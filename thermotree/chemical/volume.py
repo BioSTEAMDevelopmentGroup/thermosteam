@@ -27,7 +27,7 @@ from math import log, exp
 from .utils import R, CASDataReader
 from .virial import BVirial_Pitzer_Curl, BVirial_Abbott, BVirial_Tsonopoulos, BVirial_Tsonopoulos_extended
 from .miscdata import _VDISaturationDict, VDI_tabular_data
-from .dippr import EQ105
+from .dippr import DIPPR_EQ105
 from .electrochem import _Laliberte_Density_ParametersDict, LaliberteDensityModel
 from ..base import V, InterpolatedTDependentModel, TPDependentModel, HandleBuilder, PhasePropertyBuilder
 

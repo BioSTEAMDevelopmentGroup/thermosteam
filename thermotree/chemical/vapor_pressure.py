@@ -5,7 +5,7 @@ Created on Mon Sep 30 23:04:44 2019
 @author: yoelr
 """
 from ..base import Psat, HandleBuilder
-from .dippr import EQ101
+from .dippr import DIPPR_EQ101
 from .utils import CASDataReader
 from math import log, exp
 import numpy as np
@@ -113,7 +113,7 @@ def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
         handle.model(Antoine(data=(A, B, C)), Tmin, Tmax)
     if CAS in _Perrys2_8:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_8[CAS]
-        handle.model(EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax,)
+        handle.model(DIPPR_EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax,)
     if CAS in _VDI_PPDS_3:
         _, Tm, Tc, Pc, A, B, C, D = _VDI_PPDS_3[CAS]
         handle.model(Wagner(data=(Tc, Pc, A, B, C, D)), 0., Tc,)

@@ -41,6 +41,7 @@ from .free_energy import EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
                          ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
 from ..base import PhaseProperty, display_asfunctor
 from ..base.units_of_measure import units_of_measure
+from .dipole import dipole_moment as dipole
 from .utils import Z#, R, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
 # from .thermal_conductivity import ThermalConductivityLiquid, ThermalConductivityGas
 # from .permittivity import Permittivity
@@ -48,7 +49,7 @@ from .utils import Z#, R, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric
 # from .viscosity import ViscosityLiquid, ViscosityGas
 # from .safety import Tflash, Tautoignition, LFL, UFL, TWA, STEL, Ceiling, Skin, Carcinogen
 # from .solubility import SolubilityParameter
-# from .dipole import dipole_moment as dipole
+
 
 # from .lennard_jones import Stockmayer, MolecularDiameter
 # from .environment import GWP, ODP, logP
@@ -94,15 +95,13 @@ def chemical_descriptor(cls):
 @chemical_descriptor
 class ChemicalData:
     __slots__ = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
-                 'Hfus', 'Hsub', 'Hf', 'Hc', 'omega', 'rhoc', 
+                 'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
                  'similarity_variable', 'iscyclic_aliphatic')
     
     def __init__(self, CAS, MW, atoms):
         self.MW = MW
-        self.iscyclic_aliphatic = None
         self.Tm = Tm(CAS)
         self.Tb = Tb(CAS)
-        self.similarity_variable = similarity_variable(atoms, MW)
 
         # Critical Point
         self.Tc = Tc(CAS)
@@ -123,6 +122,11 @@ class ChemicalData:
         # Chemistry
         self.Hf = Hf(CAS)
         self.Hc = Hcombustion(atoms=atoms, Hf=self.Hf)
+        
+        # Other
+        self.dipole = dipole(CAS)
+        self.similarity_variable = similarity_variable(atoms, MW)
+        self.iscyclic_aliphatic = None
 
 
 @chemical_descriptor
@@ -140,9 +144,12 @@ class ChemicalSubgroups:
 
 @chemical_descriptor
 class ChemicalNames:
-    __slots__ = ('CAS', 'InChI', 'InChI_key', 'common_name', 'iupac_name', 'pubchemid', 'smiles')
+    __slots__ = ('CAS', 'InChI', 'InChI_key',
+                 'common_name', 'iupac_name',
+                 'pubchemid', 'smiles')
     
-    def __init__(self, CAS, smiles, InChI, InChI_key, pubchemid, iupac_name, common_name):
+    def __init__(self, CAS, smiles, InChI, InChI_key,
+                 pubchemid, iupac_name, common_name):
         self.CAS = CAS
         self.smiles = smiles
         self.InChI = InChI
@@ -155,7 +162,8 @@ class ChemicalNames:
 # %% Thermo models
 
 class ChemicalThermoMethods:
-    __slots__ = ('Hvap', 'Psat', 'Cp', 'H', 'S', 'V', 'H_excess', 'S_excess')
+    __slots__ = ('Hvap', 'Psat', 'Cp', 'H', 'S', 'V',
+                 'H_excess', 'S_excess')
 
     def __init__(self, CAS, data, eos, eos_T_101325,
                  T_ref=298.15, P_ref=101325., H_ref=0, S_ref=0):
@@ -251,31 +259,31 @@ class ChemicalThermoMethods:
         
         # Enthalpy and Entropy
         if phase_ref == 's':
-            sdata = Cp, T_ref, H_ref
-            ldata = Cp, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref
-            gdata = Cp, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref
+            sdata = (Cp, T_ref, H_ref)
+            ldata = (Cp, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
+            gdata = (Cp, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref)
             self.H = EnthalpyRefSolid('H', sdata, ldata, gdata)
-            sdata = Cp, T_ref, S_ref
-            ldata = Cp, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref
-            gdata = Cp, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref
+            sdata = (Cp, T_ref, S_ref)
+            ldata = (Cp, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref)
+            gdata = (Cp, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref)
             self.S = EntropyRefSolid('S', sdata, ldata, gdata)
         elif phase_ref == 'l':
-            sdata = Cp, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref
-            ldata = Cp, T_ref, H_ref
-            gdata = Cp, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref
+            sdata = (Cp, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
+            ldata = (Cp, T_ref, H_ref)
+            gdata = (Cp, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref)
             self.H = EnthalpyRefLiquid('H', sdata, ldata, gdata)
-            sdata = Cp, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref
-            ldata = Cp, T_ref, S_ref
-            gdata = Cp, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S_ref
+            sdata = (Cp, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref)
+            ldata = (Cp, T_ref, S_ref)
+            gdata = (Cp, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S_ref)
             self.S = EntropyRefLiquid('S', sdata, ldata, gdata)
         elif phase_ref == 'g':
-            sdata = Cp, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref
-            ldata = Cp, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref
-            gdata = Cp, T_ref, H_ref
+            sdata = (Cp, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref)
+            ldata = (Cp, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref)
+            gdata = (Cp, T_ref, H_ref)
             self.H = EnthalpyRefGas('H', sdata, ldata, gdata)
-            sdata = Cp, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S_ref
-            ldata = Cp, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref
-            gdata = Cp, T_ref, P_ref, S_ref
+            sdata = (Cp, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S_ref)
+            ldata = (Cp, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref)
+            gdata = (Cp, T_ref, P_ref, S_ref)
             self.S = EntropyRefGas('S', sdata, ldata, gdata)
         
         # Excess energies
@@ -291,7 +299,7 @@ class ChemicalThermoMethods:
             self.S_excess = ExcessEntropyRefLiquid('S_excess', (), (), gdata)
         elif phase_ref == 'g':
             ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g, eos_T_101325)
-            gdata = eos, H_dep_ref_g
+            gdata = (eos, H_dep_ref_g)
             self.H_excess = ExcessEnthalpyRefGas('H_excess', (), ldata, gdata)
             ldata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
             gdata = (eos, S_dep_ref_g)

@@ -213,6 +213,7 @@ class IdealMixtureFunctor(Functor):
             attr = getattr
             name = self.name
             self.data = np.array([attr(i, name)(T, P) for i in self.species], dtype=float)
+            self.TP = (T, P)
         return z * self.data
 
     def show(self):

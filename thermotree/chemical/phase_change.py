@@ -41,7 +41,7 @@ from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .utils import  mixing_simple, none_and_length_check, Z
 from .vapor_pressure import VaporPressure
 from .coolprop import has_CoolProp, PropsSI, coolprop_dict, coolprop_fluids
-from .dippr import EQ106
+from .dippr import DIPPR_EQ106
 
 read = CASDataReader(__file__, 'Phase Change')
 

@@ -83,8 +83,20 @@ def VDI(T, A, B, C, D):
     term2 = term*term1
     return E*exp(A*term1 + B*term2)
 
+@mu.l(njitcompile=False)
+def Lucas(T, P, Tc, Pc, omega, P_sat, mu_l):
+    Tr = T/Tc
+    C = -0.07921+2.1616*Tr - 13.4040*Tr**2 + 44.1706*Tr**3 - 84.8291*Tr**4 \
+        + 96.1209*Tr**5-59.8127*Tr**6+15.6719*Tr**7
+    D = 0.3257/((1.0039-Tr**2.573)**0.2906) - 0.2086
+    A = 0.9991 - 4.674E-4/(1.0523*Tr**-0.03877 - 1.0513)
+    dPr = (P-P_sat(T))/Pc
+    if dPr < 0:
+        dPr = 0
+    return (1. + D*(dPr/2.118)**A)/(1. + C*omega*dPr)*mu_l(T)
+
 @HandleBuilder
-def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, V):
+def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'Mu (l)')
         handle.model(InterpolatedTDependentModel(Ts, Ys, Ts[0], Ts[-1]))
@@ -103,508 +115,23 @@ def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, V):
     if CAS in _VDI_PPDS_7:
         coef = _VDI_PPDS_7[CAS][2:]
         handle.model(VDI(coef))
-    if all((MW, Tc, Pc, omega)):
-        handle.model(Letsou_Stiel((MW, Tc, Pc, omega)), Tc/4, Tc)
-    if all((self.MW, self.Tm, self.Tc, self.Pc, self.Vc, self.omega, self.Vml)):
-        handle.model(Letsou_Stiel((MW, Tc, Pc, omega)), Tc/4, Tc)
-        methods.append(PRZEDZIECKI_SRIDHAR)
-        Tmins.append(self.Tm); Tmaxs.append(self.Tc) # TODO: test model at Tm
-    if all([self.Tc, self.Pc, self.omega]):
-        methods_P.append(LUCAS)
-    self.all_methods = set(methods)
-    self.all_methods_P = set(methods_P)
-    if Tmins and Tmaxs:
-        self.Tmin, self.Tmax = min(Tmins), max(Tmaxs)
-
-    def calculate(self, T, method):
-        r'''Method to calculate low-pressure liquid viscosity at tempearture
-        `T` with a given method.
-
-        This method has no exception handling; see `T_dependent_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to calculate viscosity, [K]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of the liquid at T and a low pressure, [Pa*S]
-        '''
-        if method == DUTT_PRASAD:
-            A, B, C = self.DUTT_PRASAD_coeffs
-            mu = ViswanathNatarajan3(T, A, B, C, )
-        elif method == VISWANATH_NATARAJAN_3:
-            A, B, C = self.VISWANATH_NATARAJAN_3_coeffs
-            mu = ViswanathNatarajan3(T, A, B, C)
-        elif method == VISWANATH_NATARAJAN_2:
-            A, B = self.VISWANATH_NATARAJAN_2_coeffs
-            mu = ViswanathNatarajan2(T, self.VISWANATH_NATARAJAN_2_coeffs[0], self.VISWANATH_NATARAJAN_2_coeffs[1])
-        elif method == VISWANATH_NATARAJAN_2E:
-            C, D = self.VISWANATH_NATARAJAN_2E_coeffs
-            mu = ViswanathNatarajan2Exponential(T, C, D)
-        elif method == DIPPR_PERRY_8E:
-            mu = DIPPR_EQ101(T, *self.Perrys2_313_coeffs)
-        elif method == COOLPROP:
-            mu = CoolProp_T_dependent_property(T, self.CASRN, 'V', 'l')
-        elif method == LETSOU_STIEL:
-            mu = Letsou_Stiel(T, self.MW, self.Tc, self.Pc, self.omega)
-        elif method == PRZEDZIECKI_SRIDHAR:
-            Vml = self.Vml(T) if hasattr(self.Vml, '__call__') else self.Vml
-            mu = Przedziecki_Sridhar(T, self.Tm, self.Tc, self.Pc, self.Vc, Vml, self.omega, self.MW)
-        elif method == VDI_PPDS:
-            A, B, C, D, E = self.VDI_PPDS_coeffs
-            
-        elif method in self.tabular_data:
-            mu = self.interpolate(T, method)
-        return mu
-
-    def test_method_validity(self, T, method):
-        r'''Method to check the validity of a method. Follows the given
-        ranges for all coefficient-based methods. For CSP methods, the models
-        are considered valid from 0 K to the critical point. For tabular data,
-        extrapolation outside of the range is used if
-        :obj:`tabular_extrapolation_permitted` is set; if it is, the
-        extrapolation is considered valid for all temperatures.
-
-        It is not guaranteed that a method will work or give an accurate
-        prediction simply because this method considers the method valid.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to test the method, [K]
-        method : str
-            Name of the method to test
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a method is valid
-        '''
-        if method == DUTT_PRASAD:
-            if T < self.DUTT_PRASAD_Tmin or T > self.DUTT_PRASAD_Tmax:
-                return False
-        elif method == VISWANATH_NATARAJAN_3:
-            if T < self.VISWANATH_NATARAJAN_3_Tmin or T > self.VISWANATH_NATARAJAN_3_Tmax:
-                return False
-        elif method == VISWANATH_NATARAJAN_2:
-            if T < self.VISWANATH_NATARAJAN_2_Tmin or T > self.VISWANATH_NATARAJAN_2_Tmax:
-                return False
-        elif method == VISWANATH_NATARAJAN_2E:
-            if T < self.VISWANATH_NATARAJAN_2E_Tmin or T > self.VISWANATH_NATARAJAN_2E_Tmax:
-                return False
-        elif method == DIPPR_PERRY_8E:
-            if T < self.Perrys2_313_Tmin or T > self.Perrys2_313_Tmax:
-                return False
-        elif method == COOLPROP:
-            if T < self.CP_f.Tmin or T < self.CP_f.Tt or T > self.CP_f.Tc:
-                return False
-        elif method in [LETSOU_STIEL, PRZEDZIECKI_SRIDHAR]:
-            if T > self.Tc:
-                return False
-            # No lower limit
-        elif method == VDI_PPDS:
-            # If the derivative is positive, return invalid.
-            # This is very important as no maximum temperatures are specified.
-            if self.Tc and T > self.Tc:
-                return False
-            A, B, C, D, E = self.VDI_PPDS_coeffs
-            term = (C - T)/(T - D)
-            # Derived with sympy
-            if term > 0:
-                der = E*((-C + T)/(D - T))**(1/3.)*(A + 4*B*(-C + T)/(D - T))*(C - D)*exp(((-C + T)/(D - T))**(1/3.)*(A + B*(-C + T)/(D - T)))/(3*(C - T)*(D - T))
-            else:
-                der = E*((C - T)/(D - T))**(1/3.)*(-A*(C - D)*(D - T)**6 + B*(C - D)*(C - T)*(D - T)**5 + 3*B*(C - T)**2*(D - T)**5 - 3*B*(C - T)*(D - T)**6)*exp(-((C - T)/(D - T))**(1/3.)*(A*(D - T) - B*(C - T))/(D - T))/(3*(C - T)*(D - T)**7)
-            return der < 0
-        elif method in self.tabular_data:
-            # if tabular_extrapolation_permitted, good to go without checking
-            if not self.tabular_extrapolation_permitted:
-                Ts, properties = self.tabular_data[method]
-                if T < Ts[0] or T > Ts[-1]:
-                    return False
-        else:
-            raise Exception('Method not valid')
-        return True
-
-    def calculate_P(self, T, P, method):
-        r'''Method to calculate pressure-dependent liquid viscosity at
-        temperature `T` and pressure `P` with a given method.
-
-        This method has no exception handling; see `TP_dependent_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to calculate viscosity, [K]
-        P : float
-            Pressure at which to calculate viscosity, [K]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of the liquid at T and P, [Pa*S]
-        '''
-        if method == LUCAS:
-            mu = self.T_dependent_property(T)
-            Psat = self.Psat(T) if hasattr(self.Psat, '__call__') else self.Psat
-            mu = Lucas(T, P, self.Tc, self.Pc, self.omega, Psat, mu)
-        elif method == COOLPROP:
-            mu = PropsSI('V', 'T', T, 'P', P, self.CASRN)
-        elif method in self.tabular_data:
-            mu = self.interpolate_P(T, P, method)
-        return mu
-
-    def test_method_validity_P(self, T, P, method):
-        r'''Method to check the validity of a high-pressure method. For
-        **COOLPROP**, the fluid must be both a liquid and under the maximum
-        pressure of the fluid's EOS. **LUCAS** doesn't work on some occasions,
-        due to something related to Tr and negative powers - but is otherwise
-        considered correct for all circumstances.
-
-        For tabular data, extrapolation outside of the range is used if
-        :obj:`tabular_extrapolation_permitted` is set; if it is, the
-        extrapolation is considered valid for all temperatures and pressures.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to test the method, [K]
-        P : float
-            Pressure at which to test the method, [Pa]
-        method : str
-            Name of the method to test
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a method is valid
-        '''
-        validity = True
-        if method == LUCAS:
-            pass
-        elif method == COOLPROP:
-            validity = PhaseSI('T', T, 'P', P, self.CASRN) in ['liquid', 'supercritical_liquid']
-        elif method in self.tabular_data:
-            if not self.tabular_extrapolation_permitted:
-                Ts, Ps, properties = self.tabular_data[method]
-                if T < Ts[0] or T > Ts[-1] or P < Ps[0] or P > Ps[-1]:
-                    validity = False
-        else:
-            raise Exception('Method not valid')
-        return validity
-
-
-### Viscosity of Dense Liquids
-
-
-def Lucas(T, P, Tc, Pc, omega, P_sat, mu_l):
-    r'''Adjustes for pressure the viscosity of a liquid using an emperical
-    formula developed in [1]_, but as discussed in [2]_ as the original source
-    is in German.
-
-    .. math::
-        \frac{\mu}{\mu_{sat}}=\frac{1+D(\Delta P_r/2.118)^A}{1+C\omega \Delta P_r}
-
-        \Delta P_r = \frac{P-P^{sat}}{P_c}
-
-        A=0.9991-\frac{4.674\times 10^{-4}}{1.0523T_r^{-0.03877}-1.0513}
-
-        D = \frac{0.3257}{(1.0039-T_r^{2.573})^{0.2906}}-0.2086
-
-        C = -0.07921+2.1616T_r-13.4040T_r^2+44.1706T_r^3-84.8291T_r^4+
-        96.1209T_r^5-59.8127T_r^6+15.6719T_r^7
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    P : float
-        Pressure of fluid [Pa]
-    Tc: float
-        Critical point of fluid [K]
-    Pc : float
-        Critical pressure of the fluid [Pa]
-    omega : float
-        Acentric factor of compound
-    P_sat : float
-        Saturation pressure of the fluid [Pa]
-    mu_l : float
-        Viscosity of liquid at 1 atm or saturation, [Pa*S]
-
-    Returns
-    -------
-    mu_l_dense : float
-        Viscosity of liquid, [Pa*s]
-
-    Notes
-    -----
-    This equation is entirely dimensionless; all dimensions cancel.
-    The example is from Reid (1987); all results agree.
-    Above several thousand bar, this equation does not represent true behavior.
-    If Psat is larger than P, the fluid may not be liquid; dPr is set to 0.
-
-    Examples
-    --------
-    >>> Lucas(300., 500E5, 572.2, 34.7E5, 0.236, 0, 0.00068) # methylcyclohexane
-    0.0010683738499316518
-
-    References
-    ----------
-    .. [1] Lucas, Klaus. "Ein Einfaches Verfahren Zur Berechnung Der
-       Viskositat von Gasen Und Gasgemischen." Chemie Ingenieur Technik 46, no. 4
-       (February 1, 1974): 157-157. doi:10.1002/cite.330460413.
-    .. [2] Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
-       Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
-    '''
-    Tr = T/Tc
-    C = -0.07921+2.1616*Tr - 13.4040*Tr**2 + 44.1706*Tr**3 - 84.8291*Tr**4 \
-        + 96.1209*Tr**5-59.8127*Tr**6+15.6719*Tr**7
-    D = 0.3257/((1.0039-Tr**2.573)**0.2906) - 0.2086
-    A = 0.9991 - 4.674E-4/(1.0523*Tr**-0.03877 - 1.0513)
-    dPr = (P-P_sat)/Pc
-    if dPr < 0:
-        dPr = 0
-    return (1. + D*(dPr/2.118)**A)/(1. + C*omega*dPr)*mu_l
-
-### Viscosity of liquid mixtures
-
-
-LALIBERTE_MU = 'Laliberte'
-MIXING_LOG_MOLAR = 'Logarithmic mixing, molar'
-MIXING_LOG_MASS = 'Logarithmic mixing, mass'
-
-viscosity_liquid_mixture_methods = [LALIBERTE_MU, MIXING_LOG_MOLAR, MIXING_LOG_MASS]
-
-
-class ViscosityLiquidMixture(MixtureProperty):
-    '''Class for dealing with the viscosity of a liquid mixture as a   
-    function of temperature, pressure, and composition.
-    Consists of one electrolyte-specific method, and logarithmic rules based
-    on either mole fractions of mass fractions. 
-         
-    Prefered method is :obj:`mixing_logarithmic` with mole
-    fractions, or **Laliberte** if the mixture is aqueous and has electrolytes.  
-        
-    Parameters
-    ----------
-    CASs : list[str], optional
-        The CAS numbers of all species in the mixture
-    ViscosityLiquids : list[ViscosityLiquid], optional
-        ViscosityLiquid objects created for all species in the mixture,  
-        normally created by :obj:`thermo.chemical.Chemical`.
-
-    Notes
-    -----
-    To iterate over all methods, use the list stored in
-    :obj:`viscosity_liquid_mixture_methods`.
-
-    **LALIBERTE_MU**:
-        Electrolyte model equation with coefficients; see
-        :obj:`thermo.electrochem.Laliberte_viscosity` for more details.
-    **MIXING_LOG_MOLAR**:
-        Logarithmic mole fraction mixing rule described in 
-        :obj:`thermo.utils.mixing_logarithmic`.
-    **MIXING_LOG_MASS**:
-        Logarithmic mole fraction mixing rule described in 
-        :obj:`thermo.utils.mixing_logarithmic`.
-
-    See Also
-    --------
-    :obj:`thermo.electrochem.Laliberte_viscosity`
-
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    '''
-    name = 'liquid viscosity'
-    units = 'Pa*s'
-    property_min = 0
-    '''Mimimum valid value of liquid viscosity.'''
-    property_max = 2E8
-    '''Maximum valid value of liquid viscosity. Generous limit, as
-    the value is that of bitumen in a Pitch drop experiment.'''
-                            
-    ranked_methods = [LALIBERTE_MU, MIXING_LOG_MOLAR, MIXING_LOG_MASS]
-
-    def __init__(self, CASs=[], ViscosityLiquids=[]):
-        self.CASs = CASs
-        self.ViscosityLiquids = ViscosityLiquids
-
-        self.Tmin = None
-        '''Minimum temperature at which no method can calculate the
-        liquid viscosity under.'''
-        self.Tmax = None
-        '''Maximum temperature at which no method can calculate the
-        liquid viscosity above.'''
-
-        self.sorted_valid_methods = []
-        '''sorted_valid_methods, list: Stored methods which were found valid
-        at a specific temperature; set by `mixture_property`.'''
-        self.user_methods = []
-        '''user_methods, list: Stored methods which were specified by the user
-        in a ranked order of preference; set by `mixture_property`.'''
-        self.all_methods = set()
-        '''Set of all methods available for a given set of information;
-        filled by :obj:`load_all_methods`.'''
-        self.load_all_methods()
-
-    def load_all_methods(self):
-        r'''Method to initialize the object by precomputing any values which
-        may be used repeatedly and by retrieving mixture-specific variables.
-        All data are stored as attributes. This method also sets :obj:`Tmin`, 
-        :obj:`Tmax`, and :obj:`all_methods` as a set of methods which should 
-        work to calculate the property.
-
-        Called on initialization only. See the source code for the variables at
-        which the coefficients are stored. The coefficients can safely be
-        altered once the class is initialized. This method can be called again
-        to reset the parameters.
-        '''
-        methods = [MIXING_LOG_MOLAR, MIXING_LOG_MASS]
-        if len(self.CASs) > 1 and '7732-18-5' in self.CASs:
-            wCASs = [i for i in self.CASs if i != '7732-18-5'] 
-            if all([i in _Laliberte_Viscosity_ParametersDict for i in wCASs]):
-                methods.append(LALIBERTE_MU)
-                self.wCASs = wCASs
-                self.index_w = self.CASs.index('7732-18-5')
-        self.all_methods = set(methods)
-        Tmins = [i.Tmin for i in self.ViscosityLiquids if i.Tmin]
-        Tmaxs = [i.Tmax for i in self.ViscosityLiquids if i.Tmax]
-        if Tmins:
-            self.Tmin = max(Tmins)
-        if Tmaxs:
-            self.Tmax = max(Tmaxs)
-        
-    def calculate(self, T, P, zs, ws, method):
-        r'''Method to calculate viscosity of a liquid mixture at 
-        temperature `T`, pressure `P`, mole fractions `zs` and weight fractions
-        `ws` with a given method.
-
-        This method has no exception handling; see `mixture_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to calculate the property, [K]
-        P : float
-            Pressure at which to calculate the property, [Pa]
-        zs : list[float]
-            Mole fractions of all species in the mixture, [-]
-        ws : list[float]
-            Weight fractions of all species in the mixture, [-]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of the liquid mixture, [Pa*s]
-        '''
-        if method == MIXING_LOG_MOLAR:
-            mus = [i(T, P) for i in self.ViscosityLiquids]
-            return mixing_logarithmic(zs, mus)
-        elif method == MIXING_LOG_MASS:
-            mus = [i(T, P) for i in self.ViscosityLiquids]
-            return mixing_logarithmic(ws, mus)
-        elif method == LALIBERTE_MU:
-            ws = list(ws) ; ws.pop(self.index_w)
-            return Laliberte_viscosity(T, ws, self.wCASs)
-        else:
-            raise Exception('Method not valid')
-
-    def test_method_validity(self, T, P, zs, ws, method):
-        r'''Method to test the validity of a specified method for the given
-        conditions. If **Laliberte** is applicable, all other methods are 
-        returned as inapplicable. Otherwise, there are no checks or strict 
-        ranges of validity.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to check method validity, [K]
-        P : float
-            Pressure at which to check method validity, [Pa]
-        zs : list[float]
-            Mole fractions of all species in the mixture, [-]
-        ws : list[float]
-            Weight fractions of all species in the mixture, [-]
-        method : str
-            Method name to use
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a specifid method is valid
-        '''
-        if LALIBERTE_MU in self.all_methods:
-            # If everything is an electrolyte, accept only it as a method
-            if method in self.all_methods:
-                return method == LALIBERTE_MU
-        if method in self.all_methods:
-            return True
-        else:
-            raise Exception('Method not valid')
+    data = (MW, Tc, Pc, omega)
+    if all(data):
+        handle.model(Letsou_Stiel(data), Tc/4, Tc)
+    data = (MW, Tm, Tc, Pc, Vc, omega, Vl)
+    if all(data):
+        handle.model(Przedziecki_Sridhar(data), Tm, Tc)
+    data = (Tc, Pc, omega)
+    if all(data):
+        for mu in handler.models:
+            if isinstance(mu, TDependentModel): break
+        data = (Tc, Pc, omega, Psat, mu)
+        handle.model(Lucas(data), Tm, Tc)
 
 
 ### Viscosity of Gases - low pressure
-
+@mu.g
 def Yoon_Thodos(T, Tc, Pc, MW):
-    r'''Calculates the viscosity of a gas using an emperical formula
-    developed in [1]_.
-
-    .. math::
-        \eta \xi \times 10^8 = 46.10 T_r^{0.618} - 20.40 \exp(-0.449T_r) + 1
-        9.40\exp(-4.058T_r)+1
-
-        \xi = 2173.424 T_c^{1/6} MW^{-1/2} P_c^{-2/3}
-
-    Parameters
-    ----------
-    T : float
-        Temperature of the fluid [K]
-    Tc : float
-        Critical temperature of the fluid [K]
-    Pc : float
-        Critical pressure of the fluid [Pa]
-    MW : float
-        Molwcular weight of fluid [g/mol]
-
-    Returns
-    -------
-    mu_g : float
-        Viscosity of gas, [Pa*S]
-
-    Notes
-    -----
-    This equation has been tested. The equation uses SI units only internally.
-    The constant 2173.424 is an adjustment factor for units.
-    Average deviation within 3% for most compounds.
-    Greatest accuracy with dipole moments close to 0.
-    Hydrogen and helium have different coefficients, not implemented.
-    This is DIPPR Procedure 8B: Method for the Viscosity of Pure,
-    non hydrocarbon, nonpolar gases at low pressures
-
-    Examples
-    --------
-    >>> Yoon_Thodos(300., 556.35, 4.5596E6, 153.8)
-    1.0194885727776819e-05
-
-    References
-    ----------
-    .. [1]  Yoon, Poong, and George Thodos. "Viscosity of Nonpolar Gaseous
-       Mixtures at Normal Pressures." AIChE Journal 16, no. 2 (1970): 300-304.
-       doi:10.1002/aic.690160225.
-    '''
     Tr = T/Tc
     xi = 2173.4241*Tc**(1/6.)/(MW**0.5*Pc**(2/3.))
     a = 46.1
@@ -615,49 +142,8 @@ def Yoon_Thodos(T, Tc, Pc, MW):
     f = -4.058
     return (1. + a*Tr**b - c * exp(d*Tr) + e*exp(f*Tr))/(1E8*xi)
 
-
+@mu.g
 def Stiel_Thodos(T, Tc, Pc, MW):
-    r'''Calculates the viscosity of a gas using an emperical formula
-    developed in [1]_.
-
-    .. math::
-        TODO
-
-    Parameters
-    ----------
-    T : float
-        Temperature of the fluid [K]
-    Tc : float
-        Critical temperature of the fluid [K]
-    Pc : float
-        Critical pressure of the fluid [Pa]
-    MW : float
-        Molwcular weight of fluid [g/mol]
-
-    Returns
-    -------
-    mu_g : float
-        Viscosity of gas, [Pa*S]
-
-    Notes
-    -----
-    Untested.
-    Claimed applicability from 0.2 to 5 atm.
-    Developed with data from 52 nonpolar, and 53 polar gases.
-    internal units are poise and atm.
-    Seems to give reasonable results.
-
-    Examples
-    --------
-    >>> Stiel_Thodos(300., 556.35, 4.5596E6, 153.8) #CCl4
-    1.0408926223608723e-05
-
-    References
-    ----------
-    .. [1] Stiel, Leonard I., and George Thodos. "The Viscosity of Nonpolar
-       Gases at Normal Pressures." AIChE Journal 7, no. 4 (1961): 611-15.
-       doi:10.1002/aic.690070416.
-    '''
     Pc = Pc/101325.
     Tr = T/Tc
     xi = Tc**(1/6.)/(MW**0.5*Pc**(2/3.))
@@ -669,66 +155,8 @@ def Stiel_Thodos(T, Tc, Pc, MW):
 
 _lucas_Q_dict = {'7440-59-7': 1.38, '1333-74-0': 0.76, '7782-39-0': 0.52}
 
-
-def lucas_gas(T, Tc, Pc, Zc, MW, dipole=0, CASRN=None):
-    r'''Estimate the viscosity of a gas using an emperical
-    formula developed in several sources, but as discussed in [1]_ as the
-    original sources are in German or merely personal communications with the
-    authors of [1]_.
-
-    .. math::
-        \eta  = \left[0.807T_r^{0.618}-0.357\exp(-0.449T_r) + 0.340\exp(-4.058
-        T_r) + 0.018\right]F_p^\circ F_Q^\circ /\xi
-
-        F_p^\circ=1, 0 \le \mu_{r} < 0.022
-
-        F_p^\circ = 1+30.55(0.292-Z_c)^{1.72}, 0.022 \le \mu_{r} < 0.075
-
-        F_p^\circ = 1+30.55(0.292-Z_c)^{1.72}|0.96+0.1(T_r-0.7)| 0.075 < \mu_{r}
-
-        F_Q^\circ = 1.22Q^{0.15}\left\{ 1+0.00385[(T_r-12)^2]^{1/M}\text{sign}
-        (T_r-12)\right\}
-
-        \mu_r = 52.46 \frac{\mu^2 P_c}{T_c^2}
-
-        \xi=0.176\left(\frac{T_c}{MW^3 P_c^4}\right)^{1/6}
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc: float
-        Critical point of fluid [K]
-    Pc : float
-        Critical pressure of the fluid [Pa]
-    Zc : float
-        Critical compressibility of the fluid [Pa]
-    dipole : float
-        Dipole moment of fluid [debye]
-    CASRN : str, optional
-        CAS of the fluid
-
-    Returns
-    -------
-    mu_g : float
-        Viscosity of gas, [Pa*s]
-
-    Notes
-    -----
-    The example is from [1]_; all results agree.
-    Viscosity is calculated in micropoise, and converted to SI internally (1E-7).
-    Q for He = 1.38; Q for H2 = 0.76; Q for D2 = 0.52.
-
-    Examples
-    --------
-    >>> lucas_gas(T=550., Tc=512.6, Pc=80.9E5, Zc=0.224, MW=32.042, dipole=1.7)
-    1.7822676912698928e-05
-
-    References
-    ----------
-    .. [1] Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
-       Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
-    '''
+@mu.g
+def lucas_gas(T, Tc, Pc, Zc, MW, Q, dipole=0):
     Tr = T/Tc
     xi = 0.176*(Tc/MW**3/(Pc/1E5)**4)**(1/6.)  # bar arrording to example in Poling
     if dipole is None:
@@ -740,8 +168,7 @@ def lucas_gas(T, Tc, Pc, Zc, MW, dipole=0, CASRN=None):
         Fp = 1 + 30.55*(0.292 - Zc)**1.72
     else:
         Fp = 1 + 30.55*(0.292 - Zc)**1.72*abs(0.96 + 0.1*(Tr-0.7))
-    if CASRN and CASRN in _lucas_Q_dict:
-        Q = _lucas_Q_dict[CASRN]
+    if Q:
         if Tr - 12 > 0:
             value = 1
         else:
@@ -752,53 +179,8 @@ def lucas_gas(T, Tc, Pc, Zc, MW, dipole=0, CASRN=None):
     eta = (0.807*Tr**0.618 - 0.357*exp(-0.449*Tr) + 0.340*exp(-4.058*Tr) + 0.018)*Fp*FQ/xi
     return eta/1E7
 
-
+@mu.g
 def Gharagheizi_gas_viscosity(T, Tc, Pc, MW):
-    r'''Calculates the viscosity of a gas using an emperical formula
-    developed in [1]_.
-
-    .. math::
-        \mu = 10^{-7} | 10^{-5} P_cT_r + \left(0.091-\frac{0.477}{M}\right)T +
-        M \left(10^{-5}P_c-\frac{8M^2}{T^2}\right)
-        \left(\frac{10.7639}{T_c}-\frac{4.1929}{T}\right)|
-
-    Parameters
-    ----------
-    T : float
-        Temperature of the fluid [K]
-    Tc : float
-        Critical temperature of the fluid [K]
-    Pc : float
-        Critical pressure of the fluid [Pa]
-    MW : float
-        Molwcular weight of fluid [g/mol]
-
-    Returns
-    -------
-    mu_g : float
-        Viscosity of gas, [Pa*S]
-
-    Notes
-    -----
-    Example is first point in supporting information of article, for methane.
-    This is the prefered function for gas viscosity.
-    7% average relative deviation. Deviation should never be above 30%.
-    Developed with the DIPPR database. It is believed theoretically predicted values
-    are included in the correlation.
-
-    Examples
-    --------
-    >>> Gharagheizi_gas_viscosity(120., 190.564, 45.99E5, 16.04246)
-    5.215761625399613e-06
-
-    References
-    ----------
-    .. [1] Gharagheizi, Farhad, Ali Eslamimanesh, Mehdi Sattari, Amir H.
-       Mohammadi, and Dominique Richon. "Corresponding States Method for
-       Determination of the Viscosity of Gases at Atmospheric Pressure."
-       Industrial & Engineering Chemistry Research 51, no. 7
-       (February 22, 2012): 3179-85. doi:10.1021/ie202591f.
-    '''
     Tr = T/Tc
     mu_g = 1E-5*Pc*Tr + (0.091 - 0.477/MW)*T + MW*(1E-5*Pc - 8*MW**2/T**2)*(10.7639/Tc - 4.1929/T)
     return 1E-7 * abs(mu_g)
@@ -811,238 +193,45 @@ LUCAS_GAS = 'LUCAS_GAS'
 
 viscosity_gas_methods = [COOLPROP, DIPPR_PERRY_8E, VDI_PPDS, VDI_TABULAR, GHARAGHEIZI, YOON_THODOS,
                          STIEL_THODOS, LUCAS_GAS]
-'''Holds all low-pressure methods available for the ViscosityGas
-class, for use in iterating over them.'''
-viscosity_gas_methods_P = [COOLPROP]
-'''Holds all high-pressure methods available for the ViscosityGas
-class, for use in iterating over them.'''
 
-
-class ViscosityGas(TPDependentProperty):
-    r'''Class for dealing with gas viscosity as a function of
-    temperature and pressure.
-
-    For gases at atmospheric pressure, there are 4 corresponding-states
-    estimators, two sources of coefficient-based models, one source of tabular 
-    information, and the external library CoolProp.
-
-    For gases under the fluid's boiling point (at sub-atmospheric pressures),
-    and high-pressure gases above the boiling point, there are zero
-    corresponding-states estimators, and the external library CoolProp.
-
-    Parameters
-    ----------
-    CASRN : str, optional
-        The CAS number of the chemical
-    MW : float, optional
-        Molecular weight, [g/mol]
-    Tc : float, optional
-        Critical temperature, [K]
-    Pc : float, optional
-        Critical pressure, [Pa]
-    Zc : float, optional
-        Critical compressibility, [-]
-    dipole : float, optional
-        Dipole moment of the fluid, [debye]
-    Vmg : float, optional
-        Molar volume of the fluid at a pressure and temperature, [m^3/mol]
-
-    Notes
-    -----
-    A string holding each method's name is assigned to the following variables
-    in this module, intended as the most convenient way to refer to a method.
-    To iterate over all methods, use the lists stored in
-    :obj:`viscosity_gas_methods` and
-    :obj:`viscosity_gas_methods_P` for low and high pressure
-    methods respectively.
-
-    Low pressure methods:
-
-    **GHARAGHEIZI**:
-        CSP method, described in :obj:`Gharagheizi_gas_viscosity`.
-    **YOON_THODOS**:
-        CSP method, described in :obj:`Yoon_Thodos`.
-    **STIEL_THODOS**:
-        CSP method, described in :obj:`Stiel_Thodos`.
-    **LUCAS_GAS**:
-        CSP method, described in :obj:`lucas_gas`.
-    **DIPPR_PERRY_8E**:
-        A collection of 345 coefficient sets from the DIPPR database published
-        openly in [3]_. Provides temperature limits for all its fluids. 
-        :obj:`thermo.dippr. 02` is used for its fluids.
-    **VDI_PPDS**:
-        Coefficients for a equation form developed by the PPDS, published 
-        openly in [2]_. Provides no temperature limits, but provides reasonable
-        values at fairly high and very low temperatures.
-    **COOLPROP**:
-        CoolProp external library; with select fluids from its library.
-        Range is limited to that of the equations of state it uses, as
-        described in [1]_. Very slow.
-    **VDI_TABULAR**:
-        Tabular data in [2]_ along the saturation curve; interpolation is as
-        set by the user or the default.
-
-    High pressure methods:
-
-    **COOLPROP**:
-        CoolProp external library; with select fluids from its library.
-        Range is limited to that of the equations of state it uses, as
-        described in [1]_. Very slow, but unparalled in accuracy for pressure
-        dependence.
-
-    See Also
-    --------
-    Gharagheizi_gas_viscosity
-    Yoon_Thodos
-    Stiel_Thodos
-    lucas_gas
-
-    References
-    ----------
-    .. [1] Bell, Ian H., Jorrit Wronski, Sylvain Quoilin, and Vincent Lemort.
-       "Pure and Pseudo-Pure Fluid Thermophysical Property Evaluation and the
-       Open-Source Thermophysical Property Library CoolProp." Industrial &
-       Engineering Chemistry Research 53, no. 6 (February 12, 2014):
-       2498-2508. doi:10.1021/ie4033999. http://www.coolprop.org/
-    .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
-    .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
-    '''
-    name = 'Gas viscosity'
-    units = 'Pa*s'
-    interpolation_T = None
-    '''No interpolation transformation by default.'''
-    interpolation_P = None
-    '''No interpolation transformation by default.'''
-    interpolation_property = None
-    '''No interpolation transformation by default.'''
-    interpolation_property_inv = None
-    '''No interpolation transformation by default.'''
-    tabular_extrapolation_permitted = True
-    '''Allow tabular extrapolation by default.'''
-    property_min = 0
-    '''Mimimum valid value of gas viscosity; limiting condition at low pressure
-    is 0.'''
-    property_max = 1E-3
-    '''Maximum valid value of gas viscosity. Might be too high, or too low.'''
-
-    ranked_methods = [COOLPROP, DIPPR_PERRY_8E, VDI_PPDS, VDI_TABULAR, GHARAGHEIZI, YOON_THODOS,
-                      STIEL_THODOS, LUCAS_GAS]
-    '''Default rankings of the low-pressure methods.'''
-    ranked_methods_P = [COOLPROP]
-    '''Default rankings of the high-pressure methods.'''
-
-    def __init__(self, CASRN='', MW=None, Tc=None, Pc=None, Zc=None,
-                 dipole=None, Vmg=None):
-        self.CASRN = CASRN
-        self.MW = MW
-        self.Tc = Tc
-        self.Pc = Pc
-        self.Zc = Zc
-        self.dipole = dipole
-        self.Vmg = Vmg
-
-        self.Tmin = None
-        '''Minimum temperature at which no method can calculate the
-        gas viscosity under.'''
-        self.Tmax = None
-        '''Maximum temperature at which no method can calculate the
-        gas viscosity above.'''
-
-
-        self.tabular_data = {}
-        '''tabular_data, dict: Stored (Ts, properties) for any
-        tabular data; indexed by provided or autogenerated name.'''
-        self.tabular_data_interpolators = {}
-        '''tabular_data_interpolators, dict: Stored (extrapolator,
-        spline) tuples which are interp1d instances for each set of tabular
-        data; indexed by tuple of (name, interpolation_T,
-        interpolation_property, interpolation_property_inv) to ensure that
-        if an interpolation transform is altered, the old interpolator which
-        had been created is no longer used.'''
-
-        self.tabular_data_P = {}
-        '''tabular_data_P, dict: Stored (Ts, Ps, properties) for any
-        tabular data; indexed by provided or autogenerated name.'''
-        self.tabular_data_interpolators_P = {}
-        '''tabular_data_interpolators_P, dict: Stored (extrapolator,
-        spline) tuples which are interp2d instances for each set of tabular
-        data; indexed by tuple of (name, interpolation_T, interpolation_P,
-        interpolation_property, interpolation_property_inv) to ensure that
-        if an interpolation transform is altered, the old interpolator which
-        had been created is no longer used.'''
-
-        self.sorted_valid_methods = []
-        '''sorted_valid_methods, list: Stored methods which were found valid
-        at a specific temperature; set by `T_dependent_property`.'''
-        self.sorted_valid_methods_P = []
-        '''sorted_valid_methods_P, list: Stored methods which were found valid
-        at a specific temperature; set by `TP_dependent_property`.'''
-        self.user_methods = []
-        '''user_methods, list: Stored methods which were specified by the user
-        in a ranked order of preference; set by `T_dependent_property`.'''
-        self.user_methods_P = []
-        '''user_methods_P, list: Stored methods which were specified by the user
-        in a ranked order of preference; set by `TP_dependent_property`.'''
-
-        self.all_methods = set()
-        '''Set of all low-pressure methods available for a given CASRN and
-        properties; filled by :obj:`load_all_methods`.'''
-        self.all_methods_P = set()
-        '''Set of all high-pressure methods available for a given CASRN and
-        properties; filled by :obj:`load_all_methods`.'''
-
-        self.load_all_methods()
-
-    def load_all_methods(self):
-        r'''Method which picks out coefficients for the specified chemical
-        from the various dictionaries and DataFrames storing it. All data is
-        stored as attributes. This method also sets :obj:`Tmin`, :obj:`Tmax`,
-        :obj:`all_methods` and obj:`all_methods_P` as a set of methods for
-        which the data exists for.
-
-        Called on initialization only. See the source code for the variables at
-        which the coefficients are stored. The coefficients can safely be
-        altered once the class is initialized. This method can be called again
-        to reset the parameters.
-        '''
-        methods, methods_P = [], []
-        Tmins, Tmaxs = [], []
-        if self.CASRN in _VDISaturationDict:
-            methods.append(VDI_TABULAR)
-            Ts, props = VDI_tabular_data(self.CASRN, 'Mu (g)')
-            self.VDI_Tmin = Ts[0]
-            self.VDI_Tmax = Ts[-1]
-            self.tabular_data[VDI_TABULAR] = (Ts, props)
-            Tmins.append(self.VDI_Tmin); Tmaxs.append(self.VDI_Tmax)
-        if has_CoolProp and self.CASRN in coolprop_dict:
-            methods.append(COOLPROP); methods_P.append(COOLPROP)
-            self.CP_f = coolprop_fluids[self.CASRN]
-            Tmins.append(self.CP_f.Tmin); Tmaxs.append(self.CP_f.Tmax)
-        if self.CASRN in Perrys2_312.index:
-            methods.append(DIPPR_PERRY_8E)
-            _, C1, C2, C3, C4, self.Perrys2_312_Tmin, self.Perrys2_312_Tmax = _Perrys2_312_values[Perrys2_312.index.get_loc(self.CASRN)].tolist()
-            self.Perrys2_312_coeffs = [C1, C2, C3, C4]
-            Tmins.append(self.Perrys2_312_Tmin); Tmaxs.append(self.Perrys2_312_Tmax)
-        if self.CASRN in VDI_PPDS_8.index:
-            methods.append(VDI_PPDS)
-            self.VDI_PPDS_coeffs = _VDI_PPDS_8_values[VDI_PPDS_8.index.get_loc(self.CASRN)].tolist()[1:]
-            self.VDI_PPDS_coeffs.reverse() # in format for horner's scheme
-        if all([self.Tc, self.Pc, self.MW]):
-            methods.append(GHARAGHEIZI)
-            methods.append(YOON_THODOS)
-            methods.append(STIEL_THODOS)
-            Tmins.append(0); Tmaxs.append(5E3)  # Intelligently set limit
-            # GHARAGHEIZI turns nonsesical at ~15 K, YOON_THODOS fine to 0 K,
-            # same as STIEL_THODOS
-        if all([self.Tc, self.Pc, self.Zc, self.MW]):
-            methods.append(LUCAS_GAS)
-            Tmins.append(0); Tmaxs.append(1E3)
-        self.all_methods = set(methods)
-        self.all_methods_P = set(methods_P)
-        if Tmins and Tmaxs:
-            self.Tmin, self.Tmax = min(Tmins), max(Tmaxs)
+@HandleBuilder
+def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole, Vmg):
+    methods, methods_P = [], []
+    Tmins, Tmaxs = [], []
+    if self.CASRN in _VDISaturationDict:
+        methods.append(VDI_TABULAR)
+        Ts, props = VDI_tabular_data(self.CASRN, 'Mu (g)')
+        self.VDI_Tmin = Ts[0]
+        self.VDI_Tmax = Ts[-1]
+        self.tabular_data[VDI_TABULAR] = (Ts, props)
+        Tmins.append(self.VDI_Tmin); Tmaxs.append(self.VDI_Tmax)
+    if has_CoolProp and self.CASRN in coolprop_dict:
+        methods.append(COOLPROP); methods_P.append(COOLPROP)
+        self.CP_f = coolprop_fluids[self.CASRN]
+        Tmins.append(self.CP_f.Tmin); Tmaxs.append(self.CP_f.Tmax)
+    if self.CASRN in Perrys2_312.index:
+        methods.append(DIPPR_PERRY_8E)
+        _, C1, C2, C3, C4, self.Perrys2_312_Tmin, self.Perrys2_312_Tmax = _Perrys2_312_values[Perrys2_312.index.get_loc(self.CASRN)].tolist()
+        self.Perrys2_312_coeffs = [C1, C2, C3, C4]
+        Tmins.append(self.Perrys2_312_Tmin); Tmaxs.append(self.Perrys2_312_Tmax)
+    if self.CASRN in VDI_PPDS_8.index:
+        methods.append(VDI_PPDS)
+        self.VDI_PPDS_coeffs = _VDI_PPDS_8_values[VDI_PPDS_8.index.get_loc(self.CASRN)].tolist()[1:]
+        self.VDI_PPDS_coeffs.reverse() # in format for horner's scheme
+    if all([self.Tc, self.Pc, self.MW]):
+        methods.append(GHARAGHEIZI)
+        methods.append(YOON_THODOS)
+        methods.append(STIEL_THODOS)
+        Tmins.append(0); Tmaxs.append(5E3)  # Intelligently set limit
+        # GHARAGHEIZI turns nonsesical at ~15 K, YOON_THODOS fine to 0 K,
+        # same as STIEL_THODOS
+    if all([self.Tc, self.Pc, self.Zc, self.MW]):
+        methods.append(LUCAS_GAS)
+        Tmins.append(0); Tmaxs.append(1E3)
+    self.all_methods = set(methods)
+    self.all_methods_P = set(methods_P)
+    if Tmins and Tmaxs:
+        self.Tmin, self.Tmax = min(Tmins), max(Tmaxs)
 
     def calculate(self, T, method):
         r'''Method to calculate low-pressure gas viscosity at
