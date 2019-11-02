@@ -9,5 +9,6 @@ pandas
 numba
 numpy
 matplotlib
+graphviz
 numpydoc
 nbsphinx
