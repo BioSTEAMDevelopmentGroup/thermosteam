@@ -25,7 +25,8 @@ from math import log, exp
 from cmath import log as clog, exp as cexp
 import numpy as np
 from numba import njit
-from ..base import InterpolatedTDependentModel, thermo_model, HandleBuilder, PhasePropertyBuilder, S, H, Cp
+from ..base import InterpolatedTDependentModel, thermo_model, TDependentHandleBuilder, \
+                   ChemicalPhaseTPropertyBuilder, S, H, Cp
 from .utils import R, calorie, to_num, CASDataReader, polylog2
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .electrochem import (LaliberteHeatCapacityModel,
@@ -277,7 +278,7 @@ Poling_Functors = (Poling,
                    Poling_Integral_Over_T)
 
 
-@HandleBuilder
+@TDependentHandleBuilder
 def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
     if CAS in _TRC_gas:
         _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, _, _, _ = _TRC_gas[CAS]
@@ -393,7 +394,7 @@ with open(os.path.join(read.folder, 'Zabransky.tsv'), encoding='utf-8') as f:
                 d[CAS].append((a1s, a2s, a3s, a4s, Tmin, Tmax))
         else:
             # No duplicates for quasipolynomials
-            d[CAS] = (a1p, a2p, a3p, a4p, a5p, a6p, Tc, Tmin, Tmax)
+            d[CAS] = (Tc, a1p, a2p, a3p, a4p, a5p, a6p, Tmin, Tmax)
 
 @Cp.l
 def Zabransky_Quasi_Polynomial(T, Tc, a1, a2, a3, a4, a5, a6):
@@ -413,7 +414,7 @@ def Zabransky_Quasi_Polynomial_Integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a6):
     return (Zabransky_Quasi_Polynomial_Indefinte_Integral(Tb, Tc, a1, a2, a3, a4, a5, a6)
             - Zabransky_Quasi_Polynomial_Indefinte_Integral(Ta, Tc, a1, a2, a3, a4, a5, a6))
 
-@njit
+#@njit
 def Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(T, Tc, a1, a2, a3, a4, a5, a6):
     Tc2 = Tc*Tc
     Tc3 = Tc2*Tc    
@@ -423,7 +424,7 @@ def Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(T, Tc, a1, a2, a3, a4, 
     return R*(a3*logT -a1*polylog2(T/Tc) - a2*(-logT + 0.5*log(term*term))
               + T*(T*(T*a6/(3.*Tc3) + a5/(2.*Tc2)) + a4/Tc))
 
-@S.l
+@S.l(njitcompile=False)
 def Zabransky_Quasi_Polynomial_Over_T_Integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a6):
     return (Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Tb, Tc, a1, a2, a3, a4, a5, a6)
             - Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Ta, Tc, a1, a2, a3, a4, a5, a6))
@@ -436,7 +437,7 @@ def Zabransky_Cubic(T, a1, a2, a3, a4):
 @njit
 def Zabransky_Cubic_Indefinite_Integral(T, a1, a2, a3, a4):
     T = T/100.
-    return 100*R*T*(T*(T*(T*a4*0.25 + a3/3.) + a2*0.5) + a1)
+    return 100.*R*T*(T*(T*(T*a4*0.25 + a3/3.) + a2*0.5) + a1)
 
 @H.l
 def Zabransky_Cubic_Integral(Ta, Tb, a1, a2, a3, a4):
@@ -446,7 +447,7 @@ def Zabransky_Cubic_Integral(Ta, Tb, a1, a2, a3, a4):
 @njit
 def Zabransky_Cubic_Over_T_Indefinite_Integral(T, a1, a2, a3, a4):
     T = T/100.
-    return R*(T*(T*(T*a4/3 + a3/2) + a2) + a1*log(T))
+    return R*(T*(T*(T*a4/3. + a3/2.) + a2) + a1*log(T))
 
 @S.l
 def Zabransky_Cubic_Over_T_Integral(Ta, Tb, a1, a2, a3, a4):
@@ -497,8 +498,9 @@ zabransky_model_data = ((ZABRANSKY_SPLINE,
 zabransky_model_builders = [ZabranskyModelBuilder(*i) for i in zabransky_model_data]
 zabransky_model_builders[0].many = True
 zabransky_model_builders[2].many = True
+zabransky_model_builders[4].many = True
 
-@HandleBuilder
+@TDependentHandleBuilder
 def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cp):
     Cpg = Cp.g(Tb)
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
@@ -507,8 +509,7 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cp):
         # pressure; it is normally substantially higher than the ideal gas
         # value
         Ts, Cpls = VDI_tabular_data(CAS, 'Cp (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Cpls, Ts[0], Ts[-1],
-                                                   name=VDI_TABULAR, interpolate=True))
+        handle.model(InterpolatedTDependentModel(Ts, Cpls, Ts[0], Ts[-1], name=VDI_TABULAR))
     if Tc and omega and Cpg:
         args = (Tc, omega, Cpg, 200, Tc)
         handle.model(Rowlinson_Bondi(args), name=ROWLINSON_BONDI)
@@ -614,7 +615,7 @@ Perry_151_Functors = (Perry_151, Perry_151_Integral, Perry_151_Over_T_Integral)
 LASTOVKA_S = 'Lastovka, Fulem, Becerra and Shaw (2008)'
 PERRY151 = '''Perry's Table 2-151'''
 
-@HandleBuilder
+@TDependentHandleBuilder
 def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
     Tmin = 0
     Tmax = 2000
@@ -635,5 +636,5 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
         handle.model(CpHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
-HeatCapacity = PhasePropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas)
+HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas)
 

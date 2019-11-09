@@ -83,6 +83,11 @@ class ThermoModel:
 
 class TDependentModel(ThermoModel, Functor=TFunctor):
     
+    @property
+    def var(self):
+        try: return self.evaluate.var
+        except: return None
+    
     def indomain(self, T, P=None):
         return self.Tmin < T < self.Tmax
     
@@ -111,6 +116,8 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
 
 
 class TPDependentModel(ThermoModel, Functor=TPFunctor):
+    
+    var = TDependentModel.var
     
     def indomain(self, T, P):
         return (self.Tmin < T < self.Tmax) and (self.Pmin < P < self.Pmax)
@@ -227,7 +234,7 @@ class InterpolatedTDependentModel(ThermoModel):
     
     def show(self):
         print(f"{type(self).__name__}: {self.name}\n"
-              f" evaluate: {display_asfunctor(self, self.var)}"
+              f" evaluate: {display_asfunctor(self.evaluate, self.var)}"
               f" Tmin: {self.Tmin:.2f}\n"
               f" Tmax: {self.Tmax:.2f}")
 

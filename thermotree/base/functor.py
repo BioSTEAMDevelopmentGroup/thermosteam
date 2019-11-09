@@ -9,12 +9,11 @@ from .utils import var_with_units, get_obj_values
 from inspect import signature, isclass
 from numba.targets.registry import CPUDispatcher
 from numba import njit
-import numpy as np
 
-__all__ = ("Functor", "MixtureFunctor",
+__all__ = ("Functor", "MixtureFunctor", 
            "TFunctor", "TPFunctor",
            "zTFunctor", "zTPFunctor",
-           "functor", 'H', 'S', 'V', 'Cp',
+           "functor", 'H', 'S', 'V', 'Cp', 'mu', 'k', 'sigma', 'delta', 'epsilon',
            'Psat', 'Hvap', 'display_asfunctor',
            'functor_matching_params', 'functor_base_and_params')
 
@@ -105,8 +104,9 @@ class FunctorFactory:
     def __repr__(self):
         return f"{type(self).__name__}: {var_with_units(self.var)}"
     
-H, S, Cp, V, k, mu, Psat, Hvap = [FunctorFactory(i) for i in
-                                 ('H', 'S', 'Cp', 'V', 'k', 'mu', 'Psat', 'Hvap')]
+H, S, Cp, V, k, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i in
+                            ('H', 'S', 'Cp', 'V', 'k', 'mu', 'Psat', 'Hvap',
+                             'sigma', 'delta', 'epsilon')]
 
 
 # %% Functors
@@ -197,28 +197,6 @@ class TPFunctor(PureComponentFunctor, args=('T', 'P')):
     
     def __call__(self, T, P):
         return self.function(T, P, **self.kwargs)
-    
-
-class IdealMixtureFunctor(Functor):
-    __slots__ = ('name', 'species', 'cached')
-    
-    def __init__(self, name, species):
-        self.name = name
-        self.species = species
-        self.TP = (0., 0.)
-        self.data = None
-    
-    def __call__(self, z, T, P):
-        if (T, P) != self.TP:
-            attr = getattr
-            name = self.name
-            self.data = np.array([attr(i, name)(T, P) for i in self.species], dtype=float)
-            self.TP = (T, P)
-        return z * self.data
-
-    def show(self):
-        print(f"Functor: {display_asfunctor(self)}"
-              f" species: {', '.join([i.ID for i in self.species])}")
 
 
 class MixtureFunctor(Functor):
@@ -249,10 +227,6 @@ class MixtureFunctor(Functor):
             self.kwargs = self.cached[species]
         else:
             self.cached[species] = self.kwargs = self.calculate_kwargs(self.species)
-        
-    show = IdealMixtureFunctor.show
-        
-    _ipython_display_ = show
             
     
 class zTFunctor(MixtureFunctor, args=('z', 'T')): 

@@ -20,8 +20,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-from __future__ import division
-
 __all__ = ['Yaws_data', 'Tb_methods', 'Tb', 'Tm_ON_data', 'Tm_methods', 'Tm', 
            'Clapeyron', 'Pitzer', 'SMK', 'MK', 'Velasco', 'Riedel', 'Chen', 
            'Liu', 'Vetere', 'GharagheiziHvap_data', 'CRCHvap_data', 
@@ -33,7 +31,7 @@ import os
 import numpy as np
 import pandas as pd
 from numba import njit
-from ..base import InterpolatedTDependentModel, HandleBuilder, Hvap
+from ..base import InterpolatedTDependentModel, TDependentHandleBuilder, Hvap
 from math import log, pi
 from .utils import R, N_A, CASDataReader
 from .miscdata import _CRC_organic, _CRC_inorganic
@@ -553,7 +551,7 @@ def MK(T, Tc, omega):
     return H0 + omega*H1 + omega**2*H2
 
 @Hvap
-def Velasco(T, P, Tc, omega):
+def Velasco(T, Tc, omega):
     r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
     the work of [1]_; requires a chemical's critical temperature and
     acentric factor.
@@ -853,7 +851,7 @@ def VDI_PPDS(T, Tc, A, B, C, D, E):
     tau = 1. - T/Tc
     return R*Tc*(A*tau**(1/3.) + B*tau**(2/3.) + C*tau + D*tau**2 + E*tau**6)
 
-@HandleBuilder
+@TDependentHandleBuilder
 def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V):
     # if has_CoolProp and self.CASRN in coolprop_dict:
     #     methods.append(COOLPROP)

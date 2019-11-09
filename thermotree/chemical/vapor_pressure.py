@@ -4,7 +4,7 @@ Created on Mon Sep 30 23:04:44 2019
 
 @author: yoelr
 """
-from ..base import Psat, HandleBuilder
+from ..base import Psat, TDependentHandleBuilder
 from .dippr import DIPPR_EQ101
 from .utils import CASDataReader
 from math import log, exp
@@ -94,7 +94,7 @@ def Edalat(T, Tc, Pc, ω, Tmin, Tmax):
     lnPr = (a * τ + b * τ**1.5 + c * τ**3.0 + d * τ**6.0) / (1.0 - τ)
     return exp(lnPr) * Pc
 
-@HandleBuilder
+@TDependentHandleBuilder
 def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
     if CAS in _WagnerMcGarry:
         _, A, B, C, D, Pc, Tc, Tmin = _WagnerMcGarry[CAS]

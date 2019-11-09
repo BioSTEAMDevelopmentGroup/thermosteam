@@ -10,30 +10,26 @@ from .functor import display_asfunctor
 from .units_of_measure import units_of_measure
 
 __all__ = ('ThermoModelHandle', 'TDependentModelHandle',
-           'TPDependentModelHandle', 'RegisteredHandles')
+           'TPDependentModelHandle')
 
 
 # %% Handles
 
-RegisteredHandles = []
 
 class ThermoModelHandle:
-    __slots__ = ('var', 'models')
+    __slots__ = ('models',)
     
-    def __init_subclass__(cls, Model=None, before=None, after=None):
-        if Model:
-            if before:
-                index = RegisteredHandles.index(before)
-            elif after:
-                index = RegisteredHandles.index(after) + 1
-            else:
-                index = 0
-            RegisteredHandles.insert(index, cls)
-            cls._Model = Model
-            
-    def __init__(self, var=None):
-        self.var = var
+    @property
+    def var(self):
+        for i in self.models:
+            var = i.var
+            if var: return var
+        
+    def __init__(self):
         self.models = []
+    
+    def __bool__(self):
+        return bool(self.models)
     
     def model(self, evaluate,
               Tmin=None, Tmax=None,
@@ -56,13 +52,10 @@ class ThermoModelHandle:
               f"{models}")
         
     _ipython_display_ = show
-        
+
     
-class TDependentModelHandle(ThermoModelHandle, Model=TDependentModel):
+class TDependentModelHandle(ThermoModelHandle):
     __slots__ = ()
-    
-    Pmin = 0.0
-    Pmax = infinity
     
     @property
     def Tmin(self):
@@ -71,64 +64,61 @@ class TDependentModelHandle(ThermoModelHandle, Model=TDependentModel):
     def Tmax(self):
         return max([i.Tmax for i in self.models])
     
-    def __call__(self, T, P=None):
+    def __call__(self, T):
         for model in self.models:
             if model.indomain(T): return model.evaluate(T)
         raise ValueError(f"no valid model at T={T:.2f} K")
             
-    def differentiate_by_T(self, T, P=None):
+    def differentiate_by_T(self, T):
         for model in self.models:
             if model.indomain(T): return model.differentiate_by_T(T)
         raise ValueError(f"no valid model at T={T:.2f} K")
-    
-    def differentiate_by_P(self, T, P=None):
-        return 0
         
-    def integrate_by_T(self, Ta, Tb, P=None):
-        integral = 0
+    def integrate_by_T(self, Ta, Tb):
+        integral = 0.
         defined = hasattr
         for model in self.models:
             if not defined(model, 'integrate_by_T'): continue
-            lb_satisfied = Ta > model.Tmin
-            ub_satisfied = Tb < model.Tmax
+            Tmax = model.Tmax
+            Tmin = model.Tmin
+            lb_satisfied = Ta > Tmin
+            ub_satisfied = Tb < Tmax
             if lb_satisfied:
                 if ub_satisfied:
                     return integral + model.integrate_by_T(Ta, Tb)
-                else:
-                    Ti = model.Tmax
-                    integral += model.integrate_by_T(Ta, Ti)
-                    Ta = Ti
-            elif ub_satisfied:
-                Ti = model.Tmin
-                integral += model.integrate_by_T(Ti, Tb)
-                Tb = Ti
+                elif Ta < Tmax:
+                    integral += model.integrate_by_T(Ta, Tmax)
+                    Ta = Tmax
+            elif ub_satisfied and Tmin < Tb:
+                integral += model.integrate_by_T(Tmin, Tb)
+                Tb = Tmin
         raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
     
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
     
-    def integrate_by_T_over_T(self, Ta, Tb, P=None):
-        integral = 0
+    def integrate_by_T_over_T(self, Ta, Tb):
+        integral = 0.
         defined = hasattr
         for model in self.models:
             if not defined(model, 'integrate_by_T_over_T'): continue
-            lb_satisfied = Ta >= model.Tmin
-            ub_satisfied = Tb <= model.Tmax
+            Tmax = model.Tmax
+            Tmin = model.Tmin
+            lb_satisfied = Ta > Tmin
+            ub_satisfied = Tb < Tmax
             if lb_satisfied:
                 if ub_satisfied:
                     return integral + model.integrate_by_T_over_T(Ta, Tb)
-                else:
-                    Ti = model.Tmax
-                    integral += model.integrate_by_T_over_T(Ta, Ti)
-                    Ta = Ti
-            elif ub_satisfied:
-                Ti = model.Tmin
-                integral += model.integrate_by_T_over_T(Ti, Tb)
-                Tb = Ti
+                elif Ta < Tmax:
+                    integral += model.integrate_by_T_over_T(Ta, Tmax)
+                    Ta = Tmax
+            elif ub_satisfied and Tmin < Tb:
+                integral += model.integrate_by_T_over_T(Tmin, Tb)
+                Tb = Tmin
         raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
     
     
-class TPDependentModelHandle(ThermoModelHandle, Model=TPDependentModel):
+class TPDependentModelHandle(ThermoModelHandle):
     __slots__ = ()
     
     Tmin = TDependentModelHandle.Tmin
@@ -161,19 +151,19 @@ class TPDependentModelHandle(ThermoModelHandle, Model=TPDependentModel):
         defined = hasattr
         for model in self.models:
             if not (defined(model, 'integrate_by_T') and model.Pmin < P < model.Pmax): continue
-            lb_satisfied = Ta > model.Tmin
-            ub_satisfied = Tb < model.Tmax
+            Tmax = model.Tmax
+            Tmin = model.Tmin    
+            lb_satisfied = Ta > Tmin
+            ub_satisfied = Tb < Tmax
             if lb_satisfied:
                 if ub_satisfied:
                     return integral + model.integrate_by_T(Ta, Tb, P)
-                else:
-                    Ti = model.Tmax
-                    integral += model.integrate_by_T(Ta, Ti, P)
-                    Ta = Ti
-            elif ub_satisfied:
-                Ti = model.Tmin
-                integral += model.integrate_by_T(Ti, Tb, P)
-                Tb = Ti
+                elif Ta < Tmax:
+                    integral += model.integrate_by_T(Ta, Tmax, P)
+                    Ta = Tmax
+            elif ub_satisfied and Tmin < Tb:
+                integral += model.integrate_by_T(Tmin, Tb, P)
+                Tb = Tmin
         raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K at P={P:5g} Pa")
     
     def integrate_by_P(self, Pa, Pb, T):
@@ -182,19 +172,19 @@ class TPDependentModelHandle(ThermoModelHandle, Model=TPDependentModel):
         for model in self.models:
             if not (defined(model, 'integrate_by_P')
                     and model.Tmin < T < model.Tmax): continue
-            lb_satisfied = Pa > model.Pmin
-            ub_satisfied = Pb < model.Pmax
+            Pmin = model.Pmin
+            Pmax = model.Pmax
+            lb_satisfied = Pa > Pmin
+            ub_satisfied = Pb < Pmax
             if lb_satisfied:
                 if ub_satisfied:
                     return integral + model.integrate_by_P(Pa, Pb, T)
-                else:
-                    Pi = model.Tmax
-                    integral += model.integrate_by_P(Pa, Pi, T)
-                    Pa = Pi
-            elif ub_satisfied:
-                Pi = model.Tmin
-                integral += model.integrate_by_P(Pi, Pb, T)
-                Pb = Pi
+                elif Pa < Pmax:
+                    integral += model.integrate_by_P(Pa, Pmax, T)
+                    Pa = Pmax
+            elif ub_satisfied and Pmin < Pb:
+                integral += model.integrate_by_P(Pmin, Pb, T)
+                Pb = Pmin
         raise ValueError(f"no valid model between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
     
     def integrate_by_T_over_T(self, Ta, Tb, P):
@@ -203,19 +193,19 @@ class TPDependentModelHandle(ThermoModelHandle, Model=TPDependentModel):
         for model in self.models:
             if not (defined(model, 'integrate_by_T_over_T')
                     and model.Pmin < P < model.Pmax): continue
-            lb_satisfied = Ta >= model.Tmin
-            ub_satisfied = Tb <= model.Tmax
+            Tmax = model.Tmax
+            Tmin = model.Tmin    
+            lb_satisfied = Ta > Tmin
+            ub_satisfied = Tb < Tmax
             if lb_satisfied:
                 if ub_satisfied:
                     return integral + model.integrate_by_T_over_T(Ta, Tb, P)
-                else:
-                    Ti = model.Tmax
-                    integral += model.integrate_by_T_over_T(Ta, Ti, P)
-                    Ta = Ti
-            elif ub_satisfied:
-                Ti = model.Tmin
-                integral += model.integrate_by_T_over_T(Ti, Tb, P)
-                Tb = Ti
+                elif Ta < Tmax:
+                    integral += model.integrate_by_T_over_T(Ta, Tmax, P)
+                    Ta = Tmax
+            elif ub_satisfied and Tmin < Tb:
+                integral += model.integrate_by_T_over_T(Tmin, Tb, P)
+                Tb = Tmin
         raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
             
     

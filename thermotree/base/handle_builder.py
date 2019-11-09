@@ -4,26 +4,26 @@ Created on Tue Oct 29 12:00:55 2019
 
 @author: yoelr
 """
-from .thermo_model_handle import ThermoModelHandle, RegisteredHandles
-from .utils import any_isinstance
+from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 
-__all__ = ('HandleBuilder',)
+__all__ = ('HandleBuilder', 'TDependentHandleBuilder', 'TPDependentHandleBuilder')
 
 class HandleBuilder:
-    __slots__ = ('function', 'params')
+    __slots__ = ('function',)
     
     def __init__(self, function):
         self.function = function
-    
-    def __call__(self, var, data):
-        handle = ThermoModelHandle()
+
+    def __call__(self, data):
+        handle = self.Handle()
         self.function(handle, *data)
-        models = handle.models
-        for Handler in RegisteredHandles:    
-            if any_isinstance(models, Handler._Model): break
-        handle.__class__ = Handler
-        handle.var = var
         return handle
         
     def __repr__(self):
-        return f"<[{type(self).__name__}] {self.function.__name__}(data, var='')>"
+        return f"<[{type(self).__name__}] {self.function.__name__}(data)>"
+    
+class TDependentHandleBuilder(HandleBuilder):
+    Handle = TDependentModelHandle
+
+class TPDependentHandleBuilder(HandleBuilder):
+    Handle = TPDependentModelHandle

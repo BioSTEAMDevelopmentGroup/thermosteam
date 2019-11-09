@@ -4,6 +4,7 @@ Created on Wed Oct 30 12:07:13 2019
 
 @author: yoelr
 """
-from .chemical import Chemical
+from .chemical import *
+from . import chemical
 
-__all__ = ('Chemical',)
+__all__ = (*chemical.__all__,)

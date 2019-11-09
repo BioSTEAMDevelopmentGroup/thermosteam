@@ -35,27 +35,30 @@ def DIPPR_EQ101(T, A, B, C, D, E):
     return exp(A + B/T + C*log(T) + D*T**E)
 
 @functor
-def DIPPR_EQ102(T, A, B, C, D, order=0):
-    if order == 0:
-        return A*T**B/(1. + C/T + D/(T*T))
-    elif order == 1:
-        return (A*B*T**B/(T*(C/T + D/T**2 + 1)) 
-                + A*T**B*(C/T**2 + 2*D/T**3)/(C/T + D/T**2 + 1)**2)
-    elif order == -1:
-        # imaginary part is 0
-        return (2*A*T**(3+B)*hyp2f1(1, 3+B, 4+B, -2*T/(C - csqrt(C*C 
-                - 4*D)))/((3+B)*(C - csqrt(C*C-4*D))*csqrt(C*C-4*D))
-                -2*A*T**(3+B)*hyp2f1(1, 3+B, 4+B, -2*T/(C + csqrt(C*C - 4*D)))/(
-                        (3+B)*(C + csqrt(C*C-4*D))*csqrt(C*C-4*D))).real
-    elif order == -1j:
+def DIPPR_EQ102(T, A, B, C, D):
+    return A*T**B/(1. + C/T + D/(T*T))
+
+@functor
+def DIPPR_EQ102_derivative_by_T(T, A, B, C, D):
+    return (A*B*T**B/(T*(C/T + D/T**2 + 1)) 
+            + A*T**B*(C/T**2 + 2*D/T**3)/(C/T + D/T**2 + 1)**2)
+    
+@functor
+def DIPPR_EQ102_integral_by_T(T, A, B, C, D):
+    # imaginary part is 0
+    return (2*A*T**(3+B)*hyp2f1(1, 3+B, 4+B, -2*T/(C - csqrt(C*C 
+            - 4*D)))/((3+B)*(C - csqrt(C*C-4*D))*csqrt(C*C-4*D))
+            -2*A*T**(3+B)*hyp2f1(1, 3+B, 4+B, -2*T/(C + csqrt(C*C - 4*D)))/(
+                    (3+B)*(C + csqrt(C*C-4*D))*csqrt(C*C-4*D))).real
+    
+@functor
+def DIPPR_EQ102_integral_by_T_over_T(T, A, B, C, D):
         return (2*A*T**(2+B)*hyp2f1(1, 2+B, 3+B, -2*T/(C - csqrt(C*C - 4*D)))/(
                 (2+B)*(C - csqrt(C*C-4*D))*csqrt(C*C-4*D)) - 2*A*T**(2+B)*
             hyp2f1(1, 2+B, 3+B, -2*T/(C + csqrt(C*C - 4*D)))/((2+B)*(C + csqrt(
                                 C*C-4*D))*csqrt(C*C-4*D))).real
-    else:
-        raise Exception(order_not_found_msg)
         
-functor
+@functor
 def DIPPR_EQ104(T, A, B, C, D, E, order=0):
     if order == 0:
         T2 = T*T

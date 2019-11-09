@@ -19,8 +19,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
-from cmath import sqrt as csqrt
+from cmath import sqrt as csqrt, exp
 from bisect import bisect_left
+from ..base import functor
 import numpy as np
 import os
 import pandas as pd
@@ -76,7 +77,13 @@ class CASData:
     
     def __repr__(self):
         return f"<{type(self).__name__}: {self.name}>"
-        
+
+@functor
+def horner(T, coeffs):
+    tot = 0
+    for c in coeffs: tot = tot * T + c
+    return tot     
+
 
 def to_num(values):
     r'''Legacy function to turn a list of strings into either floats
@@ -1301,38 +1308,6 @@ def allclose_variable(a, b, limits, rtols=None, atols=None):
     return True
 
 
-def horner(coeffs, x):
-    r'''Simple function to calculate the value of a polynomial at a specific
-    value of `x`, using the Horner evaluation scheme
-
-    Parameters
-    ----------
-    coeffs : array-like
-        Coefficients, where coeffs[0] is multiplied by the largest power of x,
-        and coeffs[-1] is added to the sum with no multiplication.
-    x : float
-        Value to evaluate the polynomial at
-
-    Returns
-    -------
-    y : float
-        Evaluated result
-
-    Notes
-    -----
-    Efficient. Faster than numpy.polyval.
-
-    Examples
-    --------
-    >>> horner([1,2,3], 3)
-    18
-    '''
-    tot = 0
-    for c in coeffs:
-        tot = tot * x + c
-    return tot
-
-
 def polylog2(x):
     r'''Simple function to calculate PolyLog(2, x) from ranges 0 <= x <= 1,
     with relative error guaranteed to be < 1E-7 from 0 to 0.99999. This
@@ -1377,7 +1352,7 @@ def polylog2(x):
     else:
         raise Exception('Approximation is valid between 0 and 1 only.')
     x = x - offset
-    return horner(p, x)/horner(q, x)
+    return horner.function(x, p)/horner.function(x, q)
 
 
 def normalize(values):

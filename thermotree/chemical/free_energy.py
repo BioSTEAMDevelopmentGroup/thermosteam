@@ -5,7 +5,7 @@ Created on Thu Oct 31 06:56:43 2019
 @author: yoelr
 """
 from .utils import R
-from ..base import H, S, PhasePropertyBuilder
+from ..base import H, S, ChemicalPhaseTPropertyBuilder, ChemicalPhaseTPPropertyBuilder
 from math import log
     
 @H.l(njitcompile=False)
@@ -46,17 +46,17 @@ def Gas_Enthalpy_Ref_Solid(T, Cp, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, H
     return H_ref + H_int_T_ref_to_Tm_s + Hfus + H_int_Tm_to_Tb_l + Hvap_Tb + Cp.g.integrate_by_T(Tb, T)
 
 
-EnthalpyRefLiquid = PhasePropertyBuilder(Solid_Enthalpy_Ref_Liquid,
-                                         Liquid_Enthalpy_Ref_Liquid,
-                                         Gas_Enthalpy_Ref_Liquid)
+EnthalpyRefLiquid = ChemicalPhaseTPropertyBuilder(Solid_Enthalpy_Ref_Liquid,
+                                                  Liquid_Enthalpy_Ref_Liquid,
+                                                  Gas_Enthalpy_Ref_Liquid)
 
-EnthalpyRefSolid = PhasePropertyBuilder(Solid_Enthalpy_Ref_Solid,
-                                        Liquid_Enthalpy_Ref_Solid,
-                                        Gas_Enthalpy_Ref_Solid)
+EnthalpyRefSolid = ChemicalPhaseTPropertyBuilder(Solid_Enthalpy_Ref_Solid,
+                                                 Liquid_Enthalpy_Ref_Solid,
+                                                 Gas_Enthalpy_Ref_Solid)
 
-EnthalpyRefGas = PhasePropertyBuilder(Solid_Enthalpy_Ref_Gas,
-                                      Liquid_Enthalpy_Ref_Gas,
-                                      Gas_Enthalpy_Ref_Gas)
+EnthalpyRefGas = ChemicalPhaseTPropertyBuilder(Solid_Enthalpy_Ref_Gas,
+                                               Liquid_Enthalpy_Ref_Gas,
+                                               Gas_Enthalpy_Ref_Gas)
 
 @S.l(njitcompile=False)
 def Liquid_Entropy_Ref_Liquid(T, Cp, T_ref, S_ref):
@@ -96,17 +96,17 @@ def Gas_Entropy_Ref_Solid(T, P, Cp, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l,
     return S_ref + S_int_T_ref_to_Tm_s + Sfus + S_int_Tm_to_Tb_l + Svap_Tb + Cp.g.integrate_by_T_over_T(Tb, T) - R*log(P/P_ref)
 
 
-EntropyRefLiquid = PhasePropertyBuilder(Solid_Entropy_Ref_Liquid,
-                                         Liquid_Entropy_Ref_Liquid,
-                                         Gas_Entropy_Ref_Liquid)
+EntropyRefLiquid = ChemicalPhaseTPPropertyBuilder(Solid_Entropy_Ref_Liquid,
+                                                  Liquid_Entropy_Ref_Liquid,
+                                                  Gas_Entropy_Ref_Liquid)
 
-EntropyRefSolid = PhasePropertyBuilder(Solid_Entropy_Ref_Solid,
-                                         Liquid_Entropy_Ref_Solid,
-                                         Gas_Entropy_Ref_Solid)
+EntropyRefSolid = ChemicalPhaseTPPropertyBuilder(Solid_Entropy_Ref_Solid,
+                                                 Liquid_Entropy_Ref_Solid,
+                                                 Gas_Entropy_Ref_Solid)
 
-EntropyRefGas = PhasePropertyBuilder(Solid_Entropy_Ref_Gas,
-                                     Liquid_Entropy_Ref_Gas,
-                                     Gas_Entropy_Ref_Gas)
+EntropyRefGas = ChemicalPhaseTPPropertyBuilder(Solid_Entropy_Ref_Gas,
+                                               Liquid_Entropy_Ref_Gas,
+                                               Gas_Entropy_Ref_Gas)
 
 @H.l(njitcompile=False)
 def Excess_Liquid_Enthalpy_Ref_Liquid(T, P):
@@ -142,20 +142,20 @@ def Excess_Gas_Enthalpy_Ref_Liquid(T, P, eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep
     return H_dep_T_ref_Pb - H_dep_ref_l + eos.to_TP(T, P).H_dep_g - H_dep_Tb_Pb_g
 
 @H.g(njitcompile=False)
-def Excess_Gas_Enthalpy_Ref_Solid(T, Cp, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref):
-    return NotImplemented
+def Excess_Gas_Enthalpy_Ref_Solid(T):
+    return 0
 
-ExcessEnthalpyRefLiquid = PhasePropertyBuilder(Excess_Solid_Enthalpy_Ref_Liquid,
-                                               Excess_Liquid_Enthalpy_Ref_Liquid,
-                                               Gas_Enthalpy_Ref_Liquid)
+ExcessEnthalpyRefLiquid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Enthalpy_Ref_Liquid,
+                                                         Excess_Liquid_Enthalpy_Ref_Liquid,
+                                                         Gas_Enthalpy_Ref_Liquid)
 
-ExcessEnthalpyRefSolid = PhasePropertyBuilder(Solid_Enthalpy_Ref_Solid,
-                                              Excess_Liquid_Enthalpy_Ref_Solid,
-                                              Excess_Gas_Enthalpy_Ref_Solid)
+ExcessEnthalpyRefSolid = ChemicalPhaseTPPropertyBuilder(Solid_Enthalpy_Ref_Solid,
+                                                        Excess_Liquid_Enthalpy_Ref_Solid,
+                                                        Excess_Gas_Enthalpy_Ref_Solid)
 
-ExcessEnthalpyRefGas = PhasePropertyBuilder(Excess_Solid_Enthalpy_Ref_Gas,
-                                            Excess_Liquid_Enthalpy_Ref_Gas,
-                                            Excess_Gas_Enthalpy_Ref_Gas)
+ExcessEnthalpyRefGas = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Enthalpy_Ref_Gas,
+                                                      Excess_Liquid_Enthalpy_Ref_Gas,
+                                                      Excess_Gas_Enthalpy_Ref_Gas)
 
 @S.l(njitcompile=False)
 def Excess_Liquid_Entropy_Ref_Liquid(T, P):
@@ -191,17 +191,17 @@ def Excess_Gas_Entropy_Ref_Liquid(T, P, eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_
     return S_dep_T_ref_Pb - S_dep_ref_l + eos.to_TP(T, P).S_dep_g - S_dep_Tb_Pb_g
 
 @S.g(njitcompile=False)
-def Excess_Gas_Entropy_Ref_Solid(T, Cp, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, S_ref):
-    return NotImplemented
+def Excess_Gas_Entropy_Ref_Solid(T):
+    return 0
 
-ExcessEntropyRefLiquid = PhasePropertyBuilder(Excess_Solid_Entropy_Ref_Liquid,
-                                              Excess_Liquid_Entropy_Ref_Liquid,
-                                              Gas_Entropy_Ref_Liquid)
+ExcessEntropyRefLiquid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Entropy_Ref_Liquid,
+                                                        Excess_Liquid_Entropy_Ref_Liquid,
+                                                        Gas_Entropy_Ref_Liquid)
 
-ExcessEntropyRefSolid = PhasePropertyBuilder(Solid_Entropy_Ref_Solid,
-                                             Excess_Liquid_Entropy_Ref_Solid,
-                                             Excess_Gas_Entropy_Ref_Solid)
+ExcessEntropyRefSolid = ChemicalPhaseTPPropertyBuilder(Solid_Entropy_Ref_Solid,
+                                                       Excess_Liquid_Entropy_Ref_Solid,
+                                                       Excess_Gas_Entropy_Ref_Solid)
 
-ExcessEntropyRefGas = PhasePropertyBuilder(Excess_Solid_Entropy_Ref_Gas,
-                                           Excess_Liquid_Entropy_Ref_Gas,
-                                           Excess_Gas_Entropy_Ref_Gas)
+ExcessEntropyRefGas = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Entropy_Ref_Gas,
+                                                     Excess_Liquid_Entropy_Ref_Gas,
+                                                     Excess_Gas_Entropy_Ref_Gas)

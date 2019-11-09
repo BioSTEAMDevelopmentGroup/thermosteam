@@ -22,16 +22,14 @@ SOFTWARE.'''
 
 from __future__ import division
 
-import os
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.optimize import newton
-from numpa import njit
 from math import log, exp
-from .utils import horner, none_and_length_check, mixing_simple, mixing_logarithmic, CASDataReader
-from ..base import InterpolatedTDependentModel, mu, HandleBuilder
+from .utils import CASDataReader, horner
+from ..base import InterpolatedTDependentModel, mu, TPDependentHandleBuilder, TDependentModel, ChemicalPhaseTPPropertyBuilder
 from .miscdata import _VDISaturationDict, VDI_tabular_data
-from .electrochem import _Laliberte_Viscosity_ParametersDict, Laliberte_viscosity
+# from .electrochem import _Laliberte_Viscosity_ParametersDict, Laliberte_viscosity
 from .dippr import DIPPR_EQ101, DIPPR_EQ102
 
 read = CASDataReader(__file__, 'Viscosity')
@@ -74,7 +72,7 @@ def Przedziecki_Sridhar(T, Tm, Tc, Pc, Vc, Vm, omega, MW):
     return Vo/(E*(V-Vo))/1000.
 
 @mu.l
-def VDI(T, A, B, C, D):
+def VDI(T, A, B, C, D, E):
     term = (C - T)/(T-D)
     if term < 0:
         term1 = -((T - C)/(T-D))**(1/3.)
@@ -84,18 +82,17 @@ def VDI(T, A, B, C, D):
     return E*exp(A*term1 + B*term2)
 
 @mu.l(njitcompile=False)
-def Lucas(T, P, Tc, Pc, omega, P_sat, mu_l):
+def Lucas(T, P, Tc, Pc, omega, P_sat, mu):
     Tr = T/Tc
     C = -0.07921+2.1616*Tr - 13.4040*Tr**2 + 44.1706*Tr**3 - 84.8291*Tr**4 \
         + 96.1209*Tr**5-59.8127*Tr**6+15.6719*Tr**7
     D = 0.3257/((1.0039-Tr**2.573)**0.2906) - 0.2086
     A = 0.9991 - 4.674E-4/(1.0523*Tr**-0.03877 - 1.0513)
     dPr = (P-P_sat(T))/Pc
-    if dPr < 0:
-        dPr = 0
-    return (1. + D*(dPr/2.118)**A)/(1. + C*omega*dPr)*mu_l(T)
+    if dPr < 0: dPr = 0
+    return (1. + D*(dPr/2.118)**A)/(1. + C*omega*dPr)*mu.l(T)
 
-@HandleBuilder
+@TPDependentHandleBuilder
 def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'Mu (l)')
@@ -108,7 +105,7 @@ def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         handle.model(ViswanathNatarajan3(data=(A, B, C)), Tmin, Tmax)
     if CAS in _VN2:
         _, _, A, B, Tmin, Tmax = _VN2[CAS]
-        handle.model(ViswanathNatarajan2(data=(A, B), Tmin ,Tmax))
+        handle.model(ViswanathNatarajan2(data=(A, B)), Tmin ,Tmax)
     if CAS in _Perrys2_313:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_313[CAS]
         handle.model(DIPPR_EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax)
@@ -123,9 +120,9 @@ def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         handle.model(Przedziecki_Sridhar(data), Tm, Tc)
     data = (Tc, Pc, omega)
     if all(data):
-        for mu in handler.models:
-            if isinstance(mu, TDependentModel): break
-        data = (Tc, Pc, omega, Psat, mu)
+        for mu_l in handle.models:
+            if isinstance(mu_l, TDependentModel): break
+        data = (Tc, Pc, omega, Psat, mu_l)
         handle.model(Lucas(data), Tm, Tc)
 
 
@@ -191,608 +188,38 @@ YOON_THODOS = 'YOON_THODOS'
 STIEL_THODOS = 'STIEL_THODOS'
 LUCAS_GAS = 'LUCAS_GAS'
 
-viscosity_gas_methods = [COOLPROP, DIPPR_PERRY_8E, VDI_PPDS, VDI_TABULAR, GHARAGHEIZI, YOON_THODOS,
-                         STIEL_THODOS, LUCAS_GAS]
 
-@HandleBuilder
-def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole, Vmg):
-    methods, methods_P = [], []
-    Tmins, Tmaxs = [], []
-    if self.CASRN in _VDISaturationDict:
-        methods.append(VDI_TABULAR)
-        Ts, props = VDI_tabular_data(self.CASRN, 'Mu (g)')
-        self.VDI_Tmin = Ts[0]
-        self.VDI_Tmax = Ts[-1]
-        self.tabular_data[VDI_TABULAR] = (Ts, props)
-        Tmins.append(self.VDI_Tmin); Tmaxs.append(self.VDI_Tmax)
-    if has_CoolProp and self.CASRN in coolprop_dict:
-        methods.append(COOLPROP); methods_P.append(COOLPROP)
-        self.CP_f = coolprop_fluids[self.CASRN]
-        Tmins.append(self.CP_f.Tmin); Tmaxs.append(self.CP_f.Tmax)
-    if self.CASRN in Perrys2_312.index:
-        methods.append(DIPPR_PERRY_8E)
-        _, C1, C2, C3, C4, self.Perrys2_312_Tmin, self.Perrys2_312_Tmax = _Perrys2_312_values[Perrys2_312.index.get_loc(self.CASRN)].tolist()
-        self.Perrys2_312_coeffs = [C1, C2, C3, C4]
-        Tmins.append(self.Perrys2_312_Tmin); Tmaxs.append(self.Perrys2_312_Tmax)
-    if self.CASRN in VDI_PPDS_8.index:
-        methods.append(VDI_PPDS)
-        self.VDI_PPDS_coeffs = _VDI_PPDS_8_values[VDI_PPDS_8.index.get_loc(self.CASRN)].tolist()[1:]
-        self.VDI_PPDS_coeffs.reverse() # in format for horner's scheme
-    if all([self.Tc, self.Pc, self.MW]):
-        methods.append(GHARAGHEIZI)
-        methods.append(YOON_THODOS)
-        methods.append(STIEL_THODOS)
-        Tmins.append(0); Tmaxs.append(5E3)  # Intelligently set limit
-        # GHARAGHEIZI turns nonsesical at ~15 K, YOON_THODOS fine to 0 K,
+@TPDependentHandleBuilder
+def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
+    if CAS in _Perrys2_312:
+        _, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_312[CAS]
+        handle.model(DIPPR_EQ102((C1, C2, C3, C4)), Tmin, Tmax)
+    if CAS in _VDI_PPDS_8:
+        data = _VDI_PPDS_8[CAS].tolist()[1:]
+        data.reverse()
+        handle.model(horner({'coeffs':data}))
+    data = (Tc, Pc, Zc, MW)
+    if all(data):
+        Tmin = 0; Tmax = 1e3
+        handle.model(lucas_gas(data), Tmin, Tmax)
+    data = (Tc, Pc, MW)
+    if all(data):
+        Tmin = 0; Tmax = 5e3
+        handle.model(Gharagheizi_gas_viscosity(data), Tmin, Tmax)
+        handle.model(Yoon_Thodos(data), Tmin, Tmax)
+        handle.model(Stiel_Thodos(data), Tmin, Tmax)
+        # Intelligently set limit
+        # GHARAGHEIZI turns nonsensical at ~15 K, YOON_THODOS fine to 0 K,
         # same as STIEL_THODOS
-    if all([self.Tc, self.Pc, self.Zc, self.MW]):
-        methods.append(LUCAS_GAS)
-        Tmins.append(0); Tmaxs.append(1E3)
-    self.all_methods = set(methods)
-    self.all_methods_P = set(methods_P)
-    if Tmins and Tmaxs:
-        self.Tmin, self.Tmax = min(Tmins), max(Tmaxs)
-
-    def calculate(self, T, method):
-        r'''Method to calculate low-pressure gas viscosity at
-        tempearture `T` with a given method.
-
-        This method has no exception handling; see `T_dependent_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature of the gas, [K]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of the gas at T and a low pressure, [Pa*S]
-        '''
-        if method == GHARAGHEIZI:
-            mu = Gharagheizi_gas_viscosity(T, self.Tc, self.Pc, self.MW)
-        elif method == COOLPROP:
-            mu = CoolProp_T_dependent_property(T, self.CASRN, 'V', 'g')
-        elif method == DIPPR_PERRY_8E:
-            mu = EQ102(T, *self.Perrys2_312_coeffs)
-        elif method == VDI_PPDS:
-            mu =  horner(self.VDI_PPDS_coeffs, T)
-        elif method == YOON_THODOS:
-            mu = Yoon_Thodos(T, self.Tc, self.Pc, self.MW)
-        elif method == STIEL_THODOS:
-            mu = Stiel_Thodos(T, self.Tc, self.Pc, self.MW)
-        elif method == LUCAS_GAS:
-            mu = lucas_gas(T, self.Tc, self.Pc, self.Zc, self.MW, self.dipole, CASRN=self.CASRN)
-        elif method in self.tabular_data:
-            mu = self.interpolate(T, method)
-        return mu
-
-    def test_method_validity(self, T, method):
-        r'''Method to check the validity of a temperature-dependent
-        low-pressure method. For CSP most methods, the all methods are
-        considered valid from 0 K up to 5000 K. For method **GHARAGHEIZI**,
-        the method is considered valud from 20 K to 2000 K.
-
-        For tabular data, extrapolation outside of the range is used if
-        :obj:`tabular_extrapolation_permitted` is set; if it is, the extrapolation
-        is considered valid for all temperatures.
-
-
-        It is not guaranteed that a method will work or give an accurate
-        prediction simply because this method considers the method valid.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to test the method, [K]
-        method : str
-            Name of the method to test
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a method is valid
-        '''
-        validity = True
-        if method in [YOON_THODOS, STIEL_THODOS, LUCAS_GAS]:
-            if T < 0 or T > 5000:
-                # Arbitrary limit
-                return False
-        elif method == DIPPR_PERRY_8E:
-            if T < self.Perrys2_312_Tmin or T > self.Perrys2_312_Tmax:
-                return False
-        elif method == GHARAGHEIZI:
-            if T < 20 or T > 2E3:
-                validity = False
-                # Doesn't do so well as the other methods
-        elif method == COOLPROP:
-            if T < self.CP_f.Tmin or T > self.CP_f.Tmax:
-                return False
-        elif method == VDI_PPDS:
-            pass # Polynomial always works
-        elif method in self.tabular_data:
-            # if tabular_extrapolation_permitted, good to go without checking
-            if not self.tabular_extrapolation_permitted:
-                Ts, properties = self.tabular_data[method]
-                if T < Ts[0] or T > Ts[-1]:
-                    return False
-        else:
-            raise Exception('Method not valid')
-        return validity
-
-    def calculate_P(self, T, P, method):
-        r'''Method to calculate pressure-dependent gas viscosity
-        at temperature `T` and pressure `P` with a given method.
-
-        This method has no exception handling; see `TP_dependent_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to calculate gas viscosity, [K]
-        P : float
-            Pressure at which to calculate gas viscosity, [K]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of the gas at T and P, [Pa*]
-        '''
-        if method == COOLPROP:
-            mu = PropsSI('V', 'T', T, 'P', P, self.CASRN)
-        elif method in self.tabular_data:
-            mu = self.interpolate_P(T, P, method)
-        return mu
-
-    def test_method_validity_P(self, T, P, method):
-        r'''Method to check the validity of a high-pressure method. For
-        **COOLPROP**, the fluid must be both a gas and under the maximum
-        pressure of the fluid's EOS. No other methods are implemented.
-
-        For tabular data, extrapolation outside of the range is used if
-        :obj:`tabular_extrapolation_permitted` is set; if it is, the
-        extrapolation is considered valid for all temperatures and pressures.
-
-        It is not guaranteed that a method will work or give an accurate
-        prediction simply because this method considers the method valid.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to test the method, [K]
-        P : float
-            Pressure at which to test the method, [Pa]
-        method : str
-            Name of the method to test
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a method is valid
-        '''
-        validity = True
-        if method == COOLPROP:
-            validity = PhaseSI('T', T, 'P', P, self.CASRN) in ['gas', 'supercritical_gas', 'supercritical', 'supercritical_liquid']
-        elif method in self.tabular_data:
-            if not self.tabular_extrapolation_permitted:
-                Ts, Ps, properties = self.tabular_data[method]
-                if T < Ts[0] or T > Ts[-1] or P < Ps[0] or P > Ps[-1]:
-                    validity = False
-        else:
-            raise Exception('Method not valid')
-        return validity
-
-
-### Viscosity of gas mixtures
-
-def Herning_Zipperer(zs, mus, MWs):
-    r'''Calculates viscosity of a gas mixture according to
-    mixing rules in [1]_.
-
-    .. math::
-        TODO
-
-    Parameters
-    ----------
-    zs : float
-        Mole fractions of components
-    mus : float
-        Gas viscosities of all components, [Pa*S]
-    MWs : float
-        Molecular weights of all components, [g/mol]
-
-    Returns
-    -------
-    mug : float
-        Viscosity of gas mixture, Pa*S]
-
-    Notes
-    -----
-    This equation is entirely dimensionless; all dimensions cancel.
-    The original source has not been reviewed.
-
-    Examples
-    --------
-
-    References
-    ----------
-    .. [1] Herning, F. and Zipperer, L,: "Calculation of the Viscosity of
-       Technical Gas Mixtures from the Viscosity of Individual Gases, german",
-       Gas u. Wasserfach (1936) 79, No. 49, 69.
-    '''
-    if not none_and_length_check([zs, mus, MWs]):  # check same-length inputs
-        raise Exception('Function inputs are incorrect format')
-    MW_roots = [MWi**0.5 for MWi in MWs]
-    denominator = sum([zi*MW_root_i for zi, MW_root_i in zip(zs, MW_roots)])
-    k = sum([zi*mui*MW_root_i for zi, mui, MW_root_i in zip(zs, mus, MW_roots)])
-    return k/denominator
-
-
-def Wilke(ys, mus, MWs):
-    r'''Calculates viscosity of a gas mixture according to
-    mixing rules in [1]_.
-
-    .. math::
-        \eta_{mix} = \sum_{i=1}^n \frac{y_i \eta_i}{\sum_{j=1}^n y_j \phi_{ij}}
-
-        \phi_{ij} = \frac{(1 + \sqrt{\eta_i/\eta_j}(MW_j/MW_i)^{0.25})^2}
-        {\sqrt{8(1+MW_i/MW_j)}}
-
-    Parameters
-    ----------
-    ys : float
-        Mole fractions of gas components
-    mus : float
-        Gas viscosities of all components, [Pa*S]
-    MWs : float
-        Molecular weights of all components, [g/mol]
-
-    Returns
-    -------
-    mug : float
-        Viscosity of gas mixture, Pa*S]
-
-    Notes
-    -----
-    This equation is entirely dimensionless; all dimensions cancel.
-    The original source has not been reviewed or found.
-
-    Examples
-    --------
-    >>> Wilke([0.05, 0.95], [1.34E-5, 9.5029E-6], [64.06, 46.07])
-    9.701614885866193e-06
-
-    References
-    ----------
-    .. [1] TODO
-    '''
-    if not none_and_length_check([ys, mus, MWs]):  # check same-length inputs
-        raise Exception('Function inputs are incorrect format')
-    cmps = range(len(ys))
-    phis = [[(1 + (mus[i]/mus[j])**0.5*(MWs[j]/MWs[i])**0.25)**2/(8*(1 + MWs[i]/MWs[j]))**0.5
-                    for j in cmps] for i in cmps]
-
-    return sum([ys[i]*mus[i]/sum([ys[j]*phis[i][j] for j in cmps]) for i in cmps])
-
-
-def Brokaw(T, ys, mus, MWs, molecular_diameters, Stockmayers):
-    r'''Calculates viscosity of a gas mixture according to
-    mixing rules in [1]_.
-
-    .. math::
-        \eta_{mix} = \sum_{i=1}^n \frac{y_i \eta_i}{\sum_{j=1}^n y_j \phi_{ij}}
-
-        \phi_{ij} = \left( \frac{\eta_i}{\eta_j} \right)^{0.5} S_{ij} A_{ij}
-
-        A_{ij} = m_{ij} M_{ij}^{-0.5} \left[1 +
-        \frac{M_{ij} - M_{ij}^{0.45}}
-        {2(1+M_{ij}) + \frac{(1 + M_{ij}^{0.45}) m_{ij}^{-0.5}}{1 + m_{ij}}} \right]
-
-        m_{ij} = \left[ \frac{4}{(1+M_{ij}^{-1})(1+M_{ij})}\right]^{0.25}
-
-        M_{ij} = \frac{M_i}{M_j}
-
-        S_{ij} = \frac{1 + (T_i^* T_j^*)^{0.5} + (\delta_i \delta_j/4)}
-        {[1+T_i^* + (\delta_i^2/4)]^{0.5}[1+T_j^*+(\delta_j^2/4)]^{0.5}}
-
-        T^* = kT/\epsilon
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid, [K]
-    ys : float
-        Mole fractions of gas components
-    mus : float
-        Gas viscosities of all components, [Pa*S]
-    MWs : float
-        Molecular weights of all components, [g/mol]
-    molecular_diameters : float
-        L-J molecular diameter  of all components, [angstroms]
-    Stockmayers : float
-        L-J Stockmayer energy parameters of all components, []
-
-    Returns
-    -------
-    mug : float
-        Viscosity of gas mixture, [Pa*S]
-
-    Notes
-    -----
-    This equation is entirely dimensionless; all dimensions cancel.
-    The original source has not been reviewed.
-
-    This is DIPPR Procedure 8D: Method for the Viscosity of Nonhydrocarbon
-    Vapor Mixtures at Low Pressure (Polar and Nonpolar)
-
-    Examples
-    --------
-    >>> Brokaw(308.2, [0.05, 0.95], [1.34E-5, 9.5029E-6], [64.06, 46.07], [0.42, 0.19], [347, 432])
-    9.699085099801568e-06
-
-    References
-    ----------
-    .. [1] Brokaw, R. S. "Predicting Transport Properties of Dilute Gases."
-       Industrial & Engineering Chemistry Process Design and Development
-       8, no. 2 (April 1, 1969): 240-53. doi:10.1021/i260030a015.
-    .. [2] Brokaw, R. S. Viscosity of Gas Mixtures, NASA-TN-D-4496, 1968.
-    .. [3] Danner, Ronald P, and Design Institute for Physical Property Data.
-       Manual for Predicting Chemical Process Design Data. New York, N.Y, 1982.
-    '''
-    cmps = range(len(ys))
-    MDs = molecular_diameters
-    if not none_and_length_check([ys, mus, MWs, molecular_diameters, Stockmayers]): # check same-length inputs
-        raise Exception('Function inputs are incorrect format')
-    Tsts = [T/Stockmayer_i for Stockmayer_i in Stockmayers]
-    Sij = [[0 for i in cmps] for j in cmps]
-    Mij = [[0 for i in cmps] for j in cmps]
-    mij = [[0 for i in cmps] for j in cmps]
-    Aij = [[0 for i in cmps] for j in cmps]
-    phiij =[[0 for i in cmps] for j in cmps]
-
-    for i in cmps:
-        for j in cmps:
-            Sij[i][j] = (1+(Tsts[i]*Tsts[j])**0.5 + (MDs[i]*MDs[j])/4.)/(1 + Tsts[i] + (MDs[i]**2/4.))**0.5/(1 + Tsts[j] + (MDs[j]**2/4.))**0.5
-            if MDs[i] <= 0.1 and MDs[j] <= 0.1:
-                Sij[i][j] = 1
-            Mij[i][j] = MWs[i]/MWs[j]
-            mij[i][j] = (4./(1+Mij[i][j]**-1)/(1+Mij[i][j]))**0.25
-
-            Aij[i][j] = mij[i][j]*Mij[i][j]**-0.5*(1 + (Mij[i][j]-Mij[i][j]**0.45)/(2*(1+Mij[i][j]) + (1+Mij[i][j]**0.45)*mij[i][j]**-0.5/(1+mij[i][j])))
-
-            phiij[i][j] = (mus[i]/mus[j])**0.5*Sij[i][j]*Aij[i][j]
-
-    return sum([ys[i]*mus[i]/sum([ys[j]*phiij[i][j] for j in cmps]) for i in cmps])
-
-
-BROKAW = 'Brokaw'
-HERNING_ZIPPERER = 'Herning-Zipperer'
-WILKE = 'Wilke'
-SIMPLE = 'Simple'
-viscosity_gas_mixture_methods = [BROKAW, HERNING_ZIPPERER, WILKE, SIMPLE]
-
-
-class ViscosityGasMixture(MixtureProperty):
-    '''Class for dealing with the viscosity of a gas mixture as a   
-    function of temperature, pressure, and composition.
-    Consists of three gas viscosity specific mixing rules and a mole-weighted
-    simple mixing rule.
-         
-    Prefered method is :obj:`Brokaw`.
-    
-    Parameters
-    ----------
-    MWs : list[float], optional
-        Molecular weights of all species in the mixture, [g/mol]
-    molecular_diameters : list[float], optional
-        Lennard-Jones molecular diameters, [Angstrom]
-    Stockmayers : list[float], optional
-        Lennard-Jones depth of potential-energy minimum over k 
-        or epsilon_k, [K]
-    CASs : list[str], optional
-        The CAS numbers of all species in the mixture
-    ViscosityGass : list[ViscosityGas], optional
-        ViscosityGas objects created for all species in the mixture,  
-        normally created by :obj:`thermo.chemical.Chemical`.
-    
-    Notes
-    -----
-    To iterate over all methods, use the list stored in
-    :obj:`viscosity_liquid_mixture_methods`.
-
-    **Brokaw**:
-        Mixing rule described in :obj:`Brokaw`.
-    **Herning-Zipperer**:
-        Mixing rule described in :obj:`Herning_Zipperer`.
-    **Wilke**:
-        Mixing rule described in :obj:`Wilke`.
-    **SIMPLE**:
-        Mixing rule described in :obj:`thermo.utils.mixing_simple`.
-
-    See Also
-    --------
-    Brokaw
-    Herning_Zipperer
-    Wilke
-
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    '''
-    name = 'gas viscosity'
-    units = 'Pa*s'
-    property_min = 0
-    '''Mimimum valid value of gas viscosity; limiting condition at low pressure
-    is 0.'''
-    property_max = 1E-3
-    '''Maximum valid value of gas viscosity. Might be too high, or too low.'''
-                            
-    ranked_methods = [BROKAW, HERNING_ZIPPERER, SIMPLE, WILKE]
-
-    def __init__(self, MWs=[], molecular_diameters=[], Stockmayers=[], CASs=[], ViscosityGases=[]):
-        self.MWs = MWs
-        self.molecular_diameters = molecular_diameters
-        self.Stockmayers = Stockmayers
-        self.CASs = CASs
-        self.ViscosityGases = ViscosityGases
-
-        self.Tmin = None
-        '''Minimum temperature at which no method can calculate the
-        gas viscosity under.'''
-        self.Tmax = None
-        '''Maximum temperature at which no method can calculate the
-        gas viscosity above.'''
-
-        self.sorted_valid_methods = []
-        '''sorted_valid_methods, list: Stored methods which were found valid
-        at a specific temperature; set by `mixture_property`.'''
-        self.user_methods = []
-        '''user_methods, list: Stored methods which were specified by the user
-        in a ranked order of preference; set by `mixture_property`.'''
-        self.all_methods = set()
-        '''Set of all methods available for a given set of information;
-        filled by :obj:`load_all_methods`.'''
-        self.load_all_methods()
-
-    def load_all_methods(self):
-        r'''Method to initialize the object by precomputing any values which
-        may be used repeatedly and by retrieving mixture-specific variables.
-        All data are stored as attributes. This method also sets :obj:`Tmin`, 
-        :obj:`Tmax`, and :obj:`all_methods` as a set of methods which should 
-        work to calculate the property.
-
-        Called on initialization only. See the source code for the variables at
-        which the coefficients are stored. The coefficients can safely be
-        altered once the class is initialized. This method can be called again
-        to reset the parameters.
-        '''
-        methods = [SIMPLE]        
-        if none_and_length_check((self.MWs, self.molecular_diameters, self.Stockmayers)):
-            methods.append(BROKAW)
-        if none_and_length_check([self.MWs]):
-            methods.extend([WILKE, HERNING_ZIPPERER])
-        self.all_methods = set(methods)
-        Tmins = [i.Tmin for i in self.ViscosityGases if i.Tmin]
-        Tmaxs = [i.Tmax for i in self.ViscosityGases if i.Tmax]
-        if Tmins:
-            self.Tmin = max(Tmins)
-        if Tmaxs:
-            self.Tmax = max(Tmaxs)
-        
-    def calculate(self, T, P, zs, ws, method):
-        r'''Method to calculate viscosity of a gas mixture at 
-        temperature `T`, pressure `P`, mole fractions `zs` and weight fractions
-        `ws` with a given method.
-
-        This method has no exception handling; see `mixture_property`
-        for that.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to calculate the property, [K]
-        P : float
-            Pressure at which to calculate the property, [Pa]
-        zs : list[float]
-            Mole fractions of all species in the mixture, [-]
-        ws : list[float]
-            Weight fractions of all species in the mixture, [-]
-        method : str
-            Name of the method to use
-
-        Returns
-        -------
-        mu : float
-            Viscosity of gas mixture, [Pa*s]
-        '''
-        if method == SIMPLE:
-            mus = [i(T, P) for i in self.ViscosityGases]
-            return mixing_simple(zs, mus)
-        elif method == HERNING_ZIPPERER:
-            mus = [i(T, P) for i in self.ViscosityGases]
-            return Herning_Zipperer(zs, mus, self.MWs)
-        elif method == WILKE:
-            mus = [i(T, P) for i in self.ViscosityGases]
-            return Wilke(zs, mus, self.MWs)
-        elif method == BROKAW:
-            mus = [i(T, P) for i in self.ViscosityGases]
-            return Brokaw(T, zs, mus, self.MWs, self.molecular_diameters, self.Stockmayers)
-        else:
-            raise Exception('Method not valid')
-
-    def test_method_validity(self, T, P, zs, ws, method):
-        r'''Method to test the validity of a specified method for the given
-        conditions. No methods have implemented checks or strict ranges of 
-        validity.
-
-        Parameters
-        ----------
-        T : float
-            Temperature at which to check method validity, [K]
-        P : float
-            Pressure at which to check method validity, [Pa]
-        zs : list[float]
-            Mole fractions of all species in the mixture, [-]
-        ws : list[float]
-            Weight fractions of all species in the mixture, [-]
-        method : str
-            Method name to use
-
-        Returns
-        -------
-        validity : bool
-            Whether or not a specifid method is valid
-        '''
-        if method in self.all_methods:
-            return True
-        else:
-            raise Exception('Method not valid')
-
-
-### Misc functions
-
-
-def _round_whole_even(i):
-    r'''Round a number to the nearest whole number. If the number is exactly
-    between two numbers, round to the even whole number. Used by
-    `viscosity_index`.
-
-    Parameters
-    ----------
-    i : float
-        Number, [-]
-
-    Returns
-    -------
-    i : int
-        Rounded number, [-]
-
-    Notes
-    -----
-    Should never run with inputs from a practical function, as numbers on
-    computers aren't really normally exactly between two numbers.
-
-    Examples
-    --------
-    _round_whole_even(116.5)
-    116
-    '''
-    if i % .5 == 0:
-        if (i + 0.5) % 2 == 0:
-            i = i + 0.5
-        else:
-            i = i - 0.5
-    else:
-        i = round(i, 0)
-    return int(i)
-
+    if CAS in _VDISaturationDict:
+        Ts, Ys = VDI_tabular_data(CAS, 'Mu (g)')
+        Tmin = Ts[0]
+        Tmax = Ts[-1]
+        handle.model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
+
+Viscosity = ChemicalPhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas)
+
+# %% Other
 
 VI_nus = np.array([2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3, 3.1,
                    3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3,
