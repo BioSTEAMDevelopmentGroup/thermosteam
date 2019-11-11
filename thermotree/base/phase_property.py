@@ -38,7 +38,7 @@ class PhaseProperty:
         
     @property
     def var(self):
-        for phase in self.__slots__:
+        for phase in ('s', 'l', 'g'):
             try:
                 var = getattr(self, phase).var
                 if var: return var.split('.')[0]
@@ -91,13 +91,13 @@ class PhasePropertyBuilder:
         self.g = g
         
     def __call__(self, sdata, ldata, gdata, phase_property=None):
-        pp = phase_property or self.PhaseProperty()
+        if phase_property is None: phase_property = self.PhaseProperty() 
         phases = ('s', 'g', 'l')
         builders = (self.s, self.g, self.l)
         phases_data = (sdata, gdata, ldata)
         for phase, builder, data in zip(phases, builders, phases_data):
-            set_phase_property(pp, phase, builder, data)
-        return pp
+            set_phase_property(phase_property, phase, builder, data)
+        return phase_property
 
 class ChemicalPhaseTPropertyBuilder(PhasePropertyBuilder):
     __slots__ = ()

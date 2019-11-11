@@ -1,4 +1,4 @@
-ch# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -20,8 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-__all__ = ('Chemical', 'ChemicalThermoMethods', 'ChemicalData',
-           'ChemicalSubgroups', 'ChemicalNames')
+__all__ = ('Chemical',)
 
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
@@ -42,7 +41,7 @@ from .free_energy import EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
                          EntropyRefSolid, EntropyRefLiquid, EntropyRefGas, \
                          ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
                          ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
-from ..base import ChemicalPhaseTProperty, display_asfunctor
+from ..base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, display_asfunctor
 from ..base.units_of_measure import units_of_measure
 from .dipole import dipole_moment as dipole
 from .utils import Z, R#, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
@@ -65,67 +64,92 @@ def create_eos(eos, Tc, Pc, omega):
     except: return GCEOS_DUMMY(T=298.15, P=101325.)
 
 
-# %% Chemical descriptor
+# %% Chemical fields
 
-class ChemicalDescriptor:
-    __slots__ = ()
+names = ('CAS', 'InChI', 'InChI_key',
+         'common_name', 'iupac_name',
+         'pubchemid', 'smiles')
+
+groups = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
+
+thermo = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
+          'mu', 'Psat', 'Hvap', 'sigma', 'epsilon')
+
+_optional_data = ('S_excess', 'H_excess', 'k', 'V', 'Cp',
+                       'mu', 'sigma', 'epsilon')
+
+_optional_single_phase_nondata = ('S', 'H')
+
+_optional_single_phase = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
+                          'mu', 'sigma')
+
+_optional_properties = ('Psat', 'Hvap')
+
+data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
+        'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
+        'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
+
+chemical_fields = {'\n[Names]  ': names,
+                   '\n[Groups] ': groups,
+                   '\n[Thermo] ': thermo,
+                   '\n[Data]   ': data}
+
+def _full_chemical_identity(chemical, pretty=False):
+    typeheader = f"{type(chemical).__name__}:"
+    fullID = f"{typeheader} {chemical.ID} (phase_ref={repr(chemical.phase_ref)})"
+    phase, T, P = chemical._phaseTP
+    state = []
+    if phase:
+        state.append(f"phase={repr(phase)}")
+    if T:
+        state.append(f"T={T} K")
+    if P:
+        state.append(f"P={P} Pa")
+    state = ' at ' + ', '.join(state) if state else ""
+    if pretty and (T and P):
+        fullID += "\n" + len(typeheader) * " " 
+    return fullID + state
+
+
+# %% Chemical
+
+class Chemical:
+    __slots__ = ('ID', 'eos', 'eos_T_101325', '_phaseTP', '_phase_ref') \
+                + names + groups + thermo + data
+    T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
+    _cached = {}
     
-    @classmethod
-    def new(cls):
-        self = cls.__new__(cls)
-        setfield = setattr
-        for slot in cls.__slots__: setfield(self, slot, None)
+    def __new__(cls, ID, *, eos=PR, CAS=None):
+        CAS = CAS or CAS_from_any(ID) or ID
+        if CAS in cls._cached:
+            self = cls._cached[CAS]
+            if self.ID != ID:
+                self = self.copy()
+                self.ID = ID
+        else:
+            self = object.__new__(cls)
+            self._phaseTP = (None, None, None)
+            info = pubchem_db.search_CAS(CAS)
+            self._init_groups(info.InChI_key)
+            self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
+                             info.pubchemid, info.iupac_name, info.common_name)
+            atoms = simple_formula_parser(info.formula)
+            self._init_data(CAS, info.MW, atoms)
+            self.eos = create_eos(eos, self.Tc, self.Pc, self.omega)
+            self.eos_T_101325 = self.eos.to_TP(298.15, 101325)
+            self._init_thermo(CAS, self.eos, self.eos_T_101325)
+            self.ID = ID
+        cls._cached[CAS] = self
         return self
-    
-    def fill(self, properties=None, like=None, fallback=None):
+
+    def copy(self):
+        new = object.__new__(self.__class__)
         getfield = getattr
         setfield = setattr
-        has_properties = bool(properties)
-        for key in self.__slots__:
-            if getfield(self, key):
-                continue
-            elif has_properties and key in properties:
-                field = properties[key]
-            elif like:
-                field = getfield(like, key)
-                if not field and fallback: 
-                    field = getfield(fallback, key)
-            setfield(self, key, field)
-        return self
-    
-    def __repr__(self):
-        return f"<{type(self).__name__}: {', '.join(self.__slots__)}>"
-    
-    def show(self):
-        attr = getattr
-        info = f"{type(self).__name__}:"
-        for key in self.__slots__:
-            value = attr(self, key)
-            if value is None:
-                info += f"\n {key}: {value}"
-                continue
-            else:
-                try:
-                    info += f"\n {key}: {value:.5g}"
-                except:
-                    info += f"\n {key}: {value}"    
-                else:
-                    units = units_of_measure.get(key, "")
-                    if units: info += ' ' + units
-        print(info)
-    
-    _ipython_display_ = show
-    
+        for field in self.__slots__: setfield(new, field, getfield(self, field))
+        return new
 
-
-# %% Chemical descriptors
-
-class ChemicalData(ChemicalDescriptor):
-    __slots__ = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
-                 'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
-                 'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
-    
-    def __init__(self, CAS, MW, atoms):
+    def _init_data(self, CAS, MW, atoms):
         self.MW = MW
         self.Tm = Tm(CAS)
         self.Tb = Tb(CAS)
@@ -158,26 +182,8 @@ class ChemicalData(ChemicalDescriptor):
         self.similarity_variable = similarity_variable(atoms, MW)
         self.iscyclic_aliphatic = None
 
-
-class ChemicalSubgroups(ChemicalDescriptor):
-    __slots__ = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
-    
-    def __init__(self, InChI_key):
-        if InChI_key in DDBST_UNIFAC_assignments:
-            self.UNIFAC = DDBST_UNIFAC_assignments[InChI_key]
-        if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
-            self.UNIFAC_Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
-        if InChI_key in DDBST_PSRK_assignments:
-            self.PSRK = DDBST_PSRK_assignments[InChI_key]
-
-
-class ChemicalNames(ChemicalDescriptor):
-    __slots__ = ('CAS', 'InChI', 'InChI_key',
-                 'common_name', 'iupac_name',
-                 'pubchemid', 'smiles')
-    
-    def __init__(self, CAS, smiles, InChI, InChI_key,
-                 pubchemid, iupac_name, common_name):
+    def _init_names(self, CAS, smiles, InChI, InChI_key,
+                    pubchemid, iupac_name, common_name):
         self.CAS = CAS
         self.smiles = smiles
         self.InChI = InChI
@@ -185,29 +191,42 @@ class ChemicalNames(ChemicalDescriptor):
         self.pubchemid = pubchemid
         self.iupac_name = iupac_name
         self.common_name = common_name
-    
+        
+    def _init_groups(self, InChI_key):
+        if InChI_key in DDBST_UNIFAC_assignments:
+            self.UNIFAC = DDBST_UNIFAC_assignments[InChI_key]
+        else:
+            self.UNIFAC = None
+        if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
+            self.UNIFAC_Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
+        else:
+            self.UNIFAC_Dortmund = None
+        if InChI_key in DDBST_PSRK_assignments:
+            self.PSRK = DDBST_PSRK_assignments[InChI_key]
+        else:
+            self.PSRK = None
 
-class ChemicalThermoMethods(ChemicalDescriptor):
-    __slots__ = ('epsilon', 'sigma', 'Hvap', 'Psat',
-                 'mu', 'Cp', 'H', 'S', 'V', 'k',
-                 'H_excess', 'S_excess')
-
-    def __init__(self, CAS, data, eos, eos_T_101325,
-                 T_ref=298.15, P_ref=101325., H_ref=0, S_ref=0):
-        # Constants
-        MW = data.MW
-        Tm = data.Tm
-        Tb = data.Tb
-        Tc = data.Tc
-        Pc = data.Pc
-        Zc = data.Zc
-        Vc = data.Vc
-        Hfus = data.Hfus
-        Sfus = Hfus / Tm
-        omega = data.omega
-        dipole = data.dipole
-        similarity_variable = data.similarity_variable
-        iscyclic_aliphatic = data.iscyclic_aliphatic
+    def _init_thermo(self, CAS, eos, eos_T_101325, phase_ref=None):
+        # Reference
+        P_ref = self.P_ref
+        T_ref = self.T_ref
+        H_ref = self.H_ref
+        S_ref = self.S_ref
+        
+        # data
+        MW = self.MW
+        Tm = self.Tm
+        Tb = self.Tb
+        Tc = self.Tc
+        Pc = self.Pc
+        Zc = self.Zc
+        Vc = self.Vc
+        Hfus = self.Hfus
+        omega = self.omega
+        dipole = self.dipole
+        similarity_variable = self.similarity_variable
+        iscyclic_aliphatic = self.iscyclic_aliphatic
+        Sfus = Hfus / Tm if Hfus and Tm else None
         
         # Vapor pressure
         self.Psat = Psat = VaporPressure((CAS, Tb, Tc, Pc, omega))
@@ -234,65 +253,76 @@ class ChemicalThermoMethods(ChemicalDescriptor):
         gdata = (CAS, MW, Tc, Pc, Zc, dipole)
         self.mu = mu = Viscosity(None, ldata, gdata)
         
-        if Cp:
-            Cps_int = Cp.s.integrate_by_T
-            Cpl_int = Cp.l.integrate_by_T
-            Cpg_int = Cp.g.integrate_by_T
-            Cps_int_T = Cp.s.integrate_by_T_over_T
-            Cpl_int_T = Cp.l.integrate_by_T_over_T
-            Cpg_int_T = Cp.g.integrate_by_T_over_T
-            
-            if Tm and T_ref <= Tm:
-                phase_ref = 's'
-            elif P_ref <= Psat(T_ref):
-                phase_ref = 'g'
-            else:
-                phase_ref = 'l'
+        has_Cps = bool(Cp.s)
+        has_Cpl = bool(Cp.l)
+        has_Cpg = bool(Cp.g)
+        has_Cp = any((has_Cps, has_Cpl, has_Cpg))
+        if has_Cp:
+            if not phase_ref:
+                if Tm and T_ref <= Tm:
+                    self._phase_ref = phase_ref = 's'
+                elif Psat and P_ref <= Psat(T_ref):
+                    self._phase_ref = phase_ref = 'g'
+                else:
+                    self._phase_ref = phase_ref = 'l'
             
             Hvap_Tb = Hvap(Tb) if Tb else None
             Svap_Tb = Hvap_Tb / Tb if Tb else None
             
-            # Enthalpy integrals
-            if phase_ref != 'l':
-                H_int_Tm_to_Tb_l = Cpl_int(Tm, Tb) if (Tm and Tb) else None
-            if phase_ref == 's':
-                H_int_T_ref_to_Tm_s = Cps_int(T_ref, Tm) if Tm else None
-            if phase_ref == 'g':
-                H_int_Tb_to_T_ref_g = Cpg_int(Tb, T_ref) if Tb else None
-            if phase_ref == 'l':
-                H_int_T_ref_to_Tb_l = Cpl_int(T_ref, Tb) if Tb else None
-                H_int_Tm_to_T_ref_l = Cpl_int(Tm, T_ref) if Tm else None
-    
-            # Entropy integrals
-            if phase_ref != 'l':
-                S_int_Tm_to_Tb_l = Cpl_int_T(Tm, Tb) if (Tm and Tb) else None
-            if phase_ref == 's':
-                S_int_T_ref_to_Tm_s = Cps_int_T(T_ref, Tm) if Tm else None
-            if phase_ref == 'g':
-                S_int_Tb_to_T_ref_g = Cpg_int_T(Tb, T_ref) if Tb else None
-            if phase_ref == 'l':
-                S_int_T_ref_to_Tb_l = Cpl_int_T(T_ref, Tb) if Tb else None
-                S_int_Tm_to_T_ref_l = Cpl_int_T(Tm, T_ref) if Tm else None
-    
-            # Excess constants
-            if phase_ref == 'g':
-                eos_phase_ref = eos.to_TP(T_ref, P_ref)
-                H_dep_ref_g = eos_phase_ref.H_dep_g
-                S_dep_ref_g = eos_phase_ref.S_dep_g
-            elif phase_ref == 'l':
-                eos_phase_ref = eos.to_TP(T_ref, P_ref)
-                H_dep_ref_l = eos_phase_ref.H_dep_l
-                S_dep_ref_l = eos_phase_ref.S_dep_l
-                H_dep_T_ref_Pb = eos.to_TP(T_ref, 101325).H_dep_l
-                S_dep_T_ref_Pb = eos.to_TP(T_ref, 101325).S_dep_l
-            if Tb:
-                eos_Tb = eos.to_TP(Tb, 101325)
-                H_dep_Tb_Pb_g = eos_Tb.H_dep_g
-                H_dep_Tb_P_ref_g = eos.to_TP(Tb, P_ref).H_dep_g
-                S_dep_Tb_P_ref_g = eos.to_TP(Tb, P_ref).S_dep_g
-                S_dep_Tb_Pb_g = eos_Tb.S_dep_g
+            # Enthalpy and entropy integrals
+            if phase_ref != 'l' and has_Cpl and (Tm and Tb):
+                H_int_Tm_to_Tb_l = Cp.l.integrate_by_T(Tm, Tb)
+                S_int_Tm_to_Tb_l = Cp.l.integrate_by_T_over_T(Tm, Tb)
             else:
-                S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = H_dep_Tb_Pb_g = eos_Tb = None
+                H_int_Tm_to_Tb_l = S_int_Tm_to_Tb_l = None
+            if phase_ref == 's' and has_Cps and Tm:
+                H_int_T_ref_to_Tm_s = Cp.s.integrate_by_T(T_ref, Tm)
+                S_int_T_ref_to_Tm_s = Cp.s.integrate_by_T_over_T(T_ref, Tm)
+            else:
+                H_int_T_ref_to_Tm_s = S_int_T_ref_to_Tm_s = None
+            if phase_ref == 'g' and has_Cpg and Tb:
+                H_int_Tb_to_T_ref_g = Cp.g.integrate_by_T(Tb, T_ref)
+                S_int_Tb_to_T_ref_g = Cp.g.integrate_by_T_over_T(Tb, T_ref)
+            else:
+                H_int_Tb_to_T_ref_g = S_int_Tb_to_T_ref_g = None
+            if phase_ref == 'l':
+                if has_Cpl:
+                    if Tb:
+                        H_int_T_ref_to_Tb_l = Cp.l.integrate_by_T(T_ref, Tb)
+                        S_int_T_ref_to_Tb_l = Cp.l.integrate_by_T_over_T(T_ref, Tb)
+                    else:
+                        H_int_T_ref_to_Tb_l = S_int_T_ref_to_Tb_l = None
+                    if Tm:
+                        H_int_Tm_to_T_ref_l = Cp.l.integrate_by_T(Tm, T_ref)
+                        S_int_Tm_to_T_ref_l = Cp.l.integrate_by_T_over_T(Tm, T_ref)
+                    else:
+                        H_int_Tm_to_T_ref_l = S_int_Tm_to_T_ref_l = None
+    
+            # Excess data
+            if isinstance(eos, GCEOS_DUMMY):
+                H_dep_ref_g = S_dep_ref_g = H_dep_ref_l = S_dep_ref_l = \
+                H_dep_T_ref_Pb = S_dep_T_ref_Pb = H_dep_Tb_Pb_g = H_dep_Tb_P_ref_g = \
+                S_dep_Tb_P_ref_g = S_dep_Tb_Pb_g = 0
+            else:
+                if phase_ref == 'g':
+                    eos_phase_ref = eos.to_TP(T_ref, P_ref)
+                    H_dep_ref_g = eos_phase_ref.H_dep_g
+                    S_dep_ref_g = eos_phase_ref.S_dep_g
+                elif phase_ref == 'l':
+                    eos_phase_ref = eos.to_TP(T_ref, P_ref)
+                    H_dep_ref_l = eos_phase_ref.H_dep_l
+                    S_dep_ref_l = eos_phase_ref.S_dep_l
+                    H_dep_T_ref_Pb = eos.to_TP(T_ref, 101325).H_dep_l
+                    S_dep_T_ref_Pb = eos.to_TP(T_ref, 101325).S_dep_l
+                if Tb:
+                    eos_Tb = eos.to_TP(Tb, 101325)
+                    H_dep_Tb_Pb_g = eos_Tb.H_dep_g
+                    H_dep_Tb_P_ref_g = eos.to_TP(Tb, P_ref).H_dep_g
+                    S_dep_Tb_P_ref_g = eos.to_TP(Tb, P_ref).S_dep_g
+                    S_dep_Tb_Pb_g = eos_Tb.S_dep_g
+                else:
+                    S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
+                    H_dep_Tb_Pb_g = 0.
             
             # Enthalpy and Entropy
             if phase_ref == 's':
@@ -348,8 +378,8 @@ class ChemicalThermoMethods(ChemicalDescriptor):
         self.k = ThermalConductivity(None, ldata, gdata)
         
         # # Surface tension
-        Cpl_Tb = Cp.l(Tb)
-        rhol = 1/V.l(Tb, 101325.) * MW
+        Cpl_Tb = Cp.l(Tb) if (Cp.l and Tb) else None
+        rhol = 1/V.l(Tb, 101325.) * MW if (V.l and MW) else None
         data = (CAS, MW, Tb, Tc, Pc, Vc, Zc,
                 omega, StielPolar, Hvap_Tb, rhol, Cpl_Tb)
         self.sigma = SurfaceTension(data)
@@ -359,74 +389,150 @@ class ChemicalThermoMethods(ChemicalDescriptor):
         # self.solubility_parameter = SolubilityParameter(self)
         # self.molecular_diameter = MolecularDiameter(self)
 
-    def make_static(self, phase, T, P):
-        pass
+    def to_phase(self, phase):
+        current_phase, T, P = self._phaseTP
+        if current_phase == phase:
+            return self
+        elif current_phase:
+            raise ValueError(f"state not available for {repr(self)}")
+        new = self.copy()        
+        getfield = getattr
+        setfield = setattr
+        isa = isinstance
+        for field in _optional_single_phase:
+            obj = getfield(new, field)
+            if isa(obj, PhaseProperty): setfield(new, field, getfield(obj, phase))
+        new._phaseTP = (phase, T, P)
+        return new
+
+    def to_TP(self, TP):
+        phase, *current_TP = self._phaseTP
+        if current_TP == TP:
+            return self
+        elif any(current_TP):
+            raise ValueError(f"state not available for {repr(self)}")
+        T, P = TP
+        new = self.copy()
+        getfield = getattr
+        setfield = setattr
+        isa = isinstance
+        iscallable = callable
+        for field in _optional_data:
+            obj = getfield(new, field)
+            if isa(obj, ChemicalPhaseTPProperty): 
+                for phase in ('s', 'l', 'g'):
+                    setfield(obj, phase, obj(phase, T, P))
+            elif isa (obj, ChemicalPhaseTProperty):
+                for phase in ('s', 'l', 'g'):
+                    setfield(obj, phase, obj(phase, T))
+            elif iscallable(obj):
+                try:
+                    value = obj(T, P)
+                except:
+                    value = obj(T)
+                setfield(new, field, value)
+        new._phaseTP = (phase, T, P)
+        return new
+
+    def to_phaseTP(self, phaseTP):
+        if self._phaseTP == phaseTP: return self
+        for i, j in zip(self._phaseTP, phaseTP):
+            if i and i != j:
+                raise ValueError(f"state not available for {repr(self)}")            
+        phase, T, P = phaseTP
+        new = self.copy()
+        getfield = getattr
+        setfield = setattr
+        isa = isinstance
+        iscallable = callable
+        for field in _optional_data:
+            obj = getfield(new, field)
+            if isa(obj, ChemicalPhaseTPProperty):
+                value = obj(phase, T, P)
+            elif isa (obj, ChemicalPhaseTProperty):
+                value = obj(phase, T)
+            elif iscallable(obj):
+                try:
+                    value = obj(T, P)
+                except:
+                    value = obj(T)
+            else: continue
+            setfield(new, field, value)
+        for field in _optional_single_phase_nondata:
+            obj = getfield(new, field)
+            if isa(obj, PhaseProperty): setfield(new, field, getfield(obj, phase))
+        new._phaseTP = phaseTP
+        return new
 
     def Cv(self, T):
         return self.Cp.g(T) - R
-
-    def show(self):
-        info = f"{type(self).__name__}:"
-        getfield = getattr
-        for i in self.__slots__:
-            f = getfield(self, i)
-            info += f"\n {display_asfunctor(f, name=i, var=i, show_var=False)}"
-        print(info)
-
-
-
-# %% Chemical
-
-class Chemical:
-    __slots__ = ('ID', 'names', 'subgroups', 'data', 'methods', 'eos', 'eos_T_101325')
-    cached_chemicals = {}
     
-    def __init__(self, ID, *, eos=PR, CAS=None):
-        self.ID = ID
-        CAS = CAS or CAS_from_any(ID) or ID
-        if CAS in self.cached_chemicals:
-            chemical = self.cached_chemicals[CAS]
-            for i in chemical.__slots__[1:]: setattr(self, i, getattr(chemical, i))
-        else:
-            info = pubchem_db.search_CAS(CAS)
-            self.subgroups = ChemicalSubgroups(info.InChI_key)
-            self.names = ChemicalNames(CAS, info.smiles, info.InChI, info.InChI_key, 
-                                       info.pubchemid, info.iupac_name, info.common_name)
-            atoms = simple_formula_parser(info.formula)
-            self.data = data = ChemicalData(CAS, info.MW, atoms)
-            self.eos = create_eos(eos, data.Tc, data.Pc, data.omega)
-            self.eos_T_101325 = self.eos.to_TP(298.15, 101325)
-            self.methods = ChemicalThermoMethods(CAS, data, self.eos, self.eos_T_101325)
-            self.cached_chemicals[CAS] = self
-
-    @classmethod
-    def new(cls):
-        self = object.__new__(cls)
-        self.eos_T_101325 = self.eos = self.ID = None
-        self.data = ChemicalData.new()
-        self.methods = ChemicalThermoMethods.new()
-        self.subgroups = ChemicalSubgroups.new()
-        self.names = ChemicalNames.new()
-
-    @classmethod
-    def substance(cls, ID, *, properties=None, like=None, fallback=None, phaseTP=None):
-        self = cls.new(ID)
+    def fill(self, properties=None, like=None, fallback=None):
         getfield = getattr
-        for field in ('data', 'methods', 'subgroups', 'names'):
-            field_like = like and getfield(like, field)
-            field_fallback = fallback and getfield(fallback, field)
-            getfield(self, field).fill(properties, field_like, field_fallback)
-        if phaseTP: self.methods.make_static(*phaseTP)
+        setfield = setattr
+        has_properties = bool(properties)
+        for key in self.__slots__:
+            if getfield(self, key): continue
+            elif has_properties and key in properties:
+                field = properties[key]
+            elif like:
+                field = getfield(like, key)
+                if not field and fallback: 
+                    field = getfield(fallback, key)
+            else:
+                field = None
+            setfield(self, key, field)
         return self
 
+    @classmethod
+    def build(cls, ID, *, properties=None, like=None, fallback=None):
+        self = object.__new__(cls)
+        self.ID = ID
+        self.fill(properties, like, fallback)
+        return self
+    
     def phase(self, T, P):
-        Tm = self.data.Tm
-        if Tm and T <= Tm: return 's'
-        elif P <= self.methods.Psat(T): return 'g'
+        if self.Tm and T <= self.Tm: return 's'
+        if self.Psat and P <= self.Psat(T): return 'g'
         else: return 'l'
     
+    @property
+    def phase_ref(self):
+        return self._phase_ref
+    
+    def show(self):
+        getfield = getattr
+        info = _full_chemical_identity(self, pretty=True)
+        for header, fields in chemical_fields.items():
+            section = []
+            for field in fields:
+                value = getfield(self, field)
+                if value is None: continue
+                else:
+                    if callable(value):
+                        line = f"{display_asfunctor(value, name=field, var=field, show_var=False)}"
+                    else:
+                        try:
+                            line = f"{field}: {value:.5g}"
+                        except:
+                            value = str(value)
+                            line = f"{field}: {value}"
+                            if len(line) > 27: line = line[:27] + '...'
+                        else:
+                            units = units_of_measure.get(field, "")
+                            if units: line += ' ' + units
+                section.append(line)
+            if section:
+                info += header + ("\n" + 9*" ").join(section)
+        print(info)
+        
+    _ipython_display_ = show
+    
+    def __str__(self):
+        return self.ID
+    
     def __repr__(self):
-        return f'<{type(self).__name__}: {self.ID}>'
+        return f'<{type(self).__name__}: {_full_chemical_identity(self)}>'
     
 
 

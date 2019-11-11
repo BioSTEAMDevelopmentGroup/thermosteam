@@ -5,24 +5,24 @@ Created on Thu Nov  7 07:37:35 2019
 @author: yoelr
 """
 from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor
-from numpy import asarray, array, logical_and, logical_or
+from numpy import asarray, array, logical_and, logical_or, zeros
 
 __all__ = ('IdealMixture', 'IdealMixtureTProperty', 'IdealMixtureTPProperty')
 
 # %% Mixture properties
 
 class IdealMixtureTPProperty:
-    __slots__ = ('_sources', '_TP', '_nonzero', '_data')
+    __slots__ = ('_properties', '_TP', '_nonzero', '_data')
 
-    def __init__(self, sources):
+    def __init__(self, properties):
         self._TP = (0., 0.)
         self._nonzero = None
-        self._data = None
-        self._sources = sources
+        self._data = zeros(len(properties))
+        self._properties = properties
 
     @property
     def var(self):
-        for i in self._sources:
+        for i in self._properties:
             try:
                 var = i.var
                 if var: return var
@@ -31,13 +31,17 @@ class IdealMixtureTPProperty:
     def __call__(self, z, T, P):
         z = asarray(z)
         self._nonzero = nonzero = z!=0
+        iscallable = callable
         if (T, P) != self._TP:
-            self._data = array([(i(T, P) if j else 0.) for i,j in zip(self._sources, nonzero)], dtype=float)
+            self._data[:] = 0.
+            self._data[nonzero] = [(i(T, P) if iscallable(i) else i)
+                                   for i,j in zip(self._properties, nonzero) if j]
             self._TP = (T, P)
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [i(T, P) for i,j in zip(self._sources, new_nonzero) if j]
+            self._data[new_nonzero] = [(i(T, P) if iscallable(i) else i)
+                                       for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
     
@@ -46,50 +50,68 @@ class IdealMixtureTPProperty:
 
 
 class IdealMixtureTProperty:
-    __slots__ = ('_sources', '_T', '_nonzero', '_data')
+    __slots__ = ('_properties', '_T', '_nonzero', '_data')
     var = IdealMixtureTPProperty.var
     __repr__ = IdealMixtureTPProperty.__repr__
 
-    def __init__(self, sources):
+    def __init__(self, properties):
         self._T = 0.0
         self._nonzero = None
-        self._data = None
-        self._sources = tuple(sources)
+        self._data = zeros(len(properties))
+        self._properties = tuple(properties)
 
     def __call__(self, z, T):
         z = asarray(z)
         self._nonzero = nonzero = z!=0
+        iscallable = callable
         if T != self._T:
-            self._data = array([(i(T) if j else 0.) for i,j in zip(self._sources, nonzero)], dtype=float)
+            self._data[:] = 0.
+            self._data[nonzero] = [(i(T) if iscallable(i) else i)
+                                   for i,j in zip(self._properties, nonzero) if j]
             self._T = T
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [i(T) for i,j in zip(self._sources, new_nonzero) if j]
+            self._data[new_nonzero] = [(i(T) if iscallable(i) else i)
+                                       for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
 
 
 # %% Ideal mixture phase property
         
+def gather_properties_by_phase(phase_properties):
+    hasfield = hasattr
+    getfield = getattr
+    iscallable = callable
+    properties_by_phase = {'s': [],
+                           'l': [],
+                           'g': []}
+    for phase, properties in properties_by_phase.items():
+        for phase_property in phase_properties:
+            if iscallable(phase_property) and hasfield(phase_property, phase):
+                prop = getfield(phase_property, phase)
+            else:
+                prop = phase_property
+            properties.append(prop)
+    return properties_by_phase
+    
 class IdealMixturePhaseTProperty(MixturePhaseTProperty):
     __slots__ = ('s', 'l', 'g')
     
-    def __init__(self, sources):
-        getfield = getattr
+    def __init__(self, phase_properties):
         setfield = setattr
-        for phase in ('s', 'l', 'g'):
-            setfield(self, phase, IdealMixtureTProperty([getfield(i, phase) for i in sources]))
+        for phase, properties in gather_properties_by_phase(phase_properties).items():
+            setfield(self, phase, IdealMixtureTProperty(properties))
 
 
 class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
     __slots__ = ('s', 'l', 'g')
     
-    def __init__(self, sources):
-        getfield = getattr
+    def __init__(self, phase_properties):
         setfield = setattr
-        for phase in ('s', 'l', 'g'):
-            setfield(self, phase, IdealMixtureTPProperty([getfield(i, phase) for i in sources]))
+        for phase, properties in gather_properties_by_phase(phase_properties).items():
+            setfield(self, phase, IdealMixtureTPProperty(properties))
 
 
 # %% Ideal mixture
@@ -102,18 +124,17 @@ class IdealMixture:
     __slots__ = chemical_phaseTP_methods + chemical_phaseT_methods + chemical_T_methods
     
     def __init__(self, chemicals=()):
-        chemical_methods = [i.methods for i in chemicals]
         getfield = getattr
         setfield = setattr
         for var in chemical_phaseT_methods:
-            sources = [getfield(i, var) for i in chemical_methods]
-            if any(sources): setfield(self, var, IdealMixturePhaseTProperty(sources))
+            properties = [getfield(i, var) for i in chemicals]
+            if any(properties): setfield(self, var, IdealMixturePhaseTProperty(properties))
         for var in chemical_phaseTP_methods:
-            sources = [getfield(i, var) for i in chemical_methods]
-            if any(sources): setfield(self, var, IdealMixturePhaseTPProperty(sources))
+            properties = [getfield(i, var) for i in chemicals]
+            if any(properties): setfield(self, var, IdealMixturePhaseTPProperty(properties))
         for var in chemical_T_methods:
-            sources = [getfield(i, var) for i in chemical_methods]
-            if any(sources): setfield(self, var, IdealMixtureTProperty(sources))
+            properties = [getfield(i, var) for i in chemicals]
+            if any(properties): setfield(self, var, IdealMixtureTProperty(properties))
     
     def __repr__(self):
         return f"<{type(self).__name__}>"

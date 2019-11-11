@@ -502,7 +502,7 @@ zabransky_model_builders[4].many = True
 
 @TDependentHandleBuilder
 def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cp):
-    Cpg = Cp.g(Tb)
+    Cpg = Cp.g(Tb) if (Tb and Cp.g) else None
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
