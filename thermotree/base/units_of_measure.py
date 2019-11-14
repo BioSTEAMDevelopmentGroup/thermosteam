@@ -18,7 +18,7 @@ units_of_measure = {'MW': 'g/mol',
                     'Pt': 'K',
                     'V': 'm^3/mol',
                     'Vc': 'm^3/mol',
-                    'Cp': 'J/mol/K', 
+                    'Cp': 'J/mol/K',
                     'rho': 'kg/m^3', 
                     'rhoc': 'kg/m^3',
                     'nu': 'm^2/s',
@@ -36,7 +36,9 @@ units_of_measure = {'MW': 'g/mol',
                     'U': 'J/mol', 
                     'A': 'J/mol',
                     'H_excess': 'J/mol', 
-                    'S_excess': 'J/mol'}
+                    'S_excess': 'J/mol',
+                    'R': 'J/mol/K'
+}
 
 definitions = {'MW': 'Molecular weight',
                'T': 'Temperature',
@@ -51,6 +53,9 @@ definitions = {'MW': 'Molecular weight',
                'V': 'Molar volume',
                'Vc': 'Critical point volume',
                'Cp': 'Molar heat capacity',
+               'Cp.s': 'Molar heat capacity of a solid',
+               'Cp.l': 'Molar heat capacity of a liquid',
+               'Cp.g': 'Molar heat capacity of a gas',
                'rho': 'Density',
                'rhoc': 'Critical point density',
                'nu': 'Kinematic viscosity',
@@ -68,4 +73,24 @@ definitions = {'MW': 'Molecular weight',
                'U': 'Internal energy',
                'A': 'Helmholtz energy',
                'H_excess': 'Excess enthalpy',
-               'S_excess': 'Excess entropy'}
+               'S_excess': 'Excess entropy',
+               'R': 'Universal gas constant',
+               'Zc': 'Critical compressibility',
+               'omega': 'Acentric factor',
+}
+
+types = {}
+# Synonyms
+for i, j in [('ω', 'omega')]:
+    definitions[i] = definitions[j]
+    if j in units_of_measure: units_of_measure[i] = units_of_measure[j]
+
+# Phase properties
+for var in ('Cp', 'H', 'S', 'V', 'k', 'H_excess', 'S_excess'):
+    units = units_of_measure[var]
+    definition = definitions[var]
+    for tag, phase in zip(('s', 'l', 'g'), ('solid', 'liquid', 'gas')):
+        for tag in ('_' + tag, '.'+tag):
+            phasevar = var + tag
+            units_of_measure[phasevar] = units
+            definitions[phasevar] = definition + ' of a ' + phase

@@ -41,7 +41,7 @@ __all__ = ['isobaric_expansion', 'isothermal_compressibility',
     
 # Obtained from SciPy 0.19 (2014 CODATA)
 # Included here so calculations are consistent across SciPy versions
-R = 8.3144598
+R = 8.3144598 # J/mol/K
 k = 1.38064852e-23
 N_A = 6.022140857e+23
 calorie = 4.184

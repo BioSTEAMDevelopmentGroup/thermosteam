@@ -285,22 +285,22 @@ def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
         funcs = CpHS(*TRCCp_Functors, (a0, a1, a2, a3, a4, a5, a6, a7))
         handle.model(Tmin=Tmin, Tmax=Tmax, name=TRCIG, **funcs)
     if CAS in _Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cpg, _ = _Poling[CAS]
+        _, Tmin, Tmax, a, b, c, d, e, Cp_g, _ = _Poling[CAS]
         if not np.isnan(a0):
             funcs = CpHS(*Poling_Functors, (a, b, c, d, e))
             handle.model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
-        if not np.isnan(Cpg):
-            handle.model(Cpg, Tmin, Tmax, var='Cpg', name=POLING_CONST)
+        if not np.isnan(Cp_g):
+            handle.model(Cp_g, Tmin, Tmax, var='Cp.g', name=POLING_CONST)
     if CAS in _CRC_standard:
-        Cpg = _CRC_standard[CAS][-1]
-        if not np.isnan(Cpg):
-            handle.model(Cpg, name=CRCSTD)
+        Cp_g = _CRC_standard[CAS][-1]
+        if not np.isnan(Cp_g):
+            handle.model(Cp_g, name=CRCSTD)
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
-        Ts, Cpgs = VDI_tabular_data(CAS, 'Cp (g)')
-        handle.model(InterpolatedTDependentModel(Ts, Cpgs, Tmin=Ts[0], Tmax=Ts[-1],
+        Ts, Cp_gs = VDI_tabular_data(CAS, 'Cp (g)')
+        handle.model(InterpolatedTDependentModel(Ts, Cp_gs, Tmin=Ts[0], Tmax=Ts[-1],
                                                       name=VDI_TABULAR))
     if MW and similarity_variable:
         data = (MW, similarity_variable, iscyclic_aliphatic)
@@ -309,14 +309,14 @@ def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
 ### Heat capacities of liquids
 
 @Cp.l
-def Rowlinson_Poling(T, Tc, ω, Cpg):
+def Rowlinson_Poling(T, Tc, ω, Cp_g):
     Tr = T/Tc
-    return Cpg + R*(1.586 + 0.49/(1.-Tr) + ω*(4.2775 + 6.3*(1-Tr)**(1/3.)/Tr + 0.4355/(1.-Tr)))
+    return Cp_g + R*(1.586 + 0.49/(1.-Tr) + ω*(4.2775 + 6.3*(1-Tr)**(1/3.)/Tr + 0.4355/(1.-Tr)))
 
 @Cp.l
-def Rowlinson_Bondi(T, Tc, ω, Cpg):
+def Rowlinson_Bondi(T, Tc, ω, Cp_g):
     Tr = T/Tc
-    return Cpg + R*(1.45 + 0.45/(1.-Tr) + 0.25*ω*(17.11 + 25.2*(1-Tr)**(1/3.)/Tr + 1.742/(1.-Tr)))
+    return Cp_g + R*(1.45 + 0.45/(1.-Tr) + 0.25*ω*(17.11 + 25.2*(1-Tr)**(1/3.)/Tr + 1.742/(1.-Tr)))
 
 @Cp.l
 def Dadgostar_Shaw(T, MW, first, second, third):
@@ -502,27 +502,27 @@ zabransky_model_builders[4].many = True
 
 @TDependentHandleBuilder
 def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cp):
-    Cpg = Cp.g(Tb) if (Tb and Cp.g) else None
+    Cp_g = Cp.g(Tb) if (Tb and Cp.g) else None
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
-        Ts, Cpls = VDI_tabular_data(CAS, 'Cp (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Cpls, Ts[0], Ts[-1], name=VDI_TABULAR))
-    if Tc and omega and Cpg:
-        args = (Tc, omega, Cpg, 200, Tc)
+        Ts, Cp_ls = VDI_tabular_data(CAS, 'Cp (l)')
+        handle.model(InterpolatedTDependentModel(Ts, Cp_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
+    if Tc and omega and Cp_g:
+        args = (Tc, omega, Cp_g, 200, Tc)
         handle.model(Rowlinson_Bondi(args), name=ROWLINSON_BONDI)
         handle.model(Rowlinson_Poling(args), name=ROWLINSON_POLING)
     # Constant models
     if CAS in _Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cpg, Cpl = _Poling[CAS]
-        if not np.isnan(Cpg):
-            handle.model(Cpl, Tmin, Tmax, name=POLING_CONST, var="")
+        _, Tmin, Tmax, a, b, c, d, e, Cp_g, Cp_l = _Poling[CAS]
+        if not np.isnan(Cp_g):
+            handle.model(Cp_l, Tmin, Tmax, name=POLING_CONST, var="Cp.l")
     if CAS in _CRC_standard:
-        Cpl = _CRC_standard[CAS][-5]
-        if not np.isnan(Cpl):
-            handle.model(Cpl, 0, Tc, name=CRCSTD, var="Cpl")
+        Cp_l = _CRC_standard[CAS][-5]
+        if not np.isnan(Cp_l):
+            handle.model(Cp_l, 0, Tc, name=CRCSTD, var="Cp.l")
     # Other
     if MW and similarity_variable:
         handle.model(CpHSModel(*Dadgostar_Shaw_Functors,

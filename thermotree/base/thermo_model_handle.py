@@ -15,7 +15,6 @@ __all__ = ('ThermoModelHandle', 'TDependentModelHandle',
 
 # %% Handles
 
-
 class ThermoModelHandle:
     __slots__ = ('models',)
     
@@ -24,7 +23,7 @@ class ThermoModelHandle:
         for i in self.models:
             var = i.var
             if var: return var
-        
+         
     def __init__(self):
         self.models = []
     

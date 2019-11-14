@@ -57,7 +57,7 @@ from .interface import SurfaceTension
 # from .refractivity import refractive_index
 # from .electrochem import conductivity
 
-# %% Utilities
+# %% Initialize EOS
                          
 def create_eos(eos, Tc, Pc, omega):
     try: return eos(T=298.15, P=101325., Tc=Tc, Pc=Pc, omega=omega)
@@ -66,15 +66,15 @@ def create_eos(eos, Tc, Pc, omega):
 
 # %% Chemical fields
 
-names = ('CAS', 'InChI', 'InChI_key',
+_names = ('CAS', 'InChI', 'InChI_key',
          'common_name', 'iupac_name',
          'pubchemid', 'smiles')
 
-groups = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
+_groups = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
 
-thermo = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
-          'mu', 'Psat', 'Hvap', 'sigma', 'epsilon')
-
+_thermo = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
+           'mu', 'Psat', 'Hvap', 'sigma', 'epsilon')
+    
 _optional_data = ('S_excess', 'H_excess', 'k', 'V', 'Cp',
                        'mu', 'sigma', 'epsilon')
 
@@ -85,16 +85,16 @@ _optional_single_phase = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
 
 _optional_properties = ('Psat', 'Hvap')
 
-data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
-        'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
-        'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
+_data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
+         'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
+         'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
 
-chemical_fields = {'\n[Names]  ': names,
-                   '\n[Groups] ': groups,
-                   '\n[Thermo] ': thermo,
-                   '\n[Data]   ': data}
+_chemical_fields = {'\n[Names]  ': _names,
+                    '\n[Groups] ': _groups,
+                    '\n[Thermo] ': _thermo,
+                    '\n[Data]   ': _data}
 
-def _full_chemical_identity(chemical, pretty=False):
+def chemical_identity(chemical, pretty=False):
     typeheader = f"{type(chemical).__name__}:"
     fullID = f"{typeheader} {chemical.ID} (phase_ref={repr(chemical.phase_ref)})"
     phase, T, P = chemical._phaseTP
@@ -115,7 +115,7 @@ def _full_chemical_identity(chemical, pretty=False):
 
 class Chemical:
     __slots__ = ('ID', 'eos', 'eos_T_101325', '_phaseTP', '_phase_ref') \
-                + names + groups + thermo + data
+                + _names + _groups + _thermo + _data
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
     _cached = {}
     
@@ -467,11 +467,12 @@ class Chemical:
     def Cv(self, T):
         return self.Cp.g(T) - R
     
-    def fill(self, properties=None, like=None, fallback=None):
+    def fill(self, properties=None, like=None, fallback=None, slots=None):
         getfield = getattr
         setfield = setattr
         has_properties = bool(properties)
-        for key in self.__slots__:
+        unavailable = []
+        for key in (slots or self.__slots__):
             if getfield(self, key): continue
             elif has_properties and key in properties:
                 field = properties[key]
@@ -480,13 +481,20 @@ class Chemical:
                 if not field and fallback: 
                     field = getfield(fallback, key)
             else:
-                field = None
+                unavailable.append(key)
+                continue
             setfield(self, key, field)
+        # TODO: fill unavailable keys with water properties at STP
+        # TODO: Easy build enthalpy and entropy functors based on constant Cp
+        # for key in unavailable:
+            # setfield(self, key, getfield(water_STP, key))
         return self
 
     @classmethod
     def build(cls, ID, *, properties=None, like=None, fallback=None):
         self = object.__new__(cls)
+        setfield = setattr
+        for i in self.__slots__: setfield(self, i, None)
         self.ID = ID
         self.fill(properties, like, fallback)
         return self
@@ -502,8 +510,8 @@ class Chemical:
     
     def show(self):
         getfield = getattr
-        info = _full_chemical_identity(self, pretty=True)
-        for header, fields in chemical_fields.items():
+        info = chemical_identity(self, pretty=True)
+        for header, fields in _chemical_fields.items():
             section = []
             for field in fields:
                 value = getfield(self, field)
@@ -532,7 +540,7 @@ class Chemical:
         return self.ID
     
     def __repr__(self):
-        return f'<{type(self).__name__}: {_full_chemical_identity(self)}>'
+        return f'<{chemical_identity(self)}>'
     
 
 

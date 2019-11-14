@@ -4,8 +4,9 @@ Created on Sat Oct 26 04:26:20 2019
 
 @author: yoelr
 """
-from .units_of_measure import units_of_measure
+from .units_of_measure import units_of_measure, definitions, types
 from .utils import var_with_units, get_obj_values
+from .autodoc import autodoc_functor
 from inspect import signature, isclass
 from numba.targets.registry import CPUDispatcher
 from numba import njit
@@ -19,7 +20,7 @@ __all__ = ("Functor", "MixtureFunctor",
 
 RegisteredArgs = set()
 RegisteredFunctors = []
-function_functors = {}
+function_functors = set()
 
 # %% Utilities
 
@@ -54,20 +55,12 @@ def functor_base_and_params(function):
     return base, params[len(base._args):]
 
 
-# %% Interfaces
-
-def functor(function=None, data=None, kwargs=None, var=None,
-            njitcompile=True, wrap=None):
-    if function:
-        cls = function if isclass(function) else factory(function, var, njitcompile, wrap)
-        return cls(data, kwargs) if data else cls
-    else:
-        return lambda function: factory(function, var, njitcompile, wrap)
+# %% Decorator
   
-def factory(function=None, var=None, njitcompile=True,
-            wrap=None):
+def functor(function=None, var=None, njitcompile=True, wrap=None,
+            definitions=None, units_of_measure=None, math="", refs="", doc=None):
     if function:
-        if (function in function_functors): return function_functors[function]
+        if function in function_functors: raise ValueError(f"{function} is already a Functor")
         base, params = functor_base_and_params(function)
         if njitcompile and not isinstance(function, CPUDispatcher): 
             function = njit(function)
@@ -75,11 +68,18 @@ def factory(function=None, var=None, njitcompile=True,
                'function': staticmethod(function),
                'params': params,
                'var': var}
-        function_functors[function] = cls = type(function.__name__, (base,), dct)
+        cls = type(function.__name__, (base,), dct)
+        if units_of_measure:
+            dct['units_of_measure'] = units_of_measure
+        if definitions:
+            dct['definitions'] = definitions
+        function_functors.add(function)
         if wrap: cls.wrapper(wrap)
+        if doc:  cls.__doc__ = doc
+        else: autodoc_functor(cls, base, math, refs)
         return cls
     else:
-        return lambda function: factory(function, var, njitcompile, wrap)
+        return lambda function: functor(function, var, njitcompile, wrap)
 
 
 # %% Decorators
@@ -89,17 +89,25 @@ class FunctorFactory:
     def __init__(self, var):
         self.var = var
     
-    def __call__(self, function=None, data=None, kwargs=None, njitcompile=True, wrap=None):
-        return functor(function, data, kwargs, self.var, njitcompile, wrap)
+    def __call__(self, function=None, njitcompile=True, wrap=None,
+                 definitions=None, units_of_measure=None, math="", refs="", doc=None):
+        return functor(function, self.var, njitcompile, wrap,
+                       definitions, units_of_measure, math, refs, doc)
     
-    def s(self, function=None, data=None, kwargs=None, njitcompile=True, wrap=None):
-        return functor(function, data, kwargs, self.var + '.s', njitcompile, wrap)
+    def s(self, function=None, njitcompile=True, wrap=None,
+          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+        return functor(function, self.var + '.s', njitcompile, wrap,
+                       definitions, units_of_measure, math, refs, doc)
     
-    def l(self, function=None, data=None, kwargs=None, njitcompile=True, wrap=None):
-        return functor(function, data, kwargs, self.var + '.l', njitcompile, wrap)
+    def l(self, function=None, njitcompile=True, wrap=None,
+          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+        return functor(function, self.var + '.l', njitcompile, wrap,
+                       definitions, units_of_measure, math, refs, doc)
     
-    def g(self, function=None, data=None, kwargs=None, njitcompile=True, wrap=None):
-        return functor(function, data, kwargs, self.var + '.g', njitcompile, wrap)
+    def g(self, function=None, njitcompile=True, wrap=None,
+          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+        return functor(function, self.var + '.g', njitcompile, wrap,
+                       definitions, units_of_measure, math, refs, doc)
     
     def __repr__(self):
         return f"{type(self).__name__}: {var_with_units(self.var)}"
@@ -114,6 +122,8 @@ H, S, Cp, V, k, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i
 class Functor: 
     __slots__ = ()
     units_of_measure = units_of_measure
+    definitions = definitions
+    types = types
     
     def __init_subclass__(cls, args=None, before=None, after=None):
         if args and not hasattr(cls, 'function'):
@@ -165,8 +175,8 @@ class PureComponentFunctor(Functor):
                 except:
                     info += f"\n {key}: {value}"    
                 else:
-                    units = units_of_measure.get(key, "")
-                    if units: info += ' ' + units
+                    u = units.get(key) or units_of_measure.get(key)
+                    if u: info += ' ' + u
         print(info)
         
     _ipython_display_ = show
@@ -247,5 +257,7 @@ class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
     
     def __call__(self, z, T, P):
         return self.function(z, T, P, **self.kwargs)
+    
+    
     
     
