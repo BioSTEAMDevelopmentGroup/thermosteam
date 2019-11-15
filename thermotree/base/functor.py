@@ -7,7 +7,7 @@ Created on Sat Oct 26 04:26:20 2019
 from .units_of_measure import units_of_measure, definitions, types
 from .utils import var_with_units, get_obj_values
 from .autodoc import autodoc_functor
-from inspect import signature, isclass
+from inspect import signature
 from numba.targets.registry import CPUDispatcher
 from numba import njit
 
@@ -20,7 +20,6 @@ __all__ = ("Functor", "MixtureFunctor",
 
 RegisteredArgs = set()
 RegisteredFunctors = []
-function_functors = set()
 
 # %% Utilities
 
@@ -60,7 +59,6 @@ def functor_base_and_params(function):
 def functor(function=None, var=None, njitcompile=True, wrap=None,
             definitions=None, units_of_measure=None, math="", refs="", doc=None):
     if function:
-        if function in function_functors: raise ValueError(f"{function} is already a Functor")
         base, params = functor_base_and_params(function)
         if njitcompile and not isinstance(function, CPUDispatcher): 
             function = njit(function)
@@ -73,7 +71,6 @@ def functor(function=None, var=None, njitcompile=True, wrap=None,
             dct['units_of_measure'] = units_of_measure
         if definitions:
             dct['definitions'] = definitions
-        function_functors.add(function)
         if wrap: cls.wrapper(wrap)
         if doc:  cls.__doc__ = doc
         else: autodoc_functor(cls, base, math, refs)
@@ -113,8 +110,9 @@ class FunctorFactory:
         return f"{type(self).__name__}: {var_with_units(self.var)}"
     
 H, S, Cp, V, k, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i in
-                            ('H', 'S', 'Cp', 'V', 'k', 'mu', 'Psat', 'Hvap',
-                             'sigma', 'delta', 'epsilon')]
+                                                         ('H', 'S', 'Cp', 'V', 'k',
+                                                          'mu', 'Psat', 'Hvap',
+                                                          'sigma', 'delta', 'epsilon')]
 
 
 # %% Functors

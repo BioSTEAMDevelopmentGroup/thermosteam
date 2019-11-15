@@ -5,9 +5,11 @@ Created on Thu Nov  7 07:37:35 2019
 @author: yoelr
 """
 from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor
-from numpy import asarray, array, logical_and, logical_or, zeros
+from numpy import asarray, logical_and, logical_or, zeros
 
-__all__ = ('IdealMixture', 'IdealMixtureTProperty', 'IdealMixtureTPProperty')
+__all__ = ('IdealMixture',
+           'IdealMixtureTProperty',
+           'IdealMixtureTPProperty')
 
 # %% Mixture properties
 

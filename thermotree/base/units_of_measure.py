@@ -88,9 +88,9 @@ for i, j in [('ω', 'omega')]:
 # Phase properties
 for var in ('Cp', 'H', 'S', 'V', 'k', 'H_excess', 'S_excess'):
     units = units_of_measure[var]
-    definition = definitions[var]
-    for tag, phase in zip(('s', 'l', 'g'), ('solid', 'liquid', 'gas')):
+    definition = definitions[var].lower()
+    for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):
         for tag in ('_' + tag, '.'+tag):
             phasevar = var + tag
             units_of_measure[phasevar] = units
-            definitions[phasevar] = definition + ' of a ' + phase
+            definitions[phasevar] = phase + definition

@@ -10,6 +10,7 @@ from .units_of_measure import units_of_measure, definitions, types
 
 class FunctorVariableDescriber:
     __slots__ = ('defs', 'units', 'types', 'output')
+    
     def __init__(self, functor):
         self.defs = functor.definitions
         self.units = functor.units_of_measure
@@ -35,6 +36,7 @@ class FunctorVariableDescriber:
         if info:
             units = self.get_units(var)
             if units: info += f" in {units}"
+            info += '.'
         return info
     
 
@@ -49,7 +51,7 @@ def autodoc_functor(functor, base, math, refs):
                       "----------\n")
         for p in params:
             parameters += (f"{p} : {f.get_type(p)}\n"
-                           f"{f.describe(p)}.\n")
+                           f"{f.describe(p)}\n")
         parameters += '\n'
     else:
         parameters = ""

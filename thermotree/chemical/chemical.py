@@ -72,11 +72,11 @@ _names = ('CAS', 'InChI', 'InChI_key',
 
 _groups = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
 
-_thermo = ('S_excess', 'H_excess', 'k', 'V', 'S', 'H', 'Cp',
-           'mu', 'Psat', 'Hvap', 'sigma', 'epsilon')
+_thermo = ('S_excess', 'H_excess', 'k', 'V', 'mu', 'S', 'H', 'Cp',
+           'Psat', 'Hvap', 'sigma', 'epsilon')
     
 _optional_data = ('S_excess', 'H_excess', 'k', 'V', 'Cp',
-                       'mu', 'sigma', 'epsilon')
+                  'mu', 'sigma', 'epsilon')
 
 _optional_single_phase_nondata = ('S', 'H')
 

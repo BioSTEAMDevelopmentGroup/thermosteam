@@ -23,25 +23,25 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 # %% Vapor pressure
 
 @Psat
-def Antoine(T, A, B, C):
-    return 10.0**(A - B / (T + C))
+def Antoine(T, a, b, c):
+    return 10.0**(a - b / (T + c))
 
 @Psat
-def Antoine_Extended(T, Tc, to, A, B, C, n, E, F):
+def Antoine_Extended(T, Tc, to, a, b, c, n, E, F):
     x = max((T - to - 273.15) / Tc, 0.0)
-    return 10.0**(A - B / (T + C) + 0.43429 * x**n + E * x**8 + F * x**12)
+    return 10.0**(a - b / (T + c) + 0.43429 * x**n + E * x**8 + F * x**12)
 
 @Psat
-def Wagner_McGarry(T, A, B, C, D, Tc, Pc):
+def Wagner_McGarry(T, a, b, c, d, Tc, Pc):
     Tr = T / Tc
     tau = 1.0 - Tr
-    return Pc * exp((A * tau + B * tau**1.5 + C * tau**3 + D * tau**6) / Tr)
+    return Pc * exp((a * tau + b * tau**1.5 + c * tau**3 + d * tau**6) / Tr)
 
 @Psat
-def Wagner(T, Tc, Pc, A, B, C, D):
+def Wagner(T, Tc, Pc, a, b, c, d):
     Tr = T / Tc
     τ = 1.0 - Tr
-    return Pc * exp((A*τ + B*τ**1.5 + C*τ**2.5 + D*τ**5) / Tr)
+    return Pc * exp((a*τ + b*τ**1.5 + c*τ**2.5 + d*τ**5) / Tr)
 
 @Psat
 def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
@@ -97,26 +97,26 @@ def Edalat(T, Tc, Pc, ω, Tmin, Tmax):
 @TDependentHandleBuilder
 def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
     if CAS in _WagnerMcGarry:
-        _, A, B, C, D, Pc, Tc, Tmin = _WagnerMcGarry[CAS]
+        _, a, b, c, d, Pc, Tc, Tmin = _WagnerMcGarry[CAS]
         Tmax = Tc
-        handle.model(Wagner_McGarry(data=(A, B, C, D, Tc, Pc)), Tmin, Tmax)
+        handle.model(Wagner_McGarry(data=(a, b, c, d, Tc, Pc)), Tmin, Tmax)
     if CAS in _Wagner:
-        _, A, B, C, D, Tc, Pc, Tmin, Tmax = _Wagner[CAS]
+        _, a, b, c, d, Tc, Pc, Tmin, Tmax = _Wagner[CAS]
         # Some Tmin values are missing; Arbitrary choice of 0.1 lower limit
         if np.isnan(Tmin): Tmin = Tmax * 0.1
-        handle.model(Wagner(data=(A, B, C, D, Tc, Pc)), Tmin, Tmax)
+        handle.model(Wagner(data=(a, b, c, d, Tc, Pc)), Tmin, Tmax)
     if CAS in _AntoineExtended:
-        _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = _AntoineExtended[CAS]
-        handle.model(Antoine_Extended(data=(A, B, C, Tc, to, n, E, F)), Tmin, Tmax)
+        _, a, b, c, Tc, to, n, E, F, Tmin, Tmax = _AntoineExtended[CAS]
+        handle.model(Antoine_Extended(data=(a, b, c, Tc, to, n, E, F)), Tmin, Tmax)
     if CAS in _Antoine:
-        _, A, B, C, Tmin, Tmax = _Antoine[CAS]
-        handle.model(Antoine(data=(A, B, C)), Tmin, Tmax)
+        _, a, b, c, Tmin, Tmax = _Antoine[CAS]
+        handle.model(Antoine(data=(a, b, c)), Tmin, Tmax)
     if CAS in _Perrys2_8:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_8[CAS]
         handle.model(DIPPR_EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax,)
     if CAS in _VDI_PPDS_3:
-        _, Tm, Tc, Pc, A, B, C, D = _VDI_PPDS_3[CAS]
-        handle.model(Wagner(data=(Tc, Pc, A, B, C, D)), 0., Tc,)
+        _, Tm, Tc, Pc, a, b, c, d = _VDI_PPDS_3[CAS]
+        handle.model(Wagner(data=(Tc, Pc, a, b, c, d)), 0., Tc,)
     data = (Tb, Tc, Pc)
     if all(data):
         handle.model(Boiling_Critical_Relation(data), 0., Tc)
