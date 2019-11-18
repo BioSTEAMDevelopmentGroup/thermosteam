@@ -113,9 +113,9 @@ def Excess_Liquid_Enthalpy_Ref_Liquid(T, P):
     return 0
 
 @H.l(njitcompile=False)
-def Excess_Liquid_Enthalpy_Ref_Gas(T, P, eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g, eos_T_101325):
+def Excess_Liquid_Enthalpy_Ref_Gas(T, P, eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g, eos_1atm):
     return (H_dep_Tb_Pb_g - H_dep_Tb_P_ref_g
-            + eos.to_TP(T, P).H_dep_l - eos_T_101325.H_dep_l)
+            + eos.to_TP(T, P).H_dep_l - eos_1atm.H_dep_l)
     
 @H.l(njitcompile=False)
 def Excess_Liquid_Enthalpy_Ref_Solid(T, P):
@@ -162,9 +162,9 @@ def Excess_Liquid_Entropy_Ref_Liquid(T, P):
     return 0
 
 @S.l(njitcompile=False)
-def Excess_Liquid_Entropy_Ref_Gas(T, P, eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_T_101325):
+def Excess_Liquid_Entropy_Ref_Gas(T, P, eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_1atm):
     return (S_dep_Tb_Pb_g - S_dep_Tb_P_ref_g
-            + eos.to_TP(T, P).S_dep_l - eos_T_101325.S_dep_l)
+            + eos.to_TP(T, P).S_dep_l - eos_1atm.S_dep_l)
     
 @S.l(njitcompile=False)
 def Excess_Liquid_Entropy_Ref_Solid(T, P):

@@ -153,9 +153,9 @@ class ConstantThermoModel(ThermoModel):
     def __init__(self, value, 
                  Tmin=None, Tmax=None,
                  Pmin=None, Pmax=None,
-                 name="Constant", var=""):
+                 name=None, var=""):
         self.value = value
-        self.name = name
+        self.name = name or "Constant"
         self.var = var
         if Pmin: self.Pmin = Pmin
         if Pmax: self.Pmax = Pmax
@@ -189,8 +189,9 @@ class ConstantThermoModel(ThermoModel):
             units = " " + units_of_measure[var]
         else:
             units = ""
+        var = f' ({self.var})' if self.var else ""
         print(f"{type(self).__name__}: {self.name}\n"
-              f" {self.var}: {self.value}{units}\n"
+              f" value{var}: {self.value}{units}\n"
               f" Tmin: {self.Tmin:.5g} K\n"
               f" Tmax: {self.Tmax:.5g} K\n"
               f" Pmin: {self.Pmin:.5g} Pa\n"

@@ -118,8 +118,8 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 
 # %% Ideal mixture
 
-chemical_phaseT_methods = ('Cp', 'H')
-chemical_phaseTP_methods = ('H_excess', 'S_excess', 'mu', 'S', 'V', 'k')
+chemical_phaseT_methods = ('H', 'Cp')
+chemical_phaseTP_methods = ('H_excess', 'S_excess', 'mu', 'V', 'k', 'S')
 chemical_T_methods  = ('Hvap', 'sigma', 'epsilon')
 
 class IdealMixture:

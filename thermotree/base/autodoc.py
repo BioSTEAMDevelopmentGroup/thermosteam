@@ -8,19 +8,20 @@ from .units_of_measure import units_of_measure, definitions, types
 
 # %% Utilities
 
-class FunctorVariableDescriber:
-    __slots__ = ('defs', 'units', 'types', 'output')
+class VariableDescriber:
+    __slots__ = ('defs', 'units', 'types')
     
-    def __init__(self, functor):
-        self.defs = functor.definitions
-        self.units = functor.units_of_measure
-        self.types = functor.types
-        var = functor.var
+    def __init__(self, definitions, units_of_measure, types):
+        self.defs = definitions
+        self.units = units_of_measure
+        self.types = types
+
+    def get_output(self, var):
         definition = self.get_def(var)
         units = self.get_units(var)
         output = definition.lower() + f" ({var})" if definition else var
         if units: output += f" in {units}"
-        self.output = output
+        return output
 
     def get_def(self, var):
         return self.defs.get(var, "") or definitions.get(var, "")
@@ -38,13 +39,16 @@ class FunctorVariableDescriber:
             if units: info += f" in {units}"
             info += '.'
         return info
-    
+
+describer = VariableDescriber(definitions, units_of_measure, types)
 
 # %% Autodoc
 
 def autodoc_functor(functor, base, math, refs):
-    f = FunctorVariableDescriber(functor)
-    header = f"Create a {base.__name__}.{functor.__name__} object that returns the {f.output}.\n" + math + '\n'
+    f = VariableDescriber(functor.definitions, functor.units_of_measure,
+                          functor.types)
+    out = f.get_output(functor.var)
+    header = f"Create a {base.__name__}.{functor.__name__} object that returns the {out}.\n" + math + '\n'
     params = functor.params
     if params:
         parameters = ("Parameters\n"
