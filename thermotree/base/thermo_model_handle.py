@@ -4,13 +4,20 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-from numpy import inf as infinity
-from .thermo_model import TPDependentModel, TDependentModel, ThermoModel, thermo_model
+from .thermo_model import ThermoModel, ConstantThermoModel, thermo_model
 from .functor import display_asfunctor
-from .units_of_measure import units_of_measure
 
 __all__ = ('ThermoModelHandle', 'TDependentModelHandle',
            'TPDependentModelHandle')
+
+# %% Utilities
+
+def find_constant_model(models):
+    isa = isinstance
+    CTM = ConstantThermoModel
+    for model in models:
+        if isa(model, CTM): return model
+            
 
 
 # %% Handles
@@ -34,9 +41,16 @@ class ThermoModelHandle:
               Tmin=None, Tmax=None,
               Pmin=None, Pmax=None,
               name=None, var=None,
-              **funcs):
-        self.models.append(evaluate if isinstance(evaluate, ThermoModel)
-                           else thermo_model(evaluate, Tmin, Tmax, Pmin, Pmax, name, var, **funcs))
+              *, first=False, **funcs):
+        if isinstance(evaluate, ThermoModel):
+            model = evaluate
+        else:
+            model = thermo_model(evaluate, Tmin, Tmax, Pmin,
+                                   Pmax, name, var, **funcs)
+        if first:
+            self.models.insert(0, model)
+        else:
+            self.models.append(model)    
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
@@ -56,6 +70,15 @@ class ThermoModelHandle:
 class TDependentModelHandle(ThermoModelHandle):
     __slots__ = ()
     
+    def to_TP(self, T, P=None):
+        models = self.models
+        constant_model = find_constant_model(models)
+        if constant_model:
+            models.remove(constant_model)
+        else:
+            constant_model = ConstantThermoModel(self(T))
+        models.insert(0, constant_model)
+        
     @property
     def Tmin(self):
         return min([i.Tmin for i in self.models])
@@ -122,6 +145,15 @@ class TPDependentModelHandle(ThermoModelHandle):
     
     Tmin = TDependentModelHandle.Tmin
     Tmax = TDependentModelHandle.Tmax
+    
+    def to_TP(self, T, P=None):
+        models = self.models
+        constant_model = find_constant_model(models)
+        if constant_model:
+            models.remove(constant_model)
+        else:
+            constant_model = ConstantThermoModel(self(T))
+        models.insert(0, constant_model)
     
     @property
     def Pmin(self):
