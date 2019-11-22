@@ -22,14 +22,20 @@ def chemgroup_array(chemgroups, index):
         for group, count in groups.items():
             array[i, index[group]] = count
     return array
-    
+
+def masked_psis(cQfs, psis, indices):
+    masked_psis = np.zeros_like(psis, dtype=float)
+    for index in indices:
+        for i in index:
+            masked_psis[i, index] = psis[index, i]
+    return masked_psis
 
 # %% Activity Coefficients
 
 class GroupActivityCoefficients:
-    __slots__ = ('chemgroups', 'rs', 'qs',
-                 'Qs', 'Rs', 'chem_Qfractions',
-                 'interactions', '_chemicals')
+    __slots__ = ('_chemgroups', '_rs', '_qs', '_indices',
+                 '_Qs', '_chem_Qfractions',
+                 '_interactions', '_chemicals')
     _cached = {}
     def __init__(self, chemicals):
         self.chemicals = chemicals
@@ -42,7 +48,8 @@ class GroupActivityCoefficients:
     def chemicals(self, chemicals):
         chemicals = tuple(chemicals)
         if chemicals in self._cached:
-            self.rs, self.qs, self.Rs, self.Qs, self.chemgroups, self.chem_Qfractions, self.interactions = self._cached[chemicals]
+            (self._rs, self._qs, self._Qs, self._chemgroups,
+            self._chem_Qfractions, self._interactions, self._indices) = self._cached[chemicals]
         else:
             chemgroups = [s.UNIFAC_Dortmund for s in chemicals]
             all_groups = set()
@@ -52,17 +59,20 @@ class GroupActivityCoefficients:
             all_subgroups = self.all_subgroups
             subgroups = [all_subgroups[i] for i in all_groups]
             main_group_ids = [i.main_group_id for i in subgroups]
-            self.Rs = Rs = np.array([i.R for i in subgroups])
-            self.Qs = Qs = np.array([i.Q for i in subgroups])
-            self.rs = rs = chemgroups @ Rs
-            self.qs = qs = chemgroups @ Qs
-            self.chemgroups = chemgroups
+            self._Qs = Qs = np.array([i.Q for i in subgroups])
+            Rs = np.array([i.R for i in subgroups])
+            self._rs = rs = chemgroups @ Rs
+            self._qs = qs = chemgroups @ Qs
+            self._chemgroups = chemgroups
             chem_Qs = Qs * chemgroups
-            self.chem_Qfractions = chem_Qs/chem_Qs.sum(1, keepdims=True)
+            self._chem_Qfractions = cQfs = chem_Qs/chem_Qs.sum(1, keepdims=True)
             all_interactions = self.all_interactions
-            self.interactions = [[None if i == j else all_interactions[i][j] for i in main_group_ids]
+            self._interactions = [[None if i == j else all_interactions[i][j] for i in main_group_ids]
                                  for j in main_group_ids]
-            self._cached[chemicals] = rs, qs, Rs, Qs, chemgroups, self.chem_Qfractions, self.interactions
+            rowindex = np.arange(len(all_groups), dtype=int)
+            self._indices = indices = [rowindex[rowmask] for rowmask in cQfs != 0]
+            self._cached[chemicals] = (rs, qs, Qs, chemgroups, cQfs,
+                                       self._interactions, indices)
         self._chemicals = chemicals
         
     def __call__(self, xs, T):
@@ -77,23 +87,24 @@ class GroupActivityCoefficients:
         
         """
         xs = np.asarray(xs)
-        chemgroups = self.chemgroups
+        chemgroups = self._chemgroups
         weighted_counts = chemgroups.transpose() @ xs
-        weighted_counts = weighted_counts/weighted_counts.sum()
-        loggammacs = self.loggammacs(self.qs, self.rs, xs)
-        Q_fractions = self.Qs * weighted_counts 
+        loggammacs = self.loggammacs(self._qs, self._rs, xs)
+        Qs = self._Qs
+        Q_fractions = Qs * weighted_counts 
         Q_fractions /= Q_fractions.sum()
         psis = np.array([[self.psi(T, d) if d else 1. for d in i]
-                         for i in self.interactions])
-        Qs = self.Qs
+                         for i in self._interactions])
         Q_psis = psis * Q_fractions
-        sum1 = Q_psis.sum(1)
-        sum2 = -(psis.transpose() / sum1) @ Q_fractions
-        loggamma_groups = Qs * (1. - np.log(sum1) + sum2)
-        chem_Qfractions = self.chem_Qfractions
-        sum1 = chem_Qfractions @ psis
-        fracs = - chem_Qfractions / sum1
-        sum2 = (psis @ fracs.transpose()).transpose()
+        lg1 = Q_psis.sum(1)
+        lg2 = -(psis.transpose() / lg1) @ Q_fractions
+        loggamma_groups = Qs * (1. - np.log(lg1) + lg2)
+        cQfs = self._chem_Qfractions
+        mpsis = masked_psis(cQfs, psis, self._indices)
+        sum1 = cQfs @ mpsis
+        sum1 = np.where(sum1==0, 1., sum1)
+        fracs = - cQfs / sum1
+        sum2 = (mpsis @ fracs.transpose()).transpose()
         chem_loggamma_groups = Qs*(1. - np.log(sum1) + sum2)
         loggammars = ((loggamma_groups - chem_loggamma_groups) * chemgroups).sum(1)
         return np.exp(loggammacs + loggammars)
