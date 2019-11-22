@@ -5,38 +5,66 @@ Created on Mon Apr 16 08:58:41 2018
 
 @author: Yoel Rene Cortes-Pena
 """
-from math import log, exp
-from .unifac_data import DOUFSG, DOUFIP2016
+from math import exp
+import numpy as np
+from .unifac_data import DOUFSG, DOUFIP2016, UFIP, UFSG
+from numba import njit
 
 __all__ = ('GroupActivityCoefficients', 'DortmundActivityCoefficients')
 
+# %% Utilities
+
+def chemgroup_array(chemgroups, index):
+    M = len(chemgroups)
+    N = len(index)
+    array = np.zeros((M, N))
+    for i, groups in enumerate(chemgroups):
+        for group, count in groups.items():
+            array[i, index[group]] = count
+    return array
+    
 
 # %% Activity Coefficients
 
 class GroupActivityCoefficients:
-    __slots__ = ('chemgroups', 'rs', 'qs', 'groupcounts')
-    def __init__(self, chemgroups):
-        self.chemgroups = chemgroups
-        self.rs = rs = []
-        self.qs = qs = []
-        self.groupcounts = groupcounts = {}
-        subgroups = self.subgroups
-        for groups in chemgroups:
-            ri = 0.
-            qi = 0.
-            for group, count in groups.items():
-                subgroup = subgroups[group]
-                ri += subgroup.R*count
-                qi += subgroup.Q*count
-                if group in groupcounts: groupcounts[group] += count
-                else: groupcounts[group] = count
-            rs.append(ri)
-            qs.append(qi)
+    __slots__ = ('chemgroups', 'rs', 'qs',
+                 'Qs', 'Rs', 'chem_Qfractions',
+                 'interactions', '_chemicals')
+    _cached = {}
+    def __init__(self, chemicals):
+        self.chemicals = chemicals
         
-    @classmethod
-    def from_chemicals(cls, chemicals):
-        return cls([s.UNIFAC_Dortmund for s in chemicals])
-            
+    @property
+    def chemicals(self):
+        return self._chemicals
+    
+    @chemicals.setter
+    def chemicals(self, chemicals):
+        chemicals = tuple(chemicals)
+        if chemicals in self._cached:
+            self.rs, self.qs, self.Rs, self.Qs, self.chemgroups, self.chem_Qfractions, self.interactions = self._cached[chemicals]
+        else:
+            chemgroups = [s.UNIFAC_Dortmund for s in chemicals]
+            all_groups = set()
+            for groups in chemgroups: all_groups.update(groups)
+            index = {group:i for i,group in enumerate(all_groups)}
+            chemgroups = chemgroup_array(chemgroups, index)
+            all_subgroups = self.all_subgroups
+            subgroups = [all_subgroups[i] for i in all_groups]
+            main_group_ids = [i.main_group_id for i in subgroups]
+            self.Rs = Rs = np.array([i.R for i in subgroups])
+            self.Qs = Qs = np.array([i.Q for i in subgroups])
+            self.rs = rs = chemgroups @ Rs
+            self.qs = qs = chemgroups @ Qs
+            self.chemgroups = chemgroups
+            chem_Qs = Qs * chemgroups
+            self.chem_Qfractions = chem_Qs/chem_Qs.sum(1, keepdims=True)
+            all_interactions = self.all_interactions
+            self.interactions = [[None if i == j else all_interactions[i][j] for i in main_group_ids]
+                                 for j in main_group_ids]
+            self._cached[chemicals] = rs, qs, Rs, Qs, chemgroups, self.chem_Qfractions, self.interactions
+        self._chemicals = chemicals
+        
     def __call__(self, xs, T):
         """Return UNIFAC coefficients.
         
@@ -48,122 +76,74 @@ class GroupActivityCoefficients:
             Temperature (K)
         
         """
-        groupcounts = self.groupcounts
-        xs_chemgroups = tuple(zip(xs, self.chemgroups))
-        # Sum the denominator for calculating Xs
-        sum_ = sum
-        group_sum = sum_([count*x for x, g in xs_chemgroups for count in g.values()])
-    
-        # Caclulate each numerator for calculating Xs
-        group_count_xs = {}
-        for group in groupcounts:
-            tot_numerator = sum_([x*g[group] for x, g in xs_chemgroups if group in g])
-            group_count_xs[group] = tot_numerator/group_sum
-    
+        xs = np.asarray(xs)
+        chemgroups = self.chemgroups
+        weighted_counts = chemgroups.transpose() @ xs
+        weighted_counts = weighted_counts/weighted_counts.sum()
         loggammacs = self.loggammacs(self.qs, self.rs, xs)
-        subgroups = self.subgroups
-        Q_sum_term = sum_([subgroups[group].Q*group_count_xs[group] for group in groupcounts])
-        area_fractions = {group: subgroups[group].Q*group_count_xs[group]/Q_sum_term
-                          for group in groupcounts}
-    
-        psi = self.psi
-        interactions = self.interactions
-        UNIFAC_psis = {k: {m: (psi(T, m, k, subgroups, interactions))
-                           for m in groupcounts} for k in groupcounts}
-    
-        loggamma_groups = {}
-        for k in groupcounts:
-            sum1, sum2 = 0., 0.
-            for m in groupcounts:
-                sum1 += area_fractions[m]*UNIFAC_psis[k][m]
-                sum3 = sum_([area_fractions[n]*UNIFAC_psis[m][n]
-                            for n in groupcounts])
-                sum2 -= area_fractions[m]*UNIFAC_psis[m][k]/sum3
-            loggamma_groups[k] = subgroups[k].Q*(1. - log(sum1) + sum2)
-    
-        loggammars = []
-        for groups in self.chemgroups:
-            chem_group_sum = sum_(groups.values())
-            chem_group_count_xs = {group: count/chem_group_sum
-                                   for group, count in groups.items()}
-    
-            Q_sum_term = sum_([subgroups[group].Q*chem_group_count_xs[group]
-                               for group in groups])
-            chem_area_fractions = {group: subgroups[group].Q*chem_group_count_xs[group]/Q_sum_term
-                                   for group in groups}
-            chem_loggamma_groups = {}
-            for k in groups:
-                sum1, sum2 = 0., 0.
-                for m in groups:
-                    sum1 += chem_area_fractions[m]*UNIFAC_psis[k][m]
-                    sum3 = sum_([chem_area_fractions[n]
-                                * UNIFAC_psis[m][n] for n in groups])
-                    sum2 -= chem_area_fractions[m]*UNIFAC_psis[m][k]/sum3
-    
-                chem_loggamma_groups[k] = subgroups[k].Q*(1. - log(sum1) + sum2)
-    
-            tot = sum_([count*(loggamma_groups[group] - chem_loggamma_groups[group])
-                       for group, count in groups.items()])
-            loggammars.append(tot)
-    
-        return [exp(sum_(ij)) for ij in zip(loggammacs, loggammars)]
+        Q_fractions = self.Qs * weighted_counts 
+        Q_fractions /= Q_fractions.sum()
+        psis = np.array([[self.psi(T, d) if d else 1. for d in i]
+                         for i in self.interactions])
+        Qs = self.Qs
+        Q_psis = psis * Q_fractions
+        sum1 = Q_psis.sum(1)
+        sum2 = -(psis.transpose() / sum1) @ Q_fractions
+        loggamma_groups = Qs * (1. - np.log(sum1) + sum2)
+        chem_Qfractions = self.chem_Qfractions
+        sum1 = chem_Qfractions @ psis
+        fracs = - chem_Qfractions / sum1
+        sum2 = (psis @ fracs.transpose()).transpose()
+        chem_loggamma_groups = Qs*(1. - np.log(sum1) + sum2)
+        loggammars = ((loggamma_groups - chem_loggamma_groups) * chemgroups).sum(1)
+        return np.exp(loggammacs + loggammars)
     
     def __repr__(self):
-        return f"{type(self).__name__}({self.chemgroups})"
+        chemicals = ", ".join([i.ID for i in self.chemicals])
+        return f"<{type(self).__name__}({chemicals})>"
     
     
 class UNIFACActivityCoefficiencts(GroupActivityCoefficients):
-   
-    @staticmethod
-    def loggammacs(qs, rs, xs):
-        rsxs = 0.; qsxs = 0.; loggammacs = []
-        for xi, ri, qi in zip(xs, rs, qs):
-            rsxs += ri*xi
-            qsxs += qi*xi
-        for qi, ri in zip(qs, rs):
-            Vi = ri/rsxs
-            Fi = qi/qsxs
-            Vi_over_Fi = Vi/Fi
-            loggammacs.append(1. - Vi + log(Vi)
-                              - 5.*qi*(1. - Vi_over_Fi + log(Vi_over_Fi)))
-        return loggammacs
+    all_subgroups = UFSG
+    all_interactions = UFIP
     
     @staticmethod
-    def psi(T, subgroup1, subgroup2, subgroup_data, interaction_data):
-        try: return exp(-interaction_data[subgroup_data[subgroup1].main_group_id] \
-                                         [subgroup_data[subgroup2].main_group_id]/T)
-        except: return 1.
+    @njit
+    def loggammacs(qs, rs, xs):
+        r_net = (xs*rs).sum()
+        q_net = (xs*qs).sum()  
+        Vs = rs/r_net
+        Fs = qs/q_net
+        Vs_over_Fs = Vs/Fs
+        return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
+    
+    @staticmethod
+    def psi(T, a):
+        return exp(-a/T)
 
 
 class DortmundActivityCoefficients(GroupActivityCoefficients):
     __slots__ = ()
-    subgroups = DOUFSG
-    interactions = DOUFIP2016
+    all_subgroups = DOUFSG
+    all_interactions = DOUFIP2016
     
     @staticmethod
+    @njit
     def loggammacs(qs, rs, xs):
-        rsxs = 0.; qsxs = 0.; rsxs2 = 0.; rs_34 = []; loggammacs = []
-        for xi, ri, qi in zip(xs, rs, qs):
-            rsxs += ri*xi
-            qsxs += qi*xi
-            ri_34 = ri**0.75
-            rs_34.append(ri_34)
-            rsxs2 += ri_34*xi
-        for qi, ri, ri_34 in zip(qs, rs, rs_34):
-            Vi = ri/rsxs
-            Fi = qi/qsxs
-            Vi2 = ri_34/rsxs2
-            Vi_over_Fi = Vi/Fi
-            loggammacs.append(1. - Vi2 + log(Vi2)
-                              - 5.*qi*(1. - Vi_over_Fi + log(Vi_over_Fi)))
-        return loggammacs
+        r_net = (xs*rs).sum()
+        q_net = (xs*qs).sum()
+        rs_p = rs**0.75
+        r_pnet = (rs_p*xs).sum()
+        Vs = rs/r_net
+        Fs = qs/q_net
+        Vs_over_Fs = Vs/Fs
+        Vs_p = rs_p/r_pnet
+        return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
     
     @staticmethod
-    def psi(T, subgroup1, subgroup2, subgroup_data, interaction_data):
-        try: a, b, c = interaction_data[subgroup_data[subgroup1].main_group_id] \
-                                       [subgroup_data[subgroup2].main_group_id]
-        except: return 1.
-        return exp((-a/T - b - c*T))
+    def psi(T, abc):
+        a, b, c = abc
+        return exp((-a/T - b - c*T)) 
     
     
     
