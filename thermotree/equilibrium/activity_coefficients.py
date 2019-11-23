@@ -10,7 +10,9 @@ import numpy as np
 from .unifac_data import DOUFSG, DOUFIP2016, UFIP, UFSG
 from numba import njit
 
-__all__ = ('GroupActivityCoefficients', 'DortmundActivityCoefficients')
+__all__ = ('GroupActivityCoefficients',
+           'DortmundActivityCoefficients',
+           'UNIFACActivityCoefficiencts')
 
 # %% Utilities
 
@@ -22,11 +24,6 @@ def chemgroup_array(chemgroups, index):
         for group, count in groups.items():
             array[i, index[group]] = count
     return array
-
-def load_group_psis(group_psis, psis, indices):
-    for index in indices:
-        for i in index:
-            group_psis[i, index] = psis[i, index]
 
 @njit
 def group_activity_coefficients(xs, chemgroups, loggammacs,
@@ -50,7 +47,7 @@ def group_activity_coefficients(xs, chemgroups, loggammacs,
 # %% Activity Coefficients
 
 class GroupActivityCoefficients:
-    __slots__ = ('_chemgroups', '_rs', '_qs', '_indices',
+    __slots__ = ('_chemgroups', '_rs', '_qs', '_group_mask',
                  '_Qs', '_chem_Qfractions', '_group_psis',
                  '_interactions', '_chemicals')
     _cached = {}
@@ -65,8 +62,10 @@ class GroupActivityCoefficients:
     def chemicals(self, chemicals):
         chemicals = tuple(chemicals)
         if chemicals in self._cached:
-            (self._rs, self._qs, self._Qs, self._chemgroups, self._group_psis,
-            self._chem_Qfractions, self._interactions, self._indices) = self._cached[chemicals]
+            (self._rs, self._qs, self._Qs,
+             self._chemgroups, self._group_psis,
+             self._chem_Qfractions, self._interactions,
+             self._group_mask) = self._cached[chemicals]
         else:
             get = getattr
             attr = self.group_name
@@ -86,14 +85,23 @@ class GroupActivityCoefficients:
             chem_Qs = Qs * chemgroups
             self._chem_Qfractions = cQfs = chem_Qs/chem_Qs.sum(1, keepdims=True)
             all_interactions = self.all_interactions
-            self._interactions = [[None if i == j else all_interactions[i][j] for i in main_group_ids]
+            self._interactions = [[None if i == j else all_interactions[i][j]
+                                   for i in main_group_ids]
                                  for j in main_group_ids]
             N_groups = len(all_groups)
-            self._group_psis = np.zeros((N_groups, N_groups), dtype=float)
+            group_shape = (N_groups, N_groups)
+            # Psis array with only symmetrically available groups
+            self._group_psis = np.zeros(group_shape, dtype=float)
+            # Make mask for retrieving symmetrically available groups
             rowindex = np.arange(N_groups, dtype=int)
-            self._indices = [rowindex[rowmask] for rowmask in cQfs != 0]
-            self._cached[chemicals] = (rs, qs, Qs, chemgroups, self._group_psis,
-                                       cQfs, self._interactions, self._indices)
+            indices = [rowindex[rowmask] for rowmask in cQfs != 0]
+            self._group_mask = group_mask = np.zeros(group_shape, dtype=bool)
+            for index in indices:
+                for i in index:
+                    group_mask[i, index] = True
+            self._cached[chemicals] = (rs, qs, Qs, chemgroups,
+                                       self._group_psis, cQfs,
+                                       self._interactions, self._group_mask)
         self._chemicals = chemicals
         
     def __call__(self, xs, T):
@@ -110,7 +118,8 @@ class GroupActivityCoefficients:
         xs = np.asarray(xs)
         psis = np.array([[self.psi(T, d) if d else 1. for d in i]
                          for i in self._interactions])
-        load_group_psis(self._group_psis, psis, self._indices)
+        mask = self._group_mask
+        self._group_psis[mask] =  psis[mask]
         return group_activity_coefficients(xs, self._chemgroups,
                                            self.loggammacs(self._qs, self._rs, xs),
                                            self._Qs, psis,
@@ -145,7 +154,7 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     __slots__ = ()
     all_subgroups = DOUFSG
     all_interactions = DOUFIP2016
-    group_name = 'UNIFAC_Dortmund'
+    group_name = 'Dortmund'
     @staticmethod
     @njit
     def loggammacs(qs, rs, xs):
@@ -165,30 +174,6 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
         return exp((-a/T - b - c*T)) 
     
     
-    
-# def UNIFAC(self, xs, T):
-#     return UNIFAC_Coeffictients(self, xs, T, UFSG, UFIP, UNIFAC_psi, loggammacs_UNIFAC)
-
-# def UNIFAC_LL(self, xs, T):
-#     """For LLE"""
-#     return UNIFAC_Coeffictients(self, xs, T, UFSG, UFLLIP, UNIFAC_psi, loggammacs_UNIFAC)
-
-# def loggammacs_UNIFAC(qs, rs, xs):
-#     rsxs = sum([ri*xi for ri, xi in zip(rs, xs)])
-#     Vis = [ri/rsxs for ri in rs]
-#     qsxs = sum([qi*xi for qi, xi in zip(qs, xs)])
-#     Fis = [qi/qsxs for qi in qs]
-
-#     loggammacs = [1. - Visi + log(Visi) - 5.*qsi*(1. - Visi/Fisi + log(Visi/Fisi))
-#                   for Visi, Fisi, qsi in zip(Vis, Fis, qs)]
-#     return loggammacs
-
-# def UNIFAC_psi(T, subgroup1, subgroup2, subgroup_data, interaction_data):
-#     try:
-#         return exp(-interaction_data[subgroup_data[subgroup1].main_group_id] \
-#                                     [subgroup_data[subgroup2].main_group_id]/T)
-#     except:
-#         return 1
 
 
 

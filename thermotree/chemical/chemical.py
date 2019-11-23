@@ -120,7 +120,7 @@ _names = ('CAS', 'InChI', 'InChI_key',
          'common_name', 'iupac_name',
          'pubchemid', 'smiles')
 
-_groups = ('UNIFAC_Dortmund', 'UNIFAC', 'PSRK')
+_groups = ('Dortmund', 'UNIFAC', 'PSRK')
 
 _thermo = ('S_excess', 'H_excess', 'mu', 'k', 'V', 'S', 'H', 'Cp',
            'Psat', 'Hvap', 'sigma', 'epsilon')
@@ -159,7 +159,7 @@ class Chemical:
                          info.pubchemid, info.iupac_name, info.common_name)
         self._init_groups(info.InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
-            self.UNIFAC_Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
+            self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
         self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
         self._init_eos(eos, self.Tc, self.Pc, self.omega)
         self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
@@ -192,9 +192,9 @@ class Chemical:
         else:
             self.UNIFAC = None
         if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
-            self.UNIFAC_Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
+            self.Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
         else:
-            self.UNIFAC_Dortmund = None
+            self.Dortmund = None
         if InChI_key in DDBST_PSRK_assignments:
             self.PSRK = DDBST_PSRK_assignments[InChI_key]
         else:
