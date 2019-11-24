@@ -89,12 +89,14 @@ class TDependentModelHandle(ThermoModelHandle):
     def __call__(self, T):
         for model in self.models:
             if model.indomain(T): return model.evaluate(T)
-        return None # raise ValueError(f"no valid model at T={T:.2f} K")
+        # return model.evaluate(T)
+        raise ValueError(f"no valid model at T={T:.2f} K")
             
     def differentiate_by_T(self, T):
         for model in self.models:
             if model.indomain(T): return model.differentiate_by_T(T)
-        return None # raise ValueError(f"no valid model at T={T:.2f} K")
+        # return model.differentiate_by_T(T) 
+        raise ValueError(f"no valid model at T={T:.2f} K")
         
     def integrate_by_T(self, Ta, Tb):
         integral = 0.
@@ -114,7 +116,8 @@ class TDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T(Tmin, Tb)
                 Tb = Tmin
-        return None # raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        # return integral + model.integrate_by_T(Ta, Tb)
+        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
     
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
@@ -137,7 +140,8 @@ class TDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T_over_T(Tmin, Tb)
                 Tb = Tmin
-        return None # raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        # return integral + model.integrate_by_T_over_T(Ta, Tb)
+        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
     
     
 class TPDependentModelHandle(ThermoModelHandle):
@@ -165,17 +169,20 @@ class TPDependentModelHandle(ThermoModelHandle):
     def __call__(self, T, P=101325.):
         for model in self.models:
             if model.indomain(T, P): return model.evaluate(T, P)
-        return None # raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        # return model.evaluate(T, P)
+        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
 
     def differentiate_by_T(self, T, P=101325.):
         for model in self.models:
             if model.indomain(T, P): return model.differentiate_by_T(T, P)
-        return None # raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        # return model.differentiate_by_T(T, P) 
+        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
             
     def differentiate_by_P(self, T, P=101325.):
         for model in self.models:
              if model.indomain(T, P): return model.differentiate_by_P(T, P)
-        return None # raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        # return model.differentiate_by_P(T, P) 
+        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
 
     def integrate_by_T(self, Ta, Tb, P=101325.):
         integral = 0
@@ -195,7 +202,8 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T(Tmin, Tb, P)
                 Tb = Tmin
-        return None # raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K at P={P:5g} Pa")
+        # return integral + model.integrate_by_T(Ta, Tb, P) 
+        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K at P={P:5g} Pa")
     
     def integrate_by_P(self, Pa, Pb, T):
         integral = 0
@@ -216,7 +224,8 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Pmin < Pb:
                 integral += model.integrate_by_P(Pmin, Pb, T)
                 Pb = Pmin
-        return None # raise ValueError(f"no valid model between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
+        # return integral + model.integrate_by_P(Pa, Pb, T) 
+        raise ValueError(f"no valid model between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
     
     def integrate_by_T_over_T(self, Ta, Tb, P):
         integral = 0
@@ -237,6 +246,8 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T_over_T(Tmin, Tb, P)
                 Tb = Tmin
-        return None # raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        # return integral + model.integrate_by_T_over_T(Ta, Tb, P) 
+        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        
             
     

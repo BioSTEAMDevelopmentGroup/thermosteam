@@ -6,29 +6,30 @@ Created on Sun Jul 21 22:15:30 2019
 """
 
 from numpy import asarray, array
-from flexsolve import wegstein_secant, aitken_secant, wegstein, aitken
+from flexsolve import aitken_secant
+from .activity_coefficients import DortmundActivityCoefficients
+from .fugacity_coefficients import IdealFugacityCoefficients
 
 __all__ = ('DewPoint',)
 
 class DewPoint:
-    __slots__ = ('gamma', 'P', 'T', 'x')
+    __slots__ = ('gamma', 'P', 'T', 'x', 'Psats', 'phi_V', 'Tbs')
     rootsolver = staticmethod(aitken_secant)
-    itersolver = staticmethod(aitken)
-    def __init__(self, gamma):
-        self.gamma = gamma
+    def __init__(self, chemicals, gamma=None, phi_V=None):
+        self.gamma = gamma or DortmundActivityCoefficients(chemicals)
+        self.phi_V = phi_V or IdealFugacityCoefficients(chemicals)
+        self.Psats = [i.Psat for i in chemicals]
+        self.Tbs = array([s.Tb for s in chemicals])
+        self.P = self.T = self.x = None
     
-    def _x_iter_at_P(self, x, T, zP, VPs):
-        return zP/(array([i(T) for i in VPs]) * self.gamma(x/x.sum(), T))
-    
-    def _x_iter_at_T(self, x, T, P, z, Psat):
-        return z*P/(Psat * self.gamma(x/x.sum(), T))
-    
-    def _T_error(self, T, zP, VPs):
-        self.x = self.itersolver(self._x_iter_at_P, self.x, 1e-5, args=(T, zP, VPs))
+    def _T_error(self, T, P, z, zP):
+        x_gamma = zP/array([i(T) for i in self.Psats]) * self.phi_V(z, T, P)
+        self.x = self.gamma.solve_x(x_gamma, T, self.x)
         return 1 - self.x.sum()
     
-    def _P_error(self, P, T, z, Psat):
-        self.x = self.itersolver(self._x_iter_at_T, self.x, 1e-5, args=(T, P, z, Psat))
+    def _P_error(self, P, T, z, z_over_Psats):
+        x_gamma = z_over_Psats*P*self.phi_V(z, T, P)
+        self.x = self.gamma.solve_x(x_gamma, T, self.x)
         return 1 - self.x.sum()
     
     def solve_Tx(self, z, P):
@@ -58,27 +59,20 @@ class DewPoint:
         (357.45184742263075, array([0.151, 0.849]))
         """
         z = asarray(z)
+        zP = z * P
+        args = (P, z, zP)
         self.P = P
+        T = self.T or (z * self.Tbs).sum()
         try:
-            self.T = self.rootsolver(self._T_error, self.T, self.T-0.01, 1e-6,
-                                     args=(P*z, [s.VaporPressure for s in self.gamma.species]))
+            self.T = self.rootsolver(self._T_error, T, T-0.01,
+                                     1e-6, 5e-8, args)
         except:
             self.x = z.copy()
-            T = (z * [s.Tb for s in self.gamma.species]).sum()
-            try:
-                self.T = self.rootsolver(self._T_error, T, T-0.01, 1e-6,
-                                         args=(P*z, [s.VaporPressure for s in self.gamma.species]))
-            except:
-                self.x = z.copy()
-                T_guess = min([s.Tb for s in self.gamma.species])
-                try:
-                    self.T = self.rootsolver(self._T_error, T_guess, T_guess-0.01, 1e-6,
-                                             args=(P*z, [s.VaporPressure for s in self.gamma.species]))
-                except:
-                    self.T = T
-                    self.x = z.copy()
+            T = (z * self.Tbs).sum()
+            self.T = self.rootsolver(self._T_error, T, T-0.01,
+                                     1e-6, 5e-8, args)
                 
-        self.x = self.x/self.x.sum()
+        self.x /= self.x.sum()
         return self.T, self.x
     
     def solve_Px(self, z, T):
@@ -108,18 +102,22 @@ class DewPoint:
  
        """
         z = asarray(z)
-        Psat = array([i.VaporPressure(T) for i in self.gamma.species])
+        Psats = array([i(T) for i in self.Psats])
+        z_over_Psats = z/Psats
+        args = (T, z, z_over_Psats)
         self.T = T
+        P = self.P or (z * Psats).sum()
         try:
-            self.P = self.rootsolver(self._P_error, self.P, self.P+1, 1e-2,
-                                     args=(T, z, Psat))
+            self.P = self.rootsolver(self._P_error, P, P+1,
+                                     1e-2, 5e-8, args)
         except:
-            P = (z * Psat).sum()
+            P = (z * Psats).sum()
             self.x = z.copy()
-            self.P = self.rootsolver(self._P_error, P, P+1, 1e-2,
-                                     args=(T, z, Psat))
-        self.x = self.x/self.x.sum()
+            self.P = self.rootsolver(self._P_error, P, P+1, 
+                                     1e-2, 5e-8, args)
+        self.x /= self.x.sum()
         return self.P, self.x
     
     def __repr__(self):
-        return f"<{type(self).__name__}: gamma={self.gamma}>"
+        chemicals = ", ".join([i.ID for i in self.gamma.chemicals])
+        return f"<{type(self).__name__}([{chemicals}])>"

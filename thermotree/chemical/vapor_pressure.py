@@ -85,7 +85,7 @@ def Sanjari(T, Tc, Pc, ω):
     return Pc * exp(f0 + f1 * ω + f2 * ω**2)
 
 @Psat
-def Edalat(T, Tc, Pc, ω, Tmin, Tmax):
+def Edalat(T, Tc, Pc, ω):
     τ = 1.0 - T / Tc
     a = -6.1559 - 4.0855 * ω
     c = -0.8747 - 7.8874 * ω
