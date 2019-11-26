@@ -60,7 +60,7 @@ class IdealActivityCoefficients:
     def __call__(self, T):
         return 1.
 
-    def solve_x(self, x_gamma, T, P, x_guess=None):
+    def solve_x(self, x_gamma, T, x_guess=None):
         return x_gamma
     
     def __repr__(self):

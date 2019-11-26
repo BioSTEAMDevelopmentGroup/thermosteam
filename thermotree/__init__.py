@@ -9,16 +9,19 @@ from . import chemical
 from . import mixture
 from . import equilibrium
 from . import chemicals
+from . import exceptions
 
 __all__ = (*base.__all__, 
            *chemical.__all__, 
            *mixture.__all__,
            *equilibrium.__all__,
-           *chemicals.__all__)
+           *chemicals.__all__,
+           *exceptions.__all__)
 
 from .base import *
 from .chemical import *
 from .mixture import *
 from .equilibrium import *
 from .chemicals import *
+from .exceptions import *
 

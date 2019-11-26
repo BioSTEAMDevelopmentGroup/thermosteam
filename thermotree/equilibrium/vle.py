@@ -33,9 +33,9 @@ def V_3N(zs, Ks):
 
 class VLE:
     """Create a VLE object for solving VLE."""
-    __slots__ = ('T', 'P', 'Q', 'V', '_stream', '_gamma',
-                 '_dew_point', '_bubble_point', '_v', '_liquid_mol',
-                 '_vapor_mol', '_index', '_massnet', '_compound',
+    __slots__ = ('T', 'P', 'Q', 'V', 'material_data', 'gamma',
+                 'dew_point', 'bubble_point', '_v', 
+                 '_index', '_massnet', '_compound',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
                  '_zs', '_Ks', '_Psat_gama', '_Psat_P')
     
@@ -46,14 +46,15 @@ class VLE:
     Q_tol = 0.1
     V_tol = 0.00001
     
-    def __init__(self, stream):
+    def __init__(self, material_data,
+                 dew_point, bubble_point,
+                 gamma, phi_V):
         self.T = self.P = self.Q = self.V = 0
-        self._stream = stream
-        self._dew_point = stream._dew_point
-        self._bubble_point = stream._bubble_point
-        self._gamma = stream._gamma
-        self._liquid_mol = stream.liquid_mol
-        self._vapor_mol = stream.vapor_mol
+        self.material_data = material_data
+        self.dew_point = dew_point
+        self.bubble_point = bubble_point
+        self.gamma = gamma
+        self.phi_V = phi_V
     
     def __call__(self, species_IDs=None, LNK=None, HNK=None,
                  P=None, Q=None, T=None, V=None, x=None, y=None):

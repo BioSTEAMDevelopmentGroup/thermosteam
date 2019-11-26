@@ -39,7 +39,7 @@ class BubblePoint:
         Parameters
         ----------
         z : array_like
-            Liquid phase composition.
+            Molar composotion.
         P : float
             Pressure (Pa).
         
@@ -79,7 +79,7 @@ class BubblePoint:
         Parameters
         ----------
         z : array_like
-            Liquid phase composotion.
+            Molar composotion.
         T : float
             Temperature (K).
         

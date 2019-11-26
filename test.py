@@ -10,12 +10,15 @@ import numpy as np
 
 # %% Ideal mixture
 
-# water =  t3.Chemical('Water')
-# ethanol = t3.Chemical('Ethanol')
-# methanol = t3.Chemical('Methanol')
-# glycerol = t3.Chemical('Glycerol')
-# propanol = t3.Chemical('Propanol')
-# lignin = t3.Chemical('Lignin')
+water =  t3.Chemical('Water')
+ethanol = t3.Chemical('Ethanol')
+methanol = t3.Chemical('Methanol')
+glycerol = t3.Chemical('Glycerol')
+propanol = t3.Chemical('Propanol')
+lignin = t3.Chemical('Lignin')
+
+chemicals = (water, ethanol, methanol, glycerol, propanol, lignin)
+
 
 # lignin.to_phaseTP('l', 298.15, 101325.)
 # # lignin.fill(like=water.to_phaseTP(phaseTP))
@@ -27,7 +30,7 @@ d_bst = bst.Dortmund(*bst.Species('Water', 'Ethanol', 'Methanol', 'Glycerol', 'P
 bp_bst = bst.BubblePoint(d_bst)
 dp_bst = bst.DewPoint(d_bst)
 
-chemicals = t3.Chemicals('Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol')
+chemicals = t3.Chemicals(['Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol'])
 bp_t3 = t3.BubblePoint(chemicals)
 dp_t3 = t3.DewPoint(chemicals)
 

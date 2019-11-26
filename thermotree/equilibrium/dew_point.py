@@ -37,8 +37,8 @@ class DewPoint:
 
         Parameters
         ----------
-        y : array_like
-            Vapor phase composition.
+        z : array_like
+            Molar composition.
 
         P : float
             Pressure (Pa).
@@ -52,9 +52,8 @@ class DewPoint:
 
         Examples
         --------
-        >>> from biosteam import Species, DewPoint, Dortmund
-        >>> gamma = Dortmund(*Species('Ethanol', 'Water'))
-        >>> dp = DewPoint(gamma)
+        >>> from thermotree import Chemicals, DewPoint
+        >>> dp = DewPoint(Chemicals('Ethanol', 'Water'))
         >>> dp.solve_Tx(z=(0.5, 0.5), P=101325)
         (357.45184742263075, array([0.151, 0.849]))
         """
@@ -80,8 +79,8 @@ class DewPoint:
 
         Parameters
         ----------
-        y : array_like
-            Vapor phase composition.
+        z : array_like
+            Molar composition.
         T : float
             Temperature (K).
         
@@ -94,9 +93,8 @@ class DewPoint:
 
         Examples
         --------
-        >>> from biosteam import Species, DewPoint, Dortmund
-        >>> gamma = Dortmund(*Species('Ethanol', 'Water'))
-        >>> dp = DewPoint(gamma)
+        >>> from thermotree import Chemicals, DewPoint
+        >>> dp = DewPoint(Chemicals('Ethanol', 'Water'))
         >>> dp.solve_Px(z=(0.703, 0.297), T=352.28)
         (111366.15384513882, array([0.6, 0.4]))
  
