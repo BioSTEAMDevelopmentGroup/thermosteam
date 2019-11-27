@@ -15,7 +15,7 @@ class Chemicals:
 
     Parameters
     ----------
-    *chemicals : str or Chemical
+    chemicals : Iterable[str or Chemical]
            Strings should be one of the following [-]:
               * Name, in IUPAC form or common form or a synonym registered in PubChem
               * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
@@ -44,14 +44,11 @@ class Chemicals:
         self._compile()
     
     def subgroup(self, IDs):
-        subgroup = self.__new__(self.__class__)
-        subgroup.__dict__.update({i: getattr(self, i) for i in IDs})
-        return subgroup
+        return self.__class__([getattr(self, i) for i in IDs])
         
     def extend(self, chemicals):
         """Extend with more Chemicals."""
-        setfield = setattr
-        for c in chemicals: setfield(self, c.ID, c)
+        for c in chemicals: setattr(self, c.ID, c)
     
     def __len__(self):
         return len(self.__dict__)
@@ -142,7 +139,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermotree import CompiledChemicals
-        >>> chemicals = CompiledChemicals('Water', 'Ethanol')
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.kwarray(Water=2)
         array([2., 0.])
         
@@ -162,7 +159,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermotree import CompiledChemicals
-        >>> chemicals = CompiledChemicals('Water', 'Ethanol')
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.array(['Water'], [2])
         array([2., 0.])
         
@@ -184,7 +181,7 @@ class CompiledChemicals(Chemicals):
         Index by ID:
         
         >>> from thermotree import CompiledChemicals
-        >>> chemicals = CompiledChemicals('Water', 'Ethanol')
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.index('Water')
         1
 
@@ -211,7 +208,7 @@ class CompiledChemicals(Chemicals):
         Indices by ID:
         
         >>> from thermotree import CompiledChemicals
-        >>> chemicals = CompiledChemicals('Water', 'Ethanol')
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.indices(['Water', 'Ethanol'])
         [1, 0]
 

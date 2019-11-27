@@ -22,7 +22,7 @@ chemicals = (water, ethanol, methanol, glycerol, propanol, lignin)
 
 # lignin.to_phaseTP('l', 298.15, 101325.)
 # # lignin.fill(like=water.to_phaseTP(phaseTP))
-# ideal_mixture = t3.IdealMixture(chemicals=(water, ethanol, methanol, lignin))
+ideal_mixture = t3.IdealMixture(chemicals)
 
 # %% Equilibrium
 

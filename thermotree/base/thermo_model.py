@@ -168,16 +168,16 @@ class ConstantThermoModel(ThermoModel):
     def evaluate(self, T=None, P=None):
         return self.value
     
-    def integrate_by_T(self, Ta, Tb, P):
+    def integrate_by_T(self, Ta, Tb, P=101325.):
         return self.value*(Tb - Ta)
     
-    def integrate_by_T_over_T(self, Ta, Tb, P): 
+    def integrate_by_T_over_T(self, Ta, Tb, P=101325.): 
         return self.value*log(Tb/Ta)    
     
     def integrate_by_P(self, Pa, Pb, T):
         return self.value*(Pb - Pa)
     
-    def differentiate_by_T(self, T, P):
+    def differentiate_by_T(self, T, P=101325.):
         return 0
     
     def differentiate_by_P(self, T, P):

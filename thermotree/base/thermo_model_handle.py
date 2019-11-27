@@ -109,7 +109,11 @@ class TDependentModelHandle(ThermoModelHandle):
             ub_satisfied = Tb < Tmax
             if lb_satisfied:
                 if ub_satisfied:
-                    return integral + model.integrate_by_T(Ta, Tb)
+                    try:
+                        return integral + model.integrate_by_T(Ta, Tb)
+                    except:
+                        import pdb
+                        pdb.set_trace()
                 elif Ta < Tmax:
                     integral += model.integrate_by_T(Ta, Tmax)
                     Ta = Tmax

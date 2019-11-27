@@ -6,6 +6,6 @@ Created on Mon Nov 25 20:55:06 2019
 """
 __all__ = ('UndefinedChemical',)
 
-class UndefinedChemical(AttributeError):
+class UndefinedChemical(LookupError):
     """LookupError regarding undefined compounds."""
     def __init__(self, ID): super().__init__(f"'{ID}'")

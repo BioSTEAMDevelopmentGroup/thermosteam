@@ -5,6 +5,7 @@ Created on Thu Oct 31 02:38:40 2019
 @author: yoelr
 """
 from .handle_builder import HandleBuilder
+from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import display_asfunctor
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
@@ -53,12 +54,22 @@ class PhaseProperty:
 class ChemicalPhaseTProperty(PhaseProperty):
     __slots__ = ()
     
+    def __init__(self, s=None, l=None, g=None):
+        self.s = TDependentModelHandle() if s is None else s
+        self.l = TDependentModelHandle() if l is None else l
+        self.g = TDependentModelHandle() if g is None else g
+    
     def __call__(self, phase, T):
         return getattr(self, phase)(T)
     
     
 class ChemicalPhaseTPProperty(PhaseProperty):
     __slots__ = ()
+    
+    def __init__(self, s=None, l=None, g=None):
+        self.s = TPDependentModelHandle() if s is None else s
+        self.l = TPDependentModelHandle() if l is None else l
+        self.g = TPDependentModelHandle() if g is None else g
     
     def __call__(self, phase, T, P):
         return getattr(self, phase)(T, P)

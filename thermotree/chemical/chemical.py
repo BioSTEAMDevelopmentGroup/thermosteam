@@ -41,7 +41,8 @@ from .free_energy import EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
                          ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
                          ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
 from ..base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, \
-                   display_asfunctor, thermo_model, ThermoModelHandle, ConstantThermoModel
+                   display_asfunctor, thermo_model, ThermoModelHandle, \
+                   ConstantThermoModel, TDependentModelHandle
 from ..base.units_of_measure import units_of_measure
 from .dipole import dipole_moment as dipole
 from .utils import Z, R#, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
@@ -290,14 +291,21 @@ class Chemical:
         S_ref = self.S_ref
         Sfus = Hfus / Tm if Hfus and Tm else None
         
-        Cp_s = Cp.s
-        Cp_l = Cp.l
-        Cp_g = Cp.g
-        has_Cps = bool(Cp_s)
-        has_Cpl = bool(Cp_l)
-        has_Cpg = bool(Cp_g)
-        has_Cp = any((has_Cps, has_Cpl, has_Cpg))
-        if has_Cp:
+        if hasattr(Cp, 's'):
+            Cp_s = Cp.s
+            Cp_l = Cp.l
+            Cp_g = Cp.g
+            has_Cps = bool(Cp_s)
+            has_Cpl = bool(Cp_l)
+            has_Cpg = bool(Cp_g)
+        elif Cp and phase_ref:
+            has_Cps = phase_ref == 's'
+            has_Cpl = phase_ref == 'l'
+            has_Cpg = phase_ref == 'g'
+        else:
+            has_Cps = has_Cpl = has_Cpg = False
+        
+        if any((has_Cps, has_Cpl, has_Cpg)):
             if not phase_ref:
                 if Tm and T_ref <= Tm:
                     self._phase_ref = phase_ref = 's'
@@ -469,6 +477,7 @@ class Chemical:
     def default(self, slots=None):
         if not slots:
             slots = self.missing(slots)   
+        has = hasattr
         # Default to Water property values
         if 'CAS' in slots:
             self.CAS = self.ID
@@ -476,24 +485,49 @@ class Chemical:
             self.MW = MW = 1
         else:
             MW = self.MW
-        if 'Cp' in slots:
-            self.Cp = Cp_l = thermo_model(4.18*MW, var='Cp')
-            self.H = EnthalpyRefLiquid.l((Cp_l, self.T_ref, self.H_ref))
-            self.S = EntropyRefLiquid.l((Cp_l, self.T_ref, self.S_ref))
-            self.H_excess = ExcessEnthalpyRefLiquid.l(())
-            self.S_excess = ExcessEntropyRefLiquid.l(())
         if 'sigma' in slots:
-            self.sigma = 0.072055
+            self.sigma.model(0.072055)
         if 'mu' in slots:
-            self.mu = 0.00091272
+            mu = self.mu
+            if has(mu, 'l'):
+                mu.l.model(0.00091272)
+            if not mu:
+                mu.model(0.00091272)
         if 'k' in slots:
-            self.k = 0.5942
+            k = self.k
+            if has(k, 'l'):
+                k.l.model(0.5942)
+            if not k:
+                k.model(0.5942)
         if 'Hc' in slots:
             self.Hc = 0
         if 'Hf' in slots:
             self.Hf = 0
         if 'epsilon' in slots:
-            self.epsilon = 0
+            self.epsilon.model(0)
+        if '_phase_ref' in slots:
+            self._phase_ref = 'l'
+        if 'eos' in slots:
+            self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
+            self.eos_1atm = self.eos.to_TP(298.15, 101325)
+        if 'Cp' in slots:
+            Cp = self.Cp
+            phase_ref = self.phase_ref
+            getfield = getattr
+            has_phase_ref = has(Cp, phase_ref)
+            if has_phase_ref:
+                Cp_phase = getfield(Cp, phase_ref)
+                Cp_phase.model(4.18*MW, var='Cp')
+            else:
+                Cp.model(4.18*MW, var='Cp')
+                Cp_phase = Cp
+            self._init_energies(Cp, self.Hvap, self.Psat, self.Hfus, self.Tm,
+                                self.Tb, self.eos, self.eos_1atm, self.phase_ref)
+            if not has_phase_ref:
+                self.H = getfield(self.H, phase_ref)
+                self.S = getfield(self.S, phase_ref)
+                self.H_excess = getfield(self.H_excess, phase_ref)
+                self.S_excess = getfield(self.S_excess, phase_ref)
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cp', 'Hf', 'sigma',
                                    'mu', 'k', 'Hc', 'epsilon'})
@@ -501,7 +535,7 @@ class Chemical:
     
     def missing(self, slots=None):
         getfield = getattr
-        return [i for i in (slots or self.__slots__) if getfield(self, i) is None]
+        return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
     def fill(self, *sources, slots=None, default=True):
         missing = slots if slots else self.missing(slots)
@@ -515,11 +549,21 @@ class Chemical:
     def blank(cls, ID):
         self = object.__new__(cls)
         setfield = setattr
-        for i in self.__slots__: setfield(self, i, None)
+        self.eos = self.eos_1atm = self._phase_ref = None
+        for i in _names: setfield(self, i, None)
+        for i in _groups: setfield(self, i, None)
+        for i in _data: setfield(self, i, None)
+        for i in _free_energies: setfield(self, i, None)
+        for i in ('k', 'mu', 'V'):
+            setfield(self, i, ChemicalPhaseTPProperty())
+        self.Cp = ChemicalPhaseTProperty()
+        for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
+            setfield(self, i, TDependentModelHandle())
         self._phaseTP = (None, None, None)
         self.ID = ID
         return self
     
+    @classmethod
     def new(cls, ID, *sources, slots=None, default=True):
         try: self = cls(ID)
         except: self = cls.blank(ID)

@@ -33,17 +33,14 @@ class IdealMixtureTPProperty:
     def __call__(self, z, T, P):
         z = asarray(z)
         self._nonzero = nonzero = z!=0
-        iscallable = callable
         if (T, P) != self._TP:
             self._data[:] = 0.
-            self._data[nonzero] = [(i(T, P) if iscallable(i) else i)
-                                   for i,j in zip(self._properties, nonzero) if j]
+            self._data[nonzero] = [i(T, P) for i,j in zip(self._properties, nonzero) if j]
             self._TP = (T, P)
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [(i(T, P) if iscallable(i) else i)
-                                       for i,j in zip(self._properties, new_nonzero) if j]
+            self._data[new_nonzero] = [i(T, P) for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
     
@@ -65,17 +62,14 @@ class IdealMixtureTProperty:
     def __call__(self, z, T):
         z = asarray(z)
         self._nonzero = nonzero = z!=0
-        iscallable = callable
         if T != self._T:
             self._data[:] = 0.
-            self._data[nonzero] = [(i(T) if iscallable(i) else i)
-                                   for i,j in zip(self._properties, nonzero) if j]
+            self._data[nonzero] = [i(T) for i,j in zip(self._properties, nonzero) if j]
             self._T = T
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [(i(T) if iscallable(i) else i)
-                                       for i,j in zip(self._properties, new_nonzero) if j]
+            self._data[new_nonzero] = [i(T) for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
 
