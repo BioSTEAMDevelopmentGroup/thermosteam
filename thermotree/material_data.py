@@ -14,7 +14,6 @@ class SinglePhaseMaterialData:
         self._mixture = mixture
         self._phase = phase
         
-        
     def mix(self, other):
         assert self._chemicals is other._chemicals, "chemicals must be the same to mix material data"
         if isinstance(other, SinglePhaseMaterialData):

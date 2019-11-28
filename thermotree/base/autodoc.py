@@ -27,7 +27,7 @@ class VariableDescriber:
         return self.defs.get(var, "") or definitions.get(var, "")
     
     def get_units(self, var):
-        return self.units.get(var, "") or units_of_measure.get(var, "")
+        return self.units.get(var) or units_of_measure.get(var)
     
     def get_type(self, var):
         return self.types.get(var) or 'float'
@@ -36,9 +36,9 @@ class VariableDescriber:
         info = self.get_def(var)
         if info:
             units = self.get_units(var)
-            if units: info += f" in {units}"
-            info += '.'
-        return info
+            if units: info += f" [{units}]"
+            else: info += f" [-]"
+        return info + "."
 
 describer = VariableDescriber(definitions, units_of_measure, types)
 
