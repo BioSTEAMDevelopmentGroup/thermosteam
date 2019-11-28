@@ -4,7 +4,7 @@ Created on Sat Nov  2 10:58:19 2019
 
 @author: yoelr
 """
-import thermotree as tm 
+import thermodynamics as tm 
 from graphviz import Digraph
 from IPython import display
 
