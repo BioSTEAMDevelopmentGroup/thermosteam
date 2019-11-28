@@ -27,7 +27,7 @@ __all__ = ['checkCAS', 'CAS_from_any', 'PubChem', 'MW', 'formula', 'smiles',
            '_MixtureDict', 'mixture_from_any', 'cryogenics', 'dippr_compounds',
            'pubchem_db']
 import os
-from .utils import to_num, CAS2int, int2CAS
+from .utils import CAS2int, int2CAS, to_nums
 from .elements import periodic_table, homonuclear_elemental_gases, charge_from_formula, serialize_formula
 
 folder = os.path.join(os.path.dirname(__file__), 'Data/Identifiers')
@@ -667,7 +667,7 @@ with open(os.path.join(folder, 'Mixtures Compositions.tsv')) as f:
     '''
     next(f)
     for line in f:
-        values = to_num(line.strip('\n').strip('\t').split('\t'))
+        values = to_nums(line.strip('\n').strip('\t').split('\t'))
         _name, _source, N = values[0:3]
         N = int(N)
         _CASs, _names, _ws, _zs = values[3:3+N], values[3+N:3+2*N], values[3+2*N:3+3*N], values[3+3*N:3+4*N]

@@ -23,7 +23,8 @@ __all__ = ['_CRC_inorganic', '_CRC_organic', '_VDISaturationDict',
            'VDI_tabular_data']
 import os
 import copy
-from .utils import to_num, rho_to_Vm, CASDataReader
+from .utils import to_nums, CASDataReader
+from ..functional import rho_to_V
 
 read = CASDataReader(__file__, 'Misc')
 
@@ -53,7 +54,7 @@ with open(os.path.join(read.folder, 'VDI Saturation Compounds Data.csv')) as f:
     '''
     next(f)
     for line in f:
-        values = to_num(line.strip('\n').split('\t'))
+        values = to_nums(line.strip('\n').split('\t'))
         (CASRN, _name, _MW, _Tc, T, P, rhol, rhog, Hvap, cpl, cpg, mul, mug, kl, kg, prl, prg, sigma, Beta) = values
         newdict = (_VDISaturationDict[CASRN] if CASRN in _VDISaturationDict else copy.deepcopy(emptydict))
         newdict["Name"] = _name
@@ -74,8 +75,8 @@ with open(os.path.join(read.folder, 'VDI Saturation Compounds Data.csv')) as f:
         newdict["Pr (g)"].append(prl)
         newdict["sigma"].append(sigma)
         newdict["Beta"].append(Beta)
-        newdict["Volume (l)"].append(rho_to_Vm(rhol, _MW))
-        newdict["Volume (g)"].append(rho_to_Vm(rhog, _MW))
+        newdict["Volume (l)"].append(rho_to_V(rhol, _MW))
+        newdict["Volume (g)"].append(rho_to_V(rhog, _MW))
         _VDISaturationDict[CASRN] = newdict
 
 

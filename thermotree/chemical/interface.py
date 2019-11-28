@@ -22,8 +22,8 @@ SOFTWARE.'''
 
 from math import log, exp
 from ..base import sigma, TDependentHandleBuilder, InterpolatedTDependentModel
-from .utils import none_and_length_check, Vm_to_rho
-from .utils import N_A, k, CASDataReader
+from .utils import CASDataReader
+from ..constants import N_A, k
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ106
 

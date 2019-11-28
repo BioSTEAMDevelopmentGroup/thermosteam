@@ -45,7 +45,7 @@ from ..base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPPropert
                    ConstantThermoModel, TDependentModelHandle
 from ..base.units_of_measure import units_of_measure
 from .dipole import dipole_moment as dipole
-from .utils import Z, R#, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
+from ..functional import Z #, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
 from .permittivity import Permittivity
 from .interface import SurfaceTension
 from ..equilibrium.unifac_data import DDBST_UNIFAC_assignments, \
@@ -267,7 +267,7 @@ class Chemical:
         
         # Conductivity
         ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus)
-        gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, self.Cv, mu.g)
+        gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cp.g, mu.g)
         self.k = ThermalConductivity(None, ldata, gdata)
         
         # Surface tension
@@ -280,7 +280,7 @@ class Chemical:
         
         # Other
         self.epsilon = Permittivity((CAS, V.l,))
-        # self.solubility_parameter = SolubilityParameter(self)
+        # self.delta = SolubilityParameter(self)
         # self.molecular_diameter = MolecularDiameter(self)
 
     def _init_energies(self, Cp, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm, phase_ref=None):        
@@ -470,9 +470,6 @@ class Chemical:
             functor = getfield(phase_property, phase)
             setfield(self, field, functor)
         self._phaseTP = (phase, T, P)
-
-    def Cv(self, T):
-        return self.Cp.g(T) - R
     
     def default(self, slots=None):
         if not slots:
@@ -530,7 +527,8 @@ class Chemical:
                 self.S_excess = getfield(self.S_excess, phase_ref)
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cp', 'Hf', 'sigma',
-                                   'mu', 'k', 'Hc', 'epsilon'})
+                                   'mu', 'k', 'Hc', 'epsilon', 'H',
+                                   'S', 'H_excess', 'S_excess', '_phase_ref'})
         return missing
     
     def missing(self, slots=None):

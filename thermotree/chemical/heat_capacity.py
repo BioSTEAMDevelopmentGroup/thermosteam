@@ -27,7 +27,9 @@ import numpy as np
 from numba import njit
 from ..base import InterpolatedTDependentModel, thermo_model, TDependentHandleBuilder, \
                    ChemicalPhaseTPropertyBuilder, S, H, Cp
-from .utils import R, calorie, to_num, CASDataReader, polylog2
+from .utils import to_nums, CASDataReader
+from ..constants import R, calorie
+from ..functional import polylog2
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .electrochem import (LaliberteHeatCapacityModel,
 #                           _Laliberte_Heat_Capacity_ParametersDict)
@@ -91,7 +93,7 @@ with open(os.path.join(read.folder, 'Perrys Table 2-151.tsv'), encoding='utf-8')
     '''
     next(f)
     for line in f:
-        values = to_num(line.strip('\n').split('\t'))
+        values = to_nums(line.strip('\n').split('\t'))
         (CASRN, _formula, _phase, _subphase, Const, Lin, Quadinv, Quad, Tmin,
          Tmax, err) = values
         if Lin is None:
@@ -383,7 +385,7 @@ type_to_zabransky_dict = {('C', True): zabransky_dict_const_s,
 with open(os.path.join(read.folder, 'Zabransky.tsv'), encoding='utf-8') as f:
     next(f)
     for line in f:
-        values = to_num(line.strip('\n').split('\t'))
+        values = to_nums(line.strip('\n').split('\t'))
         (CAS, name, Type, uncertainty, Tmin, Tmax, a1s, a2s, a3s, a4s, a1p, a2p, a3p, a4p, a5p, a6p, Tc) = values
         spline = bool(a1s) # False if Quasypolynomial, True if spline
         d = type_to_zabransky_dict[(Type, spline)]

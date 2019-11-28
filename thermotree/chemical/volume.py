@@ -24,7 +24,8 @@ import numpy as np
 from numba import njit
 from scipy.interpolate import interp1d
 from math import log, exp
-from .utils import R, CASDataReader
+from .utils import CASDataReader
+from ..constants import R
 from .virial import BVirial_Pitzer_Curl, BVirial_Abbott, BVirial_Tsonopoulos, BVirial_Tsonopoulos_extended
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ105

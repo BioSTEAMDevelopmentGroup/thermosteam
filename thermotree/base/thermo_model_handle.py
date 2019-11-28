@@ -5,7 +5,7 @@ Created on Mon Sep 30 23:02:53 2019
 @author: yoelr
 """
 from .thermo_model import ThermoModel, ConstantThermoModel, thermo_model
-from .functor import display_asfunctor
+from .functor import functor_lookalike
 
 __all__ = ('ThermoModelHandle', 'TDependentModelHandle',
            'TPDependentModelHandle')
@@ -22,6 +22,7 @@ def find_constant_model(models):
 
 # %% Handles
 
+@functor_lookalike
 class ThermoModelHandle:
     __slots__ = ('models',)
     
@@ -51,9 +52,6 @@ class ThermoModelHandle:
             self.models.insert(0, model)
         else:
             self.models.append(model)    
-    
-    def __repr__(self):
-        return f"<{display_asfunctor(self)}>"
        
     def show(self):
         if self.models:
@@ -61,7 +59,7 @@ class ThermoModelHandle:
                                   for i, model in enumerate(self.models)])
         else:
             models = "(no models available)"
-        print(f"{display_asfunctor(self)}\n"
+        print(f"{self}\n"
               f"{models}")
         
     _ipython_display_ = show

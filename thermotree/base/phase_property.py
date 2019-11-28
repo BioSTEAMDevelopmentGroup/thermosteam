@@ -6,7 +6,7 @@ Created on Thu Oct 31 02:38:40 2019
 """
 from .handle_builder import HandleBuilder
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
-from .functor import display_asfunctor
+from .functor import functor_lookalike
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -26,6 +26,7 @@ def set_phase_property(phase_property, phase, builder, data):
 
 # %% Abstract class
 
+@functor_lookalike
 class PhaseProperty:
     __slots__ = ('s', 'l', 'g')
     
@@ -44,9 +45,6 @@ class PhaseProperty:
                 var = getattr(self, phase).var
                 if var: return var.split('.')[0]
             except: pass
-        
-    def __repr__(self):
-        return f"<{display_asfunctor(self)}>"
 
 
 # %% Pure component

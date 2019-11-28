@@ -23,9 +23,10 @@ SOFTWARE.'''
 import numpy as np
 from scipy.interpolate import interp2d
 from ..base import InterpolatedTDependentModel, TDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder, k as K
-from .utils import R, N_A, k
+from ..constants import R, N_A, k
 from math import log, exp
-from .utils import horner, CASDataReader
+from .utils import CASDataReader
+from ..functional import polyfunctor
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ100, DIPPR_EQ102
 
@@ -119,7 +120,7 @@ def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
         handle.model(DIPPR_EQ100(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_9:
         _,  A, B, C, D, E = _VDI_PPDS_9[CAS]
-        handle.model(horner({'coeffs':(E, D, C, B, A)}))
+        handle.model(polyfunctor({'coeffs':(E, D, C, B, A)}))
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'K (l)')
         Tmin = Ts[0]
@@ -183,52 +184,62 @@ def Missenard(T, P, Tc, Pc, kl_models):
 ### Thermal Conductivity of Gases
 
 @K.g(njitcompile=False)
-def Eucken(T, MW, Cv, mu):
-    if callable(Cv):
-        Cv = Cv(T)
+def Eucken(T, MW, Cp, mu):
+    if callable(Cp):
+        Cv = Cp(T) - R
+    else:
+        Cv = Cp - R
     if callable(mu):
         mu = mu(T)
     MW = MW/1000.
     return (1. + 9/4./(Cv/R))*mu*Cv/MW
 
 @K.g(njitcompile=False)
-def Eucken_modified(T, MW, Cv, mu):
-    if callable(Cv):
-        Cv = Cv(T)
+def Eucken_modified(T, MW, Cp, mu):
+    if callable(Cp):
+        Cv = Cp(T) - R
+    else:
+        Cv = Cp - R
     if callable(mu):
         mu = mu(T)
     MW = MW/1000.
     return (1.32 + 1.77/(Cv/R))*mu*Cv/MW
 
 @K.g(njitcompile=False)
-def DIPPR9B_linear(T, MW, Cv, mu, Tc):
-    if callable(Cv):
-        Cv = Cv(T)*1000.  # J/mol/K to J/kmol/K
+def DIPPR9B_linear(T, MW, Cp, mu, Tc):
+    if callable(Cp):
+        Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
+    else:
+        Cv = (Cp - R) * 1000.  
     if callable(mu):
         mu = mu(T)
     Tr = T/Tc
     return mu/MW*(1.30*Cv + 14644 - 2928.80/Tr)
 
 @K.g(njitcompile=False)    
-def DIPPR9B_monoatomic(T, MW, Cv, mu):
-    if callable(Cv):
-        Cv = Cv(T)*1000.  # J/mol/K to J/kmol/K
+def DIPPR9B_monoatomic(T, MW, Cp, mu):
+    if callable(Cp):
+        Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
+    else:
+        Cv = (Cp - R) * 1000.  
     if callable(mu):
         mu = mu(T)
     return 2.5*mu*Cv/MW
 
 @K.g(njitcompile=False)
-def DIPPR9B_nonlinear(T, MW, Cv, mu):
-    if callable(Cv):
-        Cv = Cv(T)*1000.  # J/mol/K to J/kmol/K
-    if callable(mu):
-        mu = mu(T)
+def DIPPR9B_nonlinear(T, MW, Cp, mu):
+    if callable(Cp):
+        Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
+    else:
+        Cv = (Cp - R) * 1000.  
     return mu/MW*(1.15*Cv + 16903.36)
 
 @K.g(njitcompile=False)
-def Chung(T, MW, Tc, omega, Cv, mu):
-    if callable(Cv):
-        Cv = Cv(T)
+def Chung(T, MW, Tc, omega, Cp, mu):
+    if callable(Cp):
+        Cv = Cp(T) - R # J/mol/K to J/kmol/K
+    else:
+        Cv = Cp - R 
     if callable(mu):
         mu = mu(T)
     MW = MW/1000.
@@ -240,10 +251,13 @@ def Chung(T, MW, Tc, omega, Cv, mu):
     return 3.75*psi/(Cv/R)/MW*mu*Cv
 
 @K.g(njitcompile=False)
-def eli_hanley(T, MW, Tc, Vc, Zc, omega, Cv):
+def eli_hanley(T, MW, Tc, Vc, Zc, omega, Cp):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5, 
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1, 2.037119479E-1]
-    if callable(Cv): Cv = Cv(T)
+    if callable(Cp):
+        Cv = Cp(T) - R # J/mol/K to J/kmol/K
+    else:
+        Cv = Cp - R 
     Tr = T/Tc
     if Tr > 2: Tr = 2
     theta = 1 + (omega - 0.011)*(0.56553 - 0.86276*log(Tr) - 0.69852/Tr)
@@ -303,7 +317,7 @@ def stiel_thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
     return kg
 
 @K.g(njitcompile=False)
-def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cv, Vg):
+def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5,
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1,
           2.037119479E-1]
@@ -311,7 +325,10 @@ def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cv, Vg):
     if Tr > 2:
         Tr = 2
     Vm = Vg(T, P)
-    Cvm = Cv(T)
+    if callable(Cp):
+        Cvm = Cp(T) - R # J/mol/K to J/kmol/K
+    else:
+        Cvm = Cp - R 
     Vr = Vm/Vc
     if Vr > 2:
         Vr = 2
@@ -362,8 +379,11 @@ def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cv, Vg):
     return k
 
 @K.g(njitcompile=False)
-def chung_dense(T, P, MW, Tc, Vc, omega, Cv, Vg, mug, dipole, association=0):
-    Cvm = Cv(T)
+def chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
+    if callable(Cp):
+        Cvm = Cp(T) - R # J/mol/K to J/kmol/K
+    else:
+        Cvm = Cp - R 
     mu = mug(T, P)
     Vm = Vg(T, P)
     ais = [2.4166E+0, -5.0924E-1, 6.6107E+0, 1.4543E+1, 7.9274E-1, -5.8634E+0, 9.1089E+1]
@@ -409,34 +429,34 @@ thermal_conductivity_gas_methods_P = [COOLPROP, ELI_HANLEY_DENSE, CHUNG_DENSE,
 class, for use in iterating over them.'''
 
 @TPDependentHandleBuilder
-def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, Vg, Cv, mug):
+def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, Vg, Cp, mug):
     data = (MW, Tb, Pc, omega)
     if all(data):
         handle.model(Gharagheizi_gas(data))
-    data = (MW, Cv, mug, Tc)
+    data = (MW, Cp, mug, Tc)
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'K (g)')
         handle.model(InterpolatedTDependentModel(Ts, Ys))
     if CAS in _VDI_PPDS_10:
         _,  *data = _VDI_PPDS_10[CAS].tolist()
         data.reverse()
-        handle.model(horner({'coeffs': data}))
+        handle.model(polyfunctor({'coeffs': data}))
     if all(data):
         handle.model(DIPPR9B_linear(data))
-    data = (MW, Tc, omega, Cv, mug)
+    data = (MW, Tc, omega, Cp, mug)
     if all(data):
         handle.model(Chung(data))
-    data = (MW, Tc, Vc, Zc, omega, Cv)
+    data = (MW, Tc, Vc, Zc, omega, Cp)
     if all(data):
         handle.model(eli_hanley(data))
-    data = (MW, Cv, mug)
+    data = (MW, Cp, mug)
     if all(data):
         handle.model(Eucken_modified(data))
         handle.model(Eucken(data))
-    data = (MW, Tc, Vc, Zc, omega, Cv, Vg)
-    if all((MW, Tc, Vc, Zc, omega, Cv, Vg)):
+    data = (MW, Tc, Vc, Zc, omega, Cp, Vg)
+    if all((MW, Tc, Vc, Zc, omega, Cp, Vg)):
         handle.model(eli_hanley_dense(data))
-    data = (MW, Tc, Vc, omega, Cv, Vg, mug, dipole)
+    data = (MW, Tc, Vc, omega, Cp, Vg, mug, dipole)
     if all(data):
         handle.model(chung_dense(data))
     data = (MW, Tc, Pc, Vc, Zc, Vg, handle.models)

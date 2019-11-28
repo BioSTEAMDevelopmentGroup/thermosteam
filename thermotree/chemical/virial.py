@@ -28,7 +28,7 @@ __all__ = ['BVirial_Pitzer_Curl', 'BVirial_Abbott', 'BVirial_Tsonopoulos',
 from numba import njit
 from scipy.misc import derivative
 from math import log
-from .utils import R
+from ..constants import R
 
 
 ### Second Virial Coefficients

@@ -38,7 +38,8 @@ units_of_measure = {'MW': 'g/mol',
                     'A': 'J/mol',
                     'H_excess': 'J/mol', 
                     'S_excess': 'J/mol',
-                    'R': 'J/mol/K'
+                    'R': 'J/mol/K',
+                    'delta': 'Pa^0.5',
 }
 
 definitions = {'MW': 'Molecular weight',
@@ -79,6 +80,7 @@ definitions = {'MW': 'Molecular weight',
                'R': 'Universal gas constant',
                'Zc': 'Critical compressibility',
                'omega': 'Acentric factor',
+               'delta': 'Solubility parameter',
 }
 
 types = {}

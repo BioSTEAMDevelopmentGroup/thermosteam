@@ -27,8 +27,10 @@ __all__ = ['GCEOS', 'PR', 'SRK', 'PR78', 'PRSV', 'PRSV2', 'VDW', 'RK',
 
 from cmath import atanh as catanh
 from scipy.optimize import newton
-from .utils import Cp_minus_Cv, isobaric_expansion, isothermal_compressibility, \
-                   phase_identification_parameter, R, horner
+from ..functional import Cp_minus_Cv, isobaric_expansion, \
+                        isothermal_compressibility, \
+                        phase_identification_parameter, horner
+from ..constants import R
 from math import log, exp, sqrt, copysign
 
 
@@ -445,7 +447,7 @@ class GCEOS(object):
             Second temperature derivative of coefficient calculated by  
             EOS-specific method, [J^2/mol^2/Pa/K**2]
         '''
-        raise NotImplemented('a_alpha and its first and second derivatives \
+        raise NotImplementedError('a_alpha and its first and second derivatives \
 should be calculated by this method, in a user subclass.')
     
     def solve_T(self, P, V, quick=True):
@@ -993,6 +995,7 @@ class ALPHA_FUNCTIONS(GCEOS):
         '''
         c1, c2 = self.alpha_function_coeffs
         T, Tc, a = self.T, self.Tc, self.a
+        Tr = T/Tc
         a_alpha = a*(1 + c1*(1-sqrt(Tr)) -c2*(1-Tr)*(0.7-Tr))**2
         if not full:
             return a_alpha
@@ -1216,14 +1219,15 @@ class ALPHA_FUNCTIONS(GCEOS):
         .. [1] J. Schwartzentruber, H. Renon, and S. Watanasiri, "K-values for 
            Non-Ideal Systems:An Easier Way," Chem. Eng., March 1990, 118-124.
         '''
-        c1, c2, c3 = self.alpha_function_coeffs
+        c1, c2, c3, c4 = self.alpha_function_coeffs
         T, Tc, a = self.T, self.Tc, self.a
-        a_alpha = a*((c4*(-sqrt(T/Tc) + 1) - (-sqrt(T/Tc) + 1)*(T**2*c3/Tc**2 + T*c2/Tc + c1) + 1)**2)
+        Tr = T/Tc
+        a_alpha = a*((c4*(-sqrt(Tr) + 1) - (-sqrt(Tr) + 1)*(Tr**2*c3 + Tr*c2 + c1) + 1)**2)
         if not full:
             return a_alpha
         else:
-            da_alpha_dT = a*((c4*(-sqrt(T/Tc) + 1) - (-sqrt(T/Tc) + 1)*(T**2*c3/Tc**2 + T*c2/Tc + c1) + 1)*(-2*(-sqrt(T/Tc) + 1)*(2*T*c3/Tc**2 + c2/Tc) - c4*sqrt(T/Tc)/T + sqrt(T/Tc)*(T**2*c3/Tc**2 + T*c2/Tc + c1)/T))
-            d2a_alpha_dT2 = a*(((-c4*(sqrt(T/Tc) - 1) + (sqrt(T/Tc) - 1)*(T**2*c3/Tc**2 + T*c2/Tc + c1) + 1)*(8*c3*(sqrt(T/Tc) - 1)/Tc**2 + 4*sqrt(T/Tc)*(2*T*c3/Tc + c2)/(T*Tc) + c4*sqrt(T/Tc)/T**2 - sqrt(T/Tc)*(T**2*c3/Tc**2 + T*c2/Tc + c1)/T**2) + (2*(sqrt(T/Tc) - 1)*(2*T*c3/Tc + c2)/Tc - c4*sqrt(T/Tc)/T + sqrt(T/Tc)*(T**2*c3/Tc**2 + T*c2/Tc + c1)/T)**2)/2)
+            da_alpha_dT = a*((c4*(-sqrt(Tr) + 1) - (-sqrt(Tr) + 1)*(Tr**2*c3 + Tr*c2 + c1) + 1)*(-2*(-sqrt(Tr) + 1)*(2*Tr*c3/Tc + c2/Tc) - c4*sqrt(Tr)/T + sqrt(Tr)*(Tr**2*c3 + Tr*c2 + c1)/T))
+            d2a_alpha_dT2 = a*(((-c4*(sqrt(Tr) - 1) + (sqrt(Tr) - 1)*(Tr**2*c3 + Tr*c2 + c1) + 1)*(8*c3*(sqrt(Tr) - 1)/Tc**2 + 4*sqrt(Tr)*(2*Tr*c3 + c2)/(T*Tc) + c4*sqrt(Tr)/T**2 - sqrt(Tr)*(Tr**2*c3 + Tr*c2 + c1)/T**2) + (2*(sqrt(Tr) - 1)*(2*Tr*c3 + c2)/Tc - c4*sqrt(Tr)/T + sqrt(Tr)*(Tr**2*c3 + Tr*c2 + c1)/T)**2)/2)
             return a_alpha, da_alpha_dT, d2a_alpha_dT2
 
     @staticmethod
@@ -1252,7 +1256,7 @@ class ALPHA_FUNCTIONS(GCEOS):
         if not full:
             return a_alpha
         else:
-            da_alpha_dT = a*((c1*(c2 - 1)*(-T/Tc + 1)*abs(T/Tc - 1)**(c2 - 1)*copysign(1, T/Tc - 1)/(Tc*Abs(T/Tc - 1)) - c1*abs(T/Tc - 1)**(c2 - 1)/Tc - Tc*c3/T**2)*exp(c1*(-T/Tc + 1)*abs(T/Tc - 1)**(c2 - 1) + c3*(-1 + Tc/T)))
+            da_alpha_dT = a*((c1*(c2 - 1)*(-T/Tc + 1)*abs(T/Tc - 1)**(c2 - 1)*copysign(1, T/Tc - 1)/(Tc*abs(T/Tc - 1)) - c1*abs(T/Tc - 1)**(c2 - 1)/Tc - Tc*c3/T**2)*exp(c1*(-T/Tc + 1)*abs(T/Tc - 1)**(c2 - 1) + c3*(-1 + Tc/T)))
             d2a_alpha_dT2 = a*exp(c3*(Tc/T - 1) - c1*abs(T/Tc - 1)**(c2 - 1)*(T/Tc - 1))*((c1*abs(T/Tc - 1)**(c2 - 1))/Tc + (Tc*c3)/T**2 + (c1*abs(T/Tc - 1)**(c2 - 2)*copysign(1, T/Tc - 1)*(c2 - 1)*(T/Tc - 1))/Tc)**2 - exp(c3*(Tc/T - 1) - c1*abs(T/Tc - 1)**(c2 - 1)*(T/Tc - 1))*((2*c1*abs(T/Tc - 1)**(c2 - 2)*copysign(1, T/Tc - 1)*(c2 - 1))/Tc**2 - (2*Tc*c3)/T**3 + (c1*abs(T/Tc - 1)**(c2 - 3)*copysign(1, T/Tc - 1)**2*(c2 - 1)*(c2 - 2)*(T/Tc - 1))/Tc**2)
             return a_alpha, da_alpha_dT, d2a_alpha_dT2
 
@@ -1448,6 +1452,7 @@ class ALPHA_FUNCTIONS(GCEOS):
            Engineering Data, August 31, 2017. doi:10.1021/acs.jced.7b00496.
         '''
         c1, c2, c3, c4, c5, c6, c7 = self.alpha_function_coeffs
+        omega = self.omega
         T, Tc, a = self.T, self.Tc, self.a
         a_alpha = a*exp(c4*log((-sqrt(T/Tc) + 1)*(c5 + c6*omega + c7*omega**2) + 1)**2 + (-T/Tc + 1)*(c1 + c2*omega + c3*omega**2))
         if not full:

@@ -12,7 +12,7 @@ def var_with_units(var, units=units_of_measure):
     else:
         var_ = var
     units = units.get(var_, "")
-    units = units and ' (' + units + ')'
+    units = units and ' [' + units + ']'
     return f"{var}{units}"
 
 def any_isinstance(objs, cls):

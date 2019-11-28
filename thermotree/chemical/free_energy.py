@@ -4,7 +4,7 @@ Created on Thu Oct 31 06:56:43 2019
 
 @author: yoelr
 """
-from .utils import R
+from ..constants import R
 from ..base import H, S, ChemicalPhaseTPropertyBuilder, ChemicalPhaseTPPropertyBuilder
 from math import log
     

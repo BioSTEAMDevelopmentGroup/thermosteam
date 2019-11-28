@@ -26,7 +26,8 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.optimize import newton
 from math import log, exp
-from .utils import CASDataReader, horner
+from .utils import CASDataReader
+from ..functional import polyfunctor
 from ..base import InterpolatedTDependentModel, mu, TPDependentHandleBuilder, TDependentModel, ChemicalPhaseTPPropertyBuilder
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .electrochem import _Laliberte_Viscosity_ParametersDict, Laliberte_viscosity
@@ -197,7 +198,7 @@ def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
     if CAS in _VDI_PPDS_8:
         data = _VDI_PPDS_8[CAS].tolist()[1:]
         data.reverse()
-        handle.model(horner({'coeffs':data}))
+        handle.model(polyfunctor({'coeffs':data}))
     data = (Tc, Pc, Zc, MW)
     if all(data):
         Tmin = 0; Tmax = 1e3

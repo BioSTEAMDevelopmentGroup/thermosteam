@@ -25,7 +25,8 @@ from __future__ import division
 __all__ = ('Permittivity',)
 
 import numpy as np
-from .utils import N_A, epsilon_0, k, CASDataReader
+from .utils import CASDataReader
+from ..constants import N_A, epsilon_0, k
 from ..base import TDependentHandleBuilder, epsilon
 
 read = CASDataReader(__file__, 'Electrolytes')

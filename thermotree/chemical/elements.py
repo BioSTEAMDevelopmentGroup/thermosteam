@@ -33,7 +33,7 @@ import os
 import re
 import string
 from collections import Counter
-from .utils import to_num
+from .utils import to_nums
 
 folder = os.path.join(os.path.dirname(__file__), 'Data\\Misc')
 
@@ -231,7 +231,7 @@ with open(os.path.join(folder, 'element.txt'), 'rb') as f:
     for line in f:
         line = line.decode("utf-8")
         if line[0] != '#':
-            values = to_num(line.strip('\n').split('\t'))
+            values = to_nums(line.strip('\n').split('\t'))
             number, symbol, AReneg, rcov, _, rvdw, maxbonds, MW, elneg, ionization, elaffinity, _, _, _, name = values
             number = int(number)
             name = str(name)

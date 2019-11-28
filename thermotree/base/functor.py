@@ -15,7 +15,7 @@ __all__ = ("Functor", "MixtureFunctor",
            "TFunctor", "TPFunctor",
            "zTFunctor", "zTPFunctor",
            "functor", 'H', 'S', 'V', 'Cp', 'mu', 'k', 'sigma', 'delta', 'epsilon',
-           'Psat', 'Hvap', 'display_asfunctor',
+           'Psat', 'Hvap', 'display_asfunctor', 'functor_lookalike',
            'functor_matching_params', 'functor_base_and_params')
 
 RegisteredArgs = set()
@@ -38,6 +38,11 @@ def display_asfunctor(functor, var=None, name=None, show_var=True):
             u = units.get(var)
             if u: info += f" -> {u}"
     return info
+
+def functor_lookalike(cls):
+    cls.__repr__ = Functor.__repr__
+    cls.__str__ = Functor.__str__
+    return cls
 
 def functor_matching_params(params):
     N_total = len(params)
@@ -107,7 +112,7 @@ class FunctorFactory:
                        definitions, units_of_measure, math, refs, doc)
     
     def __repr__(self):
-        return f"{type(self).__name__}: {var_with_units(self.var)}"
+        return f"{type(self).__name__}({repr(self.var)})"
     
 H, S, Cp, V, k, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i in
                                                          ('H', 'S', 'Cp', 'V', 'k',
@@ -137,8 +142,11 @@ class Functor:
             RegisteredArgs.add(args)
             cls._args = args
     
+    def __str__(self):
+        return display_asfunctor(self)
+    
     def __repr__(self):
-        return f"<[Functor] {display_asfunctor(self)}>"
+        return f"<{self}>"
 
 
 class PureComponentFunctor(Functor):
