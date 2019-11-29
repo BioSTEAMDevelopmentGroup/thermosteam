@@ -20,16 +20,16 @@ def find_constant_model(models, T, P):
             
 
 def get_not_a(obj, cls):
-	isinstance = isa
-	if isa(obj, cls):
-		return None
-	elif hasattr(obj, '__iter__'):
-		for i in object:
-			if not isa(i, cls):
-				return i
-	else:
-		return obj
-
+    isa = isinstance
+    if isa(obj, cls):
+        return None
+    elif hasattr(obj, '__iter__'):
+        for i in obj:
+            if not isa(i, cls):
+                return i
+    else:
+        return obj
+    
 
 # %% Handles
 
@@ -49,11 +49,11 @@ class ThermoModelHandle:
     def __getitem__(self, index):
         return self.models[index]
     
-	def __setitem__(self, index, model):
-		not_a_model = get_not_a(model, ThermoHandle)
-		assert not_a_model is None, ("a 'ThermoModelHandle' may only contain "
-									f"'ThermoModel' objects, not a '{not_a_model}'")
-		self.models[index] = model
+    def __setitem__(self, index, model):
+        not_a_model = get_not_a(model, ThermoModel)
+        assert not_a_model is None, ("a 'ThermoModelHandle' may only contain "
+                                     f"'ThermoModel' objects, not a '{not_a_model}'")
+        self.models[index] = model
 	
     def __iter__(self):
         return iter(self.models)
