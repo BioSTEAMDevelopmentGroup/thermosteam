@@ -1,17 +1,17 @@
 ========================================================
-thermodynamics: The Thermodynamic Property Package
+chemicals: the thermodynamic property package builder
 ========================================================
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
-   :target: https://github.com/yoelcortes/thermodynamics/blob/master/LICENSE.txt
+   :target: https://github.com/yoelcortes/chemicals/blob/master/LICENSE.txt
    :alt: license
 
 
 .. contents::
 
-What is thermodynamics?
+What is chemicals?
 -----------------
 
-thermodynamics is an open-source thermodynamic property package with an easily extendable structure.
+chemicals is an open-source thermodynamic property package builder with an easily extendable structure.
 
 Installation
 ------------
@@ -26,9 +26,9 @@ TODO
 Bug reports
 -----------
 
-To report bugs, please use the thermodynamics's Bug Tracker at:
+To report bugs, please use the chemicals's Bug Tracker at:
 
-    https://github.com/yoelcortes/thermodynamics
+    https://github.com/yoelcortes/chemicals
 
 
 License information
@@ -37,15 +37,15 @@ License information
 See ``LICENSE.txt`` for information on the terms & conditions for usage
 of this software, and a DISCLAIMER OF ALL WARRANTIES.
 
-Although not required by the thermodynamics license, if it is convenient for you,
-please cite thermodynamics if used in your work. Please also consider contributing
+Although not required by the chemicals license, if it is convenient for you,
+please cite chemicals if used in your work. Please also consider contributing
 any changes you make back, and benefit the community.
 
 
 Citation
 --------
 
-To cite thermodynamics in publications use::
+To cite chemicals in publications use::
 
-    Yoel Cortes-Pena (2019). thermodynamics: The Thermodynamic Property Package.
-    https://github.com/yoelcortes/thermodynamics
+    Yoel Cortes-Pena (2019). chemicals: the thermodynamic property package builder.
+    https://github.com/yoelcortes/chemicals

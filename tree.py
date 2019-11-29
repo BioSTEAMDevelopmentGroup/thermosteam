@@ -4,14 +4,14 @@ Created on Sat Nov  2 10:58:19 2019
 
 @author: yoelr
 """
-import thermodynamics as tm 
+import chemicals as cm
 from graphviz import Digraph
 from IPython import display
 
-water = tm.Chemical('Water')
-ethanol = tm.Chemical('Ethanol')
-methanol = tm.Chemical('Methanol')
-ideal_mixture = tm.IdealMixture(chemicals=(water, ethanol, methanol))
+water = cm.Chemical('Water')
+ethanol = cm.Chemical('Ethanol')
+methanol = cm.Chemical('Methanol')
+ideal_mixture = cm.IdealMixture(chemicals=(water, ethanol, methanol))
 digraph = Digraph(format='svg')
 
 istreelike = lambda x: hasattr(x, '__slots__') or hasattr(x, '__dict__')
@@ -33,7 +33,7 @@ def branch_out(digraph, parent_name, child_name, child, stop=False):
         tree(digraph, child_name, child)
     elif isinstance(child, list):
         for i in child:
-            if isinstance(i, tm.ThermoModel):
+            if isinstance(i, cm.ThermoModel):
                 branch_out(digraph, parent_name, i.name, i)
 
 def tree(digraph, parent_name, parent):
