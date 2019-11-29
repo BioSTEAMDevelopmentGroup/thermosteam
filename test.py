@@ -16,6 +16,8 @@ methanol = tm.Chemical('Methanol')
 glycerol = tm.Chemical('Glycerol')
 propanol = tm.Chemical('Propanol')
 lignin = tm.Chemical('Lignin')
+lignin.default()
+lignin.lock_state('l', 298.15, 101325)
 
 chemicals = (water, ethanol, methanol, glycerol, propanol, lignin)
 

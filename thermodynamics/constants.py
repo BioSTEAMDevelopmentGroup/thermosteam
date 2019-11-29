@@ -4,8 +4,9 @@ Created on Wed Nov 27 20:09:05 2019
 
 @author: yoelr
 """
+from fluids.core import g
 
-__all__ = ('R', 'k', 'N_A', 'calorie', 'epsilon_0')
+__all__ = ('R', 'k', 'g', 'N_A', 'calorie', 'epsilon_0')
 
 
 # Obtained from SciPy 0.19 (2014 CODATA)

@@ -4,6 +4,8 @@ Created on Wed Nov 27 19:11:28 2019
 
 @author: yoelr
 """
+from fluids import core as fluids_core
+from fluids.core import *
 from cmath import sqrt as csqrt
 from numba import njit
 from .base import functor
@@ -13,12 +15,14 @@ import numpy as np
 __all__ = ('isobaric_expansion', 'isothermal_compressibility', 
            'Cp_minus_Cv', 'speed_of_sound', 'Joule_Thomson',
            'phase_identification_parameter', 'phase_identification_parameter_phase',
-           'isentropic_exponent', 'V_to_rho', 'rho_to_V', 
-           'Z', 'B_to_Z', 'B_from_Z', 'Z_from_virial_density_form', 
+           'isentropic_exponent', 'rho_to_V', 'rho', 'V_to_rho', 'mu_to_nu', 
+           'nu', 'Z', 'B_to_Z', 'Z_to_B', 'Z_from_virial_density_form', 
            'Z_from_virial_pressure_form', 'zs_to_ws', 'ws_to_zs', 'zs_to_Vfs', 
            'Vfs_to_zs', 'none_and_length_check', 'normalize', 'mixing_simple', 
            'mixing_logarithmic', 'Parachor', 'SG_to_API', 'API_to_SG', 'SG',
-           'horner', 'allclose_variable', 'polylog2', 'horner', 'polyfunctor')
+           'horner', 'allclose_variable', 'polylog2', 'horner', 'polyfunctor'
+           ) + tuple(fluids_core.__all__)
+            
 
 @functor
 def polyfunctor(T, coeffs):
@@ -28,65 +32,88 @@ def polyfunctor(T, coeffs):
 
 horner = polyfunctor.function  
 
-def Parachor(MW, rho_l, rho_g, sigma):
-    r'''Calculate Parachor for a pure species, using its density in the
-    liquid and gas phases, surface tension, and molecular weight.
+def mu_to_nu(mu, rho):
+    r'''Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and 
+    density (rho).
 
     .. math::
-        P = \frac{\sigma^{0.25} MW}{\rho_L - \rho_V}
+        \nu = \frac{\mu}{\rho}
+
+    Examples
+    --------
+    >>> nu(0.000998, 998.)
+    1.0e-06
+
+    References
+    ----------
+    .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
+       Applications. Boston: McGraw Hill Higher Education, 2006.
+    '''
+    return mu/rho
+nu = mu_to_nu
+
+def V_to_rho(V, MW):
+    r'''Return the density (rho) in kg/m^3 given the molar volume (V) in
+    m^3/mol and molecular weight (MW) in g/mol.
+
+    .. math::
+        \rho = \frac{MW}{1000\cdot VM}
     
     Parameters
     ----------
+    V : float
+        Molar volume, [m^3/mol]
     MW : float
         Molecular weight, [g/mol]
-    rho_l : float
-        Liquid density [kg/m^3]
-    rho_g : float
-        Gas density [kg/m^3]
-    sigma : float
-        Surface tension, [N/m]
 
     Returns
     -------
-    P : float
-        Parachor, [N^0.25*m^2.75/mol]
+    rho : float
+        Density, [kg/m^3]
 
-    Notes
-    -----
-    To convert the output of this function to units of [mN^0.25*m^2.75/kmol], 
-    multiply by 5623.4132519.
-    
-    Values in group contribution tables for Parachor are often listed as 
-    dimensionless, in which they are multiplied by 5623413 and the appropriate
-    units to make them dimensionless.
-    
     Examples
     --------
-    Calculating Parachor from a known surface tension for methyl isobutyl 
-    ketone at 293.15 K
-    
-    >>> Parachor(100.15888, 800.8088185536124, 4.97865317223119, 0.02672166960656005)
-    5.088443542210164e-05
-    
-    Converting to the `dimensionless` form:
-    
-    >>> 5623413*5.088443542210164e-05
-    286.14419565030687
-    
-    Compared to 274.9 according to a group contribution method described in
-    [3]_.
+    >>> rho(0.000132, 86.18)
+    652.8787878787879
 
     References
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [2] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       8E. McGraw-Hill Professional, 2007.
-    .. [3] Danner, Ronald P, and Design Institute for Physical Property Data.
-       Manual for Predicting Chemical Process Design Data. New York, N.Y, 1982.
     '''
-    rho_l, rho_g = rho_l*1000., rho_g*1000. # Convert kg/m^3 to g/m^3
-    return sigma**0.25*MW/(rho_l-rho_g) # (N/m)**0.25*g/mol/(g/m^3)
+    return MW/V/1000.
+rho = V_to_rho
+
+def rho_to_V(rho, MW):
+    r'''Return the molar volume (V) in m^3/mol given the density (rho) in
+    kg/m^3 and molecular weight (MW) in g/mol.
+
+    .. math::
+        V = \left(\frac{1000 \rho}{MW}\right)^{-1}
+
+    Parameters
+    ----------
+    rho : float
+        Density, [kg/m^3]
+    MW : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    V : float
+        Molar volume, [m^3/mol]
+
+    Examples
+    --------
+    >>> V(652.9, 86.18)
+    0.00013199571144126206
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    '''
+    return MW/rho/1000.
 
 def SG_to_API(SG):
     r'''Calculates specific gravity of a liquid given its API, as shown in
@@ -189,6 +216,65 @@ def SG(rho, rho_ref=999.0170824078306):
     0.8608461408159591
     '''
     return rho/rho_ref
+
+def Parachor(V_l, V_g, sigma):
+    r'''Calculate Parachor for a pure species, using its density in the
+    liquid and gas phases, surface tension, and molecular weight.
+
+    .. math::
+        P = \frac{\sigma^{0.25}}{V_l^{-1} - V_g^{-1}}
+    
+    Parameters
+    ----------
+    MW : float
+        Molecular weight, [g/mol]
+    V_l : float
+        Liquid density [mol/m^3]
+    V_g : float
+        Gas density [mol/m^3]
+    sigma : float
+        Surface tension, [N/m]
+
+    Returns
+    -------
+    P : float
+        Parachor, [N^0.25*m^2.75/mol]
+
+    Notes
+    -----
+    To convert the output of this function to units of [mN^0.25*m^2.75/kmol], 
+    multiply by 5623.4132519.
+    
+    Values in group contribution tables for Parachor are often listed as 
+    dimensionless, in which they are multiplied by 5623413 and the appropriate
+    units to make them dimensionless.
+    
+    Examples
+    --------
+    Calculating Parachor from a known surface tension for methyl isobutyl 
+    ketone at 293.15 K
+    
+    >>> Parachor(100.15888, 800.8088185536124, 4.97865317223119, 0.02672166960656005)
+    5.088443542210164e-05
+    
+    Converting to the `dimensionless` form:
+    
+    >>> 5623413*5.088443542210164e-05
+    286.14419565030687
+    
+    Compared to 274.9 according to a group contribution method described in
+    [3]_.
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [2] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
+       8E. McGraw-Hill Professional, 2007.
+    .. [3] Danner, Ronald P, and Design Institute for Physical Property Data.
+       Manual for Predicting Chemical Process Design Data. New York, N.Y, 1982.
+    '''
+    return sigma**0.25 / (1./V_l - 1./V_g) # (N/m)**0.25*g/mol/(g/m^3)
 
 def isobaric_expansion(V, dV_dT):
     r'''Calculate the isobaric coefficient of a thermal expansion, given its 
@@ -603,69 +689,6 @@ def isentropic_exponent(Cp, Cv):
     '''
     return Cp/Cv
 
-
-def V_to_rho(V, MW):
-    r'''Calculate the density of a chemical, given its molar volume and
-    molecular weight.
-
-    .. math::
-        \rho = \frac{MW}{1000\cdot VM}
-
-    Parameters
-    ----------
-    V : float
-        Molar volume, [m^3/mol]
-    MW : float
-        Molecular weight, [g/mol]
-
-    Returns
-    -------
-    rho : float
-        Density, [kg/m^3]
-
-    Examples
-    --------
-    >>> Vm_to_rho(0.000132, 86.18)
-    652.8787878787879
-
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    '''
-    return V**-1*MW/1000.
-
-def rho_to_V(rho, MW):
-    r'''Calculate the molar volume of a chemical, given its density and
-    molecular weight.
-
-    .. math::
-        V = \left(\frac{1000 \rho}{MW}\right)^{-1}
-
-    Parameters
-    ----------
-    rho : float
-        Density, [kg/m^3]
-    MW : float
-        Molecular weight, [g/mol]
-
-    Returns
-    -------
-    V : float
-        Molar volume, [m^3/mol]
-
-    Examples
-    --------
-    >>> rho_to_V(652.9, 86.18)
-    0.00013199571144126206
-
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    '''
-    return (rho*1000./MW)**-1
-
 def Z(T, P, V):
     r'''Calculates the compressibility factor of a gas, given its
     temperature, pressure, and molar volume.
@@ -736,7 +759,7 @@ def B_to_Z(B, T, P):
     '''
     return 1. + B*P/R/T
 
-def B_from_Z(Z, T, P):
+def Z_to_B(Z, T, P):
     r'''Calculates the second virial coefficient of a pure species, given the
     compressibility factor of the gas.
 
@@ -828,12 +851,12 @@ def Z_from_virial_density_form(T, P, *args):
     l = len(args)
     if l == 1:
         return 1/2. + (4*args[0]*P + R*T)**0.5/(2*(R*T)**0.5)
-#        return ((R*T*(4*args[0]*P + R*T))**0.5 + R*T)/(2*P)
-    if l == 2:
+#       return ((R*T*(4*args[0]*P + R*T))**0.5 + R*T)/(2*P)
+    elif l == 2:
         B, C = args
         # A small imaginary part is ignored
         return (P*(-(3*B*R*T/P + R**2*T**2/P**2)/(3*(-1/2 + csqrt(3)*1j/2)*(-9*B*R**2*T**2/(2*P**2) - 27*C*R*T/(2*P) + csqrt(-4*(3*B*R*T/P + R**2*T**2/P**2)**(3+0j) + (-9*B*R**2*T**2/P**2 - 27*C*R*T/P - 2*R**3*T**3/P**3)**(2+0j))/2 - R**3*T**3/P**3)**(1/3.+0j)) - (-1/2 + csqrt(3)*1j/2)*(-9*B*R**2*T**2/(2*P**2) - 27*C*R*T/(2*P) + csqrt(-4*(3*B*R*T/P + R**2*T**2/P**2)**(3+0j) + (-9*B*R**2*T**2/P**2 - 27*C*R*T/P - 2*R**3*T**3/P**3)**(2+0j))/2 - R**3*T**3/P**3)**(1/3.+0j)/3 + R*T/(3*P))/(R*T)).real
-    if l == 3:
+    elif l == 3:
         # Huge mess. Ideally sympy could optimize a function for quick python 
         # execution. Derived with kate's text highlighting
         B, C, D = args
@@ -944,8 +967,10 @@ def zs_to_ws(zs, MWs):
     >>> zs_to_ws([0.5, 0.5], [10, 20])
     [0.3333333333333333, 0.6666666666666666]
     '''
-    Mavg = sum(zi*MWi for zi, MWi in zip(zs, MWs))
-    ws = [zi*MWi/Mavg for zi, MWi in zip(zs, MWs)]
+    zs = np.asarray(zs)
+    MWs = np.asarray(MWs)
+    ws = zs * MWs
+    ws /= ws.sum()
     return ws
 
 def ws_to_zs(ws, MWs):
@@ -977,22 +1002,24 @@ def ws_to_zs(ws, MWs):
     >>> ws_to_zs([0.3333333333333333, 0.6666666666666666], [10, 20])
     [0.5, 0.5]
     '''
-    tot = sum(w/MW for w, MW in zip(ws, MWs))
-    zs = [w/MW/tot for w, MW in zip(ws, MWs)]
+    ws = np.asarray(ws)
+    MWs = np.asarray(MWs)
+    zs = ws/MWs
+    zs /= zs.sum()
     return zs
 
-def zs_to_Vfs(zs, Vms):
+def zs_to_Vfs(zs, Vs):
     r'''Converts a list of mole fractions to volume fractions. Requires molar
     volumes for all species.
 
     .. math::
-        \text{Vf}_i = \frac{z_i V_{m,i}}{\sum_i z_i V_{m,i}}
+        \text{Vf}_i = \frac{z_i V_{i}}{\sum_i z_i V_{i}}
 
     Parameters
     ----------
     zs : iterable
         Mole fractions [-]
-    VMs : iterable
+    Vs : iterable
         Molar volumes of species [m^3/mol]
 
     Returns
@@ -1015,11 +1042,13 @@ def zs_to_Vfs(zs, Vms):
     >>> zs_to_Vfs([0.637, 0.363], [8.0234e-05, 9.543e-05])
     [0.5960229712956298, 0.4039770287043703]
     '''
-    vol_is = [zi*Vmi for zi, Vmi in zip(zs, Vms)]
-    tot = sum(vol_is)
-    return [vol_i/tot for vol_i in vol_is]
+    zs = np.asarray(zs)
+    Vs = np.asarray(Vs)
+    Vfs = zs * Vs
+    Vfs /= Vfs.sum()
+    return Vfs
 
-def Vfs_to_zs(Vfs, Vms):
+def Vfs_to_zs(Vfs, Vs):
     r'''Converts a list of mass fractions to mole fractions. Requires molecular
     weights for all species.
 
@@ -1054,9 +1083,11 @@ def Vfs_to_zs(Vfs, Vms):
     >>> Vfs_to_zs([0.596, 0.404], [8.0234e-05, 9.543e-05])
     [0.6369779395901142, 0.3630220604098858]
     '''
-    mols_i = [Vfi/Vmi for Vfi, Vmi in zip(Vfs, Vms)]
-    mols = sum(mols_i)
-    return [mol_i/mols for mol_i in mols_i]
+    Vs = np.asarray(Vs)
+    Vfs = np.asarray(Vfs)
+    zs = Vfs/Vs
+    zs /= zs.sum()
+    return zs
 
 def none_and_length_check(all_inputs, length=None):
     r'''Checks inputs for suitability of use by a mixing rule which requires

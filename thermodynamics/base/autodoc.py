@@ -48,7 +48,9 @@ def autodoc_functor(functor, base, math, refs):
     f = VariableDescriber(functor.definitions, functor.units_of_measure,
                           functor.types)
     out = f.get_output(functor.var)
-    header = f"Create a {base.__name__}.{functor.__name__} object that returns the {out}.\n" + math + '\n'
+    header = f"Create a {base.__name__}.{functor.__name__} object that returns the {out}.\n\n" 
+    if math:
+        math = ".. math::\n    " + math.replace('\n', '\n    ') + '\n\n'
     params = functor.params
     if params:
         parameters = ("Parameters\n"
@@ -64,7 +66,7 @@ def autodoc_functor(functor, base, math, refs):
                       "----------\n") + refs
     else:
         references = ""
-    functor.__doc__ = header + parameters + references
+    functor.__doc__ = header + math + parameters + references
     
     
     

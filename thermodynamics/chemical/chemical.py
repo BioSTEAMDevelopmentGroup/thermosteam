@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
+from ..base.utils import shallow_copy
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
 from .phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -57,6 +58,37 @@ from ..equilibrium.unifac_data import DDBST_UNIFAC_assignments, \
 # from .environment import GWP, ODP, logP
 # from .refractivity import refractive_index
 # from .electrochem import conductivity
+
+# %% Utilities
+                                      
+class LockedState:
+    __slots__ = ('_phase', '_T', '_P')
+    def __init__(self, phase=None, T=None, P=None):
+        self._phase = phase
+        self._T = T
+        self._P = P
+    
+    @property
+    def phase(self):
+        return self._phase    
+    @property
+    def T(self):
+        return self._T
+    @property
+    def P(self):
+        return self._P
+    
+    def __bool__(self):
+        return any(self)
+    
+    def __iter__(self):
+        yield self._phase
+        yield self._T
+        yield self._P
+    
+    def __repr__(self):
+        return f"{type(self).__name__}(phase={self.phase}, T={self.T}, P={self.P})"
+
 
 # %% Filling missing properties
 
@@ -94,7 +126,7 @@ def fill(chemical, other, slots=None):
 def chemical_identity(chemical, pretty=False):
     typeheader = f"{type(chemical).__name__}:"
     fullID = f"{typeheader} {chemical.ID} (phase_ref={repr(chemical.phase_ref)})"
-    phase, T, P = chemical._phaseTP
+    phase, T, P = chemical._locked_state
     state = []
     if phase:
         state.append(f"phase={repr(phase)}")
@@ -147,7 +179,7 @@ _chemical_fields = {'\n[Names]  ': _names,
 # %% Chemical
 
 class Chemical:
-    __slots__ = ('ID', 'eos', 'eos_1atm', '_phaseTP', '_phase_ref') \
+    __slots__ = ('ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
                 + _names + _groups + _thermo + _data
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
     
@@ -155,7 +187,7 @@ class Chemical:
         CAS = CAS or CAS_from_any(ID) or ID
         info = pubchem_db.search_CAS(CAS)
         self.ID = ID
-        self._phaseTP = (None, None, None)
+        self._locked_state = LockedState()
         self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
                          info.pubchemid, info.iupac_name, info.common_name)
         self._init_groups(info.InChI_key)
@@ -174,7 +206,12 @@ class Chemical:
         new = self.__new__(self.__class__)
         getfield = getattr
         setfield = setattr
-        for field in self.__slots__: setfield(new, field, getfield(self, field))
+        for field in self.__slots__: 
+            value = getfield(self, field)
+            setfield(new, field, shallow_copy(value))
+        new._init_energies(new.Cp, new.Hvap, new.Psat, new.Hfus, new.Tm,
+                           new.Tb, new.eos, new.eos_1atm, new.phase_ref,
+                           new._locked_state.phase)
         return new
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
@@ -283,7 +320,8 @@ class Chemical:
         # self.delta = SolubilityParameter(self)
         # self.molecular_diameter = MolecularDiameter(self)
 
-    def _init_energies(self, Cp, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm, phase_ref=None):        
+    def _init_energies(self, Cp, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm,
+                       phase_ref=None, single_phase=False):        
         # Reference
         P_ref = self.P_ref
         T_ref = self.T_ref
@@ -291,17 +329,18 @@ class Chemical:
         S_ref = self.S_ref
         Sfus = Hfus / Tm if Hfus and Tm else None
         
-        if hasattr(Cp, 's'):
+        if isinstance(Cp, PhaseProperty):
             Cp_s = Cp.s
             Cp_l = Cp.l
             Cp_g = Cp.g
             has_Cps = bool(Cp_s)
             has_Cpl = bool(Cp_l)
             has_Cpg = bool(Cp_g)
-        elif Cp and phase_ref:
-            has_Cps = phase_ref == 's'
-            has_Cpl = phase_ref == 'l'
-            has_Cpg = phase_ref == 'g'
+        elif Cp and single_phase:
+            has_Cps = single_phase == 's'
+            has_Cpl = single_phase == 'l'
+            has_Cpg = single_phase == 'g'
+            Cp_s = Cp_l = Cp_g = Cp
         else:
             has_Cps = has_Cpl = has_Cpg = False
         
@@ -421,60 +460,18 @@ class Chemical:
                 self.S_excess = ExcessEntropyRefGas((), ldata, gdata)
         else:
             self.H = self.S = self.S_excess = self.H_excess = None
+            
+        if single_phase:
+            getfield = getattr
+            self.H = getfield(self.H, single_phase)
+            self.S = getfield(self.S, single_phase)
+            self.H_excess = getfield(self.H_excess, single_phase)
+            self.S_excess = getfield(self.S_excess, single_phase)
 
-    def to_phase(self, phase):
-        if any(self._phaseTP):
-            raise ValueError(f"state already selected for {repr(self)}")            
-        getfield = getattr
-        setfield = setattr
-        for field in _phase_properties:
-            phase_property = getfield(self, field)
-            model_handle = getfield(phase_property, phase)
-            setfield(self, field, model_handle)
-        for field in _free_energies:
-            phase_property = getfield(self, field)
-            functor = getfield(phase_property, phase)
-            setfield(self, field, functor)
-        self._phaseTP = (phase, None, None)
-
-    def to_TP(self, T, P):
-        if any(self._phaseTP):
-            raise ValueError(f"state already selected for {repr(self)}")    
-        getfield = getattr
-        phases = ('s', 'l', 'g')
-        for field in _phase_properties:
-            phase_property = getfield(self, field)
-            for phase in phases:
-                model_handle = getfield(phase_property, phase)
-                model_handle.to_TP(T, P)
-        for field in _liquid_only_properties:
-            model_handle = getfield(self, field) 
-            model_handle.to_TP(T, P)
-        self._phaseTP = (None, T, P)
-
-    def to_phaseTP(self, phase, T, P):
-        if any(self._phaseTP):
-            raise ValueError(f"state already selected for {repr(self)}")            
-        getfield = getattr
-        setfield = setattr
-        for field in _phase_properties:
-            phase_property = getfield(self, field)
-            model_handle = getfield(phase_property, phase)
-            model_handle.to_TP(T, P)
-            setfield(self, field, model_handle)
-        for field in _liquid_only_properties:
-            model_handle = getfield(self, field) 
-            model_handle.to_TP(T, P)
-        for field in _free_energies:
-            phase_property = getfield(self, field)
-            functor = getfield(phase_property, phase)
-            setfield(self, field, functor)
-        self._phaseTP = (phase, T, P)
-    
     def default(self, slots=None):
         if not slots:
             slots = self.missing(slots)   
-        has = hasattr
+        hasfield = hasattr
         # Default to Water property values
         if 'CAS' in slots:
             self.CAS = self.ID
@@ -486,13 +483,13 @@ class Chemical:
             self.sigma.model(0.072055)
         if 'mu' in slots:
             mu = self.mu
-            if has(mu, 'l'):
+            if hasfield(mu, 'l'):
                 mu.l.model(0.00091272)
             if not mu:
                 mu.model(0.00091272)
         if 'k' in slots:
             k = self.k
-            if has(k, 'l'):
+            if hasfield(k, 'l'):
                 k.l.model(0.5942)
             if not k:
                 k.model(0.5942)
@@ -511,20 +508,16 @@ class Chemical:
             Cp = self.Cp
             phase_ref = self.phase_ref
             getfield = getattr
-            has_phase_ref = has(Cp, phase_ref)
-            if has_phase_ref:
-                Cp_phase = getfield(Cp, phase_ref)
-                Cp_phase.model(4.18*MW, var='Cp')
-            else:
+            single_phase = isinstance(Cp, TDependentModelHandle)
+            if single_phase:
                 Cp.model(4.18*MW, var='Cp')
                 Cp_phase = Cp
+            else:
+                Cp_phase = getfield(Cp, phase_ref)
+                Cp_phase.model(4.18*MW, var='Cp')
             self._init_energies(Cp, self.Hvap, self.Psat, self.Hfus, self.Tm,
-                                self.Tb, self.eos, self.eos_1atm, self.phase_ref)
-            if not has_phase_ref:
-                self.H = getfield(self.H, phase_ref)
-                self.S = getfield(self.S, phase_ref)
-                self.H_excess = getfield(self.H_excess, phase_ref)
-                self.S_excess = getfield(self.S_excess, phase_ref)
+                                self.Tb, self.eos, self.eos_1atm, self.phase_ref,
+                                single_phase and phase_ref)
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cp', 'Hf', 'sigma',
                                    'mu', 'k', 'Hc', 'epsilon', 'H',
@@ -557,7 +550,7 @@ class Chemical:
         self.Cp = ChemicalPhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
-        self._phaseTP = (None, None, None)
+        self._locked_state = LockedState()
         self.ID = ID
         return self
     
@@ -569,6 +562,7 @@ class Chemical:
         return self
     
     def phase(self, T=298.15, P=101325.):
+        if self._locked_state.phase: return self._locked_state.phase
         if self.Tm and T <= self.Tm: return 's'
         if self.Psat and P <= self.Psat(T): return 'g'
         else: return 'l'
@@ -576,6 +570,24 @@ class Chemical:
     @property
     def phase_ref(self):
         return self._phase_ref
+    
+    @property
+    def locked_state(self):
+        return self._locked_state
+    
+    def lock_state(self, phase=None, T=None, P=None):
+        if self.locked_state:
+            raise ValueError(f"{self}'s state is already locked")    
+        elif T and P:
+            if phase:
+                lock_locked_state(self, phase, T, P)
+            else:
+                lock_TP(self, T, P)                
+        elif phase:
+            lock_phase(self, phase)
+        else:
+            raise ValueError("must pass a either a phase, T and P, or both to lock state")
+        self._locked_state.__init__(phase, T, P)
     
     def show(self):
         getfield = getattr
@@ -611,7 +623,53 @@ class Chemical:
     def __repr__(self):
         return f'<{chemical_identity(self)}>'
     
+    
+def lock_TP(chemical, T, P):
+    getfield = getattr
+    setfield = setattr
+    phases = ('s', 'l', 'g')
+    for field in _phase_properties:
+        phase_property = getfield(chemical, field)
+        for phase in phases:
+            model_handle = getfield(phase_property, phase)
+            try: value = model_handle.lock_TP(T, P)
+            except: value = None
+            setfield(phase_property, phase, value)
+    for field in _liquid_only_properties:
+        model_handle = getfield(chemical, field) 
+        value = model_handle.lock_TP(T, P)
+        setfield(chemical, field, value)
 
+def lock_phase(chemical, phase):
+    getfield = getattr
+    setfield = setattr
+    for field in _phase_properties:
+        phase_property = getfield(chemical, field)
+        model_handle = getfield(phase_property, phase)
+        setfield(chemical, field, model_handle)
+    for field in _free_energies:
+        phase_property = getfield(chemical, field)
+        functor = getfield(phase_property, phase)
+        setfield(chemical, field, functor)
+
+def lock_locked_state(chemical, phase, T, P):
+    getfield = getattr
+    setfield = setattr
+    for field in _phase_properties:
+        phase_property = getfield(chemical, field)
+        model_handle = getfield(phase_property, phase)
+        try: value = model_handle.lock_TP(T, P)
+        except: value = None
+        setfield(chemical, field, value)
+    for field in _liquid_only_properties:
+        model_handle = getfield(chemical, field) 
+        try: value = model_handle.lock_TP(T, P)
+        except: value = None
+        setfield(chemical, field, value) 
+    for field in _free_energies:
+        phase_property = getfield(chemical, field)
+        functor = getfield(phase_property, phase)
+        setfield(chemical, field, functor)
 
 # # Fire Safety Limits
 # self.Tflash = Tflash(CAS)

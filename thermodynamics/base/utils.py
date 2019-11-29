@@ -6,6 +6,9 @@ Created on Wed Oct 30 13:37:22 2019
 """
 from .units_of_measure import units_of_measure
 
+def shallow_copy(phase):
+    return phase.copy() if hasattr(phase, 'copy') else phase
+
 def var_with_units(var, units=units_of_measure):
     if '.' in var:
         var_, phase = var.split(".")

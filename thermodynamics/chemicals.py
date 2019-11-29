@@ -44,7 +44,7 @@ class Chemicals:
         self._compile()
     
     def subgroup(self, IDs):
-        return self.__class__([getattr(self, i) for i in IDs])
+        return type(self)([getattr(self, i) for i in IDs])
         
     def extend(self, chemicals):
         """Extend with more Chemicals."""
@@ -252,7 +252,7 @@ class CompiledChemicals(Chemicals):
         return chemical in self._chemicals
     
     def __iter__(self):
-        yield from self._chemicals
+        return iter(self._chemicals)
         
     def _equilibrium_indices(self, nonzero):
         """Return indices of species in equilibrium."""

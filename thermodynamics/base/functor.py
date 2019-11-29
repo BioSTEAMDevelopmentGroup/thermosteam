@@ -62,7 +62,8 @@ def functor_base_and_params(function):
 # %% Decorator
   
 def functor(function=None, var=None, njitcompile=True, wrap=None,
-            definitions=None, units_of_measure=None, math="", refs="", doc=None):
+            definitions=None, units_of_measure=None, math="", refs="",
+            doc=None):
     if function:
         base, params = functor_base_and_params(function)
         if njitcompile and not isinstance(function, CPUDispatcher): 
@@ -79,6 +80,7 @@ def functor(function=None, var=None, njitcompile=True, wrap=None,
         if wrap: cls.wrapper(wrap)
         if doc:  cls.__doc__ = doc
         else: autodoc_functor(cls, base, math, refs)
+        cls.__module__ = function.__module__
         return cls
     else:
         return lambda function: functor(function, var, njitcompile, wrap)
@@ -87,12 +89,14 @@ def functor(function=None, var=None, njitcompile=True, wrap=None,
 # %% Decorators
     
 class FunctorFactory:
+    __slots__ = ('var',)
    
     def __init__(self, var):
         self.var = var
     
     def __call__(self, function=None, njitcompile=True, wrap=None,
-                 definitions=None, units_of_measure=None, math="", refs="", doc=None):
+                 definitions=None, units_of_measure=None, math="", refs="",
+                 doc=None):
         return functor(function, self.var, njitcompile, wrap,
                        definitions, units_of_measure, math, refs, doc)
     

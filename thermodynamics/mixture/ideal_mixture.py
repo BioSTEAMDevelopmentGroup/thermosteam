@@ -35,12 +35,16 @@ class IdealMixtureTPProperty:
         self._nonzero = nonzero = z!=0
         if (T, P) != self._TP:
             self._data[:] = 0.
-            self._data[nonzero] = [i(T, P) for i,j in zip(self._properties, nonzero) if j]
+            iscallable = callable
+            self._data[nonzero] = [i(T, P) if iscallable(i) else i
+                                   for i,j in zip(self._properties, nonzero) if j]
             self._TP = (T, P)
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [i(T, P) for i,j in zip(self._properties, new_nonzero) if j]
+            iscallable = callable
+            self._data[new_nonzero] = [i(T, P) if iscallable(i) else i
+                                       for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
     
@@ -64,12 +68,15 @@ class IdealMixtureTProperty:
         self._nonzero = nonzero = z!=0
         if T != self._T:
             self._data[:] = 0.
-            self._data[nonzero] = [i(T) for i,j in zip(self._properties, nonzero) if j]
+            iscallable = callable
+            self._data[nonzero] = [i(T) if iscallable(i) else i
+                                   for i,j in zip(self._properties, nonzero) if j]
             self._T = T
         else:
             nomatch = self._nonzero != nonzero
             new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [i(T) for i,j in zip(self._properties, new_nonzero) if j]
+            self._data[new_nonzero] = [i(T) if iscallable(i) else i
+                                       for i,j in zip(self._properties, new_nonzero) if j]
             self._nonzero = logical_or(self._nonzero, nonzero)
         return (z * self._data).sum()
 
@@ -117,26 +124,33 @@ chemical_phaseTP_methods = ('H_excess', 'S_excess', 'mu', 'V', 'k', 'S')
 chemical_T_methods  = ('Hvap', 'sigma', 'epsilon')
 
 class IdealMixture:
-    __slots__ = chemical_phaseTP_methods + chemical_phaseT_methods + chemical_T_methods
+    __slots__ = (('chemicals',)
+                 + chemical_phaseTP_methods
+                 + chemical_phaseT_methods
+                 + chemical_T_methods)
     
     def __init__(self, chemicals=()):
         getfield = getattr
         setfield = setattr
+        any_ = any
+        self.chemicals = chemicals
         for var in chemical_phaseT_methods:
             properties = [getfield(i, var) for i in chemicals]
-            if any(properties): setfield(self, var, IdealMixturePhaseTProperty(properties))
+            if any_(properties): setfield(self, var, IdealMixturePhaseTProperty(properties))
         for var in chemical_phaseTP_methods:
             properties = [getfield(i, var) for i in chemicals]
-            if any(properties): setfield(self, var, IdealMixturePhaseTPProperty(properties))
+            if any_(properties): setfield(self, var, IdealMixturePhaseTPProperty(properties))
         for var in chemical_T_methods:
             properties = [getfield(i, var) for i in chemicals]
-            if any(properties): setfield(self, var, IdealMixtureTProperty(properties))
+            if any_(properties): setfield(self, var, IdealMixtureTProperty(properties))
     
     def __repr__(self):
-        return f"<{type(self).__name__}>"
+        IDs = [str(i) for i in self.chemicals]
+        return f"{type(self).__name__}([{', '.join(IDs)}])"
     
     def show(self):
-        info = f"{type(self).__name__}:"
+        IDs = [str(i) for i in self.chemicals]
+        info = f"{type(self).__name__}: {', '.join(IDs)}"
         getfield = getattr
         for i in self.__slots__[1:]:
             f = getfield(self, i)

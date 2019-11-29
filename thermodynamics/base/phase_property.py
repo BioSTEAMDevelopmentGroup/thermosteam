@@ -7,6 +7,7 @@ Created on Thu Oct 31 02:38:40 2019
 from .handle_builder import HandleBuilder
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
+from .utils import shallow_copy
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -22,9 +23,9 @@ def set_phase_property(phase_property, phase, builder, data):
     else:
         prop = builder(data)
     setattr(phase_property, phase, prop)
+    
 
-
-# %% Abstract class
+# %% Abstract class    
 
 @functor_lookalike
 class PhaseProperty:
@@ -37,7 +38,12 @@ class PhaseProperty:
 
     def __bool__(self):
         return any((self.s, self.l, self.g)) 
-        
+    
+    def copy(self):
+        return self.__class__(shallow_copy(self.s),
+                              shallow_copy(self.l),
+                              shallow_copy(self.g))
+    
     @property
     def var(self):
         for phase in ('s', 'l', 'g'):
