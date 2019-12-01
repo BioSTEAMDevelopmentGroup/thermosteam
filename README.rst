@@ -1,5 +1,5 @@
 ========================================================
-Ether: The Thermodynamic Property Package 
+Ether: The Extendable Thermodynamic Property Package 
 ========================================================
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
    :target: https://github.com/yoelcortes/ether/blob/master/LICENSE.txt
@@ -47,5 +47,5 @@ Citation
 
 To cite Ether in publications use::
 
-    Yoel Cortes-Pena (2019). Ether: The Thermodynamic Property Package.
+    Yoel Cortes-Pena (2019). Ether: The Extendable Thermodynamic Property Package.
     https://github.com/yoelcortes/ether
