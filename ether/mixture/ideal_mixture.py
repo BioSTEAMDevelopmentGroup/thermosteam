@@ -5,7 +5,9 @@ Created on Thu Nov  7 07:37:35 2019
 @author: yoelr
 """
 from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor
+from ..settings import settings
 from numpy import asarray, logical_and, logical_or, zeros
+from flexsolve import SolverError
 
 __all__ = ('IdealMixture',
            'IdealMixturePhaseTProperty',
@@ -124,12 +126,12 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 mixture_phaseT_methods = ('H', 'Cp')
 mixture_phaseTP_methods = ('H_excess', 'S_excess', 'mu', 'V', 'k', 'S')
 mixture_T_methods  = ('Hvap', 'sigma', 'epsilon')
+mixture_methods = (*mixture_phaseT_methods,
+                   *mixture_phaseTP_methods,
+                   *mixture_T_methods)
 
 class IdealMixture:
-    __slots__ = (('chemicals',)
-                 + mixture_phaseTP_methods
-                 + mixture_phaseT_methods
-                 + mixture_T_methods)
+    __slots__ = ('chemicals', *mixture_methods)
     
     def __init__(self, chemicals=()):
         getfield = getattr
@@ -145,6 +147,88 @@ class IdealMixture:
         for var in mixture_T_methods:
             properties = [getfield(i, var) for i in chemicals]
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties))
+    
+    def solve_T(self, phase, z, H, T_guess):
+        if settings.rigorous_energy_balance:
+            # First approximation
+            Cp = self.Cp(phase, z, T_guess)
+            T = T_guess + (H - self.H(phase, z, T_guess))/Cp
+        
+            # Solve enthalpy by iteration
+            it = 0
+            it2 = 0
+            Cp = self.Cp(phase, z, T_guess)
+            while abs(T - T_guess) > 0.01:
+                T_guess = T
+                T += (H - self.H(phase, z, T))/Cp
+                if it == 5:
+                    it = 0
+                    it2 += 1
+                    Cp = self.Cp(phase, z, T_guess)
+                    if it2 > 10:
+                        raise SolverError("could not solve temperature "
+                                          "given enthalpy")
+                else: it += 1
+        else:
+            return T_guess + (H - self.H(phase, z, T_guess))/self.Cp(phase, z, T_guess)    
+                
+    def xsolve_T(self, phase_data, H, T_guess):
+        T = T_guess
+        if settings.rigorous_energy_balance:
+            # First approximation
+            Cp = self.xCp(phase_data, T_guess)
+            T = T_guess + (H - self.xH(phase_data, T_guess))/Cp
+        
+            # Solve enthalpy by iteration
+            it = 0
+            it2 = 0
+            Cp = self.xCp(phase_data, T_guess)
+            while abs(T - T_guess) > 0.01:
+                T_guess = T
+                T += (H - self.xH(phase_data, T))/Cp
+                if it == 5:
+                    it = 0
+                    it2 += 1
+                    Cp = self.xCp(phase_data, T_guess)
+                    if it2 > 10:
+                        raise SolverError("could not solve temperature "
+                                          "given enthalpy")
+                else: it += 1
+        else:
+            return T_guess + (H - self.xH(phase_data, T_guess))/self.xCp(phase_data, T_guess)   
+        
+    
+    def xCp(self, phase_data, T):
+        Cp = self.Cp
+        return sum([Cp(phase, z, T) for phase, z in phase_data])
+    
+    def xH(self, phase_data, T):
+        H = self.H
+        return sum([H(phase, z, T) for phase, z in phase_data])
+    
+    def xS(self, phase_data, T, P):
+        S = self.S
+        return sum([S(phase, z, T, P) for phase, z in phase_data])
+    
+    def xH_excess(self, phase_data, T, P):
+        H_excess = self.H_excess
+        return sum([H_excess(phase, z, T, P) for phase, z in phase_data])
+    
+    def xS_excess(self, phase_data, T, P):
+        S_excess = self.S_excess
+        return sum([S_excess(phase, z, T, P) for phase, z in phase_data])
+    
+    def xV(self, phase_data, T, P):
+        V = self.V
+        return sum([V(phase, z, T, P) for phase, z in phase_data])
+    
+    def xmu(self, phase_data, T, P):
+        mu = self.mu
+        return sum([mu(phase, z, T, P) for phase, z in phase_data])
+    
+    def xk(self, phase_data, T, P):
+        k = self.k
+        return sum([k(phase, z, T, P) for phase, z in phase_data])
     
     def __repr__(self):
         IDs = [str(i) for i in self.chemicals]

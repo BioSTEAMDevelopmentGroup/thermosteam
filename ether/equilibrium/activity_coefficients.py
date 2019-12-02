@@ -51,7 +51,7 @@ class ActivityCoefficients:
     
     @property
     def chemicals(self):
-        return self.chemicals
+        return self._chemicals
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

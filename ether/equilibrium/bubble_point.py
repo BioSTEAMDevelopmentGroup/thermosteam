@@ -18,15 +18,13 @@ class BubblePoint:
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
-        if not thermo:
-            thermo = settings.default_thermo
-            assert thermo, "no available 'Thermo' object"
+        thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo)
         cached = self._cached
         if key in cached:
             other = cached[key]
-            fill_like(self, other)
+            fill_like(self, other, self.__slots__)
         else:
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)

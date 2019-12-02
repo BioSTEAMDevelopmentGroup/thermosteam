@@ -16,8 +16,11 @@ __all__ = ('Thermo',)
 @read_only
 class Thermo:
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
-    
+    _cached = {}
     def __new__(cls, chemicals, mixture=None, Gamma=None, Phi=None, PCF=None):
+        args = (chemicals, mixture, Gamma, Phi, PCF)
+        cached = cls._cached
+        if args in cached: return cached[args]
         self = super().__new__(cls)
         PCF = PCF or eq.IdealPoyintingCorrectionFactor
         Gamma = Gamma or eq.DortmundActivityCoefficients
@@ -34,6 +37,7 @@ class Thermo:
         setattr(self, 'Phi', Phi)
         setattr(self, 'PCF', PCF)    
         settings.default_thermo = self
+        cached[args] = self
         return self
     
     def __repr__(self):

@@ -18,7 +18,7 @@ chems.Lignin.lock_state('l', 298.15, 101325)
 chems.compile()
 thermo = ether.Thermo(chems)
 
-# %% Equilibrium
+# %% Test bubble point and dew point
 
 d_bst = bst.Dortmund(*bst.Species('Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol'))
 bp_bst = bst.BubblePoint(d_bst)
@@ -43,10 +43,10 @@ dT_bst, dx_at_P_bst = dp_bst.solve_Tx(z, P_dp)
 dP_ether, dx_at_T_ether = dp_ether.solve_Px(z, T_dp)
 dT_ether, dx_at_P_ether = dp_ether.solve_Tx(z, P_dp)
 
-
-# d_bst = Doretherund(*Species('Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol'))
-# d_ether = ether.DoretherundActivityCoefficients(water, ethanol, methanol, glycerol, propanol)
-# xs = np.array([0.2, 0.4, 0.05, 0.25, 0.1])
-# T = 350.
-# gamma_bst = d_bst(xs, T)
-# gamma_ether = d_ether(xs, T)
+# %% Test Equilibrium
+vle = ether.VLE()
+phases = ('l', 'g')
+material_data = np.array([chems.kwarray(Water=30, Ethanol=10),
+                          chems.kwarray(Glycerol=3, Ethanol=10, Propanol=5)])
+phase_data = tuple(zip(phases, material_data))
+vle(phases, material_data, T=400, P=101325)

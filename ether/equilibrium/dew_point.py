@@ -15,26 +15,27 @@ __all__ = ('DewPoint',)
 
 class DewPoint:
     __slots__ = ('chemicals', 'phi', 'gamma',
-                 'pcf', 'P', 'T', 'x', 'Psats', 'Tbs')
+                 'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
-    def __init__(self, chemicals=(), thermo=None):
-        if not thermo:
-            thermo = settings.default_thermo
-            assert thermo, "no available 'Thermo' object"
+    def __init__(self, chemicals=(), thermo=None, bp=None):
+        thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo)
         cached = self._cached
         if key in cached:
             other = cached[key]
-            fill_like(self, other)
+            fill_like(self, other, self.__slots__)
         else:
-            self.gamma = thermo.Gamma(chemicals)
-            self.phi = thermo.Phi(chemicals)
-            self.pcf = thermo.PCF(chemicals)
-            self.Psats = [i.Psat for i in chemicals]
-            self.Tbs = array([s.Tb for s in chemicals])
-            self.chemicals = chemicals
+            if bp:
+                fill_like(self, bp, self.__slots__[:-3])
+            else:
+                self.gamma = thermo.Gamma(chemicals)
+                self.phi = thermo.Phi(chemicals)
+                self.pcf = thermo.PCF(chemicals)
+                self.Psats = [i.Psat for i in chemicals]
+                self.Tbs = array([s.Tb for s in chemicals])
+                self.chemicals = chemicals
             self.P = self.T = self.x = None
             cached[key] = self
     
