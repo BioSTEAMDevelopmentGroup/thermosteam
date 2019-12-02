@@ -5,7 +5,7 @@ Created on Mon Dec  2 01:41:50 2019
 @author: yoelr
 """
 from .settings import settings
-from .exceptions import UndefinedChemical, UndefinedPhase
+from .exceptions import UndefinedPhase
 import numpy as np
 
 __all__ = ('MaterialData', 'MultiPhaseMaterialData')
@@ -22,11 +22,12 @@ def nonzeros(IDs, data):
     return [IDs[i] for i in index], data[index]
 
 class MaterialData:
-    __slots__ = ('phase', 'T', 'P', '_data', '_chemicals')
+    __slots__ = ('phase', 'T', 'P', '_data', '_units', '_chemicals')
     
-    def __init__(self, phase, T, P, data=None, chemicals=None, **ID_data):
+    def __init__(self, phase, T, P, data=None, units=None, chemicals=None, **ID_data):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
         self.phase = phase
+        self._units = units
         self.T = T
         self.P = P
         if data:
@@ -50,23 +51,25 @@ class MaterialData:
     def data(self):
         return self._data
     @property
+    def units(self):
+        return self._units
+    @property
     def chemicals(self):
         return self._chemicals
         
     def sum(self):
         return self._data.sum()
     
-    
     def __iter__(self):
         return self._data.__iter__()
         
     def __getitem__(self, IDs):
         if isinstance(IDs, str):
-            return self._data[self._chemicals.index[IDs]]
+            return self._data[self._chemicals.index(IDs)]
         elif IDs == all_index:
             return self._data
         else:
-            return self._data[self._chemicals.indices[IDs]]
+            return self._data[self._chemicals.indices(IDs)]
     
     def __setitem__(self, IDs, data):
         if isinstance(IDs, str):
@@ -96,7 +99,11 @@ class MaterialData:
         if len_ == 0:
             return basic_info + ' data: (empty)' 
         else:
-            start_data = " data: "
+            units = self.units
+            if units:
+                start_data = f" data ({units}): "
+            else:
+                start_data = " data: "
         new_line_spaces = len(start_data) * ' '        
         data_info = ''
         lengths = [len(i) for i in IDs]
@@ -128,11 +135,12 @@ class MaterialData:
       
         
 class MultiPhaseMaterialData:
-    __slots__ = ('T', 'P', '_phases', '_phase_index', '_data', '_chemicals')
+    __slots__ = ('T', 'P', '_phases', '_phase_index', '_data', '_units', '_chemicals')
     
-    def __init__(self, phases, T, P, data=None, chemicals=None):
+    def __init__(self, phases, T, P, data=None, units=None, chemicals=None):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
         self._phases = phases
+        self._units = units
         self._phase_index  = {j:i for i,j in enumerate(phases)}
         self.T = T
         self.P = P
@@ -171,6 +179,9 @@ class MultiPhaseMaterialData:
     @property
     def phases(self):
         return self._phases
+    @property
+    def units(self):
+        return self._units
     @property
     def chemicals(self):
         return self._chemicals
@@ -246,10 +257,11 @@ class MultiPhaseMaterialData:
 
         # Length of species column
         all_lengths = [len(i) for i in IDs]
-        maxlen = max(all_lengths + [7])  # include length of the word 'species'
+        maxlen = max(all_lengths + [9])  # include length of the word 'species'
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''
+        add_header = bool(self.units)
         for phase in self.phases:
             phase_data = self[phase, all_IDs]
             IDs, data = nonzeros(IDs, phase_data)
@@ -280,6 +292,14 @@ class MultiPhaseMaterialData:
             spaces = ' ' * (maxlen - lengths[l-1])
             flowrates += (f'{IDs[l-1]} ' + spaces
                           + f' {data[l-1]:.3g}')
+
+            # Add header to flow rates
+            if add_header:
+                spaces = ' ' * (maxlen - 9)
+                beginning = (f'{new_line_spaces}chemicals{spaces}  {self.units}\n'
+                             + beginning)
+            else:
+                add_header = False
 
             # Put it together
             phases_flowrates_info += beginning + flowrates + '\n\n'

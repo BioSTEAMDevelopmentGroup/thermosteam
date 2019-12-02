@@ -28,7 +28,7 @@ class EtherSettings:
         if isinstance(chemicals, ether.Chemicals):
             chemicals.compile()
         if not chemicals:
-            thermo = settings.default_thermo
+            thermo = settings._thermo
             assert thermo, "no available 'Thermo' object"
             chemicals = thermo.chemicals
         else:
@@ -44,16 +44,21 @@ class EtherSettings:
         self._rigorous_energy_balance = bool(isrigorous)
     
     @property
+    def default_chemicals(self):
+        thermo = settings.default_thermo
+        assert thermo, "no available 'Thermo' object"
+        return thermo.chemicals
+    @default_chemicals.setter
+    def default_chemicals(self, chemicals):
+        ether.Thermo(chemicals)
+    
+    @property
     def default_thermo(self):
         return self._thermo
-    
     @default_thermo.setter
     def default_thermo(self, thermo):
         if isinstance(thermo, ether.Thermo):
             self._thermo = thermo
-        elif isinstance(thermo, ether.Chemicals):
-            thermo.compile()
-            self._thermo = ether.Thermo(thermo)
         else:
             raise ValueError("default must be a 'Thermo' object, "
                             f"not a '{type(thermo).__name__}'")
