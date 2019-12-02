@@ -44,7 +44,8 @@ dT_ether, dx_at_P_ether = dp_ether.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
 
-material = ether.MultiPhaseMaterialData(phases='lg', T=450., P=101325., units='kmol/hr')
+material = ether.MultiPhaseMaterialData(phases='Llg', T=450., P=101325., units='kmol/hr')
+material['L', ('Glycerol')] = 0.1
 material['l', ('Water', 'Ethanol', 'Glycerol')] = (50, 30, 10)
 material['g', ('Ethanol', 'Propanol')] = (10, 5)
 vle = ether.VLE(material)

@@ -9,11 +9,24 @@ import ether
 __all__ = ('settings',)
 
 class EtherSettings:
-    __slots__ = ('_thermo', '_rigorous_energy_balance')
+    __slots__ = ('_thermo', '_rigorous_energy_balance', '_phase_equivalents')
     
     def __init__(self):
         self._thermo = None
         self._rigorous_energy_balance = False
+        self._phase_equivalents = {'v': 'v',
+                                   'S': 's',
+                                   'L': 'l',
+                                   'G': 'g',
+                                   'V': 'g',
+                                   'solid': 's',
+                                   'liquid': 'l',
+                                   'gas': 'g',
+                                   'vapor': 'g'}
+    
+    @property
+    def phase_equivalents(self):
+        return self._phase_equivalents
     
     def get_default_thermo(self, thermo):
         if not thermo:

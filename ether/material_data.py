@@ -24,7 +24,8 @@ def nonzeros(IDs, data):
 class MaterialData:
     __slots__ = ('phase', 'T', 'P', '_data', '_units', '_chemicals')
     
-    def __init__(self, phase, T, P, data=None, units=None, chemicals=None, **ID_data):
+    def __init__(self, phase='l', T=298.15, P=101325.,
+                 data=None, units='', chemicals=None, **ID_data):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
         self.phase = phase
         self._units = units
@@ -74,6 +75,7 @@ class MaterialData:
     def __setitem__(self, IDs, data):
         if isinstance(IDs, str):
             index = self._chemicals.index(IDs)
+            self._data[index] = data
         elif IDs == all_index:
             self._data[:] = data
         else:
@@ -86,7 +88,7 @@ class MaterialData:
             kwdata = ", " + ", ".join(data)
         else:
             kwdata = ""
-        return f"{type(self).__name__}('{self.phase}', {self.T}, {self.P}{kwdata})"
+        return f"{type(self).__name__}(phase='{self.phase}', T={self.T}, P={self.P}, units='{self.units}'{kwdata})"
     
     def _info(self, N):
         """Return string with all specifications."""
@@ -137,7 +139,8 @@ class MaterialData:
 class MultiPhaseMaterialData:
     __slots__ = ('T', 'P', '_phases', '_phase_index', '_data', '_units', '_chemicals')
     
-    def __init__(self, phases, T, P, data=None, units=None, chemicals=None):
+    def __init__(self, phases='lg', T=298.15, P=101325.,
+                 data=None, units=None, chemicals=None):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
         self._phases = phases
         self._units = units
@@ -242,7 +245,7 @@ class MultiPhaseMaterialData:
         self._data[phases_index, IDs_index] = data
     
     def __repr__(self):
-        return f"{type(self).__name__}(phases='{self.phases}', T={self.T}, P={self.P}, data=...)"
+        return f"{type(self).__name__}(phases='{self.phases}', T={self.T}, P={self.P}, units='{self.units}', data=...)"
     
     def _info(self, N):
         """Return string with all specifications."""
@@ -264,8 +267,9 @@ class MultiPhaseMaterialData:
         add_header = bool(self.units)
         for phase in self.phases:
             phase_data = self[phase, all_IDs]
-            IDs, data = nonzeros(IDs, phase_data)
-            
+            IDs, data = nonzeros(all_IDs, phase_data)
+            if not IDs: continue
+        
             # Get basic structure for phase data
             phase_full_name = phase_names[phase]
             beginning = f' {phase_full_name}: '
@@ -298,12 +302,11 @@ class MultiPhaseMaterialData:
                 spaces = ' ' * (maxlen - 9)
                 beginning = (f'{new_line_spaces}chemicals{spaces}  {self.units}\n'
                              + beginning)
-            else:
                 add_header = False
 
             # Put it together
-            phases_flowrates_info += beginning + flowrates + '\n\n'
+            phases_flowrates_info += beginning + flowrates + '\n'
             
-        return basic_info + phases_flowrates_info[:-2]
+        return basic_info + phases_flowrates_info[:-1]
     show = MaterialData.show
     _ipython_display_ = show
