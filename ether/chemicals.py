@@ -26,17 +26,23 @@ class Chemicals:
               * CAS number
         
     """
-    
+    _cached = {}
     def __new__(cls, chemicals):
-        self = super().__new__(cls)
-        setfield = object.__setattr__
-        isa = isinstance
-        for chem in chemicals:
-            if isa(chem, Chemical):
-                setfield(self, chem.ID, chem)
-            else:
-                setfield(self, chem, Chemical(chem))
-        return self
+        chemicals = tuple(chemicals)
+        cached = cls._cached
+        if chemicals in cached:
+            return cached[chemicals]
+        else:
+            self = super().__new__(cls)
+            setfield = object.__setattr__
+            isa = isinstance
+            for chem in chemicals:
+                if isa(chem, Chemical):
+                    setfield(self, chem.ID, chem)
+                else:
+                    setfield(self, chem, Chemical(chem))
+            cached[chemicals] = self
+            return self
     
     @property
     def IDs(self):
@@ -131,6 +137,7 @@ class CompiledChemicals(Chemicals):
         dct['_isheavy'] = np.array([i.Tb in (np.inf, None) for i in chemicals])
         dct['_islight'] = np.array([i.Tb in (0, -np.inf) for i in chemicals], dtype=bool)
         nonfinite = (np.inf, -np.inf, None)
+        # TODO: Fix equilibrium indices according to property package
         dct['_has_equilibrium'] = np.array([(bool(i.Dortmund)
                                              and i.Tb not in nonfinite)
                                             for i in chemicals])
@@ -231,7 +238,7 @@ class CompiledChemicals(Chemicals):
         """
         try: return self._index[ID]
         except KeyError:
-            if ID not in self._indexdct: raise UndefinedChemical(ID)
+            raise UndefinedChemical(ID)
 
     def indices(self, IDs):
         """Return indices of specified chemicals.

@@ -24,6 +24,18 @@ class EtherSettings:
             thermo = ether.Thermo(thermo)
         return thermo
     
+    def get_default_chemicals(self, chemicals):
+        if isinstance(chemicals, ether.Chemicals):
+            chemicals.compile()
+        if not chemicals:
+            thermo = settings.default_thermo
+            assert thermo, "no available 'Thermo' object"
+            chemicals = thermo.chemicals
+        else:
+            chemicals = ether.Chemicals(chemicals)
+            chemicals.compile()
+        return chemicals
+    
     @property
     def rigorous_energy_balance(self):
         return self._rigorous_energy_balance

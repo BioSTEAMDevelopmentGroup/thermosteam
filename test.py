@@ -44,9 +44,9 @@ dP_ether, dx_at_T_ether = dp_ether.solve_Px(z, T_dp)
 dT_ether, dx_at_P_ether = dp_ether.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
-vle = ether.VLE()
-phases = ('l', 'g')
-material_data = np.array([chems.kwarray(Water=30, Ethanol=10),
-                          chems.kwarray(Glycerol=3, Ethanol=10, Propanol=5)])
-phase_data = tuple(zip(phases, material_data))
-vle(phases, material_data, T=400, P=101325)
+
+material = ether.MultiPhaseMaterialData(phases='lg', T=450., P=101325.)
+material['l', ('Water', 'Ethanol', 'Glycerol')] = (50, 30, 10)
+material['g', ('Ethanol', 'Propanol')] = (10, 5)
+vle = ether.VLE(material)
+vle(T=400, P=101325)
