@@ -14,15 +14,11 @@ class EtherSettings:
     def __init__(self):
         self._thermo = None
         self._rigorous_energy_balance = False
-        self._phase_equivalents = {'v': 'v',
-                                   'S': 's',
+        self._phase_equivalents = {'S': 's',
                                    'L': 'l',
                                    'G': 'g',
                                    'V': 'g',
-                                   'solid': 's',
-                                   'liquid': 'l',
-                                   'gas': 'g',
-                                   'vapor': 'g'}
+                                   'v': 'g',}
     
     @property
     def phase_equivalents(self):
