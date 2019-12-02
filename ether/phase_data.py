@@ -8,46 +8,47 @@ from .settings import settings
 from .exceptions import UndefinedPhase
 import numpy as np
 
-__all__ = ('MaterialData', 'MultiPhaseMaterialData')
-
-phase_names = {'s': 'solid',
-               'l': 'liquid',
-               'L': 'LIQUID',
-               'g': 'vapor'}
+__all__ = ('PhaseData',
+           'MultiPhaseData',
+           'PhaseMolarFlow', 
+           'MultiPhaseMolarFlow',
+           'PhaseMassFlow', 
+           'MultiPhaseMassFlow',
+           'PhaseVolumetricFlow',
+           'MultiPhaseVolumetricFlow')
 
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
-
-class MaterialData:
-    __slots__ = ('_data', '_units', '_chemicals')
+        
+class PhaseData:
+    __slots__ = ('_data', '_chemicals')
+    units = None
     
-    def __init__(self, data=None, units='', chemicals=None, **ID_data):
+    def __new__(cls, data=None, chemicals=None, **IDdata):
+        self = super().__new__(cls)
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
-        self._units = units
         if data:
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
-            if ID_data:
+            if IDdata:
                 raise ValueError("may specify either 'data' or "
-                                 "'ID_data', but not both")
+                                 "'IDdata', but not both")
             elif data.size == chemicals.size:
                 self.data = data
             else:
                 raise ValueError('size of data must be equal to '
-                                 'size of ID_data')
+                                 'size of chemicals')
         else:
             self._data = np.zeros(chemicals.size, float)
-            if ID_data:
-                IDs, data = zip(*ID_data.items())
+            if IDdata:
+                IDs, data = zip(*IDdata.items())
                 self._data[chemicals.indices(IDs)] = data
+        return self
     
     @property
     def data(self):
         return self._data
-    @property
-    def units(self):
-        return self._units
     @property
     def chemicals(self):
         return self._chemicals
@@ -56,9 +57,10 @@ class MaterialData:
         return self._data.sum()
         
     def _get_index(self, IDs):
-        if isinstance(IDs, str):
+        isa = isinstance
+        if isa(IDs, str):
             return self._chemicals.index(IDs)
-        elif isinstance(IDs, slice):
+        elif isa(IDs, slice):
             return IDs
         else:
             return self._chemicals.indices(IDs)
@@ -73,29 +75,22 @@ class MaterialData:
         return self._data.__iter__()
     
     def __repr__(self):
-        data = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data)]
-        if data:
-            kwdata = ", ".join(data) + ", "
-        else:
-            kwdata = ""
-        return f"{type(self).__name__}({kwdata}units='{self.units}')"
+        IDdata = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
+        return f"{type(self).__name__}({', '.join(IDdata)})"
     
     def _info(self, N):
         """Return string with all specifications."""
-        basic_info = (f"{type(self).__name__}:\n")
         IDs = self.chemicals.IDs
         data = self.data
         IDs, data = nonzeros(IDs, data)
         len_ = len(data)
         if len_ == 0:
-            return basic_info + ' data: (empty)' 
+            return f"{type(self).__name__}: (empty)"
+        elif self.units:
+            basic_info = f"{type(self).__name__} ({self.units}):\n "
         else:
-            units = self.units
-            if units:
-                start_data = f" data ({units}): "
-            else:
-                start_data = " data: "
-        new_line_spaces = len(start_data) * ' '        
+            basic_info = f"{type(self).__name__}:\n "
+        new_line_spaces = ' '        
         data_info = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1
@@ -108,8 +103,7 @@ class MaterialData:
             data_info += IDs[i] + spaces + f' {data[i]:.3g}\n' + new_line_spaces
         spaces = ' ' * (maxlen - lengths[len_-1])
         data_info += IDs[len_-1] + spaces + f' {data[len_-1]:.3g}'
-        return (basic_info 
-              + start_data
+        return (basic_info
               + data_info)
 
     def show(self, N=5):
@@ -124,28 +118,48 @@ class MaterialData:
         print(self._info(N))
     _ipython_display_ = show
       
-        
-class MultiPhaseMaterialData:
-    __slots__ = ('_phases', '_phase_index', '_data', '_units', '_chemicals')
+
+class MultiPhaseData:
+    __slots__ = ('_phases', '_phase_index', '_phase_data', '_data', '_chemicals')
+    _cached_phase_index = {}
+    _PhaseData = PhaseData
+    units = PhaseData.units
     
-    def __init__(self, phases='lg', data=None, units=None, chemicals=None):
+    def __new__(cls, phases='lg', data=None, chemicals=None, **phase_data):
+        self = super().__new__(cls)
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
+        cached = cls._cached_phase_index
+        if phases in cached:
+            self._phase_index = cached[phases]
+        else:
+            self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
         self._phases = phases
-        self._units = units
-        self._phase_index  = {j:i for i,j in enumerate(phases)}
+        N_phases = len(phases)
+        M_chemicals = chemicals.size
         if data:
+            if phase_data:
+                raise ValueError("may specify either 'data' or "
+                                 "'phase_data', but not both")
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
             M, N = data.shape
-            assert M == len(phases), ('number of phases must be equal to '
-                                      'the number of data rows')
-            assert N == chemicals.size, ('size of chemicals '
-                                        'must be equal to '
-                                        'number of data columns')
+            assert M == N_phases, ('number of phases must be equal to '
+                                   'the number of data rows')
+            assert N == M_chemicals, ('size of chemicals '
+                                      'must be equal to '
+                                      'number of data columns')
             self._data = data
         else:
-            shape = (len(phases), chemicals.size)
-            self._data = np.zeros(shape, float)
+            shape = (N_phases, M_chemicals)
+            self._data = data = np.zeros(shape, float)
+            if phase_data:
+                chemical_indices = chemicals.indices
+                phase_index = self._get_phase_index
+                for phase, IDdata in phase_data.items():
+                    IDs, row = zip(*IDdata)
+                    self._data[phase_index(phase), chemical_indices(IDs)] = row
+        self._phase_data = tuple(zip(phases, data))
+        return self
     
     @property
     def data(self):
@@ -153,9 +167,6 @@ class MultiPhaseMaterialData:
     @property
     def phases(self):
         return self._phases
-    @property
-    def units(self):
-        return self._units
     @property
     def chemicals(self):
         return self._chemicals
@@ -168,6 +179,12 @@ class MultiPhaseMaterialData:
     
     def sum_chemicals(self):
         return self._data.sum(1)
+    
+    def get_phase(self, phase):
+        phase_data = object.__new__(self._PhaseData)
+        phase_data._data = self._data[self._phase_index[phase]]
+        phase_data._chemicals = self._chemicals
+        return phase_data
     
     def _get_index(self, phases_IDs):
         isa = isinstance
@@ -212,19 +229,30 @@ class MultiPhaseMaterialData:
         self._data[self._get_index(phases_IDs)] = data
     
     def __iter__(self):
-        return zip(self._phases, self._data)
+        return self._phase_data.__iter__()
     
     def __repr__(self):
-        return f"{type(self).__name__}(phases='{self.phases}', units='{self.units}', data=...)"
+        IDs = self._chemicals.IDs
+        phase_data = []
+        for phase, data in self._phase_data:
+            IDdata = ", ".join([f"('{ID}', {i:.3g})" for ID, i in zip(IDs, data) if i])
+            phase_data.append(f"{phase}=[{IDdata}]")
+        phase_data = ", ".join(phase_data)
+        if phase_data:
+            phase_data = ", " + phase_data
+        return f"{type(self).__name__}(phases='{self.phases}'{phase_data})"
     
     def _info(self, N):
         """Return string with all specifications."""
-        basic_info = (f"{type(self).__name__}:\n")
         IDs = self.chemicals.IDs
         index, = np.where(self.sum_phases() != 0)
         len_ = len(index)
         if len_ == 0:
-            return basic_info + ' data: (empty)' 
+            return f"{type(self).__name__}: (empty)"
+        elif self.units:
+            basic_info = f"{type(self).__name__} ({self.units}):\n"
+        else:
+            basic_info = f"{type(self).__name__}:\n"
         all_IDs = [IDs[i] for i in index]
 
         # Length of species column
@@ -233,22 +261,14 @@ class MultiPhaseMaterialData:
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''
-        add_header = bool(self.units)
         for phase in self.phases:
             phase_data = self[phase, all_IDs]
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue
         
             # Get basic structure for phase data
-            phase_full_name = phase_names[phase]
-            beginning = f' {phase_full_name}: '
+            beginning = f' ({phase}) '
             new_line_spaces = len(beginning) * ' '
-
-            # Make up for soild and vapor phase having 5 letters
-            # (while liquid has 6 letters)
-            if phase in 'sg':
-                beginning += ' '
-                new_line_spaces += ' '
 
             # Set chemical data
             flowrates = ''
@@ -266,16 +286,21 @@ class MultiPhaseMaterialData:
             flowrates += (f'{IDs[l-1]} ' + spaces
                           + f' {data[l-1]:.3g}')
 
-            # Add header to flow rates
-            if add_header:
-                spaces = ' ' * (maxlen - 8)
-                beginning = (f'{new_line_spaces}chemical{spaces}  {self.units}\n'
-                             + beginning)
-                add_header = False
-
             # Put it together
             phases_flowrates_info += beginning + flowrates + '\n'
             
         return basic_info + phases_flowrates_info[:-1]
-    show = MaterialData.show
+    show = PhaseData.show
     _ipython_display_ = show
+    
+def new_PhaseData(name, units):
+    PhaseDataSubclass = type('Phase' + name, (PhaseData,), {})
+    MultiPhaseDataSubclass = type('MultiPhase' + name, (MultiPhaseData,), {})
+    PhaseDataSubclass.__slots__ = MultiPhaseDataSubclass.__slots__ = ()
+    PhaseDataSubclass.units = MultiPhaseDataSubclass.units = units    
+    MultiPhaseDataSubclass._PhaseData = PhaseDataSubclass
+    return PhaseDataSubclass, MultiPhaseDataSubclass
+    
+PhaseMolarFlow, MultiPhaseMolarFlow = new_PhaseData('MolarFlow', 'kmol/hr')
+PhaseMassFlow, MultiPhaseMassFlow = new_PhaseData('MassFlow', 'kg/hr')
+PhaseVolumetricFlow, MultiPhaseVolumetricFlow = new_PhaseData('VolumetricFlow', 'm^3/hr')

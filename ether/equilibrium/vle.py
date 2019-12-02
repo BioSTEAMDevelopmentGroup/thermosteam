@@ -124,7 +124,7 @@ class VLE:
         self._mixture = thermo.mixture
         self._material_data = material_data
         self._condition = condition or Condition(298.15, 101325.)
-        self._phase_data = tuple(material_data)
+        self._phase_data = material_data._phase_data
         self._liquid_mol = liquid_mol = material_data['l']
         self._vapor_mol = vapor_mol = material_data['g']
 
