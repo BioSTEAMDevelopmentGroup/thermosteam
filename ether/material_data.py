@@ -15,22 +15,16 @@ phase_names = {'s': 'solid',
                'L': 'LIQUID',
                'g': 'vapor'}
 
-all_index = slice(None)
-
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
 class MaterialData:
-    __slots__ = ('phase', 'T', 'P', '_data', '_units', '_chemicals')
+    __slots__ = ('_data', '_units', '_chemicals')
     
-    def __init__(self, phase='l', T=298.15, P=101325.,
-                 data=None, units='', chemicals=None, **ID_data):
+    def __init__(self, data=None, units='', chemicals=None, **ID_data):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
-        self.phase = phase
         self._units = units
-        self.T = T
-        self.P = P
         if data:
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
@@ -67,8 +61,8 @@ class MaterialData:
     def __getitem__(self, IDs):
         if isinstance(IDs, str):
             return self._data[self._chemicals.index(IDs)]
-        elif IDs == all_index:
-            return self._data
+        elif isinstance(IDs, slice):
+            return self._data[IDs]
         else:
             return self._data[self._chemicals.indices(IDs)]
     
@@ -76,8 +70,8 @@ class MaterialData:
         if isinstance(IDs, str):
             index = self._chemicals.index(IDs)
             self._data[index] = data
-        elif IDs == all_index:
-            self._data[:] = data
+        elif isinstance(IDs, slice):
+            self._data[IDs] = data
         else:
             index = self._chemicals.indices(IDs)
             self._data[index] = data
@@ -85,15 +79,14 @@ class MaterialData:
     def __repr__(self):
         data = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data)]
         if data:
-            kwdata = ", " + ", ".join(data)
+            kwdata = ", ".join(data) + ", "
         else:
             kwdata = ""
-        return f"{type(self).__name__}(phase='{self.phase}', T={self.T}, P={self.P}, units='{self.units}'{kwdata})"
+        return f"{type(self).__name__}({kwdata}units='{self.units}')"
     
     def _info(self, N):
         """Return string with all specifications."""
-        basic_info = (f"{type(self).__name__}:\n"
-                     +f" phase: '{self.phase}', T: {self.T:.2f} K, P: {self.P:.6g} Pa\n")
+        basic_info = (f"{type(self).__name__}:\n")
         IDs = self.chemicals.IDs
         data = self.data
         IDs, data = nonzeros(IDs, data)
@@ -137,16 +130,13 @@ class MaterialData:
       
         
 class MultiPhaseMaterialData:
-    __slots__ = ('T', 'P', '_phases', '_phase_index', '_data', '_units', '_chemicals')
+    __slots__ = ('_phases', '_phase_index', '_data', '_units', '_chemicals')
     
-    def __init__(self, phases='lg', T=298.15, P=101325.,
-                 data=None, units=None, chemicals=None):
+    def __init__(self, phases='lg', data=None, units=None, chemicals=None):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
         self._phases = phases
         self._units = units
         self._phase_index  = {j:i for i,j in enumerate(phases)}
-        self.T = T
-        self.P = P
         if data:
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
@@ -207,14 +197,14 @@ class MultiPhaseMaterialData:
             phases, IDs = phases_IDs
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
-            elif IDs == all_index:
-                IDs_index = ...
+            elif isinstance(IDs, slice):
+                IDs_index = IDs
             else:
                 IDs_index = self._chemicals.indices(IDs)
         else:
             phases = phases_IDs
             IDs_index = ...
-        if phases == all_index:
+        if isinstance(phases, slice):
             phases_index = phases
         elif len(phases) == 1:
             phases_index = self.phase_index(phases)
@@ -245,12 +235,11 @@ class MultiPhaseMaterialData:
         self._data[phases_index, IDs_index] = data
     
     def __repr__(self):
-        return f"{type(self).__name__}(phases='{self.phases}', T={self.T}, P={self.P}, units='{self.units}', data=...)"
+        return f"{type(self).__name__}(phases='{self.phases}', units='{self.units}', data=...)"
     
     def _info(self, N):
         """Return string with all specifications."""
-        basic_info = (f"{type(self).__name__}:\n"
-                     +f" phases: '{self.phases}', T: {self.T:.2f} K, P: {self.P:.6g} Pa\n")
+        basic_info = (f"{type(self).__name__}:\n")
         IDs = self.chemicals.IDs
         index, = np.where(self.sum_phases() != 0)
         len_ = len(index)
@@ -260,7 +249,7 @@ class MultiPhaseMaterialData:
 
         # Length of species column
         all_lengths = [len(i) for i in IDs]
-        maxlen = max(all_lengths + [9])  # include length of the word 'species'
+        maxlen = max(all_lengths + [8])  # include length of the word 'species'
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''
@@ -299,8 +288,8 @@ class MultiPhaseMaterialData:
 
             # Add header to flow rates
             if add_header:
-                spaces = ' ' * (maxlen - 9)
-                beginning = (f'{new_line_spaces}chemicals{spaces}  {self.units}\n'
+                spaces = ' ' * (maxlen - 8)
+                beginning = (f'{new_line_spaces}chemical{spaces}  {self.units}\n'
                              + beginning)
                 add_header = False
 
