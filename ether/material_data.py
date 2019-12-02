@@ -54,27 +54,23 @@ class MaterialData:
         
     def sum(self):
         return self._data.sum()
+        
+    def _get_index(self, IDs):
+        if isinstance(IDs, str):
+            return self._chemicals.index(IDs)
+        elif isinstance(IDs, slice):
+            return IDs
+        else:
+            return self._chemicals.indices(IDs)
+        
+    def __getitem__(self, IDs):
+        return self._data[self._get_index(IDs)]
+    
+    def __setitem__(self, IDs, data):
+        self._data[self._get_index(IDs)] = data
     
     def __iter__(self):
         return self._data.__iter__()
-        
-    def __getitem__(self, IDs):
-        if isinstance(IDs, str):
-            return self._data[self._chemicals.index(IDs)]
-        elif isinstance(IDs, slice):
-            return self._data[IDs]
-        else:
-            return self._data[self._chemicals.indices(IDs)]
-    
-    def __setitem__(self, IDs, data):
-        if isinstance(IDs, str):
-            index = self._chemicals.index(IDs)
-            self._data[index] = data
-        elif isinstance(IDs, slice):
-            self._data[IDs] = data
-        else:
-            index = self._chemicals.indices(IDs)
-            self._data[index] = data
     
     def __repr__(self):
         data = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data)]
@@ -151,21 +147,6 @@ class MultiPhaseMaterialData:
             shape = (len(phases), chemicals.size)
             self._data = np.zeros(shape, float)
     
-    def phase_index(self, phase):
-        try:
-            return self._phase_index[phase]
-        except KeyError:
-            raise UndefinedPhase(phase)
-    
-    def phases_index(self, phases):
-        try:
-            index = self._phase_index
-            return [index[i] for i in phases]
-        except KeyError:
-            for i in phases:
-                if i not in index:
-                    raise UndefinedPhase(i)
-    
     @property
     def data(self):
         return self._data
@@ -179,60 +160,59 @@ class MultiPhaseMaterialData:
     def chemicals(self):
         return self._chemicals
     
+    def sum(self):
+        return self._data.sum()
+    
     def sum_phases(self):
         return self._data.sum(0)
     
     def sum_chemicals(self):
         return self._data.sum(1)
-        
-    def sum(self):
-        return self._data.sum()
     
-    def __iter__(self):
-        return zip(self._phases, self._data)
-    
-    def __getitem__(self, phases_IDs):
+    def _get_index(self, phases_IDs):
         isa = isinstance
         if isa(phases_IDs, tuple):
             phases, IDs = phases_IDs
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
-            elif isinstance(IDs, slice):
+            elif isa(IDs, slice):
                 IDs_index = IDs
             else:
                 IDs_index = self._chemicals.indices(IDs)
         else:
             phases = phases_IDs
             IDs_index = ...
-        if isinstance(phases, slice):
+        if isa(phases, slice):
             phases_index = phases
         elif len(phases) == 1:
-            phases_index = self.phase_index(phases)
+            phases_index = self._get_phase_index(phases)
         else:
-            phases_index = self.phases_index(phases)
-        return self._data[phases_index, IDs_index]
+            phases_index = self._get_phase_indices(phases)
+        return phases_index, IDs_index
+    
+    def _get_phase_index(self, phase):
+        try:
+            return self._phase_index[phase]
+        except KeyError:
+            raise UndefinedPhase(phase)
+    
+    def _get_phase_indices(self, phases):
+        try:
+            index = self._phase_index
+            return [index[i] for i in phases]
+        except KeyError:
+            for i in phases:
+                if i not in index:
+                    raise UndefinedPhase(i)
+    
+    def __getitem__(self, phases_IDs):
+        return self._data[self._get_index(phases_IDs)]
     
     def __setitem__(self, phases_IDs, data):
-        isa = isinstance
-        all_index = slice(None)
-        if isa(phases_IDs, tuple):
-            phases, IDs = phases_IDs
-            if isa(IDs, str):
-                IDs_index = self._chemicals.index(IDs)
-            elif IDs == all_index:
-                IDs_index = ...
-            else:
-                IDs_index = self._chemicals.indices(IDs)
-        else:
-            phases = phases_IDs
-            IDs_index = ...
-        if phases == all_index:
-            phases_index = phases
-        elif len(phases) == 1:
-            phases_index = self.phase_index(phases)
-        else:
-            phases_index = self.phases_index(phases)
-        self._data[phases_index, IDs_index] = data
+        self._data[self._get_index(phases_IDs)] = data
+    
+    def __iter__(self):
+        return zip(self._phases, self._data)
     
     def __repr__(self):
         return f"{type(self).__name__}(phases='{self.phases}', units='{self.units}', data=...)"
