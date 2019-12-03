@@ -8,22 +8,313 @@ from .settings import settings
 from .exceptions import UndefinedPhase
 import numpy as np
 
-__all__ = ('PhaseData',
-           'MultiPhaseData',
-           'PhaseMolarFlow', 
-           'MultiPhaseMolarFlow',
-           'PhaseMassFlow', 
-           'MultiPhaseMassFlow',
-           'PhaseVolumetricFlow',
-           'MultiPhaseVolumetricFlow')
+__all__ = ('ChemicalArray',
+           'PhaseArray',
+           'ChemicalMolarFlow', 
+           'PhaseMolarFlow',
+           'ChemicalMassFlow', 
+           'PhaseMassFlow',
+           'ChemicalVolumetricFlow',
+           'PhaseVolumetricFlow')
+
+# %% Utilities
 
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
+
+# %% Abstract data emulator
+    
+class ArrayEmulator:
+    __slots__ = ()
+    units = phases = None
+    
+    def assert_safety(self, other):
+        if isinstance(other, ArrayEmulator):
+            assert other._chemicals is self._chemicals, "chemicals do not match"
+            assert other.units == self.units, "units do not match"
+            assert other.phases == self.phases, "phases do not match"
+            return True
+        return False
+    
+    def __add__(self, other):
+        new = self.copy()
+        new._data.__iadd__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return  new
+    
+    def __sub__(self, other):
+        new = self.copy()
+        new._data.__isub__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return  new
+    
+    def __mul__(self, other):
+        new = self.copy()
+        new._data.__imul__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
         
-class PhaseData:
+    def __floordiv__(self, other):
+        new = self.copy()
+        new._data.__ifloordiv__(other._data
+                                if self.assert_safety(other)
+                                else other)
+        return new
+    
+    def __mod__(self, other):
+        new = self.copy()
+        new._data.__imod__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+    
+    def __divmod__(self, other):
+        new = self.copy()
+        new._data.__idivmod__(other._data
+                              if self.assert_safety(other)
+                              else other)
+        return new
+    
+    def __pow__(self, other):
+        new = self.copy()
+        new._data.__idivmod__(other._data
+                              if self.assert_safety(other)
+                              else other)
+        return new
+    
+    def __lshift__(self, other):
+        new = self.copy()
+        new._data.__ilshift__(other._data
+                              if self.assert_safety(other)
+                              else other)
+        return new
+        
+    def __rshift__(self, other):
+        new = self.copy()
+        new._data.__irshift__(other._data
+                              if self.assert_safety(other)
+                              else other)
+        return new
+    
+    def __and__(self, other):
+        new = self.copy()
+        new._data.__iand__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+    
+    def __xor__(self, other):
+        new = self.copy()
+        new._data.__ixor__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+    
+    def __or__(self, other):
+        new = self.copy()
+        new._data.__ior__(other._data
+                          if self.assert_safety(other)
+                          else other)
+        return new
+    
+    def __radd__(self, other):
+        new = self.copy()
+        new._data.__iadd__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+        
+    def __rsub__(self, other):
+        new = self._copy_without_data()
+        new._data = -self._data
+        new._data.__iadd__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+    
+    def __rmul__(self, other):
+        new = self.copy()
+        new._data.__imul__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return new
+        
+    def __rtruediv__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rtruediv__(other._data
+                                            if self.assert_safety(other)
+                                            else other)
+        return new
+        
+    def __rfloordiv__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rtruediv__(other._data
+                                            if self.assert_safety(other)
+                                            else other)
+        return new
+        
+    def __rmod__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rmod__(other._data
+                                        if self.assert_safety(other)
+                                        else other)
+        return new
+        
+    def __rdivmod__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rdivmod__(other._data
+                                           if self.assert_safety(other)
+                                           else other)
+        return new
+    
+    def __rpow__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rpow__(other._data
+                                        if self.assert_safety(other)
+                                        else other)
+        return new
+    
+    def __rlshift__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rlshift__(other._data
+                                           if self.assert_safety(other)
+                                           else other)
+        return new
+    
+    def __rrshift__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rrshift__(other._data
+                                           if self.assert_safety(other)
+                                           else other)
+        return new
+    
+    def __rand__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rand__(other._data
+                                        if self.assert_safety(other)
+                                        else other)
+        return new
+    
+    def __rxor__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__rxor__(other._data
+                                        if self.assert_safety(other)
+                                        else other)
+        return new
+    
+    def __ror__(self, other):
+        new = self.copy()
+        new = self._copy_without_data()
+        new._data = self._data.__ror__(other._data
+                                       if self.assert_safety(other)
+                                       else other)
+        return new
+
+    def __iadd__(self, other):
+        self._data.__iadd__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __isub__(self, other):
+        self._data.__isub__(other._data 
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __imul__(self, other):
+        self._data.__imul__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __itruediv__(self, other):
+        self._data.__itruediv__(other._data
+                                if self.assert_safety(other)
+                                else other)
+        return self
+        
+    def __ifloordiv__(self, other):
+        self._data.__ifloordiv__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+        return self
+        
+    def __imod__(self, other):
+        self._data.__imod__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __ipow__(self, other):
+        self._data.__ipow__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __ilshift__(self, other):
+        self._data.__ilshift__(other._data
+                               if self.assert_safety(other)
+                               else other)
+        return self
+        
+    def __irshift__(self, other):
+        self._data.__irshift__(other._data 
+                               if self.assert_safety(other)
+                               else other)
+        return self
+        
+    def __iand__(self, other):
+        self._data.__iand__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __ixor__(self, other):
+        self._data.__ixor__(other._data
+                            if self.assert_safety(other)
+                            else other)
+        return self
+        
+    def __ior__(self, other):
+        self._data.__ior__(other._data
+                           if self.assert_safety(other)
+                           else other)
+        return self
+        
+    def __neg__(self):
+        new = self._copy_without_data()
+        new._data = -self._data
+        return new
+        
+    def __pos__(self):
+        new = self._copy_without_data()
+        new._data = +self._data
+        return new
+        
+    def __abs__(self):
+        new = self._copy_without_data()
+        new._data = self._data.abs()
+        return new
+
+
+# %% Phase data
+
+class ChemicalArray(ArrayEmulator):
     __slots__ = ('_data', '_chemicals')
-    units = None
     
     def __new__(cls, chemicals=None, **IDdata):
         self = cls.blank()
@@ -32,8 +323,29 @@ class PhaseData:
             self._data[self._chemicals.indices(IDs)] = data
         return self
     
+    def __getattr__(self, attr):
+        return getattr(self._data, attr)
+    
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
+    
+    def copy(self):
+        new = self._copy_without_data()
+        new._data = self._data.copy()
+        return new
+    
+    def _copy_without_data(self):
+        new = super().__new__(self.__class__)
+        new._chemicals = self._chemicals
+        return new
+    
+    def assert_safety(self, other):
+        if isinstance(other, ArrayEmulator):
+            assert other._chemicals is self._chemicals, "chemicals do not match"
+            assert other.units == self.units, "units do not match"
+            return True
+        else:
+            return False
     
     @classmethod
     def blank(cls, chemicals=None):
@@ -49,13 +361,13 @@ class PhaseData:
         if data:
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
-            elif data.size == chemicals.size:
+            elif data.size == self._chemicals.size:
                 self.data = data
             else:
                 raise ValueError('size of data must be equal to '
                                  'size of chemicals')
         else:
-            self._data = np.zeros(chemicals.size, float)
+            self._data = np.zeros(self._chemicals.size, float)
     
     @property
     def data(self):
@@ -63,9 +375,6 @@ class PhaseData:
     @property
     def chemicals(self):
         return self._chemicals
-        
-    def sum(self):
-        return self._data.sum()
         
     def _get_index(self, IDs):
         isa = isinstance
@@ -141,14 +450,13 @@ class PhaseData:
     _ipython_display_ = show
       
 
-class MultiPhaseData:
+class PhaseArray(ArrayEmulator):
     __slots__ = ('_phases', '_phase_index', '_phase_data', '_data', '_chemicals')
     _cached_phase_index = {}
-    _PhaseData = PhaseData
-    units = PhaseData.units
+    _ChemicalArray = ChemicalArray
     
     def __new__(cls, phases=None, chemicals=None, **phase_data):
-        self = cls.blank(phases or "".join(phase_data), chemicals)
+        self = cls.blank(phases or phase_data, chemicals)
         if phase_data:
             data = self._data
             chemical_indices = self._chemicals.indices
@@ -158,24 +466,37 @@ class MultiPhaseData:
                 data[phase_index(phase), chemical_indices(IDs)] = row
         return self
     
-    _set_chemicals = PhaseData._set_chemicals
+    _set_chemicals = ChemicalArray._set_chemicals
+    __getattr__ = ChemicalArray.__getattr__
     
     def _set_phases(self, phases):
-        self._phases = phases
+        self._phases = phases = tuple(phases)
         cached = self._cached_phase_index
         if phases in cached:
             self._phase_index = cached[phases]
         else:
             self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
     
+    def copy(self):
+        new = self._copy_without_data()
+        new._data = self._data.copy()
+        return new
+    
+    def _copy_without_data(self):
+        new = super().__new__(self.__class__)
+        new._chemicals = self._chemicals
+        new._phases = self._phases
+        new._phase_index = self._phase_index
+        return new
+    
     @classmethod
     def blank(cls, phases, chemicals=None):
         self = super().__new__(cls)
+        self._phase_data = None
         self._set_chemicals(chemicals)
         self._set_phases(phases)
-        shape = (len(phases), self._chemicals.size)
-        self._data = data = np.zeros(shape, float)
-        self._phase_data = tuple(zip(phases, data))
+        shape = (len(self._phases), self._chemicals.size)
+        self._data = np.zeros(shape, float)
         return self
     
     @classmethod
@@ -183,7 +504,7 @@ class MultiPhaseData:
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
-        M_phases = len(phases)
+        M_phases = len(self._phases)
         N_chemicals = self._chemicals.size
         if data:
             if not isinstance(data, np.ndarray):
@@ -194,10 +515,10 @@ class MultiPhaseData:
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of data columns')
-            self._data = data
         else:
-            self._data = data = np.zeros((M_phases, N_chemicals), float)
-        self._phase_data = tuple(zip(phases, data))
+            data = np.zeros((M_phases, N_chemicals), float)
+        self._data = data
+        return self
     
     @property
     def data(self):
@@ -209,9 +530,6 @@ class MultiPhaseData:
     def chemicals(self):
         return self._chemicals
     
-    def sum(self):
-        return self._data.sum()
-    
     def sum_phases(self):
         return self._data.sum(0)
     
@@ -219,31 +537,29 @@ class MultiPhaseData:
         return self._data.sum(1)
     
     def get_phase(self, phase):
-        phase_data = object.__new__(self._PhaseData)
+        phase_data = object.__new__(self._PhaseArray)
         phase_data._data = self._data[self._phase_index[phase]]
         phase_data._chemicals = self._chemicals
         return phase_data
     
-    def _get_index(self, phases_IDs):
+    def _get_index(self, phase_IDs):
         isa = isinstance
-        if isa(phases_IDs, tuple):
-            phases, IDs = phases_IDs
+        if isa(phase_IDs, tuple):
+            phases, IDs = phase_IDs
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
-            elif isa(IDs, slice):
+            elif isa(IDs, slice) or IDs == ...:
                 IDs_index = IDs
             else:
                 IDs_index = self._chemicals.indices(IDs)
         else:
-            phases = phases_IDs
+            phases = phase_IDs
             IDs_index = ...
-        if isa(phases, slice):
-            phases_index = phases
-        elif len(phases) == 1:
-            phases_index = self._get_phase_index(phases)
+        if isa(phases, slice) or phases == ...:
+            phase_index = phases
         else:
-            phases_index = self._get_phase_indices(phases)
-        return phases_index, IDs_index
+            phase_index = self._get_phase_index(phases)
+        return phase_index, IDs_index
     
     def _get_phase_index(self, phase):
         try:
@@ -251,40 +567,18 @@ class MultiPhaseData:
         except KeyError:
             raise UndefinedPhase(phase)
     
-    def _get_phase_indices(self, phases):
-        try:
-            index = self._phase_index
-            return [index[i] for i in phases]
-        except KeyError:
-            for i in phases:
-                if i not in index:
-                    raise UndefinedPhase(i)
-    
     def __getitem__(self, phases_IDs):
-        phases, IDs = index = self._get_index(phases_IDs)
-        data = self._data
-        if isinstance(phases, list):
-            return [data[i, IDs] for i in phases]
-        else:                
-            return data[index]
+        return self._data[self._get_index(phases_IDs)]
     
     def __setitem__(self, phases_IDs, data):
-        phases, IDs = index = self._get_index(phases_IDs)
-        if isinstance(phases, list):
-            data = np.asarray(data)
-            if data.ndim <= 1:
-                for i in phases: self._data[i, IDs] = data
-            elif len(phases) == len(data):
-                for i, row in zip(phases, data): self._data[i, IDs] = row
-            else:
-                raise ValueError(f"shape mismatch: value array of shape {data.shape} "
-                                  "could not be broadcast to indexing result of shape "
-                                 f"{(len(phases), self._data[:, IDs].shape[1])}")
-        else:
-            self._data[index] = data
+        self._data[self._get_index(phases_IDs)] = data
     
     def __iter__(self):
-        return self._phase_data.__iter__()
+        if self._phase_data:
+            return self._phase_data.__iter__()
+        else:
+            self._phase_data = iter = tuple(zip(self._phases, self._data))
+            return iter.__iter__()
     
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
@@ -360,17 +654,17 @@ class MultiPhaseData:
             phases_flowrates_info += beginning + flowrates + '\n'
             
         return basic_info + phases_flowrates_info[:-1]
-    show = PhaseData.show
+    show = ChemicalArray.show
     _ipython_display_ = show
     
-def new_PhaseData(name, units):
-    PhaseDataSubclass = type('Phase' + name, (PhaseData,), {})
-    MultiPhaseDataSubclass = type('MultiPhase' + name, (MultiPhaseData,), {})
-    PhaseDataSubclass.__slots__ = MultiPhaseDataSubclass.__slots__ = ()
-    PhaseDataSubclass.units = MultiPhaseDataSubclass.units = units    
-    MultiPhaseDataSubclass._PhaseData = PhaseDataSubclass
-    return PhaseDataSubclass, MultiPhaseDataSubclass
+def new_Data(name, units):
+    ChemicalArraySubclass = type('Chemical' + name, (ChemicalArray,), {})
+    PhaseArraySubclass = type('Phase' + name, (PhaseArray,), {})
+    ChemicalArraySubclass.__slots__ = PhaseArraySubclass.__slots__ = ()
+    ChemicalArraySubclass.units = PhaseArraySubclass.units = units    
+    PhaseArraySubclass._PhaseArray = ChemicalArraySubclass
+    return ChemicalArraySubclass, PhaseArraySubclass
     
-PhaseMolarFlow, MultiPhaseMolarFlow = new_PhaseData('MolarFlow', 'kmol/hr')
-PhaseMassFlow, MultiPhaseMassFlow = new_PhaseData('MassFlow', 'kg/hr')
-PhaseVolumetricFlow, MultiPhaseVolumetricFlow = new_PhaseData('VolumetricFlow', 'm^3/hr')
+ChemicalMolarFlow, PhaseMolarFlow = new_Data('MolarFlow', 'kmol/hr')
+ChemicalMassFlow, PhaseMassFlow = new_Data('MassFlow', 'kg/hr')
+ChemicalVolumetricFlow, PhaseVolumetricFlow = new_Data('VolumetricFlow', 'm^3/hr')

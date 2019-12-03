@@ -124,7 +124,7 @@ class VLE:
         self._mixture = thermo.mixture.copy()
         self._molar_data = molar_data
         self._condition = condition or Condition(298.15, 101325.)
-        self._phase_data = molar_data._phase_data
+        self._phase_data = molar_data._phase_data or tuple(molar_data)
         self._liquid_mol = liquid_mol = molar_data['l']
         self._vapor_mol = vapor_mol = molar_data['g']
 

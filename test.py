@@ -15,7 +15,7 @@ chems = ether.Chemicals(['Water', 'Ethanol',
                          'Propanol', 'Lignin'])
 chems.Lignin.default()
 chems.Lignin.lock_state('l', 298.15, 101325)
-ether.settings.default_chemicals = chems
+thermo = ether.Thermo(chems)
 
 # %% Test bubble point and dew point
 
@@ -44,7 +44,7 @@ dT_ether, dx_at_P_ether = dp_ether.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
 
-molar_data = ether.MultiPhaseMolarFlow(l=[('Water', 304), ('Ethanol', 30)],
-                                       g=[('Ethanol', 201), ('Glycerol', 10)])
+molar_data = ether.PhaseMolarFlow(l=[('Water', 304), ('Ethanol', 30)],
+                                  g=[('Ethanol', 201), ('Glycerol', 10)])
 vle = ether.VLE(molar_data)
 vle(T=400, P=101325)
