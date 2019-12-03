@@ -44,6 +44,9 @@ class Chemicals:
             cached[chemicals] = self
             return self
     
+    def __getnewargs__(self):
+        return (tuple(self),)
+    
     @property
     def IDs(self):
         return tuple(self.__dict__)

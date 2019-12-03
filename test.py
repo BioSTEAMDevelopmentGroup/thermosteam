@@ -45,6 +45,6 @@ dT_eth, dx_at_P_eth = dp_eth.solve_Tx(z, P_dp)
 # %% Test Equilibrium
 
 molar_data = eth.MolarFlow(l=[('Water', 304), ('Ethanol', 30)],
-                             g=[('Ethanol', 201), ('Glycerol', 10)])
+                           g=[('Ethanol', 201), ('Glycerol', 10)])
 vle = eth.VLE(molar_data)
 vle(T=400, P=101325)

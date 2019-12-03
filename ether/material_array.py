@@ -366,6 +366,9 @@ class ChemicalArray(ArrayEmulator):
             self._data[self._chemicals.indices(IDs)] = data
         return self
     
+    def __reduce__(self):
+        return self.from_data, (self._data, self._chemicals)
+    
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
@@ -402,7 +405,6 @@ class ChemicalArray(ArrayEmulator):
                                                        'size of chemicals')
         self._data = data
         return self
-    
     
     @property
     def chemicals(self):
@@ -484,6 +486,9 @@ class PhaseArray(ArrayEmulator):
             phases, data = zip(*phase_data)
             self._data[self._get_phase_indices(phases)] = data
         return self
+    
+    def __reduce__(self):
+        return self.from_data, (self._data, self._phases)
     
     @property
     def phases(self):
@@ -624,6 +629,9 @@ class MaterialArray(ArrayEmulator):
                 IDs, row = zip(*IDdata)
                 data[phase_index(phase), chemical_indices(IDs)] = row
         return self
+    
+    def __reduce__(self):
+        return self.from_data, (self._data, self._phases, self._chemicals)
     
     def phase_fraction(self):
         data = self._data

@@ -47,6 +47,10 @@ class Thermo:
             cached[args] = self
         return self
     
+    def __reduce__(self):
+        return self.__new__, (self.__class__, self.chemicals, self.mixture,
+                              self.Gamma, self.Phi, self.PCF)
+    
     def __repr__(self):
         IDs = [i for i in self.chemicals.IDs]
         return f"{type(self).__name__}([{', '.join(IDs)}])"
