@@ -18,7 +18,7 @@ class BubblePoint:
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
-        thermo = settings.get_default_thermo(thermo)
+        thermo = settings.get_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo)
         cached = self._cached

@@ -9,11 +9,15 @@ import ether
 __all__ = ('settings',)
 
 class EtherSettings:
-    __slots__ = ('_thermo', '_rigorous_energy_balance', '_phase_equivalents')
+    __slots__ = ('_thermo',
+                 '_rigorous_energy_balance',
+                 '_phase_equivalents',
+                 '_debug')
     
     def __init__(self):
         self._thermo = None
         self._rigorous_energy_balance = False
+        self._debug = True
         self._phase_equivalents = {'S': 's',
                                    'L': 'l',
                                    'G': 'g',
@@ -21,19 +25,23 @@ class EtherSettings:
                                    'v': 'g'}
     
     @property
+    def debug(self):
+        return self._debug
+    @debug.setter
+    def debug(self, debug):
+        self._debug = bool(debug)
+    
+    @property
     def phase_equivalents(self):
         return self._phase_equivalents
     
-    def get_default_thermo(self, thermo):
+    def get_thermo(self, thermo):
         if not thermo:
-            thermo = settings.default_thermo
+            thermo = settings.thermo
             assert thermo, "no available 'Thermo' object"
-        elif isinstance(thermo, ether.Chemicals):
-            thermo.compile()
-            thermo = ether.Thermo(thermo)
         return thermo
     
-    def get_default_chemicals(self, chemicals):
+    def get_chemicals(self, chemicals):
         if isinstance(chemicals, ether.Chemicals):
             chemicals.compile()
         if not chemicals:
@@ -45,27 +53,18 @@ class EtherSettings:
             chemicals.compile()
         return chemicals
     
-    @property
-    def rigorous_energy_balance(self):
-        return self._rigorous_energy_balance
-    @rigorous_energy_balance.setter
-    def rigorous_energy_balance(self, isrigorous):
-        self._rigorous_energy_balance = bool(isrigorous)
+    def get_mixture(self, mixture):
+        if not mixture:
+            thermo = settings.thermo
+            assert thermo, "no available 'Thermo' object"
+            mixture = thermo.mixture
+        return mixture
     
     @property
-    def default_chemicals(self):
-        thermo = settings.default_thermo
-        assert thermo, "no available 'Thermo' object"
-        return thermo.chemicals
-    @default_chemicals.setter
-    def default_chemicals(self, chemicals):
-        ether.Thermo(chemicals)
-    
-    @property
-    def default_thermo(self):
+    def thermo(self):
         return self._thermo
-    @default_thermo.setter
-    def default_thermo(self, thermo):
+    @thermo.setter
+    def thermo(self, thermo):
         if isinstance(thermo, ether.Thermo):
             self._thermo = thermo
         else:

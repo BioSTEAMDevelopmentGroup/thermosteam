@@ -10,12 +10,16 @@ import numpy as np
 
 __all__ = ('ChemicalArray',
            'PhaseArray',
+           'MaterialArray',
            'ChemicalMolarFlow', 
            'PhaseMolarFlow',
+           'MolarFlow',
            'ChemicalMassFlow', 
            'PhaseMassFlow',
+           'MassFlow',
            'ChemicalVolumetricFlow',
-           'PhaseVolumetricFlow')
+           'PhaseVolumetricFlow',
+           'VolumetricFlow')
 
 # %% Utilities
 
@@ -27,29 +31,73 @@ def nonzeros(IDs, data):
     
 class ArrayEmulator:
     __slots__ = ()
-    units = phases = None
+    chemicals = units = phases = None
     
     def assert_safety(self, other):
         if isinstance(other, ArrayEmulator):
-            assert other._chemicals is self._chemicals, "chemicals do not match"
-            assert other.units == self.units, "units do not match"
-            assert other.phases == self.phases, "phases do not match"
+            if settings._debug:
+                assert other.chemicals is self.chemicals, "chemicals do not match"
+                assert other.units == self.units, "units do not match"
+                assert other.phases == self.phases, "phases do not match"
             return True
         return False
+    
+    @property
+    def data(self):
+        return self._data
+    
+    def __getattr__(self, attr):
+        return getattr(self._data, attr)
+    
+    def __getitem__(self, key):
+        return self._data[self._get_index(key)]
+    
+    def __setitem__(self, key, data):
+        self._data[self._get_index(key)] = data
+    
+    def __lt__(self, other):
+        return self._data.__lt__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+    
+    def __le__(self, other):
+        return self._data.__le__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+    
+    def __eq__(self, other):
+        return self._data.__eq__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+    
+    def __ne__(self, other):
+        return self._data.__ne__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+    
+    def __gt__(self, other):
+        return self._data.__gt__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
+    
+    def __ge__(self, other):
+        return self._data.__ge__(other._data
+                                 if self.assert_safety(other)
+                                 else other)
     
     def __add__(self, other):
         new = self.copy()
         new._data.__iadd__(other._data
                            if self.assert_safety(other)
                            else other)
-        return  new
+        return new
     
     def __sub__(self, other):
         new = self.copy()
         new._data.__isub__(other._data
                            if self.assert_safety(other)
                            else other)
-        return  new
+        return new
     
     def __mul__(self, other):
         new = self.copy()
@@ -130,10 +178,9 @@ class ArrayEmulator:
         
     def __rsub__(self, other):
         new = self._copy_without_data()
-        new._data = -self._data
-        new._data.__iadd__(other._data
-                           if self.assert_safety(other)
-                           else other)
+        new._data = self._data.__rsub__(other._data
+                                        if self.assert_safety(other)
+                                        else other)
         return new
     
     def __rmul__(self, other):
@@ -144,7 +191,6 @@ class ArrayEmulator:
         return new
         
     def __rtruediv__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rtruediv__(other._data
                                             if self.assert_safety(other)
@@ -152,7 +198,6 @@ class ArrayEmulator:
         return new
         
     def __rfloordiv__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rtruediv__(other._data
                                             if self.assert_safety(other)
@@ -160,7 +205,6 @@ class ArrayEmulator:
         return new
         
     def __rmod__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rmod__(other._data
                                         if self.assert_safety(other)
@@ -168,7 +212,6 @@ class ArrayEmulator:
         return new
         
     def __rdivmod__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rdivmod__(other._data
                                            if self.assert_safety(other)
@@ -176,7 +219,6 @@ class ArrayEmulator:
         return new
     
     def __rpow__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rpow__(other._data
                                         if self.assert_safety(other)
@@ -184,7 +226,6 @@ class ArrayEmulator:
         return new
     
     def __rlshift__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rlshift__(other._data
                                            if self.assert_safety(other)
@@ -192,7 +233,6 @@ class ArrayEmulator:
         return new
     
     def __rrshift__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rrshift__(other._data
                                            if self.assert_safety(other)
@@ -200,7 +240,6 @@ class ArrayEmulator:
         return new
     
     def __rand__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rand__(other._data
                                         if self.assert_safety(other)
@@ -208,7 +247,6 @@ class ArrayEmulator:
         return new
     
     def __rxor__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__rxor__(other._data
                                         if self.assert_safety(other)
@@ -216,7 +254,6 @@ class ArrayEmulator:
         return new
     
     def __ror__(self, other):
-        new = self.copy()
         new = self._copy_without_data()
         new._data = self._data.__ror__(other._data
                                        if self.assert_safety(other)
@@ -323,11 +360,8 @@ class ChemicalArray(ArrayEmulator):
             self._data[self._chemicals.indices(IDs)] = data
         return self
     
-    def __getattr__(self, attr):
-        return getattr(self._data, attr)
-    
     def _set_chemicals(self, chemicals):
-        self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
+        self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
     def copy(self):
         new = self._copy_without_data()
@@ -339,14 +373,6 @@ class ChemicalArray(ArrayEmulator):
         new._chemicals = self._chemicals
         return new
     
-    def assert_safety(self, other):
-        if isinstance(other, ArrayEmulator):
-            assert other._chemicals is self._chemicals, "chemicals do not match"
-            assert other.units == self.units, "units do not match"
-            return True
-        else:
-            return False
-    
     @classmethod
     def blank(cls, chemicals=None):
         self = super().__new__(cls)
@@ -355,23 +381,19 @@ class ChemicalArray(ArrayEmulator):
         return self
     
     @classmethod
-    def from_data(cls, data=None, chemicals=None):
+    def from_data(cls, data, chemicals=None):
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
-        if data:
-            if not isinstance(data, np.ndarray):
-                data = np.array(data, float)
-            elif data.size == self._chemicals.size:
-                self.data = data
-            else:
-                raise ValueError('size of data must be equal to '
-                                 'size of chemicals')
+        if not isinstance(data, np.ndarray):
+            data = np.array(data, float)
+        elif data.size == self._chemicals.size:
+            self._data = data
         else:
-            self._data = np.zeros(self._chemicals.size, float)
+            raise ValueError('size of data must be equal to '
+                             'size of chemicals')
+        return self
     
-    @property
-    def data(self):
-        return self._data
+    
     @property
     def chemicals(self):
         return self._chemicals
@@ -384,12 +406,6 @@ class ChemicalArray(ArrayEmulator):
             return IDs
         else:
             return self._chemicals.indices(IDs)
-        
-    def __getitem__(self, IDs):
-        return self._data[self._get_index(IDs)]
-    
-    def __setitem__(self, IDs, data):
-        self._data[self._get_index(IDs)] = data
     
     def __iter__(self):
         return self._data.__iter__()
@@ -398,7 +414,7 @@ class ChemicalArray(ArrayEmulator):
         if not tabs: tabs = 1
         tabs = int(tabs) 
         tab = tabs*4*" "
-        IDdata = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
+        IDdata = [f"{ID}={i:.4g}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
         if len(IDdata) > 1 and tab:
             dlim = ",\n" + tab
             IDdata = "\n" + tab + dlim.join(IDdata)
@@ -431,9 +447,9 @@ class ChemicalArray(ArrayEmulator):
             if i == _N:
                 data_info += '...\n' + new_line_spaces
                 break
-            data_info += IDs[i] + spaces + f' {data[i]:.3g}\n' + new_line_spaces
+            data_info += IDs[i] + spaces + f' {data[i]:.4g}\n' + new_line_spaces
         spaces = ' ' * (maxlen - lengths[len_-1])
-        data_info += IDs[len_-1] + spaces + f' {data[len_-1]:.3g}'
+        data_info += IDs[len_-1] + spaces + f' {data[len_-1]:.4g}'
         return (basic_info
               + data_info)
 
@@ -449,11 +465,141 @@ class ChemicalArray(ArrayEmulator):
         print(self._info(N))
     _ipython_display_ = show
       
-
+    
 class PhaseArray(ArrayEmulator):
+    
+    def __new__(cls, phases, **phase_data):
+        self = cls.blank(phases or phase_data)
+        if phase_data:
+            phases, data = zip(*phase_data)
+            self._data[self._get_phase_indices(phases)] = data
+        return self
+    
+    @property
+    def phases(self):
+        return self._phases
+    
+    def _get_phase_index(self, phase):
+        try:
+            return self._phase_index[phase]
+        except KeyError:
+            raise UndefinedPhase(phase)
+    
+    def _get_phase_indices(self, phases):
+        index = self._phase_index
+        try:
+            return [index[i] for i in phases]
+        except KeyError:
+            for i in phases:
+                if i not in index:
+                    raise UndefinedPhase(i)
+            
+    def copy(self):
+        new = self._copy_without_data()
+        new._data = self._data.copy()
+        return new
+    
+    def _copy_without_data(self):
+        new = super().__new__(self.__class__)
+        new._phases = self._phases
+        return new
+    
+    def _set_phases(self, phases):
+        self._phases = tuple(phases)
+    
+    @classmethod
+    def blank(cls, phases):
+        self = super().__new__(cls)
+        self._set_phases(phases)
+        self._data = np.zeros(len(self._phases), float)
+        return self
+    
+    @classmethod
+    def from_data(cls, phases, data):
+        self = super().__new__(cls)
+        self._set_phases(phases)
+        if not isinstance(data, np.ndarray):
+            data = np.array(data, float)
+        elif data.size == len(self._phases):
+            self._data = data
+        else:
+            raise ValueError('size of data must be equal to '
+                             'size of chemicals')
+        return self
+    
+    def _get_index(self, phases):
+        if len(phases) == 1:
+            return self._phase_index(phases)
+        elif isinstance(phases, slice):
+            return phases
+        else:
+            return self._phase_indices(phases)
+    
+    def __iter__(self):
+        return self._data.__iter__()
+    
+    def __format__(self, tabs=""):
+        if not tabs: tabs = 1
+        tabs = int(tabs) 
+        tab = tabs*4*" "
+        phase_data = [f"{phase}={i:.4g}" for phase, i in zip(self.phases, self.data) if i]
+        if len(phase_data) > 1 and tab:
+            dlim = ",\n" + tab
+            phase_data = "\n" + tab + dlim.join(phase_data)
+        else:
+            phase_data = ', '.join(phase_data)
+        return f"{type(self).__name__}({phase_data})"
+    
+    def __repr__(self):
+        return self.__format__()
+    
+    def _info(self, N):
+        """Return string with all specifications."""
+        phases = self.phases
+        data = self.data
+        phases, data = nonzeros(phases, data)
+        phases = [f'({i})' for i in phases]
+        len_ = len(data)
+        if len_ == 0:
+            return f"{type(self).__name__}: (empty)"
+        elif self.units:
+            basic_info = f"{type(self).__name__} ({self.units}):\n "
+        else:
+            basic_info = f"{type(self).__name__}:\n "
+        new_line_spaces = ' '        
+        data_info = ''
+        lengths = [len(i) for i in phases]
+        maxlen = max(lengths) + 1
+        _N = N - 1
+        for i in range(len_-1):
+            spaces = ' ' * (maxlen - lengths[i])
+            if i == _N:
+                data_info += '...\n' + new_line_spaces
+                break
+            data_info += phases[i] + spaces + f' {data[i]:.4g}\n' + new_line_spaces
+        spaces = ' ' * (maxlen - lengths[len_-1])
+        data_info += phases[len_-1] + spaces + f' {data[len_-1]:.4g}'
+        return (basic_info
+              + data_info)
+
+    def show(self, N=5):
+        """Print all specifications.
+        
+        Parameters
+        ----------
+        N: int, optional
+            Number of compounds to display.
+        
+        """
+        print(self._info(N))
+    _ipython_display_ = show
+            
+
+class MaterialArray(ArrayEmulator):
     __slots__ = ('_phases', '_phase_index', '_phase_data', '_data', '_chemicals')
     _cached_phase_index = {}
     _ChemicalArray = ChemicalArray
+    _PhaseArray = PhaseArray
     
     def __new__(cls, phases=None, chemicals=None, **phase_data):
         self = cls.blank(phases or phase_data, chemicals)
@@ -467,7 +613,9 @@ class PhaseArray(ArrayEmulator):
         return self
     
     _set_chemicals = ChemicalArray._set_chemicals
-    __getattr__ = ChemicalArray.__getattr__
+    
+    def __matmul__(self, other):
+        return self._PhaseArray.from_data(self._phases, self._data @ other)
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(phases)
@@ -500,29 +648,23 @@ class PhaseArray(ArrayEmulator):
         return self
     
     @classmethod
-    def from_data(cls, phases, data=None, chemicals=None):
+    def from_data(cls, phases, data, chemicals=None):
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
         M_phases = len(self._phases)
         N_chemicals = self._chemicals.size
-        if data:
-            if not isinstance(data, np.ndarray):
-                data = np.array(data, float)
+        if not isinstance(data, np.ndarray):
+            self._data = data = np.array(data, float)
+        if settings.debug:
             M, N = data.shape
             assert M == M_phases, ('number of phases must be equal to '
                                    'the number of data rows')
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of data columns')
-        else:
-            data = np.zeros((M_phases, N_chemicals), float)
-        self._data = data
         return self
     
-    @property
-    def data(self):
-        return self._data
     @property
     def phases(self):
         return self._phases
@@ -530,14 +672,14 @@ class PhaseArray(ArrayEmulator):
     def chemicals(self):
         return self._chemicals
     
-    def sum_phases(self):
-        return self._data.sum(0)
+    def phase_array(self):
+        return self._PhaseArray.from_data(self._phases, self._data.sum(1))
     
-    def sum_chemicals(self):
-        return self._data.sum(1)
+    def chemical_array(self):
+        return self._ChemicalArray.from_data(self._data.sum(0), self._chemicals)
     
     def get_phase(self, phase):
-        phase_data = object.__new__(self._PhaseArray)
+        phase_data = object.__new__(self._MaterialArray)
         phase_data._data = self._data[self._phase_index[phase]]
         phase_data._chemicals = self._chemicals
         return phase_data
@@ -567,12 +709,6 @@ class PhaseArray(ArrayEmulator):
         except KeyError:
             raise UndefinedPhase(phase)
     
-    def __getitem__(self, phases_IDs):
-        return self._data[self._get_index(phases_IDs)]
-    
-    def __setitem__(self, phases_IDs, data):
-        self._data[self._get_index(phases_IDs)] = data
-    
     def __iter__(self):
         if self._phase_data:
             return self._phase_data.__iter__()
@@ -584,7 +720,7 @@ class PhaseArray(ArrayEmulator):
         IDs = self._chemicals.IDs
         phase_data = []
         for phase, data in self._phase_data:
-            IDdata = ", ".join([f"('{ID}', {i:.3g})" for ID, i in zip(IDs, data) if i])
+            IDdata = ", ".join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
             phase_data.append(f"{phase}=[{IDdata}]")
         tabs = int(tabs)
         if tabs:
@@ -593,7 +729,7 @@ class PhaseArray(ArrayEmulator):
         else:
             dlim = ", "
         phase_data = dlim.join(phase_data)
-        if self.sum_chemicals().all():
+        if self.chemical_array().all():
             phases = ""
             if phase_data:
                 phase_data = "\n" + tab + phase_data
@@ -609,7 +745,7 @@ class PhaseArray(ArrayEmulator):
     def _info(self, N):
         """Return string with all specifications."""
         IDs = self.chemicals.IDs
-        index, = np.where(self.sum_phases() != 0)
+        index, = np.where(self.chemical_array() != 0)
         len_ = len(index)
         if len_ == 0:
             return f"{type(self).__name__}: (empty)"
@@ -645,10 +781,10 @@ class PhaseArray(ArrayEmulator):
                     flowrates += '...\n' + new_line_spaces
                     break
                 flowrates += f'{IDs[i]} ' + spaces + \
-                    f' {data[i]:.3g}\n' + new_line_spaces
+                    f' {data[i]:.4g}\n' + new_line_spaces
             spaces = ' ' * (maxlen - lengths[l-1])
             flowrates += (f'{IDs[l-1]} ' + spaces
-                          + f' {data[l-1]:.3g}')
+                          + f' {data[l-1]:.4g}')
 
             # Put it together
             phases_flowrates_info += beginning + flowrates + '\n'
@@ -660,11 +796,17 @@ class PhaseArray(ArrayEmulator):
 def new_Data(name, units):
     ChemicalArraySubclass = type('Chemical' + name, (ChemicalArray,), {})
     PhaseArraySubclass = type('Phase' + name, (PhaseArray,), {})
-    ChemicalArraySubclass.__slots__ = PhaseArraySubclass.__slots__ = ()
-    ChemicalArraySubclass.units = PhaseArraySubclass.units = units    
-    PhaseArraySubclass._PhaseArray = ChemicalArraySubclass
-    return ChemicalArraySubclass, PhaseArraySubclass
+    MaterialArraySubclass = type(name, (MaterialArray,), {})
+    ChemicalArraySubclass.__slots__ = \
+    PhaseArraySubclass.__slots__ = \
+    MaterialArraySubclass.__slots__ = ()
+    ChemicalArraySubclass.units = \
+    PhaseArraySubclass.units = \
+    MaterialArraySubclass.units = units
+    MaterialArraySubclass._ChemicalArray = ChemicalArraySubclass
+    MaterialArraySubclass._PhaseArray = PhaseArraySubclass
+    return ChemicalArraySubclass, PhaseArraySubclass, MaterialArraySubclass
     
-ChemicalMolarFlow, PhaseMolarFlow = new_Data('MolarFlow', 'kmol/hr')
-ChemicalMassFlow, PhaseMassFlow = new_Data('MassFlow', 'kg/hr')
-ChemicalVolumetricFlow, PhaseVolumetricFlow = new_Data('VolumetricFlow', 'm^3/hr')
+ChemicalMolarFlow, PhaseMolarFlow, MolarFlow = new_Data('MolarFlow', 'kmol/hr')
+ChemicalMassFlow, PhaseMassFlow, MassFlow = new_Data('MassFlow', 'kg/hr')
+ChemicalVolumetricFlow, PhaseVolumetricFlow, VolumetricFlow = new_Data('VolumetricFlow', 'm^3/hr')

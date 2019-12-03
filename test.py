@@ -44,7 +44,7 @@ dT_ether, dx_at_P_ether = dp_ether.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
 
-molar_data = ether.PhaseMolarFlow(l=[('Water', 304), ('Ethanol', 30)],
-                                  g=[('Ethanol', 201), ('Glycerol', 10)])
-vle = ether.VLE(molar_data)
+molar_flow = ether.MolarFlow(l=[('Water', 304), ('Ethanol', 30)],
+                             g=[('Ethanol', 201), ('Glycerol', 10)])
+vle = ether.VLE(molar_flow)
 vle(T=400, P=101325)

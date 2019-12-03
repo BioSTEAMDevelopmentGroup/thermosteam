@@ -84,8 +84,8 @@ class VLE:
         x_spec = x is not None
         y_spec = y is not None
         N_specs = (P_spec + H_spec + T_spec + V_spec + x_spec + y_spec)
-        assert N_specs == 2, ("must pass two and only two of the following specifications: "
-                              "T, P, V, H, x, y")
+        assert N_specs == 2, ("must pass two and only two of the following "
+                              "specifications: T, P, V, H, x, y")
         
         # Run equilibrium
         if T_spec:
@@ -120,7 +120,7 @@ class VLE:
     
     def __init__(self, molar_data, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
         self._T = self._P = self._H_hat = self._V = 0
-        self._thermo = thermo = settings.get_default_thermo(thermo)
+        self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture.copy()
         self._molar_data = molar_data
         self._condition = condition or Condition(298.15, 101325.)

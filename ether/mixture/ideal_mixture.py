@@ -151,9 +151,10 @@ mixture_methods = (*mixture_phaseT_methods,
                    *mixture_T_methods)
 
 class IdealMixture:
-    __slots__ = ('chemicals', *mixture_methods)
+    __slots__ = ('chemicals', 'rigorous_energy_balance', *mixture_methods)
     
-    def __init__(self, chemicals=()):
+    def __init__(self, chemicals=(), rigorous_energy_balance=False):
+        self.rigorous_energy_balance = rigorous_energy_balance
         getfield = getattr
         setfield = setattr
         any_ = any
@@ -182,7 +183,7 @@ class IdealMixture:
         return new
     
     def solve_T(self, phase, z, H, T_guess):
-        if settings.rigorous_energy_balance:
+        if self.rigorous_energy_balance:
             # First approximation
             Cp = self.Cp(phase, z, T_guess)
             T = T_guess + (H - self.H(phase, z, T_guess))/Cp
@@ -207,7 +208,7 @@ class IdealMixture:
                 
     def xsolve_T(self, phase_data, H, T_guess):
         T = T_guess
-        if settings.rigorous_energy_balance:
+        if self.rigorous_energy_balance:
             # First approximation
             Cp = self.xCp(phase_data, T_guess)
             T = T_guess + (H - self.xH(phase_data, T_guess))/Cp
@@ -273,7 +274,11 @@ class IdealMixture:
         getfield = getattr
         for i in self.__slots__[1:]:
             f = getfield(self, i)
-            info += f"\n {display_asfunctor(f, name=i, var=i, show_var=False)}"
+            if callable(f):
+                info += f"\n {display_asfunctor(f, name=i, var=i, show_var=False)}"
+            else:
+                info += f"\n {i}: {f}"
+            
         print(info)
     
     _ipython_display_ = show
