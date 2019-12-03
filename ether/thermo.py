@@ -8,7 +8,7 @@ from . import equilibrium as eq
 from .chemicals import Chemicals
 from .mixture import IdealMixture
 from .utils import read_only
-from .exceptions import check_value
+from .exceptions import assert_value
 from .settings import settings
 
 __all__ = ('Thermo',)
@@ -31,9 +31,10 @@ class Thermo:
             if not isinstance(chemicals, Chemicals):
                 chemicals = Chemicals(chemicals)
             chemicals.compile()
-            check_value(issubclass, Gamma, 'Gamma', eq.ActivityCoefficients)
-            check_value(issubclass, Phi, 'Phi', eq.FugacityCoefficients)
-            check_value(issubclass, PCF, 'PCF', eq.PoyintingCorrectionFactor)
+            if settings._debug:
+                assert_value(issubclass, Gamma, 'Gamma', eq.ActivityCoefficients)
+                assert_value(issubclass, Phi, 'Phi', eq.FugacityCoefficients)
+                assert_value(issubclass, PCF, 'PCF', eq.PoyintingCorrectionFactor)
             setattr = object.__setattr__
             setattr(self, 'chemicals', chemicals)
             setattr(self, 'mixture', mixture)

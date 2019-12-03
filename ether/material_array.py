@@ -31,9 +31,10 @@ def nonzeros(IDs, data):
     
 class ArrayEmulator:
     __slots__ = ()
+    _cached_phase_index = {}
     chemicals = units = phases = None
     
-    def assert_safety(self, other):
+    def _assert_safety(self, other):
         if isinstance(other, ArrayEmulator):
             if settings._debug:
                 assert other.chemicals is self.chemicals, "chemicals do not match"
@@ -41,6 +42,11 @@ class ArrayEmulator:
                 assert other.phases == self.phases, "phases do not match"
             return True
         return False
+    
+    def copy(self):
+        new = self._copy_without_data()
+        new._data = self._data.copy()
+        return new
     
     @property
     def data(self):
@@ -57,278 +63,278 @@ class ArrayEmulator:
     
     def __lt__(self, other):
         return self._data.__lt__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __le__(self, other):
         return self._data.__le__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __eq__(self, other):
         return self._data.__eq__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __ne__(self, other):
         return self._data.__ne__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __gt__(self, other):
         return self._data.__gt__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __ge__(self, other):
         return self._data.__ge__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
     
     def __add__(self, other):
         new = self.copy()
         new._data.__iadd__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
     
     def __sub__(self, other):
         new = self.copy()
         new._data.__isub__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
     
     def __mul__(self, other):
         new = self.copy()
         new._data.__imul__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
         
     def __floordiv__(self, other):
         new = self.copy()
         new._data.__ifloordiv__(other._data
-                                if self.assert_safety(other)
+                                if self._assert_safety(other)
                                 else other)
         return new
     
     def __mod__(self, other):
         new = self.copy()
         new._data.__imod__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
     
     def __divmod__(self, other):
         new = self.copy()
         new._data.__idivmod__(other._data
-                              if self.assert_safety(other)
+                              if self._assert_safety(other)
                               else other)
         return new
     
     def __pow__(self, other):
         new = self.copy()
         new._data.__idivmod__(other._data
-                              if self.assert_safety(other)
+                              if self._assert_safety(other)
                               else other)
         return new
     
     def __lshift__(self, other):
         new = self.copy()
         new._data.__ilshift__(other._data
-                              if self.assert_safety(other)
+                              if self._assert_safety(other)
                               else other)
         return new
         
     def __rshift__(self, other):
         new = self.copy()
         new._data.__irshift__(other._data
-                              if self.assert_safety(other)
+                              if self._assert_safety(other)
                               else other)
         return new
     
     def __and__(self, other):
         new = self.copy()
         new._data.__iand__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
     
     def __xor__(self, other):
         new = self.copy()
         new._data.__ixor__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
     
     def __or__(self, other):
         new = self.copy()
         new._data.__ior__(other._data
-                          if self.assert_safety(other)
+                          if self._assert_safety(other)
                           else other)
         return new
     
     def __radd__(self, other):
         new = self.copy()
         new._data.__iadd__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
         
     def __rsub__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rsub__(other._data
-                                        if self.assert_safety(other)
+                                        if self._assert_safety(other)
                                         else other)
         return new
     
     def __rmul__(self, other):
         new = self.copy()
         new._data.__imul__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return new
         
     def __rtruediv__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rtruediv__(other._data
-                                            if self.assert_safety(other)
+                                            if self._assert_safety(other)
                                             else other)
         return new
         
     def __rfloordiv__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rtruediv__(other._data
-                                            if self.assert_safety(other)
+                                            if self._assert_safety(other)
                                             else other)
         return new
         
     def __rmod__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rmod__(other._data
-                                        if self.assert_safety(other)
+                                        if self._assert_safety(other)
                                         else other)
         return new
         
     def __rdivmod__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rdivmod__(other._data
-                                           if self.assert_safety(other)
+                                           if self._assert_safety(other)
                                            else other)
         return new
     
     def __rpow__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rpow__(other._data
-                                        if self.assert_safety(other)
+                                        if self._assert_safety(other)
                                         else other)
         return new
     
     def __rlshift__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rlshift__(other._data
-                                           if self.assert_safety(other)
+                                           if self._assert_safety(other)
                                            else other)
         return new
     
     def __rrshift__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rrshift__(other._data
-                                           if self.assert_safety(other)
+                                           if self._assert_safety(other)
                                            else other)
         return new
     
     def __rand__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rand__(other._data
-                                        if self.assert_safety(other)
+                                        if self._assert_safety(other)
                                         else other)
         return new
     
     def __rxor__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__rxor__(other._data
-                                        if self.assert_safety(other)
+                                        if self._assert_safety(other)
                                         else other)
         return new
     
     def __ror__(self, other):
         new = self._copy_without_data()
         new._data = self._data.__ror__(other._data
-                                       if self.assert_safety(other)
+                                       if self._assert_safety(other)
                                        else other)
         return new
 
     def __iadd__(self, other):
         self._data.__iadd__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __isub__(self, other):
         self._data.__isub__(other._data 
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __imul__(self, other):
         self._data.__imul__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __itruediv__(self, other):
         self._data.__itruediv__(other._data
-                                if self.assert_safety(other)
+                                if self._assert_safety(other)
                                 else other)
         return self
         
     def __ifloordiv__(self, other):
         self._data.__ifloordiv__(other._data
-                                 if self.assert_safety(other)
+                                 if self._assert_safety(other)
                                  else other)
         return self
         
     def __imod__(self, other):
         self._data.__imod__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __ipow__(self, other):
         self._data.__ipow__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __ilshift__(self, other):
         self._data.__ilshift__(other._data
-                               if self.assert_safety(other)
+                               if self._assert_safety(other)
                                else other)
         return self
         
     def __irshift__(self, other):
         self._data.__irshift__(other._data 
-                               if self.assert_safety(other)
+                               if self._assert_safety(other)
                                else other)
         return self
         
     def __iand__(self, other):
         self._data.__iand__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __ixor__(self, other):
         self._data.__ixor__(other._data
-                            if self.assert_safety(other)
+                            if self._assert_safety(other)
                             else other)
         return self
         
     def __ior__(self, other):
         self._data.__ior__(other._data
-                           if self.assert_safety(other)
+                           if self._assert_safety(other)
                            else other)
         return self
         
@@ -363,6 +369,11 @@ class ChemicalArray(ArrayEmulator):
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
+    def fraction(self):
+        data = self._data
+        sum = data.sum()
+        return ChemicalArray.from_data(data/sum if sum else data.copy(), self._chemicals)
+    
     def copy(self):
         new = self._copy_without_data()
         new._data = self._data.copy()
@@ -386,11 +397,10 @@ class ChemicalArray(ArrayEmulator):
         self._set_chemicals(chemicals)
         if not isinstance(data, np.ndarray):
             data = np.array(data, float)
-        elif data.size == self._chemicals.size:
-            self._data = data
-        else:
-            raise ValueError('size of data must be equal to '
-                             'size of chemicals')
+        if settings.debug:
+            assert data.size == self._chemicals.size, ('size of data must be equal to '
+                                                       'size of chemicals')
+        self._data = data
         return self
     
     
@@ -479,6 +489,19 @@ class PhaseArray(ArrayEmulator):
     def phases(self):
         return self._phases
     
+    def fraction(self):
+        data = self._data
+        sum = data.sum()
+        return PhaseArray.from_data(data/sum if sum else data.copy(), self._phases)
+    
+    def _set_phases(self, phases):
+        self._phases = phases = tuple(phases)
+        cached = self._cached_phase_index
+        if phases in cached:
+            self._phase_index = cached[phases]
+        else:
+            self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
+    
     def _get_phase_index(self, phase):
         try:
             return self._phase_index[phase]
@@ -493,19 +516,11 @@ class PhaseArray(ArrayEmulator):
             for i in phases:
                 if i not in index:
                     raise UndefinedPhase(i)
-            
-    def copy(self):
-        new = self._copy_without_data()
-        new._data = self._data.copy()
-        return new
     
     def _copy_without_data(self):
         new = super().__new__(self.__class__)
         new._phases = self._phases
         return new
-    
-    def _set_phases(self, phases):
-        self._phases = tuple(phases)
     
     @classmethod
     def blank(cls, phases):
@@ -515,25 +530,24 @@ class PhaseArray(ArrayEmulator):
         return self
     
     @classmethod
-    def from_data(cls, phases, data):
+    def from_data(cls, data, phases):
         self = super().__new__(cls)
         self._set_phases(phases)
         if not isinstance(data, np.ndarray):
             data = np.array(data, float)
-        elif data.size == len(self._phases):
-            self._data = data
-        else:
-            raise ValueError('size of data must be equal to '
-                             'size of chemicals')
+        if settings.debug:
+            assert data.size == len(self._phases), ('size of data must be equal to '
+                                                    'size of chemicals')
+        self._data = data
         return self
     
     def _get_index(self, phases):
         if len(phases) == 1:
-            return self._phase_index(phases)
+            return self._get_phase_index(phases)
         elif isinstance(phases, slice):
             return phases
         else:
-            return self._phase_indices(phases)
+            return self._get_phase_indices(phases)
     
     def __iter__(self):
         return self._data.__iter__()
@@ -597,7 +611,6 @@ class PhaseArray(ArrayEmulator):
 
 class MaterialArray(ArrayEmulator):
     __slots__ = ('_phases', '_phase_index', '_phase_data', '_data', '_chemicals')
-    _cached_phase_index = {}
     _ChemicalArray = ChemicalArray
     _PhaseArray = PhaseArray
     
@@ -612,23 +625,23 @@ class MaterialArray(ArrayEmulator):
                 data[phase_index(phase), chemical_indices(IDs)] = row
         return self
     
+    def phase_fraction(self):
+        data = self._data
+        phase_data = data.sum(0, keepdims=True)
+        phase_data[phase_data == 0] = 1.
+        return MaterialArray.from_data(data/phase_data, self._phases, self._chemicals)
+    
+    def chemical_fraction(self):
+        data = self._data
+        chemical_data = data.sum(1, keepdims=True)
+        chemical_data[chemical_data == 0] = 1.
+        return MaterialArray.from_data(data/chemical_data, self._phases, self._chemicals)
+    
     _set_chemicals = ChemicalArray._set_chemicals
+    _set_phases = PhaseArray._set_phases
     
     def __matmul__(self, other):
-        return self._PhaseArray.from_data(self._phases, self._data @ other)
-    
-    def _set_phases(self, phases):
-        self._phases = phases = tuple(phases)
-        cached = self._cached_phase_index
-        if phases in cached:
-            self._phase_index = cached[phases]
-        else:
-            self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
-    
-    def copy(self):
-        new = self._copy_without_data()
-        new._data = self._data.copy()
-        return new
+        return self._PhaseArray.from_data(self._data @ other, self._phases)
     
     def _copy_without_data(self):
         new = super().__new__(self.__class__)
@@ -648,14 +661,14 @@ class MaterialArray(ArrayEmulator):
         return self
     
     @classmethod
-    def from_data(cls, phases, data, chemicals=None):
+    def from_data(cls, data, phases, chemicals=None):
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
         M_phases = len(self._phases)
         N_chemicals = self._chemicals.size
         if not isinstance(data, np.ndarray):
-            self._data = data = np.array(data, float)
+            data = np.array(data, float)
         if settings.debug:
             M, N = data.shape
             assert M == M_phases, ('number of phases must be equal to '
@@ -663,6 +676,7 @@ class MaterialArray(ArrayEmulator):
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of data columns')
+        self._data = data
         return self
     
     @property
@@ -673,13 +687,13 @@ class MaterialArray(ArrayEmulator):
         return self._chemicals
     
     def phase_array(self):
-        return self._PhaseArray.from_data(self._phases, self._data.sum(1))
+        return self._PhaseArray.from_data(self._data.sum(1), self._phases)
     
     def chemical_array(self):
         return self._ChemicalArray.from_data(self._data.sum(0), self._chemicals)
     
     def get_phase(self, phase):
-        phase_data = object.__new__(self._MaterialArray)
+        phase_data = object.__new__(self._ChemicalArray)
         phase_data._data = self._data[self._phase_index[phase]]
         phase_data._chemicals = self._chemicals
         return phase_data
@@ -721,7 +735,8 @@ class MaterialArray(ArrayEmulator):
         phase_data = []
         for phase, data in self._phase_data:
             IDdata = ", ".join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
-            phase_data.append(f"{phase}=[{IDdata}]")
+            if IDdata:
+                phase_data.append(f"{phase}=[{IDdata}]")
         tabs = int(tabs)
         if tabs:
             tab = tabs*4*" "
@@ -729,7 +744,7 @@ class MaterialArray(ArrayEmulator):
         else:
             dlim = ", "
         phase_data = dlim.join(phase_data)
-        if self.chemical_array().all():
+        if self.phase_array().all():
             phases = ""
             if phase_data:
                 phase_data = "\n" + tab + phase_data
@@ -793,7 +808,7 @@ class MaterialArray(ArrayEmulator):
     show = ChemicalArray.show
     _ipython_display_ = show
     
-def new_Data(name, units):
+def new_Array(name, units):
     ChemicalArraySubclass = type('Chemical' + name, (ChemicalArray,), {})
     PhaseArraySubclass = type('Phase' + name, (PhaseArray,), {})
     MaterialArraySubclass = type(name, (MaterialArray,), {})
@@ -807,6 +822,6 @@ def new_Data(name, units):
     MaterialArraySubclass._PhaseArray = PhaseArraySubclass
     return ChemicalArraySubclass, PhaseArraySubclass, MaterialArraySubclass
     
-ChemicalMolarFlow, PhaseMolarFlow, MolarFlow = new_Data('MolarFlow', 'kmol/hr')
-ChemicalMassFlow, PhaseMassFlow, MassFlow = new_Data('MassFlow', 'kg/hr')
-ChemicalVolumetricFlow, PhaseVolumetricFlow, VolumetricFlow = new_Data('VolumetricFlow', 'm^3/hr')
+ChemicalMolarFlow, PhaseMolarFlow, MolarFlow = new_Array('MolarFlow', 'kmol/hr')
+ChemicalMassFlow, PhaseMassFlow, MassFlow = new_Array('MassFlow', 'kg/hr')
+ChemicalVolumetricFlow, PhaseVolumetricFlow, VolumetricFlow = new_Array('VolumetricFlow', 'm^3/hr')

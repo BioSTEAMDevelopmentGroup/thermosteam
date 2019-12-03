@@ -8,7 +8,7 @@ import ether
 
 __all__ = ('settings',)
 
-class EtherSettings:
+class Settings:
     __slots__ = ('_thermo',
                  '_rigorous_energy_balance',
                  '_phase_equivalents',
@@ -74,4 +74,4 @@ class EtherSettings:
     def __repr__(self):
         return "ether.settings"
     
-settings = EtherSettings()
+settings = Settings()
