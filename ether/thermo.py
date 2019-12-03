@@ -17,16 +17,16 @@ __all__ = ('Thermo',)
 class Thermo:
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
     _cached = {}
-    def __new__(cls, chemicals, mixture=None, Gamma=None, Phi=None, PCF=None):
+    def __new__(cls, chemicals, mixture=None,
+                Gamma=eq.DortmundActivityCoefficients,
+                Phi=eq.IdealFugacityCoefficients,
+                PCF=eq.IdealPoyintingCorrectionFactor):
         args = (chemicals, mixture, Gamma, Phi, PCF)
         cached = cls._cached
         if args in cached:
             self = cached[args]
         else:
             self = super().__new__(cls)
-            PCF = PCF or eq.IdealPoyintingCorrectionFactor
-            Gamma = Gamma or eq.DortmundActivityCoefficients
-            Phi = Phi or eq.IdealFugacityCoefficients
             mixture = mixture or IdealMixture(chemicals)
             if not isinstance(chemicals, Chemicals):
                 chemicals = Chemicals(chemicals)

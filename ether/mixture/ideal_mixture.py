@@ -26,6 +26,13 @@ class IdealMixtureTPProperty:
         self._data = zeros(len(properties))
         self._properties = properties
 
+    def copy(self):
+        new = self.__new__(self.__class__)
+        new._TP = self._TP
+        new._data = self._data.copy()
+        new._properties = self._properties
+        return new
+
     @property
     def var(self):
         for i in self._properties:
@@ -67,6 +74,13 @@ class IdealMixtureTProperty:
         self._data = zeros(len(properties))
         self._properties = tuple(properties)
 
+    def copy(self):
+        new = self.__new__(self.__class__)
+        new._T = self._T
+        new._data = self._data.copy()
+        new._properties = self._properties
+        return new
+
     def __call__(self, z, T):
         z = asarray(z)
         self._nonzero = nonzero = z!=0
@@ -106,19 +120,25 @@ def group_properties_by_phase(phase_properties):
 class IdealMixturePhaseTProperty(MixturePhaseTProperty):
     __slots__ = ('s', 'l', 'g')
     
-    def __init__(self, phase_properties):
+    @classmethod
+    def from_phase_properties(cls, phase_properties):
         setfield = setattr
+        self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
             setfield(self, phase, IdealMixtureTProperty(properties))
+        return self
 
 
 class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
     __slots__ = ('s', 'l', 'g')
     
-    def __init__(self, phase_properties):
+    @classmethod
+    def from_phase_properties(cls, phase_properties):
         setfield = setattr
+        self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
             setfield(self, phase, IdealMixtureTPProperty(properties))
+        return self
 
 
 # %% Ideal mixture
@@ -139,14 +159,27 @@ class IdealMixture:
         any_ = any
         self.chemicals = chemicals
         for var in mixture_phaseT_methods:
-            properties = [getfield(i, var) for i in chemicals]
-            if any_(properties): setfield(self, var, IdealMixturePhaseTProperty(properties))
+            phase_properties = [getfield(i, var) for i in chemicals]
+            if any_(phase_properties): 
+                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties)
+                setfield(self, var, phase_property)
         for var in mixture_phaseTP_methods:
-            properties = [getfield(i, var) for i in chemicals]
-            if any_(properties): setfield(self, var, IdealMixturePhaseTPProperty(properties))
+            phase_properties = [getfield(i, var) for i in chemicals]
+            if any_(phase_properties): 
+                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties)
+                setfield(self, var, phase_property)
         for var in mixture_T_methods:
             properties = [getfield(i, var) for i in chemicals]
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties))
+    
+    def copy(self):
+        getfield = getattr
+        setfield = setattr
+        new = self.__new__(self.__class__)
+        new.chemicals = self.chemicals
+        for i in mixture_methods:
+            setfield(new, i, getfield(self, i).copy())
+        return new
     
     def solve_T(self, phase, z, H, T_guess):
         if settings.rigorous_energy_balance:

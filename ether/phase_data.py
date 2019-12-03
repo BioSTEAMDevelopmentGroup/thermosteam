@@ -74,9 +74,20 @@ class PhaseData:
     def __iter__(self):
         return self._data.__iter__()
     
-    def __repr__(self):
+    def __format__(self, tabs=""):
+        if not tabs: tabs = 1
+        tabs = int(tabs) 
+        tab = tabs*4*" "
         IDdata = [f"{ID}={i}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
-        return f"{type(self).__name__}({', '.join(IDdata)})"
+        if len(IDdata) > 1 and tab:
+            dlim = ",\n" + tab
+            IDdata = "\n" + tab + dlim.join(IDdata)
+        else:
+            IDdata = ', '.join(IDdata)
+        return f"{type(self).__name__}({IDdata})"
+    
+    def __repr__(self):
+        return self.__format__()
     
     def _info(self, N):
         """Return string with all specifications."""
@@ -231,16 +242,25 @@ class MultiPhaseData:
     def __iter__(self):
         return self._phase_data.__iter__()
     
-    def __repr__(self):
+    def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
         phase_data = []
         for phase, data in self._phase_data:
             IDdata = ", ".join([f"('{ID}', {i:.3g})" for ID, i in zip(IDs, data) if i])
             phase_data.append(f"{phase}=[{IDdata}]")
-        phase_data = ", ".join(phase_data)
+        tabs = int(tabs)
+        if tabs:
+            tab = tabs*4*" "
+            dlim = ",\n" + tab 
+        else:
+            dlim = ", "
+        phase_data = dlim.join(phase_data)
         if phase_data:
-            phase_data = ", " + phase_data
-        return f"{type(self).__name__}(phases='{self.phases}'{phase_data})"
+            phase_data = dlim + phase_data
+        return (f"{type(self).__name__}(phases='{self.phases}'{phase_data})")
+    
+    def __repr__(self):
+        return self.__format__("1")
     
     def _info(self, N):
         """Return string with all specifications."""

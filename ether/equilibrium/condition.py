@@ -14,6 +14,9 @@ class Condition:
         self.T = T
         self.P = P
         
-    def __repr__(self):
+    def _ipython_display_(self):
         return f"{type(self).__name__}(T={self.T:.2f} K, P={self.P:.6g} Pa)"
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.6g})"
     

@@ -18,7 +18,7 @@ class EtherSettings:
                                    'L': 'l',
                                    'G': 'g',
                                    'V': 'g',
-                                   'v': 'g',}
+                                   'v': 'g'}
     
     @property
     def phase_equivalents(self):

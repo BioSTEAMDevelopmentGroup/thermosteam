@@ -8,13 +8,13 @@ __all__ = ('UndefinedChemical',
            'UndefinedPhase',
            'check_value')
 
-class UndefinedChemical(LookupError):
-    """LookupError regarding undefined compounds."""
+class UndefinedChemical(AttributeError):
+    """AttributeError regarding undefined compounds."""
     def __init__(self, ID): super().__init__(f"'{ID}'")
     
     
-class UndefinedPhase(LookupError):
-    """LookupError regarding undefined phases."""
+class UndefinedPhase(AttributeError):
+    """AttributeError regarding undefined phases."""
     def __init__(self, phase): super().__init__(f"'{phase}'")
 
 

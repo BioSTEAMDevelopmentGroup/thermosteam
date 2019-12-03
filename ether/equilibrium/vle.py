@@ -39,7 +39,7 @@ class VLE:
     """Create a VLE object for solving VLE."""
     __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_condition',
                  '_dew_point', '_bubble_point', '_mixture',
-                 '_phi', '_pcf', '_gamma', '_material_data',
+                 '_phi', '_pcf', '_gamma', '_molar_data',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_massnet', '_chemical',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
@@ -57,7 +57,7 @@ class VLE:
 
         Parameters
         ----------
-        material_data : MaterialData
+        molar_data : MaterialData
         
         condition : [Condition]
         
@@ -90,24 +90,24 @@ class VLE:
         # Run equilibrium
         if T_spec:
             if P_spec:
-                return self.TP(T, P)
+                return self.set_TP(T, P)
             elif V_spec:
-                return self.TV(T, V)
+                return self.set_TV(T, V)
             elif H_spec:
-                return self.TH(T, H)
+                return self.set_TH(T, H)
             elif x_spec:
-                return self.Tx(T, np.asarray(x))
+                return self.set_Tx(T, np.asarray(x))
             else: # y_spec
-                return self.Ty(T, np.asarray(y))
+                return self.set_Ty(T, np.asarray(y))
         elif P_spec:
             if V_spec:
-                return self.PV(P, V)
+                return self.set_PV(P, V)
             elif H_spec:
-                return self.PH(P, H)
+                return self.set_PH(P, H)
             elif x_spec:
-                return self.Px(P, np.asarray(x))
+                return self.set_Px(P, np.asarray(x))
             else: # y_spec
-                return self.Py(P, np.asarray(y))
+                return self.set_Py(P, np.asarray(y))
         elif H_spec:
             if y_spec:
                 raise NotImplementedError('specification H and y not implemented')
@@ -118,15 +118,15 @@ class VLE:
         else: # x_spec and y_spec
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
-    def __init__(self, material_data, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
+    def __init__(self, molar_data, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
         self._T = self._P = self._H_hat = self._V = 0
         self._thermo = thermo = settings.get_default_thermo(thermo)
-        self._mixture = thermo.mixture
-        self._material_data = material_data
+        self._mixture = thermo.mixture.copy()
+        self._molar_data = molar_data
         self._condition = condition or Condition(298.15, 101325.)
-        self._phase_data = material_data._phase_data
-        self._liquid_mol = liquid_mol = material_data['l']
-        self._vapor_mol = vapor_mol = material_data['g']
+        self._phase_data = molar_data._phase_data
+        self._liquid_mol = liquid_mol = molar_data['l']
+        self._vapor_mol = vapor_mol = molar_data['g']
 
         # Get flow rates
         mol = liquid_mol + vapor_mol
@@ -175,7 +175,7 @@ class VLE:
             self._solve_V = self._solve_V_N
         
         # Get overall composition
-        data = material_data.data
+        data = molar_data.data
         self._massnet = (chemicals._MW * data).sum()
         self._molnet = molnet = data.sum()
         assert molnet != 0, 'empty stream cannot perform equilibrium'
@@ -193,15 +193,15 @@ class VLE:
     def thermo(self):
         return self._thermo
     @property
-    def material_data(self):
-        return self._material_data
+    def molar_data(self):
+        return self._molar_data
     @property
     def condition(self):
         return self._condition
 
     ### Single component equilibrium case ###
         
-    def _TP_chemical(self, T, P):
+    def _set_TP_chemical(self, T, P):
         # Either liquid or gas
         if P < self._chemical.Psat(T):
             self._liquid_mol[self._index] = 0
@@ -210,19 +210,19 @@ class VLE:
             self._liquid_mol[self._index] = self._mol
             self._vapor_mol[self._index] = 0
     
-    def _TV_chemical(self, T, V):
+    def _set_TV_chemical(self, T, V):
         # Set vapor fraction
         self._T = self._condition.T = self._chemical.Psat(T)
         self._vapor_mol[self._index] = self._mol*V
         self._liquid_mol[self._index] = self._mol - self._vapor_mol[self._index]
         
-    def _PV_chemical(self, P, V):
+    def _set_PV_chemical(self, P, V):
         # Set vapor fraction
         self._T = self._condition.T = self._chemical.Tsat(P)
         self._vapor_mol[self._index] = self._mol*V
         self._liquid_mol[self._index] = self._mol - self._vapor_mol[self._index]
         
-    def _PH_chemical(self, P, H): 
+    def _set_PH_chemical(self, P, H): 
         mol = self._mol
         index = self._index
         vapor_mol = self._vapor_mol
@@ -252,7 +252,7 @@ class VLE:
         vapor_mol[index] = mol*V
         liquid_mol[index] = mol - vapor_mol[index]
         
-    def _TH_chemical(self, T, H):
+    def _set_TH_chemical(self, T, H):
         index = self._index
         mol = self._mol
         vapor_mol = self._vapor_mol
@@ -293,30 +293,30 @@ class VLE:
         self._vapor_mol[self._index] = v = self._molnet * split_frac * y
         self._liquid_mol[self._index] = self._mol - v
     
-    def Tx(self, T, x):
+    def set_Tx(self, T, x):
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
         self._condition.P, y = self._bubble_point.solve_Px(x, T)
         self._lever_rule(x, y)
     
-    def Px(self, P, x):
+    def set_Px(self, P, x):
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
         self._condition.T, y = self._bubble_point.solve_Ty(x, P) 
         self._lever_rule(x, y)
         
-    def Ty(self, T, y):
+    def set_Ty(self, T, y):
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
         self._condition.P, x = self._dew_point.solve_Px(y, T)
         self._lever_rule(x, y)
     
-    def Py(self, P, y):
+    def set_Py(self, P, y):
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
         self._condition.T, x = self._dew_point.solve_Ty(y, P) 
         self._lever_rule(x, y)
         
-    def TP(self, T, P):
+    def set_TP(self, T, P):
         self._T = self._condition.T = T
         self._P = self._condition.P = P
-        if self._N == 1: return self._TP_chemical(T, P)
+        if self._N == 1: return self._set_TP_chemical(T, P)
         # Setup bounderies
         P_dew, x_dew = self._dew_point.solve_Px(self._zs, T)
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._zs, T)
@@ -342,9 +342,9 @@ class VLE:
             self._liquid_mol[self._index] = self._mol - self._v
             self._H_hat = self._mixture.xH(self._phase_data, T)/self._massnet
         
-    def TV(self, T, V):
+    def set_TV(self, T, V):
         self._T = T
-        if self._N == 1: return self._TV_chemical(T, V)
+        if self._N == 1: return self._set_TV_chemical(T, V)
         P_dew, x_dew = self._dew_point.solve_Px(self._zs, T)
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._zs, T)
         if V == 1:
@@ -366,8 +366,8 @@ class VLE:
             self._liquid_mol[self._index] = self._mol - self._v
             self._H_hat = self._mixture.xH(self._phase_data, T)/self._massnet
 
-    def TH(self, T, H):
-        if self._N == 1: return self._TH_chemical(T, H)
+    def set_TH(self, T, H):
+        if self._N == 1: return self._set_TH_chemical(T, H)
         self._T = T
         
         # Setup bounderies
@@ -409,9 +409,9 @@ class VLE:
                                                       self._P, self._H_hat,
                                                       self.P_tol, self.H_hat_tol) 
     
-    def PV(self, P, V):
+    def set_PV(self, P, V):
         self._P = P
-        if self._N == 1: return self._PV_chemical(P, V)
+        if self._N == 1: return self._set_PV_chemical(P, V)
         
         # Setup bounderies
         T_dew, x_dew = self._dew_point.solve_Tx(self._zs, P)
@@ -442,9 +442,9 @@ class VLE:
             self._P = P
             self._H_hat = self._mixture.xH(self._phase_data, self._T)/self._massnet
     
-    def PH(self, P, H):
+    def set_PH(self, P, H):
         self._P = P
-        if self._N == 1: return self._PH_chemical(P, H)
+        if self._N == 1: return self._set_PH_chemical(P, H)
         
         # Setup bounderies
         T_dew, x_dew = self._dew_point.solve_Tx(self._zs, P)
@@ -581,5 +581,16 @@ class VLE:
                       + K2*z1 + K2*z2 + K2*z3 + K3*z1 + K3*z2 + K3*z3 - z1 - z2 - z3))
         return self._V
 
+    def __format__(self, tabs=""):
+        if not tabs: tabs = 1
+        tabs = int(tabs)
+        tab = tabs * 4 * " "
+        molar_data = format(self.molar_data, str(2*tabs))
+        if tabs:
+            dlim = "\n" + tab
+        else:
+            dlim = ", "
+        return f"VLE({molar_data},{dlim}{self.condition})"
+    
     def __repr__(self):
-        return f"VLE({self.material_data}, {self.condition})"
+        return self.__format__("1")
