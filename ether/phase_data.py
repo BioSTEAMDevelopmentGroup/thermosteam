@@ -25,15 +25,30 @@ class PhaseData:
     __slots__ = ('_data', '_chemicals')
     units = None
     
-    def __new__(cls, data=None, chemicals=None, **IDdata):
-        self = super().__new__(cls)
+    def __new__(cls, chemicals=None, **IDdata):
+        self = cls.blank()
+        if IDdata:
+            IDs, data = zip(*IDdata.items())
+            self._data[self._chemicals.indices(IDs)] = data
+        return self
+    
+    def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
+    
+    @classmethod
+    def blank(cls, chemicals=None):
+        self = super().__new__(cls)
+        self._set_chemicals(chemicals)
+        self._data = np.zeros(self._chemicals.size, float)
+        return self
+    
+    @classmethod
+    def from_data(cls, data=None, chemicals=None):
+        self = super().__new__(cls)
+        self._set_chemicals(chemicals)
         if data:
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
-            if IDdata:
-                raise ValueError("may specify either 'data' or "
-                                 "'IDdata', but not both")
             elif data.size == chemicals.size:
                 self.data = data
             else:
@@ -41,10 +56,6 @@ class PhaseData:
                                  'size of chemicals')
         else:
             self._data = np.zeros(chemicals.size, float)
-            if IDdata:
-                IDs, data = zip(*IDdata.items())
-                self._data[chemicals.indices(IDs)] = data
-        return self
     
     @property
     def data(self):
@@ -136,41 +147,57 @@ class MultiPhaseData:
     _PhaseData = PhaseData
     units = PhaseData.units
     
-    def __new__(cls, phases='lg', data=None, chemicals=None, **phase_data):
-        self = super().__new__(cls)
-        self._chemicals = chemicals = settings.get_default_chemicals(chemicals)
-        cached = cls._cached_phase_index
+    def __new__(cls, phases=None, chemicals=None, **phase_data):
+        self = cls.blank(phases or "".join(phase_data), chemicals)
+        if phase_data:
+            data = self._data
+            chemical_indices = self._chemicals.indices
+            phase_index = self._get_phase_index
+            for phase, IDdata in phase_data.items():
+                IDs, row = zip(*IDdata)
+                data[phase_index(phase), chemical_indices(IDs)] = row
+        return self
+    
+    _set_chemicals = PhaseData._set_chemicals
+    
+    def _set_phases(self, phases):
+        self._phases = phases
+        cached = self._cached_phase_index
         if phases in cached:
             self._phase_index = cached[phases]
         else:
             self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
-        self._phases = phases
-        N_phases = len(phases)
-        M_chemicals = chemicals.size
+    
+    @classmethod
+    def blank(cls, phases, chemicals=None):
+        self = super().__new__(cls)
+        self._set_chemicals(chemicals)
+        self._set_phases(phases)
+        shape = (len(phases), self._chemicals.size)
+        self._data = data = np.zeros(shape, float)
+        self._phase_data = tuple(zip(phases, data))
+        return self
+    
+    @classmethod
+    def from_data(cls, phases, data=None, chemicals=None):
+        self = super().__new__(cls)
+        self._set_chemicals(chemicals)
+        self._set_phases(phases)
+        M_phases = len(phases)
+        N_chemicals = self._chemicals.size
         if data:
-            if phase_data:
-                raise ValueError("may specify either 'data' or "
-                                 "'phase_data', but not both")
             if not isinstance(data, np.ndarray):
                 data = np.array(data, float)
             M, N = data.shape
-            assert M == N_phases, ('number of phases must be equal to '
+            assert M == M_phases, ('number of phases must be equal to '
                                    'the number of data rows')
-            assert N == M_chemicals, ('size of chemicals '
+            assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of data columns')
             self._data = data
         else:
-            shape = (N_phases, M_chemicals)
-            self._data = data = np.zeros(shape, float)
-            if phase_data:
-                chemical_indices = chemicals.indices
-                phase_index = self._get_phase_index
-                for phase, IDdata in phase_data.items():
-                    IDs, row = zip(*IDdata)
-                    self._data[phase_index(phase), chemical_indices(IDs)] = row
+            self._data = data = np.zeros((M_phases, N_chemicals), float)
         self._phase_data = tuple(zip(phases, data))
-        return self
     
     @property
     def data(self):
@@ -234,10 +261,27 @@ class MultiPhaseData:
                     raise UndefinedPhase(i)
     
     def __getitem__(self, phases_IDs):
-        return self._data[self._get_index(phases_IDs)]
+        phases, IDs = index = self._get_index(phases_IDs)
+        data = self._data
+        if isinstance(phases, list):
+            return [data[i, IDs] for i in phases]
+        else:                
+            return data[index]
     
     def __setitem__(self, phases_IDs, data):
-        self._data[self._get_index(phases_IDs)] = data
+        phases, IDs = index = self._get_index(phases_IDs)
+        if isinstance(phases, list):
+            data = np.asarray(data)
+            if data.ndim <= 1:
+                for i in phases: self._data[i, IDs] = data
+            elif len(phases) == len(data):
+                for i, row in zip(phases, data): self._data[i, IDs] = row
+            else:
+                raise ValueError(f"shape mismatch: value array of shape {data.shape} "
+                                  "could not be broadcast to indexing result of shape "
+                                 f"{(len(phases), self._data[:, IDs].shape[1])}")
+        else:
+            self._data[index] = data
     
     def __iter__(self):
         return self._phase_data.__iter__()
@@ -255,9 +299,15 @@ class MultiPhaseData:
         else:
             dlim = ", "
         phase_data = dlim.join(phase_data)
-        if phase_data:
-            phase_data = dlim + phase_data
-        return (f"{type(self).__name__}(phases='{self.phases}'{phase_data})")
+        if self.sum_chemicals().all():
+            phases = ""
+            if phase_data:
+                phase_data = "\n" + tab + phase_data
+        else:
+            phases = f'phases={self.phases}'
+            if phase_data:
+                phase_data = dlim + phase_data
+        return f"{type(self).__name__}({phases}{phase_data})"
     
     def __repr__(self):
         return self.__format__("1")
