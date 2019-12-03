@@ -17,7 +17,7 @@ class Settings:
     def __init__(self):
         self._thermo = None
         self._rigorous_energy_balance = False
-        self._debug = True
+        self._debug = __debug__
         self._phase_equivalents = {'S': 's',
                                    'L': 'l',
                                    'G': 'g',
