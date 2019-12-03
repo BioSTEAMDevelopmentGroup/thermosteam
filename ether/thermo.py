@@ -8,7 +8,6 @@ from . import equilibrium as eq
 from .chemicals import Chemicals
 from .mixture import IdealMixture
 from .utils import read_only
-from .exceptions import assert_value
 from .settings import settings
 
 __all__ = ('Thermo',)
