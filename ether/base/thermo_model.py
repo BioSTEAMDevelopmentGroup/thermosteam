@@ -50,7 +50,7 @@ def thermo_model(evaluate,
                 found_model = True
                 break
         
-    assert found_model, 'no available model matching evaluate signature'
+    assert found_model, 'no available model matching signature'
     return Model(evaluate, Tmin, Tmax, Pmin, Pmax, name, **funcs)
 
 

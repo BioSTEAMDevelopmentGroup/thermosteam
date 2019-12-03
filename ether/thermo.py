@@ -33,11 +33,11 @@ class Thermo:
             if settings._debug:
                 issubtype = issubclass
                 assert issubtype(Gamma, eq.ActivityCoefficients), (
-                    f"'Gamma' must be a '{eq.ActivityCoefficients.__name__}' class")
+                    f"Gamma must be a '{eq.ActivityCoefficients.__name__}' class")
                 assert issubtype(Phi, eq.FugacityCoefficients), (
-                    f"'Phi' must be a '{eq.FugacityCoefficients.__name__}' class")
+                    f"Phi must be a '{eq.FugacityCoefficients.__name__}' class")
                 assert issubtype(PCF, eq.PoyintingCorrectionFactor), (
-                    f"'PCF' must be a '{eq.PoyintingCorrectionFactor.__name__}' class")
+                    f"PCF must be a '{eq.PoyintingCorrectionFactor.__name__}' class")
             setattr = object.__setattr__
             setattr(self, 'chemicals', chemicals)
             setattr(self, 'mixture', mixture)
@@ -45,7 +45,6 @@ class Thermo:
             setattr(self, 'Phi', Phi)
             setattr(self, 'PCF', PCF)    
             cached[args] = self
-        settings._thermo = self
         return self
     
     def __repr__(self):

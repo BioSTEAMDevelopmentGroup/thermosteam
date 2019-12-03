@@ -38,7 +38,8 @@ class Settings:
     def get_thermo(self, thermo):
         if not thermo:
             thermo = settings.thermo
-            assert thermo, "no available 'Thermo' object"
+            assert thermo, ("no available 'Thermo' object; "
+                            "set ether.settings.thermo first")
         return thermo
     
     def get_chemicals(self, chemicals):
@@ -56,7 +57,8 @@ class Settings:
     def get_mixture(self, mixture):
         if not mixture:
             thermo = settings.thermo
-            assert thermo, "no available 'Thermo' object"
+            assert thermo, ("no available 'Thermo' object; "
+                            "set ether.settings.thermo first")
             mixture = thermo.mixture
         return mixture
     
@@ -68,7 +70,7 @@ class Settings:
         if isinstance(thermo, ether.Thermo):
             self._thermo = thermo
         else:
-            raise ValueError("default must be a 'Thermo' object, "
+            raise ValueError("thermo must be a 'Thermo' object, "
                             f"not a '{type(thermo).__name__}'")
     
     def __repr__(self):
