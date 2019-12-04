@@ -37,10 +37,11 @@ class ArrayEmulator:
     _quantity = _Q(1.)
     
     def _assert_safety(self, other, *, isa=isinstance, settings=settings):
-        if isa(other, ArrayEmulator) and settings._debug:
-            assert other.chemicals is self.chemicals, "chemicals do not match"
-            assert other.units == self.units, "units do not match"
-            assert other.phases == self.phases, "phases do not match"
+        if isa(other, ArrayEmulator):
+            if settings._debug:
+                assert other.chemicals is self.chemicals, "chemicals do not match"
+                assert other.units == self.units, "units do not match"
+                assert other.phases == self.phases, "phases do not match"
             return True
         return False
     
