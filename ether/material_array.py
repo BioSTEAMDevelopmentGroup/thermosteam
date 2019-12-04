@@ -4,6 +4,7 @@ Created on Mon Dec  2 01:41:50 2019
 
 @author: yoelr
 """
+from .base import _Q
 from .settings import settings
 from .exceptions import UndefinedPhase
 import numpy as np
@@ -33,6 +34,7 @@ class ArrayEmulator:
     __slots__ = ()
     _cached_phase_index = {}
     chemicals = units = phases = None
+    _quantity = _Q(1.)
     
     def _assert_safety(self, other):
         if isinstance(other, ArrayEmulator):
@@ -369,13 +371,20 @@ class ChemicalArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals)
     
+    def get_data(self, chemicals, units):
+        return self[chemicals] * self._quantity.to(units).magnitude
+    
+    def set_data(self, chemicals, data, units):
+        self[chemicals] = data / self._quantity.to(units).magnitude
+    
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
-    def fraction(self):
+    def composition(self):
         data = self._data
-        sum = data.sum()
-        return ChemicalArray.from_data(data/sum if sum else data.copy(), self._chemicals)
+        total = data.sum()
+        return ChemicalArray.from_data(data/total if total else data.copy(),
+                                       self._chemicals)
     
     def copy(self):
         new = self._copy_without_data()
@@ -398,9 +407,8 @@ class ChemicalArray(ArrayEmulator):
     def from_data(cls, data, chemicals=None):
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
-        if not isinstance(data, np.ndarray):
-            data = np.array(data, float)
         if settings.debug:
+            assert isinstance(data, np.ndarray), 'data must be an 1d numpy array'
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
         self._data = data
@@ -490,14 +498,21 @@ class PhaseArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases)
     
+    def get_data(self, phases, units):
+        return self[phases] * self._quantity.to(units).magnitude
+    
+    def set_data(self, phases, data, units):
+        self[phases] = data / self._quantity.to(units).magnitude
+    
     @property
     def phases(self):
         return self._phases
     
-    def fraction(self):
+    def phase_split(self):
         data = self._data
-        sum = data.sum()
-        return PhaseArray.from_data(data/sum if sum else data.copy(), self._phases)
+        total = data.sum()
+        return PhaseArray.from_data(data/total if total else data.copy(),
+                                    self._phases)
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(phases)
@@ -538,9 +553,8 @@ class PhaseArray(ArrayEmulator):
     def from_data(cls, data, phases):
         self = super().__new__(cls)
         self._set_phases(phases)
-        if not isinstance(data, np.ndarray):
-            data = np.array(data, float)
         if settings.debug:
+            assert isinstance(data, np.ndarray), 'data must be an 1d numpy array'
             assert data.size == len(self._phases), ('size of data must be equal to '
                                                     'size of chemicals')
         self._data = data
@@ -633,17 +647,29 @@ class MaterialArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals)
     
-    def phase_fraction(self):
+    def get_data(self, phase, chemicals, units):
+        return self[phase, chemicals] * self._quantity.to(units).magnitude
+    
+    def set_data(self, phase, chemicals, data, units):
+        self[phase, chemicals] = data / self._quantity.to(units).magnitude
+    
+    def composition(self):
+        data = self._data
+        total = data.sum(keepdims=True)
+        return MaterialArray.from_data(data/total if total else data.copy(),
+                                       self._phases, self._chemicals)
+    
+    def phase_composition(self):
+        data = self._data
+        phase_data = data.sum(1, keepdims=True)
+        phase_data[phase_data == 0] = 1.
+        return MaterialArray.from_data(data/phase_data, self._phases, self._chemicals)
+    
+    def phase_split(self):
         data = self._data
         phase_data = data.sum(0, keepdims=True)
         phase_data[phase_data == 0] = 1.
         return MaterialArray.from_data(data/phase_data, self._phases, self._chemicals)
-    
-    def chemical_fraction(self):
-        data = self._data
-        chemical_data = data.sum(1, keepdims=True)
-        chemical_data[chemical_data == 0] = 1.
-        return MaterialArray.from_data(data/chemical_data, self._phases, self._chemicals)
     
     _set_chemicals = ChemicalArray._set_chemicals
     _set_phases = PhaseArray._set_phases
@@ -673,11 +699,10 @@ class MaterialArray(ArrayEmulator):
         self = super().__new__(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
-        M_phases = len(self._phases)
-        N_chemicals = self._chemicals.size
-        if not isinstance(data, np.ndarray):
-            data = np.array(data, float)
         if settings.debug:
+            assert isinstance(data, np.ndarray), 'data must be an 1d numpy array'
+            M_phases = len(self._phases)
+            N_chemicals = self._chemicals.size
             M, N = data.shape
             assert M == M_phases, ('number of phases must be equal to '
                                    'the number of data rows')
@@ -709,7 +734,7 @@ class MaterialArray(ArrayEmulator):
     def _get_index(self, phase_IDs):
         isa = isinstance
         if isa(phase_IDs, tuple):
-            phases, IDs = phase_IDs
+            phase, IDs = phase_IDs
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
             elif isa(IDs, slice) or IDs == ...:
@@ -717,19 +742,15 @@ class MaterialArray(ArrayEmulator):
             else:
                 IDs_index = self._chemicals.indices(IDs)
         else:
-            phases = phase_IDs
+            phase = phase_IDs
             IDs_index = ...
-        if isa(phases, slice) or phases == ...:
-            phase_index = phases
+        if isa(phase, slice) or phase == ...:
+            phase_index = phase
         else:
-            phase_index = self._get_phase_index(phases)
+            phase_index = self._get_phase_index(phase)
         return phase_index, IDs_index
     
-    def _get_phase_index(self, phase):
-        try:
-            return self._phase_index[phase]
-        except KeyError:
-            raise UndefinedPhase(phase)
+    _get_phase_index = PhaseArray._get_phase_index
     
     def __iter__(self):
         if self._phase_data:
@@ -826,6 +847,9 @@ def new_Array(name, units):
     ChemicalArraySubclass.units = \
     PhaseArraySubclass.units = \
     MaterialArraySubclass.units = units
+    ChemicalArraySubclass._quantity = \
+    PhaseArraySubclass._quantity = \
+    MaterialArraySubclass._quantity = _Q(1., units)
     MaterialArraySubclass._ChemicalArray = ChemicalArraySubclass
     MaterialArraySubclass._PhaseArray = PhaseArraySubclass
     return ChemicalArraySubclass, PhaseArraySubclass, MaterialArraySubclass

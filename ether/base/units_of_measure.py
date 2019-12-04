@@ -4,7 +4,33 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-__all__ = ('units_of_measure',)
+__all__ = ('units_of_measure', '_ureg', '_Q')
+
+# %% Import unit registry
+
+import pandas as pd
+import numpy as np
+from pint import UnitRegistry
+import os
+
+# Set pint Unit Registry
+_ureg = UnitRegistry()
+_ureg.default_format = '~P'
+_ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
+_Q = _ureg.Quantity
+_Q._repr_latex_ = _Q._repr_html_ = \
+_Q.__str__ = _Q.__repr__ = lambda self: self.__format__('')
+
+# Set number of digits displayed
+np.set_printoptions(suppress=False)
+np.set_printoptions(precision=3) 
+pd.options.display.float_format = '{:.3g}'.format
+pd.set_option('display.max_rows', 35)
+pd.set_option('display.max_columns', 10)
+pd.set_option('max_colwidth', 35)
+del np, pd, os, UnitRegistry
+
+# %% Units of measure
 
 units_of_measure = {'MW': 'g/mol',
                     'T': 'K',

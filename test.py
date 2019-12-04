@@ -27,7 +27,7 @@ bp_eth = eth.BubblePoint(chemicals)
 dp_eth = eth.DewPoint(chemicals)
 
 molar_data = eth.ChemicalArray(Water=2, Ethanol=4, Methanol=2, Glycerol=1, Propanol=0.1)
-z = molar_data.fraction()
+z = molar_data.composition()
 T_bp = 350.
 P_bp = 101325 / 5
 bP_bst, by_at_T_bst = bp_bst.solve_Py(z, T_bp)
@@ -44,7 +44,7 @@ dT_eth, dx_at_P_eth = dp_eth.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
 
-molar_data = eth.MolarFlow(l=[('Water', 304), ('Ethanol', 30)],
+molar_flow = eth.MolarFlow(l=[('Water', 304), ('Ethanol', 30)],
                            g=[('Ethanol', 201), ('Glycerol', 10)])
-vle = eth.VLE(molar_data)
+vle = eth.VLE(molar_flow)
 vle(T=400, P=101325)

@@ -269,7 +269,7 @@ class CompiledChemicals(Chemicals):
         try:
             dct = self._index
             return [dct[i] for i in IDs]
-        except KeyError:
+        except:
             for i in IDs:
                 if i not in dct: raise UndefinedChemical(i)     
     
