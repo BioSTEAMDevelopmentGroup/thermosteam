@@ -36,7 +36,7 @@ class ArrayEmulator:
     chemicals = units = phases = None
     _quantity = _Q(1.)
     
-    def _assert_safety(self, other, *, isa=isinstance, settings=settings):
+    def _assert_safety(self, other, *, isa=isinstance):
         if isa(other, ArrayEmulator):
             if settings._debug:
                 assert other.chemicals is self.chemicals, "chemicals do not match"
@@ -54,24 +54,21 @@ class ArrayEmulator:
     def data(self):
         return self._data
     
-    def get_data(self, *indices, units):
-        length = len(indices)
+    def get_data(self, *index, units):
+        length = len(index)
         if length == 0:
-            indices = ...
+            index = ...
         elif length == 1:
-            indices = indices[0]
-        return self[indices] * self._quantity.to(units).magnitude
+            index = index[0]
+        return self[index] * self._quantity.to(units).magnitude
     
-    def set_data(self, *indices, data, units):
-        length = len(indices)
+    def set_data(self, *index, data, units):
+        length = len(index)
         if length == 0:
-            indices = ...
+            index = ...
         elif length == 1:
-            indices = indices[0]
-        self[indices] = data / self._quantity.to(units).magnitude
-    
-    def __getattr__(self, attr):
-        return getattr(self._data, attr)
+            index = index[0]
+        self[index] = data / self._quantity.to(units).magnitude
     
     def __getitem__(self, key):
         return self._data[self._get_index(key)]
