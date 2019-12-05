@@ -10,7 +10,6 @@ from ..settings import settings
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
 from .condition import Condition
-from ..utils import CachedValue
 from numba import njit
 import numpy as np
 
@@ -139,7 +138,7 @@ class VLE:
         self._phase_data = molar_array.phase_data
         self._liquid_mol = liquid_mol = molar_array['l']
         self._vapor_mol = molar_array['g']
-        self._nonzero = CachedValue(np.zeros(liquid_mol.shape, dtype=bool), None)
+        self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
     
     def _setup(self):
         IDs = self._IDs
