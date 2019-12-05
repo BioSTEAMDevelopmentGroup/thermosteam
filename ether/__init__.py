@@ -15,6 +15,7 @@ from . import settings
 from . import utils
 from . import thermo
 from . import material_array
+from . import thermal_condition
 
 __all__ = (*base.__all__, 
            *chemical.__all__, 
@@ -26,7 +27,8 @@ __all__ = (*base.__all__,
            *utils.__all__,
            *thermo.__all__,
            *settings.__all__,
-           *material_array.__all__)
+           *material_array.__all__,
+           *thermal_condition.__all__)
 
 from .base import *
 from .chemical import *
@@ -39,3 +41,4 @@ from .thermo import *
 from .utils import *
 from .settings import *
 from .material_array import *
+from .thermal_condition import *

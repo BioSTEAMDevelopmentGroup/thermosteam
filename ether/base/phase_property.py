@@ -18,6 +18,7 @@ __all__ = ('PhaseProperty', #'PhasePropertyBuilder',
 
 # %% Utilities
 
+getattr = getattr
 phase_equivalents = settings.phase_equivalents
 
 def set_phase_property(phase_property, phase, builder, data):

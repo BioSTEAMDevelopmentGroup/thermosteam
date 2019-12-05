@@ -9,7 +9,7 @@ from flexsolve import bounded_wegstein, wegstein, aitken, \
 from ..settings import settings
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
-from .condition import Condition
+from ..thermal_condition import ThermalCondition
 from numba import njit
 import numpy as np
 
@@ -37,9 +37,9 @@ def V_3N(zs, Ks):
 
 class VLE:
     """Create a VLE object for solving VLE."""
-    __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_condition',
+    __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_thermal_condition',
                  '_dew_point', '_bubble_point', '_mixture',
-                 '_phi', '_pcf', '_gamma', '_molar_array',
+                 '_phi', '_pcf', '_gamma', '_molar_data',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_massnet', '_chemical',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
@@ -110,14 +110,14 @@ class VLE:
         else: # x_spec and y_spec
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
-    def __init__(self, molar_array, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
+    def __init__(self, molar_data, thermal_condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
         """Create a VLE object that performs vapor-liquid equilibrium when called.
         
         Parameters
         ----------
-        molar_array : MaterialArray
+        molar_data : MaterialArray
         
-        condition : Condition
+        thermal_condition : ThermalCondition
         
         IDs = None : tuple, optional
                      IDs of chemicals in equilibrium.
@@ -133,11 +133,11 @@ class VLE:
         self._HNK = HNK
         self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture.copy()
-        self._molar_array = molar_array
-        self._condition = condition or Condition(298.15, 101325.)
-        self._phase_data = molar_array.phase_data
-        self._liquid_mol = liquid_mol = molar_array['l']
-        self._vapor_mol = molar_array['g']
+        self._molar_data = molar_data
+        self._thermal_condition = thermal_condition or ThermalCondition(298.15, 101325.)
+        self._phase_data = molar_data.phase_data
+        self._liquid_mol = liquid_mol = molar_data['l']
+        self._vapor_mol = molar_data['g']
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
     
     def _setup(self):
@@ -150,32 +150,29 @@ class VLE:
         vapor_mol = self._vapor_mol
         mol = self._liquid_mol + self._vapor_mol
         notzero = mol > 0
+        chemicals = self._thermo.chemicals
         if (self._nonzero == notzero).all():
             index = self._index
             LNK_index = self._LNK_index
             HNK_index = self._HNK_index
         else:
-            # Reused attributes
-            chemicals = self._thermo.chemicals
-            chemical_index = chemicals._index
-    
             # Set up indices for both equilibrium and non-equilibrium species
             if IDs:
-                index = [chemical_index[specie] for specie in IDs]
+                index = chemicals.indices(IDs)
             else:
                 # TODO: Fix this according to equilibrium indices
                 index = chemicals._equilibrium_indices(notzero)
             if LNK:
-                LNK_index = [chemical_index[i] for i in LNK]
+                LNK_index = chemicals.indices(LNK)
             else:
                 LNK_index = chemicals._light_indices(notzero)
             if HNK:
-                HNK_index = [chemical_index[i] for i in HNK]
+                HNK_index = chemicals.indices(HNK)
             else:
                 HNK_index = chemicals._heavy_indices(notzero)
             
             self._N = N = len(index)
-            eq_chems = chemicals._chemicals
+            eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
             self._nonzero = notzero
             self._index = index
@@ -200,8 +197,8 @@ class VLE:
             self._phi = bp.phi
         
         # Get overall composition
-        data = self._molar_array.data
-        self._massnet = (self._thermo.chemicals._MW * data).sum()
+        data = self._molar_data.data
+        self._massnet = (chemicals.MW * data).sum()
         self._molnet = molnet = data.sum()
         assert molnet != 0, 'empty stream cannot perform equilibrium'
         self._mol = mol[index]
@@ -218,11 +215,11 @@ class VLE:
     def thermo(self):
         return self._thermo
     @property
-    def molar_array(self):
-        return self._molar_array
+    def molar_data(self):
+        return self._molar_data
     @property
-    def condition(self):
-        return self._condition
+    def thermal_condition(self):
+        return self._thermal_condition
 
     ### Single component equilibrium case ###
         
@@ -237,13 +234,13 @@ class VLE:
     
     def _set_TV_chemical(self, T, V):
         # Set vapor fraction
-        self._T = self._condition.T = self._chemical.Psat(T)
+        self._T = self._thermal_condition.T = self._chemical.Psat(T)
         self._vapor_mol[self._index] = self._mol*V
         self._liquid_mol[self._index] = self._mol - self._vapor_mol[self._index]
         
     def _set_PV_chemical(self, P, V):
         # Set vapor fraction
-        self._T = self._condition.T = self._chemical.Tsat(P)
+        self._T = self._thermal_condition.T = self._chemical.Tsat(P)
         self._vapor_mol[self._index] = self._mol*V
         self._liquid_mol[self._index] = self._mol - self._vapor_mol[self._index]
         
@@ -256,21 +253,21 @@ class VLE:
         phase_data = self._phase_data
         
         # Set temperature in equilibrium
-        self._T = self._condition.T = T = self._chemical.Tsat(P)
+        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P)
         
         # Check if super heated vapor
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = thermo.mixture.xH(phase_data, T)
         if H >= H_dew:
-            self._condition.T = thermo.xsolve_T(phase_data, H, T)
+            self._thermal_condition.T = thermo.xsolve_T(phase_data, H, T)
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         H_bubble = thermo.mixture.xH(phase_data, T)
         if H <= H_bubble:
-            self._condition.T = thermo.xsolve_T(phase_data, H, T)
+            self._thermal_condition.T = thermo.xsolve_T(phase_data, H, T)
         
         # Adjust vapor fraction accordingly
         V = (H - H_bubble)/(H_dew - H_bubble)
@@ -286,7 +283,7 @@ class VLE:
         phase_data = self._phase_data
         
         # Set Pressure in equilibrium
-        self._condition.P = self._chemical.Psat(T)
+        self._thermal_condition.P = self._chemical.Psat(T)
         
         # Check if super heated vapor
         vapor_mol[index] = mol
@@ -294,14 +291,14 @@ class VLE:
         H_dew = thermo.mixture.xH(phase_data, T)
         if H >= H_dew:
             # TODO: Possibly make this an error
-            self._condition.T = thermo.xsolve_T(phase_data, H, T)
+            self._thermal_condition.T = thermo.xsolve_T(phase_data, H, T)
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         H_bubble = thermo.mixture.xH(phase_data, T)
         if H <= H_bubble:
-            self._condition.T = thermo.xsolve_T(phase_data, H, T)
+            self._thermal_condition.T = thermo.xsolve_T(phase_data, H, T)
         
         # Adjust vapor fraction accordingly
         V = (H - H_bubble)/(H_dew - H_bubble)
@@ -321,31 +318,31 @@ class VLE:
     def set_Tx(self, T, x):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
-        self._condition.P, y = self._bubble_point.solve_Px(x, T)
+        self._thermal_condition.P, y = self._bubble_point.solve_Px(x, T)
         self._lever_rule(x, y)
     
     def set_Px(self, P, x):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
-        self._condition.T, y = self._bubble_point.solve_Ty(x, P) 
+        self._thermal_condition.T, y = self._bubble_point.solve_Ty(x, P) 
         self._lever_rule(x, y)
         
     def set_Ty(self, T, y):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
-        self._condition.P, x = self._dew_point.solve_Px(y, T)
+        self._thermal_condition.P, x = self._dew_point.solve_Px(y, T)
         self._lever_rule(x, y)
     
     def set_Py(self, P, y):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
-        self._condition.T, x = self._dew_point.solve_Ty(y, P) 
+        self._thermal_condition.T, x = self._dew_point.solve_Ty(y, P) 
         self._lever_rule(x, y)
         
     def set_TP(self, T, P):
         self._setup()
-        self._T = self._condition.T = T
-        self._P = self._condition.P = P
+        self._T = self._thermal_condition.T = T
+        self._P = self._thermal_condition.P = P
         if self._N == 1: return self._set_TP_chemical(T, P)
         # Setup bounderies
         P_dew, x_dew = self._dew_point.solve_Px(self._zs, T)
@@ -381,15 +378,15 @@ class VLE:
         if V == 1:
             self._vapor_mol[self._index] = self._mol
             self._liquid_mol[self._index] = 0
-            self._condition.P = P_dew
+            self._thermal_condition.P = P_dew
         elif V == 0:
             self._vapor_mol[self._index] = 0
             self._liquid_mol[self._index] = self._mol
-            self._condition.P = P_bubble
+            self._thermal_condition.P = P_bubble
         else:
             self._V = V
             self._v = (V*self._zs + (1-V)*y_bubble)*V*self._molnet
-            self._P = self._condition.P = self.solver(self._V_at_P,
+            self._P = self._thermal_condition.P = self.solver(self._V_at_P,
                                                           P_bubble, P_dew, 0, 1,
                                                           self._P, self._V,
                                                           self.P_tol, self.V_tol)
@@ -418,7 +415,7 @@ class VLE:
         if dH_dew >= 0:
             # TODO: Possibly make this an error
             self._T = self._mixture.xsolve_T(self._phase_data, H, T)
-            self._condition.P = P_dew
+            self._thermal_condition.P = P_dew
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -427,7 +424,7 @@ class VLE:
         dH_bubble = (H - H_bubble)
         if dH_bubble <= 0:
             self._T = self._mixture.xsolve_T(self._phase_data, H, T)
-            self._condition.P = P_bubble
+            self._thermal_condition.P = P_bubble
 
         # Guess overall vapor fraction, and vapor flow rates
         V = self._V or dH_bubble/(H_dew - H_bubble)
@@ -435,7 +432,7 @@ class VLE:
         self._v = V*self._zs + (1-V)*y_bubble*V*self._molnet
         massnet = self._massnet
         self._H_hat = H/massnet
-        self._P = self._condition.P = self.solver(self._H_hat_at_P,
+        self._P = self._thermal_condition.P = self.solver(self._H_hat_at_P,
                                                       P_bubble, P_dew,
                                                       H_bubble/massnet, H_dew/massnet,
                                                       self._P, self._H_hat,
@@ -458,15 +455,15 @@ class VLE:
         if V == 1:
             vapor_mol[index] = mol
             liquid_mol[index] = 0
-            self._condition.T = T_dew
+            self._thermal_condition.T = T_dew
         elif V == 0:
             vapor_mol[index] = 0
             liquid_mol[index] = mol
-            self._condition.T = T_bubble
+            self._thermal_condition.T = T_bubble
         else:
             self._v = (V*self._zs + (1-V)*y_bubble) * V * self._molnet
             self._V = V
-            self._T = self._condition.T = self.solver(self._V_at_T,
+            self._T = self._thermal_condition.T = self.solver(self._V_at_T,
                                                           T_bubble, T_dew, 0, 1,
                                                           self._T , V,
                                                           self.T_tol, self.V_tol)
@@ -495,7 +492,7 @@ class VLE:
         H_dew = self._mixture.xH(self._phase_data, T_dew)
         dH_dew = H - H_dew
         if dH_dew >= 0:
-            self._condition.T = self._mixture.xsolve_T(self._phase_data, H, T_dew)
+            self._thermal_condition.T = self._mixture.xsolve_T(self._phase_data, H, T_dew)
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -503,7 +500,7 @@ class VLE:
         H_bubble = self._mixture.xH(self._phase_data, T_dew)
         dH_bubble = H - H_bubble
         if dH_bubble <= 0:
-            self._condition.T = self._mixture.xsolve_T(self._phase_data, H, T_bubble)
+            self._thermal_condition.T = self._mixture.xsolve_T(self._phase_data, H, T_bubble)
         
         # Guess T, overall vapor fraction, and vapor flow rates
         self._V = V = self._V or dH_bubble/(H_dew - H_bubble)
@@ -511,7 +508,7 @@ class VLE:
         
         massnet = self._massnet
         self._H_hat = H/massnet
-        self._T = self._condition.T = self.solver(self._H_hat_at_T,
+        self._T = self._thermal_condition.T = self.solver(self._H_hat_at_T,
                                                   T_bubble, T_dew, 
                                                   H_bubble/massnet, H_dew/massnet,
                                                   self._T , self._H_hat,
@@ -619,7 +616,7 @@ class VLE:
         if not tabs: tabs = 1
         tabs = int(tabs)
         tab = tabs * 4 * " "
-        molar_array = format(self.molar_array, str(2*tabs))
+        molar_data = format(self.molar_data, str(2*tabs))
         if tabs:
             dlim = "\n" + tab
         else:
@@ -627,7 +624,7 @@ class VLE:
         IDs = f"{dlim}{self._IDs}" if self._IDs else ""
         HNK = f"{dlim}{self._HNK}" if self._HNK else ""
         LNK = f"{dlim}{self._LNK}" if self._LNK else ""
-        return f"VLE({molar_array},{dlim}{self.condition}{IDs}{LNK}{HNK})"
+        return f"VLE(molar_data={molar_data},{dlim}thermal_condition={self.thermal_condition}{IDs}{LNK}{HNK})"
     
     def __repr__(self):
         return self.__format__("1")

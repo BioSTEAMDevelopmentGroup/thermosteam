@@ -13,16 +13,17 @@ def fill_like(A, B, fields):
     getfield = getattr
     for i in fields: setfield(A, i, getfield(B, i))
 
-def deny_deletion(self, ID):
-    raise AttributeError(f"'{type(self).__name__} object is read-only")
-    
-def deny_mutation(self, ID, name):
-    raise AttributeError(f"'{type(self).__name__} object is read-only")
+def deny(self, *args, **kwargs):
+    raise TypeError(f"'{type(self).__name__}' object is read-only")
 
-def read_only(cls):
-    cls.__delattr__ = deny_deletion
-    cls.__setattr__ = deny_mutation
-    return cls
+def read_only(cls=None, methods=()):
+    if not cls and methods:
+        return lambda cls: read_only(cls, methods)
+    else:
+        for i in methods: setattr(cls, i, deny)
+        cls.__delattr__ = deny
+        cls.__setattr__ = deny
+        return cls
     
 def save(object, file):
     with open(file, 'wb') as f: pickle.dump(object, f)

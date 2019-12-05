@@ -10,6 +10,15 @@ from .chemical import Chemical
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
+setattr = object.__setattr__
+
+# %% Utilities
+
+def must_compile(*args, **kwargs):
+    raise TypeError("method valid only for compiled chemicals; "
+                    "run <chemicals>.compile() to compile")
+
+# %% Chemicals
 
 class Chemicals:
     """Create Chemicals object that contains Chemical objects as attributes.
@@ -34,25 +43,23 @@ class Chemicals:
             return cached[chemicals]
         else:
             self = super().__new__(cls)
-            setfield = object.__setattr__
             isa = isinstance
             for chem in chemicals:
                 if isa(chem, Chemical):
-                    setfield(self, chem.ID, chem)
+                    setattr(self, chem.ID, chem)
                 else:
-                    setfield(self, chem, Chemical(chem))
+                    setattr(self, chem, Chemical(chem))
             cached[chemicals] = self
             return self
+    
+    def __setattr__(self, ID, chemical):
+        raise TypeError("can't set attribute; use <Chemicals>.append instead")
     
     def __getnewargs__(self):
         return (tuple(self),)
     
-    @property
-    def IDs(self):
-        return tuple(self.__dict__)
-    
     def compile(self):
-        self.__class__ = CompiledChemicals
+        setattr(self, '__class__', CompiledChemicals)
         self._compile()
     
     def subgroup(self, IDs):
@@ -62,25 +69,15 @@ class Chemicals:
         dct = self.__dict__
         return [dct[i] for i in IDs]
     
+    def append(self, chemical):
+        """Append a Chemical."""
+        setattr(self, chemical.ID, chemical)
+    
     def extend(self, chemicals):
-        """Extend with more Chemicals."""
+        """Extend with more Chemical objects."""
         for c in chemicals: setattr(self, c.ID, c)
     
-    def kwarray(self, **data):
-        raise TypeError("method valid only for compiled chemicals; "
-                        "run <chemicals>.compile() to compile")
-    
-    def array(self, IDs, data):
-        raise TypeError("method valid only for compiled chemicals; "
-                        "run <chemicals>.compile() to compile")
-        
-    def index(self, ID):
-        raise TypeError("method valid only for compiled chemicals; "
-                        "run <chemicals>.compile() to compile")
-        
-    def indices(self, IDs):
-        raise TypeError("method valid only for compiled chemicals; "
-                        "run <chemicals>.compile() to compile")
+    kwarray = array = index = indices = must_compile
         
     def __len__(self):
         return len(self.__dict__)
@@ -92,14 +89,13 @@ class Chemicals:
         yield from self.__dict__.values()
     
     def __str__(self):
-        IDs = [i for i in self.IDs]
-        return f"[{', '.join(IDs)}]"
+        return f"[{', '.join(self.__dict__)}]"
     
     def __repr__(self):
         return f'{type(self).__name__}({self})'
 
 
-@read_only
+@read_only(methods=('append', 'extend'))
 class CompiledChemicals(Chemicals):
     """Create CompiledChemicals object that contains Chemical objects as attributes.
 
@@ -124,9 +120,6 @@ class CompiledChemicals(Chemicals):
     def __dir__(self):
         return self.IDs + tuple(dir(type(self)))
     
-    def extend(self, chemicals):
-        raise TypeError("'{type(self).__name__}' object is read-only")
-    
     def compile(self): pass
     
     def _compile(self):
@@ -138,7 +131,10 @@ class CompiledChemicals(Chemicals):
         N = len(IDs)
         index = tup(range(N))
         for i in chemicals: dct[i.CAS] = i
+        dct['tuple'] = chemicals
         dct['size'] = N
+        dct['IDs'] = IDs
+        dct['MW'] = np.array([i.MW for i in chemicals])
         dct['_index'] = dict((*zip(CAS, index), *zip(IDs, index)))
         dct['_isheavy'] = np.array([i.Tb in (np.inf, None) for i in chemicals])
         dct['_islight'] = np.array([i.Tb in (0, -np.inf) for i in chemicals], dtype=bool)
@@ -147,14 +143,6 @@ class CompiledChemicals(Chemicals):
         dct['_has_equilibrium'] = np.array([(bool(i.Dortmund)
                                              and i.Tb not in nonfinite)
                                             for i in chemicals])
-        dct['_chemicals'] = chemicals
-        dct['_IDs'] = IDs
-        dct['_MW'] = np.array([i.MW for i in chemicals])
-    
-    @property
-    def IDs(self):
-        """[tuple] IDs of Species object."""
-        return self._IDs
     
     def subgroup(self, IDs):
         chemicals = self.retrieve(IDs)
@@ -280,10 +268,10 @@ class CompiledChemicals(Chemicals):
         return self.size
     
     def __contains__(self, chemical):
-        return chemical in self._chemicals
+        return chemical in self.tuple
     
     def __iter__(self):
-        return iter(self._chemicals)
+        return iter(self.tuple)
         
     def _equilibrium_indices(self, nonzero):
         """Return indices of species in equilibrium."""
@@ -297,3 +285,5 @@ class CompiledChemicals(Chemicals):
         """Return indices of light species not in equilibrium."""
         return np.where(self._islight & nonzero)[0]
     
+    def __str__(self):
+        return f"[{', '.join(self.IDs)}]"

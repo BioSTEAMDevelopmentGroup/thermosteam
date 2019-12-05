@@ -5,9 +5,9 @@ Created on Mon Dec  2 07:45:30 2019
 @author: yoelr
 """
 
-__all__ = ('Condition',)
+__all__ = ('ThermalCondition',)
 
-class Condition:
+class ThermalCondition:
     __slots__ = ('T', 'P')
     
     def __init__(self, T, P):
