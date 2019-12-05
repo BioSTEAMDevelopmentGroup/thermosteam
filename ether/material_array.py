@@ -843,12 +843,8 @@ class MaterialArray(ArrayEmulator):
         self._data = data
         return self
     
-    @property
-    def phases(self):
-        return self._phases
-    @property
-    def chemicals(self):
-        return self._chemicals
+    phases =  PhaseArray.phases
+    chemicals = ChemicalArray.chemicals
     
     def to_phase_array(self, data=False):
         if data:
@@ -984,21 +980,28 @@ def new_Array(name, units):
     ChemicalArraySubclass = type('Chemical' + name, (ChemicalArray,), {})
     PhaseArraySubclass = type('Phase' + name, (PhaseArray,), {})
     MaterialArraySubclass = type(name, (MaterialArray,), {})
+    
     ChemicalArraySubclass.__slots__ = \
     PhaseArraySubclass.__slots__ = \
     MaterialArraySubclass.__slots__ = ()
+    
     ChemicalArraySubclass.units = \
     PhaseArraySubclass.units = \
     MaterialArraySubclass.units = units
+    
     ChemicalArraySubclass._quantity = \
     PhaseArraySubclass._quantity = \
     MaterialArraySubclass._quantity = _Q(1., units)
+    
+    PhaseArraySubclass._ChemicalArray = \
     MaterialArraySubclass._ChemicalArray = ChemicalArraySubclass
-    MaterialArraySubclass._PhaseArray = PhaseArraySubclass
+    
+    MaterialArraySubclass._PhaseArray = \
     ChemicalArraySubclass._PhaseArray = PhaseArraySubclass
+    
+    PhaseArraySubclass._MaterialArray = \
     ChemicalArraySubclass._MaterialArray = MaterialArraySubclass
-    PhaseArraySubclass._MaterialArray = MaterialArraySubclass
-    PhaseArraySubclass._ChemicalArray = ChemicalArraySubclass
+    
     return ChemicalArraySubclass, PhaseArraySubclass, MaterialArraySubclass
 
 ChemicalArray._MaterialArray = MaterialArray
