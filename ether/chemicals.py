@@ -167,23 +167,23 @@ class CompiledChemicals(Chemicals):
             self._index[synonym] = self._index[ID]
             dct[synonym] = chemical
     
-    def kwarray(self, **data):
+    def kwarray(self, IDdata):
         """Return an array with entries that correspond to the orded chemical IDs.
         
         Parameters
         ----------
-            **data : 
-                     ID-value pair.
+            IDdata : dict
+                     ID-data pairs.
             
         Examples
         --------
-        >>> from thermotree import CompiledChemicals
+        >>> from ether import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
-        >>> chemicals.kwarray(Water=2)
+        >>> chemicals.kwarray(dict(Water=2))
         array([2., 0.])
         
         """
-        return self.array(*zip(*data.items()))
+        return self.array(*zip(IDdata.items()))
     
     def array(self, IDs, data):
         """Return an array with entries that correspond to the ordered chemical IDs.
@@ -197,7 +197,7 @@ class CompiledChemicals(Chemicals):
             
         Examples
         --------
-        >>> from thermotree import CompiledChemicals
+        >>> from ether import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.array(['Water'], [2])
         array([2., 0.])
@@ -219,7 +219,7 @@ class CompiledChemicals(Chemicals):
         --------
         Index by ID:
         
-        >>> from thermotree import CompiledChemicals
+        >>> from ether import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.index('Water')
         1
@@ -246,7 +246,7 @@ class CompiledChemicals(Chemicals):
         --------
         Indices by ID:
         
-        >>> from thermotree import CompiledChemicals
+        >>> from ether import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.indices(['Water', 'Ethanol'])
         [1, 0]

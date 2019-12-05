@@ -461,10 +461,9 @@ class ChemicalArray(ArrayEmulator):
     _index_caches = {}
     
     def __new__(cls, chemicals=None, **IDdata):
-        self = cls.blank()
+        self = cls.blank(chemicals)
         if IDdata:
-            IDs, data = zip(*IDdata.items())
-            self._data[self._chemicals.indices(IDs)] = data
+            self._data = self._chemicals.array(IDdata)
         return self
     
     def __reduce__(self):
