@@ -6,7 +6,7 @@ Created on Thu Nov 28 22:59:17 2019
 """
 import pickle
 
-__all__ = ('save', 'load', 'read_only', 'fill_like')
+__all__ = ('save', 'load', 'read_only', 'fill_like', 'CachedValue')
 
 def fill_like(A, B, fields):
     setfield = setattr
@@ -29,3 +29,16 @@ def save(object, file):
     
 def load(file):
     with open(file, "rb") as f: return pickle.load(f)
+    
+class CachedValue:
+    __slots__ = ('key', 'value')
+    
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+    
+    def copy(self):
+        return self.__class__(self.key, self.value)
+    
+    def __repr__(self):
+        return f"{type(self).__name__}(key={self.key}, value={self.value})"

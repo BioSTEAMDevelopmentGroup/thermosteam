@@ -31,7 +31,7 @@ s1.setflow('g', Ethanol=201, Glycerol=10)
 
 # Ether is 2x faster than BioSTEAM
 bst_H = s1.H
-eth_H = thermo.mixture.xH(molar_flow, s1.T)
+eth_H = thermo.mixture.xH(molar_flow.phase_data, s1.T)
 
 # %% Test bubble point and dew point and compare with BioSTEAM
 

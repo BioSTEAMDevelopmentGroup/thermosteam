@@ -78,6 +78,9 @@ class ArrayEmulator:
     def __setitem__(self, key, data):
         self._data[self._get_index(key)] = data
     
+    def __iter__(self):
+        return self._data.__iter__()
+    
     def __lt__(self, other):
         return self._data.__lt__(other._data
                                  if self._assert_safety(other)
@@ -405,9 +408,6 @@ class ChemicalArray(ArrayEmulator):
         else:
             return self._chemicals.indices(IDs)
     
-    def __iter__(self):
-        return self._data.__iter__()
-    
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs) 
@@ -567,9 +567,6 @@ class PhaseArray(ArrayEmulator):
         else:
             return self._get_phase_indices(phases)
     
-    def __iter__(self):
-        return self._data.__iter__()
-    
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs) 
@@ -691,7 +688,6 @@ class MaterialArray(ArrayEmulator):
     @classmethod
     def blank(cls, phases, chemicals=None):
         self = _new(cls)
-        self._phase_data = None
         self._set_chemicals(chemicals)
         self._set_phases(phases)
         shape = (len(self._phases), self._chemicals.size)
@@ -744,9 +740,9 @@ class MaterialArray(ArrayEmulator):
     
     def _get_index(self, phase_IDs, *, isa=isinstance):
         if isa(phase_IDs, str):
-            return self._get_phase_index(phase_IDs)
+            index = self._get_phase_index(phase_IDs)
         elif isa(phase_IDs, slice) or phase_IDs == ...:
-            return phase_IDs 
+            index = phase_IDs 
         else:
             phase, IDs = phase_IDs
             if isa(IDs, str):
@@ -756,18 +752,20 @@ class MaterialArray(ArrayEmulator):
             else:
                 IDs_index = self._chemicals.indices(IDs)
             if isa(phase, slice) or phase == ...:
-                return phase, IDs_index
+                index = (phase, IDs_index)
             else:
-                return self._get_phase_index(phase), IDs_index
+                index = (self._get_phase_index(phase), IDs_index)
+        return index
             
     _get_phase_index = PhaseArray._get_phase_index
     
-    def __iter__(self):
-        if self._phase_data:
-            return self._phase_data.__iter__()
-        else:
-            self._phase_data = iter = tuple(zip(self._phases, self._data))
-            return iter.__iter__()
+    @property
+    def phase_data(self):
+        try:
+            phase_data = self._phase_data
+        except:
+            self._phase_data = phase_data = tuple(zip(self._phases, self._data))
+        return phase_data
     
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs

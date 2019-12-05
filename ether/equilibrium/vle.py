@@ -39,7 +39,7 @@ class VLE:
     """Create a VLE object for solving VLE."""
     __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_condition',
                  '_dew_point', '_bubble_point', '_mixture',
-                 '_phi', '_pcf', '_gamma', '_molar_data',
+                 '_phi', '_pcf', '_gamma', '_molar_array',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_massnet', '_chemical',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
@@ -57,9 +57,6 @@ class VLE:
 
         Parameters
         ----------
-        molar_data : MaterialData
-        
-        condition : [Condition]
         
         Specify two:
             * **P:** Operating pressure (Pa)
@@ -68,13 +65,7 @@ class VLE:
             * **V:** Molar vapor fraction
             * **x:** Molar composition of liquid (for binary mixture)
             * **y:** Molar composition of vapor (for binary mixture)
-        IDs = None : tuple, optional
-                     IDs of chemicals in equilibrium.
-        LNK = None : tuple[str], optional
-              Light non-keys that remain as a vapor (disregards equilibrium).
-        LNK = None : tuple[str], optional
-              Heavy non-keys that remain as a liquid (disregards equilibrium).
-
+        
         """
         ### Decide what kind of equilibrium to run ###
         T_spec = T is not None
@@ -114,19 +105,35 @@ class VLE:
             elif x_spec:
                 raise NotImplementedError('specification H and x not implemented')
             else: # V_spec
-                raise NotImplementedError('specification V and H not implemented yet')
+                raise NotImplementedError('specification V and H not implemented')
         else: # x_spec and y_spec
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
-    def __init__(self, molar_data, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
+    def __init__(self, molar_array, condition=None, IDs=None, LNK=None, HNK=None, thermo=None):
+        """Create a VLE object that performs vapor-liquid equilibrium when called.
+        
+        Parameters
+        ----------
+        molar_array : MaterialArray
+        
+        condition : Condition
+        
+        IDs = None : tuple, optional
+                     IDs of chemicals in equilibrium.
+        LNK = None : tuple[str], optional
+              Light non-keys that remain as a vapor (disregards equilibrium).
+        LNK = None : tuple[str], optional
+              Heavy non-keys that remain as a liquid (disregards equilibrium).
+        
+        """
         self._T = self._P = self._H_hat = self._V = 0
         self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture.copy()
-        self._molar_data = molar_data
+        self._molar_array = molar_array
         self._condition = condition or Condition(298.15, 101325.)
-        self._phase_data = molar_data._phase_data or tuple(molar_data)
-        self._liquid_mol = liquid_mol = molar_data['l']
-        self._vapor_mol = vapor_mol = molar_data['g']
+        self._phase_data = molar_array.phase_data
+        self._liquid_mol = liquid_mol = molar_array['l']
+        self._vapor_mol = vapor_mol = molar_array['g']
 
         # Get flow rates
         mol = liquid_mol + vapor_mol
@@ -175,7 +182,7 @@ class VLE:
             self._solve_V = self._solve_V_N
         
         # Get overall composition
-        data = molar_data.data
+        data = molar_array.data
         self._massnet = (chemicals._MW * data).sum()
         self._molnet = molnet = data.sum()
         assert molnet != 0, 'empty stream cannot perform equilibrium'
@@ -193,8 +200,8 @@ class VLE:
     def thermo(self):
         return self._thermo
     @property
-    def molar_data(self):
-        return self._molar_data
+    def molar_array(self):
+        return self._molar_array
     @property
     def condition(self):
         return self._condition
@@ -585,12 +592,12 @@ class VLE:
         if not tabs: tabs = 1
         tabs = int(tabs)
         tab = tabs * 4 * " "
-        molar_data = format(self.molar_data, str(2*tabs))
+        molar_array = format(self.molar_array, str(2*tabs))
         if tabs:
             dlim = "\n" + tab
         else:
             dlim = ", "
-        return f"VLE({molar_data},{dlim}{self.condition})"
+        return f"VLE({molar_array},{dlim}{self.condition})"
     
     def __repr__(self):
         return self.__format__("1")
