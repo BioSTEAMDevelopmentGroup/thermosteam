@@ -10,6 +10,7 @@ from ..settings import settings
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
 from .condition import Condition
+from ..utils import CachedValue
 from numba import njit
 import numpy as np
 
@@ -43,7 +44,8 @@ class VLE:
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_massnet', '_chemical',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
-                 '_zs', '_Ks', '_Psat_over_P_phi')
+                 '_zs', '_Ks', '_Psat_over_P_phi', '_IDs', '_LNK', '_HNK',
+                 '_nonzero', '_LNK_index', '_HNK_index')
     
     solver = staticmethod(IQ_interpolation)
     itersolver = staticmethod(aitken)
@@ -122,80 +124,97 @@ class VLE:
                      IDs of chemicals in equilibrium.
         LNK = None : tuple[str], optional
               Light non-keys that remain as a vapor (disregards equilibrium).
-        LNK = None : tuple[str], optional
+        HNK = None : tuple[str], optional
               Heavy non-keys that remain as a liquid (disregards equilibrium).
         
         """
         self._T = self._P = self._H_hat = self._V = 0
+        self._IDs = IDs
+        self._LNK = LNK
+        self._HNK = HNK
         self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture.copy()
         self._molar_array = molar_array
         self._condition = condition or Condition(298.15, 101325.)
         self._phase_data = molar_array.phase_data
         self._liquid_mol = liquid_mol = molar_array['l']
-        self._vapor_mol = vapor_mol = molar_array['g']
-
+        self._vapor_mol = molar_array['g']
+        self._nonzero = CachedValue(np.zeros(liquid_mol.shape, dtype=bool), None)
+    
+    def _setup(self):
+        IDs = self._IDs
+        LNK = self._LNK
+        HNK = self._HNK
+        
         # Get flow rates
-        mol = liquid_mol + vapor_mol
+        liquid_mol = self._liquid_mol
+        vapor_mol = self._vapor_mol
+        mol = self._liquid_mol + self._vapor_mol
         notzero = mol > 0
-
-        # Reused attributes
-        chemicals = self._thermo.chemicals
-        dct = chemicals.__dict__
-        index = chemicals._index
-
-        # Set up indices for both equilibrium and non-equilibrium species
-        if IDs:
-            eq_index = [index[specie] for specie in IDs]
-            eq_chems = [dct[ID] for ID in IDs]
+        if (self._nonzero == notzero).all():
+            index = self._index
+            LNK_index = self._LNK_index
+            HNK_index = self._HNK_index
         else:
-            # TODO: Fix this according to equilibrium indices
-            eq_index = chemicals._equilibrium_indices(notzero)
-            chems = chemicals._chemicals
-            eq_chems = [chems[i] for i in eq_index]
-        if LNK:
-            LNK_index = [index[i] for i in LNK]
-        else:
-            LNK_index = chemicals._light_indices(notzero)
-        if HNK:
-            HNK_index = [index[i] for i in HNK]
-        else:
-            HNK_index = chemicals._heavy_indices(notzero)
-        self._mol = mol[eq_index]
-        self._index = eq_index
+            # Reused attributes
+            chemicals = self._thermo.chemicals
+            chemical_index = chemicals._index
+    
+            # Set up indices for both equilibrium and non-equilibrium species
+            if IDs:
+                index = [chemical_index[specie] for specie in IDs]
+            else:
+                # TODO: Fix this according to equilibrium indices
+                index = chemicals._equilibrium_indices(notzero)
+            if LNK:
+                LNK_index = [chemical_index[i] for i in LNK]
+            else:
+                LNK_index = chemicals._light_indices(notzero)
+            if HNK:
+                HNK_index = [chemical_index[i] for i in HNK]
+            else:
+                HNK_index = chemicals._heavy_indices(notzero)
+            
+            self._N = N = len(index)
+            eq_chems = chemicals._chemicals
+            eq_chems = [eq_chems[i] for i in index]
+            self._nonzero = notzero
+            self._index = index
+            self._LNK_index = LNK_index
+            self._HNK_index = HNK_index
+            if N == 1:
+                self._chemical, = eq_chems
+                return 
+            elif N == 2:
+                self._solve_V = self._solve_V_2
+            elif N == 3:
+                self._solve_V = self._solve_V_3
+            else:
+                self._solve_V = self._solve_V_N
+            
+            # Set equilibrium objects
+            thermo = self._thermo
+            self._bubble_point = bp = BubblePoint(eq_chems, thermo)
+            self._dew_point = DewPoint(eq_chems, thermo, bp)
+            self._pcf = bp.pcf
+            self._gamma = bp.gamma
+            self._phi = bp.phi
+        
+        # Get overall composition
+        data = self._molar_array.data
+        self._massnet = (self._thermo.chemicals._MW * data).sum()
+        self._molnet = molnet = data.sum()
+        assert molnet != 0, 'empty stream cannot perform equilibrium'
+        self._mol = mol[index]
 
         # Set light and heavy keys
         vapor_mol[HNK_index] = 0
         vapor_mol[LNK_index] = mol[LNK_index]
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = mol[HNK_index]
-        
-        self._N = N = len(eq_index)
-        if N == 1:
-            self._chemical, = eq_chems
-            return 
-        elif N == 2:
-            self._solve_V = self._solve_V_2
-        elif N == 3:
-            self._solve_V = self._solve_V_3
-        else:
-            self._solve_V = self._solve_V_N
-        
-        # Get overall composition
-        data = molar_array.data
-        self._massnet = (chemicals._MW * data).sum()
-        self._molnet = molnet = data.sum()
-        assert molnet != 0, 'empty stream cannot perform equilibrium'
         self._zs = self._mol/molnet
-        
-        # Set equilibrium objects
-        thermo = self._thermo
-        self._bubble_point = bp = BubblePoint(eq_chems, thermo)
-        self._dew_point = DewPoint(eq_chems, thermo, bp)
-        self._pcf = bp.pcf
-        self._gamma = bp.gamma
-        self._phi = bp.phi
-    
+        return index
+
     @property
     def thermo(self):
         return self._thermo
@@ -301,26 +320,31 @@ class VLE:
         self._liquid_mol[self._index] = self._mol - v
     
     def set_Tx(self, T, x):
+        self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
         self._condition.P, y = self._bubble_point.solve_Px(x, T)
         self._lever_rule(x, y)
     
     def set_Px(self, P, x):
+        self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
         self._condition.T, y = self._bubble_point.solve_Ty(x, P) 
         self._lever_rule(x, y)
         
     def set_Ty(self, T, y):
+        self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
         self._condition.P, x = self._dew_point.solve_Px(y, T)
         self._lever_rule(x, y)
     
     def set_Py(self, P, y):
+        self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
         self._condition.T, x = self._dew_point.solve_Ty(y, P) 
         self._lever_rule(x, y)
         
     def set_TP(self, T, P):
+        self._setup()
         self._T = self._condition.T = T
         self._P = self._condition.P = P
         if self._N == 1: return self._set_TP_chemical(T, P)
@@ -350,6 +374,7 @@ class VLE:
             self._H_hat = self._mixture.xH(self._phase_data, T)/self._massnet
         
     def set_TV(self, T, V):
+        self._setup()
         self._T = T
         if self._N == 1: return self._set_TV_chemical(T, V)
         P_dew, x_dew = self._dew_point.solve_Px(self._zs, T)
@@ -374,6 +399,7 @@ class VLE:
             self._H_hat = self._mixture.xH(self._phase_data, T)/self._massnet
 
     def set_TH(self, T, H):
+        self._setup()
         if self._N == 1: return self._set_TH_chemical(T, H)
         self._T = T
         
@@ -417,6 +443,7 @@ class VLE:
                                                       self.P_tol, self.H_hat_tol) 
     
     def set_PV(self, P, V):
+        self._setup()
         self._P = P
         if self._N == 1: return self._set_PV_chemical(P, V)
         
@@ -450,6 +477,7 @@ class VLE:
             self._H_hat = self._mixture.xH(self._phase_data, self._T)/self._massnet
     
     def set_PH(self, P, H):
+        self._setup()
         self._P = P
         if self._N == 1: return self._set_PH_chemical(P, H)
         
@@ -485,10 +513,10 @@ class VLE:
         massnet = self._massnet
         self._H_hat = H/massnet
         self._T = self._condition.T = self.solver(self._H_hat_at_T,
-                                                      T_bubble, T_dew, 
-                                                      H_bubble/massnet, H_dew/massnet,
-                                                      self._T , self._H_hat,
-                                                      self.T_tol, self.H_hat_tol)
+                                                  T_bubble, T_dew, 
+                                                  H_bubble/massnet, H_dew/massnet,
+                                                  self._T , self._H_hat,
+                                                  self.T_tol, self.H_hat_tol)
     
     def _H_hat_at_T(self, T):
         self._vapor_mol[self._index] = self._solve_v(T, self._P)
@@ -597,7 +625,10 @@ class VLE:
             dlim = "\n" + tab
         else:
             dlim = ", "
-        return f"VLE({molar_array},{dlim}{self.condition})"
+        IDs = f"{dlim}{self._IDs}" if self._IDs else ""
+        HNK = f"{dlim}{self._HNK}" if self._HNK else ""
+        LNK = f"{dlim}{self._LNK}" if self._LNK else ""
+        return f"VLE({molar_array},{dlim}{self.condition}{IDs}{LNK}{HNK})"
     
     def __repr__(self):
         return self.__format__("1")

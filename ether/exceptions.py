@@ -7,13 +7,13 @@ Created on Mon Nov 25 20:55:06 2019
 __all__ = ('UndefinedChemical',
            'UndefinedPhase')
 
-class UndefinedChemical(AttributeError):
-    """AttributeError regarding undefined compounds."""
+class UndefinedChemical(IndexError):
+    """IndexError regarding undefined compounds."""
     def __init__(self, ID): super().__init__(f"'{ID}'")
     
     
-class UndefinedPhase(AttributeError):
-    """AttributeError regarding undefined phases."""
+class UndefinedPhase(IndexError):
+    """IndexError regarding undefined phases."""
     def __init__(self, phase): super().__init__(f"'{phase}'")
 
 

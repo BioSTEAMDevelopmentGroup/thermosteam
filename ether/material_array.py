@@ -625,7 +625,8 @@ class PhaseArray(ArrayEmulator):
             
 
 class MaterialArray(ArrayEmulator):
-    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data')
+    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data', '_cached_index')
+    _index_caches = {}
     _ChemicalArray = ChemicalArray
     _PhaseArray = PhaseArray
     
@@ -674,6 +675,13 @@ class MaterialArray(ArrayEmulator):
     
     _set_chemicals = ChemicalArray._set_chemicals
     _set_phases = PhaseArray._set_phases
+    def _set_cache(self):
+        caches = self._index_caches
+        key = self._phases, self._chemicals
+        try:
+            self._cached_index = caches[key]
+        except KeyError:
+            self._cached_index = caches[key] = {}
     
     def __matmul__(self, other):
         return self._PhaseArray.from_data(self._data @ other, self._phases)
@@ -683,6 +691,7 @@ class MaterialArray(ArrayEmulator):
         new._chemicals = self._chemicals
         new._phases = self._phases
         new._phase_index = self._phase_index
+        new._cached_index = self._cached_index
         return new
     
     @classmethod
@@ -690,6 +699,7 @@ class MaterialArray(ArrayEmulator):
         self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
+        self._set_cache()
         shape = (len(self._phases), self._chemicals.size)
         self._data = np.zeros(shape, float)
         return self
@@ -699,6 +709,7 @@ class MaterialArray(ArrayEmulator):
         self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
+        self._set_cache()
         if settings._debug:
             assert isinstance(data, np.ndarray) and data.ndim == 2, (
                                                     'data must be an 2d numpy array')
@@ -739,6 +750,10 @@ class MaterialArray(ArrayEmulator):
         return chem_array
     
     def _get_index(self, phase_IDs, *, isa=isinstance):
+        cache = self._cached_index
+        try: return cache[phase_IDs]
+        except KeyError: pass
+        except TypeError: raise IndexError(f"index must be hashable")
         if isa(phase_IDs, str):
             index = self._get_phase_index(phase_IDs)
         elif isa(phase_IDs, slice) or phase_IDs == ...:
@@ -755,6 +770,7 @@ class MaterialArray(ArrayEmulator):
                 index = (phase, IDs_index)
             else:
                 index = (self._get_phase_index(phase), IDs_index)
+        cache[phase_IDs] = index
         return index
             
     _get_phase_index = PhaseArray._get_phase_index
@@ -770,7 +786,7 @@ class MaterialArray(ArrayEmulator):
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
         phase_data = []
-        for phase, data in self:
+        for phase, data in self.phase_data:
             IDdata = ", ".join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")
@@ -805,7 +821,7 @@ class MaterialArray(ArrayEmulator):
             basic_info = f"{type(self).__name__} ({self.units}):\n"
         else:
             basic_info = f"{type(self).__name__}:\n"
-        all_IDs = [IDs[i] for i in index]
+        all_IDs = tuple([IDs[i] for i in index])
 
         # Length of species column
         all_lengths = [len(i) for i in IDs]
