@@ -24,6 +24,7 @@ __all__ = ('ChemicalArray',
 
 # %% Utilities
 
+isa = isinstance
 _new = object.__new__
 
 def nonzeros(IDs, data):
@@ -49,12 +50,6 @@ class ArrayEmulator:
     @property
     def data(self):
         return self._data
-    @property
-    def dumps(self):
-        return self._data.dumps
-    @property
-    def dump(self):
-        return self._data.dump
     @property
     def all(self):
         return self._data.all
@@ -283,156 +278,156 @@ class ArrayEmulator:
         return self._data.__iter__()
     
     def __lt__(self, other):
-        return self._data < (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data < (other._data if isa(other, ArrayEmulator) else other)
     
     def __le__(self, other):
-        return self._data <= (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data <= (other._data if isa(other, ArrayEmulator) else other)
     
     def __eq__(self, other):
-        return self._data == (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data == (other._data if isa(other, ArrayEmulator) else other)
     
     def __ne__(self, other):
-        return self._data != (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data != (other._data if isa(other, ArrayEmulator) else other)
     
     def __gt__(self, other):
-        return self._data > (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data > (other._data if isa(other, ArrayEmulator) else other)
     
     def __ge__(self, other):
-        return self._data >= (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data >= (other._data if isa(other, ArrayEmulator) else other)
     
     def __add__(self, other):
-        return self._data + (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data + (other._data if isa(other, ArrayEmulator) else other)
     
     def __sub__(self, other):
-        return self._data - (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data - (other._data if isa(other, ArrayEmulator) else other)
     
     def __mul__(self, other):
-        return self._data * (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data * (other._data if isa(other, ArrayEmulator) else other)
     
     def __matmul__(self, other):
-        return self._data @ (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data @ (other._data if isa(other, ArrayEmulator) else other)
     
     def __truediv__(self, other):
-        return self._data / (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data / (other._data if isa(other, ArrayEmulator) else other)
     
     def __floordiv__(self, other):
-        return self._data // (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data // (other._data if isa(other, ArrayEmulator) else other)
     
     def __mod__(self, other):
-        return self._data % (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data % (other._data if isa(other, ArrayEmulator) else other)
     
     def __divmod__(self, other):
-        return self._data.__divmod__(other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data.__divmod__(other._data if isa(other, ArrayEmulator) else other)
     
     def __pow__(self, other):
-        return self._data ** (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data ** (other._data if isa(other, ArrayEmulator) else other)
     
     def __lshift__(self, other):
-        return self._data << (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data << (other._data if isa(other, ArrayEmulator) else other)
         
     def __rshift__(self, other):
-        return self._data >> (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data >> (other._data if isa(other, ArrayEmulator) else other)
     
     def __and__(self, other):
-        return self._data & (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data & (other._data if isa(other, ArrayEmulator) else other)
     
     def __xor__(self, other):
-        return self._data ^ (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data ^ (other._data if isa(other, ArrayEmulator) else other)
     
     def __or__(self, other):
-        return self._data | (other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data | (other._data if isa(other, ArrayEmulator) else other)
     
     def __radd__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) + self._data
+        return (other._data if isa(other, ArrayEmulator) else other) + self._data
         
     def __rsub__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) - self._data
+        return (other._data if isa(other, ArrayEmulator) else other) - self._data
     
     def __rmul__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) * self._data
+        return (other._data if isa(other, ArrayEmulator) else other) * self._data
         
     def __rmatmul__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) @ self._data 
+        return (other._data if isa(other, ArrayEmulator) else other) @ self._data 
     
     def __rtruediv__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) / self._data
+        return (other._data if isa(other, ArrayEmulator) else other) / self._data
         
     def __rfloordiv__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) // self._data
+        return (other._data if isa(other, ArrayEmulator) else other) // self._data
         
     def __rmod__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) % self._data
+        return (other._data if isa(other, ArrayEmulator) else other) % self._data
         
     def __rdivmod__(self, other):
-        return self._data.__rdivmod__(other._data if isinstance(other, ArrayEmulator) else other)
+        return self._data.__rdivmod__(other._data if isa(other, ArrayEmulator) else other)
     
     def __rpow__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) ** self._data
+        return (other._data if isa(other, ArrayEmulator) else other) ** self._data
     
     def __rlshift__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) << self._data
+        return (other._data if isa(other, ArrayEmulator) else other) << self._data
     
     def __rrshift__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) >> self._data
+        return (other._data if isa(other, ArrayEmulator) else other) >> self._data
     
     def __rand__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) & self._data
+        return (other._data if isa(other, ArrayEmulator) else other) & self._data
     
     def __rxor__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) ^ self._data
+        return (other._data if isa(other, ArrayEmulator) else other) ^ self._data
     
     def __ror__(self, other):
-        return (other._data if isinstance(other, ArrayEmulator) else other) | self._data
+        return (other._data if isa(other, ArrayEmulator) else other) | self._data
 
     def __iadd__(self, other):
-        self._data.__iadd__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__iadd__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __isub__(self, other):
-        self._data.__isub__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__isub__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __imul__(self, other):
-        self._data.__imul__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__imul__(other._data if isa(other, ArrayEmulator) else other)
         return self
     
     def __imatmul__(self, other):
         raise TypeError("in-place matrix multiplication is not (yet) supported")
     
     def __itruediv__(self, other):
-        self._data.__itruediv__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__itruediv__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __ifloordiv__(self, other):
-        self._data.__ifloordiv__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__ifloordiv__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __imod__(self, other):
-        self._data.__imod__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__imod__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __ipow__(self, other):
-        self._data.__ipow__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__ipow__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __ilshift__(self, other):
-        self._data.__ilshift__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__ilshift__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __irshift__(self, other):
-        self._data.__irshift__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__irshift__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __iand__(self, other):
-        self._data.__iand__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__iand__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __ixor__(self, other):
-        self._data.__ixor__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__ixor__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __ior__(self, other):
-        self._data.__ior__(other._data if isinstance(other, ArrayEmulator) else other)
+        self._data.__ior__(other._data if isa(other, ArrayEmulator) else other)
         return self
         
     def __neg__(self):
@@ -462,7 +457,7 @@ class ChemicalArray(ArrayEmulator):
     
     def to_phase_array(self, split, phases=(), data=False):
         if settings._debug:
-            assert isinstance(split, np.ndarray), "split must be 1d array"
+            assert isa(split, np.ndarray), "split must be 1d array"
             assert split.ndim == 1, "split must be 1d array"
             assert split.sum() == 1., "split must be normalized"
         if data:
@@ -472,7 +467,7 @@ class ChemicalArray(ArrayEmulator):
         
     def to_material_array(self, split, phases=(), data=False):
         if settings._debug:
-            assert isinstance(split, np.ndarray), "split must be 1d array"
+            assert isa(split, np.ndarray), "split must be 1d array"
             assert split.ndim == 1, "split must be 1d array"
             assert split.sum() == 1., "split must be normalized"
         if data:
@@ -516,7 +511,7 @@ class ChemicalArray(ArrayEmulator):
         self = _new(cls)
         self._set_chemicals(chemicals)
         if settings._debug:
-            assert isinstance(data, np.ndarray) and data.ndim == 1, (
+            assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
@@ -527,7 +522,7 @@ class ChemicalArray(ArrayEmulator):
     def chemicals(self):
         return self._chemicals
         
-    def _get_index(self, IDs, *, isa=isinstance):
+    def _get_index(self, IDs):
         if isa(IDs, str):
             return self._chemicals.index(IDs)
         elif isa(IDs, slice):
@@ -606,7 +601,7 @@ class PhaseArray(ArrayEmulator):
     
     def to_material_array(self, compositions, chemicals=None, data=False):
         if settings._debug:
-            assert isinstance(compositions, np.ndarray), "compositions must be 2d array"
+            assert isa(compositions, np.ndarray), "compositions must be 2d array"
             assert compositions.ndim == 2, "compositions must be 2d array"
             assert compositions.sum() == 1., "compositions must be normalized"
         if data:
@@ -617,7 +612,7 @@ class PhaseArray(ArrayEmulator):
     
     def to_chemical_array(self, composition, chemicals=None, data=False):
         if settings._debug:
-            assert isinstance(composition, np.ndarray), "composition must be 1d array"
+            assert isa(composition, np.ndarray), "composition must be 1d array"
             assert composition.ndim == 1, "composition must be 1d array"
             assert composition.sum() == 1., "compositions must be normalized"
         if data:
@@ -679,7 +674,7 @@ class PhaseArray(ArrayEmulator):
         self = _new(cls)
         self._set_phases(phases)
         if settings._debug:
-            assert isinstance(data, np.ndarray) and data.ndim == 1, (
+            assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
             assert data.size == len(self._phases), ('size of data must be equal to '
                                                     'number of phases')
@@ -689,7 +684,7 @@ class PhaseArray(ArrayEmulator):
     def _get_index(self, phases):
         if len(phases) == 1:
             return self._get_phase_index(phases)
-        elif isinstance(phases, slice):
+        elif isa(phases, slice):
             return phases
         else:
             return self._get_phase_indices(phases)
@@ -835,7 +830,7 @@ class MaterialArray(ArrayEmulator):
         self._set_phases(phases)
         self._set_cache()
         if settings._debug:
-            assert isinstance(data, np.ndarray) and data.ndim == 2, (
+            assert isa(data, np.ndarray) and data.ndim == 2, (
                                                     'data must be an 2d numpy array')
             M_phases = len(self._phases)
             N_chemicals = self._chemicals.size
@@ -873,7 +868,7 @@ class MaterialArray(ArrayEmulator):
         chem_array._chemicals = self._chemicals
         return chem_array
     
-    def _get_index(self, phase_IDs, *, isa=isinstance):
+    def _get_index(self, phase_IDs):
         cache = self._cached_index
         try: return cache[phase_IDs]
         except KeyError: pass
