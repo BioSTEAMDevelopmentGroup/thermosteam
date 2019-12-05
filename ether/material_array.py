@@ -24,6 +24,8 @@ __all__ = ('ChemicalArray',
 
 # %% Utilities
 
+_new = object.__new__
+
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
@@ -328,13 +330,21 @@ class ChemicalArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals)
     
-    def to_phase_array(self, other, split, phases='lg', data=False):
+    def to_phase_array(self, split, phases=(), data=False):
+        if settings._debug:
+            assert isinstance(split, np.ndarray), "split must be 1d array"
+            assert split.ndim == 1, "split must be 1d array"
+            assert split.sum() == 1., "split must be normalized"
         if data:
             return self._data.sum() * split
         else:
             return self._PhaseArray.from_data(self._data.sum() * split, phases)
         
-    def to_material_array(self, other, split, phases='lg', data=False):
+    def to_material_array(self, split, phases=(), data=False):
+        if settings._debug:
+            assert isinstance(split, np.ndarray), "split must be 1d array"
+            assert split.ndim == 1, "split must be 1d array"
+            assert split.sum() == 1., "split must be normalized"
         if data:
             return self._data * split
         else:
@@ -360,22 +370,22 @@ class ChemicalArray(ArrayEmulator):
         return new
     
     def _copy_without_data(self):
-        new = super().__new__(self.__class__)
+        new = _new(self.__class__)
         new._chemicals = self._chemicals
         return new
     
     @classmethod
     def blank(cls, chemicals=None):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._set_chemicals(chemicals)
         self._data = np.zeros(self._chemicals.size, float)
         return self
     
     @classmethod
     def from_data(cls, data, chemicals=None):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._set_chemicals(chemicals)
-        if settings.debug:
+        if settings._debug:
             assert isinstance(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
             assert data.size == self._chemicals.size, ('size of data must be equal to '
@@ -468,6 +478,10 @@ class PhaseArray(ArrayEmulator):
         return self.from_data, (self._data, self._phases)
     
     def to_material_array(self, compositions, chemicals=None, data=False):
+        if settings._debug:
+            assert isinstance(compositions, np.ndarray), "compositions must be 2d array"
+            assert compositions.ndim == 2, "compositions must be 2d array"
+            assert compositions.sum() == 1., "compositions must be normalized"
         if data:
             return self._data[:, np.newaxis] * compositions
         else:
@@ -475,6 +489,10 @@ class PhaseArray(ArrayEmulator):
                                                  self._phases, chemicals)
     
     def to_chemical_array(self, composition, chemicals=None, data=False):
+        if settings._debug:
+            assert isinstance(composition, np.ndarray), "composition must be 1d array"
+            assert composition.ndim == 1, "composition must be 1d array"
+            assert composition.sum() == 1., "compositions must be normalized"
         if data:
             return self._data.sum() * composition
         else:
@@ -518,26 +536,26 @@ class PhaseArray(ArrayEmulator):
                     raise UndefinedPhase(i)
     
     def _copy_without_data(self):
-        new = super().__new__(self.__class__)
+        new = _new(self.__class__)
         new._phases = self._phases
         return new
     
     @classmethod
     def blank(cls, phases):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._set_phases(phases)
         self._data = np.zeros(len(self._phases), float)
         return self
     
     @classmethod
     def from_data(cls, data, phases):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._set_phases(phases)
-        if settings.debug:
+        if settings._debug:
             assert isinstance(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
             assert data.size == len(self._phases), ('size of data must be equal to '
-                                                    'size of chemicals')
+                                                    'number of phases')
         self._data = data
         return self
     
@@ -638,23 +656,23 @@ class MaterialArray(ArrayEmulator):
             return MaterialArray.from_data(composition, self._phases, self._chemicals)
     
     def phase_composition(self, data=False):
-        data = self._data
-        phase_data = data.sum(1, keepdims=True)
-        phase_data[phase_data == 0] = 1.
+        array = self._data
+        phase_array = array.sum(1, keepdims=True)
+        phase_array[phase_array == 0] = 1.
         if data:
-            return phase_data
+            return phase_array
         else:
-            return MaterialArray.from_data(data/phase_data,
+            return MaterialArray.from_data(array/phase_array,
                                            self._phases, self._chemicals)
     
     def phase_split(self, data=False):
-        data = self._data
-        phase_data = data.sum(0, keepdims=True)
-        phase_data[phase_data == 0] = 1.
+        array = self._data
+        phase_array = array.sum(0, keepdims=True)
+        phase_array[phase_array == 0] = 1.
         if data:
-            return phase_data
+            return phase_array
         else:
-            return MaterialArray.from_data(data/phase_data,
+            return MaterialArray.from_data(array/phase_array,
                                            self._phases, self._chemicals)
     
     _set_chemicals = ChemicalArray._set_chemicals
@@ -664,7 +682,7 @@ class MaterialArray(ArrayEmulator):
         return self._PhaseArray.from_data(self._data @ other, self._phases)
     
     def _copy_without_data(self):
-        new = super().__new__(self.__class__)
+        new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._phases = self._phases
         new._phase_index = self._phase_index
@@ -672,7 +690,7 @@ class MaterialArray(ArrayEmulator):
     
     @classmethod
     def blank(cls, phases, chemicals=None):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._phase_data = None
         self._set_chemicals(chemicals)
         self._set_phases(phases)
@@ -682,10 +700,10 @@ class MaterialArray(ArrayEmulator):
     
     @classmethod
     def from_data(cls, data, phases, chemicals=None):
-        self = super().__new__(cls)
+        self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_phases(phases)
-        if settings.debug:
+        if settings._debug:
             assert isinstance(data, np.ndarray) and data.ndim == 2, (
                                                     'data must be an 2d numpy array')
             M_phases = len(self._phases)
@@ -765,7 +783,7 @@ class MaterialArray(ArrayEmulator):
         else:
             dlim = ", "
         phase_data = dlim.join(phase_data)
-        if self.to_phase_array().all():
+        if self.to_phase_array(data=True).all():
             phases = ""
             if phase_data:
                 phase_data = "\n" + tab + phase_data
@@ -781,7 +799,7 @@ class MaterialArray(ArrayEmulator):
     def _info(self, N):
         """Return string with all specifications."""
         IDs = self.chemicals.IDs
-        index, = np.where(self.to_chemical_array() != 0)
+        index, = np.where(self.to_chemical_array(data=True) != 0)
         len_ = len(index)
         if len_ == 0:
             return f"{type(self).__name__}: (empty)"

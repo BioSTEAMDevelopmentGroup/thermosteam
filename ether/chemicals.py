@@ -121,6 +121,9 @@ class CompiledChemicals(Chemicals):
         self._compile()
         return self
     
+    def __dir__(self):
+        return self.IDs + tuple(dir(type(self)))
+    
     def extend(self, chemicals):
         raise TypeError("'{type(self).__name__}' object is read-only")
     
