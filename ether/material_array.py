@@ -38,23 +38,224 @@ class ArrayEmulator:
     chemicals = units = phases = None
     _quantity = _Q(1.)
     
-    def _assert_safety(self, other, *, isa=isinstance):
-        if isa(other, ArrayEmulator):
-            if settings._debug:
-                assert other.chemicals is self.chemicals, "chemicals do not match"
-                assert other.units == self.units, "units do not match"
-                assert other.phases == self.phases, "phases do not match"
-            return True
-        return False
-    
-    def copy(self):
-        new = self._copy_without_data()
-        new._data = self._data.copy()
-        return new
+    def copy(self, data=False):
+        if data:
+            return self._data.copy()
+        else:
+            new = self._copy_without_data()
+            new._data = self._data.copy()
+            return new
     
     @property
     def data(self):
         return self._data
+    @property
+    def dumps(self):
+        return self._data.dumps
+    @property
+    def dump(self):
+        return self._data.dump
+    @property
+    def all(self):
+        return self._data.all
+    @property
+    def any(self):
+        return self._data.any
+    @property
+    def argmax(self):
+        return self._data.argmax
+    @property
+    def argmin(self):
+        return self._data.argmin
+    @property
+    def argpartition(self):
+        return self._data.argpartition
+    @property
+    def argsort(self):
+        return self._data.argsort
+    @property
+    def astype(self):
+        return self._data.astype
+    @property
+    def byteswap(self):
+        return self._data.byteswap
+    @property
+    def choose(self):
+        return self._data.choose
+    @property
+    def clip(self):
+        return self._data.clip
+    @property
+    def compress(self):
+        return self._data.compress
+    @property
+    def conj(self):
+        return self._data.conj
+    @property
+    def conjugate(self):
+        return self._data.conjugate
+    @property
+    def cumprod(self):
+        return self._data.cumprod
+    @property
+    def cumsum(self):
+        return self._data.cumsum
+    @property
+    def diagonal(self):
+        return self._data.diagonal
+    @property
+    def dot(self):
+        return self._data.dot
+    @property
+    def fill(self):
+        return self._data.fill
+    @property
+    def flatten(self):
+        return self._data.flatten
+    @property
+    def getfield(self):
+        return self._data.getfield
+    @property
+    def item(self):
+        return self._data.item
+    @property
+    def itemset(self):
+        return self._data.itemset
+    @property
+    def max(self):
+        return self._data.max
+    @property
+    def mean(self):
+        return self._data.mean
+    @property
+    def min(self):
+        return self._data.min
+    @property
+    def newbyteorder(self):
+        return self._data.newbyteorder
+    @property
+    def nonzero(self):
+        return self._data.nonzero
+    @property
+    def partition(self):
+        return self._data.partition
+    @property
+    def prod(self):
+        return self._data.prod
+    @property
+    def ptp(self):
+        return self._data.ptp
+    @property
+    def put(self):
+        return self._data.put
+    @property
+    def ravel(self):
+        return self._data.ravel
+    @property
+    def repeat(self):
+        return self._data.repeat
+    @property
+    def reshape(self):
+        return self._data.reshape
+    @property
+    def resize(self):
+        return self._data.resize
+    @property
+    def round(self):
+        return self._data.round
+    @property
+    def searchsorted(self):
+        return self._data.searchsorted
+    @property
+    def setfield(self):
+        return self._data.setfield
+    @property
+    def setflags(self):
+        return self._data.setflags
+    @property
+    def sort(self):
+        return self._data.sort
+    @property
+    def squeeze(self):
+        return self._data.squeeze
+    @property
+    def std(self):
+        return self._data.std
+    @property
+    def sum(self):
+        return self._data.sum
+    @property
+    def swapaxes(self):
+        return self._data.swapaxes
+    @property
+    def take(self):
+        return self._data.take
+    @property
+    def tobytes(self):
+        return self._data.tobytes
+    @property
+    def tofile(self):
+        return self._data.tofile
+    @property
+    def tolist(self):
+        return self._data.tolist
+    @property
+    def tostring(self):
+        return self._data.tostring
+    @property
+    def trace(self):
+        return self._data.trace
+    @property
+    def transpose(self):
+        return self._data.tranpose
+    @property
+    def var(self):
+        return self._data.var
+    @property
+    def view(self):
+        return self._data.view
+    @property
+    def ndim(self):
+        return self._data.ndim
+    @property
+    def flags(self):
+        return self._data.flags
+    @property
+    def shape(self):
+        return self._data.shape
+    @property
+    def strides(self):
+        return self._data.strides
+    @property
+    def itemsize(self):
+        return self._data.itemsize
+    @property
+    def size(self):
+        return self._data.size
+    @property
+    def nbytes(self):
+        return self._data.nbytes
+    @property
+    def base(self):
+        return self._data.base
+    @property
+    def dtype(self):
+        return self._data.dtype
+    @property
+    def real(self):
+        return self._data.real
+    @property
+    def imag(self):
+        return self._data.imag
+    @property
+    def flat(self):
+        return self._data.flat
+    @property
+    def ctypes(self):
+        return self._data.ctypes
+    @property
+    def T(self):
+        return self._data.T
     
     def get_data(self, *index, units):
         length = len(index)
@@ -82,230 +283,156 @@ class ArrayEmulator:
         return self._data.__iter__()
     
     def __lt__(self, other):
-        return self._data.__lt__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data < (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __le__(self, other):
-        return self._data.__le__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data <= (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __eq__(self, other):
-        return self._data.__eq__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data == (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __ne__(self, other):
-        return self._data.__ne__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data != (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __gt__(self, other):
-        return self._data.__gt__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data > (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __ge__(self, other):
-        return self._data.__ge__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data >= (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __add__(self, other):
-        return self._data.__add__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return self._data + (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __sub__(self, other):
-        return self._data.__sub__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return self._data - (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __mul__(self, other):
-        return self._data.__mul__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
-        
+        return self._data * (other._data if isinstance(other, ArrayEmulator) else other)
+    
+    def __matmul__(self, other):
+        return self._data @ (other._data if isinstance(other, ArrayEmulator) else other)
+    
+    def __truediv__(self, other):
+        return self._data / (other._data if isinstance(other, ArrayEmulator) else other)
+    
     def __floordiv__(self, other):
-        return self._data.__floordiv__(other._data
-                                       if self._assert_safety(other)
-                                       else other)
+        return self._data // (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __mod__(self, other):
-        return self._data.__mod__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return self._data % (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __divmod__(self, other):
-        return self._data.__divmod__(other._data
-                                     if self._assert_safety(other)
-                                     else other)
+        return self._data.__divmod__(other._data if isinstance(other, ArrayEmulator) else other)
     
     def __pow__(self, other):
-        return self._data.__divmod__(other._data
-                                     if self._assert_safety(other)
-                                     else other)
+        return self._data ** (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __lshift__(self, other):
-        return self._data.__lshift__(other._data
-                                     if self._assert_safety(other)
-                                     else other)
+        return self._data << (other._data if isinstance(other, ArrayEmulator) else other)
         
     def __rshift__(self, other):
-        return self._data.__rshift__(other._data
-                                     if self._assert_safety(other)
-                                     else other)
+        return self._data >> (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __and__(self, other):
-        return self._data.__and__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return self._data & (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __xor__(self, other):
-        return self._data.__xor__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return self._data ^ (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __or__(self, other):
-        return self._data.__or__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        return self._data | (other._data if isinstance(other, ArrayEmulator) else other)
     
     def __radd__(self, other):
-        return self._data.__add__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) + self._data
         
     def __rsub__(self, other):
-        return self._data.__rsub__(other._data
-                                   if self._assert_safety(other)
-                                   else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) - self._data
     
     def __rmul__(self, other):
-        return self._data.__mul__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) * self._data
         
+    def __rmatmul__(self, other):
+        return (other._data if isinstance(other, ArrayEmulator) else other) @ self._data 
+    
     def __rtruediv__(self, other):
-        return self._data.__rtruediv__(other._data
-                                       if self._assert_safety(other)
-                                       else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) / self._data
         
     def __rfloordiv__(self, other):
-        return self._data.__rtruediv__(other._data
-                                       if self._assert_safety(other)
-                                       else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) // self._data
         
     def __rmod__(self, other):
-        return self._data.__rmod__(other._data
-                                   if self._assert_safety(other)
-                                   else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) % self._data
         
     def __rdivmod__(self, other):
-        return self._data.__rdivmod__(other._data
-                                      if self._assert_safety(other)
-                                      else other)
+        return self._data.__rdivmod__(other._data if isinstance(other, ArrayEmulator) else other)
     
     def __rpow__(self, other):
-        return self._data.__rpow__(other._data
-                                   if self._assert_safety(other)
-                                   else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) ** self._data
     
     def __rlshift__(self, other):
-        return self._data.__rlshift__(other._data
-                                      if self._assert_safety(other)
-                                      else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) << self._data
     
     def __rrshift__(self, other):
-        return self._data.__rrshift__(other._data
-                                      if self._assert_safety(other)
-                                      else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) >> self._data
     
     def __rand__(self, other):
-        return self._data.__rand__(other._data
-                                   if self._assert_safety(other)
-                                   else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) & self._data
     
     def __rxor__(self, other):
-        return self._data.__rxor__(other._data
-                                   if self._assert_safety(other)
-                                   else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) ^ self._data
     
     def __ror__(self, other):
-        return self._data.__ror__(other._data
-                                  if self._assert_safety(other)
-                                  else other)
+        return (other._data if isinstance(other, ArrayEmulator) else other) | self._data
 
     def __iadd__(self, other):
-        self._data.__iadd__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__iadd__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __isub__(self, other):
-        self._data.__isub__(other._data 
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__isub__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __imul__(self, other):
-        self._data.__imul__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__imul__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
-        
+    
+    def __imatmul__(self, other):
+        raise TypeError("in-place matrix multiplication is not (yet) supported")
+    
     def __itruediv__(self, other):
-        self._data.__itruediv__(other._data
-                                if self._assert_safety(other)
-                                else other)
+        self._data.__itruediv__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __ifloordiv__(self, other):
-        self._data.__ifloordiv__(other._data
-                                 if self._assert_safety(other)
-                                 else other)
+        self._data.__ifloordiv__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __imod__(self, other):
-        self._data.__imod__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__imod__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __ipow__(self, other):
-        self._data.__ipow__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__ipow__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __ilshift__(self, other):
-        self._data.__ilshift__(other._data
-                               if self._assert_safety(other)
-                               else other)
+        self._data.__ilshift__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __irshift__(self, other):
-        self._data.__irshift__(other._data 
-                               if self._assert_safety(other)
-                               else other)
+        self._data.__irshift__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __iand__(self, other):
-        self._data.__iand__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__iand__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __ixor__(self, other):
-        self._data.__ixor__(other._data
-                            if self._assert_safety(other)
-                            else other)
+        self._data.__ixor__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __ior__(self, other):
-        self._data.__ior__(other._data
-                           if self._assert_safety(other)
-                           else other)
+        self._data.__ior__(other._data if isinstance(other, ArrayEmulator) else other)
         return self
         
     def __neg__(self):
@@ -682,9 +809,6 @@ class MaterialArray(ArrayEmulator):
             self._cached_index = caches[key]
         except KeyError:
             self._cached_index = caches[key] = {}
-    
-    def __matmul__(self, other):
-        return self._PhaseArray.from_data(self._data @ other, self._phases)
     
     def _copy_without_data(self):
         new = _new(self.__class__)
