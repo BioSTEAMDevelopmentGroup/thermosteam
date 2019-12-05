@@ -34,7 +34,7 @@ def nonzeros(IDs, data):
 # %% Abstract data emulator
     
 class ArrayEmulator:
-    __slots__ = ('_data',)
+    __slots__ = ('_data', '_cached_index')
     _cached_phase_index = {}
     chemicals = units = phases = None
     _quantity = _Q(1.)
@@ -269,10 +269,24 @@ class ArrayEmulator:
         self[index] = data / self._quantity.to(units).magnitude
     
     def __getitem__(self, key):
-        return self._data[self._get_index(key)]
+        cache = self._cached_index
+        try: 
+            index = cache[key]
+        except KeyError: 
+            cache[key] = index = self.data_index(key)
+        except TypeError:
+            raise IndexError(f"index must be hashable")
+        return self._data[index]
     
     def __setitem__(self, key, data):
-        self._data[self._get_index(key)] = data
+        cache = self._cached_index
+        try: 
+            index = cache[key]
+        except KeyError: 
+            cache[key] = index = self.data_index(key)
+        except TypeError:
+            raise IndexError(f"index must be hashable")
+        self._data[index] = data
     
     def __iter__(self):
         return self._data.__iter__()
@@ -444,6 +458,7 @@ class ArrayEmulator:
 
 class ChemicalArray(ArrayEmulator):
     __slots__ = ('_chemicals',)
+    _index_caches = {}
     
     def __new__(cls, chemicals=None, **IDdata):
         self = cls.blank()
@@ -479,6 +494,13 @@ class ChemicalArray(ArrayEmulator):
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
+    def _set_cache(self):
+        caches = self._index_caches
+        try:
+            self._cached_index = caches[self._chemicals]
+        except KeyError:
+            self._cached_index = caches[self._chemicals] = {}
+    
     def composition(self, data=False):
         array = self._data
         total = array.sum()
@@ -497,12 +519,14 @@ class ChemicalArray(ArrayEmulator):
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
+        new._cached_index = self._cached_index
         return new
     
     @classmethod
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._set_chemicals(chemicals)
+        self._set_cache()
         self._data = np.zeros(self._chemicals.size, float)
         return self
     
@@ -510,6 +534,7 @@ class ChemicalArray(ArrayEmulator):
     def from_data(cls, data, chemicals=None):
         self = _new(cls)
         self._set_chemicals(chemicals)
+        self._set_cache()
         if settings._debug:
             assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
@@ -522,7 +547,7 @@ class ChemicalArray(ArrayEmulator):
     def chemicals(self):
         return self._chemicals
         
-    def _get_index(self, IDs):
+    def data_index(self, IDs):
         if isa(IDs, str):
             return self._chemicals.index(IDs)
         elif isa(IDs, slice):
@@ -588,6 +613,7 @@ class ChemicalArray(ArrayEmulator):
     
 class PhaseArray(ArrayEmulator):
     __slots__ = ('_phases', '_phase_index')
+    _index_caches = {}
     
     def __new__(cls, phases, **phase_data):
         self = cls.blank(phases or phase_data)
@@ -642,6 +668,13 @@ class PhaseArray(ArrayEmulator):
         else:
             self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
     
+    def _set_cache(self):
+        caches = self._index_caches
+        try:
+            self._cached_index = caches[self._phases]
+        except KeyError:
+            self._cached_index = caches[self._phases] = {}
+    
     def _get_phase_index(self, phase):
         try:
             return self._phase_index[phase]
@@ -660,12 +693,14 @@ class PhaseArray(ArrayEmulator):
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._phases = self._phases
+        new._cached_index = self._cached_index
         return new
     
     @classmethod
     def blank(cls, phases):
         self = _new(cls)
         self._set_phases(phases)
+        self._set_cache()
         self._data = np.zeros(len(self._phases), float)
         return self
     
@@ -673,6 +708,7 @@ class PhaseArray(ArrayEmulator):
     def from_data(cls, data, phases):
         self = _new(cls)
         self._set_phases(phases)
+        self._set_cache()
         if settings._debug:
             assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
@@ -681,7 +717,7 @@ class PhaseArray(ArrayEmulator):
         self._data = data
         return self
     
-    def _get_index(self, phases):
+    def data_index(self, phases):
         if len(phases) == 1:
             return self._get_phase_index(phases)
         elif isa(phases, slice):
@@ -747,7 +783,7 @@ class PhaseArray(ArrayEmulator):
             
 
 class MaterialArray(ArrayEmulator):
-    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data', '_cached_index')
+    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data')
     _index_caches = {}
     _ChemicalArray = ChemicalArray
     _PhaseArray = PhaseArray
@@ -864,15 +900,11 @@ class MaterialArray(ArrayEmulator):
         chem_array._chemicals = self._chemicals
         return chem_array
     
-    def _get_index(self, phase_IDs):
-        cache = self._cached_index
-        try: return cache[phase_IDs]
-        except KeyError: pass
-        except TypeError: raise IndexError(f"index must be hashable")
+    def data_index(self, phase_IDs):
         if isa(phase_IDs, str):
-            index = self._get_phase_index(phase_IDs)
+            return self._get_phase_index(phase_IDs)
         elif isa(phase_IDs, slice) or phase_IDs == ...:
-            index = phase_IDs 
+            return phase_IDs 
         else:
             phase, IDs = phase_IDs
             if isa(IDs, str):
@@ -882,11 +914,9 @@ class MaterialArray(ArrayEmulator):
             else:
                 IDs_index = self._chemicals.indices(IDs)
             if isa(phase, slice) or phase == ...:
-                index = (phase, IDs_index)
+                return (phase, IDs_index)
             else:
-                index = (self._get_phase_index(phase), IDs_index)
-        cache[phase_IDs] = index
-        return index
+                return (self._get_phase_index(phase), IDs_index)
             
     _get_phase_index = PhaseArray._get_phase_index
     
