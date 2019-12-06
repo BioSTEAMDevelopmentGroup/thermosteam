@@ -48,7 +48,7 @@ class ArrayEmulator:
             new._data = self._data.copy()
             return new
     
-    def get_data(self, *index, units):
+    def get_data(self, units, *index):
         length = len(index)
         factor = self._units_converter(units)
         if length == 0:
@@ -58,7 +58,7 @@ class ArrayEmulator:
         else:
             return factor * self[index]
     
-    def set_data(self, *index, data, units):
+    def set_data(self, data, units, *index):
         length = len(index)
         scaled_data = data / self._units_converter(units)
         if length == 0:
