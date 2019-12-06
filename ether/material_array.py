@@ -47,6 +47,38 @@ class ArrayEmulator:
             new._data = self._data.copy()
             return new
     
+    def get_data(self, *index, units):
+        length = len(index)
+        if length == 0:
+            index = ...
+        elif length == 1:
+            index = index[0]
+        return self[index] * self._quantity.to(units).magnitude
+    
+    def set_data(self, *index, data, units):
+        length = len(index)
+        if length == 0:
+            index = ...
+        elif length == 1:
+            index = index[0]
+        self[index] = data / self._quantity.to(units).magnitude
+    
+    def _get_index(self, key):
+        cache = self._cached_index
+        try: 
+            index = cache[key]
+        except KeyError: 
+            cache[key] = index = self.get_data_index(key)
+        except TypeError:
+            raise IndexError(f"index must be hashable")
+        return index
+    
+    def __getitem__(self, key):
+        return self._data[self._get_index(key)]
+    
+    def __setitem__(self, key, data):
+        self._data[self._get_index(key)] = data
+    
     @property
     def data(self):
         return self._data
@@ -251,42 +283,6 @@ class ArrayEmulator:
     @property
     def T(self):
         return self._data.T
-    
-    def get_data(self, *index, units):
-        length = len(index)
-        if length == 0:
-            index = ...
-        elif length == 1:
-            index = index[0]
-        return self[index] * self._quantity.to(units).magnitude
-    
-    def set_data(self, *index, data, units):
-        length = len(index)
-        if length == 0:
-            index = ...
-        elif length == 1:
-            index = index[0]
-        self[index] = data / self._quantity.to(units).magnitude
-    
-    def __getitem__(self, key):
-        cache = self._cached_index
-        try: 
-            index = cache[key]
-        except KeyError: 
-            cache[key] = index = self.data_index(key)
-        except TypeError:
-            raise IndexError(f"index must be hashable")
-        return self._data[index]
-    
-    def __setitem__(self, key, data):
-        cache = self._cached_index
-        try: 
-            index = cache[key]
-        except KeyError: 
-            cache[key] = index = self.data_index(key)
-        except TypeError:
-            raise IndexError(f"index must be hashable")
-        self._data[index] = data
     
     def __iter__(self):
         return self._data.__iter__()
@@ -546,7 +542,7 @@ class ChemicalArray(ArrayEmulator):
     def chemicals(self):
         return self._chemicals
         
-    def data_index(self, IDs):
+    def get_data_index(self, IDs):
         if isa(IDs, str):
             return self._chemicals.index(IDs)
         elif isa(IDs, slice):
@@ -654,7 +650,7 @@ class PhaseArray(ArrayEmulator):
         array = self._data
         total = array.sum()
         phase_split = array/total if total else array.copy()
-        if array:
+        if data:
             return phase_split
         else:
             return PhaseArray.from_data(phase_split, self._phases)
@@ -716,7 +712,7 @@ class PhaseArray(ArrayEmulator):
         self._data = data
         return self
     
-    def data_index(self, phases):
+    def get_data_index(self, phases):
         if len(phases) == 1:
             return self._get_phase_index(phases)
         elif isa(phases, slice):
@@ -899,7 +895,7 @@ class MaterialArray(ArrayEmulator):
         chem_array._chemicals = self._chemicals
         return chem_array
     
-    def data_index(self, phase_IDs):
+    def get_data_index(self, phase_IDs):
         if isa(phase_IDs, str):
             return self._get_phase_index(phase_IDs)
         elif isa(phase_IDs, slice) or phase_IDs == ...:
