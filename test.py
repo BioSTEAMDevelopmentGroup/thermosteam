@@ -6,7 +6,6 @@ Created on Mon Sep 30 12:37:43 2019
 """
 import biosteam as bst
 import ether as eth
-import numpy as np
 
 # %% Set thermo
 

@@ -18,7 +18,6 @@ def VolumetricFlowProperty(self):
     phase, T, P = self.thermal_condition
     return self.molar_flow[self.index] * self.V(phase or self.phase, T, P)
     
-    
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     phase, T, P = self.thermal_condition
