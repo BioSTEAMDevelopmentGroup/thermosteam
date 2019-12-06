@@ -4,7 +4,8 @@ Created on Mon Dec  2 01:41:50 2019
 
 @author: yoelr
 """
-from .base import _Q
+
+from .base import UnitsConverter
 from .settings import settings
 from .exceptions import UndefinedPhase
 import numpy as np
@@ -37,7 +38,7 @@ class ArrayEmulator:
     __slots__ = ('_data', '_cached_index')
     _cached_phase_index = {}
     chemicals = units = phases = None
-    _quantity = _Q(1.)
+    _units_converter = UnitsConverter()
     
     def copy(self, data=False):
         if data:
@@ -49,19 +50,23 @@ class ArrayEmulator:
     
     def get_data(self, *index, units):
         length = len(index)
+        factor = self._units_converter(units)
         if length == 0:
-            index = ...
+            return factor * self._data
         elif length == 1:
-            index = index[0]
-        return self[index] * self._quantity.to(units).magnitude
+            return factor * self[index[0]]
+        else:
+            return factor * self[index]
     
     def set_data(self, *index, data, units):
         length = len(index)
+        scaled_data = data / self._units_converter(units)
         if length == 0:
-            index = ...
+            self._data[:] = scaled_data
         elif length == 1:
-            index = index[0]
-        self[index] = data / self._quantity.to(units).magnitude
+            self._data[index[0]] = scaled_data
+        else:
+            self[index] = scaled_data
     
     def _get_index(self, key):
         cache = self._cached_index
@@ -1014,9 +1019,9 @@ def new_Array(name, units):
     PhaseArraySubclass.units = \
     MaterialArraySubclass.units = units
     
-    ChemicalArraySubclass._quantity = \
-    PhaseArraySubclass._quantity = \
-    MaterialArraySubclass._quantity = _Q(1., units)
+    ChemicalArraySubclass._units_converter = \
+    PhaseArraySubclass._units_converter = \
+    MaterialArraySubclass._units_converter = UnitsConverter(units)
     
     PhaseArraySubclass._ChemicalArray = \
     MaterialArraySubclass._ChemicalArray = ChemicalArraySubclass
