@@ -75,6 +75,9 @@ class ChemicalPhaseTProperty(PhaseProperty):
         self.l = TDependentModelHandle() if l is None else l
         self.g = TDependentModelHandle() if g is None else g
     
+    def at_thermal_condition(self, thermal_condition):
+        return getattr(self, thermal_condition.phase)(thermal_condition.T)
+    
     def __call__(self, phase, T):
         return getattr(self, phase)(T)
     
@@ -86,6 +89,9 @@ class ChemicalPhaseTPProperty(PhaseProperty):
         self.s = TPDependentModelHandle() if s is None else s
         self.l = TPDependentModelHandle() if l is None else l
         self.g = TPDependentModelHandle() if g is None else g
+    
+    def at_thermal_condition(self, thermal_condition):
+        return getattr(self, thermal_condition.phase)(thermal_condition.T, thermal_condition.P)
     
     def __call__(self, phase, T, P):
         return getattr(self, phase)(T, P)

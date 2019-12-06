@@ -17,6 +17,7 @@ from . import thermo
 from . import material_array
 from . import thermal_condition
 from . import mass_flow
+from . import volumetric_flow
 
 __all__ = (*base.__all__, 
            *chemical.__all__, 
@@ -30,7 +31,8 @@ __all__ = (*base.__all__,
            *settings.__all__,
            *material_array.__all__,
            *thermal_condition.__all__,
-           *mass_flow.__all__)
+           *mass_flow.__all__,
+           *volumetric_flow.__all__)
 
 from .base import *
 from .chemical import *
@@ -45,3 +47,4 @@ from .settings import *
 from .material_array import *
 from .thermal_condition import *
 from .mass_flow import *
+from .volumetric_flow import *
