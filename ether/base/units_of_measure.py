@@ -9,7 +9,6 @@ __all__ = ('units_of_measure', 'ureg', 'Quantity', 'UnitsConverter')
 # %% Import unit registry
 
 import pandas as pd
-import numpy as np
 from pint import UnitRegistry
 from pint.quantity import to_units_container
 import os
@@ -21,15 +20,7 @@ ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_m
 Quantity = ureg.Quantity
 Quantity._repr_latex_ = Quantity._repr_html_ = \
 Quantity.__str__ = Quantity.__repr__ = lambda self: self.__format__('')
-
-# Set number of digits displayed
-np.set_printoptions(suppress=False)
-np.set_printoptions(precision=3) 
-pd.options.display.float_format = '{:.3g}'.format
-pd.set_option('display.max_rows', 35)
-pd.set_option('display.max_columns', 10)
-pd.set_option('max_colwidth', 35)
-del np, pd, os, UnitRegistry
+del os, UnitRegistry
 
 # %% Manage conversion factors
 

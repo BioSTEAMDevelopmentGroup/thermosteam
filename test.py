@@ -68,4 +68,7 @@ vle(T=400, P=101325)
 
 s1.VLE(T=400, P=101325)
 
+# %% Test property array
 
+mass_flow_data = eth.mass_flow_1d(z, thermo.chemicals)
+mass_flow = eth.ChemicalMassFlow.from_data(mass_flow_data, chemicals)

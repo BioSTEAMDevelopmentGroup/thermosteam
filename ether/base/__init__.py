@@ -20,3 +20,14 @@ from .thermo_model_handle import *
 from .handle_builder import *
 from .phase_property import *
 from .units_of_measure import *
+
+# Set number of digits displayed
+import numpy as np
+import pandas as pd
+np.set_printoptions(suppress=False)
+np.set_printoptions(precision=3) 
+pd.options.display.float_format = '{:.3g}'.format
+pd.set_option('display.max_rows', 35)
+pd.set_option('display.max_columns', 10)
+pd.set_option('max_colwidth', 35)
+del np, pd
