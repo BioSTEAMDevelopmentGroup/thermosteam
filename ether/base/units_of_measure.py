@@ -4,7 +4,7 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-__all__ = ('units_of_measure', 'ureg', 'Quantity', 'UnitsConverter')
+__all__ = ('units_of_measure', 'ureg', 'Quantity', 'Units')
 
 # %% Import unit registry
 
@@ -24,28 +24,42 @@ del os, UnitRegistry
 
 # %% Manage conversion factors
 
-class UnitsConverter:
-    __slots__ = ('_units',)
+class Units:
+    __slots__ = ('_units', '_units_container')
     _cached_factors = {}
-    ureg = ureg
     def __init__(self, units=""):
-        self._units = to_units_container(units, self.ureg)
+        self._units = units
+        self._units_container = to_units_container(units, ureg)
+        self._dimensionality = ureg._get_dimensionality(self._units_container)
     
     @property
     def units(self):
-        return str(self._units)
+        return self._units
     
-    def __call__(self, units):
+    @property
+    def dimensionality(self):
+        return self._dimensionality
+    
+    def to(self, units):
         cached = self._cached_factors
         if units in cached:
             factor = cached[units]
         else:
-            cached[units] = factor = self.ureg.convert(1., self._units, units)
+            cached[units] = factor = ureg.convert(1., self._units_container, units)
         return factor
     
+    def __bool__(self):
+        return bool(self._units)
+    
+    def __str__(self):
+        return self._units
+    
     def __repr__(self):
-        return f"{type(self).__name__}({str(self.units)})"
+        return f"{type(self).__name__}({repr(self._units)})"
 
+def get_dimensionality(units):
+    return ureg._get_dimensionality(to_units_container(units, ureg))
+    
 
 # %% Units of measure
 

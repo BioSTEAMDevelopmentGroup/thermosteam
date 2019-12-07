@@ -15,15 +15,15 @@ __all__ = ('Thermo',)
 @read_only
 class Thermo:
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
-    _cached = {}
+    _cache = {}
     def __new__(cls, chemicals, mixture=None,
                 Gamma=eq.DortmundActivityCoefficients,
                 Phi=eq.IdealFugacityCoefficients,
                 PCF=eq.IdealPoyintingCorrectionFactor):
         args = (chemicals, mixture, Gamma, Phi, PCF)
-        cached = cls._cached
-        if args in cached:
-            self = cached[args]
+        cache = cls._cache
+        if args in cache:
+            self = cache[args]
         else:
             self = super().__new__(cls)
             mixture = mixture or IdealMixture(chemicals)
@@ -44,7 +44,7 @@ class Thermo:
             setattr(self, 'Gamma', Gamma)
             setattr(self, 'Phi', Phi)
             setattr(self, 'PCF', PCF)    
-            cached[args] = self
+            cache[args] = self
         return self
     
     def __reduce__(self):

@@ -5,7 +5,7 @@ Created on Mon Dec  2 01:41:50 2019
 @author: yoelr
 """
 
-from .base import UnitsConverter
+from .base import Units
 from .settings import settings
 from .exceptions import UndefinedPhase
 from free_properties import PropertyFactory, property_array
@@ -35,14 +35,13 @@ def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
-
 # %% Abstract data emulator
     
 class ArrayEmulator:
-    __slots__ = ('_data', '_cached_index')
-    _cached_phase_index = {}
-    chemicals = units = None
-    _units_converter = UnitsConverter()
+    __slots__ = ('_data', '_index_cache')
+    _phase_index_cache = {}
+    chemicals = None
+    units = Units()
     
     def copy(self, data=False):
         if data:
@@ -54,7 +53,7 @@ class ArrayEmulator:
     
     def get_data(self, units, *index):
         length = len(index)
-        factor = self._units_converter(units)
+        factor = self.units.to(units)
         if length == 0:
             return factor * self._data
         elif length == 1:
@@ -64,7 +63,7 @@ class ArrayEmulator:
     
     def set_data(self, data, units, *index):
         length = len(index)
-        scaled_data = data / self._units_converter(units)
+        scaled_data = data / self.units.to(units)
         if length == 0:
             self._data[:] = scaled_data
         elif length == 1:
@@ -73,13 +72,13 @@ class ArrayEmulator:
             self[index] = scaled_data
     
     def _get_index(self, key):
-        cache = self._cached_index
+        cache = self._index_cache
         try: 
             index = cache[key]
         except KeyError: 
             cache[key] = index = self.get_data_index(key)
         except TypeError:
-            raise IndexError(f"index must be hashable")
+            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
         return index
     
     def __getitem__(self, key):
@@ -482,9 +481,9 @@ class ChemicalArray(ArrayEmulator):
     def _set_cache(self):
         caches = self._index_caches
         try:
-            self._cached_index = caches[self._chemicals]
+            self._index_cache = caches[self._chemicals]
         except KeyError:
-            self._cached_index = caches[self._chemicals] = {}
+            self._index_cache = caches[self._chemicals] = {}
     
     def to_phase_array(self, phases=(), data=False):
         if data:
@@ -526,7 +525,7 @@ class ChemicalArray(ArrayEmulator):
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
-        new._cached_index = self._cached_index
+        new._index_cache = self._index_cache
         new.phase = self.phase
         return new
     
@@ -560,10 +559,12 @@ class ChemicalArray(ArrayEmulator):
     def get_data_index(self, IDs):
         if isa(IDs, str):
             return self._chemicals.index(IDs)
+        elif isa(IDs, tuple):
+            return self._chemicals.indices(IDs)
         elif isa(IDs, slice) or IDs == ...:
             return IDs
         else:
-            return self._chemicals.indices(IDs)
+            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -678,18 +679,18 @@ class PhaseArray(ArrayEmulator):
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(phases)
-        cached = self._cached_phase_index
-        if phases in cached:
-            self._phase_index = cached[phases]
+        cache = self._phase_index_cache
+        if phases in cache:
+            self._phase_index = cache[phases]
         else:
-            self._phase_index = cached[phases] = {j:i for i,j in enumerate(phases)}
+            self._phase_index = cache[phases] = {j:i for i,j in enumerate(phases)}
     
     def _set_cache(self):
         caches = self._index_caches
         try:
-            self._cached_index = caches[self._phases]
+            self._index_cache = caches[self._phases]
         except KeyError:
-            self._cached_index = caches[self._phases] = {}
+            self._index_cache = caches[self._phases] = {}
     
     def _get_phase_index(self, phase):
         try:
@@ -709,7 +710,7 @@ class PhaseArray(ArrayEmulator):
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._phases = self._phases
-        new._cached_index = self._cached_index
+        new._index_cache = self._index_cache
         return new
     
     @classmethod
@@ -734,12 +735,14 @@ class PhaseArray(ArrayEmulator):
         return self
     
     def get_data_index(self, phases):
-        if len(phases) == 1:
+        if isa(phases, str):
             return self._get_phase_index(phases)
+        elif isa(phases, tuple):
+            return self._get_phase_indices(phases)
         elif isa(phases, slice) or phases == ...:
             return phases
         else:
-            return self._get_phase_indices(phases)
+            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -853,16 +856,16 @@ class MaterialArray(ArrayEmulator):
         caches = self._index_caches
         key = self._phases, self._chemicals
         try:
-            self._cached_index = caches[key]
+            self._index_cache = caches[key]
         except KeyError:
-            self._cached_index = caches[key] = {}
+            self._index_cache = caches[key] = {}
     
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._phases = self._phases
         new._phase_index = self._phase_index
-        new._cached_index = self._cached_index
+        new._index_cache = self._index_cache
         return new
     
     @classmethod
@@ -923,21 +926,23 @@ class MaterialArray(ArrayEmulator):
             try:
                 phase, IDs = phase_IDs
             except:
-                raise IndexError("use <MaterialArray>[phase, IDs] "
+                raise IndexError("please index with <MaterialArray>[phase, IDs] "
                                  "where phase is a (str, slice, or ellipsis), "
                                  "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
+            elif isa(IDs, tuple):
+                IDs_index = self._chemicals.indices(IDs)
             elif isa(IDs, slice) or IDs == ...:
                 IDs_index = IDs
             else:
-                IDs_index = self._chemicals.indices(IDs)
+                raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
             if isa(phase, str):
                 index = (self._get_phase_index(phase), IDs_index)
             elif isa(phase, slice) or phase == ...:
                 index = (phase, IDs_index)
             else:
-                raise IndexError("use <MaterialArray>[phase, IDs] "
+                raise IndexError("please index with <MaterialArray>[phase, IDs] "
                                  "where phase is a (str, slice, or ellipsis), "
                                  "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
         return index
@@ -1041,11 +1046,7 @@ def new_Array(name, units):
     
     ChemicalArraySubclass.units = \
     PhaseArraySubclass.units = \
-    MaterialArraySubclass.units = units
-    
-    ChemicalArraySubclass._units_converter = \
-    PhaseArraySubclass._units_converter = \
-    MaterialArraySubclass._units_converter = UnitsConverter(units)
+    MaterialArraySubclass.units = Units(units)
     
     PhaseArraySubclass._ChemicalArray = \
     MaterialArraySubclass._ChemicalArray = ChemicalArraySubclass

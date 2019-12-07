@@ -16,4 +16,5 @@ class UndefinedPhase(AttributeError):
     """AttributeError regarding undefined phases."""
     def __init__(self, phase): super().__init__(f"'{phase}'")
 
-
+class DimensionError(ValueError):
+    """ValueError regarding wrong dimensions."""

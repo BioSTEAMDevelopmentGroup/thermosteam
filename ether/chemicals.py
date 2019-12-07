@@ -35,12 +35,12 @@ class Chemicals:
               * CAS number
         
     """
-    _cached = {}
+    _cache = {}
     def __new__(cls, chemicals):
         chemicals = tuple(chemicals)
-        cached = cls._cached
-        if chemicals in cached:
-            return cached[chemicals]
+        cache = cls._cache
+        if chemicals in cache:
+            return cache[chemicals]
         else:
             self = super().__new__(cls)
             isa = isinstance
@@ -49,7 +49,7 @@ class Chemicals:
                     setattr(self, chem.ID, chem)
                 else:
                     setattr(self, chem, Chemical(chem))
-            cached[chemicals] = self
+            cache[chemicals] = self
             return self
     
     def __setattr__(self, ID, chemical):

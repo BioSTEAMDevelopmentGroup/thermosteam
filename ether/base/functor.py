@@ -243,17 +243,17 @@ class MixtureFunctor(Functor):
     def species(self, species):
         if species == self._species: return
         self._species = species = tuple(species)
-        if species in self.cached:
-            self.kwargs = self.cached[species]
+        if species in self.cache:
+            self.kwargs = self.cache[species]
         else:
-            self.cached[species] = self.kwargs = self.calculate_kwargs(self.species)
+            self.cache[species] = self.kwargs = self.calculate_kwargs(self.species)
             
     
 class zTFunctor(MixtureFunctor, args=('z', 'T')): 
     __slots__ = ()
     
     def __init_subclass__(self):
-        self.cached = {}
+        self.cache = {}
     
     def __call__(self, z, T, P=None):
         return self.function(z, T, **self.kwargs)
@@ -263,7 +263,7 @@ class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
     __slots__ = ()
     
     def __init_subclass__(self):
-        self.cached = {}
+        self.cache = {}
     
     def __call__(self, z, T, P):
         return self.function(z, T, P, **self.kwargs)
