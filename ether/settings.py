@@ -12,12 +12,16 @@ class Settings:
     __slots__ = ('_thermo',
                  '_rigorous_energy_balance',
                  '_phase_equivalents',
+                 '_phase_name',
                  '_debug')
     
     def __init__(self):
         self._thermo = None
         self._rigorous_energy_balance = False
         self._debug = __debug__
+        self._phase_name = {'s': 'Solid',
+                            'l': 'Liquid',
+                            'g': 'Gas'}
         self._phase_equivalents = {'S': 's',
                                    'L': 'l',
                                    'G': 'g',
@@ -31,6 +35,9 @@ class Settings:
     def debug(self, debug):
         self._debug = bool(debug)
     
+    @property
+    def phase_name(self):
+        return self._phase_name
     @property
     def phase_equivalents(self):
         return self._phase_equivalents

@@ -560,7 +560,7 @@ class ChemicalArray(ArrayEmulator):
     def get_data_index(self, IDs):
         if isa(IDs, str):
             return self._chemicals.index(IDs)
-        elif isa(IDs, slice):
+        elif isa(IDs, slice) or IDs == ...:
             return IDs
         else:
             return self._chemicals.indices(IDs)
@@ -736,7 +736,7 @@ class PhaseArray(ArrayEmulator):
     def get_data_index(self, phases):
         if len(phases) == 1:
             return self._get_phase_index(phases)
-        elif isa(phases, slice):
+        elif isa(phases, slice) or phases == ...:
             return phases
         else:
             return self._get_phase_indices(phases)
@@ -911,27 +911,37 @@ class MaterialArray(ArrayEmulator):
             return self._ChemicalArray.from_data(self._data.sum(0), phase, self._chemicals)
     
     def get_phase(self, phase):
-        return self._ChemicalArray.from_data(self._data[self._phase_index[phase]],
+        return self._ChemicalArray.from_data(self._data[self._get_phase_index(phase)],
                                              phase, self._chemicals)
     
     def get_data_index(self, phase_IDs):
         if isa(phase_IDs, str):
-            return self._get_phase_index(phase_IDs)
+            index = self._get_phase_index(phase_IDs)
         elif isa(phase_IDs, slice) or phase_IDs == ...:
-            return phase_IDs 
+            index = phase_IDs 
         else:
-            phase, IDs = phase_IDs
+            try:
+                phase, IDs = phase_IDs
+            except:
+                raise IndexError("use <MaterialArray>[phase, IDs] "
+                                 "where phase is a (str, slice, or ellipsis), "
+                                 "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
             elif isa(IDs, slice) or IDs == ...:
                 IDs_index = IDs
             else:
                 IDs_index = self._chemicals.indices(IDs)
-            if isa(phase, slice) or phase == ...:
-                return (phase, IDs_index)
+            if isa(phase, str):
+                index = (self._get_phase_index(phase), IDs_index)
+            elif isa(phase, slice) or phase == ...:
+                index = (phase, IDs_index)
             else:
-                return (self._get_phase_index(phase), IDs_index)
-            
+                raise IndexError("use <MaterialArray>[phase, IDs] "
+                                 "where phase is a (str, slice, or ellipsis), "
+                                 "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
+        return index
+    
     _get_phase_index = PhaseArray._get_phase_index
     
     @property
@@ -1123,10 +1133,12 @@ def as_volumetric_flow(self, thermal_condition):
     for i, phase in enumerate(phases):
         for j, chem in enumerate(chemicals):
             index = i, j
-            volumetric_flow[index] = VolumetricFlowProperty(f"[{phase}] {chem.ID}", molar_flow, index, chem.V, thermal_condition, phase)
+            phase_name = settings._phase_name[phase]
+            volumetric_flow[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", molar_flow, index, chem.V, thermal_condition, phase)
     return VolumetricFlow.from_data(property_array(volumetric_flow), phases, chemicals)
 MolarFlow.as_volumetric_flow = as_volumetric_flow
 del as_volumetric_flow
+
 
 # %% Cut out functionality
 

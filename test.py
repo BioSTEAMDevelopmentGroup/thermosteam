@@ -35,7 +35,6 @@ eth_H = thermo.mixture.xH(molar_flow.phase_data, s1.T)
 # %% Test bubble point and dew point and compare with BioSTEAM
 
 # Ether is 5x faster than BioSTEAM
-
 d_bst = bst.Dortmund(*species)
 bp_bst = bst.BubblePoint(d_bst)
 dp_bst = bst.DewPoint(d_bst)
@@ -58,6 +57,7 @@ dP_bst, dx_at_T_bst = dp_bst.solve_Px(z, T_dp)
 dT_bst, dx_at_P_bst = dp_bst.solve_Tx(z, P_dp)
 dP_eth, dx_at_T_eth = dp_eth.solve_Px(z, T_dp)
 dT_eth, dx_at_P_eth = dp_eth.solve_Tx(z, P_dp)
+
 
 # %% Test Equilibrium
 
