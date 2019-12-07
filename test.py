@@ -69,5 +69,5 @@ s1.VLE(T=400, P=101325)
 
 # %% Test property array
 
-mass_flow = eth.mass_flow_2d(molar_flow)
-volumetric_flow = eth.volumetric_flow_2d(molar_flow, vle.thermal_condition)
+mass_flow = molar_flow.as_mass_flow()
+volumetric_flow = molar_flow.as_volumetric_flow(vle.thermal_condition)

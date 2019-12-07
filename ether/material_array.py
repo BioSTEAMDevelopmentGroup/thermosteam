@@ -8,6 +8,7 @@ Created on Mon Dec  2 01:41:50 2019
 from .base import UnitsConverter
 from .settings import settings
 from .exceptions import UndefinedPhase
+from free_properties import PropertyFactory, property_array
 import numpy as np
 
 __all__ = ('ChemicalArray',
@@ -21,7 +22,9 @@ __all__ = ('ChemicalArray',
            'MassFlow',
            'ChemicalVolumetricFlow',
            'PhaseVolumetricFlow',
-           'VolumetricFlow')
+           'VolumetricFlow',
+           'MassFlowProperty',
+           'VolumetricFlowProperty')
 
 # %% Utilities
 
@@ -32,12 +35,13 @@ def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
+
 # %% Abstract data emulator
     
 class ArrayEmulator:
     __slots__ = ('_data', '_cached_index')
     _cached_phase_index = {}
-    chemicals = units = phases = None
+    chemicals = units = None
     _units_converter = UnitsConverter()
     
     def copy(self, data=False):
@@ -458,38 +462,19 @@ class ArrayEmulator:
 # %% Phase data
 
 class ChemicalArray(ArrayEmulator):
-    __slots__ = ('_chemicals',)
+    __slots__ = ('_chemicals', 'phase')
     _index_caches = {}
     
-    def __new__(cls, chemicals=None, **IDdata):
-        self = cls.blank(chemicals)
+    def __new__(cls, phase, chemicals=None, **IDdata):
         if IDdata:
-            self._data = self._chemicals.array(IDdata)
+            chemicals = settings.get_chemicals(chemicals)
+            cls.from_data(chemicals.array(IDdata), phase, chemicals)
+        else:
+            self = cls.blank(phase, chemicals)
         return self
     
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals)
-    
-    def to_phase_array(self, split, phases=(), data=False):
-        if settings._debug:
-            assert isa(split, np.ndarray), "split must be 1d array"
-            assert split.ndim == 1, "split must be 1d array"
-            assert split.sum() == 1., "split must be normalized"
-        if data:
-            return self._data.sum() * split
-        else:
-            return self._PhaseArray.from_data(self._data.sum() * split, phases)
-        
-    def to_material_array(self, split, phases=(), data=False):
-        if settings._debug:
-            assert isa(split, np.ndarray), "split must be 1d array"
-            assert split.ndim == 1, "split must be 1d array"
-            assert split.sum() == 1., "split must be normalized"
-        if data:
-            return self._data * split
-        else:
-            return self._MaterialArray.from_data(self._data * split, phases,
-                                                 self._chemicals)
     
     def _set_chemicals(self, chemicals):
         self._chemicals = chemicals = settings.get_chemicals(chemicals)
@@ -501,6 +486,27 @@ class ChemicalArray(ArrayEmulator):
         except KeyError:
             self._cached_index = caches[self._chemicals] = {}
     
+    def to_phase_array(self, phases=(), data=False):
+        if data:
+            array = np.zeros_like(phases, dtype=float)
+            array[phases.index(self.phase)] = self._data.sum()
+            return array
+        else:
+            phase_array = self._PhaseArray.blank(phases)
+            phase_array[self.phase] = self._data.sum()
+            return phase_array
+        
+    def to_material_array(self, phases=(), data=False):
+        if data:
+            size = (len(phases), self._chemicals.size)
+            array = np.zeros(size, dtype=float)
+            array[phases.index(self.phase)] = self._data
+            return array
+        else:
+            material_array = self._MaterialArray.blank(phases, self._chemicals)
+            material_array[self.phase] = self._data
+            return material_array
+    
     def composition(self, data=False):
         array = self._data
         total = array.sum()
@@ -509,6 +515,7 @@ class ChemicalArray(ArrayEmulator):
             return composition
         else:
             return ChemicalArray.from_data(composition,
+                                           self.phase,
                                            self._chemicals)
     
     def copy(self):
@@ -520,21 +527,24 @@ class ChemicalArray(ArrayEmulator):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._cached_index = self._cached_index
+        new.phase = self.phase
         return new
     
     @classmethod
-    def blank(cls, chemicals=None):
+    def blank(cls, phase, chemicals=None):
         self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_cache()
         self._data = np.zeros(self._chemicals.size, float)
+        self.phase = phase
         return self
     
     @classmethod
-    def from_data(cls, data, chemicals=None):
+    def from_data(cls, data, phase, chemicals=None):
         self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_cache()
+        self.phase = phase
         if settings._debug:
             assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be an 1d numpy array')
@@ -560,12 +570,14 @@ class ChemicalArray(ArrayEmulator):
         tabs = int(tabs) 
         tab = tabs*4*" "
         IDdata = [f"{ID}={i:.4g}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
+        phase = f"phase={repr(self.phase)}"
         if len(IDdata) > 1 and tab:
             dlim = ",\n" + tab
-            IDdata = "\n" + tab + dlim.join(IDdata)
+            phase = '\n' + tab + phase
         else:
-            IDdata = ', '.join(IDdata)
-        return f"{type(self).__name__}({IDdata})"
+            dlim = ", "
+        IDdata = dlim.join(IDdata)
+        return f"{type(self).__name__}({phase}{dlim}{IDdata})"
     
     def __repr__(self):
         return self.__format__()
@@ -579,10 +591,11 @@ class ChemicalArray(ArrayEmulator):
         if len_ == 0:
             return f"{type(self).__name__}: (empty)"
         elif self.units:
-            basic_info = f"{type(self).__name__} ({self.units}):\n "
+            basic_info = f"{type(self).__name__} ({self.units}):\n"
         else:
-            basic_info = f"{type(self).__name__}:\n "
-        new_line_spaces = ' '        
+            basic_info = f"{type(self).__name__}:\n"
+        beginning = f' ({self.phase}) ' if self.phase else " "
+        new_line_spaces = len(beginning) * ' '
         data_info = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1
@@ -596,6 +609,7 @@ class ChemicalArray(ArrayEmulator):
         spaces = ' ' * (maxlen - lengths[len_-1])
         data_info += IDs[len_-1] + spaces + f' {data[len_-1]:.4g}'
         return (basic_info
+              + beginning
               + data_info)
 
     def show(self, N=5):
@@ -625,6 +639,19 @@ class PhaseArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases)
     
+    
+    def to_chemical_array(self, composition, phase=None, chemicals=None, data=False):
+        if settings._debug:
+            assert isa(composition, np.ndarray), "composition must be 1d array"
+            assert composition.ndim == 1, "composition must be 1d array"
+            assert composition.sum() == 1., "compositions must be normalized"
+        if data:
+            return self._data.sum() * composition
+        else:
+            return self._ChemicalArray.from_data(self._data.sum() * composition,
+                                                  phase,         
+                                                  chemicals)
+    
     def to_material_array(self, compositions, chemicals=None, data=False):
         if settings._debug:
             assert isa(compositions, np.ndarray), "compositions must be 2d array"
@@ -634,18 +661,7 @@ class PhaseArray(ArrayEmulator):
             return self._data[:, np.newaxis] * compositions
         else:
             return self._MaterialArray.from_data(self._data[:, np.newaxis] * compositions,
-                                                 self._phases, chemicals)
-    
-    def to_chemical_array(self, composition, chemicals=None, data=False):
-        if settings._debug:
-            assert isa(composition, np.ndarray), "composition must be 1d array"
-            assert composition.ndim == 1, "composition must be 1d array"
-            assert composition.sum() == 1., "compositions must be normalized"
-        if data:
-            return self._data.sum() * composition
-        else:
-            return self._ChemicalArray.from_data(self._data.sum() * composition,
-                                                 chemicals)
+                                                  self._phases, chemicals)
     
     @property
     def phases(self):
@@ -888,17 +904,15 @@ class MaterialArray(ArrayEmulator):
         else:
             return self._PhaseArray.from_data(self._data.sum(1), self._phases)
     
-    def to_chemical_array(self, data=False):
+    def to_chemical_array(self, phase=None, data=False):
         if data:
             return self._data.sum(0)
         else:
-            return self._ChemicalArray.from_data(self._data.sum(0), self._chemicals)
+            return self._ChemicalArray.from_data(self._data.sum(0), phase, self._chemicals)
     
     def get_phase(self, phase):
-        chem_array = object.__new__(self._ChemicalArray)
-        chem_array._data = self._data[self._phase_index[phase]]
-        chem_array._chemicals = self._chemicals
-        return chem_array
+        return self._ChemicalArray.from_data(self._data[self._phase_index[phase]],
+                                             phase, self._chemicals)
     
     def get_data_index(self, phase_IDs):
         if isa(phase_IDs, str):
@@ -1041,3 +1055,85 @@ PhaseArray._MaterialArray = MaterialArray
 ChemicalMolarFlow, PhaseMolarFlow, MolarFlow = new_Array('MolarFlow', 'kmol/hr')
 ChemicalMassFlow, PhaseMassFlow, MassFlow = new_Array('MassFlow', 'kg/hr')
 ChemicalVolumetricFlow, PhaseVolumetricFlow, VolumetricFlow = new_Array('VolumetricFlow', 'm^3/hr')
+
+
+# %% Mass flow properties
+
+@PropertyFactory(slots=('name', 'molar_flow', 'index', 'MW'))
+def MassFlowProperty(self):
+    """Mass flow (kg/hr)."""
+    return self.molar_flow[self.index] * self.MW
+    
+@MassFlowProperty.setter
+def MassFlowProperty(self, value):
+    self.molar_flow[self.index] = value/self.MW
+
+def as_chemical_mass_flow(self):
+    chemicals = self.chemicals
+    molar_flow = self.data
+    mass_flow = np.zeros_like(molar_flow, dtype=object)
+    for i, chem in enumerate(chemicals):
+        mass_flow[i] = MassFlowProperty(chem.ID, molar_flow, i, chem.MW)
+    return ChemicalMassFlow.from_data(mass_flow, chemicals)
+ChemicalMolarFlow.as_chemical_mass_flow = as_chemical_mass_flow
+del as_chemical_mass_flow    
+
+def as_mass_flow(self):
+    phases = self.phases
+    chemicals = self.chemicals
+    molar_flow = self.data
+    mass_flow = np.zeros_like(molar_flow, dtype=object)
+    for i, phase in enumerate(phases):
+        for j, chem in enumerate(chemicals):
+            index = (i, j)
+            mass_flow[index] = MassFlowProperty(chem.ID, molar_flow, index, chem.MW)
+    return MassFlow.from_data(mass_flow, phases, chemicals)
+MolarFlow.as_mass_flow = as_mass_flow
+del as_mass_flow
+
+
+# %% Volumetric flow properties
+
+@PropertyFactory(slots=('name', 'molar_flow', 'index', 'V', 'thermal_condition', 'phase'))
+def VolumetricFlowProperty(self):
+    """Volumetric flow (m^3/hr)."""
+    T, P = self.thermal_condition
+    return self.molar_flow[self.index] * self.V(self.phase or self.molar_flow.phase, T, P)
+    
+@VolumetricFlowProperty.setter
+def VolumetricFlowProperty(self, value):
+    T, P = self.thermal_condition
+    self.molar_flow[self.index] = value / self.V(self.phase or self.molar_flow.phase, T, P)
+
+def as_chemical_volumetric_flow(self, thermal_condition):
+    chemicals = self.chemicals
+    molar_flow = self.data
+    volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+    for i, chem in enumerate(chemicals):
+        volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V, thermal_condition, None)
+    return ChemicalVolumetricFlow(property_array(volumetric_flow), chemicals)
+MolarFlow.as_chemical_volumetric_flow = as_chemical_volumetric_flow
+del as_chemical_volumetric_flow
+	
+def as_volumetric_flow(self, thermal_condition):
+    phases = self.phases
+    chemicals = self.chemicals
+    molar_flow = self.data
+    volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+    for i, phase in enumerate(phases):
+        for j, chem in enumerate(chemicals):
+            index = i, j
+            volumetric_flow[index] = VolumetricFlowProperty(f"[{phase}] {chem.ID}", molar_flow, index, chem.V, thermal_condition, phase)
+    return VolumetricFlow.from_data(property_array(volumetric_flow), phases, chemicals)
+MolarFlow.as_volumetric_flow = as_volumetric_flow
+del as_volumetric_flow
+
+# %% Cut out functionality
+
+### Chemical Array Methods
+
+
+
+
+### Phase Array Methods
+

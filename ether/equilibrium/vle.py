@@ -279,7 +279,7 @@ class VLE:
         self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture.copy()
         self._molar_data = molar_data
-        self._thermal_condition = thermal_condition or ThermalCondition(None, 298.15, 101325.)
+        self._thermal_condition = thermal_condition or ThermalCondition(298.15, 101325.)
         self._phase_data = molar_data.phase_data
         self._liquid_mol = liquid_mol = molar_data['l']
         self._vapor_mol = molar_data['g']
