@@ -1112,7 +1112,7 @@ def as_chemical_volumetric_flow(self, thermal_condition):
     for i, chem in enumerate(chemicals):
         volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V, thermal_condition, None)
     return ChemicalVolumetricFlow(property_array(volumetric_flow), chemicals)
-MolarFlow.as_chemical_volumetric_flow = as_chemical_volumetric_flow
+ChemicalMolarFlow.as_chemical_volumetric_flow = as_chemical_volumetric_flow
 del as_chemical_volumetric_flow
 	
 def as_volumetric_flow(self, thermal_condition):
@@ -1129,11 +1129,4 @@ MolarFlow.as_volumetric_flow = as_volumetric_flow
 del as_volumetric_flow
 
 # %% Cut out functionality
-
-### Chemical Array Methods
-
-
-
-
-### Phase Array Methods
 
