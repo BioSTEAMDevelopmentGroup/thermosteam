@@ -24,12 +24,20 @@ del os, UnitRegistry
 # %% Manage conversion factors
 
 class Units:
-    __slots__ = ('_units', '_units_container', '_dimensionality')
-    _cached_factors = {}
-    def __init__(self, units=""):
-        self._units = units
-        self._units_container = to_units_container(units, ureg)
-        self._dimensionality = ureg._get_dimensionality(self._units_container)
+    __slots__ = ('_units', '_units_container', '_dimensionality', '_factor_cache')
+    _cache = {}
+    def __new__(cls, units=""):
+        cache = cls._cache
+        if units in cache:
+            return cache[units]
+        else:
+            self = super().__new__(cls)
+            self._units = units
+            self._units_container = to_units_container(units, ureg)
+            self._dimensionality = ureg._get_dimensionality(self._units_container)
+            self._factor_cache = {}
+            cache[units] = self
+            return self
     
     @property
     def units(self):
@@ -40,11 +48,11 @@ class Units:
         return self._dimensionality
     
     def to(self, units):
-        cached = self._cached_factors
-        if units in cached:
-            factor = cached[units]
+        cache = self._factor_cache
+        if units in cache:
+            factor = cache[units]
         else:
-            cached[units] = factor = ureg.convert(1., self._units_container, units)
+            cache[units] = factor = ureg.convert(1., self._units_container, units)
         return factor
     
     def __bool__(self):
@@ -96,6 +104,7 @@ units_of_measure = {'MW': 'g/mol',
                     'S_excess': 'J/mol',
                     'R': 'J/mol/K',
                     'delta': 'Pa^0.5',
+                    'epsilon': "",
 }
 
 definitions = {'MW': 'Molecular weight',
@@ -137,6 +146,7 @@ definitions = {'MW': 'Molecular weight',
                'Zc': 'Critical compressibility',
                'omega': 'Acentric factor',
                'delta': 'Solubility parameter',
+               'epsilon': 'Relative permittivity',
 }
 
 types = {}

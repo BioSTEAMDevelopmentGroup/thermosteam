@@ -26,12 +26,6 @@ s1 = bst.MixedStream(T=300, P=101325)
 s1.setflow('l', Water=304, Ethanol=30, Glycerol=10)
 s1.setflow('g', Ethanol=201, Methanol=40)
 
-# %% Test thermo
-
-# Ether is 2x faster than BioSTEAM
-bst_H = s1.H
-eth_H = thermo.mixture.xH(molar_flow.phase_data, s1.T)
-
 # %% Test bubble point and dew point and compare with BioSTEAM
 
 # Ether is 5x faster than BioSTEAM
@@ -72,4 +66,12 @@ s1.VLE(T=400, P=101325)
 mass_flow = molar_flow.as_mass_flow()
 volumetric_flow = molar_flow.as_volumetric_flow(vle.thermal_condition)
 
-# eth.Stream()
+stream = eth.ChemicalStream()
+stream.T = s1.T
+stream.molar_flow[...] = s1.mol
+
+# %% Test thermo
+
+# Ether is 2x faster than BioSTEAM
+bst_H = s1.H
+eth_H = stream.get_property('H')

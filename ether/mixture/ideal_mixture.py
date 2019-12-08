@@ -4,10 +4,10 @@ Created on Thu Nov  7 07:37:35 2019
 
 @author: yoelr
 """
-from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor, Units # TODO: Incorporate units in every instance
-from ..settings import settings
-from numpy import asarray, logical_and, logical_or, zeros
+from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor, PhaseProperty
+from .mixture_method_names import mixture_methods, mixture_phaseT_methods, mixture_phaseTP_methods, mixture_T_methods
 from flexsolve import SolverError
+import numpy as np
 
 __all__ = ('IdealMixture',
            'IdealMixturePhaseTProperty',
@@ -15,93 +15,127 @@ __all__ = ('IdealMixture',
            'IdealMixtureTProperty',
            'IdealMixtureTPProperty')
 
+# %% Cache
+
+class ThermalCache:
+    __slots__ = ('condition', 'nonzero', 'data')
+    
+    def __init__(self, condition, nonzero, data):
+        self.condition = condition
+        self.nonzero = nonzero
+        self.data = data
+    
+    @property
+    def tuple(self):
+        return self.condition, self.nonzero, self.data
+    
+    def __iter__(self):
+        yield self.condition
+        yield self.nonzero
+        yield self.data
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(condition={self.condition}, nonzero={self.nonzero}, data={self.data})"
+
+
+# %% Utilities
+
+def set_properties_at_T(data, properties, nonzero, T):
+    iscallable = callable
+    data[nonzero] = [i(T) if iscallable(i) else i
+                     for i,j in zip(properties, nonzero) if j]
+
+def set_properties_at_TP(data, properties, nonzero, T, P):
+    iscallable = callable
+    data[nonzero] = [i(T, P) if iscallable(i) else i
+                     for i,j in zip(properties, nonzero) if j]
+
 # %% Mixture properties
 
 class IdealMixtureTPProperty:
-    __slots__ = ('_properties', '_TP', '_nonzero', '_data')
+    __slots__ = ('var', 'units', '_properties', '_cache')
 
-    def __init__(self, properties):
-        self._TP = (0., 0.)
-        self._nonzero = None
-        self._data = zeros(len(properties))
+    def __init__(self, properties, var):
         self._properties = properties
+        self._cache = {}
+        self._set_var(var)
 
-    def copy(self):
-        new = self.__new__(self.__class__)
-        new._TP = self._TP
-        new._data = self._data.copy()
-        new._properties = self._properties
-        return new
+    _set_var = PhaseProperty._set_var
 
-    @property
-    def var(self):
-        for i in self._properties:
-            try:
-                var = i.var
-                if var: return var
-            except: pass
+    def at_thermal_condition(self, z, thermal_condition):
+        cache = self._cache
+        nonzero = z!=0
+        T, P = TP = thermal_condition.tuple
+        properties = self._properties
+        if thermal_condition in cache:
+            thermal_cache = cache[thermal_condition]
+            data = thermal_cache.data
+            if TP == thermal_cache.condition:
+                cache_nonzero = thermal_cache.nonzero
+                new_nonzero = (cache_nonzero != nonzero) & nonzero
+                set_properties_at_TP(data, properties, new_nonzero, T, P)
+                cache_nonzero |= nonzero
+            else:
+                data[:] = 0
+                set_properties_at_TP(data, properties, nonzero, T, P)
+                thermal_cache.nonzero = nonzero
+                thermal_cache.condition = TP
+        else:
+            data = np.zeros_like(z)
+            cache[thermal_condition] = ThermalCache(TP, nonzero, data)
+            set_properties_at_TP(data, properties, nonzero, T, P)
+        return (z * data).sum()
 
     def __call__(self, z, T, P):
-        z = asarray(z)
-        self._nonzero = nonzero = z!=0
-        if (T, P) != self._TP:
-            self._data[:] = 0.
-            iscallable = callable
-            self._data[nonzero] = [i(T, P) if iscallable(i) else i
-                                   for i,j in zip(self._properties, nonzero) if j]
-            self._TP = (T, P)
-        else:
-            nomatch = self._nonzero != nonzero
-            new_nonzero = logical_and(nonzero, nomatch)
-            iscallable = callable
-            self._data[new_nonzero] = [i(T, P) if iscallable(i) else i
-                                       for i,j in zip(self._properties, new_nonzero) if j]
-            self._nonzero = logical_or(self._nonzero, nonzero)
-        return (z * self._data).sum()
+        z = np.asarray(z)
+        data = np.zeros_like(z)
+        set_properties_at_T(data, self._properties, z!=0, T, P)
+        return (z * data).sum()
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
 
 
 class IdealMixtureTProperty:
-    __slots__ = ('_properties', '_T', '_nonzero', '_data')
-    var = IdealMixtureTPProperty.var
+    __slots__ = ('var', 'units', '_properties', '_cache')
     __repr__ = IdealMixtureTPProperty.__repr__
 
-    def __init__(self, properties):
-        self._T = 0.0
-        self._nonzero = None
-        self._data = zeros(len(properties))
+    def __init__(self, properties, var):
         self._properties = tuple(properties)
+        self._cache = {}
+        self._set_var(var)
 
-    def copy(self):
-        new = self.__new__(self.__class__)
-        new._T = self._T
-        new._data = self._data.copy()
-        new._properties = self._properties
-        return new
+    _set_var = PhaseProperty._set_var
 
-    def from_stream(stream, units):
-        # TODO: Left off here
-        thermal_condition = stream._thermal_condition
-        
+    def at_thermal_condition(self, z, thermal_condition):
+        cache = self._cache
+        nonzero = z!=0
+        T = thermal_condition.T
+        properties = self._properties
+        if thermal_condition in cache:
+            thermal_cache = cache[thermal_condition]
+            data = thermal_cache.data
+            if T == thermal_cache.condition:
+                cache_nonzero = thermal_cache.nonzero
+                new_nonzero = (cache_nonzero != nonzero) & nonzero
+                set_properties_at_T(data, properties, new_nonzero, T)
+                cache_nonzero |= nonzero
+            else:
+                data[:] = 0
+                set_properties_at_T(data, properties, nonzero, T)
+                thermal_cache.nonzero = nonzero
+                thermal_cache.condition = T
+        else:
+            data = np.zeros_like(z)
+            cache[thermal_condition] = ThermalCache(T, nonzero, data)
+            set_properties_at_T(data, properties, nonzero, T)
+        return (z * data).sum()
 
     def __call__(self, z, T):
-        z = asarray(z)
-        self._nonzero = nonzero = z!=0
-        if T != self._T:
-            self._data[:] = 0.
-            iscallable = callable
-            self._data[nonzero] = [i(T) if iscallable(i) else i
-                                   for i,j in zip(self._properties, nonzero) if j]
-            self._T = T
-        else:
-            nomatch = self._nonzero != nonzero
-            new_nonzero = logical_and(nonzero, nomatch)
-            self._data[new_nonzero] = [i(T) if iscallable(i) else i
-                                       for i,j in zip(self._properties, new_nonzero) if j]
-            self._nonzero = logical_or(self._nonzero, nonzero)
-        return (z * self._data).sum()
+        z = np.asarray(z)
+        data = np.zeros_like(z)
+        set_properties_at_T(data, self._properties, z!=0, T)
+        return (z * data).sum()
 
 
 # %% Ideal mixture phase property
@@ -123,37 +157,34 @@ def group_properties_by_phase(phase_properties):
     return properties_by_phase
     
 class IdealMixturePhaseTProperty(MixturePhaseTProperty):
-    __slots__ = ('s', 'l', 'g')
+    __slots__ = ()
     
     @classmethod
-    def from_phase_properties(cls, phase_properties):
+    def from_phase_properties(cls, phase_properties, var):
         setfield = setattr
         self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
-            setfield(self, phase, IdealMixtureTProperty(properties))
+            setfield(self, phase, IdealMixtureTProperty(properties, var))
+        self._set_var(var)
         return self
 
 
 class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
-    __slots__ = ('s', 'l', 'g')
+    __slots__ = ()
     
     @classmethod
-    def from_phase_properties(cls, phase_properties):
+    def from_phase_properties(cls, phase_properties, var):
         setfield = setattr
         self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
-            setfield(self, phase, IdealMixtureTPProperty(properties))
+            setfield(self, phase, IdealMixtureTPProperty(properties, var))
+        self._set_var(var)
         return self
 
 
 # %% Ideal mixture
 
-mixture_phaseT_methods = ('H', 'Cp')
-mixture_phaseTP_methods = ('H_excess', 'S_excess', 'mu', 'V', 'k', 'S')
-mixture_T_methods  = ('Hvap', 'sigma', 'epsilon')
-mixture_methods = (*mixture_phaseT_methods,
-                   *mixture_phaseTP_methods,
-                   *mixture_T_methods)
+
 
 class IdealMixture:
     __slots__ = ('chemicals', 'rigorous_energy_balance', *mixture_methods)
@@ -167,25 +198,16 @@ class IdealMixture:
         for var in mixture_phaseT_methods:
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties)
+                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties, var)
                 setfield(self, var, phase_property)
         for var in mixture_phaseTP_methods:
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties)
+                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties, var)
                 setfield(self, var, phase_property)
         for var in mixture_T_methods:
             properties = [getfield(i, var) for i in chemicals]
-            if any_(properties): setfield(self, var, IdealMixtureTProperty(properties))
-    
-    def copy(self):
-        getfield = getattr
-        setfield = setattr
-        new = self.__new__(self.__class__)
-        new.chemicals = self.chemicals
-        for i in mixture_methods:
-            setfield(new, i, getfield(self, i).copy())
-        return new
+            if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
     
     def solve_T(self, phase, z, H, T_guess):
         if self.rigorous_energy_balance:
@@ -235,7 +257,6 @@ class IdealMixture:
                 else: it += 1
         else:
             return T_guess + (H - self.xH(phase_data, T_guess))/self.xCp(phase_data, T_guess)   
-        
     
     def xCp(self, phase_data, T):
         Cp = self.Cp
@@ -268,6 +289,38 @@ class IdealMixture:
     def xk(self, phase_data, T, P):
         k = self.k
         return sum([k(phase, z, T, P) for phase, z in phase_data])
+    
+    def xCp_at_thermal_condition(self, phase_data, thermal_condition):
+        Cp = self.Cp.at_thermal_condition
+        return sum([Cp(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xH_at_thermal_condition(self, phase_data, thermal_condition):
+        H = self.H.at_thermal_condition
+        return sum([H(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xS_at_thermal_condition(self, phase_data, thermal_condition):
+        S = self.S.at_thermal_condition
+        return sum([S(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xH_excess_at_thermal_condition(self, phase_data, thermal_condition):
+        H_excess = self.H_excess.at_thermal_condition
+        return sum([H_excess(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xS_excess_at_thermal_condition(self, phase_data, thermal_condition):
+        S_excess = self.S_excess.at_thermal_condition
+        return sum([S_excess(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xV_at_thermal_condition(self, phase_data, thermal_condition):
+        V = self.V.at_thermal_condition
+        return sum([V(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xmu_at_thermal_condition(self, phase_data, thermal_condition):
+        mu = self.mu.at_thermal_condition
+        return sum([mu(phase, z, thermal_condition) for phase, z in phase_data])
+    
+    def xk_at_thermal_condition(self, phase_data, thermal_condition):
+        k = self.k.at_thermal_condition
+        return sum([k(phase, z, thermal_condition) for phase, z in phase_data])
     
     def __repr__(self):
         IDs = [str(i) for i in self.chemicals]

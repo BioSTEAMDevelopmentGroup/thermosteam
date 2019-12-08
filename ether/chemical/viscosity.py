@@ -218,7 +218,7 @@ def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
         Tmax = Ts[-1]
         handle.model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
 
-Viscosity = ChemicalPhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas)
+Viscosity = ChemicalPhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas, 'mu')
 
 # %% Other
 

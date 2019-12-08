@@ -10,6 +10,7 @@ from .functor import functor_lookalike
 from .utils import shallow_copy
 from ..settings import settings
 from ..exceptions import UndefinedPhase
+from .units_of_measure import Units, units_of_measure
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -34,12 +35,18 @@ def set_phase_property(phase_property, phase, builder, data):
 
 @functor_lookalike
 class PhaseProperty:
-    __slots__ = ('s', 'l', 'g')
+    __slots__ = ('s', 'l', 'g', 'var', 'units')
     
-    def __init__(self, s=None, l=None, g=None):
+    def __init__(self, s=None, l=None, g=None, var=None):
         self.s = s
         self.l = l
         self.g = g
+        self._set_var(var)
+
+    def _set_var(self, var):
+        var, *_ = var.split(".")
+        self.var = var
+        self.units = Units(units_of_measure[var])
 
     def __getattr__(self, phase):
         try:
@@ -55,14 +62,6 @@ class PhaseProperty:
         return self.__class__(shallow_copy(self.s),
                               shallow_copy(self.l),
                               shallow_copy(self.g))
-    
-    @property
-    def var(self):
-        for phase in ('s', 'l', 'g'):
-            try:
-                var = getattr(self, phase).var
-                if var: return var.split('.')[0]
-            except: pass
 
 
 # %% Pure component
@@ -70,10 +69,11 @@ class PhaseProperty:
 class ChemicalPhaseTProperty(PhaseProperty):
     __slots__ = ()
     
-    def __init__(self, s=None, l=None, g=None):
+    def __init__(self, s=None, l=None, g=None, var=None):
         self.s = TDependentModelHandle() if s is None else s
         self.l = TDependentModelHandle() if l is None else l
         self.g = TDependentModelHandle() if g is None else g
+        self._set_var(var)
     
     def __call__(self, phase, T):
         return getattr(self, phase)(T)
@@ -82,10 +82,11 @@ class ChemicalPhaseTProperty(PhaseProperty):
 class ChemicalPhaseTPProperty(PhaseProperty):
     __slots__ = ()
     
-    def __init__(self, s=None, l=None, g=None):
+    def __init__(self, s=None, l=None, g=None, var=None):
         self.s = TPDependentModelHandle() if s is None else s
         self.l = TPDependentModelHandle() if l is None else l
         self.g = TPDependentModelHandle() if g is None else g
+        self._set_var(var)
     
     def __call__(self, phase, T, P):
         return getattr(self, phase)(T, P)
@@ -96,6 +97,9 @@ class ChemicalPhaseTPProperty(PhaseProperty):
 class MixturePhaseTProperty(PhaseProperty):
     __slots__ = ()
     
+    def at_thermal_condition(self, phase, z, thermal_condition):
+        return getattr(self, phase).at_thermal_condition(z, thermal_condition)
+    
     def __call__(self, phase, z, T):
         return getattr(self, phase)(z, T)
 
@@ -103,22 +107,26 @@ class MixturePhaseTProperty(PhaseProperty):
 class MixturePhaseTPProperty(PhaseProperty):
     __slots__ = ()
     
+    def at_thermal_condition(self, phase, z, thermal_condition):
+        return getattr(self, phase).at_thermal_condition(z, thermal_condition)
+    
     def __call__(self, phase, z, T, P):
-        return getattr(self, phase)(z, T, P)
+        return getattr(self, phase).at_thermal_condition(z, T, P)
     
 
 # %% Builders
 
 class PhasePropertyBuilder:
-    __slots__ = ('s', 'l', 'g')
+    __slots__ = ('s', 'l', 'g', 'var')
     
-    def __init__(self, s, l, g):
+    def __init__(self, s, l, g, var):
         self.s = s
         self.l = l
         self.g = g
+        self.var = var
         
     def __call__(self, sdata, ldata, gdata, phase_property=None):
-        if phase_property is None: phase_property = self.PhaseProperty() 
+        if phase_property is None: phase_property = self.PhaseProperty(var=self.var) 
         phases = ('s', 'g', 'l')
         builders = (self.s, self.g, self.l)
         phases_data = (sdata, gdata, ldata)

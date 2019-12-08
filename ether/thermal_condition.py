@@ -13,11 +13,14 @@ class ThermalCondition:
     def __init__(self, T, P):
         self.T = T
         self.P = P
-        
+    
+    @property
+    def tuple(self):
+        return self.T, self.P
+    
     def __iter__(self):
         yield self.T
         yield self.P
         
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.6g})"
-    

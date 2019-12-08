@@ -287,7 +287,7 @@ class Chemical:
         self.V = V = Volume(sdata, ldata, gdata)
         
         # Heat capacity
-        Cp = ChemicalPhaseTProperty()
+        Cp = ChemicalPhaseTProperty(var='Cp')
         sdata = (CAS, similarity_variable, MW)
         ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cp)
         gdata = (CAS, MW, similarity_variable, iscyclic_aliphatic)

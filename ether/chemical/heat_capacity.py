@@ -638,5 +638,5 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
         handle.model(CpHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
-HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas)
+HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cp')
 

@@ -467,5 +467,5 @@ def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]
     #     handle.model(DIPPR9B_linear(data), Tmin, Tmax)
 
-ThermalConductivity = ChemicalPhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas)
+ThermalConductivity = ChemicalPhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'k')
 

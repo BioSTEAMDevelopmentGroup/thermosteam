@@ -304,5 +304,5 @@ def VolumeSolid(handle, CAS):
         handle.model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
 
 
-Volume = ChemicalPhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas)
+Volume = ChemicalPhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas, 'V')
 

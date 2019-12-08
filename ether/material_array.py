@@ -80,7 +80,7 @@ class ArrayEmulator:
         except KeyError: 
             cache[key] = index = self.get_data_index(key)
         except TypeError:
-            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
+            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
         return index
     
     def __getitem__(self, key):
@@ -571,10 +571,10 @@ class ChemicalArray(ArrayEmulator):
             return self._chemicals.index(IDs)
         elif isa(IDs, tuple):
             return self._chemicals.indices(IDs)
-        elif isa(IDs, slice) or IDs == ...:
+        elif IDs == ...:
             return IDs
         else:
-            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
+            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -753,10 +753,10 @@ class PhaseArray(ArrayEmulator):
             return self._get_phase_index(phases)
         elif isa(phases, tuple):
             return self._get_phase_indices(phases)
-        elif isa(phases, slice) or phases == ...:
+        elif phases == ...:
             return phases
         else:
-            raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
+            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -936,31 +936,31 @@ class MaterialArray(ArrayEmulator):
     def get_data_index(self, phase_IDs):
         if isa(phase_IDs, str):
             index = self._get_phase_index(phase_IDs)
-        elif isa(phase_IDs, slice) or phase_IDs == ...:
+        elif phase_IDs == ...:
             index = phase_IDs 
         else:
             try:
                 phase, IDs = phase_IDs
             except:
                 raise IndexError("please index with <MaterialArray>[phase, IDs] "
-                                 "where phase is a (str, slice, or ellipsis), "
-                                 "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
+                                 "where phase is a (str, or ellipsis), "
+                                 "and IDs is a (str, tuple(str), ellipisis, or missing)")
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
             elif isa(IDs, tuple):
                 IDs_index = self._chemicals.indices(IDs)
-            elif isa(IDs, slice) or IDs == ...:
+            elif IDs == ...:
                 IDs_index = IDs
             else:
-                raise IndexError(f"only strings, tuples, slices, and ellipsis are valid indices")
+                raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
             if isa(phase, str):
                 index = (self._get_phase_index(phase), IDs_index)
-            elif isa(phase, slice) or phase == ...:
+            elif phase == ...:
                 index = (phase, IDs_index)
             else:
                 raise IndexError("please index with <MaterialArray>[phase, IDs] "
-                                 "where phase is a (str, slice, or ellipsis), "
-                                 "and IDs is a (str, tuple(str), slice, ellipisis, or missing)")
+                                 "where phase is a (str, or ellipsis), "
+                                 "and IDs is a (str, tuple(str), ellipisis, or missing)")
         return index
     
     _get_phase_index = PhaseArray._get_phase_index

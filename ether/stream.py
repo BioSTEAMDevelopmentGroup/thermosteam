@@ -13,13 +13,12 @@ from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumet
 from .thermal_condition import ThermalCondition
 from .utils import Cache
 
-__all__ = ('Stream',)
+__all__ = ('ChemicalStream',)
 
 
 # %%
 
-class Stream:
-    """Abstract class from material data."""
+class ChemicalStream:
     __slots__ = ('_molar_flow', '_mass_flow_cache', '_volumetric_flow_cache',
                  '_thermal_condition', '_thermo', 'price')
     
@@ -62,7 +61,13 @@ class Stream:
                                             (self._thermal_condition,))
 
     def get_property(self, property, units=None):
-        return getattr(self._thermo.mixture, property).from_stream(self, units)
+        mixture_property = getattr(self._thermo.mixture, property)
+        value = mixture_property.at_thermal_condition(self._molar_flow._phase[0],
+                                                      self._molar_flow._data,
+                                                      self._thermal_condition)
+        if units:
+            value *= mixture_property.units.to(units)
+        return value
 
     @property
     def T(self):
