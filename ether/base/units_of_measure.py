@@ -4,11 +4,10 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-__all__ = ('units_of_measure', 'ureg', 'Quantity', 'Units')
+__all__ = ('units_of_measure', 'ureg', '_Q', 'Units')
 
 # %% Import unit registry
 
-import pandas as pd
 from pint import UnitRegistry
 from pint.quantity import to_units_container
 import os
@@ -17,15 +16,15 @@ import os
 ureg = UnitRegistry()
 ureg.default_format = '~P'
 ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
-Quantity = ureg.Quantity
-Quantity._repr_latex_ = Quantity._repr_html_ = \
-Quantity.__str__ = Quantity.__repr__ = lambda self: self.__format__('')
+_Q = Quantity = ureg.Quantity
+_Q._repr_latex_ = _Q._repr_html_ = \
+_Q.__str__ = _Q.__repr__ = lambda self: self.__format__('')
 del os, UnitRegistry
 
 # %% Manage conversion factors
 
 class Units:
-    __slots__ = ('_units', '_units_container')
+    __slots__ = ('_units', '_units_container', '_dimensionality')
     _cached_factors = {}
     def __init__(self, units=""):
         self._units = units

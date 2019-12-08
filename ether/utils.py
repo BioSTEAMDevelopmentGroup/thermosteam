@@ -32,14 +32,15 @@ def load(file):
     with open(file, "rb") as f: return pickle.load(f)
     
 class Cache:
-    __slots__ = ('loader', 'value')
-    def __init__(self, loader):
+    __slots__ = ('loader', 'value', 'args')
+    def __init__(self, loader, args=()):
         self.loader = loader
         self.value = None
+        self.args = args
     
     def __call__(self):
         value = self.value
         if value is None:
-            self.value = value = self.loader()
+            self.value = value = self.loader(*self.args)
         return value
             

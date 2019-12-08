@@ -4,7 +4,7 @@ Created on Thu Nov  7 07:37:35 2019
 
 @author: yoelr
 """
-from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor
+from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor, Units # TODO: Incorporate units in every instance
 from ..settings import settings
 from numpy import asarray, logical_and, logical_or, zeros
 from flexsolve import SolverError
@@ -80,6 +80,11 @@ class IdealMixtureTProperty:
         new._data = self._data.copy()
         new._properties = self._properties
         return new
+
+    def from_stream(stream, units):
+        # TODO: Left off here
+        thermal_condition = stream._thermal_condition
+        
 
     def __call__(self, z, T):
         z = asarray(z)

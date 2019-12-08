@@ -71,3 +71,5 @@ s1.VLE(T=400, P=101325)
 
 mass_flow = molar_flow.as_mass_flow()
 volumetric_flow = molar_flow.as_volumetric_flow(vle.thermal_condition)
+
+# eth.Stream()

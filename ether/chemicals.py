@@ -183,7 +183,7 @@ class CompiledChemicals(Chemicals):
         array([2., 0.])
         
         """
-        return self.array(*zip(IDdata.items()))
+        return self.array(*zip(*IDdata.items()))
     
     def array(self, IDs, data):
         """Return an array with entries that correspond to the ordered chemical IDs.
