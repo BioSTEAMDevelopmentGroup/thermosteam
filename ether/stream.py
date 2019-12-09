@@ -60,14 +60,63 @@ class ChemicalStream:
         self._volumetric_flow_cache = Cache(molar_flow.as_chemical_volumetric_flow,
                                             (self._thermal_condition,))
 
-    def get_property(self, property, units=None):
-        mixture_property = getattr(self._thermo.mixture, property)
-        value = mixture_property.at_thermal_condition(self._molar_flow._phase[0],
-                                                      self._molar_flow._data,
-                                                      self._thermal_condition)
-        if units:
-            value *= mixture_property.units.to(units)
-        return value
+    def get_flow_property(self, name, units=None):
+        mixture_property = getattr(self._thermo.mixture, name)
+        value = self._get_flow_property(mixture_property)
+        return value * mixture_property.units.to(units) if units else value
+    
+    def get_composition_property(self, name, units=None):
+        mixture_property = getattr(self._thermo.mixture, name)
+        value = self._get_composition_property(mixture_property)
+        return value * mixture_property.units.to(units) if units else value
+    
+    def get_single_phase_flow_property(self, name, units=None):
+        mixture_property = getattr(self._thermo.mixture, name)
+        value = self._get_single_phase_flow_property(mixture_property)
+        return value * mixture_property.units.to(units) if units else value
+    
+    def get_single_phase_composition_property(self, name, units=None):
+        mixture_property = getattr(self._thermo.mixture, name)
+        value = self._get_single_phase_composition_property(mixture_property)
+        return value * mixture_property.units.to(units) if units else value
+    
+    def _get_flow_property(self, mixture_property):
+        return mixture_property.at_thermal_condition(self.phase,
+                                                     self.molar_data,
+                                                     self.thermal_condition)
+    
+    def _get_composition_property(self, mixture_property):
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  mixture_property.at_thermal_condition(self.phase,
+                                                          molar_data / net_molar_data,
+                                                          self.thermal_condition)
+        else:
+            return 0
+    
+    def _get_single_phase_flow_property(self, mixture_property):
+        return mixture_property.at_thermal_condition(self.molar_data,
+                                                     self.thermal_condition)
+    
+    def _get_single_phase_composition_property(self, mixture_property):
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  mixture_property.at_thermal_condition(molar_data / net_molar_data,
+                                                          self.thermal_condition)
+        else:
+            return 0
+    
+    ### Stream data ###
+    
+    @property
+    def thermo(self):
+        return self._thermo
+    
+    @property
+    def thermal_condition(self):
+        return self._thermal_condition
 
     @property
     def T(self):
@@ -91,6 +140,9 @@ class ChemicalStream:
         self._molar_flow.phase = phase
     
     @property
+    def molar_data(self):
+        return self._molar_flow._data
+    @property
     def molar_flow(self):
         return self._molar_flow
     @property
@@ -100,16 +152,71 @@ class ChemicalStream:
     def volumetric_flow(self):
         return self._volumetric_flow_cache()
     
+    ### Net flow properties ###
+    
     @property
-    def thermo(self):
-        return self._thermo
+    def net_molar_flow(self):
+        return self.molar_data.sum()
+    @property
+    def net_mass_flow(self):
+        return (self._thermo.chemicals.MW * self.molar_data).sum()
+    @property
+    def net_volumetric_flow(self):
+        return self._get_flow_property(self._thermo.mixture.V)
+    
+    @property
+    def H(self):
+        return self._get_flow_property(self._thermo.mixture.H)
+    @H.setter
+    def H(self, H):
+        self.T = self._thermo.mixture.H.solve_T(self.phase, self.molar_data, H, self.T)
+    
+    @property
+    def S(self):
+        return self._get_flow_property(self._thermo.mixture.S)
+    
+    @property
+    def Hf(self):
+        return (self._thermo.chemicals.Hf * self.molar_data).sum()
+    @property
+    def Hc(self):
+        return (self._thermo.chemicals.Hc * self.molar_data).sum()    
+    @property
+    def Hvap(self):
+        return self._get_single_phase_flow_property(self._thermo.mixture.Hvap)
+    
+    @property
+    def C(self):
+        return self._get_flow_property(self._thermo.mixture.Cp)
+    
+    ### Composition properties ###
+    
+    @property
+    def V(self):
+        return self._get_composition_property(self._thermo.mixture.V)
+    @property
+    def k(self):
+        return self._get_composition_property(self._thermo.mixture.k)
+    @property
+    def Cp(self):
+        return self._get_composition_property(self._thermo.mixture.Cp)
+    @property
+    def mu(self):
+        return self._get_composition_property(self._thermo.mixture.mu)
+    @property
+    def sigma(self):
+        return self._get_single_phase_composition_property(self._thermo.mixture.sigma)
+    @property
+    def epsilon(self):
+        return self._get_single_phase_composition_property(self._thermo.mixture.epsilon)
+    
+    ### Representation ###
     
     def _info_phaseTP(self, phases, T_units, P_units):
         T = _Q(self.T,'K').to(T_units).magnitude
         P = _Q(self.P, 'Pa').to(P_units).magnitude
         return f" phase: '{phases}', T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
-
-    # Representation
+    
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
         basic_info = f"{type(self).__name__}:\n"

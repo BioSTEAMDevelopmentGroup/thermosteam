@@ -260,8 +260,8 @@ class Chemical:
         self.Hsub = Hsub(CASRN=CAS)
 
         # Chemistry
-        self.Hf = Hf(CAS)
-        self.Hc = Hcombustion(atoms=atoms, Hf=self.Hf)
+        self.Hf = Hf(CAS) or 0.
+        self.Hc = Hcombustion(atoms=atoms, Hf=self.Hf) or 0.
         
         # Critical Point
         self.StielPolar = StielPolar(CAS, Tc, Pc, omega)

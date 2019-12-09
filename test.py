@@ -20,11 +20,11 @@ bst.Stream.species = species
 # %% Initialize stream
 
 molar_flow = eth.MolarFlow(l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
-                           g=[('Ethanol', 201), ('Methanol', 40)])
+                           g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
 
 s1 = bst.MixedStream(T=300, P=101325)
 s1.setflow('l', Water=304, Ethanol=30, Glycerol=10)
-s1.setflow('g', Ethanol=201, Methanol=40)
+s1.setflow('g', Ethanol=201, Methanol=40, Propanol=1)
 
 # %% Test bubble point and dew point and compare with BioSTEAM
 
@@ -72,6 +72,7 @@ stream.molar_flow[...] = s1.mol
 
 # %% Test thermo
 
-# Ether is 2x faster than BioSTEAM
+# Ether is just as fast as BioSTEAM
+s1.disable_phases('l')
 bst_H = s1.H
-eth_H = stream.get_property('H')
+eth_H = stream.H

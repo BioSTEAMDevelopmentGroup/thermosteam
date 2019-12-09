@@ -135,6 +135,8 @@ class CompiledChemicals(Chemicals):
         dct['size'] = N
         dct['IDs'] = IDs
         dct['MW'] = np.array([i.MW for i in chemicals])
+        dct['Hf'] = np.array([i.Hf for i in chemicals])
+        dct['Hc'] = np.array([i.Hc for i in chemicals])
         dct['_index'] = dict((*zip(CAS, index), *zip(IDs, index)))
         dct['_isheavy'] = np.array([i.Tb in (np.inf, None) for i in chemicals])
         dct['_islight'] = np.array([i.Tb in (0, -np.inf) for i in chemicals], dtype=bool)
