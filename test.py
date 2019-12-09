@@ -66,13 +66,15 @@ s1.VLE(T=400, P=101325)
 mass_flow = molar_flow.as_mass_flow()
 volumetric_flow = molar_flow.as_volumetric_flow(vle.thermal_condition)
 
-stream = eth.ChemicalStream()
-stream.T = s1.T
-stream.molar_flow[...] = s1.mol
+stream = eth.ChemicalStream(flow=1*s1.mol, T=s1.T)
 
 # %% Test thermo
 
-# Ether is just as fast as BioSTEAM
+# Ether is 2x faster than BioSTEAM when handling multiple streams
 s1.disable_phases('l')
-bst_H = s1.H
-eth_H = stream.H
+s2 = bst.Stream(phase='l', Water=304, Ethanol=30, Glycerol=10)
+stream2 = eth.ChemicalStream(phase='l', Water=304, Ethanol=30, Glycerol=10)
+bst_H1 = s1.H
+bst_H2 = s2.H
+eth_H1 = stream.H
+eth_H2 = stream2.H

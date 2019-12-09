@@ -10,14 +10,12 @@ __all__ = ('settings',)
 
 class Settings:
     __slots__ = ('_thermo',
-                 '_rigorous_energy_balance',
                  '_phase_equivalents',
                  '_phase_name',
                  '_debug')
     
     def __init__(self):
         self._thermo = None
-        self._rigorous_energy_balance = False
         self._debug = __debug__
         self._phase_name = {'s': 'Solid',
                             'l': 'Liquid',

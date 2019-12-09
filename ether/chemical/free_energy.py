@@ -153,10 +153,10 @@ def Excess_Gas_Enthalpy_Ref_Solid(T):
 
 ExcessEnthalpyRefLiquid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Enthalpy_Ref_Liquid,
                                                          Excess_Liquid_Enthalpy_Ref_Liquid,
-                                                         Gas_Enthalpy_Ref_Liquid,
+                                                         Excess_Gas_Enthalpy_Ref_Liquid,
                                                          'H_excess')
 
-ExcessEnthalpyRefSolid = ChemicalPhaseTPPropertyBuilder(Solid_Enthalpy_Ref_Solid,
+ExcessEnthalpyRefSolid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Enthalpy_Ref_Solid,
                                                         Excess_Liquid_Enthalpy_Ref_Solid,
                                                         Excess_Gas_Enthalpy_Ref_Solid,
                                                         'H_excess')
@@ -205,10 +205,10 @@ def Excess_Gas_Entropy_Ref_Solid(T):
 
 ExcessEntropyRefLiquid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Entropy_Ref_Liquid,
                                                         Excess_Liquid_Entropy_Ref_Liquid,
-                                                        Gas_Entropy_Ref_Liquid,
+                                                        Excess_Gas_Entropy_Ref_Liquid,
                                                         'S_excess')
 
-ExcessEntropyRefSolid = ChemicalPhaseTPPropertyBuilder(Solid_Entropy_Ref_Solid,
+ExcessEntropyRefSolid = ChemicalPhaseTPPropertyBuilder(Excess_Solid_Entropy_Ref_Solid,
                                                        Excess_Liquid_Entropy_Ref_Solid,
                                                        Excess_Gas_Entropy_Ref_Solid,
                                                        'S_excess')

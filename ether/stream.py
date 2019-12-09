@@ -47,12 +47,12 @@ class ChemicalStream:
     
     def _load_flow(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
-        if flow:
+        if flow is not ():
             assert not chemical_flows, ("may specify either 'flow' or "
                                         "'chemical_flows', but not both")
             molar_flow = ChemicalMolarFlow.from_data(flow, phase, chemicals)
         elif chemical_flows:
-            molar_flow = ChemicalMolarFlow(chemicals, phase, **chemical_flows)
+            molar_flow = ChemicalMolarFlow(phase, chemicals=chemicals, **chemical_flows)
         else:
             molar_flow = ChemicalMolarFlow.blank(phase, chemicals)
         self._molar_flow = molar_flow
@@ -166,14 +166,22 @@ class ChemicalStream:
     
     @property
     def H(self):
-        return self._get_flow_property(self._thermo.mixture.H)
+        mixture = self._thermo.mixture
+        H = self._get_flow_property(mixture._H)
+        if mixture.include_excess_energies:
+            H += self._get_flow_property(mixture._H_excess)
+        return H
     @H.setter
     def H(self, H):
-        self.T = self._thermo.mixture.H.solve_T(self.phase, self.molar_data, H, self.T)
+        self.T = self._thermo.mixture.solve_T(self.phase, self.molar_data, H, self.T)
     
     @property
     def S(self):
-        return self._get_flow_property(self._thermo.mixture.S)
+        mixture = self._thermo.mixture
+        S = self._get_flow_property(mixture._S)
+        if mixture.include_excess_energies:
+            S += self._get_flow_property(mixture._S_excess)
+        return S
     
     @property
     def Hf(self):

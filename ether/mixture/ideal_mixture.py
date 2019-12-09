@@ -5,7 +5,7 @@ Created on Thu Nov  7 07:37:35 2019
 @author: yoelr
 """
 from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor, PhaseProperty
-from .mixture_method_names import mixture_methods, mixture_phaseT_methods, mixture_phaseTP_methods, mixture_T_methods
+from .mixture_method_names import mixture_methods, mixture_phaseT_methods, mixture_phaseTP_methods, mixture_T_methods, mixture_hidden_T_methods, mixture_hidden_phaseTP_methods
 from flexsolve import SolverError
 import numpy as np
 
@@ -82,8 +82,8 @@ class IdealMixtureTPProperty:
                 thermal_cache.condition = TP
         else:
             data = np.zeros_like(z)
-            cache[thermal_condition] = ThermalCache(TP, nonzero, data)
             set_properties_at_TP(data, properties, nonzero, T, P)
+            cache[thermal_condition] = ThermalCache(TP, nonzero, data)
         return (z * data).sum()
 
     def __call__(self, z, T, P):
@@ -187,14 +187,28 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 
 
 class IdealMixture:
-    __slots__ = ('chemicals', 'rigorous_energy_balance', *mixture_methods)
+    __slots__ = ('chemicals', 'rigorous_energy_balance', 
+                 'include_excess_energies', *mixture_methods)
     
-    def __init__(self, chemicals=(), rigorous_energy_balance=False):
+    def __init__(self, chemicals=(), rigorous_energy_balance=False, include_excess_energies=False):
         self.rigorous_energy_balance = rigorous_energy_balance
+        self.include_excess_energies = include_excess_energies
         getfield = getattr
         setfield = setattr
         any_ = any
         self.chemicals = chemicals
+        for attr in mixture_hidden_T_methods:
+            var = attr[1:]
+            phase_properties = [getfield(i, var) for i in chemicals]
+            if any_(phase_properties): 
+                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties, var)
+                setfield(self, attr, phase_property)
+        for attr in mixture_hidden_phaseTP_methods:
+            var = attr[1:]
+            phase_properties = [getfield(i, var) for i in chemicals]
+            if any_(phase_properties): 
+                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties, var)
+                setfield(self, attr, phase_property)
         for var in mixture_phaseT_methods:
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
@@ -209,11 +223,17 @@ class IdealMixture:
             properties = [getfield(i, var) for i in chemicals]
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
     
-    def solve_T(self, phase, z, H, T_guess):
+    def H(self, phase, T, P):
+        if self.include_excess_energies:
+            return self._H(phase, T) + self._H_excess(phase, T, P)
+        else:
+            return self._H(phase, T)
+            
+    def solve_T(self, phase, z, H, T_guess, P):
         if self.rigorous_energy_balance:
             # First approximation
             Cp = self.Cp(phase, z, T_guess)
-            T = T_guess + (H - self.H(phase, z, T_guess))/Cp
+            T = T_guess + (H - self.H(phase, z, T_guess, P))/Cp
         
             # Solve enthalpy by iteration
             it = 0
@@ -221,7 +241,7 @@ class IdealMixture:
             Cp = self.Cp(phase, z, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
-                T += (H - self.H(phase, z, T))/Cp
+                T += (H - self.H(phase, z, T, P))/Cp
                 if it == 5:
                     it = 0
                     it2 += 1
@@ -231,14 +251,14 @@ class IdealMixture:
                                           "given enthalpy")
                 else: it += 1
         else:
-            return T_guess + (H - self.H(phase, z, T_guess))/self.Cp(phase, z, T_guess)    
+            return T_guess + (H - self.H(phase, z, T_guess, P))/self.Cp(phase, z, T_guess)    
                 
-    def xsolve_T(self, phase_data, H, T_guess):
+    def xsolve_T(self, phase_data, H, T_guess, P):
         T = T_guess
         if self.rigorous_energy_balance:
             # First approximation
             Cp = self.xCp(phase_data, T_guess)
-            T = T_guess + (H - self.xH(phase_data, T_guess))/Cp
+            T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cp
         
             # Solve enthalpy by iteration
             it = 0
@@ -246,7 +266,7 @@ class IdealMixture:
             Cp = self.xCp(phase_data, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
-                T += (H - self.xH(phase_data, T))/Cp
+                T += (H - self.xH(phase_data, T, P))/Cp
                 if it == 5:
                     it = 0
                     it2 += 1
@@ -256,27 +276,27 @@ class IdealMixture:
                                           "given enthalpy")
                 else: it += 1
         else:
-            return T_guess + (H - self.xH(phase_data, T_guess))/self.xCp(phase_data, T_guess)   
+            return T_guess + (H - self.xH(phase_data, T_guess, P))/self.xCp(phase_data, T_guess)   
     
     def xCp(self, phase_data, T):
         Cp = self.Cp
         return sum([Cp(phase, z, T) for phase, z in phase_data])
     
-    def xH(self, phase_data, T):
-        H = self.H
-        return sum([H(phase, z, T) for phase, z in phase_data])
+    def xH(self, phase_data, T, P):
+        H = self._H
+        H_total = sum([H(phase, z, T) for phase, z in phase_data])
+        if self.include_excess_energies:
+            H = self._H_excess
+            H_total += sum([H(phase, z, T, P) for phase, z in phase_data])
+        return H_total
     
     def xS(self, phase_data, T, P):
-        S = self.S
-        return sum([S(phase, z, T, P) for phase, z in phase_data])
-    
-    def xH_excess(self, phase_data, T, P):
-        H_excess = self.H_excess
-        return sum([H_excess(phase, z, T, P) for phase, z in phase_data])
-    
-    def xS_excess(self, phase_data, T, P):
-        S_excess = self.S_excess
-        return sum([S_excess(phase, z, T, P) for phase, z in phase_data])
+        S = self._S
+        S_total = sum([S(phase, z, T, P) for phase, z in phase_data])
+        if self.include_excess_energies:
+            S = self._S_excess
+            S_total += sum([S(phase, z, T, P) for phase, z in phase_data])
+        return S_total
     
     def xV(self, phase_data, T, P):
         V = self.V
@@ -295,20 +315,20 @@ class IdealMixture:
         return sum([Cp(phase, z, thermal_condition) for phase, z in phase_data])
     
     def xH_at_thermal_condition(self, phase_data, thermal_condition):
-        H = self.H.at_thermal_condition
-        return sum([H(phase, z, thermal_condition) for phase, z in phase_data])
+        H = self._H.at_thermal_condition
+        H_total = sum([H(phase, z, thermal_condition) for phase, z in phase_data])
+        if self.include_excess_energies:
+            H_excess = self._H_excess.at_thermal_condition
+            H_total += sum([H_excess(phase, z, thermal_condition) for phase, z in phase_data])
+        return H_total
     
     def xS_at_thermal_condition(self, phase_data, thermal_condition):
         S = self.S.at_thermal_condition
-        return sum([S(phase, z, thermal_condition) for phase, z in phase_data])
-    
-    def xH_excess_at_thermal_condition(self, phase_data, thermal_condition):
-        H_excess = self.H_excess.at_thermal_condition
-        return sum([H_excess(phase, z, thermal_condition) for phase, z in phase_data])
-    
-    def xS_excess_at_thermal_condition(self, phase_data, thermal_condition):
-        S_excess = self.S_excess.at_thermal_condition
-        return sum([S_excess(phase, z, thermal_condition) for phase, z in phase_data])
+        S_total = sum([S(phase, z, thermal_condition) for phase, z in phase_data])
+        if self.include_excess_energies:
+            S_excess = self._S_excess.at_thermal_condition
+            S_total += sum([S_excess(phase, z, thermal_condition) for phase, z in phase_data])
+        return S_total
     
     def xV_at_thermal_condition(self, phase_data, thermal_condition):
         V = self.V.at_thermal_condition
@@ -326,17 +346,3 @@ class IdealMixture:
         IDs = [str(i) for i in self.chemicals]
         return f"{type(self).__name__}([{', '.join(IDs)}])"
     
-    def show(self):
-        IDs = [str(i) for i in self.chemicals]
-        info = f"{type(self).__name__}: {', '.join(IDs)}"
-        getfield = getattr
-        for i in self.__slots__[1:]:
-            f = getfield(self, i)
-            if callable(f):
-                info += f"\n {display_asfunctor(f, name=i, var=i, show_var=False)}"
-            else:
-                info += f"\n {i}: {f}"
-            
-        print(info)
-    
-    _ipython_display_ = show
