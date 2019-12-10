@@ -11,16 +11,14 @@ from .exceptions import DimensionError
 from .settings import settings
 from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumetricFlow
 from .thermal_condition import ThermalCondition
-from .utils import Cache
 
-__all__ = ('ChemicalStream',)
+__all__ = ('Stream',)
 
 
 # %%
 
-class ChemicalStream:
-    __slots__ = ('_molar_flow', '_mass_flow_cache', '_volumetric_flow_cache',
-                 '_thermal_condition', '_thermo')
+class Stream:
+    __slots__ = ('_molar_flow', '_thermal_condition', '_thermo')
     
 
     #: [DisplayUnits] Units of measure for IPython display
@@ -47,18 +45,22 @@ class ChemicalStream:
     
     def _load_flow(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
-        if flow is not ():
+        if flow is ():
+            if chemical_flows:
+                molar_flow = ChemicalMolarFlow(phase, chemicals=chemicals, **chemical_flows)
+            else:
+                molar_flow = ChemicalMolarFlow.blank(phase, chemicals)
+        else:
             assert not chemical_flows, ("may specify either 'flow' or "
                                         "'chemical_flows', but not both")
-            molar_flow = ChemicalMolarFlow.from_data(flow, phase, chemicals)
-        elif chemical_flows:
-            molar_flow = ChemicalMolarFlow(phase, chemicals=chemicals, **chemical_flows)
-        else:
-            molar_flow = ChemicalMolarFlow.blank(phase, chemicals)
+            if isinstance(flow, ChemicalMolarFlow):
+                molar_flow = flow 
+                molar_flow.phase = phase
+            else:
+                molar_flow = ChemicalMolarFlow.from_data(flow, phase, chemicals)
         self._molar_flow = molar_flow
-        self._mass_flow_cache = Cache(molar_flow.as_chemical_mass_flow)
-        self._volumetric_flow_cache = Cache(molar_flow.as_chemical_volumetric_flow,
-                                            (self._thermal_condition,))
+
+    ### Property getters ###
 
     def get_flow_property(self, name, units=None):
         mixture_property = getattr(self.mixture, name)
@@ -149,14 +151,21 @@ class ChemicalStream:
     def molar_data(self):
         return self._molar_flow._data
     @property
+    def mass_data(self):
+        return self.mass_flow._data
+    @property
+    def volumetric_data(self):
+        return self.volumetric_flow._data
+    
+    @property
     def molar_flow(self):
         return self._molar_flow
     @property
     def mass_flow(self):
-        return self._mass_flow_cache()
+        return self._molar_flow.by_mass()
     @property
     def volumetric_flow(self):
-        return self._volumetric_flow_cache()
+        return self._molar_flow.by_volume(self._thermal_condition)
     
     ### Net flow properties ###
     
@@ -204,6 +213,22 @@ class ChemicalStream:
         return self._get_flow_property(self.mixture.Cp)
     
     ### Composition properties ###
+    
+    @property
+    def molar_composition(self):
+        molar_flow = self.molar_data
+        net_molar_flow = molar_flow.sum()
+        return molar_flow / net_molar_flow if net_molar_flow else molar_flow.copy()
+    @property
+    def mass_composition(self):
+        mass_flow = self.chemicals.MW * self.molar_data
+        net_mass_flow = mass_flow.sum()
+        return mass_flow / net_mass_flow if net_mass_flow else mass_flow
+    @property
+    def volumetric_composition(self):
+        volumetric_flow = self._get_flow_property(self.mixture.V)
+        net_volumetric_flow = volumetric_flow.sum()
+        return volumetric_flow / net_volumetric_flow if net_volumetric_flow else volumetric_flow
     
     @property
     def V(self):

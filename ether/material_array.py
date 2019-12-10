@@ -463,7 +463,7 @@ class ArrayEmulator:
 # %% Phase data
 
 class ChemicalArray(ArrayEmulator):
-    __slots__ = ('_chemicals', '_phase')
+    __slots__ = ('_chemicals', '_phase', '_data_cache')
     _index_caches = {}
     
     def __new__(cls, phase, units=None, chemicals=None, **IDdata):
@@ -530,6 +530,7 @@ class ChemicalArray(ArrayEmulator):
         new._chemicals = self._chemicals
         new._index_cache = self._index_cache
         new._phase = self._phase
+        new._data_cache = {}
         return new
     
     @classmethod
@@ -539,6 +540,7 @@ class ChemicalArray(ArrayEmulator):
         self._set_cache()
         self._data = np.zeros(self._chemicals.size, float)
         self._phase = phase_container(phase)
+        self._data_cache = {}
         return self
     
     @classmethod
@@ -553,6 +555,7 @@ class ChemicalArray(ArrayEmulator):
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
         self._data = data
+        self._data_cache = {}
         return self
     
     @property
@@ -655,7 +658,7 @@ class PhaseArray(ArrayEmulator):
         return self.from_data, (self._data, self._phases)
     
     
-    def to_chemical_array(self, composition, phase=None, chemicals=None, data=False):
+    def to_chemical_array(self, composition, phase='l', chemicals=None, data=False):
         if settings._debug:
             assert isa(composition, np.ndarray), "composition must be 1d array"
             assert composition.ndim == 1, "composition must be 1d array"
@@ -816,7 +819,7 @@ class PhaseArray(ArrayEmulator):
             
 
 class MaterialArray(ArrayEmulator):
-    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data')
+    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data', '_data_cache')
     _index_caches = {}
     _ChemicalArray = ChemicalArray
     _PhaseArray = PhaseArray
@@ -882,6 +885,7 @@ class MaterialArray(ArrayEmulator):
         new._phases = self._phases
         new._phase_index = self._phase_index
         new._index_cache = self._index_cache
+        new._data_cache = {}
         return new
     
     @classmethod
@@ -892,6 +896,7 @@ class MaterialArray(ArrayEmulator):
         self._set_cache()
         shape = (len(self._phases), self._chemicals.size)
         self._data = np.zeros(shape, float)
+        self._data_cache = {}
         return self
     
     @classmethod
@@ -912,6 +917,7 @@ class MaterialArray(ArrayEmulator):
                                       'must be equal to '
                                       'number of data columns')
         self._data = data
+        self._data_cache = {}
         return self
     
     phases =  PhaseArray.phases
@@ -923,7 +929,7 @@ class MaterialArray(ArrayEmulator):
         else:
             return self._PhaseArray.from_data(self._data.sum(1), self._phases)
     
-    def to_chemical_array(self, phase="", data=False):
+    def to_chemical_array(self, phase='l', data=False):
         if data:
             return self._data.sum(0)
         else:
@@ -942,9 +948,9 @@ class MaterialArray(ArrayEmulator):
             try:
                 phase, IDs = phase_IDs
             except:
-                raise IndexError("please index with <MaterialArray>[phase, IDs] "
-                                 "where phase is a (str, or ellipsis), "
-                                 "and IDs is a (str, tuple(str), ellipisis, or missing)")
+                raise IndexError(f"please index with <{type(self).__name__}>[phase, IDs] "
+                                  "where phase is a (str, or ellipsis), "
+                                  "and IDs is a (str, tuple(str), ellipisis, or missing)")
             if isa(IDs, str):
                 IDs_index = self._chemicals.index(IDs)
             elif isa(IDs, tuple):
@@ -958,9 +964,9 @@ class MaterialArray(ArrayEmulator):
             elif phase == ...:
                 index = (phase, IDs_index)
             else:
-                raise IndexError("please index with <MaterialArray>[phase, IDs] "
-                                 "where phase is a (str, or ellipsis), "
-                                 "and IDs is a (str, tuple(str), ellipisis, or missing)")
+                raise IndexError(f"please index with <{type(self).__name__}>[phase, IDs] "
+                                  "where phase is a (str, or ellipsis), "
+                                  "and IDs is a (str, tuple(str), ellipisis, or missing)")
         return index
     
     _get_phase_index = PhaseArray._get_phase_index
@@ -1080,6 +1086,7 @@ ChemicalArray._PhaseArray = PhaseArray
 PhaseArray._ChemicalArray = ChemicalArray
 PhaseArray._MaterialArray = MaterialArray    
 ChemicalMolarFlow, PhaseMolarFlow, MolarFlow = new_Array('MolarFlow', 'kmol/hr')
+ChemicalMolarFlow.__slots__ = MolarFlow.__slots__ = ('_mass_flow', '_volumetric_flow')
 ChemicalMassFlow, PhaseMassFlow, MassFlow = new_Array('MassFlow', 'kg/hr')
 ChemicalVolumetricFlow, PhaseVolumetricFlow, VolumetricFlow = new_Array('VolumetricFlow', 'm^3/hr')
 
@@ -1095,28 +1102,38 @@ def MassFlowProperty(self):
 def MassFlowProperty(self, value):
     self.molar_flow[self.index] = value/self.MW
 
-def as_chemical_mass_flow(self):
-    chemicals = self.chemicals
-    molar_flow = self.data
-    mass_flow = np.zeros_like(molar_flow, dtype=object)
-    for i, chem in enumerate(chemicals):
-        mass_flow[i] = MassFlowProperty(chem.ID, molar_flow, i, chem.MW)
-    return ChemicalMassFlow.from_data(property_array(mass_flow), self._phase, chemicals)
-ChemicalMolarFlow.as_chemical_mass_flow = as_chemical_mass_flow
-del as_chemical_mass_flow    
+def by_mass(self):
+    try:
+        mass_flow = self._data_cache['mass_flow']
+    except:
+        chemicals = self.chemicals
+        molar_flow = self.data
+        mass_flow = np.zeros_like(molar_flow, dtype=object)
+        for i, chem in enumerate(chemicals):
+            mass_flow[i] = MassFlowProperty(chem.ID, molar_flow, i, chem.MW)
+        self._data_cache['mass_flow'] = mass_flow = ChemicalMassFlow.from_data(
+                                                        property_array(mass_flow),
+                                                        self._phase, chemicals)
+    return mass_flow
+ChemicalMolarFlow.by_mass = by_mass
 
-def as_mass_flow(self):
-    phases = self.phases
-    chemicals = self.chemicals
-    molar_flow = self.data
-    mass_flow = np.zeros_like(molar_flow, dtype=object)
-    for i, phase in enumerate(phases):
-        for j, chem in enumerate(chemicals):
-            index = (i, j)
-            mass_flow[index] = MassFlowProperty(chem.ID, molar_flow, index, chem.MW)
-    return MassFlow.from_data(property_array(mass_flow), phases, chemicals)
-MolarFlow.as_mass_flow = as_mass_flow
-del as_mass_flow
+def by_mass(self):
+    try:
+        mass_flow = self._data_cache['mass_flow']
+    except:
+        phases = self.phases
+        chemicals = self.chemicals
+        molar_flow = self.data
+        mass_flow = np.zeros_like(molar_flow, dtype=object)
+        for i, phase in enumerate(phases):
+            for j, chem in enumerate(chemicals):
+                index = (i, j)
+                mass_flow[index] = MassFlowProperty(chem.ID, molar_flow, index, chem.MW)
+        self._data_cache['mass_flow'] = mass_flow = MassFlow.from_data(
+                                                        property_array(mass_flow),
+                                                        phases, chemicals)
+    return mass_flow
+MolarFlow.by_mass = by_mass; del by_mass
 
 
 # %% Volumetric flow properties
@@ -1132,31 +1149,40 @@ def VolumetricFlowProperty(self, value):
     T, P = self.thermal_condition
     self.molar_flow[self.index] = value / self.V(self.phase or self.phase_container[0], T, P)
 
-def as_chemical_volumetric_flow(self, thermal_condition):
-    chemicals = self.chemicals
-    molar_flow = self.data
-    volumetric_flow = np.zeros_like(molar_flow, dtype=object)
-    for i, chem in enumerate(chemicals):
-        volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V,
-                                                    thermal_condition, None, self._phase)
-    return ChemicalVolumetricFlow.from_data(property_array(volumetric_flow), self._phase, chemicals)
-ChemicalMolarFlow.as_chemical_volumetric_flow = as_chemical_volumetric_flow
-del as_chemical_volumetric_flow
+def by_volume(self, thermal_condition):
+    try:
+        volumetric_flow = self._data_cache[thermal_condition]
+    except:
+        chemicals = self.chemicals
+        molar_flow = self.data
+        volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+        for i, chem in enumerate(chemicals):
+            volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V,
+                                                        thermal_condition, None, self._phase)
+        self._data_cache['volumetric_flow'] = \
+        volumetric_flow = ChemicalVolumetricFlow.from_data(property_array(volumetric_flow),
+                                                           self._phase, chemicals)
+    return volumetric_flow
+ChemicalMolarFlow.by_volume = by_volume
 	
-def as_volumetric_flow(self, thermal_condition):
-    phases = self.phases
-    chemicals = self.chemicals
-    molar_flow = self.data
-    volumetric_flow = np.zeros_like(molar_flow, dtype=object)
-    for i, phase in enumerate(phases):
-        for j, chem in enumerate(chemicals):
-            index = i, j
-            phase_name = settings._phase_name[phase]
-            volumetric_flow[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", molar_flow,
-                                                            index, chem.V, thermal_condition, phase)
-    return VolumetricFlow.from_data(property_array(volumetric_flow), phases, chemicals)
-MolarFlow.as_volumetric_flow = as_volumetric_flow
-del as_volumetric_flow
+def by_volume(self, thermal_condition):
+    try:
+        volumetric_flow = self._data_cache[thermal_condition]
+    except:
+        phases = self.phases
+        chemicals = self.chemicals
+        molar_flow = self.data
+        volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+        for i, phase in enumerate(phases):
+            for j, chem in enumerate(chemicals):
+                index = i, j
+                phase_name = settings._phase_name[phase]
+                volumetric_flow[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", molar_flow,
+                                                                index, chem.V, thermal_condition, phase)
+        self._data_cache['volumetric_flow'] = \
+        volumetric_flow = VolumetricFlow.from_data(property_array(volumetric_flow), phases, chemicals)
+    return volumetric_flow
+MolarFlow.by_volume = by_volume; del by_volume
 
 
 # %% Cut out functionality
