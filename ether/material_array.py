@@ -1138,7 +1138,8 @@ MolarFlow.by_mass = by_mass; del by_mass
 
 # %% Volumetric flow properties
 
-@PropertyFactory(slots=('name', 'molar_flow', 'index', 'V', 'thermal_condition', 'phase', 'phase_container'))
+@PropertyFactory(slots=('name', 'molar_flow', 'index', 'V',
+                        'thermal_condition', 'phase', 'phase_container'))
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     T, P = self.thermal_condition
