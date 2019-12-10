@@ -179,10 +179,7 @@ class ChemicalStream:
         return H
     @H.setter
     def H(self, H):
-        thermal_condition = self._thermal_condition
-        self.T = self.mixture.solve_T(self.phase, self.molar_data, H,
-                                      thermal_condition.T,
-                                      thermal_condition.P)
+        self.T = self.mixture.solve_T(self.phase, self.molar_data, H, self.T, self.P)
 
     @property
     def S(self):
