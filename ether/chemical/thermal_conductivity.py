@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 import numpy as np
 from scipy.interpolate import interp2d
-from ..base import InterpolatedTDependentModel, TDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder, k as K
+from ..base import InterpolatedTDependentModel, TDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder, kappa
 from ..constants import R, N_A, k
 from math import log, exp
 from .utils import CASDataReader
@@ -39,21 +39,21 @@ _VDI_PPDS_9 = read('VDI PPDS Thermal conductivity of saturated liquids.tsv')
 _VDI_PPDS_10 = read('VDI PPDS Thermal conductivity of gases.tsv')
 ### Purely CSP Methods - Liquids
 
-@K.l
+@kappa.l
 def Sheffy_Johnson(T, M, Tm):
     return 1.951*(1 - 0.00126*(T - Tm))/(Tm**0.216*M**0.3)
 
-@K.l
+@kappa.l
 def Sato_Riedel(T, MW, Tb, Tc):
     Tr = T/Tc
     Tbr = Tb/Tc
     return 1.1053*(3. + 20.*(1 - Tr)**(2/3.))*MW**-0.5/(3. + 20.*(1 - Tbr)**(2/3.))
 
-@K.l
+@kappa.l
 def Lakshmi_Prasad(T, MW):
     return 0.0655 - 0.0005*T + (1.3855 - 0.00197*T)*MW**-0.5
 
-@K.l
+@kappa.l
 def Gharagheizi_liquid(T, MW, Tb, Pc, omega):
     Pc = Pc/1E5
     B = 16.0407*MW + 2.*Tb - 27.9074
@@ -61,19 +61,19 @@ def Gharagheizi_liquid(T, MW, Tb, Pc, omega):
     return 1E-4*(10.*omega + 2.*Pc - 2.*T + 4. + 1.908*(Tb + 1.009*B*B/(MW*MW))
         + 3.9287*MW**4*B**-4 + A*B**-8)
 
-@K.l
+@kappa.l
 def Nicola_original(T, MW, Tc, omega, Hfus):
     Tr = T/Tc
     Hfus = Hfus*1000
     return -0.5694 - 0.1436*Tr + 5.4893E-10*Hfus + 0.0508*omega + (1./MW)**0.0622
 
-@K.l
+@kappa.l
 def Nicola(T, MW, Tc, Pc, omega):
     Tr = T/Tc
     Pc = Pc/1E5
     return 0.5147*(-0.2537*Tr + 0.0017*Pc + 0.1501*omega + (1./MW)**0.2999)
 
-@K.l
+@kappa.l
 def Bahadori_liquid(T, MW):
     A = [-6.48326E-2, 2.715015E-3, -1.08580E-5, 9.853917E-9]
     B = [1.565612E-2, -1.55833E-4, 5.051114E-7, -4.68030E-10]
@@ -87,7 +87,7 @@ def Bahadori_liquid(T, MW):
     d = A[3] + B[3]*X + C[3]*X**2 + D[3]*X**3
     return a + b*Y + c*Y**2 + d*Y**3
 
-@K.l(njitcompile=False)
+@kappa.l(njitcompile=False)
 def Mersmann_Kind_thermal_conductivity_liquid(T, MW, Tc, Vc, atoms):
     na = sum(atoms.values())
     lambda_star = 2/3.*(na + 40.*(1. - T/Tc)**0.5)
@@ -154,7 +154,7 @@ def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
 
 ### Thermal Conductivity of Dense Liquids
 
-@K.l(njitcompile=False)
+@kappa.l(njitcompile=False)
 def DIPPR9G(T, P, Tc, Pc, kl_models):
     Tr = T/Tc
     Pr = P/Pc
@@ -171,7 +171,7 @@ Qs_Missenard = np.array([[0.036, 0.038, 0.038, 0.038, 0.038, 0.038],
                          [0.012, 0.0165, 0.017, 0.019, 0.020, 0.020]])
 Qfunc_Missenard = interp2d(Prs_Missenard, Trs_Missenard, Qs_Missenard)
 
-@K.l(njitcompile=False)
+@kappa.l(njitcompile=False)
 def Missenard(T, P, Tc, Pc, kl_models):
     Tr = T/Tc
     Pr = P/Pc
@@ -183,7 +183,7 @@ def Missenard(T, P, Tc, Pc, kl_models):
 
 ### Thermal Conductivity of Gases
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def Eucken(T, MW, Cp, mu):
     if callable(Cp):
         Cv = Cp(T) - R
@@ -194,7 +194,7 @@ def Eucken(T, MW, Cp, mu):
     MW = MW/1000.
     return (1. + 9/4./(Cv/R))*mu*Cv/MW
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def Eucken_modified(T, MW, Cp, mu):
     if callable(Cp):
         Cv = Cp(T) - R
@@ -205,7 +205,7 @@ def Eucken_modified(T, MW, Cp, mu):
     MW = MW/1000.
     return (1.32 + 1.77/(Cv/R))*mu*Cv/MW
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def DIPPR9B_linear(T, MW, Cp, mu, Tc):
     if callable(Cp):
         Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
@@ -216,7 +216,7 @@ def DIPPR9B_linear(T, MW, Cp, mu, Tc):
     Tr = T/Tc
     return mu/MW*(1.30*Cv + 14644 - 2928.80/Tr)
 
-@K.g(njitcompile=False)    
+@kappa.g(njitcompile=False)    
 def DIPPR9B_monoatomic(T, MW, Cp, mu):
     if callable(Cp):
         Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
@@ -226,7 +226,7 @@ def DIPPR9B_monoatomic(T, MW, Cp, mu):
         mu = mu(T)
     return 2.5*mu*Cv/MW
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def DIPPR9B_nonlinear(T, MW, Cp, mu):
     if callable(Cp):
         Cv = (Cp(T) - R) * 1000. # J/mol/K to J/kmol/K
@@ -234,7 +234,7 @@ def DIPPR9B_nonlinear(T, MW, Cp, mu):
         Cv = (Cp - R) * 1000.  
     return mu/MW*(1.15*Cv + 16903.36)
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def Chung(T, MW, Tc, omega, Cp, mu):
     if callable(Cp):
         Cv = Cp(T) - R # J/mol/K to J/kmol/K
@@ -250,7 +250,7 @@ def Chung(T, MW, Tc, omega, Cp, mu):
                       /(0.6366 + beta*Z + 1.061*alpha*beta))
     return 3.75*psi/(Cv/R)/MW*mu*Cv
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def eli_hanley(T, MW, Tc, Vc, Zc, omega, Cp):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5, 
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1, 2.037119479E-1]
@@ -273,14 +273,14 @@ def eli_hanley(T, MW, Tc, Vc, Zc, omega, Cp):
     ks = k0*H
     return ks + etas/(MW/1000.)*1.32*(Cv - 1.5*R)
 
-@K.g
+@kappa.g
 def Gharagheizi_gas(T, MW, Tb, Pc, omega):
     Pc = Pc/1E4
     B = T + (2.*omega + 2.*T - 2.*T*(2.*omega + 3.2825)/Tb + 3.2825)/(2*omega + T - T*(2*omega+3.2825)/Tb + 3.2825) - T*(2*omega+3.2825)/Tb
     A = (2*omega + T - T*(2*omega + 3.2825)/Tb + 3.2825)/(0.1*MW*Pc*T) * (3.9752*omega + 0.1*Pc + 1.9876*B + 6.5243)**2
     return 7.9505E-4 + 3.989E-5*T - 5.419E-5*MW + 3.989E-5*A
 
-@K.g
+@kappa.g
 def Bahadori_gas(T, MW):
     A = [4.3931323468E-1, -3.88001122207E-2, 9.28616040136E-4, -6.57828995724E-6]
     B = [-2.9624238519E-3, 2.67956145820E-4, -6.40171884139E-6, 4.48579040207E-8]
@@ -296,7 +296,7 @@ def Bahadori_gas(T, MW):
 
 ### Thermal Conductivity of dense gases
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def stiel_thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
     Vm = Vg(T, P)
     for i in kg_models:
@@ -316,7 +316,7 @@ def stiel_thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
     kg = kg + diff
     return kg
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5,
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1,
@@ -378,7 +378,7 @@ def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
     k = ks + etas/(MW/1000.)*1.32*(Cvm-3*R/2.)
     return k
 
-@K.g(njitcompile=False)
+@kappa.g(njitcompile=False)
 def chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
     if callable(Cp):
         Cvm = Cp(T) - R # J/mol/K to J/kmol/K
@@ -467,5 +467,5 @@ def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]
     #     handle.model(DIPPR9B_linear(data), Tmin, Tmax)
 
-ThermalConductivity = ChemicalPhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'k')
+ThermalConductivity = ChemicalPhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'kappa')
 

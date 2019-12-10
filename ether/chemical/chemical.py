@@ -155,10 +155,10 @@ _names = ('CAS', 'InChI', 'InChI_key',
 
 _groups = ('Dortmund', 'UNIFAC', 'PSRK')
 
-_thermo = ('S_excess', 'H_excess', 'mu', 'k', 'V', 'S', 'H', 'Cp',
+_thermo = ('S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cp',
            'Psat', 'Hvap', 'sigma', 'epsilon')
     
-_phase_properties = ('k', 'V', 'Cp', 'mu')
+_phase_properties = ('kappa', 'V', 'Cp', 'mu')
 
 _free_energies = ('S_excess', 'H_excess', 'S', 'H')
 
@@ -167,7 +167,7 @@ _liquid_only_properties = ('sigma', 'epsilon')
 _equilibrium_properties = ('Psat', 'Hvap')
 
 _data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
-         'Hf', 'Hc', 'Hfus', 'Hsub', 'rhoc', 'omega', 'dipole',
+         'Hf', 'Hc', 'Hfus', 'Hsub', 'omega', 'dipole',
          'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
 
 _chemical_fields = {'\n[Names]  ': _names,
@@ -249,7 +249,6 @@ class Chemical:
         self.Vc = Vc(CAS)
         self.omega = omega(CAS)
         self.Zc = Z(self.Tc, self.Pc, self.Vc) if all((self.Tc, self.Pc, self.Vc)) else None
-        self.rhoc = 1./self.Vc if self.Vc else None
 
         # Triple point
         self.Pt = Pt(CAS)
@@ -305,7 +304,7 @@ class Chemical:
         # Conductivity
         ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus)
         gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cp.g, mu.g)
-        self.k = ThermalConductivity(None, ldata, gdata)
+        self.kappa = ThermalConductivity(None, ldata, gdata)
         
         # Surface tension
         Hvap_Tb = Hvap(Tb) if Tb else None
@@ -487,12 +486,12 @@ class Chemical:
                 mu.l.model(0.00091272)
             if not mu:
                 mu.model(0.00091272)
-        if 'k' in slots:
-            k = self.k
-            if hasfield(k, 'l'):
-                k.l.model(0.5942)
-            if not k:
-                k.model(0.5942)
+        if 'kappa' in slots:
+            kappa = self.kappa
+            if hasfield(kappa, 'l'):
+                kappa.l.model(0.5942)
+            if not kappa:
+                kappa.model(0.5942)
         if 'Hc' in slots:
             self.Hc = 0
         if 'Hf' in slots:
@@ -520,7 +519,7 @@ class Chemical:
                                 single_phase and phase_ref)
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cp', 'Hf', 'sigma',
-                                   'mu', 'k', 'Hc', 'epsilon', 'H',
+                                   'mu', 'kappa', 'Hc', 'epsilon', 'H',
                                    'S', 'H_excess', 'S_excess', '_phase_ref'})
         return missing
     
@@ -545,7 +544,7 @@ class Chemical:
         for i in _groups: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _free_energies: setfield(self, i, None)
-        for i in ('k', 'mu', 'V'):
+        for i in ('kappa', 'mu', 'V'):
             setfield(self, i, ChemicalPhaseTPProperty())
         self.Cp = ChemicalPhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):

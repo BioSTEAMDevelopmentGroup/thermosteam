@@ -14,6 +14,13 @@ class ThermalCondition:
         self.T = T
         self.P = P
     
+    def copy(self):
+        return self.__class__(self.T, self.P)
+    
+    def copy_like(self, other):
+        self.T = other.T
+        self.P = other.P
+    
     @property
     def tuple(self):
         return self.T, self.P

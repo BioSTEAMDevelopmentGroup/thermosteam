@@ -88,7 +88,7 @@ units_of_measure = {'MW': 'g/mol',
                     'nu': 'm^2/s',
                     'mu': 'Pa*s',
                     'sigma': 'N/m' ,
-                    'k': 'W/m/K',
+                    'kappa': 'W/m/K',
                     'alpha': 'm^2/s', 
                     'Hvap': 'J/mol',
                     'H': 'J/mol',  
@@ -128,7 +128,7 @@ definitions = {'MW': 'Molecular weight',
                'nu': 'Kinematic viscosity',
                'mu': 'Hydrolic viscosity',
                'sigma': 'Surface tension',
-               'k': 'Thermal conductivity',
+               'kappa': 'Thermal conductivity',
                'alpha': 'Thermal diffusivity',
                'Hvap': 'Heat of vaporization',
                'H': 'Enthalpy',
@@ -156,7 +156,7 @@ for i, j in [('ω', 'omega')]:
     if j in units_of_measure: units_of_measure[i] = units_of_measure[j]
 
 # Phase properties
-for var in ('Cp', 'H', 'S', 'V', 'k', 'H_excess', 'S_excess'):
+for var in ('Cp', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
     units = units_of_measure[var]
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):

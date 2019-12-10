@@ -15,6 +15,13 @@ from .thermal_condition import ThermalCondition
 __all__ = ('Stream',)
 
 
+# %% Utilities
+
+def assert_same_chemicals(stream, others):
+    chemicals = stream.chemicals
+    assert all([chemicals == i.chemicals for i in others]), "chemicals must match to mix streams"
+
+
 # %%
 
 class Stream:
@@ -234,8 +241,8 @@ class Stream:
     def V(self):
         return self._get_composition_property(self.mixture.V)
     @property
-    def k(self):
-        return self._get_composition_property(self.mixture.k)
+    def kappa(self):
+        return self._get_composition_property(self.mixture.kappa)
     @property
     def Cp(self):
         return self._get_composition_property(self.mixture.Cp)
@@ -248,6 +255,61 @@ class Stream:
     @property
     def epsilon(self):
         return self._get_single_phase_composition_property(self.mixture.epsilon)
+    
+    ### Stream methods ###
+    
+    def mix_from(self, others):
+        if settings._debug: assert_same_chemicals
+        self.molar_data[:] = sum([i.molar_data if isinstance(i, Stream) else i.chemical_flow for i in others])
+        self.H = sum([i.H for i in others])
+    
+    def split_to(self, s1, s2, split):
+        molar_data = self.molar_data
+        s1.molar_data[:] = dummy = molar_data * split
+        s2.molar_data[:] = molar_data - dummy
+        
+    def link_with(self, other, thermal_condition=False, flow=False, phase=False):
+        other._molar_flow._data_cache.clear()
+        if thermal_condition:
+            other._thermal_condition = self._thermal_condition
+        if flow:
+            other._molar_flow = self._molar_flow
+        if phase:
+            other._molar_flow._phase = self._molar_flow._phase
+    
+    def copy_flow(self, other, IDs, *, remove=False, exclude=False):
+        self_flow = self._molar_flow
+        self_data = self_flow._data
+        other_flow = other._molar_flow
+        other_data = molarother_flow._data
+        if IDs is None:
+            self_data[:] = stream_data
+            if remove: other_data[:] = 0
+        else:
+            if exclude:
+                self_data[:] = other_data
+                self.molar_flow[indices] = 0
+                if remove:
+                    other_data[:], other_data[indices] = 0, other_data[indices]
+            else:
+                self._mol[:] = 0
+                self._mol[indices] = stream.mol[indices]
+                if remove: 
+                    if isinstance(stream, MS.MixedStream):
+                        stream._mol[phase_index[self.phase], indices] = 0
+                    else:
+                        stream._mol[indices] = 0
+    
+    def copy_like(self, other):
+        self.molar_data[:] = other.molar_data
+        self.thermal_condition.copy_like(other)
+        self.phase = other.phase
+    
+    def copy(self):
+        pass
+    
+    def empty(self):
+        pass
     
     ### Representation ###
     
