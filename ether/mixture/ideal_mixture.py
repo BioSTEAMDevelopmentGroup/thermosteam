@@ -197,6 +197,7 @@ class IdealMixture:
         setfield = setattr
         any_ = any
         self.chemicals = chemicals
+        # TODO: Divide this up to functions
         for attr in mixture_hidden_T_methods:
             var = attr[1:]
             phase_properties = [getfield(i, var) for i in chemicals]
@@ -223,60 +224,52 @@ class IdealMixture:
             properties = [getfield(i, var) for i in chemicals]
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
     
-    def H(self, phase, T, P):
+    def H(self, phase, z, T, P):
         if self.include_excess_energies:
-            return self._H(phase, T) + self._H_excess(phase, T, P)
+            return self._H(phase, z, T) + self._H_excess(phase, z, T, P)
         else:
-            return self._H(phase, T)
+            return self._H(phase, z, T)
             
     def solve_T(self, phase, z, H, T_guess, P):
+        # First approximation
+        Cp = self.Cp(phase, z, T_guess)
+        T = T_guess + (H - self.H(phase, z, T_guess, P))/Cp
         if self.rigorous_energy_balance:
-            # First approximation
-            Cp = self.Cp(phase, z, T_guess)
-            T = T_guess + (H - self.H(phase, z, T_guess, P))/Cp
-        
             # Solve enthalpy by iteration
             it = 0
             it2 = 0
             Cp = self.Cp(phase, z, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
-                T += (H - self.H(phase, z, T, P))/Cp
-                if it == 5:
+                if it == 3:
                     it = 0
                     it2 += 1
                     Cp = self.Cp(phase, z, T_guess)
-                    if it2 > 10:
-                        raise SolverError("could not solve temperature "
-                                          "given enthalpy")
-                else: it += 1
-        else:
-            return T_guess + (H - self.H(phase, z, T_guess, P))/self.Cp(phase, z, T_guess)    
+                    if it2 > 5: break # Its good enough, no need to find exact solution
+                else:
+                    it += 1
+                T += (H - self.H(phase, z, T, P))/Cp
+        return T
                 
     def xsolve_T(self, phase_data, H, T_guess, P):
-        T = T_guess
+        # First approximation
+        Cp = self.xCp(phase_data, T_guess)
+        T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cp
         if self.rigorous_energy_balance:
-            # First approximation
-            Cp = self.xCp(phase_data, T_guess)
-            T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cp
-        
             # Solve enthalpy by iteration
-            it = 0
-            it2 = 0
+            it2 = it = 0
             Cp = self.xCp(phase_data, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
-                T += (H - self.xH(phase_data, T, P))/Cp
-                if it == 5:
+                if it == 3:
                     it = 0
                     it2 += 1
                     Cp = self.xCp(phase_data, T_guess)
-                    if it2 > 10:
-                        raise SolverError("could not solve temperature "
-                                          "given enthalpy")
-                else: it += 1
-        else:
-            return T_guess + (H - self.xH(phase_data, T_guess, P))/self.xCp(phase_data, T_guess)   
+                    if it2 > 5: break # Its good enough, no need to find exact solution
+                else:
+                    it += 1
+                T += (H - self.xH(phase_data, T, P))/Cp
+        return T
     
     def xCp(self, phase_data, T):
         Cp = self.Cp

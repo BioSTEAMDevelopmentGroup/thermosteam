@@ -22,9 +22,9 @@ bst.Stream.species = species
 molar_flow = eth.MolarFlow(l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
                            g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
 
-s1 = bst.MixedStream(T=300, P=101325)
-s1.setflow('l', Water=304, Ethanol=30, Glycerol=10)
-s1.setflow('g', Ethanol=201, Methanol=40, Propanol=1)
+s1_bst = bst.MixedStream(T=300, P=101325)
+s1_bst.setflow('l', Water=304, Ethanol=30, Glycerol=10)
+s1_bst.setflow('g', Ethanol=201, Methanol=40, Propanol=1)
 
 # %% Test bubble point and dew point and compare with BioSTEAM
 
@@ -59,22 +59,20 @@ dT_eth, dx_at_P_eth = dp_eth.solve_Tx(z, P_dp)
 vle = eth.VLE(molar_flow)
 vle(T=400, P=101325)
 
-s1.VLE(T=400, P=101325)
+s1_bst.VLE(T=400, P=101325)
 
 # %% Test property array
 
 mass_flow = molar_flow.as_mass_flow()
 volumetric_flow = molar_flow.as_volumetric_flow(vle.thermal_condition)
 
-stream = eth.ChemicalStream(flow=1*s1.mol, T=s1.T)
+s1_eth = eth.ChemicalStream(flow=1*s1_bst.mol, T=s1_bst.T, phase='g')
 
 # %% Test thermo
 
 # Ether is 2x faster than BioSTEAM when handling multiple streams
-s1.disable_phases('l')
-s2 = bst.Stream(phase='l', Water=304, Ethanol=30, Glycerol=10)
-stream2 = eth.ChemicalStream(phase='l', Water=304, Ethanol=30, Glycerol=10)
-bst_H1 = s1.H
-bst_H2 = s2.H
-eth_H1 = stream.H
-eth_H2 = stream2.H
+s1_bst.disable_phases('g')
+s2_bst = bst.Stream(phase='g', Water=304, Ethanol=30, Glycerol=10)
+s2_eth = eth.ChemicalStream(phase='g', Water=304, Ethanol=30, Glycerol=10)
+H1_bst_sum = s1_bst.H + s2_bst.H
+H2_eth_sum = s1_eth.H + s2_eth.H
