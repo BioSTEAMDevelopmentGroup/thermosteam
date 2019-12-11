@@ -11,6 +11,7 @@ from .exceptions import DimensionError
 from .settings import settings
 from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumetricFlow
 from .thermal_condition import ThermalCondition
+from .phase_container import new_phase_container
 
 __all__ = ('Stream',)
 
@@ -25,7 +26,7 @@ def assert_same_chemicals(stream, others):
 # %%
 
 class Stream:
-    __slots__ = ('_molar_flow', '_thermal_condition', '_thermo')
+    __slots__ = ('_molar_flow', '_TP', '_thermo', 'price')
     
 
     #: [DisplayUnits] Units of measure for IPython display
@@ -35,9 +36,10 @@ class Stream:
 
     def __init__(self, flow=(), phase='l', T=298.15, P=101325., units=None,
                  price=0., thermo=None, **chemical_flows):
-        self._thermal_condition = ThermalCondition(T, P)
+        self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
         self._load_flow(flow, phase, thermo.chemicals, chemical_flows)
+        self.price = price
         if units:
             dimensionality = get_dimensionality(units)
             if dimensionality == ChemicalMolarFlow.units.dimensionality:
@@ -69,53 +71,14 @@ class Stream:
 
     ### Property getters ###
 
-    def get_flow_property(self, name, units=None):
-        mixture_property = getattr(self.mixture, name)
-        value = self._get_flow_property(mixture_property)
-        return value * mixture_property.units.to(units) if units else value
-    
-    def get_composition_property(self, name, units=None):
-        mixture_property = getattr(self.mixture, name)
-        value = self._get_composition_property(mixture_property)
-        return value * mixture_property.units.to(units) if units else value
-    
-    def get_single_phase_flow_property(self, name, units=None):
-        mixture_property = getattr(self.mixture, name)
-        value = self._get_single_phase_flow_property(mixture_property)
-        return value * mixture_property.units.to(units) if units else value
-    
-    def get_single_phase_composition_property(self, name, units=None):
-        mixture_property = getattr(self.mixture, name)
-        value = self._get_single_phase_composition_property(mixture_property)
-        return value * mixture_property.units.to(units) if units else value
-    
-    def _get_flow_property(self, mixture_property):
-        return mixture_property.at_thermal_condition(self.phase,
-                                                     self.molar_data,
-                                                     self._thermal_condition)
-    
-    def _get_composition_property(self, mixture_property):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return  mixture_property.at_thermal_condition(self.phase,
-                                                          molar_data / net_molar_data,
-                                                          self._thermal_condition)
+    def get_property(self, name, units=None):
+        value = getattr(self, name)
+        if units:
+            mixture_property = getattr(self.mixture, name)
+            factor = mixture_property.units.to(units)
+            return value * factor
         else:
-            return 0
-    
-    def _get_single_phase_flow_property(self, mixture_property):
-        return mixture_property.at_thermal_condition(self.molar_data,
-                                                     self._thermal_condition)
-    
-    def _get_single_phase_composition_property(self, mixture_property):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return  mixture_property.at_thermal_condition(molar_data / net_molar_data,
-                                                          self._thermal_condition)
-        else:
-            return 0
+            return value
     
     ### Stream data ###
     
@@ -128,24 +91,24 @@ class Stream:
     @property
     def mixture(self):
         return self._thermo.mixture
-    
+
     @property
-    def thermal_condition(self):
-        return self._thermal_condition
+    def TP(self):
+        return self._TP
 
     @property
     def T(self):
-        return self._thermal_condition.T
+        return self._TP.T
     @T.setter
     def T(self, T):
-        self._thermal_condition.T = T
+        self._TP.T = T
     
     @property
     def P(self):
-        return self._thermal_condition.P
+        return self._TP.P
     @P.setter
     def P(self, P):
-        self._thermal_condition.P = P
+        self._TP.P = P
     
     @property
     def phase(self):
@@ -172,9 +135,13 @@ class Stream:
         return self._molar_flow.by_mass()
     @property
     def volumetric_flow(self):
-        return self._molar_flow.by_volume(self._thermal_condition)
+        return self._molar_flow.by_volume(self._TP)
     
     ### Net flow properties ###
+    
+    @property
+    def cost(self):
+        return self.price * self.net_mass_flow
     
     @property
     def net_molar_flow(self):
@@ -184,26 +151,18 @@ class Stream:
         return (self.chemicals.MW * self.molar_data).sum()
     @property
     def net_volumetric_flow(self):
-        return self._get_flow_property(self.mixture.V)
+        return self.mixture.V_at_TP(self.phase, self.molar_data, self._TP)
     
     @property
     def H(self):
-        mixture = self.mixture
-        H = self._get_flow_property(mixture._H)
-        if mixture.include_excess_energies:
-            H += self._get_flow_property(mixture._H_excess)
-        return H
+        return self.mixture.H_at_TP(self.phase, self.molar_data, self._TP)
     @H.setter
     def H(self, H):
         self.T = self.mixture.solve_T(self.phase, self.molar_data, H, self.T, self.P)
 
     @property
     def S(self):
-        mixture = self.mixture
-        S = self._get_flow_property(mixture._S)
-        if mixture.include_excess_energies:
-            S += self._get_flow_property(mixture._S_excess)
-        return S
+        return self.mixture.S_at_TP(self.phase, self.molar_data, self._TP)
     
     @property
     def Hf(self):
@@ -213,11 +172,11 @@ class Stream:
         return (self.chemicals.Hc * self.molar_data).sum()    
     @property
     def Hvap(self):
-        return self._get_single_phase_flow_property(self.mixture.Hvap)
+        return self.mixture.Hvap_at_TP(self.molar_data, self._TP)
     
     @property
     def C(self):
-        return self._get_flow_property(self.mixture.Cp)
+        return self.mixture.Cp_at_TP(self.molar_data, self._TP)
     
     ### Composition properties ###
     
@@ -233,52 +192,90 @@ class Stream:
         return mass_flow / net_mass_flow if net_mass_flow else mass_flow
     @property
     def volumetric_composition(self):
-        volumetric_flow = self._get_flow_property(self.mixture.V)
+        volumetric_flow = self.volumetric_data
         net_volumetric_flow = volumetric_flow.sum()
         return volumetric_flow / net_volumetric_flow if net_volumetric_flow else volumetric_flow
     
     @property
     def V(self):
-        return self._get_composition_property(self.mixture.V)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.V_at_TP(self.phase, molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     @property
     def kappa(self):
-        return self._get_composition_property(self.mixture.kappa)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.kappa_at_TP(self.phase, molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     @property
     def Cp(self):
-        return self._get_composition_property(self.mixture.Cp)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.Cp_at_TP(self.phase, molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     @property
     def mu(self):
-        return self._get_composition_property(self.mixture.mu)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.mu_at_TP(self.phase, molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     @property
     def sigma(self):
-        return self._get_single_phase_composition_property(self.mixture.sigma)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.sigma_at_TP(molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     @property
     def epsilon(self):
-        return self._get_single_phase_composition_property(self.mixture.epsilon)
+        molar_data = self.molar_data
+        net_molar_data = molar_data.sum()
+        if net_molar_data:
+            return  self.mixture.epsilon_at_TP(molar_data / net_molar_data, self._TP)
+        else:
+            return 0
     
     ### Stream methods ###
     
     def mix_from(self, others):
-        if settings._debug: assert_same_chemicals
+        if settings._debug: assert_same_chemicals(self, others)
         self.molar_data[:] = sum([i.molar_data if isinstance(i, Stream) else i.chemical_flow for i in others])
         self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
+        if settings._debug: assert all(isinstance(i, self.__class__) for i in (s1, s2)), "other must be of same type to split to"
         molar_data = self.molar_data
         s1.molar_data[:] = dummy = molar_data * split
         s2.molar_data[:] = molar_data - dummy
         
-    def link_with(self, other, thermal_condition=False, flow=False, phase=False):
+    def link_with(self, other, TP=True, flow=True, phase=True):
+        if settings._debug: assert isinstance(other, self.__class__), "other must be of same type to link with"
         other._molar_flow._data_cache.clear()
-        if thermal_condition:
-            other._thermal_condition = self._thermal_condition
+        if TP:
+            self._TP = other._TP
         if flow:
-            other._molar_flow = self._molar_flow
+            self._molar_flow._data = other._molar_flow._data
         if phase:
-            other._molar_flow._phase = self._molar_flow._phase
+            self._molar_flow._phase = other._molar_flow._phase
+            
+    def unlink(self):
+        self._molar_flow._data_cache.clear()
+        self._TP = self._TP.copy()
+        self._molar_flow._data = self._molar_flow._data.copy()
+        self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
     
     def copy_flow(self, other, IDs, *, remove=False, exclude=False):
-        assert isinstance(other, self.__class__), "other must be of same type to copy flow"
+        if settings._debug: assert isinstance(other, self.__class__), "other must be of same type to copy flow"
         if IDs is None:
             self.molar_data[:] = other.molar_data
             if remove: other.molar_data[:] = 0
@@ -296,7 +293,7 @@ class Stream:
     
     def copy_like(self, other):
         self.molar_data[:] = other.molar_data
-        self.thermal_condition.copy_like(other)
+        self.TP.copy_like(other)
         self.phase = other.phase
     
     def copy(self):
@@ -304,7 +301,7 @@ class Stream:
         new = cls.__new__(cls)
         new._thermo = self._thermo
         new._molar_flow = self._molar_flow.copy()
-        new._thermal_condition = self._thermal_condition.copy()
+        new._TP = self._TP.copy()
         return new
     
     def empty(self):

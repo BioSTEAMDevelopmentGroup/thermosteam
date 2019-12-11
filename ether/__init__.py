@@ -18,6 +18,7 @@ from . import material_array
 from . import thermal_condition
 from . import stream
 from . import phase_container
+from . import multi_stream
 
 __all__ = (*base.__all__, 
            *chemical.__all__, 
@@ -32,7 +33,8 @@ __all__ = (*base.__all__,
            *material_array.__all__,
            *thermal_condition.__all__,
            *stream.__all__,
-           *phase_container.__all__)
+           *phase_container.__all__,
+           *multi_stream.__all__)
 
 from .base import *
 from .chemical import *
@@ -48,3 +50,4 @@ from .material_array import *
 from .thermal_condition import *
 from .stream import *
 from .phase_container import *
+from .multi_stream import *

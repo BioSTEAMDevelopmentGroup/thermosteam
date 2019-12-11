@@ -62,13 +62,13 @@ class IdealMixtureTPProperty:
 
     _set_var = PhaseProperty._set_var
 
-    def at_thermal_condition(self, z, thermal_condition):
+    def at_TP(self, z, TP):
         cache = self._cache
         nonzero = z!=0
-        T, P = TP = thermal_condition.tuple
+        T, P = TP = TP.tuple
         properties = self._properties
-        if thermal_condition in cache:
-            thermal_cache = cache[thermal_condition]
+        if TP in cache:
+            thermal_cache = cache[TP]
             data = thermal_cache.data
             if TP == thermal_cache.condition:
                 cache_nonzero = thermal_cache.nonzero
@@ -83,7 +83,7 @@ class IdealMixtureTPProperty:
         else:
             data = np.zeros_like(z)
             set_properties_at_TP(data, properties, nonzero, T, P)
-            cache[thermal_condition] = ThermalCache(TP, nonzero, data)
+            cache[TP] = ThermalCache(TP, nonzero, data)
         return (z * data).sum()
 
     def __call__(self, z, T, P):
@@ -107,13 +107,13 @@ class IdealMixtureTProperty:
 
     _set_var = PhaseProperty._set_var
 
-    def at_thermal_condition(self, z, thermal_condition):
+    def at_TP(self, z, TP):
         cache = self._cache
         nonzero = z!=0
-        T = thermal_condition.T
+        T = TP.T
         properties = self._properties
-        if thermal_condition in cache:
-            thermal_cache = cache[thermal_condition]
+        if TP in cache:
+            thermal_cache = cache[TP]
             data = thermal_cache.data
             if T == thermal_cache.condition:
                 cache_nonzero = thermal_cache.nonzero
@@ -127,7 +127,7 @@ class IdealMixtureTProperty:
                 thermal_cache.condition = T
         else:
             data = np.zeros_like(z)
-            cache[thermal_condition] = ThermalCache(T, nonzero, data)
+            cache[TP] = ThermalCache(T, nonzero, data)
             set_properties_at_T(data, properties, nonzero, T)
         return (z * data).sum()
 
@@ -224,12 +224,52 @@ class IdealMixture:
             properties = [getfield(i, var) for i in chemicals]
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
     
+    @property
+    def Cp_at_TP(self):
+        return self.Cp.at_TP
+    @property
+    def kappa_at_TP(self):
+        return self.kappa.at_TP
+    @property
+    def mu_at_TP(self):
+        return self.mu.at_TP
+    @property
+    def V_at_TP(self):
+        return self.V.at_TP
+    @property
+    def sigma_at_TP(self):
+        return self.sigma.at_TP
+    @property
+    def epsilon_at_TP(self):
+        return self.epsilon.at_TP
+    @property
+    def Hvap_at_TP(self):
+        return self.Hvap.at_TP
+    
     def H(self, phase, z, T, P):
         if self.include_excess_energies:
             return self._H(phase, z, T) + self._H_excess(phase, z, T, P)
         else:
             return self._H(phase, z, T)
-            
+    
+    def S(self, phase, z, T, P):
+        if self.include_excess_energies:
+            return self._S(phase, z, T, P) + self._S_excess(phase, z, T, P)
+        else:
+            return self._S(phase, z, T, P)
+    
+    def H_at_TP(self, phase, z, TP):
+        H = self._H.at_TP(phase, z, TP)
+        if self.include_excess_energies:
+            H += self._H_excess.at_TP(phase, z, TP)
+        return H
+    
+    def S_at_TP(self, phase, z, TP):
+        S = self._S.at_TP(phase, z, TP)
+        if self.include_excess_energies:
+            S += self._S_excess.at_TP(phase, z, TP)
+        return S
+    
     def solve_T(self, phase, z, H, T_guess, P):
         # First approximation
         Cp = self.Cp(phase, z, T_guess)
@@ -299,41 +339,41 @@ class IdealMixture:
         mu = self.mu
         return sum([mu(phase, z, T, P) for phase, z in phase_data])
     
-    def xk(self, phase_data, T, P):
-        k = self.k
-        return sum([k(phase, z, T, P) for phase, z in phase_data])
+    def xkappa(self, phase_data, T, P):
+        kappa = self.kappa
+        return sum([kappa(phase, z, T, P) for phase, z in phase_data])
     
-    def xCp_at_thermal_condition(self, phase_data, thermal_condition):
-        Cp = self.Cp.at_thermal_condition
-        return sum([Cp(phase, z, thermal_condition) for phase, z in phase_data])
+    def xCp_at_TP(self, phase_data, TP):
+        Cp = self.Cp.at_TP
+        return sum([Cp(phase, z, TP) for phase, z in phase_data])
     
-    def xH_at_thermal_condition(self, phase_data, thermal_condition):
-        H = self._H.at_thermal_condition
-        H_total = sum([H(phase, z, thermal_condition) for phase, z in phase_data])
+    def xH_at_TP(self, phase_data, TP):
+        H = self._H.at_TP
+        H_total = sum([H(phase, z, TP) for phase, z in phase_data])
         if self.include_excess_energies:
-            H_excess = self._H_excess.at_thermal_condition
-            H_total += sum([H_excess(phase, z, thermal_condition) for phase, z in phase_data])
+            H_excess = self._H_excess.at_TP
+            H_total += sum([H_excess(phase, z, TP) for phase, z in phase_data])
         return H_total
     
-    def xS_at_thermal_condition(self, phase_data, thermal_condition):
-        S = self.S.at_thermal_condition
-        S_total = sum([S(phase, z, thermal_condition) for phase, z in phase_data])
+    def xS_at_TP(self, phase_data, TP):
+        S = self.S.at_TP
+        S_total = sum([S(phase, z, TP) for phase, z in phase_data])
         if self.include_excess_energies:
-            S_excess = self._S_excess.at_thermal_condition
-            S_total += sum([S_excess(phase, z, thermal_condition) for phase, z in phase_data])
+            S_excess = self._S_excess.at_TP
+            S_total += sum([S_excess(phase, z, TP) for phase, z in phase_data])
         return S_total
     
-    def xV_at_thermal_condition(self, phase_data, thermal_condition):
-        V = self.V.at_thermal_condition
-        return sum([V(phase, z, thermal_condition) for phase, z in phase_data])
+    def xV_at_TP(self, phase_data, TP):
+        V = self.V.at_TP
+        return sum([V(phase, z, TP) for phase, z in phase_data])
     
-    def xmu_at_thermal_condition(self, phase_data, thermal_condition):
-        mu = self.mu.at_thermal_condition
-        return sum([mu(phase, z, thermal_condition) for phase, z in phase_data])
+    def xmu_at_TP(self, phase_data, TP):
+        mu = self.mu.at_TP
+        return sum([mu(phase, z, TP) for phase, z in phase_data])
     
-    def xk_at_thermal_condition(self, phase_data, thermal_condition):
-        k = self.k.at_thermal_condition
-        return sum([k(phase, z, thermal_condition) for phase, z in phase_data])
+    def xkappa_at_TP(self, phase_data, TP):
+        k = self.k.at_TP
+        return sum([k(phase, z, TP) for phase, z in phase_data])
     
     def __repr__(self):
         IDs = [str(i) for i in self.chemicals]

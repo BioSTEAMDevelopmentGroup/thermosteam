@@ -6,11 +6,12 @@ Created on Sat Dec  7 21:36:37 2019
 """
 from ctypes import create_unicode_buffer
 
-__all__ = ('PhaseContainer', 'phase_container')
+__all__ = ('phase_container',)
 
 isa = isinstance
 
 def phase_container(phase):
-     return phase if isa(phase, PhaseContainer) else create_unicode_buffer(phase)
+     return create_unicode_buffer(phase) if isa(phase, str) else phase
  
-PhaseContainer = type(create_unicode_buffer('l'))
+def new_phase_container(phase):
+    return create_unicode_buffer(phase if isa(phase, str) else phase[0])

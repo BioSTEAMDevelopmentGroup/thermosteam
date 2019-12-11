@@ -1139,36 +1139,36 @@ MolarFlow.by_mass = by_mass; del by_mass
 # %% Volumetric flow properties
 
 @PropertyFactory(slots=('name', 'molar_flow', 'index', 'V',
-                        'thermal_condition', 'phase', 'phase_container'))
+                        'TP', 'phase', 'phase_container'))
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
-    T, P = self.thermal_condition
+    T, P = self.TP
     return self.molar_flow[self.index] * self.V(self.phase or self.phase_container[0], T, P)
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
-    T, P = self.thermal_condition
+    T, P = self.TP
     self.molar_flow[self.index] = value / self.V(self.phase or self.phase_container[0], T, P)
 
-def by_volume(self, thermal_condition):
+def by_volume(self, TP):
     try:
-        volumetric_flow = self._data_cache[thermal_condition]
+        volumetric_flow = self._data_cache[TP]
     except:
         chemicals = self.chemicals
         molar_flow = self.data
         volumetric_flow = np.zeros_like(molar_flow, dtype=object)
         for i, chem in enumerate(chemicals):
             volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V,
-                                                        thermal_condition, None, self._phase)
+                                                        TP, None, self._phase)
         self._data_cache['volumetric_flow'] = \
         volumetric_flow = ChemicalVolumetricFlow.from_data(property_array(volumetric_flow),
                                                            self._phase, chemicals)
     return volumetric_flow
 ChemicalMolarFlow.by_volume = by_volume
 	
-def by_volume(self, thermal_condition):
+def by_volume(self, TP):
     try:
-        volumetric_flow = self._data_cache[thermal_condition]
+        volumetric_flow = self._data_cache[TP]
     except:
         phases = self.phases
         chemicals = self.chemicals
@@ -1179,7 +1179,7 @@ def by_volume(self, thermal_condition):
                 index = i, j
                 phase_name = settings._phase_name[phase]
                 volumetric_flow[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", molar_flow,
-                                                                index, chem.V, thermal_condition, phase)
+                                                                index, chem.V, TP, phase)
         self._data_cache['volumetric_flow'] = \
         volumetric_flow = VolumetricFlow.from_data(property_array(volumetric_flow), phases, chemicals)
     return volumetric_flow

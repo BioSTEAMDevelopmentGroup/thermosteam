@@ -97,8 +97,8 @@ class ChemicalPhaseTPProperty(PhaseProperty):
 class MixturePhaseTProperty(PhaseProperty):
     __slots__ = ()
     
-    def at_thermal_condition(self, phase, z, thermal_condition):
-        return getattr(self, phase).at_thermal_condition(z, thermal_condition)
+    def at_TP(self, phase, z, TP):
+        return getattr(self, phase).at_TP(z, TP)
     
     def __call__(self, phase, z, T):
         return getattr(self, phase)(z, T)
@@ -107,11 +107,11 @@ class MixturePhaseTProperty(PhaseProperty):
 class MixturePhaseTPProperty(PhaseProperty):
     __slots__ = ()
     
-    def at_thermal_condition(self, phase, z, thermal_condition):
-        return getattr(self, phase).at_thermal_condition(z, thermal_condition)
+    def at_TP(self, phase, z, TP):
+        return getattr(self, phase).at_TP(z, TP)
     
     def __call__(self, phase, z, T, P):
-        return getattr(self, phase).at_thermal_condition(z, T, P)
+        return getattr(self, phase).at_TP(z, T, P)
     
 
 # %% Builders
