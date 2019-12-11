@@ -182,7 +182,7 @@ def V_3N(zs, Ks):
 class VLE:
     """Create a VLE object for solving VLE."""
     __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_thermal_condition',
-                 '_dew_point', '_bubble_point', '_mixture',
+                 '_dew_point', '_bubble_point', '_mixture', '_LNK_net',
                  '_phi', '_pcf', '_gamma', '_molar_data',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_massnet', '_chemical',
@@ -350,9 +350,10 @@ class VLE:
 
         # Set light and heavy keys
         vapor_mol[HNK_index] = 0
-        vapor_mol[LNK_index] = mol[LNK_index]
+        vapor_mol[LNK_index] = LNK_mol = mol[LNK_index]
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = mol[HNK_index]
+        self._LNK_net = LNK_mol.sum()
         self._zs = self._mol/molnet
         return index
 
@@ -689,7 +690,7 @@ class VLE:
         mol = self._mol
         v = self._v
         l = mol - v
-        y = v/mol
+        y = v/(v.sum() + self._LNK_net)
         Psats_over_P = np.array([i(T) for i in bp.Psats]) / P
         self._Psat_over_P_phi = Psats_over_P / phi(y, T, P)
         x = self.itersolver(self._x_iter, l/l.sum(), 1e-4)
@@ -699,6 +700,7 @@ class VLE:
             # TODO: Make y solve iteratively with Psat_over_P_phi
             self._v = v
         else:
+            self._Psat_over_P_phi = Psat_over_P_phi
             x = self.itersolver(self._x_iter, x, 1e-4)
             self._v = v = self._molnet*self._V*x/x.sum()*self._Ks            
         return v

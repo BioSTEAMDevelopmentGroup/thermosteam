@@ -4,7 +4,7 @@ Created on Tue Nov 26 02:34:56 2019
 
 @author: yoelr
 """
-from .material_array import nonzeros
+from .material_array import nonzeros, MaterialArray
 from .base.units_of_measure import get_dimensionality, _Q
 from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
@@ -278,27 +278,21 @@ class Stream:
             other._molar_flow._phase = self._molar_flow._phase
     
     def copy_flow(self, other, IDs, *, remove=False, exclude=False):
-        self_flow = self._molar_flow
-        self_data = self_flow._data
-        other_flow = other._molar_flow
-        other_data = molarother_flow._data
+        assert isinstance(other, self.__class__), "other must be of same type to copy flow"
         if IDs is None:
-            self_data[:] = stream_data
-            if remove: other_data[:] = 0
+            self.molar_data[:] = other.molar_data
+            if remove: other.molar_data[:] = 0
         else:
             if exclude:
-                self_data[:] = other_data
-                self.molar_flow[indices] = 0
+                self.molar_data[:] = other.molar_data
+                self.molar_flow[IDs] = 0
                 if remove:
-                    other_data[:], other_data[indices] = 0, other_data[indices]
+                    other.molar_data[:], other.molar_data[IDs] = 0, other.molar_data[IDs]
             else:
-                self._mol[:] = 0
-                self._mol[indices] = stream.mol[indices]
+                self.molar_data[:] = 0
+                self.molar_flow[IDs] = other.molar_flow[IDs]
                 if remove: 
-                    if isinstance(stream, MS.MixedStream):
-                        stream._mol[phase_index[self.phase], indices] = 0
-                    else:
-                        stream._mol[indices] = 0
+                    other.molar_flow[IDs] = 0
     
     def copy_like(self, other):
         self.molar_data[:] = other.molar_data
@@ -306,10 +300,15 @@ class Stream:
         self.phase = other.phase
     
     def copy(self):
-        pass
+        cls = self.__class__
+        new = cls.__new__(cls)
+        new._thermo = self._thermo
+        new._molar_flow = self._molar_flow.copy()
+        new._thermal_condition = self._thermal_condition.copy()
+        return new
     
     def empty(self):
-        pass
+        self.molar_data[:] = 0
     
     ### Representation ###
     
