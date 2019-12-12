@@ -4,7 +4,7 @@ Created on Sun Dec  1 04:12:27 2019
 
 @author: yoelr
 """
-import ether
+import thermosteam as tmo
 
 __all__ = ('settings',)
 
@@ -48,14 +48,14 @@ class Settings:
         return thermo
     
     def get_chemicals(self, chemicals):
-        if isinstance(chemicals, ether.Chemicals):
+        if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
         if not chemicals:
             thermo = settings._thermo
             assert thermo, "no available 'Thermo' object"
             chemicals = thermo.chemicals
         else:
-            chemicals = ether.Chemicals(chemicals)
+            chemicals = tmo.Chemicals(chemicals)
             chemicals.compile()
         return chemicals
     
@@ -72,7 +72,7 @@ class Settings:
         return self._thermo
     @thermo.setter
     def thermo(self, thermo):
-        if isinstance(thermo, ether.Thermo):
+        if isinstance(thermo, tmo.Thermo):
             self._thermo = thermo
         else:
             raise ValueError("thermo must be a 'Thermo' object, "
