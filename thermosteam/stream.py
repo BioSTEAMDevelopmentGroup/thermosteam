@@ -256,7 +256,6 @@ class Stream:
         self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
-        if settings._debug: assert all(isinstance(i, self.__class__) for i in (s1, s2)), "other must be of same type to split to"
         molar_data = self.molar_data
         s1.molar_data[:] = dummy = molar_data * split
         s2.molar_data[:] = molar_data - dummy
@@ -277,24 +276,6 @@ class Stream:
         self._TP = self._TP.copy()
         self._molar_flow._data = self._molar_flow._data.copy()
         self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
-    
-    def copy_flow(self, other, IDs, *, remove=False, exclude=False):
-        if settings._debug:
-            assert isinstance(other, self.__class__), "other must be of same type to copy flow"
-        if IDs is None:
-            self.molar_data[:] = other.molar_data
-            if remove: other.molar_data[:] = 0
-        else:
-            if exclude:
-                self.molar_data[:] = other.molar_data
-                self.molar_flow[IDs] = 0
-                if remove:
-                    other.molar_data[:], other.molar_data[IDs] = 0, other.molar_data[IDs]
-            else:
-                self.molar_data[:] = 0
-                self.molar_flow[IDs] = other.molar_flow[IDs]
-                if remove: 
-                    other.molar_flow[IDs] = 0
     
     def copy_like(self, other):
         self.molar_data[:] = other.molar_data

@@ -251,6 +251,11 @@ class MultiStream:
         self.molar_data[:] += sum([i.molar_data for i in multi])
         self.H = sum([i.H for i in others])
         
+    def split_to(self, s1, s2, split):
+        molar_data = self.molar_data.sum(0)
+        s1.molar_data[:] = dummy = molar_data * split
+        s2.molar_data[:] = molar_data - dummy
+        
     def link_with(self, other, TP=True, flow=True, phase=True):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
@@ -312,7 +317,8 @@ class MultiStream:
         else:
             raise DimensionError(f"dimensions for flow units must be in "
                                  f"molar, mass or volumetric flow rates, not '{flow_dim}'")
-        basic_info += ' ' + flow + f' ({flow_units}):\n'
+        first_line = ' ' + flow + f' ({flow_units}):'
+        first_line_spaces = len(first_line)*" "
         flow = getattr(self, flow)
 
         # Set up chemical data for all phases
@@ -323,7 +329,9 @@ class MultiStream:
             if not IDs: continue
         
             # Get basic structure for phase data
-            beginning = f' ({phase}) '
+            
+            beginning = (first_line or first_line_spaces) + f' ({phase}) '
+            first_line = False
             new_line_spaces = len(beginning) * ' '
 
             # Set chemical data
