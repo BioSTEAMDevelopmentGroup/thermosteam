@@ -90,7 +90,7 @@ class MultiStream:
         return self._thermo.mixture
     
     @property
-    def TP(self):
+    def thermal_condition(self):
         return self._TP
 
     @property
@@ -295,31 +295,68 @@ class MultiStream:
         return VLE(self._molar_flow, self._TP, thermo=self._thermo)
     
     @property
-    def equilibrium_chemicals(self):
+    def z_chemicals(self):
+        molar_data = self.molar_data
+        chemicals = self.chemicals
+        indices = chemicals.equilibrium_indices(molar_data != 0)
+        flow = molar_data[indices]
+        netflow = flow.sum()
+        assert netflow, "no equlibrium chemicals present"
+        z = flow / netflow  
+        chemicals_tuple = chemicals.tuple
+        return z, [chemicals_tuple[i] for i in indices]
+    
+    @property
+    def equilibrim_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.equilibrium_indices(self.molar_data.sum(0) != 0)
+        molar_data = self.molar_data.sum(0)
+        indices = chemicals.equilibrium_indices(molar_data)
         return [chemicals_tuple[i] for i in indices]
     
     @property
-    def equilibrium_composition(self):
-        molar_data = self.molar_data
+    def z(self):
+        molar_data = self.molar_data.sum(0)
         indices = self.chemicals.equilibrium_indices(molar_data != 0)
-        flow = molar_data[:, indices].sum(0)
+        flow = molar_data[indices]
         netflow = flow.sum()
         assert netflow, "no equlibrium chemicals present"
         return flow / netflow  
     
     @property
     def bubble_point(self):
-        bp = BubblePoint(self.equilibrium_chemicals, self._thermo)
+        bp = BubblePoint(self.equilibrim_chemicals, self._thermo)
         return bp
     
     @property
     def dew_point(self):
-        bp = DewPoint(self.equilibrium_chemicals, self._thermo)
+        bp = DewPoint(self.equilibrim_chemicals, self._thermo)
         return bp
-        
+    
+    @property
+    def T_bubble(self):
+        z, chemicals = self.z_chemicals
+        bp = BubblePoint(chemicals, self._thermo)
+        return bp.solve_Ty(z, self.P)[0]
+    
+    @property
+    def T_dew(self):
+        z, chemicals = self.z_chemicals
+        dp = DewPoint(chemicals, self._thermo)
+        return dp.solve_Tx(z, self.P)[0]
+    
+    @property
+    def P_bubble(self):
+        z, chemicals = self.z_chemicals
+        bp = BubblePoint(chemicals, self._thermo)
+        return bp.solve_Py(z, self.T)[0]
+    
+    @property
+    def P_dew(self):
+        z, chemicals = self.z_chemicals
+        dp = DewPoint(chemicals, self._thermo)
+        return dp.solve_Px(z, self.T)[0]
+    
     ### Representation ###
     
     def _info(self, T, P, flow, N):
