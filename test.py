@@ -73,3 +73,7 @@ s2_bst = bst.Stream(phase='g', Water=304, Ethanol=30, Glycerol=10)
 s2_tmo = tmo.Stream(phase='g', Water=304, Ethanol=30, Glycerol=10)
 H1_bst_sum = s1_bst.H + s2_bst.H
 H2_tmo_sum = s1_tmo.H + s2_tmo.H
+
+xs_1 = tmo.MultiStream()
+xs_1.molar_flow['l', ('Water', 'Ethanol')] = 20
+xs_1.molar_flow['g', ('Water', 'Propanol')] = 20

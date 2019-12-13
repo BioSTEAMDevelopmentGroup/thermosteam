@@ -12,6 +12,7 @@ from .settings import settings
 from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumetricFlow
 from .thermal_condition import ThermalCondition
 from .phase_container import new_phase_container
+from .utils import repr_kwargs, repr_kwarg
 
 __all__ = ('Stream',)
 
@@ -249,7 +250,9 @@ class Stream:
     
     def mix_from(self, others):
         if settings._debug: assert_same_chemicals(self, others)
-        self.molar_data[:] = sum([i.molar_data if isinstance(i, Stream) else i.chemical_flow for i in others])
+        isa = isinstance
+        self.molar_data[:] = sum([i.molar_data if isa(i, Stream)
+                                  else i.molar_data.sum(0) for i in others])
         self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
@@ -259,7 +262,8 @@ class Stream:
         s2.molar_data[:] = molar_data - dummy
         
     def link_with(self, other, TP=True, flow=True, phase=True):
-        if settings._debug: assert isinstance(other, self.__class__), "other must be of same type to link with"
+        if settings._debug:
+            assert isinstance(other, self.__class__), "other must be of same type to link with"
         other._molar_flow._data_cache.clear()
         if TP:
             self._TP = other._TP
@@ -275,7 +279,8 @@ class Stream:
         self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
     
     def copy_flow(self, other, IDs, *, remove=False, exclude=False):
-        if settings._debug: assert isinstance(other, self.__class__), "other must be of same type to copy flow"
+        if settings._debug:
+            assert isinstance(other, self.__class__), "other must be of same type to copy flow"
         if IDs is None:
             self.molar_data[:] = other.molar_data
             if remove: other.molar_data[:] = 0
@@ -309,10 +314,11 @@ class Stream:
     
     ### Representation ###
     
-    def _info_phaseTP(self, phases, T_units, P_units):
+    def _info_phaseTP(self, phase, T_units, P_units):
         T = _Q(self.T,'K').to(T_units).magnitude
         P = _Q(self.P, 'Pa').to(P_units).magnitude
-        return f" phase: '{phases}', T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
+        s = '' if isinstance(phase, str) else 's'
+        return f" phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
     
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
@@ -380,3 +386,11 @@ class Stream:
         """
         print(self._info(T, P, flow, N))
     _ipython_display_ = show
+    
+    def __repr__(self):
+        chemical_flows = repr_kwargs(self.chemicals.IDs, self.molar_data)
+        price = repr_kwarg('price', self.price)
+        return (f"{type(self).__name__}(phase={repr(self.phase)}, T={self.T:.2f}, "
+                f"P={self.P:.6g}{price}{chemical_flows})")
+        
+        

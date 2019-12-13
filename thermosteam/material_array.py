@@ -6,6 +6,7 @@ Created on Mon Dec  2 01:41:50 2019
 """
 
 from .base import Units
+from .utils import repr_kwargs, repr_couples
 from .settings import settings
 from .exceptions import UndefinedPhase
 from .phase_container import phase_container
@@ -583,15 +584,14 @@ class ChemicalArray(ArrayEmulator):
         if not tabs: tabs = 1
         tabs = int(tabs) 
         tab = tabs*4*" "
-        IDdata = [f"{ID}={i:.4g}" for ID, i in zip(self._chemicals.IDs, self._data) if i]
         phase = f"phase={repr(self.phase)}"
-        if len(IDdata) > 1 and tab:
+        if tab:
             dlim = ",\n" + tab
             phase = '\n' + tab + phase
         else:
             dlim = ", "
-        IDdata = dlim.join(IDdata)
-        return f"{type(self).__name__}({phase}{dlim}{IDdata})"
+        IDdata = repr_kwargs(self._chemicals.IDs, self._data, dlim)
+        return f"{type(self).__name__}({phase}{IDdata})"
     
     def __repr__(self):
         return self.__format__()
@@ -765,12 +765,13 @@ class PhaseArray(ArrayEmulator):
         if not tabs: tabs = 1
         tabs = int(tabs) 
         tab = tabs*4*" "
-        phase_data = [f"{phase}={i:.4g}" for phase, i in zip(self.phases, self.data) if i]
-        if len(phase_data) > 1 and tab:
+        if tab:
             dlim = ",\n" + tab
-            phase_data = "\n" + tab + dlim.join(phase_data)
+            start = '\n' + tab
         else:
-            phase_data = ', '.join(phase_data)
+            dlim = ', '
+            start = ""
+        phase_data = repr_kwargs(self.phases, self.data, start, dlim)
         return f"{type(self).__name__}({phase_data})"
     
     def __repr__(self):
@@ -983,7 +984,7 @@ class MaterialArray(ArrayEmulator):
         IDs = self._chemicals.IDs
         phase_data = []
         for phase, data in self.phase_data:
-            IDdata = ", ".join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
+            IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")
         tabs = int(tabs)
@@ -1019,9 +1020,9 @@ class MaterialArray(ArrayEmulator):
             basic_info = f"{type(self).__name__}:\n"
         all_IDs = tuple([IDs[i] for i in index])
 
-        # Length of species column
+        # Length of chemical column
         all_lengths = [len(i) for i in IDs]
-        maxlen = max(all_lengths + [8])  # include length of the word 'species'
+        maxlen = max(all_lengths + [8])
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''

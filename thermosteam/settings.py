@@ -44,7 +44,7 @@ class Settings:
         if not thermo:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
-                            "set ether.settings.thermo first")
+                            "set settings.thermo first")
         return thermo
     
     def get_chemicals(self, chemicals):
@@ -63,7 +63,7 @@ class Settings:
         if not mixture:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
-                            "set ether.settings.thermo first")
+                            "set settings.thermo first")
             mixture = thermo.mixture
         return mixture
     

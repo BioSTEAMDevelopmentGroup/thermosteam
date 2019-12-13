@@ -4,10 +4,11 @@ Created on Tue Dec 10 22:54:15 2019
 
 @author: yoelr
 """
-from .stream import Stream
+from .stream import Stream, assert_same_chemicals
+from .phase_container import new_phase_container
 from .base.units_of_measure import get_dimensionality
 from .thermal_condition import ThermalCondition
-from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
+from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow, nonzeros
 from .exceptions import DimensionError
 from .settings import settings
 
@@ -143,18 +144,18 @@ class MultiStream:
         return (self.chemicals.MW * self.molar_data).sum()
     @property
     def net_volumetric_flow(self):
-        return self.mixture.xV_at_TP(self.phase_data, self._TP).sum()
+        return self.mixture.xV_at_TP(self.molar_flow.phase_data, self._TP).sum()
 
     @property
     def H(self):
-        return self.mixture.xH_at_TP(self.phase_data, self._TP)
+        return self.mixture.xH_at_TP(self.molar_flow.phase_data, self._TP)
     @H.setter
     def H(self, H):
-        self.T = self.mixture.xsolve_T(self.phase, self.molar_data, H, self.T, self.P)
+        self.T = self.mixture.xsolve_T(self.molar_flow.phase_data, H, self.T, self.P)
 
     @property
     def S(self):
-        return self.mixture.xS_at_TP(self.phase_data, self._TP)
+        return self.mixture.xS_at_TP(self.molar_flow.phase_data, self._TP)
     
     @property
     def Hf(self):
@@ -168,7 +169,7 @@ class MultiStream:
     
     @property
     def C(self):
-        return self._get_flow_property('xCp')
+        return self.mixture.xCp_at_TP(self.molar_flow.phase_data, self._TP)
     
     ### Composition properties ###
     
@@ -184,7 +185,7 @@ class MultiStream:
         return mass_flow / net_mass_flow if net_mass_flow else mass_flow
     @property
     def volumetric_composition(self):
-        volumetric_flow = self._get_flow_property(self.mixture.V)
+        volumetric_flow = self.volumetric_data.values()
         net_volumetric_flow = volumetric_flow.sum()
         return volumetric_flow / net_volumetric_flow if net_volumetric_flow else volumetric_flow
     
@@ -236,3 +237,151 @@ class MultiStream:
             return self.mixture.xepsilon_at_TP(molar_flow / net, self._TP)
         else:
             return 0
+        
+    ### Methods ###
+        
+    def mix_from(self, others):
+        if settings._debug: assert_same_chemicals(self, others)
+        multi = []; single = []; isa = isinstance
+        for i in others:
+            (multi if isa(i, MultiStream) else single).append(i)
+        self.empty()
+        for i in single:
+            self.molar_flow[i.phase] += i.molar_data    
+        self.molar_data[:] += sum([i.molar_data for i in multi])
+        self.H = sum([i.H for i in others])
+        
+    def link_with(self, other, TP=True, flow=True, phase=True):
+        if settings._debug:
+            assert isinstance(other, self.__class__), "other must be of same type to link with"
+        other._molar_flow._data_cache.clear()
+        if TP:
+            self._TP = other._TP
+        if flow:
+            self._molar_flow._data = other._molar_flow._data
+        if phase:
+            self._molar_flow._phase = other._molar_flow._phase
+            
+    def unlink(self):
+        self._molar_flow._data_cache.clear()
+        self._TP = self._TP.copy()
+        self._molar_flow._data = self._molar_flow._data.copy()
+        self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
+    
+    def copy_like(self, other):
+        self.molar_data[:] = other.molar_data
+        self.TP.copy_like(other)
+    
+    def copy(self):
+        cls = self.__class__
+        new = cls.__new__(cls)
+        new._thermo = self._thermo
+        new._molar_flow = self._molar_flow.copy()
+        new._TP = self._TP.copy()
+        return new
+    
+    def empty(self):
+        self.molar_data[:] = 0
+        
+    ### Representation ###
+        
+    def _info(self, T, P, flow, N):
+        """Return string with all specifications."""
+        IDs = self.chemicals.IDs
+        basic_info = f"{type(self).__name__}:\n"
+        all_IDs, _ = nonzeros(self.chemicals.IDs, self.molar_flow.to_chemical_array(data=True))
+        all_IDs = tuple(all_IDs)
+        T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
+        basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
+        len_ = len(all_IDs)
+        if len_ == 0:
+            return basic_info + ' flow: 0' 
+
+        # Length of chemical column
+        all_lengths = [len(i) for i in all_IDs]
+        maxlen = max(all_lengths + [8]) 
+
+        # Get flow
+        flow_dim = get_dimensionality(flow_units)
+        if flow_dim == MolarFlow.units.dimensionality:
+            flow = 'molar_flow'
+        elif flow_dim == MassFlow.units.dimensionality:
+            flow = 'mass_flow'
+        elif flow_dim == VolumetricFlow.units.dimensionality:
+            flow = 'volumetric_flow'
+        else:
+            raise DimensionError(f"dimensions for flow units must be in "
+                                 f"molar, mass or volumetric flow rates, not '{flow_dim}'")
+        basic_info += ' ' + flow + f' ({flow_units}):\n'
+        flow = getattr(self, flow)
+
+        # Set up chemical data for all phases
+        phases_flowrates_info = ''
+        for phase in self.phases:
+            phase_data = flow.get_data(flow_units, phase, all_IDs)
+            IDs, data = nonzeros(all_IDs, phase_data)
+            if not IDs: continue
+        
+            # Get basic structure for phase data
+            beginning = f' ({phase}) '
+            new_line_spaces = len(beginning) * ' '
+
+            # Set chemical data
+            flowrates = ''
+            l = len(data)
+            lengths = [len(i) for i in IDs]
+            _N = N - 1
+            for i in range(l-1):
+                spaces = ' ' * (maxlen - lengths[i])
+                if i == _N:
+                    flowrates += '...\n' + new_line_spaces
+                    break
+                flowrates += f'{IDs[i]} ' + spaces + \
+                    f' {data[i]:.4g}\n' + new_line_spaces
+            spaces = ' ' * (maxlen - lengths[l-1])
+            flowrates += (f'{IDs[l-1]} ' + spaces
+                          + f' {data[l-1]:.4g}')
+
+            # Put it together
+            phases_flowrates_info += beginning + flowrates + '\n'
+            
+        return basic_info + phases_flowrates_info[:-1]
+
+    def show(self, T=None, P=None, flow=None, N=None):
+        """Print all specifications.
+        
+        Parameters
+        ----------
+        T: str, optional
+            Temperature units.
+        P: str, optional
+            Pressure units.
+        flow: str, optional
+            Flow rate units.
+        N: int, optional
+            Number of compounds to display.
+        
+        Notes
+        -----
+        Default values are stored in `Stream.display_units`.
+        
+        """
+        print(self._info(T, P, flow, N))
+    _ipython_display_ = show
+    
+    def __repr__(self):
+        from .utils import repr_kwarg, repr_couples
+        IDs = self.chemicals.IDs
+        phase_data = []
+        for phase, data in self.molar_flow.phase_data:
+            IDdata = repr_couples(", ", IDs, data)
+            if IDdata:
+                phase_data.append(f"{phase}=[{IDdata}]")
+        dlim = ", "
+        phase_data = dlim.join(phase_data)
+        phases = f'phases={self.phases}'
+        if phase_data:
+            phase_data = dlim + phase_data
+        price = repr_kwarg('price', self.price)
+        return (f"{type(self).__name__}({phases}, T={self.T:.2f}, "
+                f"P={self.P:.6g}{price}{phase_data})")
