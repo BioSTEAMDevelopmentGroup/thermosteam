@@ -8,14 +8,15 @@ from .stream import Stream, assert_same_chemicals
 from .phase_container import new_phase_container
 from .base.units_of_measure import get_dimensionality
 from .thermal_condition import ThermalCondition
-from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow, nonzeros
+from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
 from .exceptions import DimensionError
 from .settings import settings
+from .equilibrium import VLE, BubblePoint, DewPoint
 
 __all__ = ('MultiStream', )
 
 class MultiStream:
-    __slots__ = ('_molar_flow', '_TP', '_thermo', '_streams', 'price')
+    __slots__ = ('_molar_flow', '_TP', '_thermo', '_streams', 'price', '_vle')
     
     display_units = Stream.display_units
     
@@ -287,11 +288,43 @@ class MultiStream:
     
     def empty(self):
         self.molar_data[:] = 0
+    
+    ### Equilibrium ###
+    @property
+    def vle(self):
+        return VLE(self._molar_flow, self._TP, thermo=self._thermo)
+    
+    @property
+    def equilibrium_chemicals(self):
+        chemicals = self.chemicals
+        chemicals_tuple = chemicals.tuple
+        indices = chemicals.equilibrium_indices(self.molar_data.sum(0) != 0)
+        return [chemicals_tuple[i] for i in indices]
+    
+    @property
+    def equilibrium_composition(self):
+        molar_data = self.molar_data
+        indices = self.chemicals.equilibrium_indices(molar_data != 0)
+        flow = molar_data[:, indices].sum(0)
+        netflow = flow.sum()
+        assert netflow, "no equlibrium chemicals present"
+        return flow / netflow  
+    
+    @property
+    def bubble_point(self):
+        bp = BubblePoint(self.equilibrium_chemicals, self._thermo)
+        return bp
+    
+    @property
+    def dew_point(self):
+        bp = DewPoint(self.equilibrium_chemicals, self._thermo)
+        return bp
         
     ### Representation ###
-        
+    
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
+        from .material_array import nonzeros
         IDs = self.chemicals.IDs
         basic_info = f"{type(self).__name__}:\n"
         all_IDs, _ = nonzeros(self.chemicals.IDs, self.molar_flow.to_chemical_array(data=True))

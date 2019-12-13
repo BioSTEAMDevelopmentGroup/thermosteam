@@ -4,7 +4,6 @@ Created on Tue Nov 26 02:34:56 2019
 
 @author: yoelr
 """
-from .material_array import nonzeros, MaterialArray
 from .base.units_of_measure import get_dimensionality, _Q
 from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
@@ -12,7 +11,7 @@ from .settings import settings
 from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumetricFlow
 from .thermal_condition import ThermalCondition
 from .phase_container import new_phase_container
-from .utils import repr_kwargs, repr_kwarg
+from .equilibrium import BubblePoint, DewPoint
 
 __all__ = ('Stream',)
 
@@ -293,6 +292,34 @@ class Stream:
     def empty(self):
         self.molar_data[:] = 0
     
+    ### Equilibrium ###
+
+    @property
+    def equilibrium_chemicals(self):
+        chemicals = self.chemicals
+        chemicals_tuple = chemicals.tuple
+        indices = chemicals.equilibrium_indices(self.molar_data != 0)
+        return [chemicals_tuple[i] for i in indices]
+    
+    @property
+    def equilibrium_composition(self):
+        molar_data = self.molar_data
+        indices = self.chemicals.equilibrium_indices(molar_data != 0)
+        flow = molar_data[indices]
+        netflow = flow.sum()
+        assert netflow, "no equlibrium chemicals present"
+        return flow / netflow  
+    
+    @property
+    def bubble_point(self):
+        bp = BubblePoint(self.equilibrium_chemicals(), self._thermo)
+        return bp
+    
+    @property
+    def dew_point(self):
+        bp = DewPoint(self.equilibrium_chemicals(), self._thermo)
+        return bp
+    
     ### Representation ###
     
     def _info_phaseTP(self, phase, T_units, P_units):
@@ -303,6 +330,7 @@ class Stream:
     
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
+        from .material_array import nonzeros
         basic_info = f"{type(self).__name__}:\n"
         IDs = self.chemicals.IDs
         data = self.molar_flow.data
@@ -369,6 +397,7 @@ class Stream:
     _ipython_display_ = show
     
     def __repr__(self):
+        from .utils import repr_kwargs, repr_kwarg
         chemical_flows = repr_kwargs(self.chemicals.IDs, self.molar_data)
         price = repr_kwarg('price', self.price)
         return (f"{type(self).__name__}(phase={repr(self.phase)}, T={self.T:.2f}, "

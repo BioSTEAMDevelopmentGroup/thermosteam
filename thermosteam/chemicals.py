@@ -275,15 +275,15 @@ class CompiledChemicals(Chemicals):
     def __iter__(self):
         return iter(self.tuple)
         
-    def _equilibrium_indices(self, nonzero):
+    def equilibrium_indices(self, nonzero):
         """Return indices of species in equilibrium."""
         return np.where(self._has_equilibrium & nonzero)[0]
 
-    def _heavy_indices(self, nonzero):
+    def heavy_indices(self, nonzero):
         """Return indices of heavy species not in equilibrium."""
         return np.where(self._isheavy & nonzero)[0]
 
-    def _light_indices(self, nonzero):
+    def light_indices(self, nonzero):
         """Return indices of light species not in equilibrium."""
         return np.where(self._islight & nonzero)[0]
     

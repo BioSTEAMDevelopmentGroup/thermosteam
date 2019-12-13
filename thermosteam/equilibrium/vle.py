@@ -306,15 +306,15 @@ class VLE:
                 index = chemicals.indices(IDs)
             else:
                 # TODO: Fix this according to equilibrium indices
-                index = chemicals._equilibrium_indices(notzero)
+                index = chemicals.equilibrium_indices(notzero)
             if LNK:
                 LNK_index = chemicals.indices(LNK)
             else:
-                LNK_index = chemicals._light_indices(notzero)
+                LNK_index = chemicals.light_indices(notzero)
             if HNK:
                 HNK_index = chemicals.indices(HNK)
             else:
-                HNK_index = chemicals._heavy_indices(notzero)
+                HNK_index = chemicals.heavy_indices(notzero)
             
             self._N = N = len(index)
             eq_chems = chemicals.tuple
@@ -705,26 +705,38 @@ class VLE:
             self._v = v = self._molnet*self._V*x/x.sum()*self._Ks            
         return v
 
+    def _set_V(self, V):
+        if V > 1.:
+            V = 1.
+        elif V < 0.:
+            V = 0.
+        self._V = V        
+
     def _V_error(self, V):
         """Vapor fraction error."""
-        return (self._zs*(self._Ks-1.)/(1.+V*(self._Ks-1.))).sum()
+        V = (self._zs*(self._Ks-1.)/(1.+V*(self._Ks-1.))).sum()
+        self._set_V(V)
+        return V
 
     def _solve_V_N(self):
         """Update V for N components."""
-        self._V = self.solver(self._V_error, 0, 1,
-                             self._V_error(0), self._V_error(1),
-                             self._V, 0, 1e-4, 1e-7)
-        return self._V
+        V = self.solver(self._V_error, 0, 1,
+                        self._V_error(0), self._V_error(1),
+                        self._V, 0, 1e-4, 1e-7)
+        self._set_V(V)
+        return V
 
     def _solve_V_2(self):
         """Update V for 2 components."""
-        self._V = V_2N(self._zs, self._Ks)
-        return self._V
+        V = V_2N(self._zs, self._Ks)
+        self._set_V(V)
+        return V
     
     def _solve_V_3(self):
         """Update V for 3 components."""
-        self._V = V_3N(self._zs, self._Ks)
-        return self._V
+        V = V_3N(self._zs, self._Ks)
+        self._set_V(V)
+        return V
 
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
