@@ -5,7 +5,6 @@ Created on Tue Dec 10 22:54:15 2019
 @author: yoelr
 """
 from .stream import Stream, assert_same_chemicals
-from .phase_container import new_phase_container
 from .base.units_of_measure import get_dimensionality
 from .thermal_condition import ThermalCondition
 from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
@@ -26,6 +25,10 @@ class MultiStream:
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
         self._load_flow(flow, phases, thermo.chemicals, phase_flows)
         self._streams = {}
+        if 'l' in phases and 'g' in phases:
+            self._vle = VLE(self._molar_flow, self._TP, thermo=self._thermo)
+        else:
+            self._vle = None
         self.price = price
         if units:
             dimensionality = get_dimensionality(units)
@@ -114,22 +117,50 @@ class MultiStream:
     @property
     def molar_data(self):
         return self._molar_flow._data
+    @molar_data.setter
+    def molar_data(self, value):
+        if self.molar_data is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def mass_data(self):
         return self.mass_flow._data
+    @mass_data.setter
+    def mass_data(self, value):
+        if self.mass_data is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def volumetric_data(self):
         return self.volumetric_flow._data
-    
+    @volumetric_data.setter
+    def volumetric_data(self, value):
+        if self.volumetric_data is not value:
+            raise AttributeError("cannot replace attribute")
+        
     @property
     def molar_flow(self):
         return self._molar_flow
+    @molar_flow.setter
+    def molar_flow(self, value):
+        if self._molar_flow is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def mass_flow(self):
         return self._molar_flow.by_mass()
+    @mass_flow.setter
+    def mass_flow(self, value):
+        if self.mass_flow is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def volumetric_flow(self):
         return self._molar_flow.by_volume(self._TP)
+    @volumetric_flow.setter
+    def volumetric_flow(self, value):
+        if self.volumetric_flow is not value:
+            raise AttributeError("cannot replace attribute")
     
     ### Net flow properties ###
     
@@ -257,22 +288,20 @@ class MultiStream:
         s1.molar_data[:] = dummy = molar_data * split
         s2.molar_data[:] = molar_data - dummy
         
-    def link_with(self, other, TP=True, flow=True, phase=True):
+    def link_with(self, other):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
         other._molar_flow._data_cache.clear()
-        if TP:
-            self._TP = other._TP
-        if flow:
-            self._molar_flow._data = other._molar_flow._data
-        if phase:
-            self._molar_flow._phase = other._molar_flow._phase
+        self._TP = other._TP
+        self._molar_flow._data = other._molar_flow._data
+        self._streams = other._streams
+        self._vle = other._vle
             
     def unlink(self):
         self._molar_flow._data_cache.clear()
-        self._TP = self._TP.copy()
+        self._TP = TP = self._TP.copy()
         self._molar_flow._data = self._molar_flow._data.copy()
-        self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
+        self._vle = VLE(self.molar_data, TP)
     
     def copy_like(self, other):
         self.molar_data[:] = other.molar_data
@@ -283,7 +312,8 @@ class MultiStream:
         new = cls.__new__(cls)
         new._thermo = self._thermo
         new._molar_flow = self._molar_flow.copy()
-        new._TP = self._TP.copy()
+        new._TP = TP = self._TP.copy()
+        new._vle = VLE(self.molar_data, TP)
         return new
     
     def empty(self):
@@ -292,22 +322,22 @@ class MultiStream:
     ### Equilibrium ###
     @property
     def vle(self):
-        return VLE(self._molar_flow, self._TP, thermo=self._thermo)
+        return self._vle
     
     @property
     def z_chemicals(self):
-        molar_data = self.molar_data
+        molar_data = self.molar_data.sum(0)
         chemicals = self.chemicals
         indices = chemicals.equilibrium_indices(molar_data != 0)
         flow = molar_data[indices]
         netflow = flow.sum()
-        assert netflow, "no equlibrium chemicals present"
+        assert netflow, "no equilibrium chemicals present"
         z = flow / netflow  
         chemicals_tuple = chemicals.tuple
         return z, [chemicals_tuple[i] for i in indices]
     
     @property
-    def equilibrim_chemicals(self):
+    def equilibrium_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         molar_data = self.molar_data.sum(0)
@@ -320,17 +350,17 @@ class MultiStream:
         indices = self.chemicals.equilibrium_indices(molar_data != 0)
         flow = molar_data[indices]
         netflow = flow.sum()
-        assert netflow, "no equlibrium chemicals present"
+        assert netflow, "no equilibrium chemicals present"
         return flow / netflow  
     
     @property
     def bubble_point(self):
-        bp = BubblePoint(self.equilibrim_chemicals, self._thermo)
+        bp = BubblePoint(self.equilibrium_chemicals, self._thermo)
         return bp
     
     @property
     def dew_point(self):
-        bp = DewPoint(self.equilibrim_chemicals, self._thermo)
+        bp = DewPoint(self.equilibrium_chemicals, self._thermo)
         return bp
     
     @property

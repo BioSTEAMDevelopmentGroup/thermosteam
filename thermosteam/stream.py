@@ -22,6 +22,7 @@ def assert_same_chemicals(stream, others):
     chemicals = stream.chemicals
     assert all([chemicals == i.chemicals for i in others]), "chemicals must match to mix streams"
 
+
 # %%
 
 class Stream:
@@ -119,22 +120,50 @@ class Stream:
     @property
     def molar_data(self):
         return self._molar_flow._data
+    @molar_data.setter
+    def molar_data(self, value):
+        if self.molar_data is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def mass_data(self):
         return self.mass_flow._data
+    @mass_data.setter
+    def mass_data(self, value):
+        if self.mass_data is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def volumetric_data(self):
         return self.volumetric_flow._data
-    
+    @volumetric_data.setter
+    def volumetric_data(self, value):
+        if self.volumetric_data is not value:
+            raise AttributeError("cannot replace attribute")
+        
     @property
     def molar_flow(self):
         return self._molar_flow
+    @molar_flow.setter
+    def molar_flow(self, value):
+        if self._molar_flow is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def mass_flow(self):
         return self._molar_flow.by_mass()
+    @mass_flow.setter
+    def mass_flow(self, value):
+        if self.mass_flow is not value:
+            raise AttributeError("cannot replace attribute")
+    
     @property
     def volumetric_flow(self):
         return self._molar_flow.by_volume(self._TP)
+    @volumetric_flow.setter
+    def volumetric_flow(self, value):
+        if self.volumetric_flow is not value:
+            raise AttributeError("cannot replace attribute")
     
     ### Net flow properties ###
     
@@ -300,7 +329,7 @@ class Stream:
         indices = chemicals.equilibrium_indices(molar_data != 0)
         flow = molar_data[indices]
         netflow = flow.sum()
-        assert netflow, "no equlibrium chemicals present"
+        assert netflow, "no equilibrium chemicals present"
         z = flow / netflow  
         chemicals_tuple = chemicals.tuple
         return z, [chemicals_tuple[i] for i in indices]
@@ -318,7 +347,7 @@ class Stream:
         indices = self.chemicals.equilibrium_indices(molar_data != 0)
         flow = molar_data[indices]
         netflow = flow.sum()
-        assert netflow, "no equlibrium chemicals present"
+        assert netflow, "no equilibrium chemicals present"
         return flow / netflow  
     
     @property

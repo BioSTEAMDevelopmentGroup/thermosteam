@@ -55,7 +55,7 @@ dT_tmo, dx_at_P_tmo = dp_tmo.solve_Tx(z, P_dp)
 
 # %% Test Equilibrium
 
-# thermosteam is 3x faster than BioSTEAM
+# thermosteam is up to 10x faster than BioSTEAM
 vle = tmo.VLE(molar_flow)
 vle(T=400, P=101325)
 
