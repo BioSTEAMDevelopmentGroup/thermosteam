@@ -685,14 +685,14 @@ class PhaseArray(ArrayEmulator):
     def phases(self):
         return self._phases
     
-    def phase_split(self, data=False):
+    def split(self, data=False):
         array = self._data
         total = array.sum()
-        phase_split = array/total if total else array.copy()
+        split = array/total if total else array.copy()
         if data:
-            return phase_split
+            return split
         else:
-            return PhaseArray.from_data(phase_split, self._phases)
+            return PhaseArray.from_data(split, self._phases)
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(phases)
@@ -820,7 +820,7 @@ class PhaseArray(ArrayEmulator):
             
 
 class MaterialArray(ArrayEmulator):
-    __slots__ = ('_chemicals', '_phases', '_phase_index', '_phase_data', '_data_cache')
+    __slots__ = ('_chemicals', '_phases', '_phase_index', '_data_cache')
     _index_caches = {}
     _ChemicalArray = ChemicalArray
     _PhaseArray = PhaseArray
@@ -850,22 +850,22 @@ class MaterialArray(ArrayEmulator):
         else:
             return MaterialArray.from_data(composition, self._phases, self._chemicals)
     
-    def phase_composition(self, data=False):
+    def split(self, data=False):
+        array = self._data
+        split = array.sum(0, keepdims=True)
+        split[split == 0] = 1.
+        if data:
+            return split
+        else:
+            return MaterialArray.from_data(array/split,
+                                           self._phases, self._chemicals)
+    
+    def composition_by_phase(self, data=False):
         array = self._data
         phase_array = array.sum(1, keepdims=True)
         phase_array[phase_array == 0] = 1.
         if data:
-            return phase_array
-        else:
-            return MaterialArray.from_data(array/phase_array,
-                                           self._phases, self._chemicals)
-    
-    def phase_split(self, data=False):
-        array = self._data
-        phase_array = array.sum(0, keepdims=True)
-        phase_array[phase_array == 0] = 1.
-        if data:
-            return phase_array
+            return array/phase_array
         else:
             return MaterialArray.from_data(array/phase_array,
                                            self._phases, self._chemicals)
@@ -972,18 +972,19 @@ class MaterialArray(ArrayEmulator):
     
     _get_phase_index = PhaseArray._get_phase_index
     
-    @property
-    def phase_data(self):
-        try:
-            phase_data = self._phase_data
-        except:
-            self._phase_data = phase_data = tuple(zip(self._phases, self._data))
-        return phase_data
+    def iter_phase_data(self):
+        return zip(self._phases, self._data)
+    
+    def iter_phase_composition(self):
+        array = self._data
+        phase_array = array.sum(1, keepdims=True)
+        phase_array[phase_array == 0] = 1.
+        return zip(self._phases, array/phase_array)
     
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
         phase_data = []
-        for phase, data in self.phase_data:
+        for phase, data in self.iter_phase_data():
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")

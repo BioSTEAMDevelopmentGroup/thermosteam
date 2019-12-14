@@ -280,7 +280,7 @@ class VLE:
         self._mixture = thermo.mixture
         self._molar_data = molar_data
         self._TP = thermal_condition or ThermalCondition(298.15, 101325.)
-        self._phase_data = molar_data.phase_data
+        self._phase_data = tuple(molar_data.iter_phase_data())
         self._liquid_mol = liquid_mol = molar_data['l']
         self._vapor_mol = molar_data['g']
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)

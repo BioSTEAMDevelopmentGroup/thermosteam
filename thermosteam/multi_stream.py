@@ -10,14 +10,20 @@ from .thermal_condition import ThermalCondition
 from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
 from .exceptions import DimensionError
 from .settings import settings
-from .equilibrium import VLE, BubblePoint, DewPoint
+from .equilibrium import VLE
+from .utils import define_from
 
 __all__ = ('MultiStream', )
 
+shared_properties = (
+    'thermo', 'mixture', 'chemicals', 'thermal_condition', 'T', 'P', 'cost', 'get_property',
+    'molar_data', 'mass_data', 'volumetric_data', 'molar_flow', 'mass_flow', 'volumetric_flow',
+    'bubble_point', 'dew_point', 'T_bubble', 'T_dew', 'P_bubble', 'P_dew', 'Hf', 'Hc',
+    'net_molar_flow', 'net_mass_flow', 'empty', 'show', 'display_units', '_ipython_display_',
+)
+@define_from(Stream, shared_properties)
 class MultiStream:
-    __slots__ = ('_molar_flow', '_TP', '_thermo', '_streams', 'price', '_vle')
-    
-    display_units = Stream.display_units
+    __slots__ = ('_molar_flow', '_TP', '_thermo', '_streams', '_vle', 'price')
     
     def __init__(self, flow=(), T=298.15, P=101325., phases='lg', units=None,
                  thermo=None, price=None, **phase_flows):
@@ -70,138 +76,38 @@ class MultiStream:
             stream._thermo = self._thermo
             streams[phase] = stream
         return stream
-        
-    def get_property(self, name, units=None):
-        value = getattr(self, name)
-        if units:
-            mixture_property = getattr(self.mixture, name)
-            factor = mixture_property.units.to(units)
-            return value * factor
-        else:
-            return value
     
     ### Stream data ###
-    
-    @property
-    def thermo(self):
-        return self._thermo
-    @property
-    def chemicals(self):
-        return self._thermo.chemicals
-    @property
-    def mixture(self):
-        return self._thermo.mixture
-    
-    @property
-    def thermal_condition(self):
-        return self._TP
-
-    @property
-    def T(self):
-        return self._TP.T
-    @T.setter
-    def T(self, T):
-        self._TP.T = T
-    
-    @property
-    def P(self):
-        return self._TP.P
-    @P.setter
-    def P(self, P):
-        self._TP.P = P
     
     @property
     def phases(self):
         return self._molar_flow._phases
     
-    @property
-    def molar_data(self):
-        return self._molar_flow._data
-    @molar_data.setter
-    def molar_data(self, value):
-        if self.molar_data is not value:
-            raise AttributeError("cannot replace attribute")
-    
-    @property
-    def mass_data(self):
-        return self.mass_flow._data
-    @mass_data.setter
-    def mass_data(self, value):
-        if self.mass_data is not value:
-            raise AttributeError("cannot replace attribute")
-    
-    @property
-    def volumetric_data(self):
-        return self.volumetric_flow._data
-    @volumetric_data.setter
-    def volumetric_data(self, value):
-        if self.volumetric_data is not value:
-            raise AttributeError("cannot replace attribute")
-        
-    @property
-    def molar_flow(self):
-        return self._molar_flow
-    @molar_flow.setter
-    def molar_flow(self, value):
-        if self._molar_flow is not value:
-            raise AttributeError("cannot replace attribute")
-    
-    @property
-    def mass_flow(self):
-        return self._molar_flow.by_mass()
-    @mass_flow.setter
-    def mass_flow(self, value):
-        if self.mass_flow is not value:
-            raise AttributeError("cannot replace attribute")
-    
-    @property
-    def volumetric_flow(self):
-        return self._molar_flow.by_volume(self._TP)
-    @volumetric_flow.setter
-    def volumetric_flow(self, value):
-        if self.volumetric_flow is not value:
-            raise AttributeError("cannot replace attribute")
     
     ### Net flow properties ###
     
     @property
-    def cost(self):
-        return self.price * self.net_mass_flow
-    
-    @property
-    def net_molar_flow(self):
-        return self.molar_data.sum()
-    @property
-    def net_mass_flow(self):
-        return (self.chemicals.MW * self.molar_data).sum()
-    @property
     def net_volumetric_flow(self):
-        return self.mixture.xV_at_TP(self.molar_flow.phase_data, self._TP).sum()
+        return self.mixture.xV_at_TP(self.molar_flow.iter_phase_data(), self._TP).sum()
 
     @property
     def H(self):
-        return self.mixture.xH_at_TP(self.molar_flow.phase_data, self._TP)
+        return self.mixture.xH_at_TP(self.molar_flow.iter_phase_data(), self._TP)
     @H.setter
     def H(self, H):
-        self.T = self.mixture.xsolve_T(self.molar_flow.phase_data, H, self.T, self.P)
+        self.T = self.mixture.xsolve_T(self.molar_flow.iter_phase_data(), H, self.T, self.P)
 
     @property
     def S(self):
-        return self.mixture.xS_at_TP(self.molar_flow.phase_data, self._TP)
+        return self.mixture.xS_at_TP(self.molar_flow.iter_phase_data(), self._TP)
     
-    @property
-    def Hf(self):
-        return (self.chemicals.Hf * self.molar_data).sum()
-    @property
-    def Hc(self):
-        return (self.chemicals.Hc * self.molar_data).sum()    
     @property
     def Hvap(self):
         return self.mixture.Hvap_at_TP(self._molar_flow['l'], self._TP)
     
     @property
     def C(self):
-        return self.mixture.xCp_at_TP(self.molar_flow.phase_data, self._TP)
+        return self.mixture.xCp_at_TP(self.molar_flow.iter_phase_data(), self._TP)
     
     ### Composition properties ###
     
@@ -223,36 +129,20 @@ class MultiStream:
     
     @property
     def V(self):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return self.mixture.xV_at_TP(zip(self.phases, molar_data / net_molar_data), self._TP)
-        else:
-            return 0
+        return self.mixture.xV_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
+        
     @property
     def kappa(self):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return self.mixture.xkappa_at_TP(zip(self.phases, molar_data / net_molar_data), self._TP)
-        else:
-            return 0
+        return self.mixture.xkappa_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
+        
     @property
     def Cp(self):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return self.mixture.xCp_at_TP(zip(self.phases, molar_data / net_molar_data), self._TP)
-        else:
-            return 0
+        return self.mixture.xCp_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
+        
     @property
     def mu(self):
-        molar_data = self.molar_data
-        net_molar_data = molar_data.sum()
-        if net_molar_data:
-            return self.mixture.xmu_at_TP(zip(self.phases, molar_data / net_molar_data), self._TP)
-        else:
-            return 0
+        return self.mixture.xmu_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
+
     @property
     def sigma(self):
         molar_flow = self._molar_flow['l']
@@ -266,7 +156,7 @@ class MultiStream:
         molar_flow = self._molar_flow['l']
         net = molar_flow.sum()
         if net:
-            return self.mixture.xepsilon_at_TP(molar_flow / net, self._TP)
+            return self.mixture.epsilon_at_TP(molar_flow / net, self._TP)
         else:
             return 0
         
@@ -298,10 +188,11 @@ class MultiStream:
         self._vle = other._vle
             
     def unlink(self):
-        self._molar_flow._data_cache.clear()
+        molar_flow = self._molar_flow
+        molar_flow._data_cache.clear()
         self._TP = TP = self._TP.copy()
-        self._molar_flow._data = self._molar_flow._data.copy()
-        self._vle = VLE(self.molar_data, TP)
+        molar_flow._data = self._molar_flow._data.copy()
+        self._vle = VLE(molar_flow, TP)
     
     def copy_like(self, other):
         self.molar_data[:] = other.molar_data
@@ -315,9 +206,6 @@ class MultiStream:
         new._TP = TP = self._TP.copy()
         new._vle = VLE(self.molar_data, TP)
         return new
-    
-    def empty(self):
-        self.molar_data[:] = 0
     
     ### Equilibrium ###
     @property
@@ -341,7 +229,7 @@ class MultiStream:
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         molar_data = self.molar_data.sum(0)
-        indices = chemicals.equilibrium_indices(molar_data)
+        indices = chemicals.equilibrium_indices(molar_data != 0)
         return [chemicals_tuple[i] for i in indices]
     
     @property
@@ -352,40 +240,6 @@ class MultiStream:
         netflow = flow.sum()
         assert netflow, "no equilibrium chemicals present"
         return flow / netflow  
-    
-    @property
-    def bubble_point(self):
-        bp = BubblePoint(self.equilibrium_chemicals, self._thermo)
-        return bp
-    
-    @property
-    def dew_point(self):
-        bp = DewPoint(self.equilibrium_chemicals, self._thermo)
-        return bp
-    
-    @property
-    def T_bubble(self):
-        z, chemicals = self.z_chemicals
-        bp = BubblePoint(chemicals, self._thermo)
-        return bp.solve_Ty(z, self.P)[0]
-    
-    @property
-    def T_dew(self):
-        z, chemicals = self.z_chemicals
-        dp = DewPoint(chemicals, self._thermo)
-        return dp.solve_Tx(z, self.P)[0]
-    
-    @property
-    def P_bubble(self):
-        z, chemicals = self.z_chemicals
-        bp = BubblePoint(chemicals, self._thermo)
-        return bp.solve_Py(z, self.T)[0]
-    
-    @property
-    def P_dew(self):
-        z, chemicals = self.z_chemicals
-        dp = DewPoint(chemicals, self._thermo)
-        return dp.solve_Px(z, self.T)[0]
     
     ### Representation ###
     
@@ -454,34 +308,12 @@ class MultiStream:
             phases_flowrates_info += beginning + flowrates + '\n'
             
         return basic_info + phases_flowrates_info[:-1]
-
-    def show(self, T=None, P=None, flow=None, N=None):
-        """Print all specifications.
-        
-        Parameters
-        ----------
-        T: str, optional
-            Temperature units.
-        P: str, optional
-            Pressure units.
-        flow: str, optional
-            Flow rate units.
-        N: int, optional
-            Number of compounds to display.
-        
-        Notes
-        -----
-        Default values are stored in `Stream.display_units`.
-        
-        """
-        print(self._info(T, P, flow, N))
-    _ipython_display_ = show
     
     def __repr__(self):
         from .utils import repr_kwarg, repr_couples
         IDs = self.chemicals.IDs
         phase_data = []
-        for phase, data in self.molar_flow.phase_data:
+        for phase, data in self.molar_flow.iter_phase_data():
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")
@@ -493,3 +325,5 @@ class MultiStream:
         price = repr_kwarg('price', self.price)
         return (f"{type(self).__name__}({phases}, T={self.T:.2f}, "
                 f"P={self.P:.6g}{price}{phase_data})")
+    
+del shared_properties

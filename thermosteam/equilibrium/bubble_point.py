@@ -48,6 +48,15 @@ class BubblePoint:
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
     
+    def __call__(self, z, *, T=None, P=None):
+        if T:
+            if P: raise ValueError("may specify either T or P, not both")
+            return self.solve_Py(z, T)
+        elif P:
+            return self.solve_Ty(z, P)
+        else:
+            raise ValueError("must specify either T or P")
+    
     def solve_Ty(self, z, P):
         """Bubble point at given composition and pressure
 

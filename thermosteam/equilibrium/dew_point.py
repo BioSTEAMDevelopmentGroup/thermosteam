@@ -49,6 +49,15 @@ class DewPoint:
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
+    def __call__(self, z, *, T=None, P=None):
+        if T:
+            if P: raise ValueError("may specify either T or P, not both")
+            return self.solve_Px(z, T)
+        elif P:
+            return self.solve_Tx(z, P)
+        else:
+            raise ValueError("must specify either T or P")
+    
     def solve_Tx(self, z, P):
         """Dew point given composition and pressure.
 
