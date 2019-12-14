@@ -196,6 +196,7 @@ class MultiStream(Stream):
     def copy(self):
         cls = self.__class__
         new = cls.__new__(cls)
+        new._ID = None
         new._thermo = self._thermo
         new._molar_flow = self._molar_flow.copy()
         new._TP = TP = self._TP.copy()
@@ -304,7 +305,7 @@ class MultiStream(Stream):
             
         return basic_info + phases_flowrates_info[:-1]
     
-    def __repr__(self):
+    def print(self):
         from .utils import repr_kwarg, repr_couples
         IDs = self.chemicals.IDs
         phase_data = []
@@ -318,6 +319,6 @@ class MultiStream(Stream):
         if phase_data:
             phase_data = dlim + phase_data
         price = repr_kwarg('price', self.price)
-        return (f"{type(self).__name__}(ID={self.ID}, {phases}, T={self.T:.2f}, "
-                f"P={self.P:.6g}{price}{phase_data})")
+        print(f"{type(self).__name__}(ID={repr(self.ID)}, {phases}, T={self.T:.2f}, "
+              f"P={self.P:.6g}{price}{phase_data})")
     

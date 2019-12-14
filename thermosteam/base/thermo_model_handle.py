@@ -64,7 +64,8 @@ class ThermoModelHandle:
         return bool(self.models)
     
     def copy(self):
-        return type(self)(self.models.copy())
+        return self.__class__(self.models.copy())
+    __copy__ = copy
     
     def model(self, evaluate,
               Tmin=None, Tmax=None,

@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
-from ..base.utils import shallow_copy
+from ..base.utils import maybe_copy
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
 from .phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -208,11 +208,12 @@ class Chemical:
         setfield = setattr
         for field in self.__slots__: 
             value = getfield(self, field)
-            setfield(new, field, shallow_copy(value))
+            setfield(new, field, maybe_copy(value))
         new._init_energies(new.Cp, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
                            new._locked_state.phase)
         return new
+    __copy__ = copy
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
                     pubchemid, iupac_name, common_name):

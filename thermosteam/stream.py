@@ -57,6 +57,7 @@ class Stream:
             else:
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
+        self._ID = None
         self.ID = ID
         
     @classmethod
@@ -71,7 +72,10 @@ class Stream:
 
     @ID.setter
     def ID(self, ID):
-        if ID == "": ID = self._take_ticket()
+        if ID == "":
+            ID = self._take_ticket()
+        elif self._ID and self._ID in stream_register:
+            del stream_register[self._ID]
         stream_register[ID] = self
     
     def _load_flow(self, flow, phase, chemicals, chemical_flows):
@@ -147,7 +151,7 @@ class Stream:
     @mol.setter
     def mol(self, value):
         if self.mol is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
     
     @property
     def mass(self):
@@ -155,7 +159,7 @@ class Stream:
     @mass.setter
     def mass(self, value):
         if self.mass is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
     
     @property
     def vol(self):
@@ -163,7 +167,7 @@ class Stream:
     @vol.setter
     def vol(self, value):
         if self.vol is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
         
     @property
     def molar_flow(self):
@@ -171,7 +175,7 @@ class Stream:
     @molar_flow.setter
     def molar_flow(self, value):
         if self._molar_flow is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
     
     @property
     def mass_flow(self):
@@ -179,7 +183,7 @@ class Stream:
     @mass_flow.setter
     def mass_flow(self, value):
         if self.mass_flow is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
     
     @property
     def volumetric_flow(self):
@@ -187,7 +191,7 @@ class Stream:
     @volumetric_flow.setter
     def volumetric_flow(self, value):
         if self.volumetric_flow is not value:
-            raise AttributeError("cannot replace attribute")
+            raise AttributeError("cannot replace attribute with another object")
     
     ### Net flow properties ###
     
@@ -317,10 +321,12 @@ class Stream:
     def copy(self):
         cls = self.__class__
         new = cls.__new__(cls)
+        new._ID = None
         new._thermo = self._thermo
         new._molar_flow = self._molar_flow.copy()
         new._TP = self._TP.copy()
         return new
+    __copy__ = copy
     
     def empty(self):
         self.mol[:] = 0
@@ -476,7 +482,7 @@ class Stream:
         from .utils import repr_kwargs, repr_kwarg
         chemical_flows = repr_kwargs(self.chemicals.IDs, self.mol)
         price = repr_kwarg('price', self.price)
-        return (f"{type(self).__name__}(ID={self.ID}, phase={repr(self.phase)}, T={self.T:.2f}, "
-                f"P={self.P:.6g}{price}{chemical_flows})")
+        print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
+              f"P={self.P:.6g}{price}{chemical_flows})")
         
         

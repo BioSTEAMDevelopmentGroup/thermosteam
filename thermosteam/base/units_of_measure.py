@@ -64,8 +64,12 @@ class Units:
     def __repr__(self):
         return f"{type(self).__name__}({repr(self._units)})"
 
-def get_dimensionality(units):
-    return ureg._get_dimensionality(to_units_container(units, ureg))
+def get_dimensionality(units, cache={}):
+    if units in cache:
+        dim = cache[units]
+    else:
+        cache[units] = dim = ureg._get_dimensionality(to_units_container(units, ureg))
+    return dim
     
 
 # %% Units of measure

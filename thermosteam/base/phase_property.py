@@ -7,7 +7,7 @@ Created on Thu Oct 31 02:38:40 2019
 from .handle_builder import HandleBuilder
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
-from .utils import shallow_copy
+from .utils import maybe_copy
 from ..settings import settings
 from ..exceptions import UndefinedPhase
 
@@ -49,9 +49,10 @@ class PhaseProperty:
         return any((self.s, self.l, self.g)) 
     
     def copy(self):
-        return self.__class__(shallow_copy(self.s),
-                              shallow_copy(self.l),
-                              shallow_copy(self.g))
+        return self.__class__(maybe_copy(self.s),
+                              maybe_copy(self.l),
+                              maybe_copy(self.g))
+    __copy__ = copy
 
 
 # %% Pure component
