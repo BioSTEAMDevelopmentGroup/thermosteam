@@ -47,12 +47,12 @@ class Units:
     def dimensionality(self):
         return self._dimensionality
     
-    def to(self, units):
+    def conversion_factor(self, to_units):
         cache = self._factor_cache
-        if units in cache:
+        if to_units in cache:
             factor = cache[units]
         else:
-            cache[units] = factor = ureg.convert(1., self._units_container, units)
+            cache[units] = factor = ureg.convert(1., self._units_container, to_units)
         return factor
     
     def __bool__(self):
@@ -112,22 +112,26 @@ units_of_measure = {'MW': 'g/mol',
 }
 for i,j in units_of_measure.items(): units_of_measure[i] = Units(j)
 
-flow_units_of_measure = {'net_molar_flow': 'kmol/hr',
-                         'net_mass_flow': 'kg/hr',
-                         'net_volumetric_flow': 'm^3/hr',
-                         'molar_flow': 'kmol/hr',
-                         'mass_flow': 'kg/hr',
-                         'volumetric_flow': 'm^3/hr',
-                         'molar_data': 'kmol/hr',
-                         'mass_data': 'kg/hr',
-                         'volumetric_data': 'm^3/hr',
-                         'cost': 'USD/yr',
-                         'C': 'kJ/hr/K',
-                         'Hvap': 'kJ/hr',
-                         'H': 'kJ/hr',  
-                         'Hf':'kJ/hr', 
-                         'Hc':'kJ/hr', 
-}
+flow_units_of_measure = dict(molar_flow='kmol/hr',
+                             mass_flow='kg/hr',
+                             volumetric_flow='m^3/hr',
+                             cost='USD/hr',
+                             mass='kg/hr',
+                             mol='kmol/hr',
+                             vol='m^3/hr',
+                             massnet='kg/hr',
+                             molnet='kmol/hr',
+                             volnet='m^3/hr',
+                             Hvap='kJ/hr',
+                             Hf='kJ/hr', 
+                             Hc='kJ/hr', 
+                             H='kJ/hr',
+                             S='kJ/hr',
+                             G='kJ/hr',
+                             U='kJ/hr',
+                             A='kJ/hr',
+                             C='kJ/hr/K',
+)
 for i,j in flow_units_of_measure.items(): flow_units_of_measure[i] = Units(j)
 
 definitions = {'MW': 'Molecular weight',

@@ -12,9 +12,9 @@ from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumet
 from .thermal_condition import ThermalCondition
 from .phase_container import new_phase_container
 from .equilibrium import BubblePoint, DewPoint
-from .register import Register
+from .registry import Registry, registered
 
-__all__ = ('Stream', 'stream_register')
+__all__ = ('Stream', )
 
 
 # %% Utilities
@@ -23,18 +23,12 @@ def assert_same_chemicals(stream, others):
     chemicals = stream.chemicals
     assert all([chemicals == i.chemicals for i in others]), "chemicals must match to mix streams"
 
-#: [Register] Contains all System objects as attributes.
-stream_register = Register()
 
 # %%
-
+@registered('s')
 class Stream:
-    __slots__ = ('_ID', '_molar_flow', '_TP', '_thermo', '_streams', '_vle',
-                 '__weakref__', 'price')
+    __slots__ = ('_ID', '_molar_flow', '_TP', '_thermo', '_streams', '_vle', 'price')
     
-    #: [int] Current number for default IDs (class attribute)
-    ticket_number = 0
-
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = DisplayUnits(T='K', P='Pa',
                                  flow=('kmol/hr', 'kg/hr', 'm3/hr'),
@@ -57,26 +51,7 @@ class Stream:
             else:
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
-        self._ID = None
-        self.ID = ID
-        
-    @classmethod
-    def _take_ticket(cls):
-        cls.ticket_number += 1
-        return 's' + str(cls.ticket_number)
-        
-    @property
-    def ID(self):
-        """Unique identification (str). If set as '', it will choose a default ID."""
-        return self._ID
-
-    @ID.setter
-    def ID(self, ID):
-        if ID == "":
-            ID = self._take_ticket()
-        elif self._ID and self._ID in stream_register:
-            del stream_register[self._ID]
-        stream_register[ID] = self
+        self._register(ID)
     
     def _load_flow(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
@@ -105,7 +80,7 @@ class Stream:
         else:
             raise ValueError(f"no property with name '{name}'")
         value = getattr(self, name)
-        factor = original_units.to(units)
+        factor = original_units.conversion_factor(units)
         return value * factor
     
     ### Stream data ###
@@ -314,9 +289,8 @@ class Stream:
         self._molar_flow._phase = new_phase_container(self._molar_flow._phase)
     
     def copy_like(self, other):
-        self.mol[:] = other.mol
-        self.TP.copy_like(other)
-        self.phase = other.phase
+        self._molar_flow.copy_like(other._molar_flow)
+        self._TP.copy_like(other._TP)
     
     def copy(self):
         cls = self.__class__
@@ -392,6 +366,16 @@ class Stream:
         z, chemicals = self.z_chemicals
         dp = DewPoint(chemicals, self._thermo)
         return dp.solve_Px(z, self.T)[0]
+    
+    ### Casting ###
+    
+    @property
+    def phases(self):
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phases'")
+    @phases.setter
+    def phases(self, phases):
+        self.__class__ = multi_stream.MultiStream
+        self._molar_flow = self._molar_flow.to_material_array(phases)
     
     ### Representation ###
     
@@ -479,10 +463,10 @@ class Stream:
         return self.ID
     
     def print(self):
-        from .utils import repr_kwargs, repr_kwarg
-        chemical_flows = repr_kwargs(self.chemicals.IDs, self.mol)
+        from .utils import repr_IDs_data, repr_kwarg
+        chemical_flows = repr_IDs_data(self.chemicals.IDs, self.mol)
         price = repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
               f"P={self.P:.6g}{price}{chemical_flows})")
         
-        
+from . import multi_stream

@@ -10,15 +10,18 @@ from . import repr_utils
 from . import decorator_utils
 from . import other_utils
 from . import define_from
+from . import cache
 
 __all__ = (*pickle_utils.__all__,
            *repr_utils.__all__,
            *decorator_utils.__all__,
            *other_utils.__all__,
-           *define_from.__all__)
+           *define_from.__all__,
+           *cache.__all__)
 
 from .pickle_utils import *
 from .repr_utils import *
 from .decorator_utils import *
 from .other_utils import *
 from .define_from import *
+from .cache import *

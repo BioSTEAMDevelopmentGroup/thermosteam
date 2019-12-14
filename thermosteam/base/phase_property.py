@@ -4,12 +4,10 @@ Created on Thu Oct 31 02:38:40 2019
 
 @author: yoelr
 """
-from .handle_builder import HandleBuilder
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
 from .utils import maybe_copy
 from ..settings import settings
-from ..exceptions import UndefinedPhase
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -19,7 +17,6 @@ __all__ = ('PhaseProperty', #'PhasePropertyBuilder',
 # %% Utilities
 
 getattr = getattr
-phase_equivalents = settings.phase_equivalents
 
 def set_phase_property(phase_property, phase, builder, data):
     if not builder: return
@@ -38,13 +35,13 @@ class PhaseProperty:
         self.g = g
         self.var = var
 
-    def __getattr__(self, phase):
-        try:
-            phase = phase_equivalents[phase]
-        except KeyError:
-            raise UndefinedPhase(phase)
-        return getattr(self, phase)
-
+    @property
+    def S(self): return self.s
+    @property
+    def L(self): return self.l
+    @property
+    def G(self): return self.g
+    
     def __bool__(self):
         return any((self.s, self.l, self.g)) 
     

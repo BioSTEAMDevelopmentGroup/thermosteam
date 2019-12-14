@@ -6,7 +6,7 @@ Created on Mon Dec  2 01:41:50 2019
 """
 
 from .base import Units
-from .utils import repr_kwargs, repr_couples
+from .utils import repr_IDs_data, repr_couples
 from .settings import settings
 from .exceptions import UndefinedPhase
 from .phase_container import phase_container
@@ -55,7 +55,7 @@ class ArrayEmulator:
     
     def get_data(self, units, *index):
         length = len(index)
-        factor = self.units.to(units)
+        factor = self.units.conversion_factor(units)
         if length == 0:
             return factor * self._data
         elif length == 1:
@@ -66,7 +66,7 @@ class ArrayEmulator:
     def set_data(self, data, units, *index):
         length = len(index)
         data = data._data if isa(data, ArrayEmulator) else np.asarray(data, dtype=float)
-        scaled_data = data / self.units.to(units)
+        scaled_data = data / self.units.conversion_factor(units)
         if length == 0:
             self._data[:] = scaled_data
         elif length == 1:
@@ -476,6 +476,10 @@ class ChemicalArray(ArrayEmulator):
             self = cls.blank(phase, chemicals)
         return self
     
+    def copy_like(self, other):
+        self._data[:] = other._data
+        self.phase = other.phase
+    
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals)
     
@@ -590,7 +594,7 @@ class ChemicalArray(ArrayEmulator):
             phase = '\n' + tab + phase
         else:
             dlim = ", "
-        IDdata = repr_kwargs(self._chemicals.IDs, self._data, dlim)
+        IDdata = repr_IDs_data(self._chemicals.IDs, self._data, dlim)
         return f"{type(self).__name__}({phase}{IDdata})"
     
     def __repr__(self):
@@ -657,6 +661,8 @@ class PhaseArray(ArrayEmulator):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases)
     
+    def copy_like(self, other):
+        self._data[:] = other._data
     
     def to_chemical_array(self, composition, phase='l', chemicals=None, data=False):
         if settings._debug:
@@ -695,7 +701,7 @@ class PhaseArray(ArrayEmulator):
             return PhaseArray.from_data(split, self._phases)
     
     def _set_phases(self, phases):
-        self._phases = phases = tuple(phases)
+        self._phases = phases = tuple(sorted(phases))
         cache = self._phase_index_cache
         if phases in cache:
             self._phase_index = cache[phases]
@@ -771,7 +777,7 @@ class PhaseArray(ArrayEmulator):
         else:
             dlim = ', '
             start = ""
-        phase_data = repr_kwargs(self.phases, self.data, start, dlim)
+        phase_data = repr_IDs_data(self.phases, self.data, start, dlim)
         return f"{type(self).__name__}({phase_data})"
     
     def __repr__(self):
@@ -840,6 +846,9 @@ class MaterialArray(ArrayEmulator):
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals)
+    
+    def copy_like(self, other):
+        self._data[:] = other._data
     
     def composition(self, data=False):
         array = self._data

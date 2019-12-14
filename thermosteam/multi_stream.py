@@ -4,29 +4,27 @@ Created on Tue Dec 10 22:54:15 2019
 
 @author: yoelr
 """
-from .stream import Stream, assert_same_chemicals, stream_register
+from .stream import Stream, assert_same_chemicals
 from .base.units_of_measure import get_dimensionality
 from .thermal_condition import ThermalCondition
 from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
 from .exceptions import DimensionError
 from .settings import settings
 from .equilibrium import VLE
+from .utils import Cache
 import numpy as np
 
 __all__ = ('MultiStream', )
 
 class MultiStream(Stream):
-    phase = None
-    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='lg', units=None,
+    __slots__ = ()
+    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='gl', units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
         self._load_flow(flow, phases, thermo.chemicals, phase_flows)
         self._streams = {}
-        if 'l' in phases and 'g' in phases:
-            self._vle = VLE(self._molar_flow, self._TP, thermo=self._thermo)
-        else:
-            self._vle = None
+        self._vle = Cache(VLE, self._molar_flow, self._TP, thermo=self._thermo)
         self.price = price
         if units:
             dimensionality = get_dimensionality(units)
@@ -39,7 +37,7 @@ class MultiStream(Stream):
             else:
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
-        self.ID = ID
+        self._register(ID)
          
     def _load_flow(self, flow, phases, chemicals, phase_flows):
         if flow is ():
@@ -76,6 +74,12 @@ class MultiStream(Stream):
     @property
     def phases(self):
         return self._molar_flow._phases
+    @phases.setter
+    def phases(self, phases):
+        phases = sorted(phases)
+        if phases != self.phases:
+            self._molar_flow = self._molar_flow.to_material_array(phases)
+            self._vle = Cache(VLE, self._molar_flow, self._TP, thermo=self._thermo)
     
     ### Net flow properties ###
     
@@ -174,26 +178,23 @@ class MultiStream(Stream):
         molar_flow._data_cache.clear()
         self._TP = TP = self._TP.copy()
         molar_flow._data = self._molar_flow._data.copy()
-        self._vle = VLE(molar_flow, TP)
-    
-    def copy_like(self, other):
-        self.mol[:] = other.mol
-        self.TP.copy_like(other)
+        self._vle = Cache(VLE, molar_flow, TP, thermo=self._thermo)
     
     def copy(self):
         cls = self.__class__
         new = cls.__new__(cls)
         new._ID = None
-        new._thermo = self._thermo
-        new._molar_flow = self._molar_flow.copy()
+        new._thermo = thermo = self._thermo
+        new._molar_flow = molar_flow = self._molar_flow.copy()
         new._TP = TP = self._TP.copy()
-        new._vle = VLE(self.mol, TP)
+        new._vle = self._vle = Cache(VLE, molar_flow, TP, thermo=thermo)
         return new
     
     ### Equilibrium ###
+    
     @property
     def vle(self):
-        return self._vle
+        return self._vle()
     
     @property
     def z_chemicals(self):
@@ -224,6 +225,17 @@ class MultiStream(Stream):
         assert netflow, "no equilibrium chemicals present"
         return flow / netflow  
     
+    ### Casting ###
+    
+    @property
+    def phase(self):
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phases'")
+    @phase.setter
+    def phase(self, phase):
+        assert len(phase) == 1, f'invalid phase {repr(phase)}'
+        self.__class__ = Stream
+        self._molar_flow = self._molar_flow.to_chemical_array(phase)
+        
     ### Representation ###
     
     def _info(self, T, P, flow, N):
