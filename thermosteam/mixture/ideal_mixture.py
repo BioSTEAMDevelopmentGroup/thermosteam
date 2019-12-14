@@ -53,14 +53,12 @@ def set_properties_at_TP(data, properties, nonzero, T, P):
 # %% Mixture properties
 
 class IdealMixtureTPProperty:
-    __slots__ = ('var', 'units', '_properties', '_cache')
+    __slots__ = ('var', '_properties', '_cache')
 
     def __init__(self, properties, var):
         self._properties = properties
         self._cache = {}
-        self._set_var(var)
-
-    _set_var = PhaseProperty._set_var
+        self.var = var
 
     def at_TP(self, z, TP):
         cache = self._cache
@@ -97,15 +95,13 @@ class IdealMixtureTPProperty:
 
 
 class IdealMixtureTProperty:
-    __slots__ = ('var', 'units', '_properties', '_cache')
+    __slots__ = ('var', '_properties', '_cache')
     __repr__ = IdealMixtureTPProperty.__repr__
 
     def __init__(self, properties, var):
         self._properties = tuple(properties)
         self._cache = {}
-        self._set_var(var)
-
-    _set_var = PhaseProperty._set_var
+        self.var = var
 
     def at_TP(self, z, TP):
         cache = self._cache
@@ -165,7 +161,7 @@ class IdealMixturePhaseTProperty(MixturePhaseTProperty):
         self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
             setfield(self, phase, IdealMixtureTProperty(properties, var))
-        self._set_var(var)
+        self.var = var
         return self
 
 
@@ -178,7 +174,7 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
         self = cls.__new__(cls)
         for phase, properties in group_properties_by_phase(phase_properties).items():
             setfield(self, phase, IdealMixtureTPProperty(properties, var))
-        self._set_var(var)
+        self.var = var
         return self
 
 
@@ -189,6 +185,7 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 class IdealMixture:
     __slots__ = ('chemicals', 'rigorous_energy_balance', 
                  'include_excess_energies', *mixture_methods)
+    units = {}
     
     def __init__(self, chemicals=(), rigorous_energy_balance=False, include_excess_energies=False):
         self.rigorous_energy_balance = rigorous_energy_balance

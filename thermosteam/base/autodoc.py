@@ -17,16 +17,18 @@ class VariableDescriber:
         self.types = types
 
     def get_output(self, var):
-        definition = self.get_def(var)
-        units = self.get_units(var)
-        output = definition.lower() + f" ({var})" if definition else var
-        if units: output += f" in {units}"
-        return output
+        if var:
+            definition = self.get_def(var)
+            units = self.get_units(var)
+            output = definition.lower() + f" ({var})" if definition else var
+            if units: output += f" in {units}"
+            return output
 
     def get_def(self, var):
         return self.defs.get(var, "") or definitions.get(var, "")
     
     def get_units(self, var):
+        var, *_ = var.split(".")
         return self.units.get(var) or units_of_measure.get(var)
     
     def get_type(self, var):

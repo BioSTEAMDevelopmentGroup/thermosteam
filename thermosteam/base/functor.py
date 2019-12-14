@@ -35,7 +35,8 @@ def display_asfunctor(functor, var=None, name=None, show_var=True):
         if show_var:
             info += f" -> " + var_with_units(var, units)
         else:
-            u = units.get(var)
+            name, *_ = var.split('.')
+            u = units.get(name)
             if u: info += f" -> {u}"
     return info
 
@@ -185,8 +186,9 @@ class PureComponentFunctor(Functor):
                 except:
                     info += f"\n {key}: {value}"    
                 else:
+                    key, *_ = key.split('_')
                     u = units.get(key) or units_of_measure.get(key)
-                    if u: info += ' ' + u
+                    if u: info += ' ' + str(u)
         print(info)
         
     _ipython_display_ = show

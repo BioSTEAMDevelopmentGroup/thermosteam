@@ -10,7 +10,6 @@ from .functor import functor_lookalike
 from .utils import shallow_copy
 from ..settings import settings
 from ..exceptions import UndefinedPhase
-from .units_of_measure import Units, units_of_measure
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -24,29 +23,20 @@ phase_equivalents = settings.phase_equivalents
 
 def set_phase_property(phase_property, phase, builder, data):
     if not builder: return
-    if isinstance(builder, HandleBuilder):
-        prop = builder(data)
-    else:
-        prop = builder(data)
-    setattr(phase_property, phase, prop)
+    setattr(phase_property, phase, builder(data))
     
 
 # %% Abstract class    
 
 @functor_lookalike
 class PhaseProperty:
-    __slots__ = ('s', 'l', 'g', 'var', 'units')
+    __slots__ = ('s', 'l', 'g', 'var')
     
     def __init__(self, s=None, l=None, g=None, var=None):
         self.s = s
         self.l = l
         self.g = g
-        self._set_var(var)
-
-    def _set_var(self, var):
-        var, *_ = var.split(".")
         self.var = var
-        self.units = Units(units_of_measure[var])
 
     def __getattr__(self, phase):
         try:
@@ -73,7 +63,7 @@ class ChemicalPhaseTProperty(PhaseProperty):
         self.s = TDependentModelHandle() if s is None else s
         self.l = TDependentModelHandle() if l is None else l
         self.g = TDependentModelHandle() if g is None else g
-        self._set_var(var)
+        self.var = var
     
     def __call__(self, phase, T):
         return getattr(self, phase)(T)
@@ -86,7 +76,7 @@ class ChemicalPhaseTPProperty(PhaseProperty):
         self.s = TPDependentModelHandle() if s is None else s
         self.l = TPDependentModelHandle() if l is None else l
         self.g = TPDependentModelHandle() if g is None else g
-        self._set_var(var)
+        self.var = var
     
     def __call__(self, phase, T, P):
         return getattr(self, phase)(T, P)

@@ -36,27 +36,26 @@ class Register:
     
     def __getattribute__(self, key):
         if self in _must_reload: _reload(self)
-        try: return getattr_(self, key)()
-        except: return getattr_(self, key)
+        return getattr_(self, key)()
     
     __getitem__ = __getattribute__
     
     def __bool__(self):
         return bool(getattr_(self, '__dict__'))
-    
-    def __setattr__(self, key, value):
-        """Register object."""
-        ID_words = key.split('_')
-        assert all(word.isalnum() for word in ID_words), (
-                'ID may only contain letters, numbers, and/or underscores; '
-                'no special characters or spaces')
-        value._ID = key
-        setattr_(self, key, ref(value))
-        _must_reload.add(self)
    
+    def __setattr__(self, key, value):
+        setattr_(self, key, ref(value))    
+    
     def __setitem__(self, key, value):
-        setattr_(self, key, ref(value))
-        _must_reload.add(self)
+        """Register object."""
+        if key:
+            ID_words = key.split('_')
+            assert all(word.isalnum() for word in ID_words), (
+                    'ID may only contain letters, numbers, and/or underscores; '
+                    'no special characters or spaces')
+            value._ID = key
+            setattr_(self, key, ref(value))
+            _must_reload.add(self)
     
     def __iter__(self):
         if self in _must_reload: _reload(self)

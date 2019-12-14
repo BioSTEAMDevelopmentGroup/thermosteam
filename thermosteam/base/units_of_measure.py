@@ -106,6 +106,25 @@ units_of_measure = {'MW': 'g/mol',
                     'delta': 'Pa^0.5',
                     'epsilon': "",
 }
+for i,j in units_of_measure.items(): units_of_measure[i] = Units(j)
+
+flow_units_of_measure = {'net_molar_flow': 'kmol/hr',
+                         'net_mass_flow': 'kg/hr',
+                         'net_volumetric_flow': 'm^3/hr',
+                         'molar_flow': 'kmol/hr',
+                         'mass_flow': 'kg/hr',
+                         'volumetric_flow': 'm^3/hr',
+                         'molar_data': 'kmol/hr',
+                         'mass_data': 'kg/hr',
+                         'volumetric_data': 'm^3/hr',
+                         'cost': 'USD/yr',
+                         'C': 'kJ/hr/K',
+                         'Hvap': 'kJ/hr',
+                         'H': 'kJ/hr',  
+                         'Hf':'kJ/hr', 
+                         'Hc':'kJ/hr', 
+}
+for i,j in flow_units_of_measure.items(): flow_units_of_measure[i] = Units(j)
 
 definitions = {'MW': 'Molecular weight',
                'T': 'Temperature',
@@ -120,9 +139,6 @@ definitions = {'MW': 'Molecular weight',
                'V': 'Molar volume',
                'Vc': 'Critical point volume',
                'Cp': 'Molar heat capacity',
-               'Cp.s': 'Molar heat capacity of a solid',
-               'Cp.l': 'Molar heat capacity of a liquid',
-               'Cp.g': 'Molar heat capacity of a gas',
                'rho': 'Density',
                'rhoc': 'Critical point density',
                'nu': 'Kinematic viscosity',
@@ -160,7 +176,5 @@ for var in ('Cp', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
     units = units_of_measure[var]
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):
-        for tag in ('_' + tag, '.'+tag):
-            phasevar = var + tag
-            units_of_measure[phasevar] = units
-            definitions[phasevar] = phase + definition
+        phasevar = var + '.' +tag
+        definitions[phasevar] = phase + definition

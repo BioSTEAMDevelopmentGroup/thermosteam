@@ -10,12 +10,9 @@ def shallow_copy(phase):
     return phase.copy() if hasattr(phase, 'copy') else phase
 
 def var_with_units(var, units=units_of_measure):
-    if '.' in var:
-        var_, phase = var.split(".")
-    else:
-        var_ = var
-    units = units.get(var_, "")
-    units = units and ' [' + units + ']'
+    name, *phase = var.split(".")
+    units = units.get(name, "")
+    units = units and ' [' + str(units) + ']'
     return f"{var}{units}"
 
 def any_isinstance(objs, cls):

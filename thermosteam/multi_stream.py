@@ -4,28 +4,20 @@ Created on Tue Dec 10 22:54:15 2019
 
 @author: yoelr
 """
-from .stream import Stream, assert_same_chemicals
+from .stream import Stream, assert_same_chemicals, stream_register
 from .base.units_of_measure import get_dimensionality
 from .thermal_condition import ThermalCondition
 from .material_array import MolarFlow, MassFlow, VolumetricFlow, ChemicalMolarFlow
 from .exceptions import DimensionError
 from .settings import settings
 from .equilibrium import VLE
-from .utils import define_from
+import numpy as np
 
 __all__ = ('MultiStream', )
 
-shared_properties = (
-    'thermo', 'mixture', 'chemicals', 'thermal_condition', 'T', 'P', 'cost', 'get_property',
-    'molar_data', 'mass_data', 'volumetric_data', 'molar_flow', 'mass_flow', 'volumetric_flow',
-    'bubble_point', 'dew_point', 'T_bubble', 'T_dew', 'P_bubble', 'P_dew', 'Hf', 'Hc',
-    'net_molar_flow', 'net_mass_flow', 'empty', 'show', 'display_units', '_ipython_display_',
-)
-@define_from(Stream, shared_properties)
-class MultiStream:
-    __slots__ = ('_molar_flow', '_TP', '_thermo', '_streams', '_vle', 'price')
+class MultiStream(Stream):
     
-    def __init__(self, flow=(), T=298.15, P=101325., phases='lg', units=None,
+    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='lg', units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
@@ -39,15 +31,26 @@ class MultiStream:
         if units:
             dimensionality = get_dimensionality(units)
             if dimensionality == MolarFlow.units.dimensionality:
-                self.molar_flow.set_data(self.molar_data, units)
+                self.molar_flow.set_data(self.mol, units)
             elif dimensionality == MassFlow.units.dimensionality:
-                self.mass_flow.set_data(self.molar_data, units)
+                self.mass_flow.set_data(self.mol, units)
             elif dimensionality == VolumetricFlow.units.dimensionality:
-                self.volumetric_flow.set_data(self.molar_data, units)
+                self.volumetric_flow.set_data(self.mol, units)
             else:
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
-                
+        self.ID = ID
+       
+    @property
+    def ID(self):
+        """Unique identification (str). If set as '', it will choose a default ID."""
+        return self._ID
+
+    @ID.setter
+    def ID(self, ID):
+        if ID == "": ID = self._take_ticket()
+        stream_register[ID] = self
+         
     def _load_flow(self, flow, phases, chemicals, phase_flows):
         if flow is ():
             if phase_flows:
@@ -72,6 +75,7 @@ class MultiStream:
             stream._molar_flow = ChemicalMolarFlow.from_data(self.molar_flow[phase],
                                                              (phase,), 
                                                              chemicals=self.chemicals)
+            stream._ID = None
             stream._TP = self._TP
             stream._thermo = self._thermo
             streams[phase] = stream
@@ -87,7 +91,7 @@ class MultiStream:
     ### Net flow properties ###
     
     @property
-    def net_volumetric_flow(self):
+    def volnet(self):
         return self.mixture.xV_at_TP(self.molar_flow.iter_phase_data(), self._TP).sum()
 
     @property
@@ -102,63 +106,54 @@ class MultiStream:
         return self.mixture.xS_at_TP(self.molar_flow.iter_phase_data(), self._TP)
     
     @property
-    def Hvap(self):
-        return self.mixture.Hvap_at_TP(self._molar_flow['l'], self._TP)
-    
-    @property
     def C(self):
         return self.mixture.xCp_at_TP(self.molar_flow.iter_phase_data(), self._TP)
+    
+    @property
+    def Hvap(self):
+        return self.mixture.Hvap_at_TP(self._molar_flow['l'], self._TP)
     
     ### Composition properties ###
     
     @property
-    def molar_composition(self):
-        molar_flow = self.molar_data
-        net_molar_flow = molar_flow.sum()
-        return molar_flow / net_molar_flow if net_molar_flow else molar_flow.copy()
+    def molfrac(self):
+        mol = self.mol
+        molnet = mol.sum()
+        return mol / molnet if molnet else mol.copy()
     @property
-    def mass_composition(self):
-        mass_flow = self.chemicals.MW * self.molar_data
-        net_mass_flow = mass_flow.sum()
-        return mass_flow / net_mass_flow if net_mass_flow else mass_flow
+    def massfrac(self):
+        mass = self.chemicals.MW * self.mol
+        massnet = mass.sum()
+        return mass / massnet if massnet else np.zeros(mass.shape)
     @property
-    def volumetric_composition(self):
-        volumetric_flow = self.volumetric_data.values()
-        net_volumetric_flow = volumetric_flow.sum()
-        return volumetric_flow / net_volumetric_flow if net_volumetric_flow else volumetric_flow
+    def volfrac(self):
+        vol = self.vol.values()
+        volnet = vol.sum()
+        return vol / volnet if volnet else np.zeros(vol.shape)
     
     @property
     def V(self):
         return self.mixture.xV_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
-        
     @property
     def kappa(self):
-        return self.mixture.xkappa_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
-        
+        return self.mixture.xkappa_at_TP(self._molar_flow.iter_phase_composition(), self._TP)        
     @property
     def Cp(self):
         return self.mixture.xCp_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
-        
     @property
     def mu(self):
         return self.mixture.xmu_at_TP(self._molar_flow.iter_phase_composition(), self._TP)
 
     @property
     def sigma(self):
-        molar_flow = self._molar_flow['l']
-        net = molar_flow.sum()
-        if net:
-            return self.mixture.xsigma_at_TP(molar_flow / net, self._TP)
-        else:
-            return 0
+        mol = self._molar_flow['l']
+        molnet = mol.sum()
+        return self.mixture.xsigma_at_TP(mol / molnet, self._TP) if molnet else 0
     @property
     def epsilon(self):
-        molar_flow = self._molar_flow['l']
-        net = molar_flow.sum()
-        if net:
-            return self.mixture.epsilon_at_TP(molar_flow / net, self._TP)
-        else:
-            return 0
+        mol = self._molar_flow['l']
+        molnet = mol.sum()
+        return self.mixture.epsilon_at_TP(mol / molnet, self._TP) if molnet else 0
         
     ### Methods ###
         
@@ -169,16 +164,16 @@ class MultiStream:
             (multi if isa(i, MultiStream) else single).append(i)
         self.empty()
         for i in single:
-            self.molar_flow[i.phase] += i.molar_data    
-        self.molar_data[:] += sum([i.molar_data for i in multi])
+            self.molar_flow[i.phase] += i.mol    
+        self.mol[:] += sum([i.mol for i in multi])
         self.H = sum([i.H for i in others])
         
     def split_to(self, s1, s2, split):
-        molar_data = self.molar_data.sum(0)
-        s1.molar_data[:] = dummy = molar_data * split
-        s2.molar_data[:] = molar_data - dummy
+        mol = self.mol.sum(0)
+        s1.mol[:] = dummy = mol * split
+        s2.mol[:] = mol - dummy
         
-    def link_with(self, other):
+    def link(self, other):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
         other._molar_flow._data_cache.clear()
@@ -195,7 +190,7 @@ class MultiStream:
         self._vle = VLE(molar_flow, TP)
     
     def copy_like(self, other):
-        self.molar_data[:] = other.molar_data
+        self.mol[:] = other.mol
         self.TP.copy_like(other)
     
     def copy(self):
@@ -204,7 +199,7 @@ class MultiStream:
         new._thermo = self._thermo
         new._molar_flow = self._molar_flow.copy()
         new._TP = TP = self._TP.copy()
-        new._vle = VLE(self.molar_data, TP)
+        new._vle = VLE(self.mol, TP)
         return new
     
     ### Equilibrium ###
@@ -214,10 +209,10 @@ class MultiStream:
     
     @property
     def z_chemicals(self):
-        molar_data = self.molar_data.sum(0)
+        mol = self.mol.sum(0)
         chemicals = self.chemicals
-        indices = chemicals.equilibrium_indices(molar_data != 0)
-        flow = molar_data[indices]
+        indices = chemicals.equilibrium_indices(mol != 0)
+        flow = mol[indices]
         netflow = flow.sum()
         assert netflow, "no equilibrium chemicals present"
         z = flow / netflow  
@@ -228,15 +223,15 @@ class MultiStream:
     def equilibrium_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        molar_data = self.molar_data.sum(0)
-        indices = chemicals.equilibrium_indices(molar_data != 0)
+        mol = self.mol.sum(0)
+        indices = chemicals.equilibrium_indices(mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
     @property
     def z(self):
-        molar_data = self.molar_data.sum(0)
-        indices = self.chemicals.equilibrium_indices(molar_data != 0)
-        flow = molar_data[indices]
+        mol = self.mol.sum(0)
+        indices = self.chemicals.equilibrium_indices(mol != 0)
+        flow = mol[indices]
         netflow = flow.sum()
         assert netflow, "no equilibrium chemicals present"
         return flow / netflow  
@@ -247,7 +242,7 @@ class MultiStream:
         """Return string with all specifications."""
         from .material_array import nonzeros
         IDs = self.chemicals.IDs
-        basic_info = f"{type(self).__name__}:\n"
+        basic_info = self._basic_info()
         all_IDs, _ = nonzeros(self.chemicals.IDs, self.molar_flow.to_chemical_array(data=True))
         all_IDs = tuple(all_IDs)
         T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
@@ -323,7 +318,6 @@ class MultiStream:
         if phase_data:
             phase_data = dlim + phase_data
         price = repr_kwarg('price', self.price)
-        return (f"{type(self).__name__}({phases}, T={self.T:.2f}, "
+        return (f"{type(self).__name__}(ID={self.ID}, {phases}, T={self.T:.2f}, "
                 f"P={self.P:.6g}{price}{phase_data})")
     
-del shared_properties
