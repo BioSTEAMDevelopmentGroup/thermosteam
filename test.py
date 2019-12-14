@@ -68,7 +68,7 @@ s1_tmo = tmo.Stream(flow=molar_flow.to_chemical_array(), T=s1_bst.T, phase='g')
 # %% Test thermo
 
 # thermosteam is 2x faster than BioSTEAM when handling multiple streams
-s1_bst.disable_phases('g')
+
 s2_bst = bst.Stream(phase='g', Water=304, Ethanol=30, Glycerol=10)
 s2_tmo = tmo.Stream(phase='g', Water=304, Ethanol=30, Glycerol=10)
 H1_bst_sum = s1_bst.H + s2_bst.H

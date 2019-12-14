@@ -16,7 +16,7 @@ import numpy as np
 __all__ = ('MultiStream', )
 
 class MultiStream(Stream):
-    
+    phase = None
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='lg', units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
@@ -40,16 +40,6 @@ class MultiStream(Stream):
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
         self.ID = ID
-       
-    @property
-    def ID(self):
-        """Unique identification (str). If set as '', it will choose a default ID."""
-        return self._ID
-
-    @ID.setter
-    def ID(self, ID):
-        if ID == "": ID = self._take_ticket()
-        stream_register[ID] = self
          
     def _load_flow(self, flow, phases, chemicals, phase_flows):
         if flow is ():
@@ -87,13 +77,8 @@ class MultiStream(Stream):
     def phases(self):
         return self._molar_flow._phases
     
-    
     ### Net flow properties ###
     
-    @property
-    def volnet(self):
-        return self.mixture.xV_at_TP(self.molar_flow.iter_phase_data(), self._TP).sum()
-
     @property
     def H(self):
         return self.mixture.xH_at_TP(self.molar_flow.iter_phase_data(), self._TP)
@@ -104,10 +89,12 @@ class MultiStream(Stream):
     @property
     def S(self):
         return self.mixture.xS_at_TP(self.molar_flow.iter_phase_data(), self._TP)
-    
     @property
     def C(self):
         return self.mixture.xCp_at_TP(self.molar_flow.iter_phase_data(), self._TP)
+    @property
+    def volnet(self):
+        return self.mixture.xV_at_TP(self.molar_flow.iter_phase_data(), self._TP).sum()
     
     @property
     def Hvap(self):
