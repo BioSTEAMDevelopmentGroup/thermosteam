@@ -12,7 +12,7 @@ from .material_array import ChemicalMolarFlow, ChemicalMassFlow, ChemicalVolumet
 from .thermal_condition import ThermalCondition
 from .phase_container import new_phase_container
 from .equilibrium import BubblePoint, DewPoint
-from .registry import Registry, registered
+from .registry import registered
 
 __all__ = ('Stream', )
 
@@ -25,7 +25,7 @@ def assert_same_chemicals(stream, others):
 
 
 # %%
-@registered('s')
+@registered(ticket_name='s')
 class Stream:
     __slots__ = ('_ID', '_molar_flow', '_TP', '_thermo', '_streams', '_vle', 'price')
     
@@ -455,12 +455,6 @@ class Stream:
         """
         print(self._info(T, P, flow, N))
     _ipython_display_ = show
-    
-    def __repr__(self):
-        return f"<{type(self).__name__}: {self.ID}>"
-    
-    def __str__(self):
-        return self.ID
     
     def print(self):
         from .utils import repr_IDs_data, repr_kwarg

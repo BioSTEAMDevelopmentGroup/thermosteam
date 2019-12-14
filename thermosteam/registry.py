@@ -43,6 +43,8 @@ def _registered(cls, ticket_name):
     cls._unregister = _unregister
     cls._register = _register
     cls.ID = ID
+    cls.__repr__ = __repr__
+    cls.__str__ = __str__
     registries[cls.__name__.lower()] = registry
     return cls
 
@@ -68,3 +70,9 @@ def ID(self):
 def ID(self, ID):
     self._unregister()
     self._register(ID)
+    
+def __repr__(self):
+        return f"<{type(self).__name__}: {self.ID}>"
+    
+def __str__(self):
+    return self.ID
