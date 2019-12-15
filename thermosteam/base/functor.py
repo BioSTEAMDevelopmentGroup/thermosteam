@@ -46,10 +46,11 @@ def functor_lookalike(cls):
     return cls
 
 def functor_matching_params(params):
-    N_total = len(params)
+    length = len
+    N_total = length(params)
     for base in RegisteredFunctors:
         args = base._args
-        N = len(args)
+        N = length(args)
         if N > N_total: continue
         if args == params[:N]: return base
     raise ValueError("could not match function signature to registered functors")

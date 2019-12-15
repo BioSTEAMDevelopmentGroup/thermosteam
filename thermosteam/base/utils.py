@@ -6,7 +6,7 @@ Created on Wed Oct 30 13:37:22 2019
 """
 from .units_of_measure import units_of_measure
 
-def maybe_copy(obj):
+def copy_maybe(obj):
     return obj.copy() if hasattr(obj, 'copy') else obj
 
 def var_with_units(var, units=units_of_measure):

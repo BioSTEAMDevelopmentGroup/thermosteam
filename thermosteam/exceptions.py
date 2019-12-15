@@ -11,7 +11,6 @@ class UndefinedChemical(AttributeError):
     """AttributeError regarding undefined compounds."""
     def __init__(self, ID): super().__init__(f"'{ID}'")
     
-    
 class UndefinedPhase(AttributeError):
     """AttributeError regarding undefined phases."""
     def __init__(self, phase): super().__init__(f"'{phase}'")

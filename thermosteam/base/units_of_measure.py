@@ -4,7 +4,7 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-__all__ = ('units_of_measure', 'ureg', '_Q', 'Units')
+__all__ = ('units_of_measure', 'ureg', 'get_dimensionality', 'Units', 'convert')
 
 # %% Import unit registry
 
@@ -16,9 +16,7 @@ import os
 ureg = UnitRegistry()
 ureg.default_format = '~P'
 ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
-_Q = Quantity = ureg.Quantity
-_Q._repr_latex_ = _Q._repr_html_ = \
-_Q.__str__ = _Q.__repr__ = lambda self: self.__format__('')
+convert = ureg.convert
 del os, UnitRegistry
 
 # %% Manage conversion factors
@@ -34,7 +32,7 @@ class Units:
             self = super().__new__(cls)
             self._units = units
             self._units_container = to_units_container(units, ureg)
-            self._dimensionality = ureg._get_dimensionality(self._units_container)
+            self._dimensionality = get_dimensionality(self._units_container)
             self._factor_cache = {}
             cache[units] = self
             return self
@@ -50,9 +48,9 @@ class Units:
     def conversion_factor(self, to_units):
         cache = self._factor_cache
         if to_units in cache:
-            factor = cache[units]
+            factor = cache[to_units]
         else:
-            cache[units] = factor = ureg.convert(1., self._units_container, to_units)
+            cache[to_units] = factor = ureg.convert(1., self._units_container, to_units)
         return factor
     
     def __bool__(self):
@@ -63,6 +61,7 @@ class Units:
     
     def __repr__(self):
         return f"{type(self).__name__}({repr(self._units)})"
+
 
 def get_dimensionality(units, cache={}):
     if units in cache:

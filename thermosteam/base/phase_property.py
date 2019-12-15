@@ -6,8 +6,7 @@ Created on Thu Oct 31 02:38:40 2019
 """
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
-from .utils import maybe_copy
-from ..settings import settings
+from .utils import copy_maybe
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
@@ -46,9 +45,9 @@ class PhaseProperty:
         return any((self.s, self.l, self.g)) 
     
     def copy(self):
-        return self.__class__(maybe_copy(self.s),
-                              maybe_copy(self.l),
-                              maybe_copy(self.g))
+        return self.__class__(copy_maybe(self.s),
+                              copy_maybe(self.l),
+                              copy_maybe(self.g))
     __copy__ = copy
 
 

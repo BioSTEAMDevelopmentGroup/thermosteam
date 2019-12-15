@@ -19,12 +19,13 @@ bst.Stream.species = species
 
 # %% Initialize stream
 
-molar_flow = tmo.MolarFlow(l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
-                           g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
+molar_index = tmo.MolarFlowIndex(l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
+                                 g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
 
 s1_bst = bst.MixedStream(T=300, P=101325)
 s1_bst.setflow('l', Water=304, Ethanol=30, Glycerol=10)
 s1_bst.setflow('g', Ethanol=201, Methanol=40, Propanol=1)
+
 
 # %% Test bubble point and dew point and compare with BioSTEAM
 
@@ -37,7 +38,7 @@ chemicals = chems.retrieve(['Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propano
 bp_tmo = tmo.BubblePoint(chemicals)
 dp_tmo = tmo.DewPoint(chemicals)
 
-z = molar_flow.to_chemical_array().composition(data=True)
+z = molar_index.composition.data
 T_bp = 350.
 P_bp = 101325 / 5
 bP_bst, by_at_T_bst = bp_bst.solve_Py(z, T_bp)
@@ -56,14 +57,14 @@ dT_tmo, dx_at_P_tmo = dp_tmo.solve_Tx(z, P_dp)
 # %% Test Equilibrium
 
 # thermosteam is 3-10x faster than BioSTEAM
-vle = tmo.VLE(molar_flow)
+vle = tmo.VLE(molar_index)
 vle(T=400, P=101325)
 
 s1_bst.VLE(T=400, P=101325)
 
 # %% Test property array
 
-s1_tmo = tmo.Stream(flow=molar_flow.to_chemical_array(), T=s1_bst.T, phase='g')
+s1_tmo = tmo.Stream(flow=molar_index.data.sum(0), T=s1_bst.T, phase='g')
 
 # %% Test thermo
 
@@ -75,5 +76,5 @@ H1_bst_sum = s1_bst.H + s2_bst.H
 H2_tmo_sum = s1_tmo.H + s2_tmo.H
 
 xs_1 = tmo.MultiStream()
-xs_1.molar_flow['l', ('Water', 'Ethanol')] = 20
-xs_1.molar_flow['g', ('Water', 'Propanol')] = 20
+xs_1.molar_index['l', ('Water', 'Ethanol')] = 20
+xs_1.molar_index['g', ('Water', 'Propanol')] = 20

@@ -138,13 +138,12 @@ class CompiledChemicals(Chemicals):
         dct['Hf'] = np.array([i.Hf for i in chemicals])
         dct['Hc'] = np.array([i.Hc for i in chemicals])
         dct['_index'] = dict((*zip(CAS, index), *zip(IDs, index)))
-        dct['_isheavy'] = np.array([i.Tb in (np.inf, None) for i in chemicals])
-        dct['_islight'] = np.array([i.Tb in (0, -np.inf) for i in chemicals], dtype=bool)
+        light_values = (0, -np.inf)
+        heavy_values = (np.inf, None)
         nonfinite = (np.inf, -np.inf, None)
-        # TODO: Fix equilibrium indices according to property package
-        dct['_has_equilibrium'] = np.array([(bool(i.Dortmund)
-                                             and i.Tb not in nonfinite)
-                                            for i in chemicals])
+        dct['_islight'] = np.array([(i.Tb in light_values) for i in chemicals], dtype=bool)
+        dct['_isheavy'] = np.array([(i.Tb in heavy_values) for i in chemicals])
+        dct['_has_equilibrium'] = np.array([(i.Tb not in nonfinite) for i in chemicals])
     
     def subgroup(self, IDs):
         chemicals = self.retrieve(IDs)
