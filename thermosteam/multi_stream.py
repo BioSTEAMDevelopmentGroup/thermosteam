@@ -220,12 +220,12 @@ class MultiStream(Stream):
     
     @property
     def phase(self):
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phases'")
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phase'")
     @phase.setter
     def phase(self, phase):
         assert len(phase) == 1, f'invalid phase {repr(phase)}'
         self.__class__ = Stream
-        self._imol = self._imol.to_chemical_array(phase)
+        self._imol = self._imol.to_chemical_indexer(phase)
         
     ### Representation ###
     
@@ -247,7 +247,7 @@ class MultiStream(Stream):
         maxlen = max(all_lengths + [8]) 
 
         index, factor = self._get_indexer_and_factor(flow_units)
-        first_line = f' flow ({flow_units}): '
+        first_line = f' flow ({flow_units}):'
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases

@@ -9,7 +9,7 @@ from .base import Units
 from .utils import repr_IDs_data, repr_couples
 from .settings import settings
 from .exceptions import UndefinedPhase
-from .phase_container import phase_container
+from .phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
 import numpy as np
 
@@ -121,12 +121,12 @@ class ChemicalIndexer(Indexer):
         except KeyError:
             self._index_cache = caches[self._chemicals] = {}
         
-    def to_phase_index(self, phases=()):
+    def to_phase_indexer(self, phases=()):
         phase_array = self._PhaseIndexer.blank(phases)
         phase_array[self.phase] = self._data.sum()
         return phase_array
     
-    def to_material_index(self, phases=()):
+    def to_material_indexer(self, phases=()):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
         material_array[self.phase] = self._data
         return material_array
@@ -156,7 +156,7 @@ class ChemicalIndexer(Indexer):
         self._set_chemicals(chemicals)
         self._set_cache()
         self._data = np.zeros(self._chemicals.size, float)
-        self._phase = phase_container(phase)
+        self._phase = Phase.convert(phase)
         self._data_cache = {}
         return self
     
@@ -165,7 +165,7 @@ class ChemicalIndexer(Indexer):
         self = _new(cls)
         self._set_chemicals(chemicals)
         self._set_cache()
-        self._phase = phase_container(phase)
+        self._phase = Phase.convert(phase)
         if settings._debug:
             assert isa(data, np.ndarray) and data.ndim == 1, (
                                                     'data must be a 1d numpy array')
@@ -181,11 +181,10 @@ class ChemicalIndexer(Indexer):
     
     @property
     def phase(self):
-        return self._phase[0]
+        return self._phase.phase
     @phase.setter
     def phase(self, phase):
-        try: self._phase[0] = phase
-        except: raise AttributeError("can't set phase")
+        self._phase.phase = phase
     
     def _get_index(self, IDs):
         if isa(IDs, str):
@@ -444,7 +443,7 @@ class MaterialIndexer(Indexer):
         chemical_array = array.sum(0)
         total = chemical_array.sum()
         composition = chemical_array/total if total else chemical_array
-        return ChemicalIndexer.from_data(composition, (None,), self._chemicals)
+        return ChemicalIndexer.from_data(composition, NoPhase, self._chemicals)
     
     @property
     def phase_split(self):
@@ -515,15 +514,15 @@ class MaterialIndexer(Indexer):
     phases =  PhaseIndexer.phases
     chemicals = ChemicalIndexer.chemicals
     
-    def to_phase_index(self):
+    def to_phase_indexer(self):
         return self._PhaseIndexer.from_data(self._data.sum(1), self._phases)
     
-    def to_chemical_index(self, phase=(None,)):
+    def to_chemical_indexer(self, phase=NoPhase):
         return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals)
     
     def get_phase(self, phase):
         return self._ChemicalIndexer.from_data(self._data[self._get_phase_index(phase)],
-                                             (phase,), self._chemicals)
+                                               LockedPhase(phase), self._chemicals)
     
     def _get_index(self, phase_IDs):
         if isa(phase_IDs, str):

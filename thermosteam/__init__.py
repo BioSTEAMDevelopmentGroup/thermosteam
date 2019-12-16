@@ -17,7 +17,7 @@ from . import thermo
 from . import material_indexer
 from . import thermal_condition
 from . import stream
-from . import phase_container
+from . import phase
 from . import multi_stream
 
 __all__ = (*base.__all__, 
@@ -33,7 +33,7 @@ __all__ = (*base.__all__,
            *material_indexer.__all__,
            *thermal_condition.__all__,
            *stream.__all__,
-           *phase_container.__all__,
+           *phase.__all__,
            *multi_stream.__all__)
 
 from .base import *
@@ -49,5 +49,5 @@ from .settings import *
 from .material_indexer import *
 from .thermal_condition import *
 from .stream import *
-from .phase_container import *
+from .phase import *
 from .multi_stream import *

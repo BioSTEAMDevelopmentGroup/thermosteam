@@ -12,7 +12,6 @@ from .material_indexer import ChemicalMolarFlowIndexer, \
                               ChemicalMassFlowIndexer, \
                               ChemicalVolumetricFlowIndexer
 from .thermal_condition import ThermalCondition
-from .phase_container import new_phase_container
 from .equilibrium import BubblePoint, DewPoint
 from .registry import registered
 from .utils import Cache
@@ -145,10 +144,10 @@ class Stream:
     
     @property
     def phase(self):
-        return self._imol.phase
+        return self._imol._phase.phase
     @phase.setter
     def phase(self, phase):
-        self._imol.phase = phase
+        self._imol._phase.phase = phase
     
     @property
     def mol(self):
@@ -314,7 +313,7 @@ class Stream:
         self._imol._data_cache.clear()
         self._TP = self._TP.copy()
         self._imol._data = self._imol._data.copy()
-        self._imol._phase = new_phase_container(self._imol._phase)
+        self._imol._phase = self._imol._phase.copy()
     
     def copy_like(self, other):
         self._imol.copy_like(other._imol)
@@ -399,7 +398,7 @@ class Stream:
     @phases.setter
     def phases(self, phases):
         self.__class__ = multi_stream.MultiStream
-        self._imol = self._imol.to_material_array(phases)
+        self._imol = self._imol.to_material_indexer(phases)
         self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
     
     ### Representation ###
