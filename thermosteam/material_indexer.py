@@ -14,16 +14,12 @@ from free_properties import PropertyFactory, property_array
 import numpy as np
 
 __all__ = ('ChemicalIndexer',
-           'PhaseIndexer',
            'MaterialIndexer',
            'ChemicalMolarFlowIndexer', 
-           'PhaseMolarFlowIndexer',
            'MolarFlowIndexer',
            'ChemicalMassFlowIndexer', 
-           'PhaseMassFlowIndexer',
            'MassFlowIndexer',
            'ChemicalVolumetricFlowIndexer',
-           'PhaseVolumetricFlowIndexer',
            'VolumetricFlowIndexer',
            'MassFlowProperty',
            'VolumetricFlowProperty')
@@ -37,16 +33,14 @@ def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
-# %% Abstract data emulator
+# %% Abstract indexer
     
 class Indexer:
     __slots__ = ('_data', '_index_cache')
-    _phase_index_cache = {}
-    chemicals = None
-    units = Units()
+    units = None
     
     def copy(self):
-        new = self._copy_without_data()
+        new = self._copy_without_data(self)
         new._data = self._data.copy()
         return new
     __copy__ = copy
@@ -120,11 +114,6 @@ class ChemicalIndexer(Indexer):
             self._index_cache = caches[self._chemicals]
         except KeyError:
             self._index_cache = caches[self._chemicals] = {}
-        
-    def to_phase_indexer(self, phases=()):
-        phase_array = self._PhaseIndexer.blank(phases)
-        phase_array[self.phase] = self._data.sum()
-        return phase_array
     
     def to_material_indexer(self, phases=()):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -135,15 +124,9 @@ class ChemicalIndexer(Indexer):
         self._data[:] = other._data
         self.phase = other.phase
     
-    @property
-    def composition(self):
-        array = self._data
-        total = array.sum()
-        composition = array/total if total else array.copy()
-        return ChemicalIndexer.from_data(composition, self._phase, self._chemicals)
-    
-    def _copy_without_data(self):
-        new = _new(self.__class__)
+    @classmethod
+    def _copy_without_data(cls, self):
+        new = _new(cls)
         new._chemicals = self._chemicals
         new._index_cache = self._index_cache
         new._phase = self._phase
@@ -254,169 +237,12 @@ class ChemicalIndexer(Indexer):
         print(self._info(N))
     _ipython_display_ = show
       
-    
-class PhaseIndexer(Indexer):
-    __slots__ = ('_phases', '_phase_index')
-    _index_caches = {}
-    
-    def __new__(cls, phases=None, units=None, **phase_data):
-        self = cls.blank(phases or phase_data)
-        if phase_data:
-            phases, data = zip(*phase_data.items())
-            phases = tuple(phases)
-            if units:
-                self.set_data(data, units, phases)
-            else:
-                self[phases] = data
-        return self
-    
-    def __reduce__(self):
-        return self.from_data, (self._data, self._phases)
-    
-    def copy_like(self, other):
-        self._data[:] = other._data
-    
-    @property
-    def phases(self):
-        return self._phases
-    
-    @property
-    def phase_split(self):
-        array = self._data
-        total = array.sum()
-        phase_split = array/total if total else array.copy()
-        return PhaseIndexer.from_data(phase_split, self._phases)
-    
-    def _set_phases(self, phases):
-        self._phases = phases = tuple(sorted(phases))
-        cache = self._phase_index_cache
-        if phases in cache:
-            self._phase_index = cache[phases]
-        else:
-            self._phase_index = cache[phases] = {j:i for i,j in enumerate(phases)}
-    
-    def _set_cache(self):
-        caches = self._index_caches
-        try:
-            self._index_cache = caches[self._phases]
-        except KeyError:
-            self._index_cache = caches[self._phases] = {}
-    
-    def _get_phase_index(self, phase):
-        try:
-            return self._phase_index[phase]
-        except:
-            raise UndefinedPhase(phase)
-    
-    def _get_phase_indices(self, phases):
-        index = self._phase_index
-        try:
-            return [index[i] for i in phases]
-        except:
-            for i in phases:
-                if i not in index:
-                    raise UndefinedPhase(i)
-    
-    def _copy_without_data(self):
-        new = _new(self.__class__)
-        new._phases = self._phases
-        new._index_cache = self._index_cache
-        return new
-    
-    @classmethod
-    def blank(cls, phases):
-        self = _new(cls)
-        self._set_phases(phases)
-        self._set_cache()
-        self._data = np.zeros(len(self._phases), float)
-        return self
-    
-    @classmethod
-    def from_data(cls, data, phases):
-        self = _new(cls)
-        self._set_phases(phases)
-        self._set_cache()
-        if settings._debug:
-            assert isa(data, np.ndarray) and data.ndim == 1, (
-                                                    'data must be an 1d numpy array')
-            assert data.size == len(self._phases), ('size of data must be equal to '
-                                                    'number of phases')
-        self._data = data
-        return self
-    
-    def _get_index(self, phases):
-        if isa(phases, str):
-            return self._get_phase_index(phases)
-        elif isa(phases, tuple):
-            return self._get_phase_indices(phases)
-        elif phases == ...:
-            return phases
-        else:
-            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
-    
-    def __format__(self, tabs=""):
-        if not tabs: tabs = 1
-        tabs = int(tabs) 
-        tab = tabs*4*" "
-        if tab:
-            dlim = ",\n" + tab
-            start = '\n' + tab
-        else:
-            dlim = ', '
-            start = ""
-        phase_data = repr_IDs_data(self.phases, self.data, start, dlim)
-        return f"{type(self).__name__}({phase_data})"
-    
-    def __repr__(self):
-        return self.__format__()
-    
-    def _info(self, N):
-        """Return string with all specifications."""
-        phases = self.phases
-        data = self.data
-        phases, data = nonzeros(phases, data)
-        phases = [f'({i})' for i in phases]
-        len_ = len(data)
-        if len_ == 0:
-            return f"{type(self).__name__}: (empty)"
-        elif self.units:
-            basic_info = f"{type(self).__name__} ({self.units}):\n "
-        else:
-            basic_info = f"{type(self).__name__}:\n "
-        new_line_spaces = ' '        
-        data_info = ''
-        lengths = [len(i) for i in phases]
-        maxlen = max(lengths) + 1
-        _N = N - 1
-        for i in range(len_-1):
-            spaces = ' ' * (maxlen - lengths[i])
-            if i == _N:
-                data_info += '...\n' + new_line_spaces
-                break
-            data_info += phases[i] + spaces + f' {data[i]:.4g}\n' + new_line_spaces
-        spaces = ' ' * (maxlen - lengths[len_-1])
-        data_info += phases[len_-1] + spaces + f' {data[len_-1]:.4g}'
-        return (basic_info
-              + data_info)
-
-    def show(self, N=5):
-        """Print all specifications.
-        
-        Parameters
-        ----------
-        N: int, optional
-            Number of compounds to display.
-        
-        """
-        print(self._info(N))
-    _ipython_display_ = show
-            
 
 class MaterialIndexer(Indexer):
     __slots__ = ('_chemicals', '_phases', '_phase_index', '_data_cache')
     _index_caches = {}
+    _phase_index_cache = {}
     _ChemicalIndexer = ChemicalIndexer
-    _PhaseIndexer = PhaseIndexer
     
     def __new__(cls, phases=None, units=None, chemicals=None, **phase_data):
         self = cls.blank(phases or phase_data, chemicals)
@@ -437,31 +263,16 @@ class MaterialIndexer(Indexer):
     def copy_like(self, other):
         self._data[:] = other._data
     
-    @property
-    def composition(self):
-        array = self._data
-        chemical_array = array.sum(0)
-        total = chemical_array.sum()
-        composition = chemical_array/total if total else chemical_array
-        return ChemicalIndexer.from_data(composition, NoPhase, self._chemicals)
-    
-    @property
-    def phase_split(self):
-        array = self._data
-        phase_array = array.sum(1)
-        total = array.sum()
-        phase_split = phase_array/total if total else phase_array
-        return PhaseIndexer.from_data(phase_split, self._phases)
-    
-    @property
-    def composition_by_phase(self):
-        array = self._data
-        phase_array = array.sum(1, keepdims=True)
-        phase_array[phase_array == 0] = 1.
-        return MaterialIndexer.from_data(array/phase_array, self._phases, self._chemicals)
-    
     _set_chemicals = ChemicalIndexer._set_chemicals
-    _set_phases = PhaseIndexer._set_phases
+    
+    def _set_phases(self, phases):
+        self._phases = phases = tuple(sorted(phases))
+        cache = self._phase_index_cache
+        if phases in cache:
+            self._phase_index = cache[phases]
+        else:
+            self._phase_index = cache[phases] = {j:i for i,j in enumerate(phases)}
+            
     def _set_cache(self):
         caches = self._index_caches
         key = self._phases, self._chemicals
@@ -470,8 +281,9 @@ class MaterialIndexer(Indexer):
         except KeyError:
             self._index_cache = caches[key] = {}
     
-    def _copy_without_data(self):
-        new = _new(self.__class__)
+    @classmethod
+    def _copy_without_data(cls, self):
+        new = _new(cls)
         new._chemicals = self._chemicals
         new._phases = self._phases
         new._phase_index = self._phase_index
@@ -511,11 +323,11 @@ class MaterialIndexer(Indexer):
         self._data_cache = {}
         return self
     
-    phases =  PhaseIndexer.phases
-    chemicals = ChemicalIndexer.chemicals
+    @property
+    def phases(self):
+        return self._phases
     
-    def to_phase_indexer(self):
-        return self._PhaseIndexer.from_data(self._data.sum(1), self._phases)
+    chemicals = ChemicalIndexer.chemicals
     
     def to_chemical_indexer(self, phase=NoPhase):
         return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals)
@@ -554,21 +366,26 @@ class MaterialIndexer(Indexer):
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
         return index
     
-    _get_phase_index = PhaseIndexer._get_phase_index
+    def _get_phase_index(self, phase):
+        try:
+            return self._phase_index[phase]
+        except:
+            raise UndefinedPhase(phase)
     
-    def iter_phase_data(self):
+    def iter_data(self):
+        """Iterate over phase-data pairs."""
         return zip(self._phases, self._data)
     
-    def iter_phase_composition(self):
+    def iter_composition(self):
+        """Iterate over phase-composition pairs."""
         array = self._data
-        phase_array = array.sum(1, keepdims=True)
-        phase_array[phase_array == 0] = 1.
-        return zip(self._phases, array/phase_array)
+        total = array.sum() or 1.
+        return zip(self._phases, array/total)
     
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
         phase_data = []
-        for phase, data in self.iter_phase_data():
+        for phase, data in self.iter_data():
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")
@@ -643,38 +460,25 @@ class MaterialIndexer(Indexer):
     show = ChemicalIndexer.show
     _ipython_display_ = show
     
-def new_Indexer(name, units):
+def new_Indexer(name, units, slots=()):
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
-    PhaseIndexerSubclass = type('Phase' + name + 'Indexer', (PhaseIndexer,), {})
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
     
     ChemicalIndexerSubclass.__slots__ = \
-    PhaseIndexerSubclass.__slots__ = \
-    MaterialIndexerSubclass.__slots__ = ()
+    MaterialIndexerSubclass.__slots__ = slots
     
     ChemicalIndexerSubclass.units = \
-    PhaseIndexerSubclass.units = \
     MaterialIndexerSubclass.units = Units(units)
     
-    PhaseIndexerSubclass._ChemicalIndexer = \
     MaterialIndexerSubclass._ChemicalIndexer = ChemicalIndexerSubclass
-    
-    MaterialIndexerSubclass._PhaseIndexer = \
-    ChemicalIndexerSubclass._PhaseIndexer = PhaseIndexerSubclass
-    
-    PhaseIndexerSubclass._MaterialIndexer = \
     ChemicalIndexerSubclass._MaterialIndexer = MaterialIndexerSubclass
     
-    return ChemicalIndexerSubclass, PhaseIndexerSubclass, MaterialIndexerSubclass
+    return ChemicalIndexerSubclass, MaterialIndexerSubclass
 
 ChemicalIndexer._MaterialIndexer = MaterialIndexer
-ChemicalIndexer._PhaseIndexer = PhaseIndexer
-PhaseIndexer._ChemicalIndexer = ChemicalIndexer
-PhaseIndexer._MaterialIndexer = MaterialIndexer    
-ChemicalMolarFlowIndexer, PhaseMolarFlowIndexer, MolarFlowIndexer = new_Indexer('MolarFlow', 'kmol/hr')
-ChemicalMolarFlowIndexer.__slots__ = MolarFlowIndexer.__slots__ = ('_mass', '_vol')
-ChemicalMassFlowIndexer, PhaseMassFlowIndexer, MassFlowIndexer = new_Indexer('MassFlow', 'kg/hr')
-ChemicalVolumetricFlowIndexer, PhaseVolumetricFlowIndexer, VolumetricFlowIndexer = new_Indexer('VolumetricFlow', 'm^3/hr')
+ChemicalMolarFlowIndexer, MolarFlowIndexer = new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
+ChemicalMassFlowIndexer, MassFlowIndexer = new_Indexer('MassFlow', 'kg/hr')
+ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = new_Indexer('VolumetricFlow', 'm^3/hr')
 
 
 # %% Mass flow properties
@@ -729,12 +533,12 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     T, P = self.TP
-    return self.mol[self.index] * self.V(self.phase or self.phase_container[0], T, P)
+    return self.mol[self.index] * self.V(self.phase or self.phase_container.phase, T, P)
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     T, P = self.TP
-    self.mol[self.index] = value / self.V(self.phase or self.phase_container[0], T, P)
+    self.mol[self.index] = value / self.V(self.phase or self.phase_container.phase, T, P)
 
 def by_volume(self, TP):
     try:

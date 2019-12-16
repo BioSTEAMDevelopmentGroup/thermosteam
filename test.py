@@ -38,7 +38,8 @@ chemicals = chems.retrieve(['Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propano
 bp_tmo = tmo.BubblePoint(chemicals)
 dp_tmo = tmo.DewPoint(chemicals)
 
-z = imol.composition.data
+mol = imol.data.sum(0)
+z =  mol / mol.sum()
 T_bp = 350.
 P_bp = 101325 / 5
 bP_bst, by_at_T_bst = bp_bst.solve_Py(z, T_bp)

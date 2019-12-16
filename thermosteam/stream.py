@@ -26,6 +26,7 @@ __all__ = ('Stream', )
 mol_units = ChemicalMolarFlowIndexer.units
 mass_units = ChemicalMassFlowIndexer.units
 vol_units = ChemicalVolumetricFlowIndexer.units
+del ChemicalVolumetricFlowIndexer, ChemicalMassFlowIndexer
 
 def assert_same_chemicals(stream, others):
     chemicals = stream.chemicals
@@ -246,13 +247,13 @@ class Stream:
     @property
     def z_mass(self):
         mass = self.chemicals.MW * self.mol
-        massnet = mass.sum()
-        return mass / massnet if massnet else mass
+        F_mass = mass.sum()
+        return mass / F_mass if F_mass else mass
     @property
     def z_vol(self):
         vol = self.vol.value
-        volnet = vol.sum()
-        return vol / volnet if volnet else vol
+        F_vol = vol.sum()
+        return vol / F_vol if F_vol else vol
     
     @property
     def V(self):
@@ -301,7 +302,13 @@ class Stream:
     def link(self, other, TP=True, flow=True, phase=True):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
-        other._imol._data_cache.clear()
+        
+        if TP and flow and phase:
+            self._imol._data_cache = other._imol._data_cache
+        else:
+            self._imol._data_cache.clear()
+            other._imol._data_cache.clear()
+        
         if TP:
             self._TP = other._TP
         if flow:

@@ -17,7 +17,6 @@ __all__ = ('thermo_model', 'ThermoModel',
            'ConstantThermoModel', 'ConstantTDependentModel',
            'ConstantTPDependentModel', 'InterpolatedTDependentModel')
 
-
 RegisteredModels = []
 
 # %% Interfaces

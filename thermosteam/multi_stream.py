@@ -57,6 +57,9 @@ class MultiStream(Stream):
             streams[phase] = stream
         return stream
     
+    def __iter__(self):
+        for i in self._imol._phases: yield self[i]
+    
     ### Property getters ###
     
     def get_flow(self, units, phase, IDs=...):
@@ -83,20 +86,20 @@ class MultiStream(Stream):
     
     @property
     def H(self):
-        return self.mixture.xH_at_TP(self._imol.iter_phase_data(), self._TP)
+        return self.mixture.xH_at_TP(self._imol.iter_data(), self._TP)
     @H.setter
     def H(self, H):
-        self.T = self.mixture.xsolve_T(self._imol.iter_phase_data(), H, self.T, self.P)
+        self.T = self.mixture.xsolve_T(self._imol.iter_data(), H, self.T, self.P)
 
     @property
     def S(self):
-        return self.mixture.xS_at_TP(self._imol.iter_phase_data(), self._TP)
+        return self.mixture.xS_at_TP(self._imol.iter_data(), self._TP)
     @property
     def C(self):
-        return self.mixture.xCp_at_TP(self._imol.iter_phase_data(), self._TP)
+        return self.mixture.xCp_at_TP(self._imol.iter_data(), self._TP)
     @property
     def F_vol(self):
-        return self.mixture.xV_at_TP(self._imol.iter_phase_data(), self._TP)
+        return self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
     @F_vol.setter
     def F_vol(self, value):
         self.vol[:] *= value/self.F_vol
@@ -125,16 +128,16 @@ class MultiStream(Stream):
     
     @property
     def V(self):
-        return self.mixture.xV_at_TP(self._imol.iter_phase_composition(), self._TP)
+        return self.mixture.xV_at_TP(self._imol.iter_composition(), self._TP)
     @property
     def kappa(self):
-        return self.mixture.xkappa_at_TP(self._imol.iter_phase_composition(), self._TP)        
+        return self.mixture.xkappa_at_TP(self._imol.iter_composition(), self._TP)        
     @property
     def Cp(self):
-        return self.mixture.xCp_at_TP(self._imol.iter_phase_composition(), self._TP)
+        return self.mixture.xCp_at_TP(self._imol.iter_composition(), self._TP)
     @property
     def mu(self):
-        return self.mixture.xmu_at_TP(self._imol.iter_phase_composition(), self._TP)
+        return self.mixture.xmu_at_TP(self._imol.iter_composition(), self._TP)
 
     @property
     def sigma(self):
@@ -172,6 +175,7 @@ class MultiStream(Stream):
         self._imol._data = other._imol._data
         self._streams = other._streams
         self._vle = other._vle
+        self._data_cache = other._data_cache
             
     def unlink(self):
         imol = self._imol
@@ -288,7 +292,7 @@ class MultiStream(Stream):
         from .utils import repr_kwarg, repr_couples
         IDs = self.chemicals.IDs
         phase_data = []
-        for phase, data in self.mol.iter_phase_data():
+        for phase, data in self.mol.iter_data():
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")
