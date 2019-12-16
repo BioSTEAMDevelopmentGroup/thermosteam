@@ -44,7 +44,7 @@ from .free_energy import EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
 from ..base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, \
                    display_asfunctor, thermo_model, ThermoModelHandle, \
                    ConstantThermoModel, TDependentModelHandle
-from ..base.units_of_measure import units_of_measure
+from ..base.units_of_measure import chemical_units_of_measure
 from .dipole import dipole_moment as dipole
 from ..functional import Z #, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
 from .permittivity import Permittivity
@@ -577,7 +577,7 @@ class Chemical:
     
     def lock_state(self, phase=None, T=None, P=None):
         if self.locked_state:
-            raise ValueError(f"{self}'s state is already locked")    
+            raise TypeError(f"{self}'s state is already locked")    
         elif T and P:
             if phase:
                 lock_locked_state(self, phase, T, P)
@@ -608,7 +608,7 @@ class Chemical:
                             line = f"{field}: {value}"
                             if len(line) > 27: line = line[:27] + '...'
                         else:
-                            units = units_of_measure.get(field, "")
+                            units = chemical_units_of_measure.get(field, "")
                             if units: line += ' ' + units
                 section.append(line)
             if section:

@@ -4,11 +4,13 @@ Created on Tue Nov 26 02:34:56 2019
 
 @author: yoelr
 """
-from .base.units_of_measure import get_dimensionality, units_of_measure, flow_units_of_measure, convert
+from .base.units_of_measure import get_dimensionality, stream_units_of_measure, convert
 from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
 from .settings import settings
-from .material_index import ChemicalMolarFlowIndex, ChemicalMassFlowIndex, ChemicalVolumetricFlowIndex
+from .material_indexer import ChemicalMolarFlowIndexer, \
+                              ChemicalMassFlowIndexer, \
+                              ChemicalVolumetricFlowIndexer
 from .thermal_condition import ThermalCondition
 from .phase_container import new_phase_container
 from .equilibrium import BubblePoint, DewPoint
@@ -22,9 +24,9 @@ __all__ = ('Stream', )
 
 # %% Utilities
 
-molar_flow_dimensionality = ChemicalMolarFlowIndex.units.dimensionality
-mass_flow_dimensionality = ChemicalMassFlowIndex.units.dimensionality
-volumetric_flow_dimensionality = ChemicalVolumetricFlowIndex.units.dimensionality
+mol_dimensionality = ChemicalMolarFlowIndexer.units.dimensionality
+mass_dimensionality = ChemicalMassFlowIndexer.units.dimensionality
+vol_dimensionality = ChemicalVolumetricFlowIndexer.units.dimensionality
 
 def assert_same_chemicals(stream, others):
     chemicals = stream.chemicals
@@ -34,7 +36,7 @@ def assert_same_chemicals(stream, others):
 # %%
 @registered(ticket_name='s')
 class Stream:
-    __slots__ = ('_ID', '_molar_index', '_TP', '_thermo', '_streams', '_vle', 'price')
+    __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams', '_vle', 'price')
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = DisplayUnits(T='K', P='Pa',
@@ -45,37 +47,37 @@ class Stream:
                  price=0., thermo=None, **chemical_flows):
         self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
-        self._load_index(flow, phase, thermo.chemicals, chemical_flows)
+        self._load_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
         if units:
-            self._select_indexer(units).set_data(self.molar_flow, units)
+            self._select_indexer(units).set_data(self.mol, units)
         self._register(ID)
     
-    def _load_index(self, flow, phase, chemicals, chemical_flows):
+    def _load_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
         if flow is ():
             if chemical_flows:
-                molar_index = ChemicalMolarFlowIndex(phase, chemicals=chemicals, **chemical_flows)
+                imol = ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
             else:
-                molar_index = ChemicalMolarFlowIndex.blank(phase, chemicals)
+                imol = ChemicalMolarFlowIndexer.blank(phase, chemicals)
         else:
             assert not chemical_flows, ("may specify either 'flow' or "
                                         "'chemical_flows', but not both")
-            if isinstance(flow, ChemicalMolarFlowIndex):
-                molar_index = flow 
-                molar_index.phase = phase
+            if isinstance(flow, ChemicalMolarFlowIndexer):
+                imol = flow 
+                imol.phase = phase
             else:
-                molar_index = ChemicalMolarFlowIndex.from_data(flow, phase, chemicals)
-        self._molar_index = molar_index
+                imol = ChemicalMolarFlowIndexer.from_data(flow, phase, chemicals)
+        self._imol = imol
 
     def _select_indexer(self, units):
         dimensionality = get_dimensionality(units)
-        if dimensionality == molar_flow_dimensionality:
-            return self.molar_index
-        elif dimensionality == mass_flow_dimensionality:
-            return self.mass_index
-        elif dimensionality == volumetric_flow_dimensionality:
-            return self.volumetric_index
+        if dimensionality == mol_dimensionality:
+            return self.imol
+        elif dimensionality == mass_dimensionality:
+            return self.imass
+        elif dimensionality == vol_dimensionality:
+            return self.ivol
         else:
             raise DimensionError(f"dimensions for flow units must be in molar, "
                                  f"mass or volumetric flow rates, not '{dimensionality}'")
@@ -92,10 +94,8 @@ class Stream:
         indexer[IDs] = np.asarray(data, dtype=float) / indexer.units.conversion_factor(units)    
     
     def get_property(self, name, units):
-        if name in flow_units_of_measure:
-            original_units = flow_units_of_measure[name]
-        elif name in units_of_measure:
-            original_units = units_of_measure[name]
+        if name in stream_units_of_measure:
+            original_units = stream_units_of_measure[name]
         else:
             raise ValueError(f"no property with name '{name}'")
         value = getattr(self, name)
@@ -134,148 +134,160 @@ class Stream:
     
     @property
     def phase(self):
-        return self._molar_index.phase
+        return self._imol.phase
     @phase.setter
     def phase(self, phase):
-        self._molar_index.phase = phase
+        self._imol.phase = phase
     
     @property
-    def molar_flow(self):
-        return self._molar_index._data
-    @molar_flow.setter
-    def molar_flow(self, value):
-        if self.molar_flow is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def mol(self):
+        return self._imol._data
+    @mol.setter
+    def mol(self, value):
+        mol = self.mol
+        if mol is not value:
+            mol[:] = value
     
     @property
-    def mass_flow(self):
-        return self.mass_index._data
-    @mass_flow.setter
-    def mass_flow(self, value):
-        if self.mass is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def mass(self):
+        return self.imass._data
+    @mass.setter
+    def mass(self, value):
+        mass = self.mass
+        if mass is not value:
+            mass[:] = value
     
     @property
-    def volumetric_flow(self):
-        return self.volumetric_index._data
-    @volumetric_flow.setter
-    def volumetric_flow(self, value):
-        if self.vol is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def vol(self):
+        return self.ivol._data
+    @vol.setter
+    def vol(self, value):
+        vol = self.vol
+        if vol is not value:
+            vol[:] = value
         
     @property
-    def molar_index(self):
-        return self._molar_index
-    @molar_index.setter
-    def molar_index(self, value):
-        if self._molar_index is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def imol(self):
+        return self._imol
+    @imol.setter
+    def imol(self, value):
+        if self._imol is not value:
+            raise AttributeError("cannot replace indexer")
     
     @property
-    def mass_index(self):
-        return self._molar_index.by_mass()
-    @mass_index.setter
-    def mass_index(self, value):
-        if self.mass_index is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def imass(self):
+        return self._imol.by_mass()
+    @imass.setter
+    def imass(self, value):
+        if self.imass is not value:
+            raise AttributeError("cannot replace indexer")
     
     @property
-    def volumetric_index(self):
-        return self._molar_index.by_volume(self._TP)
-    @volumetric_index.setter
-    def volumetric_index(self, value):
-        if self.volumetric_index is not value:
-            raise AttributeError("cannot replace attribute with another object")
+    def ivol(self):
+        return self._imol.by_volume(self._TP)
+    @ivol.setter
+    def ivol(self, value):
+        if self.ivol is not value:
+            raise AttributeError("cannot replace indexer")
     
     ### Net flow properties ###
     
     @property
     def cost(self):
-        return self.price * self.net_mass_flow
+        return self.price * self.F_mass
     
     @property
-    def net_molar_flow(self):
+    def F_mol(self):
         return self.mol.sum()
+    @F_mol.setter
+    def F_mol(self, value):
+        self.mol[:] *= value/self.F_mol
     @property
-    def net_mass_flow(self):
-        return (self.chemicals.MW * self.molar_flow).sum()
+    def F_mass(self):
+        return (self.chemicals.MW * self.mol).sum()
+    @F_mass.setter
+    def F_mass(self, value):
+        self.mol[:] *= value/self.F_mass
     @property
-    def net_volumetric_flow(self):
-        return self.mixture.V_at_TP(self.phase, self.molar_flow, self._TP)
+    def F_vol(self):
+        return self.mixture.V_at_TP(self.phase, self.mol, self._TP)
+    @F_vol.setter
+    def F_vol(self, value):
+        self.vol[:] *= value/self.F_vol
     
     @property
     def H(self):
-        return self.mixture.H_at_TP(self.phase, self.molar_flow, self._TP)
+        return self.mixture.H_at_TP(self.phase, self.mol, self._TP)
     @H.setter
     def H(self, H):
-        self.T = self.mixture.solve_T(self.phase, self.molar_flow, H, self.T, self.P)
+        self.T = self.mixture.solve_T(self.phase, self.mol, H, self.T, self.P)
 
     @property
     def S(self):
-        return self.mixture.S_at_TP(self.phase, self.molar_flow, self._TP)
+        return self.mixture.S_at_TP(self.phase, self.mol, self._TP)
     
     @property
     def Hf(self):
-        return (self.chemicals.Hf * self.molar_flow).sum()
+        return (self.chemicals.Hf * self.mol).sum()
     @property
     def Hc(self):
-        return (self.chemicals.Hc * self.molar_flow).sum()    
+        return (self.chemicals.Hc * self.mol).sum()    
     @property
     def Hvap(self):
-        return self.mixture.Hvap_at_TP(self.molar_flow, self._TP)
+        return self.mixture.Hvap_at_TP(self.mol, self._TP)
     
     @property
     def C(self):
-        return self.mixture.Cp_at_TP(self.molar_flow, self._TP)
+        return self.mixture.Cp_at_TP(self.mol, self._TP)
     
     ### Composition properties ###
     
     @property
-    def molar_composition(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return mol / molnet if molnet else mol.copy()
+    def z_mol(self):
+        mol = self.mol
+        F_mol = mol.sum()
+        return mol / F_mol if F_mol else mol.copy()
     @property
-    def mass_composition(self):
-        mass = self.chemicals.MW * self.molar_flow
+    def z_mass(self):
+        mass = self.chemicals.MW * self.mol
         massnet = mass.sum()
         return mass / massnet if massnet else mass
     @property
-    def volumetric_composition(self):
-        vol = self.volumetric_flow
+    def z_vol(self):
+        vol = self.vol
         volnet = vol.sum()
         return vol / volnet if volnet else vol.value
     
     @property
     def V(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.V_at_TP(self.phase, mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.V_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
     def kappa(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.kappa_at_TP(self.phase, mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.kappa_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
     def Cp(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.Cp_at_TP(self.phase, mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.Cp_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
     def mu(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.mu_at_TP(self.phase, mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.mu_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
     def sigma(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.sigma_at_TP(mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.sigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
     @property
     def epsilon(self):
-        mol = self.molar_flow
-        molnet = mol.sum()
-        return self.mixture.epsilon_at_TP(mol / molnet, self._TP) if molnet else 0
+        mol = self.mol
+        F_mol = mol.sum()
+        return self.mixture.epsilon_at_TP(mol / F_mol, self._TP) if F_mol else 0
     
     ### Stream methods ###
     
@@ -286,29 +298,29 @@ class Stream:
         self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
-        mol = self.molar_flow
+        mol = self.mol
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
         
     def link(self, other, TP=True, flow=True, phase=True):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
-        other._molar_index._data_cache.clear()
+        other._imol._data_cache.clear()
         if TP:
             self._TP = other._TP
         if flow:
-            self._molar_index._data = other._molar_index._data
+            self._imol._data = other._imol._data
         if phase:
-            self._molar_index._phase = other._molar_index._phase
+            self._imol._phase = other._imol._phase
             
     def unlink(self):
-        self._molar_index._data_cache.clear()
+        self._imol._data_cache.clear()
         self._TP = self._TP.copy()
-        self._molar_index._data = self._molar_index._data.copy()
-        self._molar_index._phase = new_phase_container(self._molar_index._phase)
+        self._imol._data = self._imol._data.copy()
+        self._imol._phase = new_phase_container(self._imol._phase)
     
     def copy_like(self, other):
-        self._molar_index.copy_like(other._molar_index)
+        self._imol.copy_like(other._imol)
         self._TP.copy_like(other._TP)
     
     def copy(self):
@@ -316,13 +328,13 @@ class Stream:
         new = cls.__new__(cls)
         new._ID = None
         new._thermo = self._thermo
-        new._molar_index = self._molar_index.copy()
+        new._imol = self._imol.copy()
         new._TP = self._TP.copy()
         return new
     __copy__ = copy
     
     def empty(self):
-        self._molar_index._data[:] = 0
+        self._imol._data[:] = 0
     
     ### Equilibrium ###
 
@@ -332,8 +344,8 @@ class Stream:
         return self.vle
 
     @property
-    def z_chemicals(self):
-        mol = self.molar_flow
+    def z_equilibrium_chemicals(self):
+        mol = self.mol
         chemicals = self.chemicals
         indices = chemicals.equilibrium_indices(mol != 0)
         flow = mol[indices]
@@ -347,17 +359,8 @@ class Stream:
     def equilibrim_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.equilibrium_indices(self.molar_flow != 0)
+        indices = chemicals.equilibrium_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
-    
-    @property
-    def z(self):
-        mol = self.molar_flow
-        indices = self.chemicals.equilibrium_indices(mol != 0)
-        flow = mol[indices]
-        netflow = flow.sum()
-        assert netflow, "no equilibrium chemicals present"
-        return flow / netflow  
     
     @property
     def bubble_point(self):
@@ -369,25 +372,25 @@ class Stream:
     
     @property
     def T_bubble(self):
-        z, chemicals = self.z_chemicals
+        z, chemicals = self.z_equilibrium_chemicals
         bp = BubblePoint(chemicals, self._thermo)
         return bp.solve_Ty(z, self.P)[0]
     
     @property
     def T_dew(self):
-        z, chemicals = self.z_chemicals
+        z, chemicals = self.z_equilibrium_chemicals
         dp = DewPoint(chemicals, self._thermo)
         return dp.solve_Tx(z, self.P)[0]
     
     @property
     def P_bubble(self):
-        z, chemicals = self.z_chemicals
+        z, chemicals = self.z_equilibrium_chemicals
         bp = BubblePoint(chemicals, self._thermo)
         return bp.solve_Py(z, self.T)[0]
     
     @property
     def P_dew(self):
-        z, chemicals = self.z_chemicals
+        z, chemicals = self.z_equilibrium_chemicals
         dp = DewPoint(chemicals, self._thermo)
         return dp.solve_Px(z, self.T)[0]
     
@@ -399,8 +402,8 @@ class Stream:
     @phases.setter
     def phases(self, phases):
         self.__class__ = multi_stream.MultiStream
-        self._molar_index = self._molar_index.to_material_array(phases)
-        self._vle = Cache(VLE, self._molar_index, self._TP, thermo=self._thermo)
+        self._imol = self._imol.to_material_array(phases)
+        self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
     
     ### Representation ###
     
@@ -415,10 +418,10 @@ class Stream:
     
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
-        from .material_index import nonzeros
+        from .material_indexer import nonzeros
         basic_info = self._basic_info()
         IDs = self.chemicals.IDs
-        data = self.molar_index.data
+        data = self.imol.data
         IDs, data = nonzeros(IDs, data)
         IDs = tuple(IDs)
         T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
@@ -429,13 +432,7 @@ class Stream:
         
         # Start of third line (flow rates)
         index = self._select_indexer(flow_units)
-        if index is self._molar_index:
-            flow = 'molar_flow'
-        elif index is self._mass_index:
-            flow = 'mass_flow'
-        else:
-            flow = 'volumetric_flow'
-        beginning = f' {flow} ({flow_units}): '
+        beginning = f' flow ({flow_units}):'
             
         # Remaining lines (all flow rates)
         new_line_spaces = len(beginning) * ' '
@@ -480,7 +477,7 @@ class Stream:
     
     def print(self):
         from .utils import repr_IDs_data, repr_kwarg
-        chemical_flows = repr_IDs_data(self.chemicals.IDs, self.molar_flow)
+        chemical_flows = repr_IDs_data(self.chemicals.IDs, self.mol)
         price = repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
               f"P={self.P:.6g}{price}{chemical_flows})")

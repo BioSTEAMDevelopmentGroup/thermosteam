@@ -8,7 +8,7 @@ from math import log
 from scipy.interpolate import interp1d
 from .functor import TFunctor, TPFunctor, Functor, \
                      display_asfunctor, functor_matching_params, functor_name
-from .units_of_measure import units_of_measure
+from .units_of_measure import chemical_units_of_measure
 from numpy import inf as infinity
 from inspect import signature
 
@@ -185,8 +185,8 @@ class ConstantThermoModel(ThermoModel):
 
     def show(self):
         var = self.var
-        if var in units_of_measure:
-            units = " " + units_of_measure[var]
+        if var in chemical_units_of_measure:
+            units = " " + chemical_units_of_measure[var]
         else:
             units = ""
         var = f' ({self.var})' if self.var else ""

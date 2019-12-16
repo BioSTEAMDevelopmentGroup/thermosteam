@@ -4,7 +4,10 @@ Created on Mon Sep 30 23:02:53 2019
 
 @author: yoelr
 """
-__all__ = ('units_of_measure', 'ureg', 'get_dimensionality', 'Units', 'convert')
+__all__ = ('chemical_units_of_measure', 
+           'stream_units_of_measure',
+           'ureg', 'get_dimensionality',
+           'Units', 'convert')
 
 # %% Import unit registry
 
@@ -73,65 +76,64 @@ def get_dimensionality(units, cache={}):
 
 # %% Units of measure
 
-units_of_measure = {'MW': 'g/mol',
-                    'T': 'K',
-                    'Tm': 'K',
-                    'Tb': 'K',
-                    'Tt': 'K',
-                    'Tc': 'K',
-                    'P': 'Pa',
-                    'Pc': 'Pa',
-                    'Psat': 'Pa',
-                    'Pt': 'K',
-                    'V': 'm^3/mol',
-                    'Vc': 'm^3/mol',
-                    'Cp': 'J/mol/K',
-                    'rho': 'kg/m^3', 
-                    'rhoc': 'kg/m^3',
-                    'nu': 'm^2/s',
-                    'mu': 'Pa*s',
-                    'sigma': 'N/m' ,
-                    'kappa': 'W/m/K',
-                    'alpha': 'm^2/s', 
-                    'Hvap': 'J/mol',
-                    'H': 'J/mol',  
-                    'Hf':'J/mol', 
-                    'Hc':'J/mol', 
-                    'Hfus': 'J/mol', 
-                    'Hsub': 'J/mol',
-                    'S': 'J/mol', 
-                    'G': 'J/mol', 
-                    'U': 'J/mol', 
-                    'A': 'J/mol',
-                    'H_excess': 'J/mol', 
-                    'S_excess': 'J/mol',
-                    'R': 'J/mol/K',
-                    'delta': 'Pa^0.5',
-                    'epsilon': "",
+chemical_units_of_measure = {'MW': Units('g/mol'),
+                             'T': Units('K'),
+                             'Tm': Units('K'),
+                             'Tb': Units('K'),
+                             'Tt': Units('K'),
+                             'Tc': Units('K'),
+                             'P': Units('Pa'),
+                             'Pc': Units('Pa'),
+                             'Psat': Units('Pa'),
+                             'Pt': Units('K'),
+                             'V': Units('m^3/mol'),
+                             'Vc': Units('m^3/mol'),
+                             'Cp': Units('J/mol/K'),
+                             'rho': Units('kg/m^3'), 
+                             'rhoc': Units('kg/m^3'),
+                             'nu': Units('m^2/s'),
+                             'mu': Units('Pa*s'),
+                             'sigma': Units('N/m'),
+                             'kappa': Units('W/m/K'),
+                             'alpha': Units('m^2/s'), 
+                             'Hvap': Units('J/mol'),
+                             'H': Units('J/mol'),  
+                             'Hf': Units('J/mol'), 
+                             'Hc': Units('J/mol'), 
+                             'Hfus': Units('J/mol'), 
+                             'Hsub': Units('J/mol'),
+                             'S': Units('J/mol'), 
+                             'G': Units('J/mol'), 
+                             'U': Units('J/mol'), 
+                             'A': Units('J/mol'),
+                             'H_excess': Units('J/mol'), 
+                             'S_excess': Units('J/mol'),
+                             'R': Units('J/mol/K'),
+                             'delta': Units('Pa^0.5'),
+                             'epsilon': Units(''),
 }
-for i,j in units_of_measure.items(): units_of_measure[i] = Units(j)
-
-flow_units_of_measure = dict(molar_flow='kmol/hr',
-                             mass_flow='kg/hr',
-                             volumetric_flow='m^3/hr',
-                             cost='USD/hr',
-                             mass='kg/hr',
-                             mol='kmol/hr',
-                             vol='m^3/hr',
-                             massnet='kg/hr',
-                             molnet='kmol/hr',
-                             volnet='m^3/hr',
-                             Hvap='kJ/hr',
-                             Hf='kJ/hr', 
-                             Hc='kJ/hr', 
-                             H='kJ/hr',
-                             S='kJ/hr',
-                             G='kJ/hr',
-                             U='kJ/hr',
-                             A='kJ/hr',
-                             C='kJ/hr/K',
+stream_units_of_measure = dict(molar_flow=Units('kmol/hr'),
+                               mass_flow=Units('kg/hr'),
+                               volumetric_flow=Units('m^3/hr'),
+                               cost=Units('USD/hr'),
+                               mass=Units('kg/hr'),
+                               mol=Units('kmol/hr'),
+                               vol=Units('m^3/hr'),
+                               massnet=Units('kg/hr'),
+                               molnet=Units('kmol/hr'),
+                               volnet=Units('m^3/hr'),
+                               Hvap=Units('kJ/hr'),
+                               Hf=Units('kJ/hr'), 
+                               Hc=Units('kJ/hr'), 
+                               H=Units('kJ/hr'),
+                               S=Units('kJ/hr'),
+                               G=Units('kJ/hr'),
+                               U=Units('kJ/hr'),
+                               A=Units('kJ/hr'),
+                               C=Units('kJ/hr/K'),
 )
-for i,j in flow_units_of_measure.items(): flow_units_of_measure[i] = Units(j)
+for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma', 'kappa', 'nu', 'epsilon', 'delta', 'Psat', 'Cp'):
+    stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 definitions = {'MW': 'Molecular weight',
                'T': 'Temperature',
@@ -176,11 +178,11 @@ types = {}
 # Synonyms
 for i, j in [('ω', 'omega')]:
     definitions[i] = definitions[j]
-    if j in units_of_measure: units_of_measure[i] = units_of_measure[j]
+    if j in chemical_units_of_measure: chemical_units_of_measure[i] = chemical_units_of_measure[j]
 
 # Phase properties
 for var in ('Cp', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
-    units = units_of_measure[var]
+    units = chemical_units_of_measure[var]
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):
         phasevar = var + '.' +tag

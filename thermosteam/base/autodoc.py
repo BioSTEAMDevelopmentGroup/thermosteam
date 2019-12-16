@@ -4,7 +4,7 @@ Created on Wed Nov 13 10:06:46 2019
 
 @author: yoelr
 """
-from .units_of_measure import units_of_measure, definitions, types
+from .units_of_measure import chemical_units_of_measure, definitions, types
 
 # %% Utilities
 
@@ -29,7 +29,7 @@ class VariableDescriber:
     
     def get_units(self, var):
         var, *_ = var.split(".")
-        return self.units.get(var) or units_of_measure.get(var)
+        return self.units.get(var) or chemical_units_of_measure.get(var)
     
     def get_type(self, var):
         return self.types.get(var) or 'float'
@@ -42,7 +42,6 @@ class VariableDescriber:
             else: info += f" [-]"
         return info + "."
 
-describer = VariableDescriber(definitions, units_of_measure, types)
 
 # %% Autodoc
 

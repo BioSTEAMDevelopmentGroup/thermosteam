@@ -13,18 +13,18 @@ from .phase_container import phase_container
 from free_properties import PropertyFactory, property_array
 import numpy as np
 
-__all__ = ('ChemicalIndex',
-           'PhaseIndex',
-           'MaterialIndex',
-           'ChemicalMolarFlowIndex', 
-           'PhaseMolarFlowIndex',
-           'MolarFlowIndex',
-           'ChemicalMassFlowIndex', 
-           'PhaseMassFlowIndex',
-           'MassFlowIndex',
-           'ChemicalVolumetricFlowIndex',
-           'PhaseVolumetricFlowIndex',
-           'VolumetricFlowIndex',
+__all__ = ('ChemicalIndexer',
+           'PhaseIndexer',
+           'MaterialIndexer',
+           'ChemicalMolarFlowIndexer', 
+           'PhaseMolarFlowIndexer',
+           'MolarFlowIndexer',
+           'ChemicalMassFlowIndexer', 
+           'PhaseMassFlowIndexer',
+           'MassFlowIndexer',
+           'ChemicalVolumetricFlowIndexer',
+           'PhaseVolumetricFlowIndexer',
+           'VolumetricFlowIndexer',
            'MassFlowProperty',
            'VolumetricFlowProperty')
 
@@ -39,7 +39,7 @@ def nonzeros(IDs, data):
 
 # %% Abstract data emulator
     
-class IndexEmulator:
+class Indexer:
     __slots__ = ('_data', '_index_cache')
     _phase_index_cache = {}
     chemicals = None
@@ -63,7 +63,7 @@ class IndexEmulator:
     
     def set_data(self, data, units, *index):
         length = len(index)
-        data = data._data if isa(data, IndexEmulator) else np.asarray(data, dtype=float)
+        data = data._data if isa(data, Indexer) else np.asarray(data, dtype=float)
         scaled_data = data / self.units.conversion_factor(units)
         if length == 0:
             self._data[:] = scaled_data
@@ -86,7 +86,7 @@ class IndexEmulator:
         return self._data[self.get_index(key)]
     
     def __setitem__(self, key, data):
-        self._data[self.get_index(key)] = data._data if isa(data, IndexEmulator) else data
+        self._data[self.get_index(key)] = data._data if isa(data, Indexer) else data
     
     @property
     def data(self):
@@ -95,7 +95,7 @@ class IndexEmulator:
 
 # %% Phase data
 
-class ChemicalIndex(IndexEmulator):
+class ChemicalIndexer(Indexer):
     __slots__ = ('_chemicals', '_phase', '_data_cache')
     _index_caches = {}
     
@@ -122,12 +122,12 @@ class ChemicalIndex(IndexEmulator):
             self._index_cache = caches[self._chemicals] = {}
         
     def to_phase_index(self, phases=()):
-        phase_array = self._PhaseIndex.blank(phases)
+        phase_array = self._PhaseIndexer.blank(phases)
         phase_array[self.phase] = self._data.sum()
         return phase_array
     
     def to_material_index(self, phases=()):
-        material_array = self._MaterialIndex.blank(phases, self._chemicals)
+        material_array = self._MaterialIndexer.blank(phases, self._chemicals)
         material_array[self.phase] = self._data
         return material_array
     
@@ -140,7 +140,7 @@ class ChemicalIndex(IndexEmulator):
         array = self._data
         total = array.sum()
         composition = array/total if total else array.copy()
-        return ChemicalIndex.from_data(composition, self._phase, self._chemicals)
+        return ChemicalIndexer.from_data(composition, self._phase, self._chemicals)
     
     def _copy_without_data(self):
         new = _new(self.__class__)
@@ -256,7 +256,7 @@ class ChemicalIndex(IndexEmulator):
     _ipython_display_ = show
       
     
-class PhaseIndex(IndexEmulator):
+class PhaseIndexer(Indexer):
     __slots__ = ('_phases', '_phase_index')
     _index_caches = {}
     
@@ -286,7 +286,7 @@ class PhaseIndex(IndexEmulator):
         array = self._data
         total = array.sum()
         phase_split = array/total if total else array.copy()
-        return PhaseIndex.from_data(phase_split, self._phases)
+        return PhaseIndexer.from_data(phase_split, self._phases)
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(sorted(phases))
@@ -413,11 +413,11 @@ class PhaseIndex(IndexEmulator):
     _ipython_display_ = show
             
 
-class MaterialIndex(IndexEmulator):
+class MaterialIndexer(Indexer):
     __slots__ = ('_chemicals', '_phases', '_phase_index', '_data_cache')
     _index_caches = {}
-    _ChemicalIndex = ChemicalIndex
-    _PhaseIndex = PhaseIndex
+    _ChemicalIndexer = ChemicalIndexer
+    _PhaseIndexer = PhaseIndexer
     
     def __new__(cls, phases=None, units=None, chemicals=None, **phase_data):
         self = cls.blank(phases or phase_data, chemicals)
@@ -444,7 +444,7 @@ class MaterialIndex(IndexEmulator):
         chemical_array = array.sum(0)
         total = chemical_array.sum()
         composition = chemical_array/total if total else chemical_array
-        return ChemicalIndex.from_data(composition, (None,), self._chemicals)
+        return ChemicalIndexer.from_data(composition, (None,), self._chemicals)
     
     @property
     def phase_split(self):
@@ -452,17 +452,17 @@ class MaterialIndex(IndexEmulator):
         phase_array = array.sum(1)
         total = array.sum()
         phase_split = phase_array/total if total else phase_array
-        return PhaseIndex.from_data(phase_split, self._phases)
+        return PhaseIndexer.from_data(phase_split, self._phases)
     
     @property
     def composition_by_phase(self):
         array = self._data
         phase_array = array.sum(1, keepdims=True)
         phase_array[phase_array == 0] = 1.
-        return MaterialIndex.from_data(array/phase_array, self._phases, self._chemicals)
+        return MaterialIndexer.from_data(array/phase_array, self._phases, self._chemicals)
     
-    _set_chemicals = ChemicalIndex._set_chemicals
-    _set_phases = PhaseIndex._set_phases
+    _set_chemicals = ChemicalIndexer._set_chemicals
+    _set_phases = PhaseIndexer._set_phases
     def _set_cache(self):
         caches = self._index_caches
         key = self._phases, self._chemicals
@@ -512,17 +512,17 @@ class MaterialIndex(IndexEmulator):
         self._data_cache = {}
         return self
     
-    phases =  PhaseIndex.phases
-    chemicals = ChemicalIndex.chemicals
+    phases =  PhaseIndexer.phases
+    chemicals = ChemicalIndexer.chemicals
     
     def to_phase_index(self):
-        return self._PhaseIndex.from_data(self._data.sum(1), self._phases)
+        return self._PhaseIndexer.from_data(self._data.sum(1), self._phases)
     
     def to_chemical_index(self, phase=(None,)):
-        return self._ChemicalIndex.from_data(self._data.sum(0), phase, self._chemicals)
+        return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals)
     
     def get_phase(self, phase):
-        return self._ChemicalIndex.from_data(self._data[self._get_phase_index(phase)],
+        return self._ChemicalIndexer.from_data(self._data[self._get_phase_index(phase)],
                                              (phase,), self._chemicals)
     
     def _get_index(self, phase_IDs):
@@ -534,7 +534,7 @@ class MaterialIndex(IndexEmulator):
             try:
                 phase, IDs = phase_IDs
             except:
-                raise IndexError(f"please index with <{type(self).__name__}>[phase, IDs] "
+                raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
                                   "where phase is a (str, or ellipsis), "
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
             if isa(IDs, str):
@@ -550,12 +550,12 @@ class MaterialIndex(IndexEmulator):
             elif phase == ...:
                 index = (phase, IDs_index)
             else:
-                raise IndexError(f"please index with <{type(self).__name__}>[phase, IDs] "
+                raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
                                   "where phase is a (str, or ellipsis), "
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
         return index
     
-    _get_phase_index = PhaseIndex._get_phase_index
+    _get_phase_index = PhaseIndexer._get_phase_index
     
     def iter_phase_data(self):
         return zip(self._phases, self._data)
@@ -641,137 +641,135 @@ class MaterialIndex(IndexEmulator):
             phases_flowrates_info += beginning + flowrates + '\n'
             
         return basic_info + phases_flowrates_info[:-1]
-    show = ChemicalIndex.show
+    show = ChemicalIndexer.show
     _ipython_display_ = show
     
-def new_Index(name, units):
-    ChemicalIndexSubclass = type('Chemical' + name + 'Index', (ChemicalIndex,), {})
-    PhaseIndexSubclass = type('Phase' + name + 'Index', (PhaseIndex,), {})
-    MaterialIndexSubclass = type(name + 'Index', (MaterialIndex,), {})
+def new_Indexer(name, units):
+    ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
+    PhaseIndexerSubclass = type('Phase' + name + 'Indexer', (PhaseIndexer,), {})
+    MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
     
-    ChemicalIndexSubclass.__slots__ = \
-    PhaseIndexSubclass.__slots__ = \
-    MaterialIndexSubclass.__slots__ = ()
+    ChemicalIndexerSubclass.__slots__ = \
+    PhaseIndexerSubclass.__slots__ = \
+    MaterialIndexerSubclass.__slots__ = ()
     
-    ChemicalIndexSubclass.units = \
-    PhaseIndexSubclass.units = \
-    MaterialIndexSubclass.units = Units(units)
+    ChemicalIndexerSubclass.units = \
+    PhaseIndexerSubclass.units = \
+    MaterialIndexerSubclass.units = Units(units)
     
-    PhaseIndexSubclass._ChemicalIndex = \
-    MaterialIndexSubclass._ChemicalIndex = ChemicalIndexSubclass
+    PhaseIndexerSubclass._ChemicalIndexer = \
+    MaterialIndexerSubclass._ChemicalIndexer = ChemicalIndexerSubclass
     
-    MaterialIndexSubclass._PhaseIndex = \
-    ChemicalIndexSubclass._PhaseIndex = PhaseIndexSubclass
+    MaterialIndexerSubclass._PhaseIndexer = \
+    ChemicalIndexerSubclass._PhaseIndexer = PhaseIndexerSubclass
     
-    PhaseIndexSubclass._MaterialIndex = \
-    ChemicalIndexSubclass._MaterialIndex = MaterialIndexSubclass
+    PhaseIndexerSubclass._MaterialIndexer = \
+    ChemicalIndexerSubclass._MaterialIndexer = MaterialIndexerSubclass
     
-    return ChemicalIndexSubclass, PhaseIndexSubclass, MaterialIndexSubclass
+    return ChemicalIndexerSubclass, PhaseIndexerSubclass, MaterialIndexerSubclass
 
-ChemicalIndex._MaterialIndex = MaterialIndex
-ChemicalIndex._PhaseIndex = PhaseIndex
-PhaseIndex._ChemicalIndex = ChemicalIndex
-PhaseIndex._MaterialIndex = MaterialIndex    
-ChemicalMolarFlowIndex, PhaseMolarFlowIndex, MolarFlowIndex = new_Index('MolarFlow', 'kmol/hr')
-ChemicalMolarFlowIndex.__slots__ = MolarFlowIndex.__slots__ = ('_mass_flow', '_volumetric_flow')
-ChemicalMassFlowIndex, PhaseMassFlowIndex, MassFlowIndex = new_Index('MassFlow', 'kg/hr')
-ChemicalVolumetricFlowIndex, PhaseVolumetricFlowIndex, VolumetricFlowIndex = new_Index('VolumetricFlow', 'm^3/hr')
+ChemicalIndexer._MaterialIndexer = MaterialIndexer
+ChemicalIndexer._PhaseIndexer = PhaseIndexer
+PhaseIndexer._ChemicalIndexer = ChemicalIndexer
+PhaseIndexer._MaterialIndexer = MaterialIndexer    
+ChemicalMolarFlowIndexer, PhaseMolarFlowIndexer, MolarFlowIndexer = new_Indexer('MolarFlow', 'kmol/hr')
+ChemicalMolarFlowIndexer.__slots__ = MolarFlowIndexer.__slots__ = ('_mass', '_vol')
+ChemicalMassFlowIndexer, PhaseMassFlowIndexer, MassFlowIndexer = new_Indexer('MassFlow', 'kg/hr')
+ChemicalVolumetricFlowIndexer, PhaseVolumetricFlowIndexer, VolumetricFlowIndexer = new_Indexer('VolumetricFlow', 'm^3/hr')
 
 
 # %% Mass flow properties
 
-@PropertyFactory(slots=('name', 'molar_flow', 'index', 'MW'))
+@PropertyFactory(slots=('name', 'mol', 'index', 'MW'))
 def MassFlowProperty(self):
     """Mass flow (kg/hr)."""
-    return self.molar_flow[self.index] * self.MW
+    return self.mol[self.index] * self.MW
     
 @MassFlowProperty.setter
 def MassFlowProperty(self, value):
-    self.molar_flow[self.index] = value/self.MW
+    self.mol[self.index] = value/self.MW
 
 def by_mass(self):
     try:
-        mass_flow = self._data_cache['mass_flow']
+        mass = self._data_cache['mass']
     except:
         chemicals = self.chemicals
-        molar_flow = self.data
-        mass_flow = np.zeros_like(molar_flow, dtype=object)
+        mol = self.data
+        mass = np.zeros_like(mol, dtype=object)
         for i, chem in enumerate(chemicals):
-            mass_flow[i] = MassFlowProperty(chem.ID, molar_flow, i, chem.MW)
-        self._data_cache['mass_flow'] = mass_flow = ChemicalMassFlowIndex.from_data(
-                                                        property_array(mass_flow),
+            mass[i] = MassFlowProperty(chem.ID, mol, i, chem.MW)
+        self._data_cache['mass'] = mass = ChemicalMassFlowIndexer.from_data(
+                                                        property_array(mass),
                                                         self._phase, chemicals)
-    return mass_flow
-ChemicalMolarFlowIndex.by_mass = by_mass
+    return mass
+ChemicalMolarFlowIndexer.by_mass = by_mass
 
 def by_mass(self):
     try:
-        mass_flow = self._data_cache['mass_flow']
+        mass = self._data_cache['mass']
     except:
         phases = self.phases
         chemicals = self.chemicals
-        molar_flow = self.data
-        mass_flow = np.zeros_like(molar_flow, dtype=object)
+        mol = self.data
+        mass = np.zeros_like(mol, dtype=object)
         for i, phase in enumerate(phases):
             for j, chem in enumerate(chemicals):
                 index = (i, j)
-                mass_flow[index] = MassFlowProperty(chem.ID, molar_flow, index, chem.MW)
-        self._data_cache['mass_flow'] = mass_flow = MassFlowIndex.from_data(
-                                                        property_array(mass_flow),
+                mass[index] = MassFlowProperty(chem.ID, mol, index, chem.MW)
+        self._data_cache['mass'] = mass = MassFlowIndexer.from_data(
+                                                        property_array(mass),
                                                         phases, chemicals)
-    return mass_flow
-MolarFlowIndex.by_mass = by_mass; del by_mass
+    return mass
+MolarFlowIndexer.by_mass = by_mass; del by_mass
 
 
 # %% Volumetric flow properties
 
-@PropertyFactory(slots=('name', 'molar_flow', 'index', 'V',
+@PropertyFactory(slots=('name', 'mol', 'index', 'V',
                         'TP', 'phase', 'phase_container'))
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     T, P = self.TP
-    return self.molar_flow[self.index] * self.V(self.phase or self.phase_container[0], T, P)
+    return self.mol[self.index] * self.V(self.phase or self.phase_container[0], T, P)
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     T, P = self.TP
-    self.molar_flow[self.index] = value / self.V(self.phase or self.phase_container[0], T, P)
+    self.mol[self.index] = value / self.V(self.phase or self.phase_container[0], T, P)
 
 def by_volume(self, TP):
     try:
-        volumetric_flow = self._data_cache[TP]
+        vol = self._data_cache[TP]
     except:
         chemicals = self.chemicals
-        molar_flow = self.data
-        volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+        mol = self.data
+        vol = np.zeros_like(mol, dtype=object)
         for i, chem in enumerate(chemicals):
-            volumetric_flow[i] = VolumetricFlowProperty(chem.ID, molar_flow, i, chem.V,
-                                                        TP, None, self._phase)
-        self._data_cache['volumetric_flow'] = \
-        volumetric_flow = ChemicalVolumetricFlowIndex.from_data(property_array(volumetric_flow),
-                                                                self._phase, chemicals)
-    return volumetric_flow
-ChemicalMolarFlowIndex.by_volume = by_volume
+            vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V, TP, None, self._phase)
+        self._data_cache[TP] = \
+        vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol), self._phase, chemicals)
+    return vol
+ChemicalMolarFlowIndexer.by_volume = by_volume
 	
 def by_volume(self, TP):
     try:
-        volumetric_flow = self._data_cache[TP]
+        vol = self._data_cache[TP]
     except:
         phases = self.phases
         chemicals = self.chemicals
-        molar_flow = self.data
-        volumetric_flow = np.zeros_like(molar_flow, dtype=object)
+        mol = self.data
+        vol = np.zeros_like(mol, dtype=object)
         for i, phase in enumerate(phases):
             for j, chem in enumerate(chemicals):
                 index = i, j
                 phase_name = settings._phase_name[phase]
-                volumetric_flow[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", molar_flow,
+                vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", mol,
                                                                 index, chem.V, TP, phase)
-        self._data_cache['volumetric_flow'] = \
-        volumetric_flow = VolumetricFlowIndex.from_data(property_array(volumetric_flow),
+        self._data_cache[TP] = \
+        vol = VolumetricFlowIndexer.from_data(property_array(vol),
                                                         phases, chemicals)
-    return volumetric_flow
-MolarFlowIndex.by_volume = by_volume; del by_volume
+    return vol
+MolarFlowIndexer.by_volume = by_volume; del by_volume
 
 
 # %% Cut out functionality

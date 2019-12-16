@@ -4,7 +4,7 @@ Created on Sat Oct 26 04:26:20 2019
 
 @author: yoelr
 """
-from .units_of_measure import units_of_measure, definitions, types
+from .units_of_measure import chemical_units_of_measure, definitions, types
 from .utils import var_with_units, get_obj_values
 from .autodoc import autodoc_functor
 from inspect import signature
@@ -30,7 +30,7 @@ def display_asfunctor(functor, var=None, name=None, show_var=True):
     name = name or functor_name(functor)
     info = f"{name}{str(signature(functor)).replace('self, ', '')}"
     var = var or (functor.var if hasattr(functor, 'var') else None)
-    units = functor.units_of_measure if hasattr(functor, "units_of_measure") else units_of_measure
+    units = functor.units_of_measure if hasattr(functor, "units_of_measure") else chemical_units_of_measure
     if var:
         if show_var:
             info += f" -> " + var_with_units(var, units)
@@ -130,7 +130,7 @@ H, S, Cp, V, kappa, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) f
 
 class Functor: 
     __slots__ = ()
-    units_of_measure = units_of_measure
+    units_of_measure = chemical_units_of_measure
     definitions = definitions
     types = types
     
@@ -188,7 +188,7 @@ class PureComponentFunctor(Functor):
                     info += f"\n {key}: {value}"    
                 else:
                     key, *_ = key.split('_')
-                    u = units.get(key) or units_of_measure.get(key)
+                    u = units.get(key) or chemical_units_of_measure.get(key)
                     if u: info += ' ' + str(u)
         print(info)
         

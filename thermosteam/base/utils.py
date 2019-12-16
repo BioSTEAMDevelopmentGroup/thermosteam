@@ -4,12 +4,12 @@ Created on Wed Oct 30 13:37:22 2019
 
 @author: yoelr
 """
-from .units_of_measure import units_of_measure
+from .units_of_measure import chemical_units_of_measure
 
 def copy_maybe(obj):
     return obj.copy() if hasattr(obj, 'copy') else obj
 
-def var_with_units(var, units=units_of_measure):
+def var_with_units(var, units=chemical_units_of_measure):
     name, *phase = var.split(".")
     units = units.get(name, "")
     units = units and ' [' + str(units) + ']'
