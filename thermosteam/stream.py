@@ -24,9 +24,9 @@ __all__ = ('Stream', )
 
 # %% Utilities
 
-mol_dimensionality = ChemicalMolarFlowIndexer.units.dimensionality
-mass_dimensionality = ChemicalMassFlowIndexer.units.dimensionality
-vol_dimensionality = ChemicalVolumetricFlowIndexer.units.dimensionality
+mol_units = ChemicalMolarFlowIndexer.units
+mass_units = ChemicalMassFlowIndexer.units
+vol_units = ChemicalVolumetricFlowIndexer.units
 
 def assert_same_chemicals(stream, others):
     chemicals = stream.chemicals
@@ -43,6 +43,8 @@ class Stream:
                                  flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                  N=5)
 
+    _index_cache = {}
+
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units=None,
                  price=0., thermo=None, **chemical_flows):
         self._TP = ThermalCondition(T, P)
@@ -50,7 +52,8 @@ class Stream:
         self._load_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
         if units:
-            self._select_indexer(units).set_data(self.mol, units)
+            indexer, factor = self._get_indexer_and_factor(units)
+            indexer[...] = self.mol * factor
         self._register(ID)
     
     def _load_indexer(self, flow, phase, chemicals, chemical_flows):
@@ -70,28 +73,36 @@ class Stream:
                 imol = ChemicalMolarFlowIndexer.from_data(flow, phase, chemicals)
         self._imol = imol
 
-    def _select_indexer(self, units):
-        dimensionality = get_dimensionality(units)
-        if dimensionality == mol_dimensionality:
-            return self.imol
-        elif dimensionality == mass_dimensionality:
-            return self.imass
-        elif dimensionality == vol_dimensionality:
-            return self.ivol
+    def _get_indexer_and_factor(self, units):
+        cache = self._index_cache
+        if units in cache:
+            name, factor = cache[units]
         else:
-            raise DimensionError(f"dimensions for flow units must be in molar, "
-                                 f"mass or volumetric flow rates, not '{dimensionality}'")
+            dimensionality = get_dimensionality(units)
+            if dimensionality == mol_units.dimensionality:
+                name = 'imol'
+                factor = mol_units.conversion_factor(units)
+            elif dimensionality == mass_units.dimensionality:
+                name = 'imass'
+                factor = mass_units.conversion_factor(units)
+            elif dimensionality == vol_units.dimensionality:
+                name = 'ivol'
+                factor = vol_units.conversion_factor(units)
+            else:
+                raise DimensionError(f"dimensions for flow units must be in molar, "
+                                     f"mass or volumetric flow rates, not '{dimensionality}'")
+            cache[units] = name, factor
+        return getattr(self, name), factor
 
     ### Property getters ###
 
     def get_flow(self, units, IDs=...):
-        indexer = self._select_indexer(units)
-        flow = indexer[IDs]
-        return flow * indexer.units.conversion_factor(units)
+        indexer, factor = self._get_indexer_and_factor(units)
+        return factor * indexer[IDs]
     
     def set_flow(self, data, units, IDs=...):
-        indexer = self._select_indexer(units)
-        indexer[IDs] = np.asarray(data, dtype=float) / indexer.units.conversion_factor(units)    
+        indexer, factor = self._get_indexer_and_factor(units)
+        indexer[IDs] = np.asarray(data, dtype=float) / factor
     
     def get_property(self, name, units):
         if name in stream_units_of_measure:
@@ -240,9 +251,9 @@ class Stream:
         return mass / massnet if massnet else mass
     @property
     def z_vol(self):
-        vol = self.vol
+        vol = self.vol.value
         volnet = vol.sum()
-        return vol / volnet if volnet else vol.value
+        return vol / volnet if volnet else vol
     
     @property
     def V(self):
@@ -417,12 +428,12 @@ class Stream:
             return basic_info + ' flow: 0' 
         
         # Start of third line (flow rates)
-        index = self._select_indexer(flow_units)
+        index, factor = self._get_indexer_and_factor(flow_units)
         beginning = f' flow ({flow_units}): '
             
         # Remaining lines (all flow rates)
         new_line_spaces = len(beginning) * ' '
-        flow_array = index.get_data(flow_units, IDs)        
+        flow_array = factor * index[IDs]
         flowrates = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1

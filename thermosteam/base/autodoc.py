@@ -32,7 +32,7 @@ class VariableDescriber:
         return self.units.get(var) or chemical_units_of_measure.get(var)
     
     def get_type(self, var):
-        return self.types.get(var) or 'float'
+        return self.types.get(var) or types.get(var) or 'float'
 
     def describe(self, var):
         info = self.get_def(var)

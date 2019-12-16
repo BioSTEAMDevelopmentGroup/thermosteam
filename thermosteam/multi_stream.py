@@ -25,7 +25,8 @@ class MultiStream(Stream):
         self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
         self.price = price
         if units:
-            self._select_indexer(units).set_data(self.mol, units)
+            indexer, factor = self._get_indexer_and_factor(units)
+            indexer[...] = self.mol * factor
         self._register(ID)
          
     def _load_indexer(self, flow, phases, chemicals, phase_flows):
@@ -59,13 +60,12 @@ class MultiStream(Stream):
     ### Property getters ###
     
     def get_flow(self, units, phase, IDs=...):
-        indexer = self._select_indexer(units)
-        flow = indexer[phase, IDs]
-        return flow * indexer.units.conversion_factor(units)
+        indexer, factor = self._get_indexer_and_factor(units)
+        return factor * indexer[phase, IDs]
     
     def set_flow(self, data, units, phase, IDs=...):
-        indexer = self._select_indexer(units)
-        indexer[phase, IDs] = np.asarray(data, dtype=float) / indexer.units.conversion_factor(units)    
+        indexer, factor = self._get_indexer_and_factor(units)
+        indexer[phase, IDs] = np.asarray(data, dtype=float) / factor
     
     ### Stream data ###
     
@@ -110,18 +110,18 @@ class MultiStream(Stream):
     @property
     def z_mol(self):
         mol = self.mol.sum(0)
-        molnet = mol.sum()
-        return mol / molnet if molnet else mol.copy()
+        F_mol = mol.sum()
+        return mol / F_mol if F_mol else mol.copy()
     @property
     def z_mass(self):
         mass = (self.chemicals.MW * self.mol).sum(0)
-        massnet = mass.sum()
-        return mass / massnet if massnet else np.zeros(mass.shape)
+        F_mass = mass.sum()
+        return mass / F_mass if F_mass else np.zeros(mass.shape)
     @property
     def z_vol(self):
         vol = self.vol.value.sum(0)
-        volnet = vol.sum()
-        return vol / volnet if volnet else np.zeros(vol.shape)
+        F_vol = vol.sum()
+        return vol / F_vol if F_vol else np.zeros(vol.shape)
     
     @property
     def V(self):
@@ -139,13 +139,13 @@ class MultiStream(Stream):
     @property
     def sigma(self):
         mol = self._imol['l']
-        molnet = mol.sum()
-        return self.mixture.xsigma_at_TP(mol / molnet, self._TP) if molnet else 0
+        F_mol = mol.sum()
+        return self.mixture.xsigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
     @property
     def epsilon(self):
         mol = self._imol['l']
-        molnet = mol.sum()
-        return self.mixture.epsilon_at_TP(mol / molnet, self._TP) if molnet else 0
+        F_mol = mol.sum()
+        return self.mixture.epsilon_at_TP(mol / F_mol, self._TP) if F_mol else 0
         
     ### Methods ###
         
@@ -246,14 +246,14 @@ class MultiStream(Stream):
         all_lengths = [len(i) for i in all_IDs]
         maxlen = max(all_lengths + [8]) 
 
-        index = self._select_indexer(flow_units)
+        index, factor = self._get_indexer_and_factor(flow_units)
         first_line = f' flow ({flow_units}): '
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''
         for phase in self.phases:
-            phase_data = index.get_data(flow_units, phase, all_IDs)
+            phase_data = factor * index[phase, all_IDs] 
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue
         
