@@ -169,26 +169,12 @@ class Stream:
     @property
     def imol(self):
         return self._imol
-    @imol.setter
-    def imol(self, value):
-        if self._imol is not value:
-            raise AttributeError("cannot replace indexer")
-    
     @property
     def imass(self):
         return self._imol.by_mass()
-    @imass.setter
-    def imass(self, value):
-        if self.imass is not value:
-            raise AttributeError("cannot replace indexer")
-    
     @property
     def ivol(self):
         return self._imol.by_volume(self._TP)
-    @ivol.setter
-    def ivol(self, value):
-        if self.ivol is not value:
-            raise AttributeError("cannot replace indexer")
     
     ### Net flow properties ###
     
@@ -432,7 +418,7 @@ class Stream:
         
         # Start of third line (flow rates)
         index = self._select_indexer(flow_units)
-        beginning = f' flow ({flow_units}):'
+        beginning = f' flow ({flow_units}): '
             
         # Remaining lines (all flow rates)
         new_line_spaces = len(beginning) * ' '

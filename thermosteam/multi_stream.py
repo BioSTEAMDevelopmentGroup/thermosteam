@@ -247,7 +247,7 @@ class MultiStream(Stream):
         maxlen = max(all_lengths + [8]) 
 
         index = self._select_indexer(flow_units)
-        first_line = f' flow ({flow_units}):'
+        first_line = f' flow ({flow_units}): '
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases
