@@ -23,6 +23,7 @@ SOFTWARE.'''
 __all__ = ('Chemical',)
 
 from ..base.utils import copy_maybe
+from ..utils import getfields, setfields
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
 from .phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -52,6 +53,7 @@ from .interface import SurfaceTension
 from ..equilibrium.unifac_data import DDBST_UNIFAC_assignments, \
                                       DDBST_MODIFIED_UNIFAC_assignments, \
                                       DDBST_PSRK_assignments
+from ..functional import rho_to_V
 # from .solubility import SolubilityParameter
 # from .safety import Tflash, Tautoignition, LFL, UFL, TWA, STEL, Ceiling, Skin, Carcinogen
 # from .lennard_jones import Stockmayer, MolecularDiameter
@@ -182,25 +184,31 @@ class Chemical:
     __slots__ = ('ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
                 + _names + _groups + _thermo + _data
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
+    _cache = {}
     
-    def __init__(self, ID, *, eos=PR, CAS=None):
-        if not CAS: CAS = CAS_from_any(ID)
-        info = pubchem_db.search_CAS(CAS)
-        self.ID = ID
-        self._locked_state = LockedState()
-        self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
-                         info.pubchemid, info.iupac_name, info.common_name)
-        self._init_groups(info.InChI_key)
-        if CAS == '56-81-5': # TODO: Make this part of data
-            self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
-        self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
-        self._init_eos(eos, self.Tc, self.Pc, self.omega)
-        self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
-                              self.Pc, self.Zc, self.Vc, self.Hfus,
-                              self.omega, self.dipole, self.similarity_variable,
-                              self.iscyclic_aliphatic, self.eos)
-        self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
-                            self.Tm, self.Tb, self.eos, self.eos_1atm)
+    def __init__(self, ID, *, eos=PR):
+        cache = self._cache
+        if ID in cache:
+            setfields(self, self.__slots__, cache[ID])    
+        else:
+            CAS = CAS_from_any(ID)
+            info = pubchem_db.search_CAS(CAS)
+            self.ID = ID
+            self._locked_state = LockedState()
+            self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
+                             info.pubchemid, info.iupac_name, info.common_name)
+            self._init_groups(info.InChI_key)
+            if CAS == '56-81-5': # TODO: Make this part of data
+                self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
+            self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
+            self._init_eos(eos, self.Tc, self.Pc, self.omega)
+            self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
+                                  self.Pc, self.Zc, self.Vc, self.Hfus,
+                                  self.omega, self.dipole, self.similarity_variable,
+                                  self.iscyclic_aliphatic, self.eos)
+            self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
+                                self.Tm, self.Tb, self.eos, self.eos_1atm)
+            cache[ID] = getfields(self, self.__slots__)
 
     def copy(self):
         new = self.__new__(self.__class__)
@@ -485,8 +493,15 @@ class Chemical:
             mu = self.mu
             if hasfield(mu, 'l'):
                 mu.l.model(0.00091272)
-            if not mu:
+            elif not mu:
                 mu.model(0.00091272)
+        if 'V' in slots:
+            V = self.V
+            V_default = rho_to_V(1050, MW)
+            if hasfield(V, 'l'):
+                V.l.model(V_default)
+            elif not V:
+                V.model(V_default)
         if 'kappa' in slots:
             kappa = self.kappa
             if hasfield(kappa, 'l'):
