@@ -4,39 +4,32 @@ Created on Tue Nov 26 02:34:56 2019
 
 @author: yoelr
 """
-from .base.units_of_measure import get_dimensionality, stream_units_of_measure, convert
+import numpy as np
+from . import material_indexer as index 
+from . import equilibrium as eq
+from . import functional as fn
+from .base import units_of_measure as thermo_units
 from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
 from .settings import settings
-from .material_indexer import ChemicalMolarFlowIndexer, \
-                              ChemicalMassFlowIndexer, \
-                              ChemicalVolumetricFlowIndexer
 from .thermal_condition import ThermalCondition
-from .equilibrium import BubblePoint, DewPoint
 from .registry import registered
-from .utils import Cache
-from .equilibrium import VLE
-import numpy as np
+from .utils import Cache, assert_same_chemicals
+from . import pipping
 
 __all__ = ('Stream', )
 
 
 # %% Utilities
 
-mol_units = ChemicalMolarFlowIndexer.units
-mass_units = ChemicalMassFlowIndexer.units
-vol_units = ChemicalVolumetricFlowIndexer.units
-del ChemicalVolumetricFlowIndexer, ChemicalMassFlowIndexer
-
-def assert_same_chemicals(stream, others):
-    chemicals = stream.chemicals
-    assert all([chemicals is i.chemicals for i in others]), "chemicals must match to mix streams"
-
+mol_units = index.ChemicalMolarFlowIndexer.units
+mass_units = index.ChemicalMassFlowIndexer.units
+vol_units = index.ChemicalVolumetricFlowIndexer.units
 
 # %%
 @registered(ticket_name='s')
 class Stream:
-    __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams', '_vle', 'price')
+    __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams', '_vle', '_sink', '_source', 'price')
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = DisplayUnits(T='K', P='Pa',
@@ -54,23 +47,24 @@ class Stream:
         if units:
             indexer, factor = self._get_indexer_and_factor(units)
             indexer[...] = self.mol * factor
+        self._sink = self._source = None
         self._register(ID)
     
     def _load_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
         if flow is ():
             if chemical_flows:
-                imol = ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
+                imol = index.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
             else:
-                imol = ChemicalMolarFlowIndexer.blank(phase, chemicals)
+                imol = index.ChemicalMolarFlowIndexer.blank(phase, chemicals)
         else:
             assert not chemical_flows, ("may specify either 'flow' or "
                                         "'chemical_flows', but not both")
-            if isinstance(flow, ChemicalMolarFlowIndexer):
+            if isinstance(flow, index.ChemicalMolarFlowIndexer):
                 imol = flow 
                 imol.phase = phase
             else:
-                imol = ChemicalMolarFlowIndexer.from_data(flow, phase, chemicals)
+                imol = index.ChemicalMolarFlowIndexer.from_data(flow, phase, chemicals)
         self._imol = imol
 
     def _get_indexer_and_factor(self, units):
@@ -78,7 +72,7 @@ class Stream:
         if units in cache:
             name, factor = cache[units]
         else:
-            dimensionality = get_dimensionality(units)
+            dimensionality = thermo_units.get_dimensionality(units)
             if dimensionality == mol_units.dimensionality:
                 name = 'imol'
                 factor = mol_units.conversion_factor(units)
@@ -94,6 +88,37 @@ class Stream:
             cache[units] = name, factor
         return getattr(self, name), factor
 
+    ### Pipping ###
+    
+    @property
+    def sink(self):
+        return self._sink
+    @property
+    def source(self):
+        return self._source
+    
+    # Forward pipping
+    def __sub__(self, index):
+        if isinstance(index, int):
+            return pipping.Sink(self, index)
+        elif isinstance(index, Stream):
+            raise TypeError("unsupported operand type(s) for -: "
+                            f"'{type(self)}' and '{type(index)}'")
+        return index.__rsub__(self)
+
+    def __rsub__(self, index):
+        if isinstance(index, int):
+            return pipping.Source(self, index)
+        elif isinstance(index, Stream):
+            raise TypeError("unsupported operand type(s) for -: "
+                            "'{type(self)}' and '{type(index)}'")
+        return index.__sub__(self)
+
+    # Backward pipping    
+    __pow__ = __sub__
+    __rpow__ = __rsub__
+    
+
     ### Property getters ###
 
     def get_flow(self, units, IDs=...):
@@ -105,13 +130,23 @@ class Stream:
         indexer[IDs] = np.asarray(data, dtype=float) / factor
     
     def get_property(self, name, units):
-        if name in stream_units_of_measure:
-            original_units = stream_units_of_measure[name]
+        units_dct = thermo_units.stream_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
         else:
             raise ValueError(f"no property with name '{name}'")
         value = getattr(self, name)
         factor = original_units.conversion_factor(units)
         return value * factor
+    
+    def set_property(self, name, value, units):
+        units_dct = thermo_units.stream_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
+        else:
+            raise ValueError(f"no property with name '{name}'")
+        factor = original_units.conversion_factor(units)
+        setattr(self, name, value / factor)
     
     ### Stream data ###
     
@@ -235,7 +270,7 @@ class Stream:
     
     @property
     def C(self):
-        return self.mixture.Cp_at_TP(self.mol, self._TP)
+        return self.mixture.Cn_at_TP(self.mol, self._TP)
     
     ### Composition properties ###
     
@@ -256,6 +291,9 @@ class Stream:
         return vol / F_vol if F_vol else vol
     
     @property
+    def MW(self):
+        return self.F_mass / self.F_mol
+    @property
     def V(self):
         mol = self.mol
         F_mol = mol.sum()
@@ -266,10 +304,10 @@ class Stream:
         F_mol = mol.sum()
         return self.mixture.kappa_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
-    def Cp(self):
+    def Cn(self):
         mol = self.mol
         F_mol = mol.sum()
-        return self.mixture.Cp_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.Cn_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
     @property
     def mu(self):
         mol = self.mol
@@ -285,6 +323,22 @@ class Stream:
         mol = self.mol
         F_mol = mol.sum()
         return self.mixture.epsilon_at_TP(mol / F_mol, self._TP) if F_mol else 0
+    
+    @property
+    def Cp(self):
+        return self.Cn / self.MW
+    @property
+    def alpha(self):
+        return fn.alpha(self.kappa, self.rho, self.Cp)
+    @property
+    def rho(self):
+        return fn.V_to_rho(self.V, self.MW)
+    @property
+    def nu(self):
+        return fn.mu_to_nu(self.mu, self.rho)
+    @property
+    def Pr(self):
+        return fn.Pr(self.Cp, self.mu, self.k)
     
     ### Stream methods ###
     
@@ -367,34 +421,34 @@ class Stream:
     
     @property
     def bubble_point(self):
-        return BubblePoint(self.equilibrim_chemicals, self._thermo)
+        return eq.BubblePoint(self.equilibrim_chemicals, self._thermo)
     
     @property
     def dew_point(self):
-        return DewPoint(self.equilibrim_chemicals, self._thermo)
+        return eq.DewPoint(self.equilibrim_chemicals, self._thermo)
     
     @property
     def T_bubble(self):
         z, chemicals = self.z_equilibrium_chemicals
-        bp = BubblePoint(chemicals, self._thermo)
+        bp = eq.BubblePoint(chemicals, self._thermo)
         return bp.solve_Ty(z, self.P)[0]
     
     @property
     def T_dew(self):
         z, chemicals = self.z_equilibrium_chemicals
-        dp = DewPoint(chemicals, self._thermo)
+        dp = eq.DewPoint(chemicals, self._thermo)
         return dp.solve_Tx(z, self.P)[0]
     
     @property
     def P_bubble(self):
         z, chemicals = self.z_equilibrium_chemicals
-        bp = BubblePoint(chemicals, self._thermo)
+        bp = eq.BubblePoint(chemicals, self._thermo)
         return bp.solve_Py(z, self.T)[0]
     
     @property
     def P_dew(self):
         z, chemicals = self.z_equilibrium_chemicals
-        dp = DewPoint(chemicals, self._thermo)
+        dp = eq.DewPoint(chemicals, self._thermo)
         return dp.solve_Px(z, self.T)[0]
     
     ### Casting ###
@@ -406,7 +460,7 @@ class Stream:
     def phases(self, phases):
         self.__class__ = multi_stream.MultiStream
         self._imol = self._imol.to_material_indexer(phases)
-        self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
+        self._vle = Cache(eq.VLE, self._imol, self._TP, thermo=self._thermo)
     
     ### Representation ###
     
@@ -414,8 +468,8 @@ class Stream:
         return type(self).__name__ + ': ' + (self.ID or '') + '\n'
     
     def _info_phaseTP(self, phase, T_units, P_units):
-        T = convert(self.T, 'K', T_units)
-        P = convert(self.P, 'Pa', P_units)
+        T = thermo_units.convert(self.T, 'K', T_units)
+        P = thermo_units.convert(self.P, 'Pa', P_units)
         s = '' if isinstance(phase, str) else 's'
         return f" phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
     
@@ -486,3 +540,4 @@ class Stream:
               f"P={self.P:.6g}{price}{chemical_flows})")
         
 from . import multi_stream
+del registered

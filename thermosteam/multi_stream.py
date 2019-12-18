@@ -4,12 +4,12 @@ Created on Tue Dec 10 22:54:15 2019
 
 @author: yoelr
 """
-from .stream import Stream, assert_same_chemicals
+from .stream import Stream
 from .thermal_condition import ThermalCondition
 from .material_indexer import MolarFlowIndexer
 from .settings import settings
 from .equilibrium import VLE
-from .utils import Cache
+from .utils import Cache, assert_same_chemicals
 import numpy as np
 
 __all__ = ('MultiStream', )
@@ -96,7 +96,7 @@ class MultiStream(Stream):
         return self.mixture.xS_at_TP(self._imol.iter_data(), self._TP)
     @property
     def C(self):
-        return self.mixture.xCp_at_TP(self._imol.iter_data(), self._TP)
+        return self.mixture.xCn_at_TP(self._imol.iter_data(), self._TP)
     @property
     def F_vol(self):
         return self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
@@ -133,8 +133,8 @@ class MultiStream(Stream):
     def kappa(self):
         return self.mixture.xkappa_at_TP(self._imol.iter_composition(), self._TP)        
     @property
-    def Cp(self):
-        return self.mixture.xCp_at_TP(self._imol.iter_composition(), self._TP)
+    def Cn(self):
+        return self.mixture.xCn_at_TP(self._imol.iter_composition(), self._TP)
     @property
     def mu(self):
         return self.mixture.xmu_at_TP(self._imol.iter_composition(), self._TP)
@@ -143,7 +143,7 @@ class MultiStream(Stream):
     def sigma(self):
         mol = self._imol['l']
         F_mol = mol.sum()
-        return self.mixture.xsigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.sigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
     @property
     def epsilon(self):
         mol = self._imol['l']

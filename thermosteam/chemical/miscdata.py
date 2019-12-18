@@ -127,7 +127,7 @@ def VDI_tabular_data(CASRN, prop):
     try:
         props, Ts = d[prop], d['T']
     except:
-        raise Exception('Proprty not specified correctly')
+        raise Exception('Property not specified correctly')
     Ts = [T for p, T in zip(props, Ts) if p]
     props = [p for p in props if p]
 

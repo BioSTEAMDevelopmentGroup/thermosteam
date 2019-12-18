@@ -32,6 +32,9 @@ def polyfunctor(T, coeffs):
 
 horner = polyfunctor.function  
 
+def Pr(Cp, mu, k):
+    return Cp * mu / k
+
 def mu_to_nu(mu, rho):
     r'''Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and 
     density (rho).

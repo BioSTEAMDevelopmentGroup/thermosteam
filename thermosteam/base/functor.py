@@ -14,7 +14,7 @@ from numba import njit
 __all__ = ("Functor", "MixtureFunctor", 
            "TFunctor", "TPFunctor",
            "zTFunctor", "zTPFunctor",
-           "functor", 'H', 'S', 'V', 'Cp', 'mu', 'kappa', 'sigma', 'delta', 'epsilon',
+           "functor", 'H', 'S', 'V', 'Cn', 'mu', 'kappa', 'sigma', 'delta', 'epsilon',
            'Psat', 'Hvap', 'display_asfunctor', 'functor_lookalike',
            'functor_matching_params', 'functor_base_and_params')
 
@@ -120,8 +120,8 @@ class FunctorFactory:
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.var)})"
     
-H, S, Cp, V, kappa, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i in
-                                                             ('H', 'S', 'Cp', 'V', 'kappa',
+H, S, Cn, V, kappa, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) for i in
+                                                             ('H', 'S', 'Cn', 'V', 'kappa',
                                                               'mu', 'Psat', 'Hvap',
                                                               'sigma', 'delta', 'epsilon')]
 

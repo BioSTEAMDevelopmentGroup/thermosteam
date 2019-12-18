@@ -88,7 +88,8 @@ chemical_units_of_measure = {'MW': Units('g/mol'),
                              'Pt': Units('K'),
                              'V': Units('m^3/mol'),
                              'Vc': Units('m^3/mol'),
-                             'Cp': Units('J/mol/K'),
+                             'Cp': Units('J/g/K'),
+                             'Cn': Units('J/mol/K'),
                              'rho': Units('kg/m^3'), 
                              'rhoc': Units('kg/m^3'),
                              'nu': Units('m^2/s'),
@@ -129,7 +130,7 @@ stream_units_of_measure = {'mol': Units('kmol/hr'),
                            'A': Units('kJ/hr'),
                            'C': Units('kJ/hr/K'),
 }
-for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma', 'kappa', 'nu', 'epsilon', 'delta', 'Psat', 'Cp'):
+for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma', 'kappa', 'nu', 'epsilon', 'delta', 'Psat', 'Cp', 'Cn'):
     stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 definitions = {'MW': 'Molecular weight',
@@ -144,7 +145,8 @@ definitions = {'MW': 'Molecular weight',
                'Pt': 'Triple point pressure',
                'V': 'Molar volume',
                'Vc': 'Critical point volume',
-               'Cp': 'Molar heat capacity',
+               'Cp': 'Specific heat capacity',
+               'Cn': 'Molar heat capacity',
                'rho': 'Density',
                'rhoc': 'Critical point density',
                'nu': 'Kinematic viscosity',
@@ -178,7 +180,7 @@ for i, j in [('ω', 'omega')]:
     if j in chemical_units_of_measure: chemical_units_of_measure[i] = chemical_units_of_measure[j]
 
 # Phase properties
-for var in ('Cp', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
+for var in ('Cn', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
     units = chemical_units_of_measure[var]
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):

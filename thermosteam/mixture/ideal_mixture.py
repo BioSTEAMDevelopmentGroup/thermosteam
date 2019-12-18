@@ -222,8 +222,8 @@ class IdealMixture:
             if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
     
     @property
-    def Cp_at_TP(self):
-        return self.Cp.at_TP
+    def Cn_at_TP(self):
+        return self.Cn.at_TP
     @property
     def kappa_at_TP(self):
         return self.kappa.at_TP
@@ -269,48 +269,48 @@ class IdealMixture:
     
     def solve_T(self, phase, z, H, T_guess, P):
         # First approximation
-        Cp = self.Cp(phase, z, T_guess)
-        T = T_guess + (H - self.H(phase, z, T_guess, P))/Cp
+        Cn = self.Cn(phase, z, T_guess)
+        T = T_guess + (H - self.H(phase, z, T_guess, P))/Cn
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it = 0
             it2 = 0
-            Cp = self.Cp(phase, z, T_guess)
+            Cn = self.Cn(phase, z, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    Cp = self.Cp(phase, z, T_guess)
+                    Cn = self.Cn(phase, z, T_guess)
                     if it2 > 5: break # Its good enough, no need to find exact solution
                 else:
                     it += 1
-                T += (H - self.H(phase, z, T, P))/Cp
+                T += (H - self.H(phase, z, T, P))/Cn
         return T
                 
     def xsolve_T(self, phase_data, H, T_guess, P):
         # First approximation
-        Cp = self.xCp(phase_data, T_guess)
-        T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cp
+        Cn = self.xCn(phase_data, T_guess)
+        T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cn
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it2 = it = 0
-            Cp = self.xCp(phase_data, T_guess)
+            Cn = self.xCn(phase_data, T_guess)
             while abs(T - T_guess) > 0.01:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    Cp = self.xCp(phase_data, T_guess)
+                    Cn = self.xCn(phase_data, T_guess)
                     if it2 > 5: break # Its good enough, no need to find exact solution
                 else:
                     it += 1
-                T += (H - self.xH(phase_data, T, P))/Cp
+                T += (H - self.xH(phase_data, T, P))/Cn
         return T
     
-    def xCp(self, phase_data, T):
-        Cp = self.Cp
-        return sum([Cp(phase, z, T) for phase, z in phase_data])
+    def xCn(self, phase_data, T):
+        Cn = self.Cn
+        return sum([Cn(phase, z, T) for phase, z in phase_data])
     
     def xH(self, phase_data, T, P):
         H = self._H
@@ -340,9 +340,9 @@ class IdealMixture:
         kappa = self.kappa
         return sum([kappa(phase, z, T, P) for phase, z in phase_data])
     
-    def xCp_at_TP(self, phase_data, TP):
-        Cp = self.Cp.at_TP
-        return sum([Cp(phase, z, TP) for phase, z in phase_data])
+    def xCn_at_TP(self, phase_data, TP):
+        Cn = self.Cn.at_TP
+        return sum([Cn(phase, z, TP) for phase, z in phase_data])
     
     def xH_at_TP(self, phase_data, TP):
         H = self._H.at_TP

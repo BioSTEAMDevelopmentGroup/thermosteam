@@ -12,7 +12,7 @@ __all__ = ('mixture_phaseT_methods',
            'mixture_T_methods', 
            'mixture_methods')
 
-mixture_phaseT_methods = ('Cp',)
+mixture_phaseT_methods = ('Cn',)
 mixture_hidden_T_methods = ('_H',)
 mixture_phaseTP_methods = ('mu', 'V', 'kappa')
 mixture_hidden_phaseTP_methods = ('_H_excess', '_S_excess', '_S')

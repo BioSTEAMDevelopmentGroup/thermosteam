@@ -155,10 +155,10 @@ _names = ('CAS', 'InChI', 'InChI_key',
 
 _groups = ('Dortmund', 'UNIFAC', 'PSRK')
 
-_thermo = ('S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cp',
+_thermo = ('S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cn',
            'Psat', 'Hvap', 'sigma', 'epsilon')
     
-_phase_properties = ('kappa', 'V', 'Cp', 'mu')
+_phase_properties = ('kappa', 'V', 'Cn', 'mu')
 
 _free_energies = ('S_excess', 'H_excess', 'S', 'H')
 
@@ -199,7 +199,7 @@ class Chemical:
                               self.Pc, self.Zc, self.Vc, self.Hfus,
                               self.omega, self.dipole, self.similarity_variable,
                               self.iscyclic_aliphatic, self.eos)
-        self._init_energies(self.Cp, self.Hvap, self.Psat, self.Hfus,
+        self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
                             self.Tm, self.Tb, self.eos, self.eos_1atm)
 
     def copy(self):
@@ -209,7 +209,7 @@ class Chemical:
         for field in self.__slots__: 
             value = getfield(self, field)
             setfield(new, field, copy_maybe(value))
-        new._init_energies(new.Cp, new.Hvap, new.Psat, new.Hfus, new.Tm,
+        new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
                            new._locked_state.phase)
         return new
@@ -287,11 +287,11 @@ class Chemical:
         self.V = V = Volume(sdata, ldata, gdata)
         
         # Heat capacity
-        Cp = ChemicalPhaseTProperty(var='Cp')
+        Cn = ChemicalPhaseTProperty(var='Cn')
         sdata = (CAS, similarity_variable, MW)
-        ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cp)
+        ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cn)
         gdata = (CAS, MW, similarity_variable, iscyclic_aliphatic)
-        self.Cp = Cp = HeatCapacity(sdata, ldata, gdata, Cp)
+        self.Cn = Cn = HeatCapacity(sdata, ldata, gdata, Cn)
         
         # Heat of vaporization
         data = (CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V)
@@ -304,15 +304,15 @@ class Chemical:
         
         # Conductivity
         ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus)
-        gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cp.g, mu.g)
+        gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cn.g, mu.g)
         self.kappa = ThermalConductivity(None, ldata, gdata)
         
         # Surface tension
         Hvap_Tb = Hvap(Tb) if Tb else None
-        Cpl_Tb = Cp.l(Tb) if (Cp.l and Tb) else None
+        Cnl_Tb = Cn.l(Tb) if (Cn.l and Tb) else None
         rhol = 1/V.l(Tb, 101325.) * MW if (V.l and MW) else None
         data = (CAS, MW, Tb, Tc, Pc, Vc, Zc,
-                omega, StielPolar, Hvap_Tb, rhol, Cpl_Tb)
+                omega, StielPolar, Hvap_Tb, rhol, Cnl_Tb)
         self.sigma = SurfaceTension(data)
         
         # Other
@@ -320,7 +320,7 @@ class Chemical:
         # self.delta = SolubilityParameter(self)
         # self.molecular_diameter = MolecularDiameter(self)
 
-    def _init_energies(self, Cp, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm,
+    def _init_energies(self, Cn, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm,
                        phase_ref=None, single_phase=False):        
         # Reference
         P_ref = self.P_ref
@@ -329,22 +329,22 @@ class Chemical:
         S_ref = self.S_ref
         Sfus = Hfus / Tm if Hfus and Tm else None
         
-        if isinstance(Cp, PhaseProperty):
-            Cp_s = Cp.s
-            Cp_l = Cp.l
-            Cp_g = Cp.g
-            has_Cps = bool(Cp_s)
-            has_Cpl = bool(Cp_l)
-            has_Cpg = bool(Cp_g)
-        elif Cp and single_phase:
-            has_Cps = single_phase == 's'
-            has_Cpl = single_phase == 'l'
-            has_Cpg = single_phase == 'g'
-            Cp_s = Cp_l = Cp_g = Cp
+        if isinstance(Cn, PhaseProperty):
+            Cn_s = Cn.s
+            Cn_l = Cn.l
+            Cn_g = Cn.g
+            has_Cns = bool(Cn_s)
+            has_Cnl = bool(Cn_l)
+            has_Cng = bool(Cn_g)
+        elif Cn and single_phase:
+            has_Cns = single_phase == 's'
+            has_Cnl = single_phase == 'l'
+            has_Cng = single_phase == 'g'
+            Cn_s = Cn_l = Cn_g = Cn
         else:
-            has_Cps = has_Cpl = has_Cpg = False
+            has_Cns = has_Cnl = has_Cng = False
         
-        if any((has_Cps, has_Cpl, has_Cpg)):
+        if any((has_Cns, has_Cnl, has_Cng)):
             if not phase_ref:
                 if Tm and T_ref <= Tm:
                     self._phase_ref = phase_ref = 's'
@@ -357,31 +357,31 @@ class Chemical:
             Svap_Tb = Hvap_Tb / Tb if Tb else None
             
             # Enthalpy and entropy integrals
-            if phase_ref != 'l' and has_Cpl and (Tm and Tb):
-                H_int_Tm_to_Tb_l = Cp_l.integrate_by_T(Tm, Tb)
-                S_int_Tm_to_Tb_l = Cp_l.integrate_by_T_over_T(Tm, Tb)
+            if phase_ref != 'l' and has_Cnl and (Tm and Tb):
+                H_int_Tm_to_Tb_l = Cn_l.integrate_by_T(Tm, Tb)
+                S_int_Tm_to_Tb_l = Cn_l.integrate_by_T_over_T(Tm, Tb)
             else:
                 H_int_Tm_to_Tb_l = S_int_Tm_to_Tb_l = None
-            if phase_ref == 's' and has_Cps and Tm:
-                H_int_T_ref_to_Tm_s = Cp_s.integrate_by_T(T_ref, Tm)
-                S_int_T_ref_to_Tm_s = Cp_s.integrate_by_T_over_T(T_ref, Tm)
+            if phase_ref == 's' and has_Cns and Tm:
+                H_int_T_ref_to_Tm_s = Cn_s.integrate_by_T(T_ref, Tm)
+                S_int_T_ref_to_Tm_s = Cn_s.integrate_by_T_over_T(T_ref, Tm)
             else:
                 H_int_T_ref_to_Tm_s = S_int_T_ref_to_Tm_s = None
-            if phase_ref == 'g' and has_Cpg and Tb:
-                H_int_Tb_to_T_ref_g = Cp_g.integrate_by_T(Tb, T_ref)
-                S_int_Tb_to_T_ref_g = Cp_g.integrate_by_T_over_T(Tb, T_ref)
+            if phase_ref == 'g' and has_Cng and Tb:
+                H_int_Tb_to_T_ref_g = Cn_g.integrate_by_T(Tb, T_ref)
+                S_int_Tb_to_T_ref_g = Cn_g.integrate_by_T_over_T(Tb, T_ref)
             else:
                 H_int_Tb_to_T_ref_g = S_int_Tb_to_T_ref_g = None
             if phase_ref == 'l':
-                if has_Cpl:
+                if has_Cnl:
                     if Tb:
-                        H_int_T_ref_to_Tb_l = Cp_l.integrate_by_T(T_ref, Tb)
-                        S_int_T_ref_to_Tb_l = Cp_l.integrate_by_T_over_T(T_ref, Tb)
+                        H_int_T_ref_to_Tb_l = Cn_l.integrate_by_T(T_ref, Tb)
+                        S_int_T_ref_to_Tb_l = Cn_l.integrate_by_T_over_T(T_ref, Tb)
                     else:
                         H_int_T_ref_to_Tb_l = S_int_T_ref_to_Tb_l = None
                     if Tm:
-                        H_int_Tm_to_T_ref_l = Cp_l.integrate_by_T(Tm, T_ref)
-                        S_int_Tm_to_T_ref_l = Cp_l.integrate_by_T_over_T(Tm, T_ref)
+                        H_int_Tm_to_T_ref_l = Cn_l.integrate_by_T(Tm, T_ref)
+                        S_int_Tm_to_T_ref_l = Cn_l.integrate_by_T_over_T(Tm, T_ref)
                     else:
                         H_int_Tm_to_T_ref_l = S_int_Tm_to_T_ref_l = None
     
@@ -415,31 +415,31 @@ class Chemical:
             
             # Enthalpy and Entropy
             if phase_ref == 's':
-                sdata = (Cp_s, T_ref, H_ref)
-                ldata = (Cp_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
-                gdata = (Cp_g, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref)
+                sdata = (Cn_s, T_ref, H_ref)
+                ldata = (Cn_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
+                gdata = (Cn_g, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref)
                 self.H = EnthalpyRefSolid(sdata, ldata, gdata)
-                sdata = (Cp_s, T_ref, S_ref)
-                ldata = (Cp_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref)
-                gdata = (Cp_g, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref)
+                sdata = (Cn_s, T_ref, S_ref)
+                ldata = (Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref)
+                gdata = (Cn_g, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref)
                 self.S = EntropyRefSolid(sdata, ldata, gdata)
             elif phase_ref == 'l':
-                sdata = (Cp_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
-                ldata = (Cp_l, T_ref, H_ref)
-                gdata = (Cp_g, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref)
+                sdata = (Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
+                ldata = (Cn_l, T_ref, H_ref)
+                gdata = (Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref)
                 self.H = EnthalpyRefLiquid(sdata, ldata, gdata)
-                sdata = (Cp_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref)
-                ldata = (Cp_l, T_ref, S_ref)
-                gdata = (Cp_g, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S_ref)
+                sdata = (Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref)
+                ldata = (Cn_l, T_ref, S_ref)
+                gdata = (Cn_g, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S_ref)
                 self.S = EntropyRefLiquid(sdata, ldata, gdata)
             elif phase_ref == 'g':
-                sdata = (Cp_s, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref)
-                ldata = (Cp_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref)
-                gdata = (Cp_g, T_ref, H_ref)
+                sdata = (Cn_s, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref)
+                ldata = (Cn_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref)
+                gdata = (Cn_g, T_ref, H_ref)
                 self.H = EnthalpyRefGas(sdata, ldata, gdata)
-                sdata = (Cp_s, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S_ref)
-                ldata = (Cp_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref)
-                gdata = (Cp_g, T_ref, P_ref, S_ref)
+                sdata = (Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S_ref)
+                ldata = (Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref)
+                gdata = (Cn_g, T_ref, P_ref, S_ref)
                 self.S = EntropyRefGas(sdata, ldata, gdata)
             
             # Excess energies
@@ -504,22 +504,22 @@ class Chemical:
         if 'eos' in slots:
             self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self.eos_1atm = self.eos.to_TP(298.15, 101325)
-        if 'Cp' in slots:
-            Cp = self.Cp
+        if 'Cn' in slots:
+            Cn = self.Cn
             phase_ref = self.phase_ref
             getfield = getattr
-            single_phase = isinstance(Cp, TDependentModelHandle)
+            single_phase = isinstance(Cn, TDependentModelHandle)
             if single_phase:
-                Cp.model(4.18*MW, var='Cp')
-                Cp_phase = Cp
+                Cn.model(4.18*MW, var='Cn')
+                Cn_phase = Cn
             else:
-                Cp_phase = getfield(Cp, phase_ref)
-                Cp_phase.model(4.18*MW, var='Cp')
-            self._init_energies(Cp, self.Hvap, self.Psat, self.Hfus, self.Tm,
+                Cn_phase = getfield(Cn, phase_ref)
+                Cn_phase.model(4.18*MW, var='Cn')
+            self._init_energies(Cn, self.Hvap, self.Psat, self.Hfus, self.Tm,
                                 self.Tb, self.eos, self.eos_1atm, self.phase_ref,
                                 single_phase and phase_ref)
         missing = set(slots)
-        missing.difference_update({'MW', 'CAS', 'Cp', 'Hf', 'sigma',
+        missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
                                    'mu', 'kappa', 'Hc', 'epsilon', 'H',
                                    'S', 'H_excess', 'S_excess', '_phase_ref'})
         return missing
@@ -547,7 +547,7 @@ class Chemical:
         for i in _free_energies: setfield(self, i, None)
         for i in ('kappa', 'mu', 'V'):
             setfield(self, i, ChemicalPhaseTPProperty())
-        self.Cp = ChemicalPhaseTProperty()
+        self.Cn = ChemicalPhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
         self._locked_state = LockedState()

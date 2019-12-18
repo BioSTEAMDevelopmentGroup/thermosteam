@@ -26,7 +26,7 @@ from cmath import log as clog, exp as cexp
 import numpy as np
 from numba import njit
 from ..base import InterpolatedTDependentModel, thermo_model, TDependentHandleBuilder, \
-                   ChemicalPhaseTPropertyBuilder, S, H, Cp
+                   ChemicalPhaseTPropertyBuilder, S, H, Cn
 from .utils import to_nums, CASDataReader
 from ..constants import R, calorie
 from ..functional import polylog2
@@ -41,14 +41,14 @@ __all__ = ('HeatCapacity',)
 
 # %% Utilities
 
-def CpHS(FCp, FH, FS, data):
-    fCp = FCp(data)
-    return {'evaluate': fCp,
-            'integrate_by_T': FH(data, fCp.kwargs),
-            'integrate_by_T_over_T': FS(data, fCp.kwargs)}
+def CnHS(FCn, FH, FS, data):
+    fCn = FCn(data)
+    return {'evaluate': fCn,
+            'integrate_by_T': FH(data, fCn.kwargs),
+            'integrate_by_T_over_T': FS(data, fCn.kwargs)}
 
-def CpHSModel(FCp, FH, FS, data=None, Tmin=None, Tmax=None, name=None):
-    funcs = CpHS(FCp, FH, FS, data)
+def CnHSModel(FCn, FH, FS, data=None, Tmin=None, Tmax=None, name=None):
+    funcs = CnHS(FCn, FH, FS, data)
     return thermo_model(Tmin=Tmin, Tmax=Tmax, name=name, **funcs)
 
 class ZabranskyModelBuilder:
@@ -69,7 +69,7 @@ class ZabranskyModelBuilder:
     
     def build_model(self, data):
         *args, Tmin, Tmax = data
-        return CpHSModel(*self.funcs, args, Tmin, Tmax, self.name)
+        return CnHSModel(*self.funcs, args, Tmin, Tmax, self.name)
 
 
 # %% Data
@@ -87,7 +87,7 @@ with open(os.path.join(read.folder, 'Perrys Table 2-151.tsv'), encoding='utf-8')
     Eighth Edition. McGraw-Hill Professional, 2007.
 
     Formula:
-    Cp(Cal/mol/K) = Const + Lin*T + Quadinv/T^2 + Quadinv*T^2
+    Cn(Cal/mol/K) = Const + Lin*T + Quadinv/T^2 + Quadinv*T^2
 
     Phases: c, gls, l, g.
     '''
@@ -120,7 +120,7 @@ with open(os.path.join(read.folder, 'Perrys Table 2-151.tsv'), encoding='utf-8')
 
 # %% Heat Capacities Gas
 
-@Cp.g
+@Cn.g
 def Lastovka_Shaw(T, MW, term, a):
     B11 = 0.73917383
     B12 = 8.88308889
@@ -185,8 +185,8 @@ def Lastovka_Shaw_Integral_Over_T(T, MW, term, a):
     # variable and so will always cancel out.
     return MW * S.real
     
-@Cp.g
-def TRCCp(T, a0, a1, a2, a3, a4, a5, a6, a7):
+@Cn.g
+def TRCCn(T, a0, a1, a2, a3, a4, a5, a6, a7):
     if T <= a7:
         y = 0.
     else:
@@ -194,7 +194,7 @@ def TRCCp(T, a0, a1, a2, a3, a4, a5, a6, a7):
     return R*(a0 + (a1/T**2)*exp(-a2/T) + a3*y**2 + (a4 - a5/(T-a7)**2 )*y**8.)
 
 @njit
-def TRCCP_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
+def TRCCn_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
     first = a6 + a7    
     y = 0. if T <= a7 else (T - a7)/(T + a6)
     y2 = y*y
@@ -210,12 +210,12 @@ def TRCCP_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
     return (a0 + a1*exp(-a2/T)/(a2*T) + h/T)*R*T
 
 @H.g
-def TRCCp_Integral(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
-    return (TRCCP_Indefinite_Integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
-            - TRCCP_Indefinite_Integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
+def TRCCn_Integral(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
+    return (TRCCn_Indefinite_Integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
+            - TRCCn_Indefinite_Integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
 
 @njit
-def TRCCp_Over_T_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
+def TRCCn_Over_T_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
     # Possible optimizations: pre-cache as much as possible.
     # If this were replaced by a cache, much of this would not need to be computed.
     y = 0. if T <= a7 else (T - a7)/(T + a6)
@@ -237,11 +237,11 @@ def TRCCp_Over_T_Indefinite_Integral(T, a0, a1, a2, a3, a4, a5, a6, a7):
     return a0*log(T) + a1/(a2*a2)*(1. + a2/T)*exp(-a2/T) + s
 
 @S.g
-def TRCCp_Integral_Over_T(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
-    return R*(TRCCp_Over_T_Indefinite_Integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
-              - TRCCp_Over_T_Indefinite_Integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
+def TRCCn_Integral_Over_T(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
+    return R*(TRCCn_Over_T_Indefinite_Integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
+              - TRCCn_Over_T_Indefinite_Integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
 
-@Cp.g
+@Cn.g
 def Poling(T, a, b, c, d, e):
     return R*(a + b*T + c*T**2 + d*T**3 + e*T**4)
 
@@ -272,9 +272,9 @@ CRCSTD = 'CRC Standard Thermodynamic Properties of Chemical Substances'
 VDI_TABULAR = 'VDI Heat Atlas'
 LASTOVKA_SHAW = 'Lastovka and Shaw (2013)'
 
-TRCCp_Functors = (TRCCp,
-                  TRCCp_Integral,
-                  TRCCp_Integral_Over_T)
+TRCCn_Functors = (TRCCn,
+                  TRCCn_Integral,
+                  TRCCn_Integral_Over_T)
 Poling_Functors = (Poling,
                    Poling_Integral, 
                    Poling_Integral_Over_T)
@@ -284,43 +284,42 @@ Poling_Functors = (Poling,
 def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
     if CAS in _TRC_gas:
         _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, _, _, _ = _TRC_gas[CAS]
-        funcs = CpHS(*TRCCp_Functors, (a0, a1, a2, a3, a4, a5, a6, a7))
+        funcs = CnHS(*TRCCn_Functors, (a0, a1, a2, a3, a4, a5, a6, a7))
         handle.model(Tmin=Tmin, Tmax=Tmax, name=TRCIG, **funcs)
     if CAS in _Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cp_g, _ = _Poling[CAS]
-        if not np.isnan(a0):
-            funcs = CpHS(*Poling_Functors, (a, b, c, d, e))
+        _, Tmin, Tmax, a, b, c, d, e, Cn_g, _ = _Poling[CAS]
+        if not np.isnan(a):
+            funcs = CnHS(*Poling_Functors, (a, b, c, d, e))
             handle.model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
-        if not np.isnan(Cp_g):
-            handle.model(Cp_g, Tmin, Tmax, var='Cp.g', name=POLING_CONST)
+        if not np.isnan(Cn_g):
+            handle.model(Cn_g, Tmin, Tmax, var='Cn.g', name=POLING_CONST)
     if CAS in _CRC_standard:
-        Cp_g = _CRC_standard[CAS][-1]
-        if not np.isnan(Cp_g):
-            handle.model(Cp_g, name=CRCSTD)
+        Cn_g = _CRC_standard[CAS][-1]
+        if not np.isnan(Cn_g):
+            handle.model(Cn_g, name=CRCSTD)
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
-        Ts, Cp_gs = VDI_tabular_data(CAS, 'Cp (g)')
-        handle.model(InterpolatedTDependentModel(Ts, Cp_gs, Tmin=Ts[0], Tmax=Ts[-1],
-                                                      name=VDI_TABULAR))
+        Ts, Cn_gs = VDI_tabular_data(CAS, 'Cp (g)')
+        handle.model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
     if MW and similarity_variable:
         data = (MW, similarity_variable, iscyclic_aliphatic)
         handle.model(Lastovka_Shaw(data), name=LASTOVKA_SHAW)
     
 ### Heat capacities of liquids
 
-@Cp.l
-def Rowlinson_Poling(T, Tc, ω, Cp_g):
+@Cn.l
+def Rowlinson_Poling(T, Tc, ω, Cn_g):
     Tr = T/Tc
-    return Cp_g + R*(1.586 + 0.49/(1.-Tr) + ω*(4.2775 + 6.3*(1-Tr)**(1/3.)/Tr + 0.4355/(1.-Tr)))
+    return Cn_g + R*(1.586 + 0.49/(1.-Tr) + ω*(4.2775 + 6.3*(1-Tr)**(1/3.)/Tr + 0.4355/(1.-Tr)))
 
-@Cp.l
-def Rowlinson_Bondi(T, Tc, ω, Cp_g):
+@Cn.l
+def Rowlinson_Bondi(T, Tc, ω, Cn_g):
     Tr = T/Tc
-    return Cp_g + R*(1.45 + 0.45/(1.-Tr) + 0.25*ω*(17.11 + 25.2*(1-Tr)**(1/3.)/Tr + 1.742/(1.-Tr)))
+    return Cn_g + R*(1.45 + 0.45/(1.-Tr) + 0.25*ω*(17.11 + 25.2*(1-Tr)**(1/3.)/Tr + 1.742/(1.-Tr)))
 
-@Cp.l
+@Cn.l
 def Dadgostar_Shaw(T, MW, first, second, third):
     return (first + second*T + third*T**2) * MW
 
@@ -398,7 +397,7 @@ with open(os.path.join(read.folder, 'Zabransky.tsv'), encoding='utf-8') as f:
             # No duplicates for quasipolynomials
             d[CAS] = (Tc, a1p, a2p, a3p, a4p, a5p, a6p, Tmin, Tmax)
 
-@Cp.l
+@Cn.l
 def Zabransky_Quasi_Polynomial(T, Tc, a1, a2, a3, a4, a5, a6):
     Tr = T/Tc
     return R*(a1*log(1-Tr) + a2/(1-Tr) + a3 + a4*Tr + a5*Tr**2 + a6*Tr**3)
@@ -431,7 +430,7 @@ def Zabransky_Quasi_Polynomial_Over_T_Integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a
     return (Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Tb, Tc, a1, a2, a3, a4, a5, a6)
             - Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Ta, Tc, a1, a2, a3, a4, a5, a6))
 
-@Cp.l
+@Cn.l
 def Zabransky_Cubic(T, a1, a2, a3, a4):
     T = T/100.
     return R*(((a4*T + a3)*T + a2)*T + a1)
@@ -503,37 +502,37 @@ zabransky_model_builders[2].many = True
 zabransky_model_builders[4].many = True
 
 @TDependentHandleBuilder
-def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cp):
-    Cp_g = Cp.g(Tb) if (Tb and Cp.g) else None
+def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
+    Cn_g = Cn.g(Tb) if (Tb and Cn.g) else None
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
-        Ts, Cp_ls = VDI_tabular_data(CAS, 'Cp (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Cp_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
-    if Tc and omega and Cp_g:
-        args = (Tc, omega, Cp_g, 200, Tc)
+        Ts, Cn_ls = VDI_tabular_data(CAS, 'Cp (l)')
+        handle.model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
+    if Tc and omega and Cn_g:
+        args = (Tc, omega, Cn_g, 200, Tc)
         handle.model(Rowlinson_Bondi(args), name=ROWLINSON_BONDI)
         handle.model(Rowlinson_Poling(args), name=ROWLINSON_POLING)
     # Constant models
     if CAS in _Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cp_g, Cp_l = _Poling[CAS]
-        if not np.isnan(Cp_g):
-            handle.model(Cp_l, Tmin, Tmax, name=POLING_CONST, var="Cp.l")
+        _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
+        if not np.isnan(Cn_g):
+            handle.model(Cn_l, Tmin, Tmax, name=POLING_CONST, var="Cn.l")
     if CAS in _CRC_standard:
-        Cp_l = _CRC_standard[CAS][-5]
-        if not np.isnan(Cp_l):
-            handle.model(Cp_l, 0, Tc, name=CRCSTD, var="Cp.l")
+        Cn_l = _CRC_standard[CAS][-5]
+        if not np.isnan(Cn_l):
+            handle.model(Cn_l, 0, Tc, name=CRCSTD, var="Cn.l")
     # Other
     if MW and similarity_variable:
-        handle.model(CpHSModel(*Dadgostar_Shaw_Functors,
+        handle.model(CnHSModel(*Dadgostar_Shaw_Functors,
                                  data=(similarity_variable, MW),
                                  name=DADGOSTAR_SHAW))
 
 # %% Heat Capacity Solid
 
-@Cp.s
+@Cn.s
 def Lastovka_Solid(T, similarity_variable, MW):
     A1 = 0.013183
     A2 = 0.249381
@@ -594,7 +593,7 @@ def Lastovka_Solid_Over_T_Integral(Ta, Tb, similarity_variable, MW):
             - Lastovka_Solid_Over_T_Indefinite_Integral(Ta, similarity_variable, MW))
     
     
-@Cp.s
+@Cn.s
 def Perry_151(T, Const, Lin, Quad, Quadinv):
     return (Const + Lin*T + Quad/T**2 +Quadinv*T**2)*calorie
 
@@ -628,15 +627,15 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
             Tmin = c['Tmin']
             Tmax = c['Tmax']
             data = (c['Const'], c['Lin'], c['Quad'], c['Quadinv'])
-            handle.model(CpHSModel(*Perry_151_Functors, data), Tmin, Tmax)
+            handle.model(CnHSModel(*Perry_151_Functors, data), Tmin, Tmax)
     if CAS in _CRC_standard:
-        Cpc = _CRC_standard[CAS][3]
-        if not np.isnan(Cpc):
-            handle.model(float(Cpc), 200, 350)
+        Cnc = _CRC_standard[CAS][3]
+        if not np.isnan(Cnc):
+            handle.model(float(Cnc), 200, 350)
     if similarity_variable and MW:
         data = (similarity_variable, MW)
-        handle.model(CpHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
+        handle.model(CnHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
-HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cp')
+HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cn')
 
