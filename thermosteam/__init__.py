@@ -19,6 +19,7 @@ from . import thermal_condition
 from . import stream
 from . import phase
 from . import multi_stream
+from . import reaction
 
 __all__ = (*base.__all__, 
            *chemical.__all__, 
@@ -34,7 +35,8 @@ __all__ = (*base.__all__,
            *thermal_condition.__all__,
            *stream.__all__,
            *phase.__all__,
-           *multi_stream.__all__)
+           *multi_stream.__all__,
+           *reaction.__all__)
 
 from .base import *
 from .chemical import *
@@ -51,3 +53,4 @@ from .thermal_condition import *
 from .stream import *
 from .phase import *
 from .multi_stream import *
+from .reaction import *

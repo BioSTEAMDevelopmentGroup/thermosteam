@@ -6,8 +6,7 @@ This module includes classes and functions relating Stream objects.
 
 @author: Yoel Cortes-Pena
 """
-__all__ = ('MissingStream', 'Ins', 'Outs',
-           'Sink', 'Source')
+__all__ = ('MissingStream', 'Ins', 'Outs', 'Sink', 'Source')
 
 isa = isinstance
 
@@ -46,12 +45,19 @@ def resize(list, N_now, N_total, N_missing):
 
 class StreamSequence:
     """Create a StreamSequence object which serves as a sequence of streams for a Unit object."""
-    __slots__ = ('_unit', '_size', '_streams')
+    __slots__ = ('_size', '_streams')
 
-    def __init__(self, unit, size):
-        self._unit = unit #: Unit object where Ins object is attached
+    def __init__(self, size):
         self._size = size #: Number of streams in Ins object
         self._streams = [MissingStream] * size #: All input streams
+        
+    def remove(self, stream):
+        streams = self._streams
+        index = streams.index(stream)
+        streams[index] = MissingStream
+        
+    def clear(self):
+        self._streams = [MissingStream] * self._size
         
     @property
     def size(self):
@@ -65,14 +71,57 @@ class StreamSequence:
     
     def __getitem__(self, index):
         return self._streams[index]
-    
+            
     def __setitem__(self, index, item):
-        unit = self._unit
         streams = self._streams
         if isa(index, int):
-            s_old = streams[index]
-            s_old._unit = None
-            item._unit = unit
+            streams[index] = item
+        elif isa(index, slice):
+            N = len(item)
+            size = self._size
+            N_missing = size - N
+            if N_missing < 0:
+                raise IndexError(f"size of streams ({N}) cannot be bigger than "
+                                 "size of '{type(self).__name__}' object ({size})")
+            else:
+                streams[index] = item
+            if N_missing:
+                resize(streams, N, size, N_missing)
+        else:
+            raise TypeError(f"Only intergers and slices are valid indices for '{type(self).__name__}' objects")
+    
+    def __repr__(self):
+        return repr(self._streams)
+
+
+class Ins(StreamSequence):
+    """Create a Ins object which serves as input streams for a Unit object."""
+    __slots__ = ('_sink', )
+    
+    def __init__(self, sink, size):
+        super().__init__(size)
+        self._sink = sink
+    
+    def remove(self, stream):
+        super().remove(stream)
+        stream._sink = None
+    
+    def clear(self):
+        for s in self._streams: s._sink = None
+        super().clear()
+    
+    @property
+    def sink(self):
+        return self._sink
+    
+    def __setitem__(self, index, item):
+        sink = self._sink
+        streams = self._streams
+        if isa(index, int):
+            streams[index]._sink = None
+            if item._sink:
+                item._sink._ins.remove(item)
+            item._sink = sink
         elif isa(index, slice):
             N = len(item)
             size = self._size
@@ -81,30 +130,64 @@ class StreamSequence:
                 raise IndexError(f"size of streams ({N}) cannot be bigger than "
                                  "size of '{type(self).__name__}' object ({size})")
             for s in streams[index]:
-                if s._unit is unit:
-                    s._unit = None
+                s._sink = None
             for s in item:
-                s._unit = unit
+                if item._sink:
+                    item._sink._ins.remove(item)
+                s._sink = sink
             streams[index] = item
             if N_missing:
                 resize(streams, N, size, N_missing)
         else:
             raise TypeError(f"Only intergers and slices are valid indices for '{type(self).__name__}' objects")
-            
-    def __repr__(self):
-        return repr(self._streams)
-
-
-class Ins(StreamSequence):
-    """Create a Ins object which serves as input streams for a Unit object."""
-    @property
-    def sink(self): return self._unit
            
     
 class Outs(StreamSequence):
     """Create a Outs object which serves as output streams for a Unit object."""
+    __slots__ = ('_source', )
+    
+    def __init__(self, source, size):
+        super().__init__(size)
+        self._source = source
+    
+    def remove(self, stream):
+        super().remove(stream)
+        stream._source = None
+    
+    def clear(self):
+        for s in self._streams: s._source = None
+        super().clear()
+    
     @property
-    def source(self): return self._unit
+    def source(self):
+        return self._source
+    
+    def __setitem__(self, index, item):
+        source = self._source
+        streams = self._streams
+        if isa(index, int):
+            streams[index]._source = None
+            if item._source:
+                item._source._ins.remove(item)
+            item._source = source
+        elif isa(index, slice):
+            N = len(item)
+            size = self._size
+            N_missing = size - N
+            if N_missing < 0:
+                raise IndexError(f"size of streams ({N}) cannot be bigger than "
+                                 "size of '{type(self).__name__}' object ({size})")
+            for s in streams[index]:
+                s._source = None
+            for s in item:
+                if item._source:
+                    item._source._ins.remove(item)
+                s._source = source
+            streams[index] = item
+            if N_missing:
+                resize(streams, N, size, N_missing)
+        else:
+            raise TypeError(f"Only intergers and slices are valid indices for '{type(self).__name__}' objects")
 
 
 # %% Sink and Source object for piping notation

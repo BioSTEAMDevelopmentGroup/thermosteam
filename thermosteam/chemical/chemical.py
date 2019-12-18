@@ -348,11 +348,11 @@ class Chemical:
             if not phase_ref:
                 if Tm and T_ref <= Tm:
                     self._phase_ref = phase_ref = 's'
-                elif Psat and P_ref <= Psat(T_ref):
+                elif Tb and T_ref >= Tb:
                     self._phase_ref = phase_ref = 'g'
                 else:
                     self._phase_ref = phase_ref = 'l'
-            
+
             Hvap_Tb = Hvap(Tb) if Tb else None
             Svap_Tb = Hvap_Tb / Tb if Tb else None
             
@@ -449,13 +449,13 @@ class Chemical:
             elif phase_ref == 'l':
                 gdata = (eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep_Tb_Pb_g)
                 self.H_excess = ExcessEnthalpyRefLiquid((), (), gdata)
-                gdata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_1atm)
+                gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
                 self.S_excess = ExcessEntropyRefLiquid((), (), gdata)
             elif phase_ref == 'g':
                 ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g, eos_1atm)
                 gdata = (eos, H_dep_ref_g)
                 self.H_excess = ExcessEnthalpyRefGas((), ldata, gdata)
-                ldata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
+                ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_1atm)
                 gdata = (eos, S_dep_ref_g)
                 self.S_excess = ExcessEntropyRefGas((), ldata, gdata)
         else:
