@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
-from ..base.utils import copy_maybe
+from ..utils import copy_maybe
 from ..utils import getfields, setfields
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure

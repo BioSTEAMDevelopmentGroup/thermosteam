@@ -12,6 +12,7 @@ from . import other_utils
 from . import define_from
 from . import cache
 from . import assert_utils
+from . import var_utils
 
 __all__ = (*pickle_utils.__all__,
            *repr_utils.__all__,
@@ -19,7 +20,8 @@ __all__ = (*pickle_utils.__all__,
            *other_utils.__all__,
            *define_from.__all__,
            *cache.__all__,
-           *assert_utils.__all__)
+           *assert_utils.__all__,
+           *var_utils.__all__)
 
 from .pickle_utils import *
 from .repr_utils import *
@@ -28,3 +30,4 @@ from .other_utils import *
 from .define_from import *
 from .cache import *
 from .assert_utils import *
+from .var_utils import *

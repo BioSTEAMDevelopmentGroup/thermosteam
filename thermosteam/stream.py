@@ -15,7 +15,6 @@ from .settings import settings
 from .thermal_condition import ThermalCondition
 from .registry import registered
 from .utils import Cache, assert_same_chemicals
-from . import pipping
 
 __all__ = ('Stream', )
 
@@ -87,37 +86,6 @@ class Stream:
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
             cache[units] = name, factor
         return getattr(self, name), factor
-
-    ### Pipping ###
-    
-    @property
-    def sink(self):
-        return self._sink
-    @property
-    def source(self):
-        return self._source
-    
-    # Forward pipping
-    def __sub__(self, index):
-        if isinstance(index, int):
-            return pipping.Sink(self, index)
-        elif isinstance(index, Stream):
-            raise TypeError("unsupported operand type(s) for -: "
-                            f"'{type(self)}' and '{type(index)}'")
-        return index.__rsub__(self)
-
-    def __rsub__(self, index):
-        if isinstance(index, int):
-            return pipping.Source(self, index)
-        elif isinstance(index, Stream):
-            raise TypeError("unsupported operand type(s) for -: "
-                            "'{type(self)}' and '{type(index)}'")
-        return index.__sub__(self)
-
-    # Backward pipping    
-    __pow__ = __sub__
-    __rpow__ = __rsub__
-    
 
     ### Property getters ###
 

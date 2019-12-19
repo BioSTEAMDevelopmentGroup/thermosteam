@@ -6,7 +6,7 @@ Created on Thu Oct 31 02:38:40 2019
 """
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
-from .utils import copy_maybe
+from ..utils import copy_maybe
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
            'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',

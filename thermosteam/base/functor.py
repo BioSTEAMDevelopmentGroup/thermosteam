@@ -5,7 +5,7 @@ Created on Sat Oct 26 04:26:20 2019
 @author: yoelr
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
-from .utils import var_with_units, get_obj_values
+from ..utils import var_with_units, get_obj_values
 from .autodoc import autodoc_functor
 from inspect import signature
 from numba.targets.registry import CPUDispatcher
