@@ -22,8 +22,7 @@ SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
-from ..utils import copy_maybe
-from ..utils import getfields, setfields
+from ..utils import copy_maybe, cucumber
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
 from .phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -179,18 +178,21 @@ _chemical_fields = {'\n[Names]  ': _names,
 
 
 # %% Chemical
-
+@cucumber # Just means you can pickle it
 class Chemical:
     __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
                 + _names + _groups + _thermo + _data
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
+    _cache = {}
     
-    def __init__(self, ID, *, eos=PR, cache={}):
-        if ID in cache:
-            setfields(self, self.__slots__, cache[ID])    
+    def __new__(cls, ID, *, eos=PR):
+        cache = cls._cache
+        CAS = CAS_from_any(ID)
+        if CAS in cache:
+            self = cache[CAS]
         else:
-            CAS = CAS_from_any(ID)
             info = pubchem_db.search_CAS(CAS)
+            self = super().__new__(cls)
             self._ID = ID
             self._locked_state = LockedState()
             self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
@@ -206,14 +208,15 @@ class Chemical:
                                   self.iscyclic_aliphatic, self.eos)
             self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
                                 self.Tm, self.Tb, self.eos, self.eos_1atm)
-            cache[ID] = getfields(self, self.__slots__)
+            cache[CAS] = self
+        return self
 
     @property
     def ID(self):
         return self._ID
 
-    def copy(self):
-        new = self.__new__(self.__class__)
+    def copy(self, ID):
+        new = super().__new__(self.__class__)
         getfield = getattr
         setfield = setattr
         for field in self.__slots__: 
@@ -555,7 +558,7 @@ class Chemical:
     
     @classmethod
     def blank(cls, ID):
-        self = object.__new__(cls)
+        self = super().__new__(cls)
         setfield = setattr
         self.eos = self.eos_1atm = self._phase_ref = None
         for i in _names: setfield(self, i, None)
@@ -568,7 +571,7 @@ class Chemical:
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
         self._locked_state = LockedState()
-        self.ID = ID
+        self._ID = ID
         return self
     
     @classmethod
@@ -592,19 +595,21 @@ class Chemical:
     def locked_state(self):
         return self._locked_state
     
-    def lock_state(self, phase=None, T=None, P=None):
-        if self.locked_state:
+    def lock_state(self, ID, phase=None, T=None, P=None):
+        new = self.copy(ID)
+        if new.locked_state:
             raise TypeError(f"{self}'s state is already locked")    
         elif T and P:
             if phase:
-                lock_locked_state(self, phase, T, P)
+                lock_locked_state(new, phase, T, P)
             else:
-                lock_TP(self, T, P)                
+                lock_TP(new, T, P)                
         elif phase:
-            lock_phase(self, phase)
+            lock_phase(new, phase)
         else:
             raise ValueError("must pass a either a phase, T and P, or both to lock state")
-        self._locked_state.__init__(phase, T, P)
+        new._locked_state.__init__(phase, T, P)
+        return new
     
     def show(self):
         getfield = getattr

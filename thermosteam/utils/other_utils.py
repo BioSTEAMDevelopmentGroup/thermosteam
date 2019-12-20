@@ -12,14 +12,11 @@ def fill_like(A, B, fields):
     getfield = getattr
     for i in fields: setfield(A, i, getfield(B, i))
     
-def getfields(obj, fields):
-    getfield = getattr
+def getfields(obj, fields, getfield=getattr):
     return [getfield(obj, i) for i in fields]
 
-def setfields(obj, names, fields):
-    setfield = setattr
+def setfields(obj, names, fields, setfield=setattr):
     for i,j in zip(names, fields): setfield(obj, i, j)
-
 
 def any_isinstance(objs, cls):
     isa = isinstance

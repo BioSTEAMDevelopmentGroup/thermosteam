@@ -181,7 +181,6 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 # %% Ideal mixture
 
 
-
 class IdealMixture:
     __slots__ = ('chemicals', 'rigorous_energy_balance', 
                  'include_excess_energies', *mixture_methods)

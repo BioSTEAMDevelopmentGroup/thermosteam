@@ -7,11 +7,12 @@ Created on Sat Nov 30 20:18:27 2019
 from . import equilibrium as eq
 from .chemicals import Chemicals
 from .mixture import IdealMixture
-from .utils import read_only
+from .utils import read_only, cucumber
 from .settings import settings
 
 __all__ = ('Thermo',)
 
+@cucumber # Just means you can pickle it
 @read_only
 class Thermo:
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
