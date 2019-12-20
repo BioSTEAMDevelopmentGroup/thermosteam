@@ -28,7 +28,8 @@ vol_units = index.ChemicalVolumetricFlowIndexer.units
 # %%
 @registered(ticket_name='s')
 class Stream:
-    __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams', '_vle', '_sink', '_source', 'price')
+    __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
+                 '_vle', '_sink', '_source', 'price')
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = DisplayUnits(T='K', P='Pa',
@@ -46,7 +47,7 @@ class Stream:
         if units:
             indexer, factor = self._get_indexer_and_factor(units)
             indexer[...] = self.mol * factor
-        self._sink = self._source = None
+        self._sink = self._source = None # For BioSTEAM
         self._register(ID)
     
     def _load_indexer(self, flow, phase, chemicals, chemical_flows):
@@ -245,18 +246,15 @@ class Stream:
     @property
     def z_mol(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return mol / F_mol if F_mol else mol.copy()
+        return mol / mol.sum()
     @property
     def z_mass(self):
         mass = self.chemicals.MW * self.mol
-        F_mass = mass.sum()
-        return mass / F_mass if F_mass else mass
+        return mass / mass.sum()
     @property
     def z_vol(self):
         vol = self.vol.value
-        F_vol = vol.sum()
-        return vol / F_vol if F_vol else vol
+        return vol / vol.sum()
     
     @property
     def MW(self):
@@ -264,33 +262,27 @@ class Stream:
     @property
     def V(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.V_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.V_at_TP(self.phase, mol / mol.sum(), self._TP)
     @property
     def kappa(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.kappa_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.kappa_at_TP(self.phase, mol / mol.sum(), self._TP)
     @property
     def Cn(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.Cn_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.Cn_at_TP(self.phase, mol / mol.sum(), self._TP)
     @property
     def mu(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.mu_at_TP(self.phase, mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.mu_at_TP(self.phase, mol / mol.sum(), self._TP)
     @property
     def sigma(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.sigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.sigma_at_TP(mol / mol.sum(), self._TP)
     @property
     def epsilon(self):
         mol = self.mol
-        F_mol = mol.sum()
-        return self.mixture.epsilon_at_TP(mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.epsilon_at_TP(mol / mol.sum(), self._TP)
     
     @property
     def Cp(self):
@@ -329,7 +321,6 @@ class Stream:
             self._imol._data_cache = other._imol._data_cache
         else:
             self._imol._data_cache.clear()
-            other._imol._data_cache.clear()
         
         if TP:
             self._TP = other._TP

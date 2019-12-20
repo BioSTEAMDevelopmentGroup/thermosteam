@@ -181,19 +181,17 @@ _chemical_fields = {'\n[Names]  ': _names,
 # %% Chemical
 
 class Chemical:
-    __slots__ = ('ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
+    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
                 + _names + _groups + _thermo + _data
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
-    _cache = {}
     
-    def __init__(self, ID, *, eos=PR):
-        cache = self._cache
+    def __init__(self, ID, *, eos=PR, cache={}):
         if ID in cache:
             setfields(self, self.__slots__, cache[ID])    
         else:
             CAS = CAS_from_any(ID)
             info = pubchem_db.search_CAS(CAS)
-            self.ID = ID
+            self._ID = ID
             self._locked_state = LockedState()
             self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
                              info.pubchemid, info.iupac_name, info.common_name)
@@ -209,6 +207,10 @@ class Chemical:
             self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
                                 self.Tm, self.Tb, self.eos, self.eos_1atm)
             cache[ID] = getfields(self, self.__slots__)
+
+    @property
+    def ID(self):
+        return self._ID
 
     def copy(self):
         new = self.__new__(self.__class__)
@@ -624,7 +626,7 @@ class Chemical:
                             if len(line) > 27: line = line[:27] + '...'
                         else:
                             units = chemical_units_of_measure.get(field, "")
-                            if units: line += ' ' + units
+                            if units: line += f' {units}'
                 section.append(line)
             if section:
                 info += header + ("\n" + 9*" ").join(section)

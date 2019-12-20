@@ -113,18 +113,15 @@ class MultiStream(Stream):
     @property
     def z_mol(self):
         mol = self.mol.sum(0)
-        F_mol = mol.sum()
-        return mol / F_mol if F_mol else mol.copy()
+        return mol / mol.sum()
     @property
     def z_mass(self):
         mass = (self.chemicals.MW * self.mol).sum(0)
-        F_mass = mass.sum()
-        return mass / F_mass if F_mass else np.zeros(mass.shape)
+        return mass / mass.sum()
     @property
     def z_vol(self):
         vol = self.vol.value.sum(0)
-        F_vol = vol.sum()
-        return vol / F_vol if F_vol else np.zeros(vol.shape)
+        return vol / vol.sum()
     
     @property
     def V(self):
@@ -142,13 +139,11 @@ class MultiStream(Stream):
     @property
     def sigma(self):
         mol = self._imol['l']
-        F_mol = mol.sum()
-        return self.mixture.sigma_at_TP(mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.sigma_at_TP(mol / mol.sum(), self._TP)
     @property
     def epsilon(self):
         mol = self._imol['l']
-        F_mol = mol.sum()
-        return self.mixture.epsilon_at_TP(mol / F_mol, self._TP) if F_mol else 0
+        return self.mixture.epsilon_at_TP(mol / mol.sum(), self._TP)
         
     ### Methods ###
         

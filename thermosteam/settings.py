@@ -10,18 +10,18 @@ __all__ = ('settings',)
 
 class Settings:
     __slots__ = ('_thermo',
-                 '_phase_name',
+                 '_phase_names',
                  '_debug')
     
     def __init__(self):
         self._thermo = None
         self._debug = __debug__
-        self._phase_name = {'s': 'Solid',
-                            'l': 'Liquid',
-                            'g': 'Gas',
-                            'S': 'SOLID',
-                            'L': 'LIQUID',
-                            'G': 'GAS'}
+        self._phase_names = {'s': 'Solid',
+                             'l': 'Liquid',
+                             'g': 'Gas',
+                             'S': 'SOLID',
+                             'L': 'LIQUID',
+                             'G': 'GAS'}
     
     @property
     def debug(self):
@@ -31,8 +31,8 @@ class Settings:
         self._debug = bool(debug)
     
     @property
-    def phase_name(self):
-        return self._phase_name
+    def phase_names(self):
+        return self._phase_names
     
     def get_thermo(self, thermo):
         if not thermo:

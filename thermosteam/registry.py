@@ -7,23 +7,30 @@ Created on Wed Dec  5 16:47:33 2018
 
 __all__ = ('Registry', )
 
-setitem = dict.__setitem__
 
-class Registry(dict):
+class Registry:
     
-    def __setitem__(self, key, value):
+    def __setattr__(self, ID, obj):
+        self[ID] = obj
+    
+    def __getitem__(self, ID):
+        return self.__dict__[ID]
+    
+    def __setitem__(self, ID, obj):
         """Register object."""
-        if key:
-            ID_words = key.split('_')
+        if ID:
+            assert isinstance(ID, str), f"ID must be a string, not a '{type(ID).__name__}' object"
+            assert ID[0].isalpha(), "ID must start with a letter"
+            ID_words = ID.split('_')
             assert all(word.isalnum() for word in ID_words), (
                     'ID may only contain letters, numbers, and/or underscores; '
                     'no special characters or spaces')
-            setitem(self, key, value)
-        value._ID = key
+            self.__dict__[ID] = obj
+        obj._ID = ID
     
     def __repr__(self):
         if self:
-            return f'Register:\n ' + '\n '.join([repr(i) for i in self.values()])
+            return f'Register:\n ' + '\n '.join([repr(i) for i in self.__dict__.values()])
         else:
             return f'Register: (Empty)'
 
@@ -54,12 +61,15 @@ def _take_ticket(cls):
     return cls.ticket_name + str(cls.ticket_number)
 
 def _unregister(self):
-    try: del self.registry[self._ID]
+    try: delattr(self.registry, self._ID)
     except: pass
     
 def _register(self, ID):
-    if ID == "": ID = self._take_ticket()
-    self.registry[ID] = self
+    if ID == "":
+        self._ID = ID = self._take_ticket()
+        self.registry.__dict__[ID] = self
+    else:
+        self.registry[ID] = self
     
 @property
 def ID(self):
@@ -73,6 +83,6 @@ def ID(self, ID):
     
 def __repr__(self):
     return f"<{type(self).__name__}: {self.ID}>"
-    
+
 def __str__(self):
     return self.ID
