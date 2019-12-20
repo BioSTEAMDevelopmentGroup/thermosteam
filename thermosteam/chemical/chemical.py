@@ -595,7 +595,7 @@ class Chemical:
     def locked_state(self):
         return self._locked_state
     
-    def lock_state(self, ID, phase=None, T=None, P=None):
+    def at_state(self, ID, phase=None, T=None, P=None):
         new = self.copy(ID)
         if new.locked_state:
             raise TypeError(f"{self}'s state is already locked")    
