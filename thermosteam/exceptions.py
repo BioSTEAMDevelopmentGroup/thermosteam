@@ -5,7 +5,8 @@ Created on Mon Nov 25 20:55:06 2019
 @author: yoelr
 """
 __all__ = ('UndefinedChemical',
-           'UndefinedPhase')
+           'UndefinedPhase',
+           'DimensionError')
 
 class UndefinedChemical(AttributeError):
     """AttributeError regarding undefined compounds."""

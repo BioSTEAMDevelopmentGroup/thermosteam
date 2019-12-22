@@ -180,8 +180,8 @@ _chemical_fields = {'\n[Names]  ': _names,
 # %% Chemical
 @cucumber # Just means you can pickle it
 class Chemical:
-    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref') \
-                + _names + _groups + _thermo + _data
+    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref',
+                 *_names, *_groups, *_thermo, *_data)
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
     _cache = {}
     

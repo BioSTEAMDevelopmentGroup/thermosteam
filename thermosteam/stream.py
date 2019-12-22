@@ -64,7 +64,8 @@ class Stream:
                 imol = flow 
                 imol.phase = phase
             else:
-                imol = index.ChemicalMolarFlowIndexer.from_data(flow, phase, chemicals)
+                imol = index.ChemicalMolarFlowIndexer.from_data(
+                    np.asarray(flow, dtype=float), phase, chemicals)
         self._imol = imol
 
     def _get_indexer_and_factor(self, units):
@@ -348,6 +349,16 @@ class Stream:
         new._TP = self._TP.copy()
         return new
     __copy__ = copy
+    
+    def flow_proxy(self):
+        cls = self.__class__
+        new = cls.__new__(cls)
+        new._ID = None
+        new._thermo = self._thermo
+        new._imol = imol = self._imol._copy_without_data(self._imol)
+        imol._data = self._imol._data
+        new._TP = self._TP.copy()
+        return new
     
     def empty(self):
         self._imol._data[:] = 0

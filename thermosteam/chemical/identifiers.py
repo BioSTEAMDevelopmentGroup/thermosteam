@@ -525,7 +525,7 @@ def CAS_from_any(ID, autoload=False):
     if not autoload:
         return CAS_from_any(ID, autoload=True)
             
-    raise Exception('Chemical name not recognized')
+    raise Exception(f'Chemical {repr(ID)} not recognized')
 
 
 

@@ -174,7 +174,7 @@ class ChemicalIndexer(Indexer):
             return self._chemicals.index(IDs)
         elif isa(IDs, tuple):
             return self._chemicals.indices(IDs)
-        elif IDs == ...:
+        elif IDs is ...:
             return IDs
         else:
             raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
@@ -339,7 +339,7 @@ class MaterialIndexer(Indexer):
     def _get_index(self, phase_IDs):
         if isa(phase_IDs, str):
             index = self._get_phase_index(phase_IDs)
-        elif phase_IDs == ...:
+        elif phase_IDs is ...:
             index = phase_IDs 
         else:
             try:
@@ -352,13 +352,13 @@ class MaterialIndexer(Indexer):
                 IDs_index = self._chemicals.index(IDs)
             elif isa(IDs, tuple):
                 IDs_index = self._chemicals.indices(IDs)
-            elif IDs == ...:
+            elif IDs is ...:
                 IDs_index = IDs
             else:
                 raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
             if isa(phase, str):
                 index = (self._get_phase_index(phase), IDs_index)
-            elif phase == ...:
+            elif phase is ...:
                 index = (phase, IDs_index)
             else:
                 raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
