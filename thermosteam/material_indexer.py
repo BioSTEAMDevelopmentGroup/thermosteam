@@ -11,6 +11,7 @@ from .settings import settings
 from .exceptions import UndefinedPhase
 from .phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
+from .chemicals import chemicals_user
 import numpy as np
 
 __all__ = ('ChemicalIndexer',
@@ -89,13 +90,13 @@ class Indexer:
 
 # %% Phase data
 
+@chemicals_user
 class ChemicalIndexer(Indexer):
     __slots__ = ('_chemicals', '_phase', '_data_cache')
     _index_caches = {}
     
     def __new__(cls, phase, units=None, chemicals=None, **IDdata):
         if IDdata:
-            chemicals = settings.get_chemicals(chemicals)
             self = cls.from_data(chemicals.kwarray(IDdata), phase, chemicals)
             if units: self.set_data(self._data, units)
         else:
@@ -104,9 +105,6 @@ class ChemicalIndexer(Indexer):
     
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals)
-    
-    def _set_chemicals(self, chemicals):
-        self._chemicals = chemicals = settings.get_chemicals(chemicals)
     
     def _set_cache(self):
         caches = self._index_caches
@@ -136,7 +134,7 @@ class ChemicalIndexer(Indexer):
     @classmethod
     def blank(cls, phase, chemicals=None):
         self = _new(cls)
-        self._set_chemicals(chemicals)
+        self._load_chemicals(chemicals)
         self._set_cache()
         self._data = np.zeros(self._chemicals.size, float)
         self._phase = Phase.convert(phase)
@@ -146,7 +144,7 @@ class ChemicalIndexer(Indexer):
     @classmethod
     def from_data(cls, data, phase, chemicals=None):
         self = _new(cls)
-        self._set_chemicals(chemicals)
+        self._load_chemicals(chemicals)
         self._set_cache()
         self._phase = Phase.convert(phase)
         if settings._debug:
@@ -157,10 +155,6 @@ class ChemicalIndexer(Indexer):
         self._data = data
         self._data_cache = {}
         return self
-    
-    @property
-    def chemicals(self):
-        return self._chemicals
     
     @property
     def phase(self):
@@ -237,7 +231,7 @@ class ChemicalIndexer(Indexer):
         print(self._info(N))
     _ipython_display_ = show
       
-
+@chemicals_user
 class MaterialIndexer(Indexer):
     __slots__ = ('_chemicals', '_phases', '_phase_index', '_data_cache')
     _index_caches = {}
@@ -262,8 +256,6 @@ class MaterialIndexer(Indexer):
     
     def copy_like(self, other):
         self._data[:] = other._data
-    
-    _set_chemicals = ChemicalIndexer._set_chemicals
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(sorted(phases))
@@ -294,7 +286,7 @@ class MaterialIndexer(Indexer):
     @classmethod
     def blank(cls, phases, chemicals=None):
         self = _new(cls)
-        self._set_chemicals(chemicals)
+        self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
         shape = (len(self._phases), self._chemicals.size)
@@ -305,7 +297,7 @@ class MaterialIndexer(Indexer):
     @classmethod
     def from_data(cls, data, phases, chemicals=None):
         self = _new(cls)
-        self._set_chemicals(chemicals)
+        self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
         if settings._debug:
@@ -326,8 +318,6 @@ class MaterialIndexer(Indexer):
     @property
     def phases(self):
         return self._phases
-    
-    chemicals = ChemicalIndexer.chemicals
     
     def to_chemical_indexer(self, phase=NoPhase):
         return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals)

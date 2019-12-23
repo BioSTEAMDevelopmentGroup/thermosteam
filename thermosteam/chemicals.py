@@ -7,6 +7,7 @@ Created on Sat Nov 23 09:41:02 2019
 from .utils import read_only
 from .exceptions import UndefinedChemical
 from .chemical import Chemical
+from .settings import settings
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
@@ -17,6 +18,20 @@ setattr = object.__setattr__
 def must_compile(*args, **kwargs):
     raise TypeError("method valid only for compiled chemicals; "
                     "run <chemicals>.compile() to compile")
+
+# %% Decorator for chemicals users
+
+def chemicals_user(cls):
+    cls._load_chemicals = _load_chemicals
+    cls.chemicals = chemicals
+
+@property
+def chemicals(self):
+    return self._chemicals
+
+def _load_chemicals(self, chemicals):
+    self._chemicals = settings.get_chemicals(chemicals)
+    return chemicals
 
 # %% Chemicals
 

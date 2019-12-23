@@ -11,10 +11,10 @@ from . import functional as fn
 from .base import units_of_measure as thermo_units
 from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
-from .settings import settings
 from .thermal_condition import ThermalCondition
 from .registry import registered
 from .utils import Cache, assert_same_chemicals
+from .thermo import thermo_user
 
 __all__ = ('Stream', )
 
@@ -26,6 +26,7 @@ mass_units = index.ChemicalMassFlowIndexer.units
 vol_units = index.ChemicalVolumetricFlowIndexer.units
 
 # %%
+@thermo_user
 @registered(ticket_name='s')
 class Stream:
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
@@ -41,7 +42,7 @@ class Stream:
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units=None,
                  price=0., thermo=None, **chemical_flows):
         self._TP = ThermalCondition(T, P)
-        self._thermo = thermo = thermo or settings.get_thermo(thermo)
+        thermo = self._load_thermo(thermo)
         self._load_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
         if units:
@@ -119,16 +120,6 @@ class Stream:
         setattr(self, name, value / factor)
     
     ### Stream data ###
-    
-    @property
-    def thermo(self):
-        return self._thermo
-    @property
-    def chemicals(self):
-        return self._thermo.chemicals
-    @property
-    def mixture(self):
-        return self._thermo.mixture
 
     @property
     def thermal_condition(self):
@@ -304,7 +295,7 @@ class Stream:
     ### Stream methods ###
     
     def mix_from(self, others):
-        if settings._debug: assert_same_chemicals(self, others)
+        assert_same_chemicals(self, others)
         isa = isinstance
         self.mol[:] = sum([i.mol if isa(i, Stream) else i.mol.sum(0) for i in others])
         self.H = sum([i.H for i in others])
@@ -315,8 +306,7 @@ class Stream:
         s2.mol[:] = mol - dummy
         
     def link(self, other, TP=True, flow=True, phase=True):
-        if settings._debug:
-            assert isinstance(other, self.__class__), "other must be of same type to link with"
+        assert isinstance(other, self.__class__), "other must be of same type to link with"
         
         if TP and flow and phase:
             self._imol._data_cache = other._imol._data_cache

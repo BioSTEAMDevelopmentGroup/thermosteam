@@ -5,7 +5,7 @@ Created on Fri Jun 28 19:23:52 2019
 @author: yoelr
 """
 from . import _parse as prs
-from ..settings import settings
+from ..chemicals import chemicals_user
 import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
@@ -14,6 +14,7 @@ def stoi2str(stoi, chemicals):
     """Parse a stoichiometric array and chemicals to a reaction definition."""
     return f"{prs.arr2str(stoi, chemicals)}"
 
+@chemicals_user
 class Reaction:
     """Create a Reaction object which defines a stoichiometric reaction and conversion. When called, it returns the change in material due to the reaction.
     
@@ -30,7 +31,8 @@ class Reaction:
         Reactant conversion (fraction).
         
     chemicals=None : Chemicals, defaults to settings.chemicals.
-        
+        Chemicals corresponing to each entry in the stoichiometry array.
+    
     Examples
     --------
     >>> import thermosteam as tmo
@@ -51,7 +53,7 @@ class Reaction:
     """
     __slots__ = ('_chemicals', '_Xindex', '_stoi', '_X')
     def __init__(self, reaction, reactant, X, chemicals=None):
-        self._chemicals = chemicals = settings.get_chemicals(chemicals)
+        chemicals = self._load_chemicals(chemicals)
         self._stoi = prs.str2arr(reaction, chemicals)
         self._Xindex = self._chemicals.index(reactant)
         self._stoi *= 1/-(self._stoi[self._Xindex])
@@ -137,10 +139,6 @@ class Reaction:
     def X(self, X):
         self._X = X
     
-    @property
-    def chemicals(self):
-        """Chemicals corresponing to each entry in the stoichiometry array."""
-        return self._chemicals
     @property
     def stoichiometry(self):
         """[array] Stoichiometry coefficients."""

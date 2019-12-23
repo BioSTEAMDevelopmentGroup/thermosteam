@@ -12,6 +12,7 @@ from .settings import settings
 
 __all__ = ('Thermo',)
 
+
 @cucumber # Just means you can pickle it
 @read_only
 class Thermo:
@@ -42,3 +43,26 @@ class Thermo:
     def __repr__(self):
         IDs = [i for i in self.chemicals.IDs]
         return f"{type(self).__name__}([{', '.join(IDs)}])"
+    
+
+def thermo_user(cls):
+    cls._load_thermo = _load_thermo
+    cls.thermo = thermo
+    cls.chemicals = chemicals
+    cls.mixture = mixture
+    return cls
+    
+def _load_thermo(self, thermo):
+    self._thermo = settings.get_thermo(thermo)
+
+@property
+def thermo(self):
+    return self._thermo
+@property
+def chemicals(self):
+    return self._thermo.chemicals
+@property
+def mixture(self):
+    return self._thermo.mixture
+    
+    
