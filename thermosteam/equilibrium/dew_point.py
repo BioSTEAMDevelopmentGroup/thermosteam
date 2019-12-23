@@ -13,8 +13,26 @@ from ..settings import settings
 
 __all__ = ('DewPoint',)
 
+# %% Dew point values container
+
+class DewPointValues:
+    __slots__ = ('T', 'P', 'IDs', 'z', 'x')
+    
+    def __init__(self, T, P, IDs, z, x):
+        self.T = T
+        self.P = P
+        self.IDs = IDs
+        self.z = z
+        self.x = x
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, x={self.y})"
+
+
+# %% Dew point calculation
+
 class DewPoint:
-    __slots__ = ('chemicals', 'phi', 'gamma',
+    __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
@@ -30,6 +48,7 @@ class DewPoint:
             if bp:
                 fill_like(self, bp, self.__slots__[:-3])
             else:
+                self.IDs = [i.ID for i in chemicals]
                 self.gamma = thermo.Gamma(chemicals)
                 self.phi = thermo.Phi(chemicals)
                 self.pcf = thermo.PCF(chemicals)
@@ -52,11 +71,12 @@ class DewPoint:
     def __call__(self, z, *, T=None, P=None):
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            return self.solve_Px(z, T)
+            P, x = self.solve_Px(z, T)
         elif P:
-            return self.solve_Tx(z, P)
+            T, x = self.solve_Tx(z, P)
         else:
             raise ValueError("must specify either T or P")
+        return DewPointValues(T, P, self.IDs, z, x)
     
     def solve_Tx(self, z, P):
         """Dew point given composition and pressure.

@@ -82,7 +82,11 @@ class Chemicals:
         
     def retrieve(self, IDs):
         dct = self.__dict__
-        return [dct[i] for i in IDs]
+        try:
+            return [dct[i] for i in IDs]
+        except KeyError:
+            for ID in IDs:
+                if ID not in dct: raise UndefinedChemical(ID)
     
     def append(self, chemical):
         """Append a Chemical."""

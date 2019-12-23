@@ -10,10 +10,28 @@ from .solve_composition import solve_y
 from ..utils import fill_like
 from ..settings import settings
 
-__all__ = ('BubblePoint',)
+__all__ = ('BubblePoint', 'BubblePointValues')
+
+# %% Bubble point values container
+
+class BubblePointValues:
+    __slots__ = ('T', 'P', 'IDs', 'z', 'y')
+    
+    def __init__(self, T, P, IDs, z, y):
+        self.T = T
+        self.P = P
+        self.IDs = IDs
+        self.z = z
+        self.y = y
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, y={self.y})"
+
+
+# %% Bubble point calculation
 
 class BubblePoint:
-    __slots__ = ('chemicals', 'gamma', 'phi', 'pcf',
+    __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'P', 'T', 'y', 'Psats', 'Tbs')
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
@@ -26,6 +44,7 @@ class BubblePoint:
             other = cached[key]
             fill_like(self, other, self.__slots__)
         else:
+            self.IDs = tuple([i.ID for i in chemicals])
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
@@ -51,11 +70,12 @@ class BubblePoint:
     def __call__(self, z, *, T=None, P=None):
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            return self.solve_Py(z, T)
+            P, y = self.solve_Py(z, T)
         elif P:
-            return self.solve_Ty(z, P)
+            T, y = self.solve_Ty(z, P)
         else:
             raise ValueError("must specify either T or P")
+        return BubblePointValues(T, P, self.IDs, z, y)
     
     def solve_Ty(self, z, P):
         """Bubble point at given composition and pressure
