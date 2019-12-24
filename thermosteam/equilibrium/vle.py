@@ -342,7 +342,7 @@ class VLE:
             # Set equilibrium objects
             thermo = self._thermo
             self._bubble_point = bp = self._bubble_point_cache.reload(eq_chems, thermo)
-            self._dew_point = self._dew_point_cache.reload(eq_chems, thermo, bp)
+            self._dew_point = self._dew_point_cache.reload(eq_chems, thermo)
             self._pcf = bp.pcf
             self._gamma = bp.gamma
             self._phi = bp.phi

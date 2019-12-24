@@ -21,7 +21,6 @@ class MultiStream(Stream):
         self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
-        self._streams = {}
         self.price = price
         if units:
             indexer, factor = self._get_indexer_and_factor(units)
@@ -45,6 +44,7 @@ class MultiStream(Stream):
         
     def _init_cache(self):
         super()._init_cache()
+        self._streams = {}
         self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)

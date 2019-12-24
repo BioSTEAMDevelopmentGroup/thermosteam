@@ -38,7 +38,7 @@ class Stream:
                                  flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                  N=5)
 
-    _index_cache = {}
+    _indexer_cache = {}
 
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units=None,
                  price=0., thermo=None, **chemical_flows):
@@ -76,7 +76,7 @@ class Stream:
         self._dew_point_cache = Cache(eq.DewPoint)
 
     def _get_indexer_and_factor(self, units):
-        cache = self._index_cache
+        cache = self._indexer_cache
         if units in cache:
             name, factor = cache[units]
         else:
