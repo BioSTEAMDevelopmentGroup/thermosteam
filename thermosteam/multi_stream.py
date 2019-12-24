@@ -20,16 +20,15 @@ class MultiStream(Stream):
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
         self._thermo = thermo = thermo or settings.get_thermo(thermo)
-        self._load_indexer(flow, phases, thermo.chemicals, phase_flows)
+        self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
         self._streams = {}
-        self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
         self.price = price
         if units:
             indexer, factor = self._get_indexer_and_factor(units)
             indexer[...] = self.mol * factor
         self._register(ID)
-         
-    def _load_indexer(self, flow, phases, chemicals, phase_flows):
+        
+    def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow is ():
             if phase_flows:
                 imol = MolarFlowIndexer(phases, chemicals=chemicals, **phase_flows)
@@ -43,6 +42,12 @@ class MultiStream(Stream):
             else:
                 imol = MolarFlowIndexer.from_data(flow, phases, chemicals)
         self._imol = imol
+        
+    def _init_cache(self):
+        super()._init_cache()
+        self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo,
+                                bubble_point_cache=self._bubble_point_cache,
+                                dew_point_cache=self._dew_point_cache)
         
     def __getitem__(self, phase):
         streams = self._streams
@@ -80,7 +85,7 @@ class MultiStream(Stream):
         phases = sorted(phases)
         if phases != self.phases:
             self._imol = self._imol.to_material_array(phases)
-            self._vle = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
+            self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
     
     ### Net flow properties ###
     
@@ -169,43 +174,16 @@ class MultiStream(Stream):
         self._TP = other._TP
         self._imol._data = other._imol._data
         self._streams = other._streams
-        self._vle = other._vle
-        self._data_cache = other._data_cache
-            
-    def unlink(self):
-        imol = self._imol
-        imol._data_cache.clear()
-        self._TP = TP = self._TP.copy()
-        imol._data = self._imol._data.copy()
-        self._vle = Cache(VLE, imol, TP, thermo=self._thermo)
-    
-    def copy(self):
-        cls = self.__class__
-        new = cls.__new__(cls)
-        new._ID = None
-        new._thermo = thermo = self._thermo
-        new._imol = imol = self._imol.copy()
-        new._TP = TP = self._TP.copy()
-        new._vle = self._vle = Cache(VLE, imol, TP, thermo=thermo)
-        return new
+        self._vle_cache = other._vle_cache
+        self._dew_point_cache = other._dew_point_cache
+        self._bubble_point_cache = other._bubble_point_cache
+        self._imol._data_cache = other._imol._data_cache
     
     ### Equilibrium ###
     
     @property
     def vle(self):
-        return self._vle()
-    
-    @property
-    def z_equilibrium_chemicals(self):
-        mol = self.mol.sum(0)
-        chemicals = self.chemicals
-        indices = chemicals.equilibrium_indices(mol != 0)
-        flow = mol[indices]
-        netflow = flow.sum()
-        assert netflow, "no equilibrium chemicals present"
-        z = flow / netflow  
-        chemicals_tuple = chemicals.tuple
-        return z, [chemicals_tuple[i] for i in indices]
+        return self._vle_cache.retrieve()
     
     @property
     def equilibrium_chemicals(self):

@@ -10,6 +10,7 @@ from ..settings import settings
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
 from ..thermal_condition import ThermalCondition
+from ..utils import Cache
 from numba import njit
 import numpy as np
 
@@ -188,7 +189,8 @@ class VLE:
                  '_v',  '_index', '_massnet', '_chemical',
                  '_update_V', '_mol', '_molnet', '_N', '_solve_V',
                  '_zs', '_Ks', '_Psat_over_P_phi', '_IDs', '_LNK', '_HNK',
-                 '_nonzero', '_LNK_index', '_HNK_index')
+                 '_nonzero', '_LNK_index', '_HNK_index',
+                 '_dew_point_cache', '_bubble_point_cache')
     
     solver = staticmethod(IQ_interpolation)
     itersolver = staticmethod(wegstein)
@@ -255,7 +257,8 @@ class VLE:
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
     def __init__(self, imol, thermal_condition=None,
-                 IDs=None, LNK=None, HNK=None, thermo=None):
+                 IDs=None, LNK=None, HNK=None, thermo=None,
+                 bubble_point_cache=None, dew_point_cache=None):
         """Create a VLE object that performs vapor-liquid equilibrium when called.
         
         Parameters
@@ -276,6 +279,8 @@ class VLE:
         self._IDs = IDs
         self._LNK = LNK
         self._HNK = HNK
+        self._dew_point_cache = dew_point_cache or Cache(DewPoint)
+        self._bubble_point_cache = bubble_point_cache or Cache(BubblePoint)
         self._thermo = thermo = settings.get_thermo(thermo)
         self._mixture = thermo.mixture
         self._imol = imol
@@ -336,8 +341,8 @@ class VLE:
             
             # Set equilibrium objects
             thermo = self._thermo
-            self._bubble_point = bp = BubblePoint(eq_chems, thermo)
-            self._dew_point = DewPoint(eq_chems, thermo, bp)
+            self._bubble_point = bp = self._bubble_point_cache.reload(eq_chems, thermo)
+            self._dew_point = self._dew_point_cache.reload(eq_chems, thermo, bp)
             self._pcf = bp.pcf
             self._gamma = bp.gamma
             self._phi = bp.phi

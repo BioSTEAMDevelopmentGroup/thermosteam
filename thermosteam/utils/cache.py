@@ -16,11 +16,20 @@ class Cache:
         self.kwargs = kwargs
         self.obj = None
         
-    def __call__(self):
+    def retrieve(self):
         obj = self.obj
         if not obj:
             self.obj = obj = self.loader(*self.args, **self.kwargs)
         return obj
     
+    def reload(self, *args, **kwargs):
+        if args == self.args and kwargs == self.kwargs:
+            obj = self.retrieve()
+        else:
+            self.args = args
+            self.kwargs = kwargs
+            self.obj = obj = self.loader(*self.args, **self.kwargs)
+        return obj
+    
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self.loader)}, {repr_args(self.args)}, {repr_kwargs(self.kwargs)})"
+        return f"{type(self).__name__}({repr(self.loader)}{repr_args(self.args)}{repr_kwargs(self.kwargs)})"

@@ -10,10 +10,16 @@ def repr_IDs_data(IDs, data, dlim=", ", start=None):
     return (start or dlim) + dlim.join([f"{ID}={i:.4g}" for ID, i in zip(IDs, data) if i])
 
 def repr_kwargs(kwargs, dlim=", ", start=None):
-    return (start or dlim) + dlim.join([f"{key}={value}" for key, value in kwargs.items()])
+    if kwargs:
+        return (start or dlim) + dlim.join([f"{key}={value}" for key, value in kwargs.items()])
+    else:
+        return ""
 
 def repr_args(args, dlim=", ", start=None):
-    return (start or dlim) + dlim.join([repr(value) for value in args])
+    if args:
+        return (start or dlim) + dlim.join([repr(value) for value in args])
+    else:
+        return ""
 
 def repr_kwarg(name, value, spec=None, dlim=", "):
     if value:

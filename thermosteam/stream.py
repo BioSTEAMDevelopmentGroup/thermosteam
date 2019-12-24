@@ -30,7 +30,8 @@ vol_units = index.ChemicalVolumetricFlowIndexer.units
 @registered(ticket_name='s')
 class Stream:
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
-                 '_vle', '_sink', '_source', 'price')
+                 '_bubble_point_cache', '_dew_point_cache',
+                 '_vle_cache', '_sink', '_source', 'price')
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = DisplayUnits(T='K', P='Pa',
@@ -43,15 +44,16 @@ class Stream:
                  price=0., thermo=None, **chemical_flows):
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
-        self._load_indexer(flow, phase, thermo.chemicals, chemical_flows)
+        self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
         if units:
             indexer, factor = self._get_indexer_and_factor(units)
             indexer[...] = self.mol * factor
         self._sink = self._source = None # For BioSTEAM
+        self._init_cache()
         self._register(ID)
     
-    def _load_indexer(self, flow, phase, chemicals, chemical_flows):
+    def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
         if flow is ():
             if chemical_flows:
@@ -68,6 +70,10 @@ class Stream:
                 imol = index.ChemicalMolarFlowIndexer.from_data(
                     np.asarray(flow, dtype=float), phase, chemicals)
         self._imol = imol
+
+    def _init_cache(self):
+        self._bubble_point_cache = Cache(eq.BubblePoint)
+        self._dew_point_cache = Cache(eq.DewPoint)
 
     def _get_indexer_and_factor(self, units):
         cache = self._index_cache
@@ -331,6 +337,7 @@ class Stream:
         self._TP = self._TP.copy()
         self._imol._data = self._imol._data.copy()
         self._imol._phase = self._imol._phase.copy()
+        self._init_cache()
     
     def copy_like(self, other):
         self._imol.copy_like(other._imol)
@@ -343,6 +350,7 @@ class Stream:
         new._thermo = self._thermo
         new._imol = self._imol.copy()
         new._TP = self._TP.copy()
+        new._init_cache()
         return new
     __copy__ = copy
     
@@ -354,6 +362,7 @@ class Stream:
         new._imol = imol = self._imol._copy_without_data(self._imol)
         imol._data = self._imol._data
         new._TP = self._TP.copy()
+        new._init_cache()
         return new
     
     def empty(self):
@@ -375,14 +384,14 @@ class Stream:
     
     def _get_bubble_point_and_z(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
-        bp = eq.BubblePoint(chemicals, self._thermo)
+        bp = self._bubble_point_cache.reload(chemicals, self._thermo)
         z = self.imol[bp.IDs]
         z /= z.sum()
         return bp, z
     
     def _get_dew_point_and_z(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
-        dp = eq.DewPoint(chemicals, self._thermo)
+        dp = self._dew_point_cache.reload(chemicals, self._thermo)
         z = self.imol[dp.IDs]
         z /= z.sum()
         return dp, z
@@ -412,7 +421,9 @@ class Stream:
     def phases(self, phases):
         self.__class__ = multi_stream.MultiStream
         self._imol = self._imol.to_material_indexer(phases)
-        self._vle = Cache(eq.VLE, self._imol, self._TP, thermo=self._thermo)
+        self._vle_cache = Cache(eq.VLE, self._imol, self._TP, thermo=self._thermo,
+                                bubble_point_cache=self._bubble_point_cache,
+                                dew_point_cache=self._dew_point_cache)
     
     ### Representation ###
     
