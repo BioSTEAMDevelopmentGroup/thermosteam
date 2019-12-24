@@ -53,7 +53,8 @@ def thermo_user(cls):
     return cls
     
 def _load_thermo(self, thermo):
-    self._thermo = settings.get_thermo(thermo)
+    self._thermo = thermo = settings.get_thermo(thermo)
+    return thermo
 
 @property
 def thermo(self):

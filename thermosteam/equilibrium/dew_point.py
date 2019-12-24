@@ -48,7 +48,7 @@ class DewPoint:
             if bp:
                 fill_like(self, bp, self.__slots__[:-3])
             else:
-                self.IDs = [i.ID for i in chemicals]
+                self.IDs = tuple([i.ID for i in chemicals])
                 self.gamma = thermo.Gamma(chemicals)
                 self.phi = thermo.Phi(chemicals)
                 self.pcf = thermo.PCF(chemicals)

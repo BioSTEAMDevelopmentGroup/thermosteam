@@ -194,19 +194,25 @@ class Stream:
         return self.mol.sum()
     @F_mol.setter
     def F_mol(self, value):
-        self.mol[:] *= value/self.F_mol
+        F_mol = self.F_mol
+        if not F_mol: raise AttributeError("undefined composition; cannot set flow rate")
+        self.mol[:] *= value/F_mol
     @property
     def F_mass(self):
         return (self.chemicals.MW * self.mol).sum()
     @F_mass.setter
     def F_mass(self, value):
-        self.mol[:] *= value/self.F_mass
+        F_mass = self.F_mass
+        if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
+        self.mol[:] *= value/F_mass
     @property
     def F_vol(self):
         return self.mixture.V_at_TP(self.phase, self.mol, self._TP)
     @F_vol.setter
     def F_vol(self, value):
-        self.vol[:] *= value/self.F_vol
+        F_vol = self.F_vol
+        if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
+        self.vol[:] *= value/F_vol
     
     @property
     def H(self):
@@ -382,19 +388,19 @@ class Stream:
         return dp, z
     
     def bubble_point_at_T(self, IDs=None, T=None):
-        bp, z = self._bubble_point_and_z(IDs)
+        bp, z = self._get_bubble_point_and_z(IDs)
         return bp(z, T=T or self.T)
     
     def bubble_point_at_P(self, IDs=None, P=None):
-        bp, z = self._bubble_point_and_z(IDs)
+        bp, z = self._get_bubble_point_and_z(IDs)
         return bp(z, P=P or self.P)
     
     def dew_point_at_T(self, IDs=None, T=None):
-        dp, z = self._dew_point_and_z(IDs)
+        dp, z = self._get_dew_point_and_z(IDs)
         return dp(z, T=T or self.T)
     
     def dew_point_at_P(self, IDs=None, P=None):
-        dp, z = self._dew_point_and_z(IDs)
+        dp, z = self._get_dew_point_and_z(IDs)
         return dp(z, P=P or self.P)
     
     ### Casting ###

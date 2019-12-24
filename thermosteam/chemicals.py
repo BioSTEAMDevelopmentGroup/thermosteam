@@ -24,6 +24,7 @@ def must_compile(*args, **kwargs):
 def chemicals_user(cls):
     cls._load_chemicals = _load_chemicals
     cls.chemicals = chemicals
+    return cls
 
 @property
 def chemicals(self):
