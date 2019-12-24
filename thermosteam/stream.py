@@ -361,55 +361,41 @@ class Stream:
         return self.vle
 
     @property
-    def z_equilibrium_chemicals(self):
-        mol = self.mol
-        chemicals = self.chemicals
-        indices = chemicals.equilibrium_indices(mol != 0)
-        flow = mol[indices]
-        netflow = flow.sum()
-        assert netflow, "no equilibrium chemicals present"
-        z = flow / netflow  
-        chemicals_tuple = chemicals.tuple
-        return z, [chemicals_tuple[i] for i in indices]
-    
-    @property
     def equilibrim_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.equilibrium_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
-    def bubble_point(self, IDs=None):
+    def _get_bubble_point_and_z(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
-        return eq.BubblePoint(chemicals, self._thermo)
-    
-    def dew_point(self, IDs=None):
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
-        return eq.DewPoint(chemicals, self._thermo)
-    
-    def bubble_point_at_constant_T(self, IDs=None):
-        bp = self.bubble_point(IDs)
+        bp = eq.BubblePoint(chemicals, self._thermo)
         z = self.imol[bp.IDs]
         z /= z.sum()
-        return bp(z, T=self.T)
+        return bp, z
     
-    def bubble_point_at_constant_P(self, IDs=None):
-        bp = self.bubble_point(IDs)
-        z = self.imol[bp.IDs]
-        z /= z.sum()
-        return bp(z, P=self.P)
-    
-    def dew_point_at_constant_T(self, IDs=None):
-        dp = self.dew_point(IDs)
+    def _get_dew_point_and_z(self, IDs=None):
+        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
+        dp = eq.DewPoint(chemicals, self._thermo)
         z = self.imol[dp.IDs]
         z /= z.sum()
-        return dp(z, T=self.T)
+        return dp, z
     
-    def dew_point_at_constant_P(self, IDs=None):
-        dp = self.dew_point(IDs)
-        z = self.imol[dp.IDs]
-        z /= z.sum()
-        return dp(z, P=self.P)
+    def bubble_point_at_T(self, IDs=None, T=None):
+        bp, z = self._bubble_point_and_z(IDs)
+        return bp(z, T=T or self.T)
+    
+    def bubble_point_at_P(self, IDs=None, P=None):
+        bp, z = self._bubble_point_and_z(IDs)
+        return bp(z, P=P or self.P)
+    
+    def dew_point_at_T(self, IDs=None, T=None):
+        dp, z = self._dew_point_and_z(IDs)
+        return dp(z, T=T or self.T)
+    
+    def dew_point_at_P(self, IDs=None, P=None):
+        dp, z = self._dew_point_and_z(IDs)
+        return dp(z, P=P or self.P)
     
     ### Casting ###
     
