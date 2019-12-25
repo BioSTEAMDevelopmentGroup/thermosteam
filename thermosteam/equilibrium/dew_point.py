@@ -143,7 +143,7 @@ class DewPoint:
  
        """
         z = asarray(z)
-        Psats = array([i(T) for i in self.Psats])
+        Psats = array([i(T) for i in self.Psats], dtype=float)
         z_over_Psats = z/Psats
         args = (T, z, z_over_Psats)
         self.T = T

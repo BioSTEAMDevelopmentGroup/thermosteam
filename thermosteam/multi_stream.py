@@ -23,8 +23,9 @@ class MultiStream(Stream):
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
         self.price = price
         if units:
-            indexer, factor = self._get_indexer_and_factor(units)
-            indexer[...] = self.mol * factor
+            name, factor = self._get_flow_name_and_factor(units)
+            flow = getattr(self, name)
+            flow[:] = self.mol * factor
         self._register(ID)
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
@@ -68,11 +69,13 @@ class MultiStream(Stream):
     ### Property getters ###
     
     def get_flow(self, units, phase, IDs=...):
-        indexer, factor = self._get_indexer_and_factor(units)
+        name, factor = self._get_flow_name_and_factor(units)
+        indexer = getattr(self, 'i' + name)
         return factor * indexer[phase, IDs]
     
     def set_flow(self, data, units, phase, IDs=...):
-        indexer, factor = self._get_indexer_and_factor(units)
+        name, factor = self._get_flow_name_and_factor(units)
+        indexer = getattr(self, 'i' + name)
         indexer[phase, IDs] = np.asarray(data, dtype=float) / factor
     
     ### Stream data ###
@@ -223,14 +226,15 @@ class MultiStream(Stream):
         all_lengths = [len(i) for i in all_IDs]
         maxlen = max(all_lengths + [8]) 
 
-        index, factor = self._get_indexer_and_factor(flow_units)
+        name, factor = self._get_flow_name_and_factor(flow_units)
+        indexer = getattr(self, 'i' + name)
         first_line = f' flow ({flow_units}):'
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases
         phases_flowrates_info = ''
         for phase in self.phases:
-            phase_data = factor * index[phase, all_IDs] 
+            phase_data = factor * indexer[phase, all_IDs] 
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue
         

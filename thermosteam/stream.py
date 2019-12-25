@@ -38,7 +38,7 @@ class Stream:
                                  flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                  N=5)
 
-    _indexer_cache = {}
+    _flow_cache = {}
 
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units=None,
                  price=0., thermo=None, **chemical_flows):
@@ -47,8 +47,9 @@ class Stream:
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
         if units:
-            indexer, factor = self._get_indexer_and_factor(units)
-            indexer[...] = self.mol * factor
+            name, factor = self._get_flow_name_and_factor(units)
+            flow = getattr(self, name)
+            flow[:] = self.mol * factor
         self._sink = self._source = None # For BioSTEAM
         self._init_cache()
         self._register(ID)
@@ -75,36 +76,48 @@ class Stream:
         self._bubble_point_cache = Cache(eq.BubblePoint)
         self._dew_point_cache = Cache(eq.DewPoint)
 
-    def _get_indexer_and_factor(self, units):
-        cache = self._indexer_cache
+    @classmethod
+    def _get_flow_name_and_factor(cls, units):
+        cache = cls._flow_cache
         if units in cache:
             name, factor = cache[units]
         else:
             dimensionality = thermo_units.get_dimensionality(units)
             if dimensionality == mol_units.dimensionality:
-                name = 'imol'
+                name = 'mol'
                 factor = mol_units.conversion_factor(units)
             elif dimensionality == mass_units.dimensionality:
-                name = 'imass'
+                name = 'mass'
                 factor = mass_units.conversion_factor(units)
             elif dimensionality == vol_units.dimensionality:
-                name = 'ivol'
+                name = 'vol'
                 factor = vol_units.conversion_factor(units)
             else:
                 raise DimensionError(f"dimensions for flow units must be in molar, "
                                      f"mass or volumetric flow rates, not '{dimensionality}'")
             cache[units] = name, factor
-        return getattr(self, name), factor
+        return name, factor
 
     ### Property getters ###
 
     def get_flow(self, units, IDs=...):
-        indexer, factor = self._get_indexer_and_factor(units)
+        name, factor = self._get_flow_name_and_factor(units)
+        indexer = getattr(self, 'i' + name)
         return factor * indexer[IDs]
     
     def set_flow(self, data, units, IDs=...):
-        indexer, factor = self._get_indexer_and_factor(units)
+        name, factor = self._get_flow_name_and_factor(units)
+        indexer = getattr(self, 'i' + name)
         indexer[IDs] = np.asarray(data, dtype=float) / factor
+    
+    def get_total_flow(self, units):
+        name, factor = self._get_flow_name_and_factor(units)
+        flow = getattr(self, 'F_' + name)
+        return factor * flow
+    
+    def set_total_flow(self, value, units):
+        name, factor = self._get_flow_name_and_factor(units)
+        setattr(self, 'F_' + name, value / factor)
     
     def get_property(self, name, units):
         units_dct = thermo_units.stream_units_of_measure
@@ -451,12 +464,13 @@ class Stream:
             return basic_info + ' flow: 0' 
         
         # Start of third line (flow rates)
-        index, factor = self._get_indexer_and_factor(flow_units)
+        name, factor = self._get_flow_name_and_factor(flow_units)
+        indexer = getattr(self, 'i' + name)
         beginning = f' flow ({flow_units}): '
             
         # Remaining lines (all flow rates)
         new_line_spaces = len(beginning) * ' '
-        flow_array = factor * index[IDs]
+        flow_array = factor * indexer[IDs]
         flowrates = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1
