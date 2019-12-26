@@ -97,7 +97,7 @@ class BubblePoint:
         Examples
         --------
         >>> from thermotree import Chemicals, BubblePoint
-        >>> bp = BubblePoint(*Chemicals('Ethanol', 'Water'))
+        >>> bp = BubblePoint(Chemicals('Ethanol', 'Water'))
         >>> bp.solve_Ty(z=(0.6, 0.4), P=101325)
         (352.2820850833474, array([0.703, 0.297]))
         
@@ -111,7 +111,7 @@ class BubblePoint:
             self.T = self.rootsolver(self._T_error, T, T+0.01,
                                      1e-6, 5e-8, args)
         except:
-            self.x = z.copy()
+            self.y = z.copy()
             T = (z * self.Tbs).sum()
             self.T = self.rootsolver(self._T_error, T, T+0.01,
                                      1e-6, 5e-8, args)

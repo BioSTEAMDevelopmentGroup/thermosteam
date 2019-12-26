@@ -8,7 +8,7 @@ Created on Mon Dec  2 01:41:50 2019
 from .base import Units
 from .utils import repr_IDs_data, repr_couples
 from .settings import settings
-from .exceptions import UndefinedPhase
+from .exceptions import UndefinedPhase, UndefinedChemical, UndefinedPhaseOrChemical
 from .phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
 from .chemicals import chemicals_user
@@ -93,7 +93,6 @@ class Indexer:
 @chemicals_user
 class ChemicalIndexer(Indexer):
     __slots__ = ('_chemicals', '_phase', '_data_cache')
-    _index_caches = {}
     
     def __new__(cls, phase, units=None, chemicals=None, **IDdata):
         if IDdata:
@@ -107,11 +106,7 @@ class ChemicalIndexer(Indexer):
         return self.from_data, (self._data, self._chemicals)
     
     def _set_cache(self):
-        caches = self._index_caches
-        try:
-            self._index_cache = caches[self._chemicals]
-        except KeyError:
-            self._index_cache = caches[self._chemicals] = {}
+        self._index_cache = self._chemicals._index_cache
     
     def to_material_indexer(self, phases=()):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -148,8 +143,7 @@ class ChemicalIndexer(Indexer):
         self._set_cache()
         self._phase = Phase.convert(phase)
         if settings._debug:
-            assert isa(data, np.ndarray) and data.ndim == 1, (
-                                                    'data must be a 1d numpy array')
+            assert data.ndim == 1, 'data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
         self._data = data
@@ -301,8 +295,7 @@ class MaterialIndexer(Indexer):
         self._set_phases(phases)
         self._set_cache()
         if settings._debug:
-            assert isa(data, np.ndarray) and data.ndim == 2, (
-                                                    'data must be an 2d numpy array')
+            assert data.ndim == 2, ('data must be an 2d numpy array')
             M_phases = len(self._phases)
             N_chemicals = self._chemicals.size
             M, N = data.shape
@@ -336,12 +329,10 @@ class MaterialIndexer(Indexer):
                 phase, IDs = phase_IDs
             except:
                 raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
-                                  "where phase is a (str, or ellipsis), "
+                                  "where phase is a (str, ellipsis, or missing), "
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
-            if isa(IDs, str):
-                IDs_index = self._chemicals.index(IDs)
-            elif isa(IDs, tuple):
-                IDs_index = self._chemicals.indices(IDs)
+            if isa(IDs, (str, tuple)):
+                IDs_index = self._chemicals.get_index(IDs)
             elif IDs is ...:
                 IDs_index = IDs
             else:
@@ -354,6 +345,7 @@ class MaterialIndexer(Indexer):
                 raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
                                   "where phase is a (str, or ellipsis), "
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
+            
         return index
     
     def _get_phase_index(self, phase):
@@ -555,7 +547,7 @@ def by_volume(self, TP):
         for i, phase in enumerate(phases):
             for j, chem in enumerate(chemicals):
                 index = i, j
-                phase_name = settings._phase_name[phase]
+                phase_name = settings._phase_names[phase]
                 vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", mol,
                                                                 index, chem.V, TP, phase)
         self._data_cache[TP] = \

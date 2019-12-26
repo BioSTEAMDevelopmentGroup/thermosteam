@@ -100,6 +100,9 @@ class Stream:
 
     ### Property getters ###
 
+    def get_index(self, IDs):
+        return self.chemicals.get_index(IDs)
+
     def get_flow(self, units, IDs=...):
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
@@ -210,12 +213,12 @@ class Stream:
     
     @property
     def F_mol(self):
-        return self.mol.sum()
+        return self._imol._data.sum()
     @F_mol.setter
     def F_mol(self, value):
         F_mol = self.F_mol
         if not F_mol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.mol[:] *= value/F_mol
+        self._imol._data[:] *= value/F_mol
     @property
     def F_mass(self):
         return (self.chemicals.MW * self.mol).sum()
@@ -223,7 +226,7 @@ class Stream:
     def F_mass(self, value):
         F_mass = self.F_mass
         if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
-        self.mol[:] *= value/F_mass
+        self.imol._data[:] *= value/F_mass
     @property
     def F_vol(self):
         return self.mixture.V_at_TP(self.phase, self.mol, self._TP)
@@ -231,7 +234,7 @@ class Stream:
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.vol[:] *= value/F_vol
+        self.ivol._data[:] *= value/F_vol
     
     @property
     def H(self):
@@ -263,15 +266,21 @@ class Stream:
     @property
     def z_mol(self):
         mol = self.mol
-        return mol / mol.sum()
+        z = mol / mol.sum()
+        z.setflags(0)
+        return z
     @property
     def z_mass(self):
         mass = self.chemicals.MW * self.mol
-        return mass / mass.sum()
+        z = mass / mass.sum()
+        z.setflags(0)
+        return z
     @property
     def z_vol(self):
         vol = self.vol.value
-        return vol / vol.sum()
+        z = vol / vol.sum()
+        z.setflags(0)
+        return z
     
     @property
     def MW(self):
@@ -321,8 +330,7 @@ class Stream:
     
     def mix_from(self, others):
         assert_same_chemicals(self, others)
-        isa = isinstance
-        self.mol[:] = sum([i.mol if isa(i, Stream) else i.mol.sum(0) for i in others])
+        self.mol[:] = sum([i.mol for i in others])
         self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
@@ -398,16 +406,12 @@ class Stream:
     def _get_bubble_point_and_z(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         bp = self._bubble_point_cache.reload(chemicals, self._thermo)
-        z = self.imol[bp.IDs]
-        z /= z.sum()
-        return bp, z
+        return bp, self.get_normalized_mol(bp.IDs)
     
     def _get_dew_point_and_z(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
-        z = self.imol[dp.IDs]
-        z /= z.sum()
-        return dp, z
+        return dp, self.get_normalized_mol(dp.IDs)
     
     def bubble_point_at_T(self, IDs=None, T=None):
         bp, z = self._get_bubble_point_and_z(IDs)
@@ -424,6 +428,21 @@ class Stream:
     def dew_point_at_P(self, IDs=None, P=None):
         dp, z = self._get_dew_point_and_z(IDs)
         return dp(z, P=P or self.P)
+    
+    def get_normalized_mol(self, IDs):
+        z = self.imol[IDs]
+        z /= z.sum()
+        return z
+    
+    def get_normalized_vol(self, IDs):
+        z = self.ivol[IDs]
+        z /= z.sum()
+        return z
+    
+    def get_normalized_mass(self, IDs):
+        z = self.imass[IDs]
+        z /= z.sum()
+        return z
     
     ### Casting ###
     

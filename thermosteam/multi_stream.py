@@ -24,8 +24,9 @@ class MultiStream(Stream):
         self.price = price
         if units:
             name, factor = self._get_flow_name_and_factor(units)
-            flow = getattr(self, name)
-            flow[:] = self.mol * factor
+            flow = getattr(self, 'i' + name)
+            flow.data[:] = self._imol._data * factor
+        self._init_cache()
         self._register(ID)
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
@@ -90,6 +91,24 @@ class MultiStream(Stream):
             self._imol = self._imol.to_material_array(phases)
             self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo)
     
+    ### Flow properties ###
+            
+    @property
+    def mol(self):
+        mol = self._imol._data.sum(0)
+        mol.setflags(0)
+        return mol
+    @property
+    def mass(self):
+        mass = self.mol * self.chemicals.MW
+        mass.setflags(0)
+        return mass
+    @property
+    def vol(self):
+        vol = self.ivol._data.sum(0)
+        vol.setflags(0)
+        return vol
+    
     ### Net flow properties ###
     
     @property
@@ -110,26 +129,15 @@ class MultiStream(Stream):
         return self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
     @F_vol.setter
     def F_vol(self, value):
-        self.vol[:] *= value/self.F_vol
+        F_vol = self.F_vol
+        if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
+        self.ivol._data[:] *= value/F_vol
     
     @property
     def Hvap(self):
         return self.mixture.Hvap_at_TP(self._imol['l'], self._TP)
     
     ### Composition properties ###
-    
-    @property
-    def z_mol(self):
-        mol = self.mol.sum(0)
-        return mol / mol.sum()
-    @property
-    def z_mass(self):
-        mass = (self.chemicals.MW * self.mol).sum(0)
-        return mass / mass.sum()
-    @property
-    def z_vol(self):
-        vol = self.vol.value.sum(0)
-        return vol / vol.sum()
     
     @property
     def V(self):
@@ -155,6 +163,21 @@ class MultiStream(Stream):
         
     ### Methods ###
         
+    def get_normalized_mol(self, IDs):
+        z = self.imol[..., IDs].sum(0)
+        z /= z.sum()
+        return z
+    
+    def get_normalized_vol(self, IDs):
+        z = self.ivol[..., IDs].sum(0)
+        z /= z.sum()
+        return z
+    
+    def get_normalized_mass(self, IDs):
+        z = self.imass[..., IDs].sum(0)
+        z /= z.sum()
+        return z
+    
     def mix_from(self, others):
         if settings._debug: assert_same_chemicals(self, others)
         multi = []; single = []; isa = isinstance
@@ -162,14 +185,9 @@ class MultiStream(Stream):
             (multi if isa(i, MultiStream) else single).append(i)
         self.empty()
         for i in single:
-            self.imol[i.phase] += i.mol    
-        self.mol[:] += sum([i.mol for i in multi])
+            self._imol[i.phase] += i.mol    
+        self._imol._data[:] += sum([i._imol._data for i in multi])
         self.H = sum([i.H for i in others])
-        
-    def split_to(self, s1, s2, split):
-        mol = self.mol.sum(0)
-        s1.mol[:] = dummy = mol * split
-        s2.mol[:] = mol - dummy
         
     def link(self, other):
         if settings._debug:
@@ -187,14 +205,6 @@ class MultiStream(Stream):
     @property
     def vle(self):
         return self._vle_cache.retrieve()
-    
-    @property
-    def equilibrium_chemicals(self):
-        chemicals = self.chemicals
-        chemicals_tuple = chemicals.tuple
-        mol = self.mol.sum(0)
-        indices = chemicals.equilibrium_indices(mol != 0)
-        return [chemicals_tuple[i] for i in indices]
     
     ### Casting ###
     
@@ -214,7 +224,7 @@ class MultiStream(Stream):
         from .material_indexer import nonzeros
         IDs = self.chemicals.IDs
         basic_info = self._basic_info()
-        all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol.sum(0))
+        all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol)
         all_IDs = tuple(all_IDs)
         T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
@@ -269,7 +279,7 @@ class MultiStream(Stream):
         from .utils import repr_kwarg, repr_couples
         IDs = self.chemicals.IDs
         phase_data = []
-        for phase, data in self.mol.iter_data():
+        for phase, data in self.imol.iter_data():
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")

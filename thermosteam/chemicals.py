@@ -164,6 +164,7 @@ class CompiledChemicals(Chemicals):
         dct['_islight'] = np.array([(i.Tb in light_values) for i in chemicals], dtype=bool)
         dct['_isheavy'] = np.array([(i.Tb in heavy_values) for i in chemicals])
         dct['_has_equilibrium'] = np.array([(i.Tb not in nonfinite) for i in chemicals])
+        dct['_index_cache'] = {}
     
     def subgroup(self, IDs):
         chemicals = self.retrieve(IDs)
@@ -284,6 +285,26 @@ class CompiledChemicals(Chemicals):
         except:
             for i in IDs:
                 if i not in dct: raise UndefinedChemical(i)     
+    
+    def get_index(self, key):
+        cache = self._index_cache
+        try: 
+            index = cache[key]
+        except KeyError: 
+            cache[key] = index = self._get_index(key)
+        except TypeError:
+            raise IndexError(f"only strings, tuples, and ellipsis are valid IDs")
+        return index
+    
+    def _get_index(self, IDs):
+        if isinstance(IDs, str):
+            return self.index(IDs)
+        elif isinstance(IDs, tuple):
+            return self.indices(IDs)
+        elif IDs is ...:
+            return IDs
+        else:
+            raise IndexError(f"only strings, tuples, and ellipsis are valid IDs")
     
     def __len__(self):
         return self.size
