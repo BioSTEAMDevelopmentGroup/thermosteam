@@ -26,6 +26,7 @@ class MultiStream(Stream):
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, 'i' + name)
             flow.data[:] = self._imol._data * factor
+        self._sink = self._source = None
         self._init_cache()
         self._register(ID)
         
@@ -126,12 +127,12 @@ class MultiStream(Stream):
         return self.mixture.xCn_at_TP(self._imol.iter_data(), self._TP)
     @property
     def F_vol(self):
-        return self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
+        return 1000. * self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.ivol._data[:] *= value/F_vol
+        self.ivol._data[:] *= value / F_vol / 1000.
     
     @property
     def Hvap(self):
@@ -189,7 +190,7 @@ class MultiStream(Stream):
         self._imol._data[:] += sum([i._imol._data for i in multi])
         self.H = sum([i.H for i in others])
         
-    def link(self, other):
+    def link_with(self, other):
         if settings._debug:
             assert isinstance(other, self.__class__), "other must be of same type to link with"
         self._TP = other._TP
@@ -210,7 +211,7 @@ class MultiStream(Stream):
     
     @property
     def phase(self):
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phase'")
+        return "".join(self._imol._phases)
     @phase.setter
     def phase(self, phase):
         assert len(phase) == 1, f'invalid phase {repr(phase)}'

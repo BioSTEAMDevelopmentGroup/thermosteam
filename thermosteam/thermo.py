@@ -10,7 +10,7 @@ from .mixture import IdealMixture
 from .utils import read_only, cucumber
 from .settings import settings
 
-__all__ = ('Thermo',)
+__all__ = ('Thermo', 'thermo_user')
 
 
 @cucumber # Just means you can pickle it

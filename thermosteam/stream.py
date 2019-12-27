@@ -229,12 +229,12 @@ class Stream:
         self.imol._data[:] *= value/F_mass
     @property
     def F_vol(self):
-        return self.mixture.V_at_TP(self.phase, self.mol, self._TP)
+        return 1000. * self.mixture.V_at_TP(self.phase, self.mol, self._TP)
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.ivol._data[:] *= value/F_vol
+        self.ivol._data[:] *= value / F_vol / 1000.
     
     @property
     def H(self):
@@ -338,7 +338,7 @@ class Stream:
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
         
-    def link(self, other, TP=True, flow=True, phase=True):
+    def link_with(self, other, flow, phase, TP):
         assert isinstance(other, self.__class__), "other must be of same type to link with"
         
         if TP and flow and phase:
@@ -403,30 +403,34 @@ class Stream:
         indices = chemicals.equilibrium_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
-    def _get_bubble_point_and_z(self, IDs=None):
+    def get_bubble_point(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         bp = self._bubble_point_cache.reload(chemicals, self._thermo)
-        return bp, self.get_normalized_mol(bp.IDs)
+        return bp
     
-    def _get_dew_point_and_z(self, IDs=None):
+    def get_dew_point(self, IDs=None):
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
-        return dp, self.get_normalized_mol(dp.IDs)
+        return dp
     
     def bubble_point_at_T(self, IDs=None, T=None):
-        bp, z = self._get_bubble_point_and_z(IDs)
+        bp = self.get_bubble_point(IDs)
+        z = self.get_normalized_mol(bp.IDs)
         return bp(z, T=T or self.T)
     
     def bubble_point_at_P(self, IDs=None, P=None):
-        bp, z = self._get_bubble_point_and_z(IDs)
+        bp = self.get_bubble_point(IDs)
+        z = self.get_normalized_mol(bp.IDs)
         return bp(z, P=P or self.P)
     
     def dew_point_at_T(self, IDs=None, T=None):
-        dp, z = self._get_dew_point_and_z(IDs)
+        dp = self.get_dew_point(IDs)
+        z = self.get_normalized_mol(dp.IDs)
         return dp(z, T=T or self.T)
     
     def dew_point_at_P(self, IDs=None, P=None):
-        dp, z = self._get_dew_point_and_z(IDs)
+        dp = self.get_dew_point(IDs)
+        z = self.get_normalized_mol(dp.IDs)
         return dp(z, P=P or self.P)
     
     def get_normalized_mol(self, IDs):

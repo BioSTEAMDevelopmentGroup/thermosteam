@@ -5,10 +5,13 @@ Created on Wed Dec  5 16:47:33 2018
 @author: Yoel Cortes-Pena
 """
 
-__all__ = ('Registry', )
+__all__ = ('Registry', 'registered', 'registries')
 
 
 class Registry:
+    
+    def search(self, ID):
+        return self.__dict__.get(ID)
     
     def __setattr__(self, ID, obj):
         self[ID] = obj
@@ -37,13 +40,16 @@ class Registry:
 
 # %% Register methods
 
-registries = {}
-
 def registered(ticket_name):
     return lambda cls: _registered(cls, ticket_name)
 
 def _registered(cls, ticket_name):
-    cls.registry = registry = Registry()
+    name = cls.__name__.lower()
+    if name in registries:
+        registry = Registry()
+    else:
+        registries[name] = registry
+    cls.registry = registry
     cls.ticket_name = ticket_name
     cls.ticket_number = 0
     cls._take_ticket = _take_ticket
@@ -52,7 +58,7 @@ def _registered(cls, ticket_name):
     cls.ID = ID
     cls.__repr__ = __repr__
     cls.__str__ = __str__
-    registries[cls.__name__.lower()] = registry
+    
     return cls
 
 @classmethod
@@ -86,3 +92,7 @@ def __repr__(self):
 
 def __str__(self):
     return self.ID
+
+registries = {'stream': Registry(),
+              'unit': Registry(),
+              'system': Registry()}
