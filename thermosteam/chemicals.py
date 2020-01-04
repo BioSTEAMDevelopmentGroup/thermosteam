@@ -7,7 +7,7 @@ Created on Sat Nov 23 09:41:02 2019
 from .utils import read_only
 from .exceptions import UndefinedChemical
 from .chemical import Chemical
-from .settings import settings
+from .material_indexer import ChemicalIndexer
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
@@ -19,20 +19,6 @@ def must_compile(*args, **kwargs):
     raise TypeError("method valid only for compiled chemicals; "
                     "run <chemicals>.compile() to compile")
 
-# %% Decorator for chemicals users
-
-def chemicals_user(cls):
-    cls._load_chemicals = _load_chemicals
-    cls.chemicals = chemicals
-    return cls
-
-@property
-def chemicals(self):
-    return self._chemicals
-
-def _load_chemicals(self, chemicals):
-    self._chemicals = settings.get_chemicals(chemicals)
-    return chemicals
 
 # %% Chemicals
 
@@ -189,13 +175,13 @@ class CompiledChemicals(Chemicals):
             self._index[synonym] = self._index[ID]
             dct[synonym] = chemical
     
-    def kwarray(self, IDdata):
+    def kwarray(self, ID_data):
         """Return an array with entries that correspond to the orded chemical IDs.
         
         Parameters
         ----------
-            IDdata : dict
-                     ID-data pairs.
+        ID_data : dict
+                 ID-data pairs.
             
         Examples
         --------
@@ -205,7 +191,7 @@ class CompiledChemicals(Chemicals):
         array([2., 0.])
         
         """
-        return self.array(*zip(*IDdata.items()))
+        return self.array(*zip(*ID_data.items()))
     
     def array(self, IDs, data):
         """Return an array with entries that correspond to the ordered chemical IDs.
@@ -229,13 +215,21 @@ class CompiledChemicals(Chemicals):
         array[self.indices(IDs)] = data
         return array
 
+    def iarray(self, IDs, data):
+        array = self.array(IDs, data)
+        return ChemicalIndexer.from_data(array, phase=None, chemicals=self)
+
+    def ikwarray(self, ID_data):
+        array = self.kwarray(ID_data)
+        return ChemicalIndexer.from_data(array, phase=None, chemicals=self)
+
     def index(self, ID):
         """Return index of specified chemical.
 
         Parameters
         ----------
         ID: str
-            Compound ID
+            Chemicl ID
 
         Examples
         --------
@@ -262,7 +256,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable
-              Species IDs or CAS numbers.
+              Chemical IDs or CAS numbers.
 
         Examples
         --------
@@ -293,7 +287,8 @@ class CompiledChemicals(Chemicals):
         except KeyError: 
             cache[key] = index = self._get_index(key)
         except TypeError:
-            raise IndexError(f"only strings, tuples, and ellipsis are valid IDs")
+            key = tuple(key)
+            cache[key] = index = self._get_index(key)
         return index
     
     def _get_index(self, IDs):

@@ -6,12 +6,11 @@ Created on Mon Dec  2 01:41:50 2019
 """
 
 from .base import Units
-from .utils import repr_IDs_data, repr_couples
+from .utils import repr_IDs_data, repr_couples, chemicals_user
 from .settings import settings
-from .exceptions import UndefinedPhase, UndefinedChemical, UndefinedPhaseOrChemical
+from .exceptions import UndefinedPhase
 from .phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
-from .chemicals import chemicals_user
 import numpy as np
 
 __all__ = ('ChemicalIndexer',
@@ -58,7 +57,7 @@ class Indexer:
     
     def set_data(self, data, units, *index):
         length = len(index)
-        data = data._data if isa(data, Indexer) else np.asarray(data, dtype=float)
+        data = np.asarray(data, dtype=float)
         scaled_data = data / self.units.conversion_factor(units)
         if length == 0:
             self._data[:] = scaled_data
@@ -114,6 +113,7 @@ class ChemicalIndexer(Indexer):
         return material_array
     
     def copy_like(self, other):
+        assert self._chemicals is other._chemicals, "chemicals must match"
         self._data[:] = other._data
         self.phase = other.phase
     
@@ -122,7 +122,7 @@ class ChemicalIndexer(Indexer):
         new = _new(cls)
         new._chemicals = self._chemicals
         new._index_cache = self._index_cache
-        new._phase = self._phase
+        new._phase = self._phase.copy()
         new._data_cache = {}
         return new
     

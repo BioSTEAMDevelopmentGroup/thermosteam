@@ -164,6 +164,43 @@ class MultiStream(Stream):
         
     ### Methods ###
         
+    def copy_flow(self, stream, phase=..., IDs=..., *, remove=False, exclude=False):
+        """Copy flow rates of stream to self.
+        
+        Parameters
+        ----------
+        stream : Stream
+            Flow rates will be copied from here.
+        IDs=None : iterable[str], defaults to all chemicals.
+            Chemical IDs. 
+        remove=False: bool, optional
+            If True, copied chemicals will be removed from `stream`.
+        exclude=False: bool, optional
+            If True, exclude designated chemicals when copying.
+        
+        """
+        chemicals = self.chemicals
+        if exclude:
+            IDs = chemicals.get_index(IDs)
+            index = np.ones(chemicals.size, dtype=bool)
+            index[IDs] = False
+        
+        if isinstance(stream, MultiStream):
+            stream_phase_imol = stream.imol[phase]
+            self_phase_imol = self.imol[phase]
+            self_phase_imol[index] = stream_phase_imol[index]
+            if remove: 
+                stream_phase_imol[index] = 0
+        elif stream.phase == phase:
+            stream_imol = stream.imol
+            self_phase_imol = self.imol[phase]
+            self_phase_imol[index] = stream_imol[index]
+            if remove: 
+                stream_imol[index] = 0
+        else:
+            self_phase_imol = self.imol[phase]
+            self_phase_imol[index] = 0
+    
     def get_normalized_mol(self, IDs):
         z = self.imol[..., IDs].sum(0)
         z /= z.sum()

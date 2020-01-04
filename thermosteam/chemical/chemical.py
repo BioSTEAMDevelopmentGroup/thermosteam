@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
+from scipy.optimize import newton
 from ..utils import copy_maybe, cucumber
 from .identifiers import CAS_from_any, pubchem_db
 from .vapor_pressure import VaporPressure
@@ -214,6 +215,9 @@ class Chemical:
     @property
     def ID(self):
         return self._ID
+
+    def Tsat(self, P, T_min=200):
+        return newton(lambda T: P - self.Psat(T if T > T_min else T_min), self.Tb)
 
     def copy(self, ID):
         new = super().__new__(self.__class__)

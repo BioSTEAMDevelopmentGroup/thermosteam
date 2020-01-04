@@ -186,9 +186,9 @@ class VLE:
                  '_dew_point', '_bubble_point', '_mixture',
                  '_phi', '_pcf', '_gamma', '_imol',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
-                 '_v',  '_index', '_massnet', '_chemical',
-                 '_update_V', '_mol', '_molnet', '_N', '_solve_V',
-                 '_zs', '_Ks', '_Psat_over_P_phi', '_IDs', '_LNK', '_HNK',
+                 '_v',  '_index', '_F_mass', '_chemical',
+                 '_update_V', '_mol', '_F_mol', '_N', '_solve_V',
+                 '_zs', '_Ks', '_Psat_over_P_phi', '_keys', '_LNK', '_HNK',
                  '_nonzero', '_LNK_index', '_HNK_index',
                  '_dew_point_cache', '_bubble_point_cache')
     
@@ -257,7 +257,7 @@ class VLE:
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
     def __init__(self, imol, thermal_condition=None,
-                 IDs=None, LNK=None, HNK=None, thermo=None,
+                 keys=None, LNK=None, HNK=None, thermo=None,
                  bubble_point_cache=None, dew_point_cache=None):
         """Create a VLE object that performs vapor-liquid equilibrium when called.
         
@@ -267,8 +267,8 @@ class VLE:
         
         thermal_condition : ThermalCondition
         
-        IDs = None : tuple, optional
-                     IDs of chemicals in equilibrium.
+        keys = None : tuple, optional
+                     keys of chemicals in equilibrium.
         LNK = None : tuple[str], optional
               Light non-keys that remain as a vapor (disregards equilibrium).
         HNK = None : tuple[str], optional
@@ -276,7 +276,7 @@ class VLE:
         
         """
         self._T = self._P = self._H_hat = self._V = 0
-        self._IDs = IDs
+        self._keys = keys
         self._LNK = LNK
         self._HNK = HNK
         self._dew_point_cache = dew_point_cache or Cache(DewPoint)
@@ -292,7 +292,7 @@ class VLE:
         self._y = None
     
     def _setup(self):
-        IDs = self._IDs
+        keys = self._keys
         LNK = self._LNK
         HNK = self._HNK
         
@@ -308,8 +308,8 @@ class VLE:
             HNK_index = self._HNK_index
         else:
             # Set up indices for both equilibrium and non-equilibrium species
-            if IDs:
-                index = chemicals.indices(IDs)
+            if keys:
+                index = chemicals.indices(keys)
             else:
                 # TODO: Fix this according to equilibrium indices
                 index = chemicals.equilibrium_indices(notzero)
@@ -349,9 +349,9 @@ class VLE:
         
         # Get overall composition
         data = self._imol.data
-        self._massnet = (chemicals.MW * data).sum()
-        self._molnet = molnet = data.sum()
-        assert molnet != 0, 'empty stream cannot perform equilibrium'
+        self._F_mass = (chemicals.MW * data).sum()
+        self._F_mol = F_mol = data.sum()
+        assert F_mol != 0, 'empty stream cannot perform equilibrium'
         self._mol = mol[index]
 
         # Set light and heavy keys
@@ -359,7 +359,7 @@ class VLE:
         vapor_mol[LNK_index] = mol[LNK_index]
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = mol[HNK_index]
-        self._zs = self._mol/molnet
+        self._zs = self._mol/F_mol
         return index
 
     @property
@@ -463,7 +463,7 @@ class VLE:
             split_frac = 1
         elif split_frac < 0:
             split_frac = 0
-        self._vapor_mol[self._index] = v = self._molnet * split_frac * y
+        self._vapor_mol[self._index] = v = self._F_mol * split_frac * y
         self._liquid_mol[self._index] = self._mol - v
     
     def set_Tx(self, T, x):
@@ -521,7 +521,7 @@ class VLE:
                 v = self._solve_v(T, P)
             self._vapor_mol[self._index] = v
             self._liquid_mol[self._index] = self._mol - v
-            self._H_hat = self._mixture.xH_at_TP(self._phase_data, TP)/self._massnet
+            self._H_hat = self._mixture.xH_at_TP(self._phase_data, TP)/self._F_mass
         
     def set_TV(self, T, V):
         self._setup()
@@ -555,7 +555,7 @@ class VLE:
             self._P = TP.P = P
             self._vapor_mol[self._index] = self._v
             self._liquid_mol[self._index] = self._mol - self._v
-            self._H_hat = self._mixture.xH_at_TP(self._phase_data, TP)/self._massnet
+            self._H_hat = self._mixture.xH_at_TP(self._phase_data, TP)/self._F_mass
 
     def set_TH(self, T, H):
         self._setup()
@@ -594,19 +594,19 @@ class VLE:
         V = self._V or dH_bubble/(H_dew - H_bubble)
         # Guess composition in the vapor is a weighted average of boiling points
         self._refresh_v(V, y_bubble)
-        massnet = self._massnet
-        self._H_hat = H/massnet
+        F_mass = self._F_mass
+        self._H_hat = H/F_mass
         try:
             P = self.solver(self._H_hat_at_P,
                             P_bubble, P_dew,
-                            H_bubble/massnet, H_dew/massnet,
+                            H_bubble/F_mass, H_dew/F_mass,
                             self._P, self._H_hat,
                             self.P_tol, self.H_hat_tol) 
         except:
             self._v = self._estimate_v(V, y_bubble)
             P = self.solver(self._H_hat_at_P,
                             P_bubble, P_dew,
-                            H_bubble/massnet, H_dew/massnet,
+                            H_bubble/F_mass, H_dew/F_mass,
                             self._P, self._H_hat,
                             self.P_tol, self.H_hat_tol) 
         self._P = self._TP.P = P    
@@ -650,7 +650,7 @@ class VLE:
             self._T = self._TP.T = T
             vapor_mol[index] = self._v
             liquid_mol[index] = mol - self._v
-            self._H_hat = self._mixture.xH(self._phase_data, self._T, P)/self._massnet
+            self._H_hat = self._mixture.xH(self._phase_data, self._T, P)/self._F_mass
     
     def set_PH(self, P, H):
         self._setup()
@@ -686,39 +686,39 @@ class VLE:
         self._V = V = self._V or dH_bubble/(H_dew - H_bubble)
         self._refresh_v(V, y_bubble)
         
-        massnet = self._massnet
-        self._H_hat = H/massnet
+        F_mass = self._F_mass
+        self._H_hat = H/F_mass
         self._T = self._TP.T = self.solver(self._H_hat_at_T,
-                                                  T_bubble, T_dew, 
-                                                  H_bubble/massnet, H_dew/massnet,
-                                                  self._T , self._H_hat,
-                                                  self.T_tol, self.H_hat_tol)
+                                           T_bubble, T_dew, 
+                                           H_bubble/F_mass, H_dew/F_mass,
+                                           self._T , self._H_hat,
+                                           self.T_tol, self.H_hat_tol)
     
     def _estimate_v(self, V, y_bubble):
-        return (V*self._zs + (1-V)*y_bubble)*V*self._molnet
+        return (V*self._zs + (1-V)*y_bubble)*V*self._F_mol
     
     def _refresh_v(self, V, y_bubble):
         y = self._y
         if y is None:
             self._v = self._estimate_v(V, y_bubble)
         else:
-            self._v = y * self._molnet * V
+            self._v = y * self._F_mol * V
     
     def _H_hat_at_T(self, T):
         self._vapor_mol[self._index] = self._solve_v(T, self._P)
         self._liquid_mol[self._index] = self._mol - self._v
-        return self._mixture.xH(self._phase_data, T, self._P)/self._massnet
+        return self._mixture.xH(self._phase_data, T, self._P)/self._F_mass
     
     def _H_hat_at_P(self, P):
         self._vapor_mol[self._index] = self._solve_v(self._T , P)
         self._liquid_mol[self._index] = self._mol - self._v
-        return self._mixture.xH(self._phase_data, self._T, P)/self._massnet
+        return self._mixture.xH(self._phase_data, self._T, P)/self._F_mass
     
     def _V_at_P(self, P):
-        return self._solve_v(self._T , P).sum()/self._molnet
+        return self._solve_v(self._T , P).sum()/self._F_mol
     
     def _V_at_T(self, T):
-        return self._solve_v(T, self._P).sum()/self._molnet
+        return self._solve_v(T, self._P).sum()/self._F_mol
     
     def _x_iter(self, x):
         x = x/x.sum()
@@ -735,8 +735,9 @@ class VLE:
         y = v/v.sum()
         Psats_over_P = np.array([i(T) for i in bp.Psats]) / P
         self._Psat_over_P_phi = Psats_over_P / phi(y, T, P)
+        self._T = T
         x = self.itersolver(self._x_iter, l/l.sum(), 1e-4)
-        v = self._molnet*self._V*x/x.sum()*self._Ks            
+        v = self._F_mol*self._V*x/x.sum()*self._Ks            
         y = v / v.sum()
         Psat_over_P_phi = Psats_over_P / phi(y, T, P)
         if np.abs(self._Psat_over_P_phi - Psat_over_P_phi).sum() < 0.001:
@@ -746,7 +747,7 @@ class VLE:
         else:
             self._Psat_over_P_phi = Psat_over_P_phi
             x = self.itersolver(self._x_iter, x, 1e-4)
-            self._v = v = self._molnet*self._V*x/x.sum()*self._Ks     
+            self._v = v = self._F_mol*self._V*x/x.sum()*self._Ks     
             self._y = v / v.sum()
         return v
 
@@ -792,10 +793,10 @@ class VLE:
             dlim = "\n" + tab
         else:
             dlim = ", "
-        IDs = f"{dlim}{self._IDs}" if self._IDs else ""
+        keys = f"{dlim}{self._keys}" if self._keys else ""
         HNK = f"{dlim}{self._HNK}" if self._HNK else ""
         LNK = f"{dlim}{self._LNK}" if self._LNK else ""
-        return f"VLE(imol={imol},{dlim}thermal_condition={self.thermal_condition}{IDs}{LNK}{HNK})"
+        return f"VLE(imol={imol},{dlim}thermal_condition={self.thermal_condition}{keys}{LNK}{HNK})"
     
     def __repr__(self):
         return self.__format__("1")

@@ -100,9 +100,6 @@ class Stream:
 
     ### Property getters ###
 
-    def get_index(self, IDs):
-        return self.chemicals.get_index(IDs)
-
     def get_flow(self, units, IDs=...):
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
@@ -329,9 +326,12 @@ class Stream:
     ### Stream methods ###
     
     def mix_from(self, others):
-        assert_same_chemicals(self, others)
-        self.mol[:] = sum([i.mol for i in others])
-        self.H = sum([i.H for i in others])
+        if len(others) == 1:
+            self.copy_like(others[0])
+        else:
+            assert_same_chemicals(self, others)
+            self.mol[:] = sum([i.mol for i in others])
+            self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
         mol = self.mol
@@ -363,6 +363,35 @@ class Stream:
     def copy_like(self, other):
         self._imol.copy_like(other._imol)
         self._TP.copy_like(other._TP)
+    
+    def copy_flow(self, stream, IDs=None, *, remove=False, exclude=False):
+        """Copy flow rates of stream to self.
+        
+        Parameters
+        ----------
+        stream : Stream
+            Flow rates will be copied from here.
+        IDs=None : iterable[str], defaults to all chemicals.
+            Chemical IDs. 
+        remove=False: bool, optional
+            If True, copied chemicals will be removed from `stream`.
+        exclude=False: bool, optional
+            If True, exclude designated chemicals when copying.
+        
+        """
+        chemicals = self.chemicals
+        mol = stream.mol
+        if exclude:
+            IDs = chemicals.get_index(IDs)
+            index = np.ones(chemicals.size, dtype=bool)
+            index[IDs] = False
+            
+        self.mol[index] = mol[index]
+        if remove: 
+            if isinstance(stream, multi_stream.MultiStream):
+                mol[..., index] = 0
+            else:
+                mol[index] = 0
     
     def copy(self):
         cls = self.__class__
@@ -438,13 +467,13 @@ class Stream:
         z /= z.sum()
         return z
     
-    def get_normalized_vol(self, IDs):
-        z = self.ivol[IDs]
+    def get_normalized_mass(self, IDs):
+        z = self.imass[IDs]
         z /= z.sum()
         return z
     
-    def get_normalized_mass(self, IDs):
-        z = self.imass[IDs]
+    def get_normalized_vol(self, IDs):
+        z = self.ivol[IDs]
         z /= z.sum()
         return z
     

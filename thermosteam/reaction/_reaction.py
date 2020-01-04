@@ -5,7 +5,7 @@ Created on Fri Jun 28 19:23:52 2019
 @author: yoelr
 """
 from . import _parse as prs
-from ..chemicals import chemicals_user
+from ..utils import chemicals_user
 import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
