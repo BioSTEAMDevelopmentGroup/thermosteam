@@ -114,19 +114,22 @@ class TDependentModelHandle(ThermoModelHandle):
     def Tmax(self):
         return max([i.Tmax for i in self.models])
     
-    def __call__(self, T):
+    def __call__(self, T, P=None):
         for model in self.models:
             if model.indomain(T): return model.evaluate(T)
         # return model.evaluate(T)
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K")
             
-    def differentiate_by_T(self, T):
+    def differentiate_by_T(self, T, P=None, dT=1e-12):
         for model in self.models:
-            if model.indomain(T): return model.differentiate_by_T(T)
+            if model.indomain(T): return model.differentiate_by_T(T, dT=dT)
         # return model.differentiate_by_T(T) 
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K")
         
-    def integrate_by_T(self, Ta, Tb):
+    def differentiate_by_P(self, T, P=None, dP=1e-12):
+        return 0
+        
+    def integrate_by_T(self, Ta, Tb, P=None):
         integral = 0.
         defined = hasattr
         for model in self.models:
@@ -154,7 +157,7 @@ class TDependentModelHandle(ThermoModelHandle):
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
     
-    def integrate_by_T_over_T(self, Ta, Tb):
+    def integrate_by_T_over_T(self, Ta, Tb, P=None):
         integral = 0.
         defined = hasattr
         for model in self.models:
@@ -182,7 +185,7 @@ class TPDependentModelHandle(ThermoModelHandle):
     Tmin = TDependentModelHandle.Tmin
     Tmax = TDependentModelHandle.Tmax
     
-    def lock_TP(self, T, P=None):
+    def lock_TP(self, T, P):
         models = self.models
         constant_model = find_constant_model(models, T, P)
         if constant_model:
@@ -199,25 +202,25 @@ class TPDependentModelHandle(ThermoModelHandle):
     def Pmax(self):
         return max([i.Pmax for i in self.models])
     
-    def __call__(self, T, P=101325.):
+    def __call__(self, T, P):
         for model in self.models:
             if model.indomain(T, P): return model.evaluate(T, P)
         # return model.evaluate(T, P)
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K and P={P:5g} Pa")
 
-    def differentiate_by_T(self, T, P=101325.):
+    def differentiate_by_T(self, T, P):
         for model in self.models:
             if model.indomain(T, P): return model.differentiate_by_T(T, P)
         # return model.differentiate_by_T(T, P) 
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K and P={P:5g} Pa")
             
-    def differentiate_by_P(self, T, P=101325.):
+    def differentiate_by_P(self, T, P):
         for model in self.models:
              if model.indomain(T, P): return model.differentiate_by_P(T, P)
         # return model.differentiate_by_P(T, P) 
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K and P={P:5g} Pa")
 
-    def integrate_by_T(self, Ta, Tb, P=101325.):
+    def integrate_by_T(self, Ta, Tb, P):
         integral = 0
         defined = hasattr
         for model in self.models:

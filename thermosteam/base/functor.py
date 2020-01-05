@@ -12,7 +12,7 @@ from numba.targets.registry import CPUDispatcher
 from numba import njit
 
 __all__ = ("Functor", "MixtureFunctor", 
-           "TFunctor", "TPFunctor",
+           "TFunctor", "TPFunctor", "TIntegralFunctor",
            "zTFunctor", "zTPFunctor",
            "functor", 'H', 'S', 'V', 'Cn', 'mu', 'kappa', 'sigma', 'delta', 'epsilon',
            'Psat', 'Hvap', 'display_asfunctor', 'functor_lookalike',
@@ -64,8 +64,7 @@ def functor_base_and_params(function):
 # %% Decorator
   
 def functor(function=None, var=None, njitcompile=True, wrap=None,
-            definitions=None, units_of_measure=None, math="", refs="",
-            doc=None):
+            definitions=None, units_of_measure=None, doc=None):
     if function:
         base, params = functor_base_and_params(function)
         if njitcompile and not isinstance(function, CPUDispatcher): 
@@ -80,8 +79,7 @@ def functor(function=None, var=None, njitcompile=True, wrap=None,
         if definitions:
             dct['definitions'] = definitions
         if wrap: cls.wrapper(wrap)
-        if doc:  cls.__doc__ = doc
-        else: autodoc_functor(cls, base, math, refs)
+        cls.__doc__ = doc or function.__doc__ or autodoc_functor(cls, base)
         cls.__module__ = function.__module__
         return cls
     else:
@@ -97,25 +95,24 @@ class FunctorFactory:
         self.var = var
     
     def __call__(self, function=None, njitcompile=True, wrap=None,
-                 definitions=None, units_of_measure=None, math="", refs="",
-                 doc=None):
+                 definitions=None, units_of_measure=None, doc=None):
         return functor(function, self.var, njitcompile, wrap,
-                       definitions, units_of_measure, math, refs, doc)
+                       definitions, units_of_measure, doc)
     
     def s(self, function=None, njitcompile=True, wrap=None,
-          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+          definitions=None, units_of_measure=None, doc=None):
         return functor(function, self.var + '.s', njitcompile, wrap,
-                       definitions, units_of_measure, math, refs, doc)
+                       definitions, units_of_measure, doc)
     
     def l(self, function=None, njitcompile=True, wrap=None,
-          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+          definitions=None, units_of_measure=None, doc=None):
         return functor(function, self.var + '.l', njitcompile, wrap,
-                       definitions, units_of_measure, math, refs, doc)
+                       definitions, units_of_measure, doc)
     
     def g(self, function=None, njitcompile=True, wrap=None,
-          definitions=None, units_of_measure=None, math="", refs="", doc=None):
+          definitions=None, units_of_measure=None, doc=None):
         return functor(function, self.var + '.g', njitcompile, wrap,
-                       definitions, units_of_measure, math, refs, doc)
+                       definitions, units_of_measure, doc)
     
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.var)})"
@@ -168,9 +165,9 @@ class PureComponentFunctor(Functor):
         self.kwargs = kwargs or (self.wrap(**data) if hasattr(self, 'wrap') else data)
     
     @classmethod
-    def wrapper(cls, kwargs):
-        cls.params = tuple(signature(kwargs).parameters)
-        cls.wrap = staticmethod(kwargs)
+    def wrapper(cls, kwargs_function):
+        cls.params = tuple(signature(kwargs_function).parameters)
+        cls.wrap = staticmethod(kwargs_function)
         return cls
     
     def show(self):
@@ -208,11 +205,11 @@ class TIntegralFunctor(PureComponentFunctor, args=('Ta', 'Tb')):
     def __call__(self, Ta, Tb, P=None):
         return self.function(Ta, Tb, **self.kwargs)
 
-class PIntegralFunctor(PureComponentFunctor, args=('Pa', 'Pb', 'T')):
-    __slots__ = ()
+# class PIntegralFunctor(PureComponentFunctor, args=('Pa', 'Pb', 'T')):
+#     __slots__ = ()
     
-    def __call__(self, Pa, Pb, T):
-        return self.function(Pa, Pb, T, **self.kwargs)
+#     def __call__(self, Pa, Pb, T):
+#         return self.function(Pa, Pb, T, **self.kwargs)
 
 
 class TPFunctor(PureComponentFunctor, args=('T', 'P')):
@@ -223,15 +220,15 @@ class TPFunctor(PureComponentFunctor, args=('T', 'P')):
 
 
 class MixtureFunctor(Functor):
-    __slots__ = ('kwargs', '_species')
+    __slots__ = ('kwargs', '_chemicals')
     
-    def __init__(self, species, kwargs=None):
-        species = tuple(species)
+    def __init__(self, chemicals, kwargs=None):
+        chemicals = tuple(chemicals)
         if kwargs:
-            self._species = species
+            self._chemicals = chemicals
             self.kwargs = kwargs
         else:
-            self.species = species
+            self.chemicals = chemicals
     
     @classmethod
     def wrap(cls, kwargs):
@@ -239,17 +236,17 @@ class MixtureFunctor(Functor):
         return cls
     
     @property
-    def species(self):
-        return self._species
+    def chemicals(self):
+        return self._chemicals
     
-    @species.setter
-    def species(self, species):
-        if species == self._species: return
-        self._species = species = tuple(species)
-        if species in self.cache:
-            self.kwargs = self.cache[species]
+    @chemicals.setter
+    def chemicals(self, chemicals):
+        if chemicals == self._chemicals: return
+        self._chemicals = chemicals = tuple(chemicals)
+        if chemicals in self.cache:
+            self.kwargs = self.cache[chemicals]
         else:
-            self.cache[species] = self.kwargs = self.calculate_kwargs(self.species)
+            self.cache[chemicals] = self.kwargs = self.calculate_kwargs(self.chemicals)
             
     
 class zTFunctor(MixtureFunctor, args=('z', 'T')): 

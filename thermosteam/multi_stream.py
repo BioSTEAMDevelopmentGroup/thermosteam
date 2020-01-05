@@ -264,7 +264,11 @@ class MultiStream(Stream):
         basic_info = self._basic_info()
         all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol)
         all_IDs = tuple(all_IDs)
-        T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
+        display_units = self.display_units
+        T_units = T or display_units.T
+        P_units = P or display_units.P
+        flow_units = flow or display_units.flow
+        N = N or display_units.N
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
         len_ = len(all_IDs)
         if len_ == 0:

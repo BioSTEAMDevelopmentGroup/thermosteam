@@ -96,10 +96,10 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
     def integrate_by_T_over_T(self, Ta, Tb, P=None): 
         return self.evaluate((Tb+Ta)/2.)*log(Tb/Ta)
 
-    def differentiate_by_T(self, T, dT=1e-12, P=None):
+    def differentiate_by_T(self, T, P=None, dT=1e-12):
         return (self.evaluate(T+dT) - self.evaluate(T))/dT
     
-    def differentiate_by_P(self, T, P=None):
+    def differentiate_by_P(self, T, P=None, dP=1e-12):
         return 0
     
     def integrate_by_P(self, Pa, Pb, T):
@@ -124,7 +124,7 @@ class TPDependentModel(ThermoModel, Functor=TPFunctor):
     def integrate_by_T(self, Ta, Tb, P):
         return self.evaluate((Tb+Ta)/2, P)*(Tb - Ta)
     
-    def integrate_by_T_over_T(self, Ta, Tb, P=101325.): 
+    def integrate_by_T_over_T(self, Ta, Tb, P): 
         return self.evaluate((Tb+Ta)/2., P)*log(Tb/Ta)
     
     def integrate_by_P(self, Pa, Pb, T):
@@ -161,25 +161,25 @@ class ConstantThermoModel(ThermoModel):
         if Tmin: self.Tmin = Tmin
         if Tmax: self.Tmax = Tmax
     
-    def indomain(self, T, P=None):
+    def indomain(self, T=None, P=None):
         return True
     
     def evaluate(self, T=None, P=None):
         return self.value
     
-    def integrate_by_T(self, Ta, Tb, P=101325.):
+    def integrate_by_T(self, Ta, Tb, P=None):
         return self.value*(Tb - Ta)
     
-    def integrate_by_T_over_T(self, Ta, Tb, P=101325.): 
+    def integrate_by_T_over_T(self, Ta, Tb, P=None): 
         return self.value*log(Tb/Ta)    
     
-    def integrate_by_P(self, Pa, Pb, T):
+    def integrate_by_P(self, Pa, Pb, T=None):
         return self.value*(Pb - Pa)
     
-    def differentiate_by_T(self, T, P=101325.):
+    def differentiate_by_T(self, T=None, P=None, dT=None):
         return 0
     
-    def differentiate_by_P(self, T, P):
+    def differentiate_by_P(self, T=None, P=None, dP=None):
         return 0
 
     def show(self):

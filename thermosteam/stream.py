@@ -9,7 +9,6 @@ from . import material_indexer as index
 from . import equilibrium as eq
 from . import functional as fn
 from .base import units_of_measure as thermo_units
-from .base.display_units import DisplayUnits
 from .exceptions import DimensionError
 from .thermal_condition import ThermalCondition
 from .registry import registered
@@ -34,9 +33,9 @@ class Stream:
                  '_vle_cache', '_sink', '_source', 'price')
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
-    display_units = DisplayUnits(T='K', P='Pa',
-                                 flow=('kmol/hr', 'kg/hr', 'm3/hr'),
-                                 N=5)
+    display_units = thermo_units.DisplayUnits(T='K', P='Pa',
+                                              flow=('kmol/hr', 'kg/hr', 'm3/hr'),
+                                              N=5)
 
     _flow_cache = {}
 
@@ -509,7 +508,11 @@ class Stream:
         data = self.imol.data
         IDs, data = nonzeros(IDs, data)
         IDs = tuple(IDs)
-        T_units, P_units, flow_units, N = self.display_units.get_units(T=T, P=P, flow=flow, N=N)
+        display_units = self.display_units
+        T_units = T or display_units.T
+        P_units = P or display_units.P
+        flow_units = flow or display_units.flow
+        N = N or display_units.N
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
         len_ = len(IDs)
         if len_ == 0:

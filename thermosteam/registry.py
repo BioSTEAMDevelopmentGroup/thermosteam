@@ -46,9 +46,9 @@ def registered(ticket_name):
 def _registered(cls, ticket_name):
     name = cls.__name__.lower()
     if name in registries:
-        registry = Registry()
+        registry = registries[name]
     else:
-        registries[name] = registry
+        registries[name] = registry = Registry()
     cls.registry = registry
     cls.ticket_name = ticket_name
     cls.ticket_number = 0
@@ -93,6 +93,4 @@ def __repr__(self):
 def __str__(self):
     return self.ID
 
-registries = {'stream': Registry(),
-              'unit': Registry(),
-              'system': Registry()}
+registries = {}
