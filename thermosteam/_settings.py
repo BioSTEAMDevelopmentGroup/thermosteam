@@ -73,6 +73,6 @@ class Settings:
                             f"not a '{type(thermo).__name__}'")
     
     def __repr__(self):
-        return "thermosteam.settings"
+        return "<ThermoSTEAM-settings>"
     
 settings = Settings()
