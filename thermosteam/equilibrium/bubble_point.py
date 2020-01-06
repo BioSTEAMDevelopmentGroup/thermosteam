@@ -31,6 +31,15 @@ class BubblePointValues:
 # %% Bubble point calculation
 
 class BubblePoint:
+    """Create a BubblePoint object that returns bubble point values when called with a composition and either a temperture (T) or pressure (P).
+    
+    Parameters
+    ----------
+    chemicals=None : Iterable[Chemical], optional
+    
+    thermo=None : Thermo, optional
+    
+    """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'P', 'T', 'y', 'Psats', 'Tbs')
     rootsolver = staticmethod(aitken_secant)

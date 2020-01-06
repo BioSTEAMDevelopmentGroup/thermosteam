@@ -1,0 +1,5 @@
+fugacity_coefficients
+---------------------
+
+.. automodule:: thermosteam.equilibrium.fugacity_coefficients
+   :members:

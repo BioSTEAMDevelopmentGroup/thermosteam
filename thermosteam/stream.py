@@ -5,29 +5,62 @@ Created on Tue Nov 26 02:34:56 2019
 @author: yoelr
 """
 import numpy as np
-from . import material_indexer as index 
+from . import indexer
 from . import equilibrium as eq
 from . import functional as fn
 from .base import units_of_measure as thermo_units
 from .exceptions import DimensionError
 from .thermal_condition import ThermalCondition
 from .registry import registered
-from .utils import Cache, assert_same_chemicals
-from .thermo import thermo_user
+from .utils import Cache, assert_same_chemicals, thermo_user
 
 __all__ = ('Stream', )
 
 
 # %% Utilities
 
-mol_units = index.ChemicalMolarFlowIndexer.units
-mass_units = index.ChemicalMassFlowIndexer.units
-vol_units = index.ChemicalVolumetricFlowIndexer.units
+mol_units = indexer.ChemicalMolarFlowIndexer.units
+mass_units = indexer.ChemicalMassFlowIndexer.units
+vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
 # %%
 @thermo_user
 @registered(ticket_name='s')
 class Stream:
+    """Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
+
+    Parameters
+    ----------
+    ID='' : str, defaults to a unique ID
+        A unique identification. If ID is None, stream will not be
+        registered.
+
+    flow=() : tuple, optional
+        All flow rates corresponding to chemical `IDs`.
+
+    thermo=() : Thermo, defaults to settings.Thermo
+        Thermodynamic equilibrium package.
+
+    units='kmol/hr' : str, optional
+        Flow rate units of measure (only mass, molar, and
+        volumetric flow rates are valid)
+
+    phase='l' : {'l', 'g', 's'}, optional
+        Either gas ("g"), liquid ("l"), or solid ("s").
+
+    T=298.15 : float, optional
+        Temperature (K).
+
+    P=101325 : float, optional
+        Pressure (Pa).
+
+    price=0 : float, optional
+        Price in USD/kg.
+    
+    **chemical_flows : float
+                   ID - flow pairs
+    
+    """
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
                  '_vle_cache', '_sink', '_source', 'price')
@@ -39,13 +72,13 @@ class Stream:
 
     _flow_cache = {}
 
-    def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units=None,
+    def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units='kmol/hr',
                  price=0., thermo=None, **chemical_flows):
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
-        if units:
+        if units != 'kmol/hr':
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, name)
             flow[:] = self.mol * factor
@@ -57,17 +90,17 @@ class Stream:
         """Initialize molar flow rates."""
         if flow is ():
             if chemical_flows:
-                imol = index.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
+                imol = indexer.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
             else:
-                imol = index.ChemicalMolarFlowIndexer.blank(phase, chemicals)
+                imol = indexer.ChemicalMolarFlowIndexer.blank(phase, chemicals)
         else:
             assert not chemical_flows, ("may specify either 'flow' or "
                                         "'chemical_flows', but not both")
-            if isinstance(flow, index.ChemicalMolarFlowIndexer):
+            if isinstance(flow, indexer.ChemicalMolarFlowIndexer):
                 imol = flow 
                 imol.phase = phase
             else:
-                imol = index.ChemicalMolarFlowIndexer.from_data(
+                imol = indexer.ChemicalMolarFlowIndexer.from_data(
                     np.asarray(flow, dtype=float), phase, chemicals)
         self._imol = imol
 

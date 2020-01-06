@@ -8,6 +8,7 @@ __all__ = ('FugacityCoefficients',
            'IdealFugacityCoefficients')
 
 class FugacityCoefficients:
+    """Abstract class for the estimation of fugacity coefficients."""
     __slots__ = ()
     
     def __init__(self, chemicals):
@@ -19,6 +20,14 @@ class FugacityCoefficients:
 
 
 class IdealFugacityCoefficients(FugacityCoefficients):
+    """Create an IdealFugacityCoefficients object that estimates all fugacity coefficients to be 1 when called with composition, temperature (K), and pressure (Pa).
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[Chemical]
+    
+    """
     __slots__ = ('_chemicals')
     
     @property

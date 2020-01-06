@@ -8,24 +8,21 @@ Created on Mon Dec  2 07:45:30 2019
 __all__ = ('ThermalCondition',)
 
 class ThermalCondition:
-    __slots__ = ('_T', '_P')
+    """Create a ThermalCondition object that contains temperature and pressure values.
+    
+    Parameters
+    ----------
+    T : float
+        Temperature in Kelvin
+    P : float
+        Pressure in Pascal
+    
+    """
+    __slots__ = ('T', 'P')
     
     def __init__(self, T, P):
         self.T = T
         self.P = P
-    
-    @property
-    def T(self):
-        return self._T
-    @T.setter
-    def T(self, T):
-        self._T = float(T)
-    @property
-    def P(self):
-        return self._P
-    @P.setter
-    def P(self, P):
-        self._P = float(P)
     
     def copy(self):
         return self.__class__(self.T, self.P)

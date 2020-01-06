@@ -1,0 +1,16 @@
+equilibrium
+-----------
+
+Use the equilibrium subpackage to perform equilibrium calculations.
+
+.. toctree::
+   :maxdepth: 1
+
+   VLE
+   BubblePoint
+   DewPoint
+   activity_coefficients_module
+   fugacity_coefficients_module
+   poyinting_correction_factors_module
+   
+   

@@ -36,8 +36,8 @@ class Reaction:
     Examples
     --------
     >>> import thermosteam as tmo
+    >>> import thermosteam.reaction as rn
     >>> tmo.settings.thermo = tmo.Thermo(['H2O', 'H2', 'O2'])
-    >>> rn = tmo.reaction
     >>> srn = rn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
     >>> srn
     Reaction('H2O -> H2 + 0.5 O2', reactant='H2O', X=0.7)
@@ -169,7 +169,15 @@ class Reaction:
 
 
 class ReactionItem(Reaction):
-    """Create a ReactionItem object from a ReactionSet and index."""
+    """Create a ReactionItem object from the a ReactionSet and reaction index.
+    
+    Parameters
+    ----------
+    rxnset : ReactionSet
+    index : int
+        Index of reaction.
+        
+    """
     __slots__ = ('_index')
     def __init__(self, rxnset, index):
         self._stoi = rxnset._stoi[index]
@@ -194,7 +202,13 @@ class ReactionItem(Reaction):
         
 
 class ReactionSet:
-    """Create a ReactionSet that contains all reactions and conversions as an array."""
+    """Create a ReactionSet that contains all reactions and conversions as an array.
+    
+    Parameters
+    ----------
+    reactions : Iterable[Reaction]
+    
+    """
     __slots__ = ('_stoi', '_X', '_Xindex', '_chemicals')
     def __init__(self, reactions):
         assert len({i.chemicals for i in reactions})==1, 'all reactions must have the same chemicals'
@@ -217,7 +231,7 @@ class ReactionSet:
     
     @property
     def X(self):
-        """[float] Reaction converions."""
+        """[1d array] Reaction converions."""
         return self._X
     
     @property
@@ -226,14 +240,14 @@ class ReactionSet:
         return self._chemicals
     @property
     def stoichiometry(self):
-        """[array] Stoichiometry coefficients."""
+        """[2d array] Stoichiometry coefficients."""
         return self._stoi
     
     @property
     def reactants(self):
-        """[str] Reactants associated to conversion."""
+        """tuple[str] Reactants associated to conversion."""
         IDs = self._chemicals.IDs
-        return tuple(IDs[i] for i in self._Xindex)
+        return tuple([IDs[i] for i in self._Xindex])
     
     def __repr__(self):
         return f"<{type(self).__name__}: {', '.join(set(self.reactants))}>"
@@ -259,7 +273,14 @@ class ReactionSet:
     _ipython_display_ = show
         
 class ParallelReaction(ReactionSet):
-    """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all parallel reactions."""
+    """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all parallel reactions.
+    
+    Parameters
+    ----------
+    reactions : Iterable[Reaction]
+    
+    
+    """
     __slots__ = ()
     
     def __call__(self, material):
@@ -277,7 +298,14 @@ class ParallelReaction(ReactionSet):
         return X_net
 
 class SeriesReaction(ReactionSet):
-    """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all reactions in series."""
+    """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all reactions in series.
+    
+    Parameters
+    ----------
+    reactions : Iterable[Reaction]
+    
+    
+    """
     __slots__ = ()
     
     def __call__(self, material):

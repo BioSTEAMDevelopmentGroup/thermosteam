@@ -32,6 +32,15 @@ class DewPointValues:
 # %% Dew point calculation
 
 class DewPoint:
+    """Create a DewPoint object that returns dew point values when called with a composition and either a temperture (T) or pressure (P).
+    
+    Parameters
+    ----------
+    chemicals=None : Iterable[Chemical], optional
+    
+    thermo=None : Thermo, optional
+    
+    """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
     rootsolver = staticmethod(aitken_secant)

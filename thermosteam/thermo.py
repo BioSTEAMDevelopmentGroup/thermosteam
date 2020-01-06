@@ -10,18 +10,33 @@ from .mixture import IdealMixture
 from .utils import read_only, cucumber
 from .settings import settings
 
-__all__ = ('Thermo', 'thermo_user')
+__all__ = ('Thermo',)
 
 
 @cucumber # Just means you can pickle it
 @read_only
 class Thermo:
+    """Create a Thermo object that defines a thermodynamic property package
+    
+    Parameters
+    ----------
+    chemicals : Chemicals or Iterable[str]
+        Pure component chemical data.
+    mixture : Mixture
+        Calculator for mixture properties.
+    Gamma : ActivityCoefficients subclass
+        Class for computing activity coefficiente.
+    Phi : FugacityCoefficients subclass
+        Class for computing fugacity coefficiente.
+    PCF : PoyntingCorrectionFactor subclass.
+        Class for computing poynting correction factors.
+    """
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
                  Phi=eq.IdealFugacityCoefficients,
-                 PCF=eq.IdealPoyintingCorrectionFactor):
+                 PCF=eq.IdealPoyintingCorrectionFactors):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
         mixture = mixture or IdealMixture(chemicals)
         chemicals.compile()
@@ -31,8 +46,8 @@ class Thermo:
                 f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
             assert issubtype(Phi, eq.FugacityCoefficients), (
                 f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
-            assert issubtype(PCF, eq.PoyintingCorrectionFactor), (
-                f"PCF must be a '{eq.PoyintingCorrectionFactor.__name__}' subclass")
+            assert issubtype(PCF, eq.PoyintingCorrectionFactors), (
+                f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
         setattr = object.__setattr__
         setattr(self, 'chemicals', chemicals)
         setattr(self, 'mixture', mixture)
@@ -45,25 +60,5 @@ class Thermo:
         return f"{type(self).__name__}([{', '.join(IDs)}])"
     
 
-def thermo_user(cls):
-    cls._load_thermo = _load_thermo
-    cls.thermo = thermo
-    cls.chemicals = chemicals
-    cls.mixture = mixture
-    return cls
-    
-def _load_thermo(self, thermo):
-    self._thermo = thermo = settings.get_thermo(thermo)
-    return thermo
-
-@property
-def thermo(self):
-    return self._thermo
-@property
-def chemicals(self):
-    return self._thermo.chemicals
-@property
-def mixture(self):
-    return self._thermo.mixture
     
     

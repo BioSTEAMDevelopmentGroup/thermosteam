@@ -47,6 +47,7 @@ def group_activity_coefficients(x, chemgroups, loggammacs,
 # %% Activity Coefficients
 
 class ActivityCoefficients:
+    """Abstract class for the estimation of activity coefficients."""
     __slots__ = ('_chemicals',)
     
     @property
@@ -59,16 +60,32 @@ class ActivityCoefficients:
 
     
 class IdealActivityCoefficients(ActivityCoefficients):
+    """Create an IdealActivityCoefficients object that estimates all activity coefficients to be 1 when called with a composition and a temperature (K).
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[Chemical]
+    
+    """
     __slots__ = ()
     
     def __init__(self, chemicals):
         self._chemicals = tuple(chemicals)
     
-    def __call__(self, T):
+    def __call__(self, xs, T):
         return 1.
     
 
 class GroupActivityCoefficients(ActivityCoefficients):
+    """Abstract class for the estimation of activity coefficients using group contribution methods.
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[Chemical]
+    
+    """
     __slots__ = ('_rs', '_qs', '_Qs','_chemgroups',
                  '_group_psis',  '_chem_Qfractions',
                  '_group_mask', '_interactions',
@@ -139,6 +156,14 @@ class GroupActivityCoefficients(ActivityCoefficients):
     
     
 class UNIFACActivityCoefficiencts(GroupActivityCoefficients):
+    """Create a UNIFACActivityCoefficiencts that estimates activity coefficients using the UNIFAC group contribution method when called with a composition and a temperature (K).
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[Chemical]
+    
+    """
     all_subgroups = UFSG
     all_interactions = UFIP
     group_name = 'UNIFAC'
@@ -161,6 +186,14 @@ class UNIFACActivityCoefficiencts(GroupActivityCoefficients):
 
 
 class DortmundActivityCoefficients(GroupActivityCoefficients):
+    """Create a DortmundActivityCoefficients that estimates activity coefficients using the Dortmund UNIFAC group contribution method when called with a composition and a temperature (K).
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[Chemical]
+    
+    """
     __slots__ = ()
     all_subgroups = DOUFSG
     all_interactions = DOUFIP2016

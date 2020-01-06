@@ -1,0 +1,5 @@
+DewPoint
+--------
+
+.. autoclass:: thermosteam.equilibrium.DewPoint
+   :members:

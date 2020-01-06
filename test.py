@@ -19,8 +19,9 @@ bst.Stream.species = species
 
 # %% Initialize stream
 
-imol = tmo.MaterialIndexer(l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
-                           g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
+imol = tmo.indexer.MolarFlowIndexer(
+    l=[('Water', 304), ('Ethanol', 30), ('Glycerol', 10)],
+    g=[('Ethanol', 201), ('Methanol', 40), ('Propanol', 1)])
 
 s1_bst = bst.MixedStream(T=300, P=101325)
 s1_bst.setflow('l', Water=304, Ethanol=30, Glycerol=10)

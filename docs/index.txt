@@ -1,0 +1,65 @@
+.. thermosteam documentation master file, created by
+   sphinx-quickstart on Sun Jan  5 10:57:34 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package
+==============================================================
+
+Key Features & Capabilities
+---------------------------
+
+* **Simple:** 
+  Straight foward methods to estimate mixture properties and thermodynamic equilibrium with just a few lines of code.
+
+* **Clear:**
+  Chemical and phase data are clearly represented throughout every object using IPython's rich display.
+
+* **Fast:**
+  Smart use of cache and Numba Jit compiled functions allows thermodynamic equilibrium computations within hundreds of microseconds.
+
+* **Flexible:**
+  New thermodynamic models for estimating pure component properties can be implemented in just a few lines of code.
+
+* **Extendable:**
+  New methods for computing thermodynamic equilibrium coefficients and mixture properties can be easily integrated.
+
+.. toctree::
+   :maxdepth: 1
+   :numbered:
+   :caption: Tutorial
+   
+   Overview
+   Installation
+   tutorial/Getting started
+   tutorial/Thermodynamic equilibrium
+   tutorial/Stoichiometric reactions
+   tutorial/Extending chemicals
+   tutorial/Building new chemicals
+   tutorial/Extending equilibrium coefficients
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API
+   
+   Chemical
+   Chemicals
+   Thermo
+   Stream
+   MultiStream
+   ThermalCondition
+   functor
+   equilibrium/equilibrium_module
+   reaction/reaction_module
+   indexer/indexer_module
+   exceptions
+   functional
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

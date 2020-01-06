@@ -181,6 +181,22 @@ _chemical_fields = {'\n[Names]  ': _names,
 # %% Chemical
 @cucumber # Just means you can pickle it
 class Chemical:
+    """Creates a Chemical object which contains basic information such as 
+    molecular weight and the structure of the species, as well as thermodynamic
+    and transport properties as a function of temperature and pressure.
+    
+    Parameters
+    ----------
+    ID : str
+        One of the following [-]:
+            * Name, in IUPAC form or common form or a synonym registered in PubChem
+            * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
+            * InChI key, prefixed by 'InChIKey='
+            * PubChem CID, prefixed by 'PubChem='
+            * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
+            * CAS number
+    
+    """
     __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref',
                  *_names, *_groups, *_thermo, *_data)
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.

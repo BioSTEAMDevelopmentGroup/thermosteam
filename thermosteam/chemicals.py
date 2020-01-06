@@ -7,7 +7,7 @@ Created on Sat Nov 23 09:41:02 2019
 from .utils import read_only
 from .exceptions import UndefinedChemical
 from .chemical import Chemical
-from .material_indexer import ChemicalIndexer
+from .indexer import ChemicalIndexer
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')

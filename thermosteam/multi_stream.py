@@ -6,7 +6,7 @@ Created on Tue Dec 10 22:54:15 2019
 """
 from .stream import Stream
 from .thermal_condition import ThermalCondition
-from .material_indexer import MolarFlowIndexer
+from .indexer import MolarFlowIndexer
 from .settings import settings
 from .equilibrium import VLE
 from .utils import Cache, assert_same_chemicals
@@ -15,6 +15,40 @@ import numpy as np
 __all__ = ('MultiStream', )
 
 class MultiStream(Stream):
+    """Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
+
+    Parameters
+    ----------
+    ID='' : str, defaults to a unique ID
+        A unique identification. If ID is None, stream will not be
+        registered.
+
+    flow=() : 2d array, optional
+        All flow rates corresponding to `phases` by row and chemical IDs by column.
+
+    thermo=() : Thermo, defaults to settings.Thermo
+        Thermodynamic equilibrium package.
+
+    units='kmol/hr' : str, optional
+        Flow rate units of measure (only mass, molar, and
+        volumetric flow rates are valid)
+
+    phases='gl' : tuple['g', 'l', 's', 'G', 'L', 'S'], optional
+        Tuple denoting the phases present.
+
+    T=298.15 : float, optional
+        Temperature (K).
+
+    P=101325 : float, optional
+        Pressure (Pa).
+
+    price=0 : float, optional
+        Price in USD/kg.
+    
+    **phase_flow : tuple[str, float]
+        phase-(ID, flow) pairs
+    
+    """
     __slots__ = ()
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='gl', units=None,
                  thermo=None, price=None, **phase_flows):

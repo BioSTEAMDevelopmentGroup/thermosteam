@@ -63,8 +63,9 @@ def functor_base_and_params(function):
 
 # %% Decorator
   
-def functor(function=None, var=None, njitcompile=True, wrap=None,
+def functor(function=None, var=None, njitcompile=False, wrap=None,
             definitions=None, units_of_measure=None, doc=None):
+    """Return a Functor subclass from function."""
     if function:
         base, params = functor_base_and_params(function)
         if njitcompile and not isinstance(function, CPUDispatcher): 

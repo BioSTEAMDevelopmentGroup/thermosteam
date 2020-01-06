@@ -1,0 +1,833 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.indexer &mdash; thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.indexer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.indexer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mon Dec  2 01:41:50 2019</span>
+
+<span class="sd">@author: yoelr</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Units</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">repr_IDs_data</span><span class="p">,</span> <span class="n">repr_couples</span><span class="p">,</span> <span class="n">chemicals_user</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">UndefinedPhase</span>
+<span class="kn">from</span> <span class="nn">.phase</span> <span class="kn">import</span> <span class="n">Phase</span><span class="p">,</span> <span class="n">LockedPhase</span><span class="p">,</span> <span class="n">NoPhase</span>
+<span class="kn">from</span> <span class="nn">free_properties</span> <span class="kn">import</span> <span class="n">PropertyFactory</span><span class="p">,</span> <span class="n">property_array</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;ChemicalIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;MaterialIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ChemicalMolarFlowIndexer&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;MolarFlowIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ChemicalMassFlowIndexer&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;MassFlowIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ChemicalVolumetricFlowIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;VolumetricFlowIndexer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;MassFlowProperty&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;VolumetricFlowProperty&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Utilities</span>
+
+<span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
+<span class="n">_new</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span>
+
+<span class="k">def</span> <span class="nf">nonzeros</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">index</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<span class="c1"># %% Abstract indexer</span>
+    
+<div class="viewcode-block" id="Indexer"><a class="viewcode-back" href="../../indexer/Indexer.html#thermosteam.indexer.Indexer">[docs]</a><span class="k">class</span> <span class="nc">Indexer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for fast indexing.&quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_data&#39;</span><span class="p">,</span> <span class="s1">&#39;_index_cache&#39;</span><span class="p">)</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_without_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new</span>
+    <span class="n">__copy__</span> <span class="o">=</span> <span class="n">copy</span>
+    
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">conversion_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="k">elif</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">scaled_data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">conversion_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">scaled_data</span>
+        <span class="k">elif</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">scaled_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">scaled_data</span>
+    
+    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> 
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid indices&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span>
+    
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+    
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Indexer</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div>
+
+
+<span class="c1"># %% Phase data</span>
+
+<div class="viewcode-block" id="ChemicalIndexer"><a class="viewcode-back" href="../../indexer/ChemicalIndexer.html#thermosteam.indexer.ChemicalIndexer">[docs]</a><span class="nd">@chemicals_user</span>
+<span class="k">class</span> <span class="nc">ChemicalIndexer</span><span class="p">(</span><span class="n">Indexer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a ChemicalIndexer that can index a single-phase, 1d-array given chemical IDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : [str or PhaseContainer] {&#39;s&#39;, &#39;l&#39;, &#39;g&#39;, &#39;S&#39;, &#39;L&#39;, &#39;G&#39;}</span>
+<span class="sd">        Phase of data.</span>
+<span class="sd">    units : str</span>
+<span class="sd">        Units of measure of input data. </span>
+<span class="sd">    chemicals : Chemicals</span>
+<span class="sd">        Required to define the chemicals that are present.</span>
+<span class="sd">    **ID_data : float</span>
+<span class="sd">        ID-value pairs</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A ChemicalIndexer does not have any units defined. To use units of measure, use the </span>
+<span class="sd">    `ChemicalMolarIndexer`, `ChemicalMassIndexer`, or `ChemicalVolumetricIndexer`.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;_phase&#39;</span><span class="p">,</span> <span class="s1">&#39;_data_cache&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ID_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ID_data</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">chemicals</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="n">ID_data</span><span class="p">),</span> <span class="n">phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">units</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_data</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_set_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">_index_cache</span>
+    
+    <span class="k">def</span> <span class="nf">to_material_indexer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">()):</span>
+        <span class="n">material_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MaterialIndexer</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
+        <span class="n">material_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="k">return</span> <span class="n">material_array</span>
+    
+    <span class="k">def</span> <span class="nf">copy_like</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="ow">is</span> <span class="n">other</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">,</span> <span class="s2">&quot;chemicals must match&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">phase</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_copy_without_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_index_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">new</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">blank</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="n">Phase</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="n">Phase</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;data must be a 1d numpy array&#39;</span>
+            <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;size of data must be equal to &#39;</span>
+                                                       <span class="s1">&#39;size of chemicals&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="o">.</span><span class="n">phase</span>
+    <span class="nd">@phase</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="n">phase</span>
+    
+    <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">isa</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">IDs</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">IDs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid indices&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tabs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tabs</span><span class="p">:</span> <span class="n">tabs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tabs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span> 
+        <span class="n">tab</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;phase={repr(self.phase)}&quot;</span>
+        <span class="k">if</span> <span class="n">tab</span><span class="p">:</span>
+            <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">phase</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
+        <span class="n">ID_data</span> <span class="o">=</span> <span class="n">repr_IDs_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">dlim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(</span><span class="si">{phase}{ID_data}</span><span class="s2">)&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return string with all specifications.&quot;&quot;&quot;</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: (empty)&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__} (</span><span class="si">{self.units}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{self.phase}</span><span class="s1">) &#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">new_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
+        <span class="n">data_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">_N</span><span class="p">:</span>
+                <span class="n">data_info</span> <span class="o">+=</span> <span class="s1">&#39;...</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
+                <span class="k">break</span>
+            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[len_-1]:.4g}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">basic_info</span>
+              <span class="o">+</span> <span class="n">beginning</span>
+              <span class="o">+</span> <span class="n">data_info</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChemicalIndexer.show"><a class="viewcode-back" href="../../indexer/ChemicalIndexer.html#thermosteam.indexer.ChemicalIndexer.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print all specifications.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        N: int, optional</span>
+<span class="sd">            Number of compounds to display.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">(</span><span class="n">N</span><span class="p">))</span></div>
+    <span class="n">_ipython_display_</span> <span class="o">=</span> <span class="n">show</span></div>
+      
+<div class="viewcode-block" id="MaterialIndexer"><a class="viewcode-back" href="../../indexer/MaterialIndexer.html#thermosteam.indexer.MaterialIndexer">[docs]</a><span class="nd">@chemicals_user</span>
+<span class="k">class</span> <span class="nc">MaterialIndexer</span><span class="p">(</span><span class="n">Indexer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a MaterialIndexer that can index a multi-phase, 2d-array given the phase and chemical IDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phases : tuple[&#39;s&#39;, &#39;l&#39;, &#39;g&#39;, &#39;S&#39;, &#39;L&#39;, &#39;G&#39;]</span>
+<span class="sd">        Phases of data rows.</span>
+<span class="sd">    units : str</span>
+<span class="sd">        Units of measure of input data. </span>
+<span class="sd">    chemicals : Chemicals</span>
+<span class="sd">        Required to define the chemicals that are present.</span>
+<span class="sd">    **phase_data : tuple[str, float]</span>
+<span class="sd">        phase-(ID, value) pairs</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A MaterialIndexer does not have any units defined. To use units of measure, use the </span>
+<span class="sd">    `MolarIndexer`, `MassIndexer`, or `VolumetricIndexer`.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;_phases&#39;</span><span class="p">,</span> <span class="s1">&#39;_phase_index&#39;</span><span class="p">,</span> <span class="s1">&#39;_data_cache&#39;</span><span class="p">)</span>
+    <span class="n">_index_caches</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_phase_index_cache</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_ChemicalIndexer</span> <span class="o">=</span> <span class="n">ChemicalIndexer</span>
+    
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_data</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">phases</span> <span class="ow">or</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+            <span class="n">chemical_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">indices</span>
+            <span class="n">phase_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_phase_index</span>
+            <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">ID_data</span> <span class="ow">in</span> <span class="n">phase_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">IDs</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ID_data</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">phase_index</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span> <span class="n">chemical_indices</span><span class="p">(</span><span class="n">IDs</span><span class="p">)]</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="k">if</span> <span class="n">units</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_data</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">copy_like</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span>
+    
+    <span class="k">def</span> <span class="nf">_set_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">phases</span><span class="p">))</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_index_cache</span>
+        <span class="k">if</span> <span class="n">phases</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">phases</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">phases</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases</span><span class="p">)}</span>
+            
+    <span class="k">def</span> <span class="nf">_set_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_caches</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_copy_without_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_phase_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_index</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_index_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">new</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">blank</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_phases</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">()</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_phases</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;data must be an 2d numpy array&#39;</span><span class="p">)</span>
+            <span class="n">M_phases</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">)</span>
+            <span class="n">N_chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">assert</span> <span class="n">M</span> <span class="o">==</span> <span class="n">M_phases</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;number of phases must be equal to &#39;</span>
+                                   <span class="s1">&#39;the number of data rows&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">N</span> <span class="o">==</span> <span class="n">N_chemicals</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;size of chemicals &#39;</span>
+                                      <span class="s1">&#39;must be equal to &#39;</span>
+                                      <span class="s1">&#39;number of data columns&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span>
+    
+    <span class="k">def</span> <span class="nf">to_chemical_indexer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">NoPhase</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_phase_index</span><span class="p">(</span><span class="n">phase</span><span class="p">)],</span>
+                                               <span class="n">LockedPhase</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_IDs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">phase_IDs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_phase_index</span><span class="p">(</span><span class="n">phase_IDs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">phase_IDs</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">phase_IDs</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span> <span class="o">=</span> <span class="n">phase_IDs</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;use &lt;{type(self).__name__}&gt;[phase, IDs] &quot;</span>
+                                  <span class="s2">&quot;where phase is a (str, ellipsis, or missing), &quot;</span>
+                                  <span class="s2">&quot;and IDs is a (str, tuple(str), ellipisis, or missing)&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">IDs_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">IDs</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
+                <span class="n">IDs_index</span> <span class="o">=</span> <span class="n">IDs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid indices&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_phase_index</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span> <span class="n">IDs_index</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">phase</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs_index</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;use &lt;{type(self).__name__}&gt;[phase, IDs] &quot;</span>
+                                  <span class="s2">&quot;where phase is a (str, or ellipsis), &quot;</span>
+                                  <span class="s2">&quot;and IDs is a (str, tuple(str), ellipisis, or missing)&quot;</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">index</span>
+    
+    <span class="k">def</span> <span class="nf">_get_phase_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_index</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UndefinedPhase</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="MaterialIndexer.iter_data"><a class="viewcode-back" href="../../indexer/MaterialIndexer.html#thermosteam.indexer.MaterialIndexer.iter_data">[docs]</a>    <span class="k">def</span> <span class="nf">iter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over phase-data pairs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="MaterialIndexer.iter_composition"><a class="viewcode-back" href="../../indexer/MaterialIndexer.html#thermosteam.indexer.MaterialIndexer.iter_composition">[docs]</a>    <span class="k">def</span> <span class="nf">iter_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over phase-composition pairs.&quot;&quot;&quot;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="ow">or</span> <span class="mf">1.</span>
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phases</span><span class="p">,</span> <span class="n">array</span><span class="o">/</span><span class="n">total</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tabs</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">IDs</span>
+        <span class="n">phase_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_data</span><span class="p">():</span>
+            <span class="n">ID_data</span> <span class="o">=</span> <span class="n">repr_couples</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ID_data</span><span class="p">:</span>
+                <span class="n">phase_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{phase}</span><span class="s2">=[</span><span class="si">{ID_data}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">tabs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tabs</span><span class="p">:</span>
+            <span class="n">tab</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
+            <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
+        <span class="n">phase_data</span> <span class="o">=</span> <span class="n">dlim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phase_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">phases</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
+                <span class="n">phase_data</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">phase_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">phases</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;phases=</span><span class="si">{self.phases}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
+                <span class="n">phase_data</span> <span class="o">=</span> <span class="n">dlim</span> <span class="o">+</span> <span class="n">phase_data</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(</span><span class="si">{phases}{phase_data}</span><span class="s2">)&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return string with all specifications.&quot;&quot;&quot;</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span>
+        <span class="n">index</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: (empty)&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__} (</span><span class="si">{self.units}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">all_IDs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">])</span>
+
+        <span class="c1"># Length of chemical column</span>
+        <span class="n">all_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_lengths</span> <span class="o">+</span> <span class="p">[</span><span class="mi">8</span><span class="p">])</span>
+
+        <span class="c1"># Set up chemical data for all phases</span>
+        <span class="n">phases_flowrates_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
+            <span class="n">phase_data</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">all_IDs</span><span class="p">]</span>
+            <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">all_IDs</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">IDs</span><span class="p">:</span> <span class="k">continue</span>
+        
+            <span class="c1"># Get basic structure for phase data</span>
+            <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{phase}</span><span class="s1">) &#39;</span>
+            <span class="n">new_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
+
+            <span class="c1"># Set chemical data</span>
+            <span class="n">flowrates</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
+            <span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">_N</span><span class="p">:</span>
+                    <span class="n">flowrates</span> <span class="o">+=</span> <span class="s1">&#39;...</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
+                    <span class="k">break</span>
+                <span class="n">flowrates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> \
+                    <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
+            <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">flowrates</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[l-1]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span>
+                          <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[l-1]:.4g}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Put it together</span>
+            <span class="n">phases_flowrates_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">flowrates</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            
+        <span class="k">return</span> <span class="n">basic_info</span> <span class="o">+</span> <span class="n">phases_flowrates_info</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">show</span> <span class="o">=</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">show</span>
+    <span class="n">_ipython_display_</span> <span class="o">=</span> <span class="n">show</span></div>
+    
+<span class="k">def</span> <span class="nf">_replace_indexer_doc</span><span class="p">(</span><span class="n">Indexer</span><span class="p">,</span> <span class="n">Parent</span><span class="p">):</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">Parent</span><span class="o">.</span><span class="vm">__doc__</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[:</span><span class="n">doc</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Notes&quot;</span><span class="p">)]</span>
+    <span class="n">Indexer</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">Parent</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">Indexer</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    
+<span class="k">def</span> <span class="nf">new_Indexer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="p">()):</span>
+    <span class="n">ChemicalIndexerSubclass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Chemical&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;Indexer&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">ChemicalIndexer</span><span class="p">,),</span> <span class="p">{})</span>
+    <span class="n">MaterialIndexerSubclass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;Indexer&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">MaterialIndexer</span><span class="p">,),</span> <span class="p">{})</span>
+    
+    <span class="n">ChemicalIndexerSubclass</span><span class="o">.</span><span class="vm">__slots__</span> <span class="o">=</span> \
+    <span class="n">MaterialIndexerSubclass</span><span class="o">.</span><span class="vm">__slots__</span> <span class="o">=</span> <span class="n">slots</span>
+    
+    <span class="n">ChemicalIndexerSubclass</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> \
+    <span class="n">MaterialIndexerSubclass</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">Units</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+    
+    <span class="n">MaterialIndexerSubclass</span><span class="o">.</span><span class="n">_ChemicalIndexer</span> <span class="o">=</span> <span class="n">ChemicalIndexerSubclass</span>
+    <span class="n">ChemicalIndexerSubclass</span><span class="o">.</span><span class="n">_MaterialIndexer</span> <span class="o">=</span> <span class="n">MaterialIndexerSubclass</span>
+    
+    <span class="n">_replace_indexer_doc</span><span class="p">(</span><span class="n">ChemicalIndexerSubclass</span><span class="p">,</span> <span class="n">ChemicalIndexer</span><span class="p">)</span>
+    <span class="n">_replace_indexer_doc</span><span class="p">(</span><span class="n">MaterialIndexerSubclass</span><span class="p">,</span> <span class="n">MaterialIndexer</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">ChemicalIndexerSubclass</span><span class="p">,</span> <span class="n">MaterialIndexerSubclass</span>
+
+<span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">_MaterialIndexer</span> <span class="o">=</span> <span class="n">MaterialIndexer</span>
+<span class="n">ChemicalMolarFlowIndexer</span><span class="p">,</span> <span class="n">MolarFlowIndexer</span> <span class="o">=</span> <span class="n">new_Indexer</span><span class="p">(</span><span class="s1">&#39;MolarFlow&#39;</span><span class="p">,</span> <span class="s1">&#39;kmol/hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;_vol&#39;</span><span class="p">))</span>
+<span class="n">ChemicalMassFlowIndexer</span><span class="p">,</span> <span class="n">MassFlowIndexer</span> <span class="o">=</span> <span class="n">new_Indexer</span><span class="p">(</span><span class="s1">&#39;MassFlow&#39;</span><span class="p">,</span> <span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
+<span class="n">ChemicalVolumetricFlowIndexer</span><span class="p">,</span> <span class="n">VolumetricFlowIndexer</span> <span class="o">=</span> <span class="n">new_Indexer</span><span class="p">(</span><span class="s1">&#39;VolumetricFlow&#39;</span><span class="p">,</span> <span class="s1">&#39;m^3/hr&#39;</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">new_Indexer</span><span class="p">,</span> <span class="n">_replace_indexer_doc</span>
+
+<span class="c1"># %% Mass flow properties</span>
+
+<span class="nd">@PropertyFactory</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;mol&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;MW&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">MassFlowProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mass flow (kg/hr).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">MW</span>
+    
+<span class="nd">@MassFlowProperty</span><span class="o">.</span><span class="n">setter</span>
+<span class="k">def</span> <span class="nf">MassFlowProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">MW</span>
+
+<span class="k">def</span> <span class="nf">by_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a ChemicalMassFlowIndexer that references this object&#39;s molar data.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemicals</span><span class="p">):</span>
+            <span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">MassFlowProperty</span><span class="p">(</span><span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">=</span> <span class="n">ChemicalMassFlowIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span>
+                                                        <span class="n">property_array</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mass</span>
+<span class="n">ChemicalMolarFlowIndexer</span><span class="o">.</span><span class="n">by_mass</span> <span class="o">=</span> <span class="n">by_mass</span>
+
+<span class="k">def</span> <span class="nf">by_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a MassFlowIndexer that references this object&#39;s molar data.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">phase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">chem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemicals</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                <span class="n">mass</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">MassFlowProperty</span><span class="p">(</span><span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">=</span> <span class="n">MassFlowIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span>
+                                                        <span class="n">property_array</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                                                        <span class="n">phases</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mass</span>
+<span class="n">MolarFlowIndexer</span><span class="o">.</span><span class="n">by_mass</span> <span class="o">=</span> <span class="n">by_mass</span><span class="p">;</span> <span class="k">del</span> <span class="n">by_mass</span>
+
+
+<span class="c1"># %% Volumetric flow properties</span>
+
+<span class="nd">@PropertyFactory</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;mol&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;TP&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;phase_container&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">VolumetricFlowProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Volumetric flow (m^3/hr).&quot;&quot;&quot;</span>
+    <span class="n">f_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> 
+    <span class="k">return</span> <span class="mf">1000.</span> <span class="o">*</span> <span class="n">f_mol</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_container</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TP</span><span class="p">)</span> <span class="k">if</span> <span class="n">f_mol</span> <span class="k">else</span> <span class="mi">0</span>
+    
+<span class="nd">@VolumetricFlowProperty</span><span class="o">.</span><span class="n">setter</span>
+<span class="k">def</span> <span class="nf">VolumetricFlowProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_container</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TP</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">by_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TP</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a ChemicalVolumetricFlowIndexer that references this object&#39;s molar data.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    TP : ThermalCondition</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="n">TP</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemicals</span><span class="p">):</span>
+            <span class="n">vol</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">VolumetricFlowProperty</span><span class="p">(</span><span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">TP</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="n">TP</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">vol</span> <span class="o">=</span> <span class="n">ChemicalVolumetricFlowIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">property_array</span><span class="p">(</span><span class="n">vol</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vol</span>
+<span class="n">ChemicalMolarFlowIndexer</span><span class="o">.</span><span class="n">by_volume</span> <span class="o">=</span> <span class="n">by_volume</span>
+	
+<span class="k">def</span> <span class="nf">by_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TP</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a VolumetricFlowIndexer that references this object&#39;s molar data.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    TP : ThermalCondition</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="n">TP</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">phase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">chem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemicals</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+                <span class="n">phase_name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">_phase_names</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+                <span class="n">vol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">VolumetricFlowProperty</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{phase_name}{chem.ID}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span>
+                                                                <span class="n">index</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">TP</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="n">TP</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">vol</span> <span class="o">=</span> <span class="n">VolumetricFlowIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">property_array</span><span class="p">(</span><span class="n">vol</span><span class="p">),</span>
+                                                        <span class="n">phases</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vol</span>
+<span class="n">MolarFlowIndexer</span><span class="o">.</span><span class="n">by_volume</span> <span class="o">=</span> <span class="n">by_volume</span><span class="p">;</span> <span class="k">del</span> <span class="n">by_volume</span>
+<span class="k">del</span> <span class="n">PropertyFactory</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
