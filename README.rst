@@ -47,5 +47,5 @@ Citation
 
 To cite ThermoSTEAM in publications use::
 
-    Yoel Cortes-Pena (2019). ThermoSTEAM: BioSTEAM's Premire Thermodynamic Property Package.
+    Yoel Cortes-Pena (2019). ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package.
     https://github.com/yoelcortes/thermosteam
