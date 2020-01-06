@@ -24,21 +24,21 @@ __all__ = ('Chemical',)
 
 from scipy.optimize import newton
 from .utils import copy_maybe, cucumber
-from .chemical_data.identifiers import CAS_from_any, pubchem_db
-from .chemical_data.vapor_pressure import VaporPressure
-from .chemical_data.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
-from .chemical_data.critical import Tc, Pc, Vc
-from .chemical_data.acentric import omega, StielPolar
-from .chemical_data.triple import Tt, Pt
-from .chemical_data.volume import Volume
-from .chemical_data.heat_capacity import HeatCapacity
-from .chemical_data.reaction import Hf
-from .chemical_data.combustion import Hcombustion
-from .chemical_data.elements import similarity_variable, simple_formula_parser
-from .chemical_data.eos import GCEOS_DUMMY, PR
-from .chemical_data.viscosity import Viscosity
-from .chemical_data.thermal_conductivity import ThermalConductivity
-from .chemical_data.free_energy import \
+from ._functors.identifiers import CAS_from_any, pubchem_db
+from ._functors.vapor_pressure import VaporPressure
+from ._functors.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
+from ._functors.critical import Tc, Pc, Vc
+from ._functors.acentric import omega, StielPolar
+from ._functors.triple import Tt, Pt
+from ._functors.volume import Volume
+from ._functors.heat_capacity import HeatCapacity
+from ._functors.reaction import Hf
+from ._functors.combustion import Hcombustion
+from ._functors.elements import similarity_variable, simple_formula_parser
+from ._functors.eos import GCEOS_DUMMY, PR
+from ._functors.viscosity import Viscosity
+from ._functors.thermal_conductivity import ThermalConductivity
+from ._functors.free_energy import \
     EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas, \
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
@@ -46,10 +46,10 @@ from .chemical_data.free_energy import \
 from .base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, \
                   display_asfunctor, TDependentModelHandle
 from .base.units_of_measure import chemical_units_of_measure
-from .chemical_data.dipole import dipole_moment as dipole
+from ._functors.dipole import dipole_moment as dipole
 from .functional import Z, rho_to_V #, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
-from .chemical_data.permittivity import Permittivity
-from .chemical_data.interface import SurfaceTension
+from ._functors.permittivity import Permittivity
+from ._functors.interface import SurfaceTension
 from .equilibrium.unifac_data import \
     DDBST_UNIFAC_assignments, DDBST_MODIFIED_UNIFAC_assignments, DDBST_PSRK_assignments
 # from .solubility import SolubilityParameter
