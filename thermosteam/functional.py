@@ -9,7 +9,7 @@ from fluids.core import *
 from cmath import sqrt as csqrt
 from numba import njit
 from .base import functor
-from .constants import R
+from ._constants import R
 import numpy as np
 
 __all__ = ('isobaric_expansion', 'isothermal_compressibility', 

@@ -7,9 +7,9 @@ Created on Mon Dec  2 01:41:50 2019
 
 from .base import Units
 from .utils import repr_IDs_data, repr_couples, chemicals_user
-from .settings import settings
+from ._settings import settings
 from .exceptions import UndefinedPhase
-from .phase import Phase, LockedPhase, NoPhase
+from ._phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
 import numpy as np
 

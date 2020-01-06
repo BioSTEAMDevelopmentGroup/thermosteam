@@ -8,7 +8,7 @@ from flexsolve import wegstein, IQ_interpolation
 from ..utils.decorator_utils import thermo_user
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
-from ..thermal_condition import ThermalCondition
+from .._thermal_condition import ThermalCondition
 from ..utils import Cache
 from numba import njit
 import numpy as np

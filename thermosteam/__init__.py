@@ -4,13 +4,13 @@ Created on Wed Oct 30 11:29:58 2019
 
 @author: yoelr
 """
-from .chemical import Chemical
-from .chemicals import Chemicals
-from .thermo import Thermo
-from .stream import Stream
-from .multi_stream import MultiStream
-from .settings import settings
-from .thermal_condition import ThermalCondition
+from ._chemical import Chemical
+from ._chemicals import Chemicals
+from ._thermo import Thermo
+from ._stream import Stream
+from ._multi_stream import MultiStream
+from ._settings import settings
+from ._thermal_condition import ThermalCondition
 from .base import functor
 
 from . import base

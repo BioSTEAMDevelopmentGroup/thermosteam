@@ -27,7 +27,7 @@ class ThermalCache:
     
     @property
     def tuple(self):
-        return self.condition, self.nonzero, self.data
+        return (self.condition, self.nonzero, self.data)
     
     def __iter__(self):
         yield self.condition

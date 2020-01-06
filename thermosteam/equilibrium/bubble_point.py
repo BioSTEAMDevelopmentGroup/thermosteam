@@ -8,7 +8,7 @@ from numpy import asarray, array
 from flexsolve import aitken_secant
 from .solve_composition import solve_y
 from ..utils import fill_like
-from ..settings import settings
+from .._settings import settings
 
 __all__ = ('BubblePoint', 'BubblePointValues')
 
