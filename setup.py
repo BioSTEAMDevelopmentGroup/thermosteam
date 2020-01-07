@@ -19,7 +19,8 @@ setup(
                       'numba==0.46.0', 'scipy==1.3.1', 'IPython==7.9.0', 
                       'colorpalette>=0.3.0',
                       'pandas==0.25.2', 'graphviz==0.8.3', 'matplotlib==3.1.1',
-				  'coolprop==6.3.0', 'numpy==1.17.3', 'xlrd==1.2.0', 'openpyxl==3.0.0',
+				  'coolprop==6.3.0', 'numpy==1.17.3', 'xlrd==1.2.0',
+                      'openpyxl==3.0.0',
                       'free_properties==0.2.2', 'flexsolve', 'pyglet', 'sympy'],
     python_requires=">=3.6",
     package_data=
