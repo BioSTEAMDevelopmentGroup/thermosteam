@@ -4,7 +4,6 @@ Created on Thu Nov 28 22:59:17 2019
 
 @author: yoelr
 """
-import thermosteam as tmo
 
 __all__ = ('read_only',)
 
