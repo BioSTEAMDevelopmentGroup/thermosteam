@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: thermosteam
-Version: 0.1
+Version: 0.1.1
 Summary: BioSTEAM's Premier Thermodynamic Property Package
 Home-page: https://github.com/yoelcortes/thermosteam
 Author: Yoel Cortes-Pena
@@ -10,6 +10,13 @@ Download-URL: https://github.com/yoelcortes/thermosteam.git
 Description: ==============================================================
         ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package 
         ==============================================================
+        
+        .. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
+           :target: https://pypi.python.org/pypi/thermosteam
+           :alt: Version_status
+        .. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+           :target: https://thermosteam.readthedocs.io/en/latest/
+           :alt: Documentation
         .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
            :target: https://github.com/yoelcortes/thermosteam/blob/master/LICENSE.txt
            :alt: license

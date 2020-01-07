@@ -193,7 +193,6 @@ thermosteam/utils/cache.py
 thermosteam/utils/define_from.py
 thermosteam/utils/other_utils.py
 thermosteam/utils/pickle_utils.py
-thermosteam/utils/read_only.py
 thermosteam/utils/registry.py
 thermosteam/utils/repr_utils.py
 thermosteam/utils/var_utils.py
