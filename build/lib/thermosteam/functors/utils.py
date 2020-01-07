@@ -31,10 +31,10 @@ __all__ = ('CASDataReader', 'CASData', 'MultiCheb1D', 'CAS2int', 'int2CAS', 'to_
 class CASDataReader:
     
     def __init__(self, __file__, folder, parent="Data"):
-        path_ = os.path
-		join = path_.join
-		parent_path = join(path_.dirname(__file__), parent)
-		self.folder = join(parent_path, folder)
+        fpath = os.path
+        join = fpath.join
+        parent_path = join(fpath.dirname(__file__), parent)
+        self.folder = join(parent_path, folder)
     
     def __call__(self, file, sep='\t', index_col=0,  **kwargs):
         df = pd.read_csv(os.path.join(self.folder, file),
