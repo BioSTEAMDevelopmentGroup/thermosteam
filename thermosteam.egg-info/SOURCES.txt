@@ -184,6 +184,9 @@ thermosteam/functors/Data/Viscosity/VDI PPDS Dynamic viscosity of saturated liqu
 thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 2 term Exponential.tsv
 thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 2 term.tsv
 thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 3 term.tsv
+thermosteam/mixture/__init__.py
+thermosteam/mixture/ideal_mixture.py
+thermosteam/mixture/mixture_method_names.py
 thermosteam/reaction/__init__.py
 thermosteam/reaction/_parse.py
 thermosteam/reaction/_reaction.py
