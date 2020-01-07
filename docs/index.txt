@@ -55,7 +55,7 @@ Key Features & Capabilities
    indexer/indexer_module
    exceptions
    functional
-
+   functors/functors_module
 
 Indices and tables
 ==================

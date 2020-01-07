@@ -1,6 +1,13 @@
 ==============================================================
-ThermoSTEAM: BioSTEAM's Premire Thermodynamic Property Package 
+ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package 
 ==============================================================
+
+.. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
+   :target: https://pypi.python.org/pypi/thermosteam
+   :alt: Version_status
+.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+   :target: https://thermosteam.readthedocs.io/en/latest/
+   :alt: Documentation
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
    :target: https://github.com/yoelcortes/thermosteam/blob/master/LICENSE.txt
    :alt: license
@@ -9,19 +16,30 @@ ThermoSTEAM: BioSTEAM's Premire Thermodynamic Property Package
 .. contents::
 
 What is ThermoSTEAM?
------------------
+--------------------
 
 ThermoSTEAM is an open-source thermodynamic property package with an easily extendable structure.
 
 Installation
 ------------
 
-TODO
+Get the latest version of ThermoSTEAM from
+https://pypi.python.org/pypi/thermosteam/
+
+If you have an installation of Python with pip, simple install it with:
+
+    $ pip install thermosteam
+
+To get the git version, run:
+
+    $ git clone git://github.com/yoelcortes/thermosteam
 
 Documentation
 -------------
 
-TODO
+ThermoSTEAM's documentation is available on the web:
+
+    http://thermosteam.readthedocs.io/
 
 Bug reports
 -----------

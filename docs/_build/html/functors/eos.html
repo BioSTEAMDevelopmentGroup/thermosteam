@@ -1,0 +1,2479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>eos &mdash; ThermoSTEAM  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="heat_capacity" href="heat_capacity.html" />
+    <link rel="prev" title="elements" href="elements.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ThermoSTEAM
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ThermoSTEAM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>eos</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/eos.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.eos">
+<span id="eos"></span><h1>eos<a class="headerlink" href="#module-thermosteam.functors.eos" title="Permalink to this headline">¶</a></h1>
+<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="class">
+<dt id="thermosteam.functors.eos.GCEOS">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">GCEOS</code><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving a generic Pressure-explicit three-parameter cubic 
+equation of state. Does not implement any parameters itself; must be 
+subclassed by an equation of state class which uses it. Works for mixtures
+or pure species for all properties except fugacity. All properties are 
+derived with the CAS SymPy, not relying on any derivations previously 
+published.</p>
+<div class="math">
+<p><img src="../_images/math/9aeb71484643645ecacb7651fa89f241898efbb5.png" alt="P=\frac{RT}{V-b}-\frac{a\alpha(T)}{V^2 + \delta V + \epsilon}"/></p>
+</div><p>Main methods (in order they are called) are <cite>solve</cite>, <cite>set_from_PT</cite>,
+<cite>volume_solutions</cite>, <cite>set_properties_from_solution</cite>,  and
+<cite>derivatives_and_departures</cite>.</p>
+<p><cite>solve</cite> calls <cite>check_sufficient_input</cite>, which checks if two of <cite>T</cite>, <cite>P</cite>, 
+and <cite>V</cite> were set. It then solves for the 
+remaining variable. If <cite>T</cite> is missing, method <cite>solve_T</cite> is used; it is
+parameter specific, and so must be implemented in each specific EOS. 
+If <cite>P</cite> is missing, it is directly calculated. If <cite>V</cite> is missing, it
+is calculated with the method <cite>volume_solutions</cite>. At this point, either
+three possible volumes or one user specified volume are known. The
+value of <cite>a_alpha</cite>, and its first and second temperature derivative are
+calculated with the EOS-specific method <cite>a_alpha_and_derivatives</cite>.</p>
+<p>If <cite>V</cite> is not provided, <cite>volume_solutions</cite> calculates the three 
+possible molar volumes which are solutions to the EOS; in the single-phase 
+region, only one solution is real and correct. In the two-phase region, all 
+volumes are real, but only the largest and smallest solution are physically 
+meaningful, with the largest being that of the gas and the smallest that of
+the liquid.</p>
+<p><cite>set_from_PT</cite> is called to sort out the possible molar volumes. For the 
+case of a user-specified <cite>V</cite>, the possibility of there existing another 
+solution is ignored for speed. If there is only one real volume, the 
+method <cite>set_properties_from_solution</cite> is called with it. If there are
+two real volumes, <cite>set_properties_from_solution</cite> is called once with each 
+volume. The phase is returned by <cite>set_properties_from_solution</cite>, and the
+volumes is set to either <cite>V_l</cite> or <cite>V_g</cite> as appropriate.</p>
+<p><cite>set_properties_from_solution</cite> is a beast which calculates all relevant
+partial derivatives and properties of the EOS. 15 derivatives and excess
+enthalpy and entropy are calculated first. If the method was called with 
+the <cite>quick</cite> flag, the method <cite>derivatives_and_departures</cite> uses a mess 
+derived with SymPy’s <cite>cse</cite> function to perform the calculation as quickly
+as possible. Otherwise, the independent formulas for each property are used.</p>
+<p><cite>set_properties_from_solution</cite> next calculates <cite>beta</cite> (isobaric expansion
+coefficient), <cite>kappa</cite> (isothermal compressibility), <cite>Cp_minus_Cv</cite>, <cite>Cv_dep</cite>,
+<cite>Cp_dep</cite>, <cite>V_dep</cite> molar volume departure, <cite>U_dep</cite> internal energy departure,
+<cite>G_dep</cite> Gibbs energy departure, <cite>A_dep</cite> Helmholtz energy departure,
+<cite>fugacity</cite>, and <cite>phi</cite> (fugacity coefficient). It then calculates
+<cite>PIP</cite> or phase identification parameter, and determines the fluid phase
+with it. Finally, it sets all these properties as attibutes or either 
+the liquid or gas phase with the convention of adding on <cite>_l</cite> or <cite>_g</cite> to
+the variable names.</p>
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.check_sufficient_inputs">
+<code class="sig-name descname">check_sufficient_inputs</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.check_sufficient_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.check_sufficient_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to an exception if none of the pairs (T, P), (T, V), or 
+(P, V) are given.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.solve">
+<code class="sig-name descname">solve</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>First EOS-generic method; should be called by all specific EOSs.
+For solving for <cite>T</cite>, the EOS must provide the method <cite>solve_T</cite>.
+For all cases, the EOS must provide <cite>a_alpha_and_derivatives</cite>.
+Calls <cite>set_from_PT</cite> once done.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.set_from_PT">
+<code class="sig-name descname">set_from_PT</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">Vs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.set_from_PT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.set_from_PT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counts the number of real volumes in <cite>Vs</cite>, and determines what to do.
+If there is only one real volume, the method 
+<cite>set_properties_from_solution</cite> is called with it. If there are
+two real volumes, <cite>set_properties_from_solution</cite> is called once with  
+each volume. The phase is returned by <cite>set_properties_from_solution</cite>, 
+and the volumes is set to either <cite>V_l</cite> or <cite>V_g</cite> as appropriate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Vs</strong><span class="classifier">list[float]</span></dt><dd><p>Three possible molar volumes, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.set_properties_from_solution">
+<code class="sig-name descname">set_properties_from_solution</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">b</em>, <em class="sig-param">delta</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">a_alpha</em>, <em class="sig-param">da_alpha_dT</em>, <em class="sig-param">d2a_alpha_dT2</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.set_properties_from_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.set_properties_from_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all interesting properties which can be calculated from an
+EOS alone. Determines which phase the fluid is on its own; for details,
+see <cite>phase_identification_parameter</cite>.</p>
+<p>The list of properties set is as follows, with all properties suffixed
+with ‘_l’ or ‘_g’.</p>
+<p>dP_dT, dP_dV, dV_dT, dV_dP, dT_dV, dT_dP, d2P_dT2, d2P_dV2, d2V_dT2, 
+d2V_dP2, d2T_dV2, d2T_dP2, d2V_dPdT, d2P_dTdV, d2T_dPdV, H_dep, S_dep, 
+beta, kappa, Cp_minus_Cv, V_dep, U_dep, G_dep, A_dep, fugacity, phi, 
+and PIP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^3/mol]</p>
+</dd>
+<dt><strong>delta</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^3/mol]</p>
+</dd>
+<dt><strong>epsilon</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^6/mol^2]</p>
+</dd>
+<dt><strong>a_alpha</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [J^2/mol^2/Pa]</p>
+</dd>
+<dt><strong>da_alpha_dT</strong><span class="classifier">float</span></dt><dd><p>Temperature derivative of coefficient calculated by EOS-specific 
+method, [J^2/mol^2/Pa/K]</p>
+</dd>
+<dt><strong>d2a_alpha_dT2</strong><span class="classifier">float</span></dt><dd><p>Second temperature derivative of coefficient calculated by  
+EOS-specific method, [J^2/mol^2/Pa/K**2]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>phase</strong><span class="classifier">str</span></dt><dd><p>Either ‘l’ or ‘g’</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The individual formulas for the derivatives and excess properties are 
+as follows. For definitions of <cite>beta</cite>, see <cite>isobaric_expansion</cite>;
+for <cite>kappa</cite>, see isothermal_compressibility; for <cite>Cp_minus_Cv</cite>, see
+<cite>Cp_minus_Cv</cite>; for <cite>phase_identification_parameter</cite>, see 
+<cite>phase_identification_parameter</cite>.</p>
+<p>First derivatives; in part using the Triple Product Rule <a class="reference internal" href="#r4006778e4168-2" id="id1">[2]</a>, <a class="reference internal" href="#r4006778e4168-3" id="id2">[3]</a>:</p>
+<div class="math">
+<p><img src="../_images/math/f9d007622620170794f2ddb56c87094c90d715c5.png" alt="\left(\frac{\partial P}{\partial T}\right)_V = \frac{R}{V - b}
+- \frac{a \frac{d \alpha{\left (T \right )}}{d T}}{V^{2} + V \delta
++ \epsilon}
+
+\left(\frac{\partial P}{\partial V}\right)_T = - \frac{R T}{\left(
+V - b\right)^{2}} - \frac{a \left(- 2 V - \delta\right) \alpha{
+\left (T \right )}}{\left(V^{2} + V \delta + \epsilon\right)^{2}}
+
+\left(\frac{\partial V}{\partial T}\right)_P =-\frac{
+\left(\frac{\partial P}{\partial T}\right)_V}{
+\left(\frac{\partial P}{\partial V}\right)_T}
+
+\left(\frac{\partial V}{\partial P}\right)_T =-\frac{
+\left(\frac{\partial V}{\partial T}\right)_P}{
+\left(\frac{\partial P}{\partial T}\right)_V}            
+
+\left(\frac{\partial T}{\partial V}\right)_P = \frac{1}
+{\left(\frac{\partial V}{\partial T}\right)_P}
+
+\left(\frac{\partial T}{\partial P}\right)_V = \frac{1}
+{\left(\frac{\partial P}{\partial T}\right)_V}"/></p>
+</div><p>Second derivatives with respect to one variable; those of <cite>T</cite> and <cite>V</cite>
+use identities shown in <a class="reference internal" href="#r4006778e4168-1" id="id3">[1]</a> and verified numerically:</p>
+<div class="math">
+<p><img src="../_images/math/01df53258577e8eadd246e64abbdc0946d484332.png" alt="\left(\frac{\partial^2  P}{\partial T^2}\right)_V =  - \frac{a 
+\frac{d^{2} \alpha{\left (T \right )}}{d T^{2}}}{V^{2} + V \delta 
++ \epsilon}
+
+\left(\frac{\partial^2  P}{\partial V^2}\right)_T = 2 \left(\frac{
+R T}{\left(V - b\right)^{3}} - \frac{a \left(2 V + \delta\right)^{
+2} \alpha{\left (T \right )}}{\left(V^{2} + V \delta + \epsilon
+\right)^{3}} + \frac{a \alpha{\left (T \right )}}{\left(V^{2} + V 
+\delta + \epsilon\right)^{2}}\right)
+
+\left(\frac{\partial^2 T}{\partial P^2}\right)_V = -\left(\frac{
+\partial^2 P}{\partial T^2}\right)_V \left(\frac{\partial P}{
+\partial T}\right)^{-3}_V
+
+\left(\frac{\partial^2 V}{\partial P^2}\right)_T = -\left(\frac{
+\partial^2 P}{\partial V^2}\right)_T \left(\frac{\partial P}{
+\partial V}\right)^{-3}_T
+
+\left(\frac{\partial^2 T}{\partial V^2}\right)_P = -\left[
+\left(\frac{\partial^2 P}{\partial V^2}\right)_T
+\left(\frac{\partial P}{\partial T}\right)_V
+- \left(\frac{\partial P}{\partial V}\right)_T
+\left(\frac{\partial^2 P}{\partial T \partial V}\right) \right]
+\left(\frac{\partial P}{\partial T}\right)^{-2}_V
++ \left[\left(\frac{\partial^2 P}{\partial T\partial V}\right)
+\left(\frac{\partial P}{\partial T}\right)_V 
+- \left(\frac{\partial P}{\partial V}\right)_T
+\left(\frac{\partial^2 P}{\partial T^2}\right)_V\right]
+\left(\frac{\partial P}{\partial T}\right)_V^{-3}
+\left(\frac{\partial P}{\partial V}\right)_T
+
+\left(\frac{\partial^2 V}{\partial T^2}\right)_P = -\left[
+\left(\frac{\partial^2 P}{\partial T^2}\right)_V
+\left(\frac{\partial P}{\partial V}\right)_T
+- \left(\frac{\partial P}{\partial T}\right)_V
+\left(\frac{\partial^2 P}{\partial T \partial V}\right) \right]
+\left(\frac{\partial P}{\partial V}\right)^{-2}_T
++ \left[\left(\frac{\partial^2 P}{\partial T\partial V}\right)
+\left(\frac{\partial P}{\partial V}\right)_T 
+- \left(\frac{\partial P}{\partial T}\right)_V
+\left(\frac{\partial^2 P}{\partial V^2}\right)_T\right]
+\left(\frac{\partial P}{\partial V}\right)_T^{-3}
+\left(\frac{\partial P}{\partial T}\right)_V"/></p>
+</div><p>Second derivatives with respect to the other two variables; those of 
+<cite>T</cite> and <cite>V</cite> use identities shown in <a class="reference internal" href="#r4006778e4168-1" id="id4">[1]</a> and verified numerically:</p>
+<div class="math">
+<p><img src="../_images/math/715f319623e30fc07a7b45460b2530e182cfe311.png" alt="\left(\frac{\partial^2 P}{\partial T \partial V}\right) = - \frac{
+ R}{\left(V - b\right)^{2}} + \frac{a \left(2 V + \delta\right) 
+ \frac{d \alpha{\left (T \right )}}{d T}}{\left(V^{2} + V \delta 
+ + \epsilon\right)^{2}}
+
+\left(\frac{\partial^2 T}{\partial P\partial V}\right) = 
+ - \left[\left(\frac{\partial^2 P}{\partial T \partial V}\right)
+ \left(\frac{\partial P}{\partial T}\right)_V
+ - \left(\frac{\partial P}{\partial V}\right)_T
+ \left(\frac{\partial^2 P}{\partial T^2}\right)_V
+ \right]\left(\frac{\partial P}{\partial T}\right)_V^{-3}
+
+ \left(\frac{\partial^2 V}{\partial T\partial P}\right) = 
+ - \left[\left(\frac{\partial^2 P}{\partial T \partial V}\right)
+ \left(\frac{\partial P}{\partial V}\right)_T
+ - \left(\frac{\partial P}{\partial T}\right)_V
+ \left(\frac{\partial^2 P}{\partial V^2}\right)_T
+ \right]\left(\frac{\partial P}{\partial V}\right)_T^{-3}"/></p>
+</div><p>Excess properties</p>
+<div class="math">
+<p><img src="../_images/math/797430c626626898d53de1ece6a2ba0cd03e019b.png" alt="H_{dep} = \int_{\infty}^V \left[T\frac{\partial P}{\partial T}_V 
+- P\right]dV + PV - RT= P V - R T + \frac{2}{\sqrt{
+\delta^{2} - 4 \epsilon}} \left(T a \frac{d \alpha{\left (T \right 
+)}}{d T}  - a \alpha{\left (T \right )}\right) \operatorname{atanh}
+{\left (\frac{2 V + \delta}{\sqrt{\delta^{2} - 4 \epsilon}} 
+\right)}
+
+S_{dep} = \int_{\infty}^V\left[\frac{\partial P}{\partial T} 
+- \frac{R}{V}\right] dV + R\log\frac{PV}{RT} = - R \log{\left (V 
+\right )} + R \log{\left (\frac{P V}{R T} \right )} + R \log{\left
+(V - b \right )} + \frac{2 a \frac{d\alpha{\left (T \right )}}{d T}
+}{\sqrt{\delta^{2} - 4 \epsilon}} \operatorname{atanh}{\left (\frac
+{2 V + \delta}{\sqrt{\delta^{2} - 4 \epsilon}} \right )}
+
+V_{dep} = V - \frac{RT}{P}
+
+U_{dep} = H_{dep} - P V_{dep}
+
+G_{dep} = H_{dep} - T S_{dep}
+
+A_{dep} = U_{dep} - T S_{dep}
+
+\text{fugacity} = P\exp\left(\frac{G_{dep}}{RT}\right)
+
+\phi = \frac{\text{fugacity}}{P}
+
+C_{v, dep} = T\int_\infty^V \left(\frac{\partial^2 P}{\partial 
+T^2}\right) dV = - T a \left(\sqrt{\frac{1}{\delta^{2} - 4 
+\epsilon}} \log{\left (V - \frac{\delta^{2}}{2} \sqrt{\frac{1}{
+\delta^{2} - 4 \epsilon}} + \frac{\delta}{2} + 2 \epsilon \sqrt{
+\frac{1}{\delta^{2} - 4 \epsilon}} \right )} - \sqrt{\frac{1}{
+\delta^{2} - 4 \epsilon}} \log{\left (V + \frac{\delta^{2}}{2} 
+\sqrt{\frac{1}{\delta^{2} - 4 \epsilon}} + \frac{\delta}{2} 
+- 2 \epsilon \sqrt{\frac{1}{\delta^{2} - 4 \epsilon}} \right )}
+\right) \frac{d^{2} \alpha{\left (T \right )} }{d T^{2}}  
+
+C_{p, dep} = (C_p-C_v)_{\text{from EOS}} + C_{v, dep} - R"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r4006778e4168-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>Thorade, Matthis, and Ali Saadat. “Partial Derivatives of 
+Thermodynamic State Properties for Dynamic Simulation.” 
+Environmental Earth Sciences 70, no. 8 (April 10, 2013): 3497-3503.
+doi:10.1007/s12665-013-2394-z.</p>
+</dd>
+<dt class="label" id="r4006778e4168-2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th 
+edition. New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="r4006778e4168-3"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
+Butterworth-Heinemann, 1985.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dummy method to calculate <cite>a_alpha</cite> and its first and second
+derivatives. Should be implemented with the same function signature in 
+each EOS variant; this only raises a NotImplemented Exception.
+Should return ‘a_alpha’, ‘da_alpha_dT’, and ‘d2a_alpha_dT2’.</p>
+<p>For use in <cite>solve_T</cite>, returns only <cite>a_alpha</cite> if <cite>full</cite> is False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>full</strong><span class="classifier">bool, optional</span></dt><dd><p>If False, calculates and returns only <cite>a_alpha</cite></p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>a_alpha</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [J^2/mol^2/Pa]</p>
+</dd>
+<dt><strong>da_alpha_dT</strong><span class="classifier">float</span></dt><dd><p>Temperature derivative of coefficient calculated by EOS-specific 
+method, [J^2/mol^2/Pa/K]</p>
+</dd>
+<dt><strong>d2a_alpha_dT2</strong><span class="classifier">float</span></dt><dd><p>Second temperature derivative of coefficient calculated by  
+EOS-specific method, [J^2/mol^2/Pa/K**2]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite>.
+Provides SciPy’s <cite>newton</cite> solver, and iterates to solve the general
+equation for <cite>P</cite>, recalculating <cite>a_alpha</cite> as a function of temperature
+using <cite>a_alpha_and_derivatives</cite> each iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas - not applicable where a numerical solver is
+used.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.volume_solutions">
+<em class="property">static </em><code class="sig-name descname">volume_solutions</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">P</em>, <em class="sig-param">b</em>, <em class="sig-param">delta</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">a_alpha</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.volume_solutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.volume_solutions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solution of this form of the cubic EOS in terms of volumes. Returns
+three values, all with some complex part.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^3/mol]</p>
+</dd>
+<dt><strong>delta</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^3/mol]</p>
+</dd>
+<dt><strong>epsilon</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [m^6/mol^2]</p>
+</dd>
+<dt><strong>a_alpha</strong><span class="classifier">float</span></dt><dd><p>Coefficient calculated by EOS-specific method, [J^2/mol^2/Pa]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Vs</strong><span class="classifier">list[float]</span></dt><dd><p>Three possible molar volumes, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Using explicit formulas, as can be derived in the following example,
+is faster than most numeric root finding techniques, and
+finds all values explicitly. It takes several seconds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V, R, b, a, delta, epsilon, alpha&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CUBIC</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a</span><span class="o">*</span><span class="n">alpha</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="n">V</span> <span class="o">+</span> <span class="n">delta</span><span class="o">*</span><span class="n">V</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">)</span> <span class="o">-</span> <span class="n">P</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#solve(CUBIC, V)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.Psat">
+<code class="sig-name descname">Psat</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">polish=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.Psat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.Psat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic method to calculate vapor pressure for a specified <cite>T</cite>.</p>
+<p>From Tc to 0.32Tc, uses a 10th order polynomial of the following form:</p>
+<div class="math">
+<p><img src="../_images/math/d31349a98e33517db50ba7db9e495d75a106e964.png" alt="\ln\frac{P_r}{T_r} = \sum_{k=0}^{10} C_k\left(\frac{\alpha}{T_r}
+-1\right)^{k}"/></p>
+</div><p>If <cite>polish</cite> is True, SciPy’s <cite>newton</cite> solver is launched with the 
+calculated vapor pressure as an initial guess in an attempt to get more
+accuracy. This may not converge however.</p>
+<p>Results above the critical temperature are meaningless. A first-order 
+polynomial is used to extrapolate under 0.32 Tc; however, there is 
+normally not a volume solution to the EOS which can produce that
+low of a pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>polish</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to attempt to use a numerical solver to make the solution
+more precise or not</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Psat</strong><span class="classifier">float</span></dt><dd><p>Vapor pressure, [Pa]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>EOSs sharing the same <cite>b</cite>, <cite>delta</cite>, and <cite>epsilon</cite> have the same
+coefficient sets.</p>
+<p>All coefficients were derived with numpy’s polyfit. The intersection
+between the polynomials is continuous, but there is a step change
+in its derivative.</p>
+<p>Form for the regression is inspired from <a class="reference internal" href="#r9924a3cfda44-1" id="id8">[1]</a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r9924a3cfda44-1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
+<dd><p>Soave, G. “Direct Calculation of Pure-Compound Vapour Pressures 
+through Cubic Equations of State.” Fluid Phase Equilibria 31, no. 2 
+(January 1, 1986): 203-7. doi:10.1016/0378-3812(86)90013-0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.dPsat_dT">
+<code class="sig-name descname">dPsat_dT</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.dPsat_dT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.dPsat_dT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic method to calculate the temperature derivative of vapor 
+pressure for a specified <cite>T</cite>. Implements the analytical derivative
+of the two polynomials described in <cite>Psat</cite>.</p>
+<p>As with <cite>Psat</cite>, results above the critical temperature are meaningless. 
+The first-order polynomial which is used to calculate it under 0.32 Tc
+may not be physicall meaningful, due to there normally not being a 
+volume solution to the EOS which can produce that low of a pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dPsat_dT</strong><span class="classifier">float</span></dt><dd><p>Derivative of vapor pressure with respect to temperature, [Pa/K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>There is a small step change at 0.32 Tc for all EOS due to the two
+switch between polynomials at that point.</p>
+<p>Useful for calculating enthalpy of vaporization with the Clausius
+Clapeyron Equation. Derived with SymPy’s diff and cse.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.V_l_sat">
+<code class="sig-name descname">V_l_sat</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.V_l_sat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.V_l_sat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate molar volume of the liquid phase along the
+saturation line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>V_l_sat</strong><span class="classifier">float</span></dt><dd><p>Liquid molar volume along the saturation line, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Computers <cite>Psat</cite>, and then uses <cite>volume_solutions</cite> to obtain the three
+possible molar volumes. The lowest value is returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.V_g_sat">
+<code class="sig-name descname">V_g_sat</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.V_g_sat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.V_g_sat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate molar volume of the vapor phase along the
+saturation line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>V_g_sat</strong><span class="classifier">float</span></dt><dd><p>Gas molar volume along the saturation line, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Computers <cite>Psat</cite>, and then uses <cite>volume_solutions</cite> to obtain the three
+possible molar volumes. The highest value is returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.GCEOS.Hvap">
+<code class="sig-name descname">Hvap</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.Hvap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.Hvap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate enthalpy of vaporization for a pure fluid from
+an equation of state, without iteration.</p>
+<div class="math">
+<p><img src="../_images/math/0d2e13e3dd898eace341e5c75dc43c396f69dd14.png" alt="\frac{dP^{sat}}{dT}=\frac{\Delta H_{vap}}{T(V_g - V_l)}"/></p>
+</div><p>Results above the critical temperature are meaningless. A first-order 
+polynomial is used to extrapolate under 0.32 Tc; however, there is 
+normally not a volume solution to the EOS which can produce that
+low of a pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Hvap</strong><span class="classifier">float</span></dt><dd><p>Increase in enthalpy needed for vaporization of liquid phase along 
+the saturation line, [J/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Calculates vapor pressure and its derivative with <cite>Psat</cite> and <cite>dPsat_dT</cite>
+as well as molar volumes of the saturation liquid and vapor phase in
+the process.</p>
+<p>Very near the critical point this provides unrealistic results due to
+<cite>Psat</cite>’s polynomials being insufficiently accurate.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r8d008c87b240-1"><span class="brackets">1</span></dt>
+<dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
+Butterworth-Heinemann, 1985.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.GCEOS_DUMMY">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">GCEOS_DUMMY</code><span class="sig-paren">(</span><em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS_DUMMY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS_DUMMY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">ALPHA_FUNCTIONS</code><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic class with a number of attached alpha functions for different
+applications, all of which have no parameters attached. These alpha 
+functions should be used for fitting purposes; new EOSs should have their
+alpha functions added here. The first and second derivatives should also
+be implemented. Efficient implementations are discouraged but possible.</p>
+<p>All parameters should be in <cite>self.alpha_function_coeffs</cite>. This object is
+inspired by the work of <a class="reference internal" href="#r2007d56c3370-1" id="id11"><span>[R2007d56c3370-1]</span></a>, where most of the alpha functions have been
+found.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r2007d56c3370-1"><span class="brackets"><a class="fn-backref" href="#id11">R2007d56c3370-1</a></span></dt>
+<dd><p>Young, André F., Fernando L. P. Pessoa, and Victor R. R. Ahón. 
+“Comparison of 20 Alpha Functions Applied in the Peng–Robinson Equation 
+of State for Vapor Pressure Estimation.” Industrial &amp; Engineering 
+Chemistry Research 55, no. 22 (June 8, 2016): 6506-16. 
+doi:10.1021/acs.iecr.6b00721.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Swap out the default alpha function from the SRK EOS, replace it the same,
+a new method that takes a manually specified coefficient.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">SRK</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">eos</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">a_alpha_and_derivatives</span><span class="p">(</span><span class="mi">299</span><span class="p">)]</span>
+<span class="go">[0.9326878999999999, (3.7271789178606376, -0.007332989159328508, 1.947612023379061e-05)]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SRK_Soave_1972</span><span class="p">(</span><span class="n">SRK</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">a_alpha_and_derivatives</span> <span class="o">=</span> <span class="n">ALPHA_FUNCTIONS</span><span class="o">.</span><span class="n">Soave_1972</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SRK_Soave_1972</span><span class="o">.</span><span class="n">alpha_function_coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.9326878999999999</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">SRK_Soave_1972</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">a_alpha_and_derivatives</span><span class="p">(</span><span class="mi">299</span><span class="p">)</span>
+<span class="go">(3.7271789178606376, -0.007332989159328508, 1.947612023379061e-05)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1972">
+<em class="property">static </em><code class="sig-name descname">Soave_1972</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Soave_1972"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1972" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Soave (1972) <a class="reference internal" href="#r8520c9196bfa-1" id="id13">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Same as <cite>SRK.a_alpha_and_derivatives</cite> but slower and
+requiring <cite>alpha_function_coeffs</cite> to be set. One coefficient needed.</p>
+<div class="math">
+<p><img src="../_images/math/4a2e7bb60654a840c14c24f75526bcc24b65792a.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
++ 1\right)^{2}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r8520c9196bfa-1"><span class="brackets"><a class="fn-backref" href="#id13">1</a></span></dt>
+<dd><p>Soave, Giorgio. “Equilibrium Constants from a Modified Redlich-
+Kwong Equation of State.” Chemical Engineering Science 27, no. 6 
+(June 1972): 1197-1203. doi:10.1016/0009-2509(72)80096-4.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Heyen">
+<em class="property">static </em><code class="sig-name descname">Heyen</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Heyen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Heyen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Heyen (1980) <a class="reference internal" href="#r87e1690eca02-1" id="id15">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>,  
+and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/ab869483409978f4ffd85ccd2b8635fdf932106c.png" alt="\alpha = e^{c_{1} \left(- \left(\frac{T}{Tc}\right)^{c_{2}}
++ 1\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r87e1690eca02-1"><span class="brackets"><a class="fn-backref" href="#id15">1</a></span></dt>
+<dd><p>Heyen, G. Liquid and Vapor Properties from a Cubic Equation of 
+State. In “Proceedings of the 2nd International Conference on Phase 
+Equilibria and Fluid Properties in the Chemical Industry”. DECHEMA: 
+Frankfurt, 1980; p 9-13.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Harmens_Knapp">
+<em class="property">static </em><code class="sig-name descname">Harmens_Knapp</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Harmens_Knapp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Harmens_Knapp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Harmens and Knapp (1980) <a class="reference internal" href="#r76f15a7061b1-1" id="id17">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/a19c624870d87f1d081495d1ca1ca30cb20decf9.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
+- c_{2} \left(1 - \frac{Tc}{T}\right) + 1\right)^{2}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r76f15a7061b1-1"><span class="brackets"><a class="fn-backref" href="#id17">1</a></span></dt>
+<dd><p>Harmens, A., and H. Knapp. “Three-Parameter Cubic Equation of 
+State for Normal Substances.” Industrial &amp; Engineering Chemistry 
+Fundamentals 19, no. 3 (August 1, 1980): 291-94. 
+doi:10.1021/i160075a010.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Mathias">
+<em class="property">static </em><code class="sig-name descname">Mathias</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Mathias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Mathias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Mathias (1983) <a class="reference internal" href="#r70ca401e73a6-1" id="id19">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/774424563ff78cfb17fbfda3b49244e31254fc4d.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
+- c_{2} \left(- \frac{T}{Tc} + 0.7\right) \left(- \frac{T}{Tc} 
++ 1\right) + 1\right)^{2}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r70ca401e73a6-1"><span class="brackets"><a class="fn-backref" href="#id19">1</a></span></dt>
+<dd><p>Mathias, Paul M. “A Versatile Phase Equilibrium Equation of 
+State.” Industrial &amp; Engineering Chemistry Process Design and 
+Development 22, no. 3 (July 1, 1983): 385-91. 
+doi:10.1021/i200022a008.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Mathias_Copeman">
+<em class="property">static </em><code class="sig-name descname">Mathias_Copeman</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Mathias_Copeman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Mathias_Copeman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Mathias and Copeman (1983) <a class="reference internal" href="#rb0e2af5f4195-1" id="id21">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/90f3f149807821fa8b393955f1abb2694a6c3f38.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
++ c_{2} \left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + c_{3} \left(
+- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rb0e2af5f4195-1"><span class="brackets"><a class="fn-backref" href="#id21">1</a></span></dt>
+<dd><p>Mathias, Paul M., and Thomas W. Copeman. “Extension of the 
+Peng-Robinson Equation of State to Complex Mixtures: Evaluation of 
+the Various Forms of the Local Composition Concept.” Fluid Phase 
+Equilibria 13 (January 1, 1983): 91-108. 
+doi:10.1016/0378-3812(83)80084-3.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Gibbons_Laughton">
+<em class="property">static </em><code class="sig-name descname">Gibbons_Laughton</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Gibbons_Laughton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Gibbons_Laughton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Gibbons and Laughton (1984) <a class="reference internal" href="#r86fccbccd893-1" id="id23">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/014e115cda4ef2e39a18d76c22fc1c052e25093a.png" alt="\alpha = c_{1} \left(\frac{T}{Tc} - 1\right) + c_{2} 
+\left(\sqrt{\frac{T}{Tc}} - 1\right) + 1"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r86fccbccd893-1"><span class="brackets"><a class="fn-backref" href="#id23">1</a></span></dt>
+<dd><p>Gibbons, Richard M., and Andrew P. Laughton. “An Equation of 
+State for Polar and Non-Polar Substances and Mixtures” 80, no. 9 
+(January 1, 1984): 1019-38. doi:10.1039/F29848001019.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1984">
+<em class="property">static </em><code class="sig-name descname">Soave_1984</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Soave_1984"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1984" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Soave (1984) <a class="reference internal" href="#ra469470c6542-1" id="id25">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/e8070d893da0dbea7a762ffb51f5885c761f3df6.png" alt="\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} \left(-1
++ \frac{Tc}{T}\right) + 1"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="ra469470c6542-1"><span class="brackets"><a class="fn-backref" href="#id25">1</a></span></dt>
+<dd><p>Soave, G. “Improvement of the Van Der Waals Equation of State.” 
+Chemical Engineering Science 39, no. 2 (January 1, 1984): 357-69. 
+doi:10.1016/0009-2509(84)80034-2.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Yu_Lu">
+<em class="property">static </em><code class="sig-name descname">Yu_Lu</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Yu_Lu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Yu_Lu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Yu and Lu (1987) <a class="reference internal" href="#rb65360a7beee-1" id="id27">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Four coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/2aa9d8941597b96715187fe5ac2cc72d2bc90c94.png" alt="\alpha = 10^{c_{4} \left(- \frac{T}{Tc} + 1\right) \left(
+\frac{T^{2} c_{3}}{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rb65360a7beee-1"><span class="brackets"><a class="fn-backref" href="#id27">1</a></span></dt>
+<dd><p>Yu, Jin-Min, and Benjamin C. -Y. Lu. “A Three-Parameter Cubic 
+Equation of State for Asymmetric Mixture Density Calculations.” 
+Fluid Phase Equilibria 34, no. 1 (January 1, 1987): 1-19. 
+doi:10.1016/0378-3812(87)85047-1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Trebble_Bishnoi">
+<em class="property">static </em><code class="sig-name descname">Trebble_Bishnoi</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Trebble_Bishnoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Trebble_Bishnoi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Trebble and Bishnoi (1987) <a class="reference internal" href="#r9330d4785f52-1" id="id29">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. One coefficient needed.</p>
+<div class="math">
+<p><img src="../_images/math/1355a4eb7845b71ec0482e05f9f1bb7ba2c04f00.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r9330d4785f52-1"><span class="brackets"><a class="fn-backref" href="#id29">1</a></span></dt>
+<dd><p>Trebble, M. A., and P. R. Bishnoi. “Development of a New Four-
+Parameter Cubic Equation of State.” Fluid Phase Equilibria 35, no. 1
+(September 1, 1987): 1-18. doi:10.1016/0378-3812(87)80001-8.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Melhem">
+<em class="property">static </em><code class="sig-name descname">Melhem</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Melhem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Melhem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Melhem et al. (1989) <a class="reference internal" href="#r640d8c8b4219-1" id="id31">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Two coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/6ccc2aa2cb507c424f388c82d69ca96e0aafd6fb.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2}}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r640d8c8b4219-1"><span class="brackets"><a class="fn-backref" href="#id31">1</a></span></dt>
+<dd><p>Melhem, Georges A., Riju Saini, and Bernard M. Goodwin. “A 
+Modified Peng-Robinson Equation of State.” Fluid Phase Equilibria 
+47, no. 2 (August 1, 1989): 189-237. 
+doi:10.1016/0378-3812(89)80176-1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Androulakis">
+<em class="property">static </em><code class="sig-name descname">Androulakis</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Androulakis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Androulakis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Androulakis et al. (1989) <a class="reference internal" href="#rf6e729f900df-1" id="id33">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/0c43a7dd76ce19b73759e4563858721bb0c1dfb7.png" alt="\alpha = c_{1} \left(- \left(\frac{T}{Tc}\right)^{\frac{2}{3}}
++ 1\right) + c_{2} \left(- \left(\frac{T}{Tc}\right)^{\frac{2}{3}} 
++ 1\right)^{2} + c_{3} \left(- \left(\frac{T}{Tc}\right)^{
+\frac{2}{3}} + 1\right)^{3} + 1"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rf6e729f900df-1"><span class="brackets"><a class="fn-backref" href="#id33">1</a></span></dt>
+<dd><p>Androulakis, I. P., N. S. Kalospiros, and D. P. Tassios. 
+“Thermophysical Properties of Pure Polar and Nonpolar Compounds with
+a Modified VdW-711 Equation of State.” Fluid Phase Equilibria 45, 
+no. 2 (April 1, 1989): 135-63. doi:10.1016/0378-3812(89)80254-7.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Schwartzentruber">
+<em class="property">static </em><code class="sig-name descname">Schwartzentruber</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Schwartzentruber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Schwartzentruber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Schwartzentruber et al. (1990) <a class="reference internal" href="#r7f858797bb41-1" id="id35">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/8c9b8b7916cce08277ade6ecdd0278a15971b4d6.png" alt="\alpha = \left(c_{4} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
+- \left(- \sqrt{\frac{T}{Tc}} + 1\right) \left(\frac{T^{2} c_{3}}
+{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right) + 1\right)^{2}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r7f858797bb41-1"><span class="brackets"><a class="fn-backref" href="#id35">1</a></span></dt>
+<dd><p>J. Schwartzentruber, H. Renon, and S. Watanasiri, “K-values for 
+Non-Ideal Systems:An Easier Way,” Chem. Eng., March 1990, 118-124.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Almeida">
+<em class="property">static </em><code class="sig-name descname">Almeida</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Almeida"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Almeida" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Almeida et al. (1991) <a class="reference internal" href="#r40352d92cc02-1" id="id37">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/a85f88cbf97ae826091ed1a2b709d45f823c1b66.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left|{
+\frac{T}{Tc} - 1}\right|^{c_{2} - 1} + c_{3} \left(-1 
++ \frac{Tc}{T}\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r40352d92cc02-1"><span class="brackets"><a class="fn-backref" href="#id37">1</a></span></dt>
+<dd><p>Almeida, G. S., M. Aznar, and A. S. Telles. “Uma Nova Forma de 
+Dependência Com a Temperatura Do Termo Atrativo de Equações de 
+Estado Cúbicas.” RBE, Rev. Bras. Eng., Cad. Eng. Quim 8 (1991): 95.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Twu">
+<em class="property">static </em><code class="sig-name descname">Twu</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Twu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Twu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Twu et al. (1991) <a class="reference internal" href="#r517116672465-1" id="id39">[1]</a>. Returns <cite>a_alpha</cite>, 
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
+for more documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/833b20e4d39e74da3a658d6bbf17275c5fe10bb3.png" alt="\alpha = \left(\frac{T}{Tc}\right)^{c_{3} \left(c_{2} 
+- 1\right)} e^{c_{1} \left(- \left(\frac{T}{Tc}
+\right)^{c_{2} c_{3}} + 1\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r517116672465-1"><span class="brackets"><a class="fn-backref" href="#id39">1</a></span></dt>
+<dd><p>Twu, Chorng H., David Bluck, John R. Cunningham, and John E. 
+Coon. “A Cubic Equation of State with a New Alpha Function and a 
+New Mixing Rule.” Fluid Phase Equilibria 69 (December 10, 1991): 
+33-50. doi:10.1016/0378-3812(91)90024-2.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1993">
+<em class="property">static </em><code class="sig-name descname">Soave_1993</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Soave_1993"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Soave_1993" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Soave (1983) <a class="reference internal" href="#rf1e98af943bb-1" id="id41">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Two coefficient needed.</p>
+<div class="math">
+<p><img src="../_images/math/f412a24ce5d68104089be76f0fba01b96cc0aad7.png" alt="\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + 1"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rf1e98af943bb-1"><span class="brackets"><a class="fn-backref" href="#id41">1</a></span></dt>
+<dd><p>Soave, G. “Improving the Treatment of Heavy Hydrocarbons by the 
+SRK EOS.” Fluid Phase Equilibria 84 (April 1, 1993): 339-42. 
+doi:10.1016/0378-3812(93)85131-5.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Gasem">
+<em class="property">static </em><code class="sig-name descname">Gasem</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Gasem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Gasem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Gasem (2001) <a class="reference internal" href="#rb0d84ddfa3df-1" id="id43">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/7026791ac40f8df601fef08e3ee3f79aa54c765c.png" alt="\alpha = e^{\left(- \left(\frac{T}{Tc}\right)^{c_{3}} + 1\right) 
+\left(\frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rb0d84ddfa3df-1"><span class="brackets"><a class="fn-backref" href="#id43">1</a></span></dt>
+<dd><p>Gasem, K. A. M, W Gao, Z Pan, and R. L Robinson Jr. “A Modified 
+Temperature Dependence for the Peng-Robinson Equation of State.” 
+Fluid Phase Equilibria 181, no. 1–2 (May 25, 2001): 113-25. 
+doi:10.1016/S0378-3812(01)00488-5.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Coquelet">
+<em class="property">static </em><code class="sig-name descname">Coquelet</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Coquelet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Coquelet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Coquelet et al. (2004) <a class="reference internal" href="#ra9a5a60e2ddd-1" id="id45">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/e12fdc7f7df386d9e8256be633ee61b2178e5bf8.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left(c_{2} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + c_{3} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="ra9a5a60e2ddd-1"><span class="brackets"><a class="fn-backref" href="#id45">1</a></span></dt>
+<dd><p>Coquelet, C., A. Chapoy, and D. Richon. “Development of a New 
+Alpha Function for the Peng–Robinson Equation of State: Comparative 
+Study of Alpha Function Models for Pure Gases (Natural Gas 
+Components) and Water-Gas Systems.” International Journal of 
+Thermophysics 25, no. 1 (January 1, 2004): 133-58. 
+doi:10.1023/B:IJOT.0000022331.46865.2f.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Haghtalab">
+<em class="property">static </em><code class="sig-name descname">Haghtalab</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Haghtalab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Haghtalab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Haghtalab et al. (2010) <a class="reference internal" href="#r6d8e7f05d2e3-1" id="id47">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/d2a96b7b9f64a52d203f37cd28dca40ee8e9360a.png" alt="\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
++ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r6d8e7f05d2e3-1"><span class="brackets"><a class="fn-backref" href="#id47">1</a></span></dt>
+<dd><p>Haghtalab, A., M. J. Kamali, S. H. Mazloumi, and P. Mahmoodi. 
+“A New Three-Parameter Cubic Equation of State for Calculation 
+Physical Properties and Vapor-liquid Equilibria.” Fluid Phase 
+Equilibria 293, no. 2 (June 25, 2010): 209-18. 
+doi:10.1016/j.fluid.2010.03.029.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Saffari">
+<em class="property">static </em><code class="sig-name descname">Saffari</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Saffari"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Saffari" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Saffari and Zahedi (2013) <a class="reference internal" href="#r1dd862abaec5-1" id="id49">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Three coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/f8d0b73495e87f091188f8f8c0f0316918a6a218.png" alt="\alpha = e^{\frac{T c_{1}}{Tc} + c_{2} \log{\left (\frac{T}{Tc} 
+\right )} + c_{3} \left(- \sqrt{\frac{T}{Tc}} + 1\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1dd862abaec5-1"><span class="brackets"><a class="fn-backref" href="#id49">1</a></span></dt>
+<dd><p>Saffari, Hamid, and Alireza Zahedi. “A New Alpha-Function for 
+the Peng-Robinson Equation of State: Application to Natural Gas.” 
+Chinese Journal of Chemical Engineering 21, no. 10 (October 1, 
+2013): 1155-61. doi:10.1016/S1004-9541(13)60581-9.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.ALPHA_FUNCTIONS.Chen_Yang">
+<em class="property">static </em><code class="sig-name descname">Chen_Yang</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#ALPHA_FUNCTIONS.Chen_Yang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.ALPHA_FUNCTIONS.Chen_Yang" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives according to Hamid and Yang (2017) <a class="reference internal" href="#r4590409d6c8e-1" id="id51">[1]</a>. Returns <cite>a_alpha</cite>,
+<cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>
+for more documentation. Seven coefficients needed.</p>
+<div class="math">
+<p><img src="../_images/math/d2a96b7b9f64a52d203f37cd28dca40ee8e9360a.png" alt="\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
++ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
+</div><p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r4590409d6c8e-1"><span class="brackets"><a class="fn-backref" href="#id51">1</a></span></dt>
+<dd><p>Chen, Zehua, and Daoyong Yang. “Optimization of the Reduced 
+Temperature Associated with Peng–Robinson Equation of State and 
+Soave-Redlich-Kwong Equation of State To Improve Vapor Pressure 
+Prediction for Heavy Hydrocarbon Compounds.” Journal of Chemical &amp; 
+Engineering Data, August 31, 2017. doi:10.1021/acs.jced.7b00496.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.PR">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">PR</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Peng-Robinson cubic 
+equation of state for a pure compound. Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which calculates 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/3112904dd41d98e3c905ba032edf2541c474b933.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
+
+a=0.45724\frac{R^2T_c^2}{P_c}
+
+  b=0.07780\frac{RT_c}{P_c}
+
+\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
+
+\kappa=0.37464+1.54226\omega-0.26992\omega^2"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The constants in the expresions for <cite>a</cite> and <cite>b</cite> are given to full precision
+in the actual code, as derived in <a class="reference internal" href="#r0ef22b49e538-3" id="id53"><span>[R0ef22b49e538-3]</span></a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r0ef22b49e538-1"><span class="brackets">R0ef22b49e538-1</span></dt>
+<dd><p>Peng, Ding-Yu, and Donald B. Robinson. “A New Two-Constant Equation 
+of State.” Industrial &amp; Engineering Chemistry Fundamentals 15, no. 1 
+(February 1, 1976): 59-64. doi:10.1021/i160057a011.</p>
+</dd>
+<dt class="label" id="r0ef22b49e538-2"><span class="brackets">R0ef22b49e538-2</span></dt>
+<dd><p>Robinson, Donald B., Ding-Yu Peng, and Samuel Y-K Chung. “The 
+Development of the Peng - Robinson Equation and Its Application to Phase
+Equilibrium in a System Containing Methanol.” Fluid Phase Equilibria 24,
+no. 1 (January 1, 1985): 25-41. doi:10.1016/0378-3812(85)87035-7.</p>
+</dd>
+<dt class="label" id="r0ef22b49e538-3"><span class="brackets"><a class="fn-backref" href="#id53">R0ef22b49e538-3</a></span></dt>
+<dd><p>Privat, R., and J.-N. Jaubert. “PPR78, a Thermodynamic Model for the
+Prediction of Petroleum Fluid-Phase Behaviour,” 11. EDP Sciences, 2011. 
+doi:10.1051/jeep/201100011.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>T-P initialization, and exploring each phase’s properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PR</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">400.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_g</span>
+<span class="go">(0.00015607313188529268, 0.0021418760907613724)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span>
+<span class="go">&#39;l/g&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_g</span>
+<span class="go">(-26111.868721160878, -3549.2993749373945)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_g</span>
+<span class="go">(-58.09842815106099, -6.439449710478305)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">U_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">U_dep_g</span>
+<span class="go">(-22942.157933046172, -2365.391545698767)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">G_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">G_dep_g</span>
+<span class="go">(-2872.497460736482, -973.5194907460723)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">A_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">A_dep_g</span>
+<span class="go">(297.21332737822377, 210.38833849255525)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">beta_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">beta_g</span>
+<span class="go">(0.0026933709177837514, 0.01012322391117497)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">kappa_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">kappa_g</span>
+<span class="go">(9.33572154382935e-09, 1.9710669809793307e-06)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">Cp_minus_Cv_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">Cp_minus_Cv_g</span>
+<span class="go">(48.510145807408, 44.54414603000346)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">Cv_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">Cp_dep_l</span>
+<span class="go">(18.89210627002112, 59.08779227742912)</span>
+</pre></div>
+</div>
+<p>P-T initialization, liquid phase, and round robin trip:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PR</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00013022208100139945, -31134.740290463425, -72.47559475426019)</span>
+</pre></div>
+</div>
+<p>T-V initialization, liquid phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PR</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mf">0.00013022208100139953</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">phase</span>
+<span class="go">(1000000.0000020266, &#39;l&#39;)</span>
+</pre></div>
+</div>
+<p>P-V initialization at same state:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PR</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mf">0.00013022208100139953</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">phase</span>
+<span class="go">(298.99999999999926, &#39;l&#39;)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.PR.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PR.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PR.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>kappa</cite>, and <cite>a</cite>.</p>
+<p>For use in <cite>solve_T</cite>, returns only <cite>a_alpha</cite> if full is False.</p>
+<div class="math">
+<p><img src="../_images/math/ea3cf2c7bb3a707629d417cec69d6830a6c5193b.png" alt="a\alpha = a \left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} 
++ 1\right) + 1\right)^{2}
+
+\frac{d a\alpha}{dT} = - \frac{1.0 a \kappa}{T^{0.5} Tc^{0.5}}
+\left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} + 1\right) + 1\right)
+
+\frac{d^2 a\alpha}{dT^2} = 0.5 a \kappa \left(- \frac{1}{T^{1.5} 
+Tc^{0.5}} \left(\kappa \left(\frac{T^{0.5}}{Tc^{0.5}} - 1\right)
+- 1\right) + \frac{\kappa}{T^{1.0} Tc^{1.0}}\right)"/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.PR.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PR.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PR.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the PR
+EOS. Uses <cite>Tc</cite>, <cite>a</cite>, <cite>b</cite>, and <cite>kappa</cite> as well, obtained from the 
+class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The exact solution can be derived as follows, and is excluded for 
+breviety.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">kappa</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;R, a, b, kappa&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a_alpha</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">kappa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PR_formula</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a_alpha</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">))</span> <span class="o">-</span> <span class="n">P</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#solve(PR_formula, T)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.PR78">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">PR78</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PR78"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PR78" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Peng-Robinson cubic 
+equation of state for a pure compound according to the 1978 variant.
+Subclasses <cite>PR</cite>, which provides everything except the variable <cite>kappa</cite>.
+Solves the EOS on initialization. See <cite>PR</cite> for further documentation.</p>
+<div class="math">
+<p><img src="../_images/math/b03c6060213743343742419e80b123264da21082.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
+
+a=0.45724\frac{R^2T_c^2}{P_c}
+
+  b=0.07780\frac{RT_c}{P_c}
+
+\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
+
+\kappa_i = 0.37464+1.54226\omega_i-0.26992\omega_i^2 \text{ if } \omega_i
+\le 0.491
+
+\kappa_i = 0.379642 + 1.48503 \omega_i - 0.164423\omega_i^2 + 0.016666
+\omega_i^3 \text{ if } \omega_i &gt; 0.491"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This variant is recommended over the original.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rddfb61ce91e2-1"><span class="brackets">1</span></dt>
+<dd><p>Robinson, Donald B, and Ding-Yu Peng. The Characterization of the 
+Heptanes and Heavier Fractions for the GPA Peng-Robinson Programs. 
+Tulsa, Okla.: Gas Processors Association, 1978.</p>
+</dd>
+<dt class="label" id="rddfb61ce91e2-2"><span class="brackets">2</span></dt>
+<dd><p>Robinson, Donald B., Ding-Yu Peng, and Samuel Y-K Chung. “The 
+Development of the Peng - Robinson Equation and Its Application to Phase
+Equilibrium in a System Containing Methanol.” Fluid Phase Equilibria 24,
+no. 1 (January 1, 1985): 25-41. doi:10.1016/0378-3812(85)87035-7.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>P-T initialization (furfuryl alcohol), liquid phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PR78</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mi">632</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">5350000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.734</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 8.351960066075009e-05, -63764.649480508735, -130.73710891262687)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.PRSV">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">PRSV</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">kappa1=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Peng-Robinson-Stryjek-Vera equations of state for
+a pure compound as given in <a class="reference internal" href="#rbb6067caa021-1" id="id59"><span>[Rbb6067caa021-1]</span></a>. The same as the Peng-Robinson EOS,
+except with a different <cite>kappa</cite> formula and with an optional fit parameter.
+Subclasses <cite>PR</cite>, which provides only several constants. See <cite>PR</cite> for 
+further documentation and examples.</p>
+<div class="math">
+<p><img src="../_images/math/57013628828424668e39e35214bbf47ba231ae5d.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
+
+a=0.45724\frac{R^2T_c^2}{P_c}
+
+  b=0.07780\frac{RT_c}{P_c}
+
+\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
+
+\kappa = \kappa_0 + \kappa_1(1 + T_r^{0.5})(0.7 - T_r)
+
+\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
++ 0.0196554\omega^3"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>kappa1</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter; available in <a class="reference internal" href="#rbb6067caa021-1" id="id60"><span>[Rbb6067caa021-1]</span></a> for over 90 compounds, [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><a class="reference internal" href="#rbb6067caa021-1" id="id61"><span>[Rbb6067caa021-1]</span></a> recommends that <cite>kappa1</cite> be set to 0 for Tr &gt; 0.7. This is not done by 
+default; the class boolean <cite>kappa1_Tr_limit</cite> may be set to True and the
+problem re-solved with that specified if desired. <cite>kappa1_Tr_limit</cite> is not
+supported for P-V inputs.</p>
+<p>Solutions for P-V solve for <cite>T</cite> with SciPy’s <cite>newton</cite> solver, as there is no
+analytical solution for <cite>T</cite></p>
+<p><a class="reference internal" href="#rbb6067caa021-2" id="id62"><span>[Rbb6067caa021-2]</span></a> and <a class="reference internal" href="#rbb6067caa021-3" id="id63"><span>[Rbb6067caa021-3]</span></a> are two more resources documenting the PRSV EOS. <a class="reference internal" href="#rbb6067caa021-4" id="id64"><span>[Rbb6067caa021-4]</span></a> lists
+<cite>kappa</cite> values for 69 additional compounds. See also <cite>PRSV2</cite>. Note that
+tabulated <cite>kappa</cite> values should be used with the critical parameters used
+in their fits. Both <a class="reference internal" href="#rbb6067caa021-1" id="id65"><span>[Rbb6067caa021-1]</span></a> and <a class="reference internal" href="#rbb6067caa021-4" id="id66"><span>[Rbb6067caa021-4]</span></a> only considered vapor pressure in fitting
+the parameter.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rbb6067caa021-1"><span class="brackets">Rbb6067caa021-1</span><span class="fn-backref">(<a href="#id59">1</a>,<a href="#id60">2</a>,<a href="#id61">3</a>,<a href="#id65">4</a>,<a href="#id71">5</a>)</span></dt>
+<dd><p>Stryjek, R., and J. H. Vera. “PRSV: An Improved Peng-Robinson 
+Equation of State for Pure Compounds and Mixtures.” The Canadian Journal
+of Chemical Engineering 64, no. 2 (April 1, 1986): 323-33. 
+doi:10.1002/cjce.5450640224.</p>
+</dd>
+<dt class="label" id="rbb6067caa021-2"><span class="brackets"><a class="fn-backref" href="#id62">Rbb6067caa021-2</a></span></dt>
+<dd><p>Stryjek, R., and J. H. Vera. “PRSV - An Improved Peng-Robinson 
+Equation of State with New Mixing Rules for Strongly Nonideal Mixtures.”
+The Canadian Journal of Chemical Engineering 64, no. 2 (April 1, 1986): 
+334-40. doi:10.1002/cjce.5450640225.</p>
+</dd>
+<dt class="label" id="rbb6067caa021-3"><span class="brackets"><a class="fn-backref" href="#id63">Rbb6067caa021-3</a></span></dt>
+<dd><p>Stryjek, R., and J. H. Vera. “Vapor-liquid Equilibrium of 
+Hydrochloric Acid Solutions with the PRSV Equation of State.” Fluid 
+Phase Equilibria 25, no. 3 (January 1, 1986): 279-90. 
+doi:10.1016/0378-3812(86)80004-8.</p>
+</dd>
+<dt class="label" id="rbb6067caa021-4"><span class="brackets">Rbb6067caa021-4</span><span class="fn-backref">(<a href="#id64">1</a>,<a href="#id66">2</a>)</span></dt>
+<dd><p>Proust, P., and J. H. Vera. “PRSV: The Stryjek-Vera Modification of 
+the Peng-Robinson Equation of State. Parameters for Other Pure Compounds
+of Industrial Interest.” The Canadian Journal of Chemical Engineering 
+67, no. 1 (February 1, 1989): 170-73. doi:10.1002/cjce.5450670125.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>P-T initialization (hexane, with fit parameter in <a class="reference internal" href="#rbb6067caa021-1" id="id71"><span>[Rbb6067caa021-1]</span></a>), liquid phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PRSV</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">,</span> <span class="n">kappa1</span><span class="o">=</span><span class="mf">0.05104</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.000130126869448406, -31698.916002476693, -74.16749024350415)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.PRSV.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the PRSV
+EOS. Uses <cite>Tc</cite>, <cite>a</cite>, <cite>b</cite>, <cite>kappa0</cite>  and <cite>kappa</cite> as well, obtained from  
+the class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (somewhat faster) or 
+individual formulas.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Not guaranteed to produce a solution. There are actually two solution,
+one much higher than normally desired; it is possible the solver could
+converge on this.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.PRSV.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>kappa0</cite>, <cite>kappa1</cite>, and 
+<cite>a</cite>.</p>
+<p>For use in root-finding, returns only <cite>a_alpha</cite> if full is False.</p>
+<p>The <cite>a_alpha</cite> function is shown below; its first and second derivatives
+are long available through the SymPy expression under it.</p>
+<div class="math">
+<p><img src="../_images/math/8a85d7de67fbf504d9ed759deab52c6d8b2f4c8a.png" alt="a\alpha = a \left(\left(\kappa_{0} + \kappa_{1} \left(\sqrt{\frac{
+T}{Tc}} + 1\right) \left(- \frac{T}{Tc} + \frac{7}{10}\right)
+\right) \left(- \sqrt{\frac{T}{Tc}} + 1\right) + 1\right)^{2}"/></p>
+</div><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">kappa0</span><span class="p">,</span> <span class="n">kappa1</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;R, a, b, kappa0, kappa1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kappa</span> <span class="o">=</span> <span class="n">kappa0</span> <span class="o">+</span> <span class="n">kappa1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">Rational</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_alpha</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">kappa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># diff(a_alpha, T)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># diff(a_alpha, T, 2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.PRSV2">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">PRSV2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">kappa1=0</em>, <em class="sig-param">kappa2=0</em>, <em class="sig-param">kappa3=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Peng-Robinson-Stryjek-Vera 2 equations of state 
+for a pure compound as given in <a class="reference internal" href="#rbcc7388cc113-1" id="id72"><span>[Rbcc7388cc113-1]</span></a>. The same as the Peng-Robinson EOS,
+except with a different <cite>kappa</cite> formula and with three fit parameters.
+Subclasses <cite>PR</cite>, which provides only several constants. See <cite>PR</cite> for 
+further documentation and examples. PRSV provides only one constant.</p>
+<div class="math">
+<p><img src="../_images/math/84cf27ac4430ffabce3f7ff0bc7c6a3dd86f0bd8.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
+
+a=0.45724\frac{R^2T_c^2}{P_c}
+
+  b=0.07780\frac{RT_c}{P_c}
+
+\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
+
+\kappa = \kappa_0 + [\kappa_1 + \kappa_2(\kappa_3 - T_r)(1-T_r^{0.5})]
+(1 + T_r^{0.5})(0.7 - T_r)
+
+\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
++ 0.0196554\omega^3"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>kappa1</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter; available in <a class="reference internal" href="#rbcc7388cc113-1" id="id73"><span>[Rbcc7388cc113-1]</span></a> for over 90 compounds, [-]</p>
+</dd>
+<dt><strong>kappa2</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter; available in <a class="reference internal" href="#rbcc7388cc113-1" id="id74"><span>[Rbcc7388cc113-1]</span></a> for over 90 compounds, [-]</p>
+</dd>
+<dt><strong>kappa</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter; available in <a class="reference internal" href="#rbcc7388cc113-1" id="id75"><span>[Rbcc7388cc113-1]</span></a> for over 90 compounds, [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Solutions for P-V solve for <cite>T</cite> with SciPy’s <cite>newton</cite> solver, as there is 
+no analytical solution for <cite>T</cite></p>
+<p>Note that tabulated <cite>kappa</cite> values should be used with the critical 
+parameters used in their fits. <a class="reference internal" href="#rbcc7388cc113-1" id="id76"><span>[Rbcc7388cc113-1]</span></a> considered only vapor 
+pressure in fitting the parameter.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rbcc7388cc113-1"><span class="brackets">Rbcc7388cc113-1</span><span class="fn-backref">(<a href="#id72">1</a>,<a href="#id73">2</a>,<a href="#id74">3</a>,<a href="#id75">4</a>,<a href="#id76">5</a>,<a href="#id78">6</a>)</span></dt>
+<dd><p>Stryjek, R., and J. H. Vera. “PRSV2: A Cubic Equation of State for 
+Accurate Vapor-liquid Equilibria Calculations.” The Canadian Journal of 
+Chemical Engineering 64, no. 5 (October 1, 1986): 820-26. 
+doi:10.1002/cjce.5450640516.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>P-T initialization (hexane, with fit parameter in <a class="reference internal" href="#rbcc7388cc113-1" id="id78"><span>[Rbcc7388cc113-1]</span></a>), liquid phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">PRSV2</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">,</span> <span class="n">kappa1</span><span class="o">=</span><span class="mf">0.05104</span><span class="p">,</span> <span class="n">kappa2</span><span class="o">=</span><span class="mf">0.8634</span><span class="p">,</span> <span class="n">kappa3</span><span class="o">=</span><span class="mf">0.460</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00013018821346475235, -31496.173493225797, -73.61525801151421)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.PRSV2.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV2.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV2.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the PRSV2
+EOS. Uses <cite>Tc</cite>, <cite>a</cite>, <cite>b</cite>, <cite>kappa0</cite>, <cite>kappa1</cite>, <cite>kappa2</cite>, and <cite>kappa3</cite>
+as well, obtained from the class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (somewhat faster) or 
+individual formulas.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Not guaranteed to produce a solution. There are actually 8 solutions,
+six with an imaginary component at a tested point. The two temperature
+solutions are quite far apart, with one much higher than the other;
+it is possible the solver could converge on the higher solution, so use
+<cite>T</cite> inputs with care. This extra solution is a perfectly valid one
+however.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.PRSV2.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#PRSV2.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.PRSV2.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>kappa0</cite>, <cite>kappa1</cite>,
+<cite>kappa2</cite>, <cite>kappa3</cite>, and <cite>a</cite>.</p>
+<p>For use in <cite>solve_T</cite>, returns only <cite>a_alpha</cite> if full is False.</p>
+<p>The first and second derivatives of <cite>a_alpha</cite> are available through the
+following SymPy expression.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">kappa0</span><span class="p">,</span> <span class="n">kappa1</span><span class="p">,</span> <span class="n">kappa2</span><span class="p">,</span> <span class="n">kappa3</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;R, a, b, kappa0, kappa1, kappa2, kappa3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kappa</span> <span class="o">=</span> <span class="n">kappa0</span> <span class="o">+</span> <span class="p">(</span><span class="n">kappa1</span> <span class="o">+</span> <span class="n">kappa2</span><span class="o">*</span><span class="p">(</span><span class="n">kappa3</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Tr</span><span class="p">)))</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Tr</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">Rational</span><span class="p">(</span><span class="s1">&#39;0.7&#39;</span><span class="p">)</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_alpha</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">kappa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># diff(a_alpha, T)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># diff(a_alpha, T, 2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.VDW">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">VDW</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">omega=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#VDW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.VDW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Van der Waals cubic 
+equation of state for a pure compound. Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>. <cite>main_derivatives_and_departures</cite> is
+a re-implementation with VDW specific methods, as the general solution
+has ZeroDivisionError errors.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/f4083e33293166b564d1314518c348d732703b56.png" alt="P=\frac{RT}{V-b}-\frac{a}{V^2}
+
+a=\frac{27}{64}\frac{(RT_c)^2}{P_c}
+
+b=\frac{RT_c}{8P_c}"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><cite>omega</cite> is allowed as an input for compatibility with the other EOS forms,
+but is not used.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r3d7f0a33b4fa-1"><span class="brackets">R3d7f0a33b4fa-1</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th 
+edition. New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="r3d7f0a33b4fa-2"><span class="brackets">R3d7f0a33b4fa-2</span></dt>
+<dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
+Butterworth-Heinemann, 1985.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">VDW</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00022332978038490077, -13385.722837649315, -32.65922018109096)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.VDW.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#VDW.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.VDW.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>a</cite>.</p>
+<div class="math">
+<p><img src="../_images/math/5a5b10f037c969c199982417c626e4454997d95a.png" alt="a\alpha = a
+
+\frac{d a\alpha}{dT} = 0
+
+\frac{d^2 a\alpha}{dT^2} = 0"/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.VDW.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#VDW.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.VDW.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the VDW
+EOS. Uses <cite>a</cite>, and <cite>b</cite>, obtained from the class’s namespace.</p>
+<div class="math">
+<p><img src="../_images/math/a965a8b26cf21914ec3bbea62c658a0f3d86a868.png" alt="T =  \frac{1}{R V^{2}} \left(P V^{2} \left(V - b\right)
++ V a - a b\right)"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.VDW.main_derivatives_and_departures">
+<em class="property">static </em><code class="sig-name descname">main_derivatives_and_departures</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">b</em>, <em class="sig-param">delta</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">a_alpha</em>, <em class="sig-param">da_alpha_dT</em>, <em class="sig-param">d2a_alpha_dT2</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#VDW.main_derivatives_and_departures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.VDW.main_derivatives_and_departures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-implementation of derivatives and excess property calculations, 
+as ZeroDivisionError errors occur with the general solution. The 
+following derivation is the source of these formulas.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V, R, b, a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P_vdw</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="n">V</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vdw</span> <span class="o">=</span> <span class="n">P_vdw</span> <span class="o">-</span> <span class="n">P</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dP_dT</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">vdw</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dP_dV</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">vdw</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d2P_dT2</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">vdw</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d2P_dV2</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">vdw</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d2P_dTdV</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">vdw</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H_dep</span> <span class="o">=</span> <span class="n">integrate</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">dP_dT</span> <span class="o">-</span> <span class="n">P_vdw</span><span class="p">,</span> <span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">oo</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H_dep</span> <span class="o">+=</span> <span class="n">P</span><span class="o">*</span><span class="n">V</span> <span class="o">-</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">S_dep</span> <span class="o">=</span> <span class="n">integrate</span><span class="p">(</span><span class="n">dP_dT</span> <span class="o">-</span> <span class="n">R</span><span class="o">/</span><span class="n">V</span><span class="p">,</span> <span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">oo</span><span class="p">,</span><span class="n">V</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">S_dep</span> <span class="o">+=</span> <span class="n">R</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="n">V</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cv_dep</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">integrate</span><span class="p">(</span><span class="n">d2P_dT2</span><span class="p">,</span> <span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">oo</span><span class="p">,</span><span class="n">V</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dP_dT</span><span class="p">,</span> <span class="n">dP_dV</span><span class="p">,</span> <span class="n">d2P_dT2</span><span class="p">,</span> <span class="n">d2P_dV2</span><span class="p">,</span> <span class="n">d2P_dTdV</span><span class="p">,</span> <span class="n">H_dep</span><span class="p">,</span> <span class="n">S_dep</span><span class="p">,</span> <span class="n">Cv_dep</span>
+<span class="go">(R/(V - b), -R*T/(V - b)**2 + 2*a/V**3, 0, 2*(R*T/(V - b)**3 - 3*a/V**4), -R/(V - b)**2, P*V - R*T - a/V, R*(-log(V) + log(V - b)) + R*log(P*V/(R*T)), 0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.RK">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">RK</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">omega=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#RK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.RK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Redlich-Kwong cubic 
+equation of state for a pure compound. Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/91b95c982120dd73691b045cbc13cc4e73fec88f.png" alt="P =\frac{RT}{V-b}-\frac{a}{V\sqrt{T}(V+b)}
+
+a=\left(\frac{R^2(T_c)^{2.5}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2.5}}{P_c}
+
+b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><cite>omega</cite> is allowed as an input for compatibility with the other EOS forms,
+but is not used.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rca60fe6f15cd-1"><span class="brackets">Rca60fe6f15cd-1</span></dt>
+<dd><p>Redlich, Otto., and J. N. S. Kwong. “On the Thermodynamics of 
+Solutions. V. An Equation of State. Fugacities of Gaseous Solutions.” 
+Chemical Reviews 44, no. 1 (February 1, 1949): 233-44. 
+doi:10.1021/cr60137a013.</p>
+</dd>
+<dt class="label" id="rca60fe6f15cd-2"><span class="brackets">Rca60fe6f15cd-2</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th 
+edition. New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="rca60fe6f15cd-3"><span class="brackets">Rca60fe6f15cd-3</span></dt>
+<dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
+Butterworth-Heinemann, 1985.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">RK</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00015189341729751862, -26160.833620674086, -63.01311649400544)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.RK.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#RK.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.RK.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>a</cite>.</p>
+<div class="math">
+<p><img src="../_images/math/06cbdbdbffd41d2d1f8d6a92581fea2c58fece3b.png" alt="a\alpha = \frac{a}{\sqrt{T}}
+
+\frac{d a\alpha}{dT} = - \frac{a}{2 T^{\frac{3}{2}}}
+
+\frac{d^2 a\alpha}{dT^2} = \frac{3 a}{4 T^{\frac{5}{2}}}"/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.RK.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#RK.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.RK.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the RK
+EOS. Uses <cite>a</cite>, and <cite>b</cite>, obtained from the class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The exact solution can be derived as follows; it is excluded for 
+breviety.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V, R&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;a, b&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">RK</span> <span class="o">=</span> <span class="n">Eq</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="n">V</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">V</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># solve(RK, T)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.SRK">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">SRK</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#SRK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.SRK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Soave-Redlich-Kwong cubic 
+equation of state for a pure compound. Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/ea98ad5abe8ff62d76dbbdcda43a648cf526e334.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
+
+a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
+
+b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}
+
+\alpha(T) = \left[1 + m\left(1 - \sqrt{\frac{T}{T_c}}\right)\right]^2
+
+m = 0.480 + 1.574\omega - 0.176\omega^2"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rf69205f330b5-1"><span class="brackets">Rf69205f330b5-1</span></dt>
+<dd><p>Soave, Giorgio. “Equilibrium Constants from a Modified Redlich-Kwong
+Equation of State.” Chemical Engineering Science 27, no. 6 (June 1972): 
+1197-1203. doi:10.1016/0009-2509(72)80096-4.</p>
+</dd>
+<dt class="label" id="rf69205f330b5-2"><span class="brackets">Rf69205f330b5-2</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th 
+edition. New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="rf69205f330b5-3"><span class="brackets">Rf69205f330b5-3</span></dt>
+<dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
+Butterworth-Heinemann, 1985.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">SRK</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00014682102759032003, -31754.65309653571, -74.3732468359525)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.SRK.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#SRK.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.SRK.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>m</cite>, and <cite>a</cite>.</p>
+<div class="math">
+<p><img src="../_images/math/fa85c67e77179486ba53c5f2ea661cc76c203687.png" alt="a\alpha = a \left(m \left(- \sqrt{\frac{T}{Tc}} + 1\right)
++ 1\right)^{2}
+
+\frac{d a\alpha}{dT} = \frac{a m}{T} \sqrt{\frac{T}{Tc}} \left(m
+\left(\sqrt{\frac{T}{Tc}} - 1\right) - 1\right)
+
+\frac{d^2 a\alpha}{dT^2} = \frac{a m \sqrt{\frac{T}{Tc}}}{2 T^{2}}
+\left(m + 1\right)"/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.SRK.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#SRK.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.SRK.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the SRK
+EOS. Uses <cite>a</cite>, <cite>b</cite>, and <cite>Tc</cite> obtained from the class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The exact solution can be derived as follows; it is excluded for 
+breviety.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V, R, a, b, m&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_alpha</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SRK</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">-</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a_alpha</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="o">+</span><span class="n">b</span><span class="p">))</span> <span class="o">-</span> <span class="n">P</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># solve(SRK, T)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.APISRK">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">APISRK</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega=None</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">S1=None</em>, <em class="sig-param">S2=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#APISRK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.APISRK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Refinery Soave-Redlich-Kwong cubic 
+equation of state for a pure compound shown in the API Databook <a class="reference internal" href="#rccbfba1a2b22-1" id="id87"><span>[Rccbfba1a2b22-1]</span></a>.
+Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>. Two fit constants are used in this 
+expresion, with an estimation scheme for the first if unavailable and the
+second may be set to zero.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/15e7312fab7fcaff554535bc44e628373b34206b.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
+
+a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
+
+b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}
+
+\alpha(T) = \left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
+- \sqrt{T_r}}{\sqrt{T_r}}\right]^2
+
+S_1 = 0.48508 + 1.55171\omega - 0.15613\omega^2 \text{ if S1 is not tabulated }"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float, optional</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>S1</strong><span class="classifier">float, optional</span></dt><dd><p>Fit constant or estimated from acentric factor if not provided [-]</p>
+</dd>
+<dt><strong>S2</strong><span class="classifier">float, optional</span></dt><dd><p>Fit constant or 0 if not provided [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rccbfba1a2b22-1"><span class="brackets"><a class="fn-backref" href="#id87">Rccbfba1a2b22-1</a></span></dt>
+<dd><p>API Technical Data Book: General Properties &amp; Characterization.
+American Petroleum Institute, 7E, 2005.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">APISRK</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">514.0</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">6137000.0</span><span class="p">,</span> <span class="n">S1</span><span class="o">=</span><span class="mf">1.678665</span><span class="p">,</span> <span class="n">S2</span><span class="o">=-</span><span class="mf">0.216396</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">299</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 7.045692682173235e-05, -42826.271630638774, -103.62694391379836)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.APISRK.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#APISRK.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.APISRK.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>a</cite>, <cite>S1</cite>, and <cite>S2</cite>.</p>
+<div class="math">
+<p><img src="../_images/math/c8ad980131c2d3d453cf46aacac703e94fd22fd7.png" alt="a\alpha(T) = a\left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
+- \sqrt{T_r}}{\sqrt{T_r}}\right]^2
+
+\frac{d a\alpha}{dT} = a\frac{Tc}{T^{2}} \left(- S_{2} \left(\sqrt{
+\frac{T}{Tc}} - 1\right) + \sqrt{\frac{T}{Tc}} \left(S_{1} \sqrt{
+\frac{T}{Tc}} + S_{2}\right)\right) \left(S_{2} \left(\sqrt{\frac{
+T}{Tc}} - 1\right) + \sqrt{\frac{T}{Tc}} \left(S_{1} \left(\sqrt{
+\frac{T}{Tc}} - 1\right) - 1\right)\right)
+
+\frac{d^2 a\alpha}{dT^2} = a\frac{1}{2 T^{3}} \left(S_{1}^{2} T
+\sqrt{\frac{T}{Tc}} - S_{1} S_{2} T \sqrt{\frac{T}{Tc}} + 3 S_{1}
+S_{2} Tc \sqrt{\frac{T}{Tc}} + S_{1} T \sqrt{\frac{T}{Tc}} 
+- 3 S_{2}^{2} Tc \sqrt{\frac{T}{Tc}} + 4 S_{2}^{2} Tc + 3 S_{2} 
+Tc \sqrt{\frac{T}{Tc}}\right)"/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.eos.APISRK.solve_T">
+<code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#APISRK.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.APISRK.solve_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the API 
+SRK EOS. Uses <cite>a</cite>, <cite>b</cite>, and <cite>Tc</cite> obtained from the class’s namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+<dt><strong>quick</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a SymPy cse-derived expression (3x faster) or 
+individual formulas</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If S2 is set to 0, the solution is the same as in the SRK EOS, and that
+is used. Otherwise, newton’s method must be used to solve for <cite>T</cite>. 
+There are 8 roots of T in that case, six of them real. No guarantee can
+be made regarding which root will be obtained.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.TWUPR">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">TWUPR</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#TWUPR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.TWUPR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Twu <a class="reference internal" href="#r8dcdab0aa42e-1" id="id89"><span>[R8dcdab0aa42e-1]</span></a> variant of the Peng-Robinson cubic 
+equation of state for a pure compound. Subclasses <cite>PR</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/c7d6eda66222987dc18e5be2d9f7f5cc4606248d.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
+
+ a=0.45724\frac{R^2T_c^2}{P_c}
+
+   b=0.07780\frac{RT_c}{P_c}
+
+\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})
+
+\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]"/></p>
+</div><p>For sub-critical conditions:</p>
+<p>L0, M0, N0 =  0.125283, 0.911807,  1.948150;</p>
+<p>L1, M1, N1 = 0.511614, 0.784054, 2.812520</p>
+<p>For supercritical conditions:</p>
+<p>L0, M0, N0 = 0.401219, 4.963070, -0.2;</p>
+<p>L1, M1, N1 = 0.024955, 1.248089, -8.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Claimed to be more accurate than the PR, PR78 and PRSV equations.</p>
+<p>There is no analytical solution for <cite>T</cite>. There are multiple possible 
+solutions for <cite>T</cite> under certain conditions; no guaranteed are provided
+regarding which solution is obtained.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r8dcdab0aa42e-1"><span class="brackets"><a class="fn-backref" href="#id89">R8dcdab0aa42e-1</a></span></dt>
+<dd><p>Twu, Chorng H., John E. Coon, and John R. Cunningham. “A New 
+Generalized Alpha Function for a Cubic Equation of State Part 1. 
+Peng-Robinson Equation.” Fluid Phase Equilibria 105, no. 1 (March 15, 
+1995): 49-59. doi:10.1016/0378-3812(94)02601-V.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">TWUPR</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(0.0001301754975832378, -31652.72639160809, -74.11282530917981)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.TWUPR.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#TWUPR.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.TWUPR.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>omega</cite>, and <cite>a</cite>.</p>
+<p>Because of its similarity for the TWUSRK EOS, this has been moved to an 
+external <cite>TWU_a_alpha_common</cite> function. See it for further 
+documentation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.eos.TWUSRK">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.eos.</code><code class="sig-name descname">TWUSRK</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">V=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#TWUSRK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.TWUSRK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for solving the Soave-Redlich-Kwong cubic 
+equation of state for a pure compound. Subclasses <cite>CUBIC_EOS</cite>, which 
+provides the methods for solving the EOS and calculating its assorted 
+relevant thermodynamic properties. Solves the EOS on initialization.</p>
+<p>Implemented methods here are <cite>a_alpha_and_derivatives</cite>, which sets 
+a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
+specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
+<p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
+<div class="math">
+<p><img src="../_images/math/a965d733e60fbd07ff5fc2565c17832809041a41.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
+
+a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
+
+b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}
+
+\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})
+
+\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]"/></p>
+</div><p>For sub-critical conditions:</p>
+<p>L0, M0, N0 =  0.141599, 0.919422, 2.496441</p>
+<p>L1, M1, N1 = 0.500315, 0.799457, 3.291790</p>
+<p>For supercritical conditions:</p>
+<p>L0, M0, N0 = 0.441411, 6.500018, -0.20</p>
+<p>L1, M1, N1 = 0.032580,  1.289098, -8.0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure, [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor, [-]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure, [Pa]</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">float, optional</span></dt><dd><p>Molar volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>There is no analytical solution for <cite>T</cite>. There are multiple possible 
+solutions for <cite>T</cite> under certain conditions; no guaranteed are provided
+regarding which solution is obtained.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rd88a5447b81d-1"><span class="brackets">Rd88a5447b81d-1</span></dt>
+<dd><p>Twu, Chorng H., John E. Coon, and John R. Cunningham. “A New 
+Generalized Alpha Function for a Cubic Equation of State Part 2. 
+Redlich-Kwong Equation.” Fluid Phase Equilibria 105, no. 1 (March 15, 
+1995): 61-69. doi:10.1016/0378-3812(94)02602-W.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span> <span class="o">=</span> <span class="n">TWUSRK</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">507.6</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mi">3025000</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2975</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">299.</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">1E6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eos</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">V_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">H_dep_l</span><span class="p">,</span> <span class="n">eos</span><span class="o">.</span><span class="n">S_dep_l</span>
+<span class="go">(&#39;l&#39;, 0.00014689217317770398, -31612.591872087483, -74.02294100343829)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.eos.TWUSRK.a_alpha_and_derivatives">
+<code class="sig-name descname">a_alpha_and_derivatives</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">full=True</em>, <em class="sig-param">quick=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#TWUSRK.a_alpha_and_derivatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.TWUSRK.a_alpha_and_derivatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate <cite>a_alpha</cite> and its first and second
+derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
+<cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
+documentation. Uses the set values of <cite>Tc</cite>, <cite>omega</cite>, and <cite>a</cite>.</p>
+<p>Because of its similarity for the TWUPR EOS, this has been moved to an 
+external <cite>TWU_a_alpha_common</cite> function. See it for further 
+documentation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="heat_capacity.html" class="btn btn-neutral float-right" title="heat_capacity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="elements.html" class="btn btn-neutral float-left" title="elements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

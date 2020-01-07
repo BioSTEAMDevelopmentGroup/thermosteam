@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Stream &mdash; thermosteam  documentation</title>
+  <title>Stream &mdash; ThermoSTEAM  documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> thermosteam
+            <a href="index.html" class="icon icon-home"> ThermoSTEAM
           
 
           
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functors/functors_module.html">functors</a></li>
 </ul>
 
             
@@ -119,7 +120,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">thermosteam</a>
+          <a href="index.html">ThermoSTEAM</a>
         
       </nav>
 
@@ -192,7 +193,7 @@
 <h1>Stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="thermosteam.Stream">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">Stream</code><span class="sig-paren">(</span><em class="sig-param">ID=''</em>, <em class="sig-param">flow=()</em>, <em class="sig-param">phase='l'</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em>, <em class="sig-param">units='kmol/hr'</em>, <em class="sig-param">price=0.0</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">**chemical_flows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/stream.html#Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">Stream</code><span class="sig-paren">(</span><em class="sig-param">ID=''</em>, <em class="sig-param">flow=()</em>, <em class="sig-param">phase='l'</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em>, <em class="sig-param">units='kmol/hr'</em>, <em class="sig-param">price=0.0</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">**chemical_flows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -228,7 +229,7 @@ volumetric flow rates are valid)</p>
 
 <dl class="method">
 <dt id="thermosteam.Stream.copy_flow">
-<code class="sig-name descname">copy_flow</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">stream</em>, <em class="sig-param">IDs=None</em>, <em class="sig-param">*</em>, <em class="sig-param">remove=False</em>, <em class="sig-param">exclude=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/stream.html#Stream.copy_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.copy_flow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy_flow</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">stream</em>, <em class="sig-param">IDs=None</em>, <em class="sig-param">*</em>, <em class="sig-param">remove=False</em>, <em class="sig-param">exclude=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.copy_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.copy_flow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy flow rates of stream to self.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -254,7 +255,7 @@ volumetric flow rates are valid)</p>
 
 <dl class="method">
 <dt id="thermosteam.Stream.show">
-<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">flow=None</em>, <em class="sig-param">N=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/stream.html#Stream.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">flow=None</em>, <em class="sig-param">N=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print all specifications.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

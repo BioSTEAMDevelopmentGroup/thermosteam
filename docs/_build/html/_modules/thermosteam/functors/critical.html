@@ -1,0 +1,1466 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.critical &mdash; ThermoSTEAM  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ThermoSTEAM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.critical</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.critical</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Tc&#39;</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">,</span> <span class="s1">&#39;Mersmann_Kind_predictor&#39;</span><span class="p">,</span> <span class="s1">&#39;third_property&#39;</span><span class="p">,</span> <span class="s1">&#39;critical_surface&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Ihmels&#39;</span><span class="p">,</span> <span class="s1">&#39;Meissner&#39;</span><span class="p">,</span> <span class="s1">&#39;Grigoras&#39;</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Chueh_Prausnitz_Tc&#39;</span><span class="p">,</span> <span class="s1">&#39;Grieves_Thodos&#39;</span><span class="p">,</span> <span class="s1">&#39;modified_Wilson_Tc&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Tc_mixture&#39;</span><span class="p">,</span> <span class="s1">&#39;Pc_mixture&#39;</span><span class="p">,</span> <span class="s1">&#39;Chueh_Prausnitz_Vc&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;modified_Wilson_Vc&#39;</span><span class="p">,</span> <span class="s1">&#39;Vc_mixture&#39;</span><span class="p">]</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;Tc_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Pc_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Vc_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Zc_methods&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;critical_surface_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;_crit_IUPAC&#39;</span><span class="p">,</span> <span class="s1">&#39;_crit_Matthews&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;_crit_CRC&#39;</span><span class="p">,</span> <span class="s1">&#39;_crit_PSRKR4&#39;</span><span class="p">,</span> <span class="s1">&#39;_crit_PassutDanner&#39;</span><span class="p">,</span> <span class="s1">&#39;_crit_Yaws&#39;</span><span class="p">])</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CASDataReader</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">R</span><span class="p">,</span> <span class="n">N_A</span>
+
+<span class="c1">### Read the various data files</span>
+<span class="c1"># TODO: check out 12E of this data http://pubsdc3.acs.org/doi/10.1021/acs.jced.5b00571</span>
+
+<span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;Critical Properties&#39;</span><span class="p">)</span>
+<span class="n">_crit_IUPAC</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;IUPACOrganicCriticalProps.tsv&#39;</span><span class="p">)</span>  <span class="c1"># IUPAC Organic data series</span>
+<span class="n">_crit_Matthews</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Mathews1972InorganicCriticalProps.tsv&#39;</span><span class="p">)</span>
+<span class="n">_crit_CRC</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRCCriticalOrganics.tsv&#39;</span><span class="p">)</span> <span class="c1"># CRC Handbook from TRC Organic data section (only in 2015)</span>
+<span class="n">_crit_PSRKR4</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Appendix to PSRK Revision 4.tsv&#39;</span><span class="p">)</span>
+<span class="n">_crit_PassutDanner</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;PassutDanner1973.tsv&#39;</span><span class="p">)</span>
+<span class="n">_crit_Yaws</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Yaws Collection.tsv&#39;</span><span class="p">)</span>
+ 
+<span class="n">_crit_CRC</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Zc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Vc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Tc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">R</span><span class="p">,</span>
+                            <span class="n">index</span><span class="o">=</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Zc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Vc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Tc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">R</span><span class="p">,</span>
+                               <span class="n">index</span><span class="o">=</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Zc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Vc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Tc&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">R</span><span class="p">,</span>
+                                <span class="n">index</span><span class="o">=</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+<span class="c1">### Strings defining each method</span>
+
+<span class="n">IUPAC</span> <span class="o">=</span> <span class="s1">&#39;IUPAC&#39;</span>
+<span class="n">MATTHEWS</span> <span class="o">=</span> <span class="s1">&#39;MATTHEWS&#39;</span>
+<span class="n">CRC</span> <span class="o">=</span> <span class="s1">&#39;CRC&#39;</span>
+<span class="n">PSRK</span> <span class="o">=</span> <span class="s1">&#39;PSRK&#39;</span>
+<span class="n">PD</span> <span class="o">=</span> <span class="s1">&#39;PD&#39;</span>
+<span class="n">YAWS</span> <span class="o">=</span> <span class="s1">&#39;YAWS&#39;</span>
+<span class="n">SURF</span> <span class="o">=</span> <span class="s1">&#39;SURF&#39;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+<span class="n">Tc_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">IUPAC</span><span class="p">,</span> <span class="n">MATTHEWS</span><span class="p">,</span> <span class="n">CRC</span><span class="p">,</span> <span class="n">PSRK</span><span class="p">,</span> <span class="n">PD</span><span class="p">,</span> <span class="n">YAWS</span><span class="p">,</span> <span class="n">SURF</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Tc"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Tc">[docs]</a><span class="k">def</span> <span class="nf">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IgnoreMethods</span><span class="o">=</span><span class="p">[</span><span class="n">SURF</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s critical</span>
+<span class="sd">    temperature. Lookup is based on CASRNs. Will automatically select a data</span>
+<span class="sd">    source to use if no Method is provided; returns None if the data is not</span>
+<span class="sd">    available.</span>
+
+<span class="sd">    Prefered sources are &#39;IUPAC&#39; for organic chemicals, and &#39;MATTHEWS&#39; for </span>
+<span class="sd">    inorganic chemicals. Function has data for approximately 1000 chemicals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Tc with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Accepted methods are &#39;IUPAC&#39;, &#39;MATTHEWS&#39;, </span>
+<span class="sd">        &#39;CRC&#39;, &#39;PSRK&#39;, &#39;PD&#39;, &#39;YAWS&#39;, and &#39;SURF&#39;. All valid values are also held  </span>
+<span class="sd">        in the list `Tc_methods`.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        Tc for the desired chemical, and will return methods instead of Tc</span>
+<span class="sd">    IgnoreMethods : list, optional</span>
+<span class="sd">        A list of methods to ignore in obtaining the full list of methods,</span>
+<span class="sd">        useful for for performance reasons and ignoring inaccurate methods</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A total of seven sources are available for this function. They are:</span>
+
+<span class="sd">        * &#39;IUPAC Organic Critical Properties&#39;, a series of critically evaluated</span>
+<span class="sd">          experimental datum for organic compounds in [1]_, [2]_, [3]_, [4]_,</span>
+<span class="sd">          [5]_, [6]_, [7]_, [8]_, [9]_, [10]_, [11]_, and [12]_.</span>
+<span class="sd">        * &#39;Matthews Inorganic Critical Properties&#39;, a series of critically</span>
+<span class="sd">          evaluated data for inorganic compounds in [13]_.</span>
+<span class="sd">        * &#39;CRC Organic Critical Properties&#39;, a compillation of critically</span>
+<span class="sd">          evaluated data by the TRC as published in [14]_.</span>
+<span class="sd">        * &#39;PSRK Revision 4 Appendix&#39;, a compillation of experimental and</span>
+<span class="sd">          estimated data published in [15]_.</span>
+<span class="sd">        * &#39;Passut Danner 1973 Critical Properties&#39;, an older compillation of</span>
+<span class="sd">          data published in [16]_</span>
+<span class="sd">        * &#39;Yaws Critical Properties&#39;, a large compillation of data from a</span>
+<span class="sd">          variety of sources; no data points are sourced in the work of [17]_.</span>
+<span class="sd">        * Critical Surface&#39;, an estimation method using a</span>
+<span class="sd">          simple quadratic method for estimating Tc from Pc and Vc. This is</span>
+<span class="sd">          ignored and not returned as a method by default, as no compounds</span>
+<span class="sd">          have values of Pc and Vc but not Tc currently.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Tc(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    514.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ambrose, Douglas, and Colin L. Young. &quot;Vapor-Liquid Critical</span>
+<span class="sd">       Properties of Elements and Compounds. 1. An Introductory Survey.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):</span>
+<span class="sd">       154-154. doi:10.1021/je950378q.</span>
+<span class="sd">    .. [2] Ambrose, Douglas, and Constantine Tsonopoulos. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 2. Normal Alkanes.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.</span>
+<span class="sd">       doi:10.1021/je00019a001.</span>
+<span class="sd">    .. [3] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 3. Aromatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 40, no. 3</span>
+<span class="sd">       (May 1, 1995): 547-58. doi:10.1021/je00019a002.</span>
+<span class="sd">    .. [4] Gude, Michael, and Amyn S. Teja. &quot;Vapor-Liquid Critical Properties</span>
+<span class="sd">       of Elements and Compounds. 4. Aliphatic Alkanols.&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.</span>
+<span class="sd">       doi:10.1021/je00021a001.</span>
+<span class="sd">    .. [5] Daubert, Thomas E. &quot;Vapor-Liquid Critical Properties of Elements</span>
+<span class="sd">       and Compounds. 5. Branched Alkanes and Cycloalkanes.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.</span>
+<span class="sd">       doi:10.1021/je9501548.</span>
+<span class="sd">    .. [6] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 41, no. 4</span>
+<span class="sd">       (January 1, 1996): 645-56. doi:10.1021/je9501999.</span>
+<span class="sd">    .. [7] Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen</span>
+<span class="sd">       Compounds Other Than Alkanols and Cycloalkanols.&quot; Journal of Chemical &amp;</span>
+<span class="sd">       Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</span>
+<span class="sd">    .. [8] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 8. Organic Sulfur,</span>
+<span class="sd">       Silicon, and Tin Compounds (C + H + S, Si, and Sn).&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.</span>
+<span class="sd">       doi:10.1021/je000210r.</span>
+<span class="sd">    .. [9] Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,</span>
+<span class="sd">       and Constantine Tsonopoulos. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 9. Organic Compounds Containing Nitrogen.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):</span>
+<span class="sd">       305-14. doi:10.1021/je050221q.</span>
+<span class="sd">    .. [10] Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,</span>
+<span class="sd">       Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic</span>
+<span class="sd">       Compounds Containing Halogens.&quot; Journal of Chemical &amp; Engineering Data</span>
+<span class="sd">       52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</span>
+<span class="sd">    .. [11] Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic</span>
+<span class="sd">       Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;</span>
+<span class="sd">       N + O; and O + S, + Si.&quot; Journal of Chemical &amp; Engineering Data 54,</span>
+<span class="sd">       no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</span>
+<span class="sd">    .. [12] Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David</span>
+<span class="sd">       W. Morton, and Kenneth N. Marsh. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and</span>
+<span class="sd">       Non-Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data, October 5,</span>
+<span class="sd">       2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</span>
+<span class="sd">    .. [13] Mathews, Joseph F. &quot;Critical Constants of Inorganic Substances.&quot;</span>
+<span class="sd">       Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.</span>
+<span class="sd">       doi:10.1021/cr60275a004.</span>
+<span class="sd">    .. [14] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</span>
+<span class="sd">    .. [15] Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and</span>
+<span class="sd">       Jürgen Gmehling. &quot;PSRK Group Contribution Equation of State:</span>
+<span class="sd">       Comprehensive Revision and Extension IV, Including Critical Constants</span>
+<span class="sd">       and Α-Function Parameters for 1000 Components.&quot; Fluid Phase Equilibria</span>
+<span class="sd">       227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</span>
+<span class="sd">    .. [16] Passut, Charles A., and Ronald P. Danner. &quot;Acentric Factor. A</span>
+<span class="sd">       Valuable Correlating Parameter for the Properties of Hydrocarbons.&quot;</span>
+<span class="sd">       Industrial &amp; Engineering Chemistry Process Design and Development 12,</span>
+<span class="sd">       no. 3 (July 1, 1973): 365–68. doi:10.1021/i260047a026.</span>
+<span class="sd">    .. [17] Yaws, Carl L. Thermophysical Properties of Chemicals and</span>
+<span class="sd">       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional</span>
+<span class="sd">       Publishing, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IUPAC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MATTHEWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_CRC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CRC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PSRK</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">YAWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SURF</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                    <span class="n">methods</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Method</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">IUPAC</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MATTHEWS</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PSRK</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PD</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">CRC</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">YAWS</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">SURF</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="n">third_property</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">_Tc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Tc</span></div>
+
+
+<span class="n">Pc_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">IUPAC</span><span class="p">,</span> <span class="n">MATTHEWS</span><span class="p">,</span> <span class="n">CRC</span><span class="p">,</span> <span class="n">PSRK</span><span class="p">,</span> <span class="n">PD</span><span class="p">,</span> <span class="n">YAWS</span><span class="p">,</span> <span class="n">SURF</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Pc"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Pc">[docs]</a><span class="k">def</span> <span class="nf">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IgnoreMethods</span><span class="o">=</span><span class="p">[</span><span class="n">SURF</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s critical</span>
+<span class="sd">    pressure. Lookup is based on CASRNs. Will automatically select a data</span>
+<span class="sd">    source to use if no Method is provided; returns None if the data is not</span>
+<span class="sd">    available.</span>
+
+<span class="sd">    Prefered sources are &#39;IUPAC&#39; for organic chemicals, and &#39;MATTHEWS&#39; for </span>
+<span class="sd">    inorganic chemicals. Function has data for approximately 1000 chemicals.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Pc(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    6137000.0</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure, [Pa]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Pc with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Accepted methods are &#39;IUPAC&#39;, &#39;MATTHEWS&#39;, </span>
+<span class="sd">        &#39;CRC&#39;, &#39;PSRK&#39;, &#39;PD&#39;, &#39;YAWS&#39;, and &#39;SURF&#39;. All valid values are also held  </span>
+<span class="sd">        in the list `Pc_methods`.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        Pc for the desired chemical, and will return methods instead of Pc</span>
+<span class="sd">    IgnoreMethods : list, optional</span>
+<span class="sd">        A list of methods to ignore in obtaining the full list of methods,</span>
+<span class="sd">        useful for for performance reasons and ignoring inaccurate methods</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A total of seven sources are available for this function. They are:</span>
+
+<span class="sd">        * &#39;IUPAC&#39;, a series of critically evaluated</span>
+<span class="sd">          experimental datum for organic compounds in [1]_, [2]_, [3]_, [4]_,</span>
+<span class="sd">          [5]_, [6]_, [7]_, [8]_, [9]_, [10]_, [11]_, and [12]_.</span>
+<span class="sd">        * &#39;MATTHEWS&#39;, a series of critically</span>
+<span class="sd">          evaluated data for inorganic compounds in [13]_.</span>
+<span class="sd">        * &#39;CRC&#39;, a compillation of critically</span>
+<span class="sd">          evaluated data by the TRC as published in [14]_.</span>
+<span class="sd">        * &#39;PSRK&#39;, a compillation of experimental and</span>
+<span class="sd">          estimated data published in [15]_.</span>
+<span class="sd">        * &#39;PD&#39;, an older compillation of</span>
+<span class="sd">          data published in [16]_</span>
+<span class="sd">        * &#39;YAWS&#39;, a large compillation of data from a</span>
+<span class="sd">          variety of sources; no data points are sourced in the work of [17]_.</span>
+<span class="sd">        * SURF&#39;, an estimation method using a</span>
+<span class="sd">          simple quadratic method for estimating Pc from Tc and Vc. This is</span>
+<span class="sd">          ignored and not returned as a method by default.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ambrose, Douglas, and Colin L. Young. &quot;Vapor-Liquid Critical</span>
+<span class="sd">       Properties of Elements and Compounds. 1. An Introductory Survey.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):</span>
+<span class="sd">       154-154. doi:10.1021/je950378q.</span>
+<span class="sd">    .. [2] Ambrose, Douglas, and Constantine Tsonopoulos. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 2. Normal Alkanes.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.</span>
+<span class="sd">       doi:10.1021/je00019a001.</span>
+<span class="sd">    .. [3] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 3. Aromatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 40, no. 3</span>
+<span class="sd">       (May 1, 1995): 547-58. doi:10.1021/je00019a002.</span>
+<span class="sd">    .. [4] Gude, Michael, and Amyn S. Teja. &quot;Vapor-Liquid Critical Properties</span>
+<span class="sd">       of Elements and Compounds. 4. Aliphatic Alkanols.&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.</span>
+<span class="sd">       doi:10.1021/je00021a001.</span>
+<span class="sd">    .. [5] Daubert, Thomas E. &quot;Vapor-Liquid Critical Properties of Elements</span>
+<span class="sd">       and Compounds. 5. Branched Alkanes and Cycloalkanes.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.</span>
+<span class="sd">       doi:10.1021/je9501548.</span>
+<span class="sd">    .. [6] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 41, no. 4</span>
+<span class="sd">       (January 1, 1996): 645-56. doi:10.1021/je9501999.</span>
+<span class="sd">    .. [7] Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen</span>
+<span class="sd">       Compounds Other Than Alkanols and Cycloalkanols.&quot; Journal of Chemical &amp;</span>
+<span class="sd">       Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</span>
+<span class="sd">    .. [8] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 8. Organic Sulfur,</span>
+<span class="sd">       Silicon, and Tin Compounds (C + H + S, Si, and Sn).&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.</span>
+<span class="sd">       doi:10.1021/je000210r.</span>
+<span class="sd">    .. [9] Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,</span>
+<span class="sd">       and Constantine Tsonopoulos. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 9. Organic Compounds Containing Nitrogen.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):</span>
+<span class="sd">       305-14. doi:10.1021/je050221q.</span>
+<span class="sd">    .. [10] Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,</span>
+<span class="sd">       Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic</span>
+<span class="sd">       Compounds Containing Halogens.&quot; Journal of Chemical &amp; Engineering Data</span>
+<span class="sd">       52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</span>
+<span class="sd">    .. [11] Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic</span>
+<span class="sd">       Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;</span>
+<span class="sd">       N + O; and O + S, + Si.&quot; Journal of Chemical &amp; Engineering Data 54,</span>
+<span class="sd">       no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</span>
+<span class="sd">    .. [12] Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David</span>
+<span class="sd">       W. Morton, and Kenneth N. Marsh. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and</span>
+<span class="sd">       Non-Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data, October 5,</span>
+<span class="sd">       2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</span>
+<span class="sd">    .. [13] Mathews, Joseph F. &quot;Critical Constants of Inorganic Substances.&quot;</span>
+<span class="sd">       Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.</span>
+<span class="sd">       doi:10.1021/cr60275a004.</span>
+<span class="sd">    .. [14] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</span>
+<span class="sd">    .. [15] Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and</span>
+<span class="sd">       Jürgen Gmehling. &quot;PSRK Group Contribution Equation of State:</span>
+<span class="sd">       Comprehensive Revision and Extension IV, Including Critical Constants</span>
+<span class="sd">       and Α-Function Parameters for 1000 Components.&quot; Fluid Phase Equilibria</span>
+<span class="sd">       227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</span>
+<span class="sd">    .. [16] Passut, Charles A., and Ronald P. Danner. &quot;Acentric Factor. A</span>
+<span class="sd">       Valuable Correlating Parameter for the Properties of Hydrocarbons.&quot;</span>
+<span class="sd">       Industrial &amp; Engineering Chemistry Process Design and Development 12,</span>
+<span class="sd">       no. 3 (July 1, 1973): 365–68. doi:10.1021/i260047a026.</span>
+<span class="sd">    .. [17] Yaws, Carl L. Thermophysical Properties of Chemicals and</span>
+<span class="sd">       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional</span>
+<span class="sd">       Publishing, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IUPAC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MATTHEWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_CRC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CRC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PSRK</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">YAWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SURF</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                    <span class="n">methods</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Method</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">IUPAC</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MATTHEWS</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">CRC</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PSRK</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PD</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">YAWS</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">SURF</span><span class="p">:</span>
+        <span class="n">_Pc</span> <span class="o">=</span> <span class="n">third_property</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Pc</span></div>
+
+
+<span class="n">Vc_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">IUPAC</span><span class="p">,</span> <span class="n">MATTHEWS</span><span class="p">,</span> <span class="n">CRC</span><span class="p">,</span> <span class="n">PSRK</span><span class="p">,</span> <span class="n">YAWS</span><span class="p">,</span> <span class="n">SURF</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Vc"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Vc">[docs]</a><span class="k">def</span> <span class="nf">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IgnoreMethods</span><span class="o">=</span><span class="p">[</span><span class="n">SURF</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s critical</span>
+<span class="sd">    volume. Lookup is based on CASRNs. Will automatically select a data</span>
+<span class="sd">    source to use if no Method is provided; returns None if the data is not</span>
+<span class="sd">    available.</span>
+
+<span class="sd">    Prefered sources are &#39;IUPAC&#39; for organic chemicals, and &#39;MATTHEWS&#39; for </span>
+<span class="sd">    inorganic chemicals. Function has data for approximately 1000 chemicals.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Vc(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    0.000168</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume, [m^3/mol]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Vc with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Accepted methods are &#39;IUPAC&#39;, &#39;MATTHEWS&#39;, </span>
+<span class="sd">        &#39;CRC&#39;, &#39;PSRK&#39;, &#39;YAWS&#39;, and &#39;SURF&#39;. All valid values are also held  </span>
+<span class="sd">        in the list `Vc_methods`.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        Vc for the desired chemical, and will return methods instead of Vc</span>
+<span class="sd">    IgnoreMethods : list, optional</span>
+<span class="sd">        A list of methods to ignore in obtaining the full list of methods,</span>
+<span class="sd">        useful for for performance reasons and ignoring inaccurate methods</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A total of six sources are available for this function. They are:</span>
+
+<span class="sd">        * &#39;IUPAC&#39;, a series of critically evaluated</span>
+<span class="sd">          experimental datum for organic compounds in [1]_, [2]_, [3]_, [4]_,</span>
+<span class="sd">          [5]_, [6]_, [7]_, [8]_, [9]_, [10]_, [11]_, and [12]_.</span>
+<span class="sd">        * &#39;MATTHEWS&#39;, a series of critically</span>
+<span class="sd">          evaluated data for inorganic compounds in [13]_.</span>
+<span class="sd">        * &#39;CRC&#39;, a compillation of critically</span>
+<span class="sd">          evaluated data by the TRC as published in [14]_.</span>
+<span class="sd">        * &#39;PSRK&#39;, a compillation of experimental and</span>
+<span class="sd">          estimated data published in [15]_.</span>
+<span class="sd">        * &#39;YAWS&#39;, a large compillation of data from a</span>
+<span class="sd">          variety of sources; no data points are sourced in the work of [16]_.</span>
+<span class="sd">        * &#39;SURF&#39;, an estimation method using a</span>
+<span class="sd">          simple quadratic method for estimating Pc from Tc and Vc. This is</span>
+<span class="sd">          ignored and not returned as a method by default</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ambrose, Douglas, and Colin L. Young. &quot;Vapor-Liquid Critical</span>
+<span class="sd">       Properties of Elements and Compounds. 1. An Introductory Survey.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):</span>
+<span class="sd">       154-154. doi:10.1021/je950378q.</span>
+<span class="sd">    .. [2] Ambrose, Douglas, and Constantine Tsonopoulos. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 2. Normal Alkanes.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.</span>
+<span class="sd">       doi:10.1021/je00019a001.</span>
+<span class="sd">    .. [3] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 3. Aromatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 40, no. 3</span>
+<span class="sd">       (May 1, 1995): 547-58. doi:10.1021/je00019a002.</span>
+<span class="sd">    .. [4] Gude, Michael, and Amyn S. Teja. &quot;Vapor-Liquid Critical Properties</span>
+<span class="sd">       of Elements and Compounds. 4. Aliphatic Alkanols.&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.</span>
+<span class="sd">       doi:10.1021/je00021a001.</span>
+<span class="sd">    .. [5] Daubert, Thomas E. &quot;Vapor-Liquid Critical Properties of Elements</span>
+<span class="sd">       and Compounds. 5. Branched Alkanes and Cycloalkanes.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.</span>
+<span class="sd">       doi:10.1021/je9501548.</span>
+<span class="sd">    .. [6] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 41, no. 4</span>
+<span class="sd">       (January 1, 1996): 645-56. doi:10.1021/je9501999.</span>
+<span class="sd">    .. [7] Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen</span>
+<span class="sd">       Compounds Other Than Alkanols and Cycloalkanols.&quot; Journal of Chemical &amp;</span>
+<span class="sd">       Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</span>
+<span class="sd">    .. [8] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 8. Organic Sulfur,</span>
+<span class="sd">       Silicon, and Tin Compounds (C + H + S, Si, and Sn).&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.</span>
+<span class="sd">       doi:10.1021/je000210r.</span>
+<span class="sd">    .. [9] Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,</span>
+<span class="sd">       and Constantine Tsonopoulos. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 9. Organic Compounds Containing Nitrogen.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):</span>
+<span class="sd">       305-14. doi:10.1021/je050221q.</span>
+<span class="sd">    .. [10] Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,</span>
+<span class="sd">       Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic</span>
+<span class="sd">       Compounds Containing Halogens.&quot; Journal of Chemical &amp; Engineering Data</span>
+<span class="sd">       52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</span>
+<span class="sd">    .. [11] Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic</span>
+<span class="sd">       Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;</span>
+<span class="sd">       N + O; and O + S, + Si.&quot; Journal of Chemical &amp; Engineering Data 54,</span>
+<span class="sd">       no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</span>
+<span class="sd">    .. [12] Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David</span>
+<span class="sd">       W. Morton, and Kenneth N. Marsh. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and</span>
+<span class="sd">       Non-Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data, October 5,</span>
+<span class="sd">       2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</span>
+<span class="sd">    .. [13] Mathews, Joseph F. &quot;Critical Constants of Inorganic Substances.&quot;</span>
+<span class="sd">       Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.</span>
+<span class="sd">       doi:10.1021/cr60275a004.</span>
+<span class="sd">    .. [14] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</span>
+<span class="sd">    .. [15] Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and</span>
+<span class="sd">       Jürgen Gmehling. &quot;PSRK Group Contribution Equation of State:</span>
+<span class="sd">       Comprehensive Revision and Extension IV, Including Critical Constants</span>
+<span class="sd">       and Α-Function Parameters for 1000 Components.&quot; Fluid Phase Equilibria</span>
+<span class="sd">       227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</span>
+<span class="sd">    .. [16] Yaws, Carl L. Thermophysical Properties of Chemicals and</span>
+<span class="sd">       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional</span>
+<span class="sd">       Publishing, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IUPAC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MATTHEWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_CRC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CRC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PSRK</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">YAWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SURF</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                    <span class="n">methods</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Method</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">IUPAC</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PSRK</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MATTHEWS</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">CRC</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">YAWS</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">SURF</span><span class="p">:</span>
+        <span class="n">_Vc</span> <span class="o">=</span> <span class="n">third_property</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Vc</span></div>
+
+
+<span class="n">COMBINED</span> <span class="o">=</span> <span class="s1">&#39;COMBINED&#39;</span>
+<span class="n">Zc_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">IUPAC</span><span class="p">,</span> <span class="n">MATTHEWS</span><span class="p">,</span> <span class="n">CRC</span><span class="p">,</span> <span class="n">PSRK</span><span class="p">,</span> <span class="n">YAWS</span><span class="p">,</span> <span class="n">COMBINED</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Zc"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Zc">[docs]</a><span class="k">def</span> <span class="nf">Zc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IgnoreMethods</span><span class="o">=</span><span class="p">[</span><span class="n">COMBINED</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s critical</span>
+<span class="sd">    compressibility. Lookup is based on CASRNs. Will automatically select a</span>
+<span class="sd">    data source to use if no Method is provided; returns None if the data is</span>
+<span class="sd">    not available.</span>
+
+<span class="sd">    Prefered sources are &#39;IUPAC&#39; for organic chemicals, and &#39;MATTHEWS&#39; for </span>
+<span class="sd">    inorganic chemicals. Function has data for approximately 1000 chemicals.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Zc(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    0.24100000000000002</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Zc : float</span>
+<span class="sd">        Critical compressibility, [-]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Vc with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Accepted methods are &#39;IUPAC&#39;, &#39;MATTHEWS&#39;, </span>
+<span class="sd">        &#39;CRC&#39;, &#39;PSRK&#39;, &#39;YAWS&#39;, and &#39;COMBINED&#39;. All valid values are also held  </span>
+<span class="sd">        in `Zc_methods`.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        Zc for the desired chemical, and will return methods instead of Zc</span>
+<span class="sd">    IgnoreMethods : list, optional</span>
+<span class="sd">        A list of methods to ignore in obtaining the full list of methods,</span>
+<span class="sd">        useful for for performance reasons and ignoring inaccurate methods</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A total of five sources are available for this function. They are:</span>
+
+<span class="sd">        * &#39;IUPAC&#39;, a series of critically evaluated</span>
+<span class="sd">          experimental datum for organic compounds in [1]_, [2]_, [3]_, [4]_,</span>
+<span class="sd">          [5]_, [6]_, [7]_, [8]_, [9]_, [10]_, [11]_, and [12]_.</span>
+<span class="sd">        * &#39;MATTHEWS&#39;, a series of critically</span>
+<span class="sd">          evaluated data for inorganic compounds in [13]_.</span>
+<span class="sd">        * &#39;CRC&#39;, a compillation of critically</span>
+<span class="sd">          evaluated data by the TRC as published in [14]_.</span>
+<span class="sd">        * &#39;PSRK&#39;, a compillation of experimental and</span>
+<span class="sd">          estimated data published in [15]_.</span>
+<span class="sd">        * &#39;YAWS&#39;, a large compillation of data from a</span>
+<span class="sd">          variety of sources; no data points are sourced in the work of [16]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ambrose, Douglas, and Colin L. Young. &quot;Vapor-Liquid Critical</span>
+<span class="sd">       Properties of Elements and Compounds. 1. An Introductory Survey.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):</span>
+<span class="sd">       154-154. doi:10.1021/je950378q.</span>
+<span class="sd">    .. [2] Ambrose, Douglas, and Constantine Tsonopoulos. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 2. Normal Alkanes.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.</span>
+<span class="sd">       doi:10.1021/je00019a001.</span>
+<span class="sd">    .. [3] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 3. Aromatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 40, no. 3</span>
+<span class="sd">       (May 1, 1995): 547-58. doi:10.1021/je00019a002.</span>
+<span class="sd">    .. [4] Gude, Michael, and Amyn S. Teja. &quot;Vapor-Liquid Critical Properties</span>
+<span class="sd">       of Elements and Compounds. 4. Aliphatic Alkanols.&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.</span>
+<span class="sd">       doi:10.1021/je00021a001.</span>
+<span class="sd">    .. [5] Daubert, Thomas E. &quot;Vapor-Liquid Critical Properties of Elements</span>
+<span class="sd">       and Compounds. 5. Branched Alkanes and Cycloalkanes.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.</span>
+<span class="sd">       doi:10.1021/je9501548.</span>
+<span class="sd">    .. [6] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic</span>
+<span class="sd">       Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data 41, no. 4</span>
+<span class="sd">       (January 1, 1996): 645-56. doi:10.1021/je9501999.</span>
+<span class="sd">    .. [7] Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen</span>
+<span class="sd">       Compounds Other Than Alkanols and Cycloalkanols.&quot; Journal of Chemical &amp;</span>
+<span class="sd">       Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</span>
+<span class="sd">    .. [8] Tsonopoulos, Constantine, and Douglas Ambrose. &quot;Vapor-Liquid</span>
+<span class="sd">       Critical Properties of Elements and Compounds. 8. Organic Sulfur,</span>
+<span class="sd">       Silicon, and Tin Compounds (C + H + S, Si, and Sn).&quot; Journal of Chemical</span>
+<span class="sd">       &amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.</span>
+<span class="sd">       doi:10.1021/je000210r.</span>
+<span class="sd">    .. [9] Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,</span>
+<span class="sd">       and Constantine Tsonopoulos. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 9. Organic Compounds Containing Nitrogen.&quot;</span>
+<span class="sd">       Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):</span>
+<span class="sd">       305-14. doi:10.1021/je050221q.</span>
+<span class="sd">    .. [10] Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,</span>
+<span class="sd">       Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic</span>
+<span class="sd">       Compounds Containing Halogens.&quot; Journal of Chemical &amp; Engineering Data</span>
+<span class="sd">       52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</span>
+<span class="sd">    .. [11] Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.</span>
+<span class="sd">       &quot;Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic</span>
+<span class="sd">       Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;</span>
+<span class="sd">       N + O; and O + S, + Si.&quot; Journal of Chemical &amp; Engineering Data 54,</span>
+<span class="sd">       no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</span>
+<span class="sd">    .. [12] Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David</span>
+<span class="sd">       W. Morton, and Kenneth N. Marsh. &quot;Vapor-Liquid Critical Properties of</span>
+<span class="sd">       Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and</span>
+<span class="sd">       Non-Hydrocarbons.&quot; Journal of Chemical &amp; Engineering Data, October 5,</span>
+<span class="sd">       2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</span>
+<span class="sd">    .. [13] Mathews, Joseph F. &quot;Critical Constants of Inorganic Substances.&quot;</span>
+<span class="sd">       Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.</span>
+<span class="sd">       doi:10.1021/cr60275a004.</span>
+<span class="sd">    .. [14] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</span>
+<span class="sd">    .. [15] Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and</span>
+<span class="sd">       Jürgen Gmehling. &quot;PSRK Group Contribution Equation of State:</span>
+<span class="sd">       Comprehensive Revision and Extension IV, Including Critical Constants</span>
+<span class="sd">       and Α-Function Parameters for 1000 Components.&quot; Fluid Phase Equilibria</span>
+<span class="sd">       227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</span>
+<span class="sd">    .. [16] Yaws, Carl L. Thermophysical Properties of Chemicals and</span>
+<span class="sd">       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional</span>
+<span class="sd">       Publishing, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IUPAC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MATTHEWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_CRC</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CRC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PSRK</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">YAWS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">COMBINED</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                    <span class="n">methods</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Method</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># This is the calculate, given the method section</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">IUPAC</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_IUPAC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">PSRK</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MATTHEWS</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Matthews</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">CRC</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_CRC</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">YAWS</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">COMBINED</span><span class="p">:</span>
+        <span class="n">_Zc</span> <span class="o">=</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">/</span><span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">/</span><span class="n">R</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Zc</span></div>
+
+
+<span class="n">rcovs_Mersmann_Kind</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">,</span> <span class="s1">&#39;Cl&#39;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="mf">1.33</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mf">0.37</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="mf">0.71</span><span class="p">,</span> 
+                       <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="mf">1.04</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mf">0.71</span><span class="p">,</span> <span class="s1">&#39;Si&#39;</span><span class="p">:</span> <span class="mf">1.17</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">:</span> <span class="mf">1.14</span><span class="p">}</span>
+
+<span class="n">rcovs_regressed</span> <span class="o">=</span>  <span class="p">{</span>
+    <span class="sa">u</span><span class="s1">&#39;Nb&#39;</span><span class="p">:</span> <span class="mf">0.5139380605234125</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Ne&#39;</span><span class="p">:</span> <span class="mf">0.7708216694154189</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Al&#39;</span><span class="p">:</span> <span class="mf">1.004994775098707</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Re&#39;</span><span class="p">:</span> <span class="mf">1.1164444694484814</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Rb&#39;</span><span class="p">:</span> <span class="mf">2.9910506044828837</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Rn&#39;</span><span class="p">:</span> <span class="mf">1.9283158156480653</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Xe&#39;</span><span class="p">:</span> <span class="mf">1.694221043013319</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Ta&#39;</span><span class="p">:</span> <span class="mf">1.1185133195453156</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="mf">1.8436438207262267</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Br&#39;</span><span class="p">:</span> <span class="mf">1.3081458724155532</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Hf&#39;</span><span class="p">:</span> <span class="mf">0.8829545460486594</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Mo&#39;</span><span class="p">:</span> <span class="mf">0.740396259301556</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;He&#39;</span><span class="p">:</span> <span class="mf">0.9808144122544257</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mf">0.6068586007600608</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mf">0.7039677272439753</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="mf">0.5409105884533288</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="mf">1.7262432419406561</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mf">0.33296601702348533</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="mf">0.7384112258842432</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mf">0.5883254088243008</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mf">0.5467979701131293</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="mf">1.0444655158949694</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Si&#39;</span><span class="p">:</span> <span class="mf">1.4181434041348049</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="mf">1.5530287578073485</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="mf">1.3339487990207999</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="mf">0.8355335838735266</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="mf">0.6714619384794069</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Sb&#39;</span><span class="p">:</span> <span class="mf">0.8840680681215854</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Se&#39;</span><span class="p">:</span> <span class="mf">1.5747549515496795</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Ge&#39;</span><span class="p">:</span> <span class="mf">1.0730584829731715</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Kr&#39;</span><span class="p">:</span> <span class="mf">1.393999829252709</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Cl&#39;</span><span class="p">:</span> <span class="mf">1.0957835025011224</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="mf">1.0364452121761167</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Hg&#39;</span><span class="p">:</span> <span class="mf">0.6750818243474633</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;As&#39;</span><span class="p">:</span> <span class="mf">0.6750687692915264</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Ar&#39;</span><span class="p">:</span> <span class="mf">1.2008872952022298</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Cs&#39;</span><span class="p">:</span> <span class="mf">3.433699060142929</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s1">&#39;Zr&#39;</span><span class="p">:</span> <span class="mf">0.9346554283483623</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="Mersmann_Kind_predictor"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Mersmann_Kind_predictor">[docs]</a><span class="k">def</span> <span class="nf">Mersmann_Kind_predictor</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="mf">3.645</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+                            <span class="n">covalent_radii</span><span class="o">=</span><span class="n">rcovs_Mersmann_Kind</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Predicts the critical molar volume of a chemical based only on its</span>
+<span class="sd">    atomic composition according to [1]_ and [2]_. This is a crude approach,</span>
+<span class="sd">    but provides very reasonable</span>
+<span class="sd">    estimates in practice. Optionally, the `coeff` used and the `power` in the</span>
+<span class="sd">    fraction as well as the atomic contributions can be adjusted; this method</span>
+<span class="sd">    is general and atomic contributions can be regressed to predict other</span>
+<span class="sd">    properties with this routine.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{\left(\frac{V_c}{n_a N_A}\right)^{1/3}}{d_a}</span>
+<span class="sd">        = \frac{3.645}{\left(\frac{r_a}{r_H}\right)^{1/2}}</span>
+
+<span class="sd">        r_a = d_a/2</span>
+<span class="sd">        </span>
+<span class="sd">        d_a = 2 \frac{\sum_i (n_i r_i)}{n_a}</span>
+<span class="sd">        </span>
+<span class="sd">    In the above equations, :math:`n_i` is the number of atoms of species i in</span>
+<span class="sd">    the molecule, :math:`r_i` is the covalent atomic radius of the atom, and </span>
+<span class="sd">    :math:`n_a` is the total number of atoms in the molecule.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : dict</span>
+<span class="sd">        Dictionary of atoms and their counts, [-]</span>
+<span class="sd">    coeff : float, optional</span>
+<span class="sd">        Coefficient used in the relationship, [m^2]</span>
+<span class="sd">    power : float, optional</span>
+<span class="sd">        Power applied to the relative atomic radius, [-]</span>
+<span class="sd">    covalent_radii : dict or indexable, optional</span>
+<span class="sd">        Object which can be indexed to atomic contrinbutions (by symbol), [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Predicted critical volume of the chemical, [m^3/mol]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----    </span>
+<span class="sd">    Using the :obj:`thermo.elements.periodic_table` covalent radii (from RDKit), </span>
+<span class="sd">    the coefficient and power should be 4.261206523632586 and 0.5597281770786228</span>
+<span class="sd">    respectively for best results.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Prediction of critical volume of decane:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; Mersmann_Kind_predictor({&#39;C&#39;: 10, &#39;H&#39;: 22})</span>
+<span class="sd">    0.0005851859052024729</span>
+<span class="sd">    </span>
+<span class="sd">    This is compared against the experimental value, 0.000624 (a 6.2% relative</span>
+<span class="sd">    error)</span>
+<span class="sd">    </span>
+<span class="sd">    Using custom fitted coefficients we can do a bit better:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; from thermo.critical import rcovs_regressed</span>
+<span class="sd">    &gt;&gt;&gt; Mersmann_Kind_predictor({&#39;C&#39;: 10, &#39;H&#39;: 22}, coeff=4.261206523632586, </span>
+<span class="sd">    ... power=0.5597281770786228, covalent_radii=rcovs_regressed)</span>
+<span class="sd">    0.0005956871011923075</span>
+<span class="sd">    </span>
+<span class="sd">    The relative error is only 4.5% now. This is compared to an experimental </span>
+<span class="sd">    uncertainty of 5.6%.</span>
+<span class="sd">    </span>
+<span class="sd">    Evaluating 1321 critical volumes in the database, the average relative</span>
+<span class="sd">    error is 5.0%; standard deviation 6.8%; and worst value of 79% relative</span>
+<span class="sd">    error for phosphorus.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Mersmann, Alfons, and Matthias Kind. &quot;Correlation for the Prediction</span>
+<span class="sd">       of Critical Molar Volume.&quot; Industrial &amp; Engineering Chemistry Research,</span>
+<span class="sd">       October 16, 2017. https://doi.org/10.1021/acs.iecr.7b03171.</span>
+<span class="sd">    .. [2] Mersmann, Alfons, and Matthias Kind. &quot;Prediction of Mechanical and </span>
+<span class="sd">       Thermal Properties of Pure Liquids, of Critical Data, and of Vapor </span>
+<span class="sd">       Pressure.&quot; Industrial &amp; Engineering Chemistry Research, January 31, </span>
+<span class="sd">       2017. https://doi.org/10.1021/acs.iecr.6b04323.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">H_RADIUS_COV</span> <span class="o">=</span> <span class="n">covalent_radii</span><span class="p">[</span><span class="s1">&#39;H&#39;</span><span class="p">]</span>
+    <span class="n">tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">atom_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">atom</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">covalent_radii</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Atom </span><span class="si">%s</span><span class="s1"> is not supported by the supplied dictionary&#39;</span> <span class="o">%</span><span class="n">atom</span><span class="p">)</span>
+        <span class="n">tot</span> <span class="o">+=</span> <span class="n">count</span><span class="o">*</span><span class="n">covalent_radii</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+        <span class="n">atom_count</span> <span class="o">+=</span> <span class="n">count</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">tot</span><span class="o">/</span><span class="n">atom_count</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="n">da</span><span class="o">/</span><span class="mf">2.</span>
+    <span class="n">da_SI</span> <span class="o">=</span> <span class="n">da</span><span class="o">*</span><span class="mf">1e-10</span> <span class="c1"># Convert from angstrom to m</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">coeff</span><span class="o">/</span><span class="p">(</span><span class="n">ra</span><span class="o">/</span><span class="n">H_RADIUS_COV</span><span class="p">)</span><span class="o">**</span><span class="n">power</span><span class="p">)</span><span class="o">*</span><span class="n">da_SI</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">N_A</span><span class="o">*</span><span class="n">atom_count</span></div>
+
+
+<span class="c1">### Critical Property Relationships</span>
+
+
+<div class="viewcode-block" id="Ihmels"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Ihmels">[docs]</a><span class="k">def</span> <span class="nf">Ihmels</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Most recent, and most recommended method of estimating critical</span>
+<span class="sd">    properties from each other. Two of the three properties are required.</span>
+<span class="sd">    This model uses the &quot;critical surface&quot;, a general plot of Tc vs Pc vs Vc.</span>
+<span class="sd">    The model used 421 organic compounds to derive equation.</span>
+<span class="sd">    The general equation is in [1]_:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P_c = -0.025 + 2.215 \frac{T_c}{V_c}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid (optional) [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid (optional) [Pa]</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid (optional) [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc, Pc or Vc : float</span>
+<span class="sd">        Critical property of fluid [K], [Pa], or [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The prediction of Tc from Pc and Vc is not tested, as this is not necessary</span>
+<span class="sd">    anywhere, but it is implemented.</span>
+<span class="sd">    Internal units are MPa, cm^3/mol, and K. A slight error occurs when</span>
+<span class="sd">    Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.</span>
+<span class="sd">    Their equation was also compared with 56 inorganic and elements.</span>
+<span class="sd">    Devations of 20% for &lt;200K or &gt;1000K points.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------a</span>
+<span class="sd">    Succinic acid [110-15-6]</span>
+
+<span class="sd">    &gt;&gt;&gt; Ihmels(Tc=851.0, Vc=0.000308)</span>
+<span class="sd">    6095016.233766234</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ihmels, E. Christian. &quot;The Critical Surface.&quot; Journal of Chemical</span>
+<span class="sd">           &amp; Engineering Data 55, no. 9 (September 9, 2010): 3474-80.</span>
+<span class="sd">           doi:10.1021/je100167w.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span><span class="o">+</span><span class="mf">2.215</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Vc</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># MPa to Pa</span>
+        <span class="k">return</span> <span class="n">Pc</span>
+    <span class="k">elif</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E6</span>  <span class="c1"># Pa to MPa</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="mi">443</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="mi">200</span><span class="o">*</span><span class="n">Pc</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">/</span><span class="mf">1E6</span>  <span class="c1"># cm^3/mol to m^3/mol</span>
+        <span class="k">return</span> <span class="n">Vc</span>
+    <span class="k">elif</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E6</span>  <span class="c1"># Pa to MPa</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+        <span class="n">Tc</span> <span class="o">=</span> <span class="mf">5.0</span><span class="o">/</span><span class="mi">443</span><span class="o">*</span><span class="p">(</span><span class="mi">40</span><span class="o">*</span><span class="n">Pc</span><span class="o">*</span><span class="n">Vc</span> <span class="o">+</span> <span class="n">Vc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Tc</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Two of Tc, Pc, and Vc must be provided&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Meissner"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Meissner">[docs]</a><span class="k">def</span> <span class="nf">Meissner</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Old (1942) relationship for estimating critical</span>
+<span class="sd">    properties from each other. Two of the three properties are required.</span>
+<span class="sd">    This model uses the &quot;critical surface&quot;, a general plot of Tc vs Pc vs Vc.</span>
+<span class="sd">    The model used 42 organic and inorganic compounds to derive the equation.</span>
+<span class="sd">    The general equation is in [1]_:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P_c = \frac{2.08 T_c}{V_c-8}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float, optional</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float, optional</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+<span class="sd">    Vc : float, optional</span>
+<span class="sd">        Critical volume of fluid [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc, Pc or Vc : float</span>
+<span class="sd">        Critical property of fluid [K], [Pa], or [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The prediction of Tc from Pc and Vc is not tested, as this is not necessary</span>
+<span class="sd">    anywhere, but it is implemented.</span>
+<span class="sd">    Internal units are atm, cm^3/mol, and K. A slight error occurs when</span>
+<span class="sd">    Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.</span>
+<span class="sd">    This equation is less accurate than that of Ihmels, but surprisingly close.</span>
+<span class="sd">    The author also proposed means of estimated properties independently.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Succinic acid [110-15-6]</span>
+
+<span class="sd">    &gt;&gt;&gt; Meissner(Tc=851.0, Vc=0.000308)</span>
+<span class="sd">    5978445.199999999</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Meissner, H. P., and E. M. Redding. &quot;Prediction of Critical</span>
+<span class="sd">           Constants.&quot; Industrial &amp; Engineering Chemistry 34, no. 5</span>
+<span class="sd">           (May 1, 1942): 521-26. doi:10.1021/ie50389a003.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="mf">20.8</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="n">Vc</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="mi">101325</span><span class="o">*</span><span class="n">Pc</span>  <span class="c1"># atm to Pa</span>
+        <span class="k">return</span> <span class="n">Pc</span>
+    <span class="k">elif</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>  <span class="c1"># Pa to atm</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="mi">104</span><span class="o">/</span><span class="mf">5.0</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">+</span><span class="mi">8</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">/</span><span class="mf">1E6</span>  <span class="c1"># cm^3/mol to m^3/mol</span>
+        <span class="k">return</span> <span class="n">Vc</span>
+    <span class="k">elif</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>  <span class="c1"># Pa to atm</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+        <span class="n">Tc</span> <span class="o">=</span> <span class="mf">5.</span><span class="o">/</span><span class="mf">104.0</span><span class="o">*</span><span class="n">Pc</span><span class="o">*</span><span class="p">(</span><span class="n">Vc</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Tc</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Two of Tc, Pc, and Vc must be provided&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Grigoras"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.Grigoras">[docs]</a><span class="k">def</span> <span class="nf">Grigoras</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Relatively recent (1990) relationship for estimating critical</span>
+<span class="sd">    properties from each other. Two of the three properties are required.</span>
+<span class="sd">    This model uses the &quot;critical surface&quot;, a general plot of Tc vs Pc vs Vc.</span>
+<span class="sd">    The model used 137 organic and inorganic compounds to derive the equation.</span>
+<span class="sd">    The general equation is in [1]_:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P_c = 2.9 + 20.2 \frac{T_c}{V_c}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid (optional) [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid (optional) [Pa]</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid (optional) [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc, Pc or Vc : float</span>
+<span class="sd">        Critical property of fluid [K], [Pa], or [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The prediction of Tc from Pc and Vc is not tested, as this is not necessary</span>
+<span class="sd">    anywhere, but it is implemented.</span>
+<span class="sd">    Internal units are bar, cm^3/mol, and K. A slight error occurs when</span>
+<span class="sd">    Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.</span>
+<span class="sd">    This equation is less accurate than that of Ihmels, but surprisingly close.</span>
+<span class="sd">    The author also investigated an early QSPR model.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Succinic acid [110-15-6]</span>
+
+<span class="sd">    &gt;&gt;&gt; Grigoras(Tc=851.0, Vc=0.000308)</span>
+<span class="sd">    5871233.766233766</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Grigoras, Stelian. &quot;A Structural Approach to Calculate Physical</span>
+<span class="sd">           Properties of Pure Organic Substances: The Critical Temperature,</span>
+<span class="sd">           Critical Volume and Related Properties.&quot; Journal of Computational</span>
+<span class="sd">           Chemistry 11, no. 4 (May 1, 1990): 493-510.</span>
+<span class="sd">           doi:10.1002/jcc.540110408</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="mf">2.9</span> <span class="o">+</span> <span class="mf">20.2</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Vc</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">*</span><span class="mf">1E5</span>  <span class="c1"># bar to Pa</span>
+        <span class="k">return</span> <span class="n">Pc</span>
+    <span class="k">elif</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E5</span>  <span class="c1"># Pa to bar</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="mf">202.0</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">Pc</span><span class="o">-</span><span class="mf">29.0</span><span class="p">)</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">/</span><span class="mf">1E6</span>  <span class="c1"># cm^3/mol to m^3/mol</span>
+        <span class="k">return</span> <span class="n">Vc</span>
+    <span class="k">elif</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">:</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E5</span>  <span class="c1"># Pa to bar</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+        <span class="n">Tc</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mi">202</span><span class="o">*</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">Pc</span><span class="o">-</span><span class="mf">29.0</span><span class="p">)</span><span class="o">*</span><span class="n">Vc</span>
+        <span class="k">return</span> <span class="n">Tc</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Two of Tc, Pc, and Vc must be provided&#39;</span><span class="p">)</span></div>
+
+
+<span class="n">IHMELS</span> <span class="o">=</span> <span class="s1">&#39;IHMELS&#39;</span>
+<span class="n">MEISSNER</span> <span class="o">=</span> <span class="s1">&#39;MEISSNER&#39;</span>
+<span class="n">GRIGORAS</span> <span class="o">=</span> <span class="s1">&#39;GRIGORAS&#39;</span>
+<span class="n">critical_surface_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">IHMELS</span><span class="p">,</span> <span class="n">MEISSNER</span><span class="p">,</span> <span class="n">GRIGORAS</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="critical_surface"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.critical_surface">[docs]</a><span class="k">def</span> <span class="nf">critical_surface</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Function for calculating a critical property of a substance from its</span>
+<span class="sd">    other two critical properties. Calls functions Ihmels, Meissner, and</span>
+<span class="sd">    Grigoras, each of which use a general &#39;Critical surface&#39; type of equation.</span>
+<span class="sd">    Limited accuracy is expected due to very limited theoretical backing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid (optional) [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid (optional) [Pa]</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid (optional) [m^3/mol]</span>
+<span class="sd">    AvailableMethods : bool</span>
+<span class="sd">        Request available methods for given parameters</span>
+<span class="sd">    Method : string</span>
+<span class="sd">        Request calculation uses the requested method</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc, Pc or Vc : float</span>
+<span class="sd">        Critical property of fluid [K], [Pa], or [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Decamethyltetrasiloxane [141-62-8]</span>
+
+<span class="sd">    &gt;&gt;&gt; critical_surface(Tc=599.4, Pc=1.19E6, Method=&#39;IHMELS&#39;)</span>
+<span class="sd">    0.0010927333333333334</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">Tc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">Pc</span> <span class="ow">and</span> <span class="n">Vc</span><span class="p">):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IHMELS</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MEISSNER</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GRIGORAS</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># This is the calculate, given the method section</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">IHMELS</span><span class="p">:</span>
+        <span class="n">Third</span> <span class="o">=</span> <span class="n">Ihmels</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="n">Vc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MEISSNER</span><span class="p">:</span>
+        <span class="n">Third</span> <span class="o">=</span> <span class="n">Meissner</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="n">Vc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">GRIGORAS</span><span class="p">:</span>
+        <span class="n">Third</span> <span class="o">=</span> <span class="n">Grigoras</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="n">Vc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">Third</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Third</span></div>
+
+
+<div class="viewcode-block" id="third_property"><a class="viewcode-back" href="../../../functors/critical.html#thermosteam.functors.critical.third_property">[docs]</a><span class="k">def</span> <span class="nf">third_property</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Function for calculating a critical property of a substance from its</span>
+<span class="sd">    other two critical properties, but retrieving the actual other critical</span>
+<span class="sd">    values for convenient calculation.</span>
+<span class="sd">    Calls functions Ihmels, Meissner, and</span>
+<span class="sd">    Grigoras, each of which use a general &#39;Critical surface&#39; type of equation.</span>
+<span class="sd">    Limited accuracy is expected due to very limited theoretical backing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        The CAS number of the desired chemical</span>
+<span class="sd">    T : bool</span>
+<span class="sd">        Estimate critical temperature</span>
+<span class="sd">    P : bool</span>
+<span class="sd">        Estimate critical pressure</span>
+<span class="sd">    V : bool</span>
+<span class="sd">        Estimate critical volume</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tc, Pc or Vc : float</span>
+<span class="sd">        Critical property of fluid [K], [Pa], or [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Avoids recursion only by eliminating the None and critical surface options</span>
+<span class="sd">    for calculating each critical property. So long as it never calls itself.</span>
+<span class="sd">    Note that when used by Tc, Pc or Vc, this function results in said function</span>
+<span class="sd">    calling the other functions (to determine methods) and (with method specified)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Decamethyltetrasiloxane [141-62-8]</span>
+<span class="sd">    &gt;&gt;&gt; third_property(&#39;141-62-8&#39;, V=True)</span>
+<span class="sd">    0.0010920041152263375</span>
+
+<span class="sd">    &gt;&gt;&gt; # Succinic acid 110-15-6</span>
+<span class="sd">    &gt;&gt;&gt; third_property(&#39;110-15-6&#39;, P=True)</span>
+<span class="sd">    6095016.233766234</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Third</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">V</span><span class="p">:</span>
+        <span class="n">Tc_methods</span> <span class="o">=</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Pc_methods</span> <span class="o">=</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">Tc_methods</span> <span class="ow">and</span> <span class="n">Pc_methods</span><span class="p">:</span>
+            <span class="n">_Tc</span> <span class="o">=</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Tc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">_Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Pc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">Third</span> <span class="o">=</span> <span class="n">critical_surface</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="n">_Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="n">_Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">P</span><span class="p">:</span>
+        <span class="n">Tc_methods</span> <span class="o">=</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Vc_methods</span> <span class="o">=</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">Tc_methods</span> <span class="ow">and</span> <span class="n">Vc_methods</span><span class="p">:</span>
+            <span class="n">_Tc</span> <span class="o">=</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Tc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">_Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Vc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">Third</span> <span class="o">=</span> <span class="n">critical_surface</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="n">_Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="n">_Vc</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">T</span><span class="p">:</span>
+        <span class="n">Pc_methods</span> <span class="o">=</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Vc_methods</span> <span class="o">=</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">Pc_methods</span> <span class="ow">and</span> <span class="n">Vc_methods</span><span class="p">:</span>
+            <span class="n">_Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Pc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">_Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">Vc_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">Third</span> <span class="o">=</span> <span class="n">critical_surface</span><span class="p">(</span><span class="n">Pc</span><span class="o">=</span><span class="n">_Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="n">_Vc</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Error in function&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Third</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">Third</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

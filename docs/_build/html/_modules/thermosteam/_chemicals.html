@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam._chemicals &mdash; ThermoSTEAM  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> ThermoSTEAM
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ThermoSTEAM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam._chemicals</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam._chemicals</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Sat Nov 23 09:41:02 2019</span>
+
+<span class="sd">@author: yoelr</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_only</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">UndefinedChemical</span>
+<span class="kn">from</span> <span class="nn">._chemical</span> <span class="kn">import</span> <span class="n">Chemical</span>
+<span class="kn">from</span> <span class="nn">.indexer</span> <span class="kn">import</span> <span class="n">ChemicalIndexer</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;CompiledChemicals&#39;</span><span class="p">)</span>
+<span class="nb">setattr</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+
+<span class="c1"># %% Utilities</span>
+
+<span class="k">def</span> <span class="nf">must_compile</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;method valid only for compiled chemicals; &quot;</span>
+                    <span class="s2">&quot;run &lt;chemicals&gt;.compile() to compile&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># %% Chemicals</span>
+
+<div class="viewcode-block" id="Chemicals"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals">[docs]</a><span class="k">class</span> <span class="nc">Chemicals</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create Chemicals object that contains Chemical objects as attributes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chemicals : Iterable[str or Chemical]</span>
+<span class="sd">           Strings should be one of the following [-]:</span>
+<span class="sd">              * Name, in IUPAC form or common form or a synonym registered in PubChem</span>
+<span class="sd">              * InChI name, prefixed by &#39;InChI=1S/&#39; or &#39;InChI=1/&#39;</span>
+<span class="sd">              * InChI key, prefixed by &#39;InChIKey=&#39;</span>
+<span class="sd">              * PubChem CID, prefixed by &#39;PubChem=&#39;</span>
+<span class="sd">              * SMILES (prefix with &#39;SMILES=&#39; to ensure smiles parsing)</span>
+<span class="sd">              * CAS number</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span>
+        <span class="k">if</span> <span class="n">chemicals</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
+            <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chem</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">(</span><span class="n">chem</span><span class="p">))</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;can&#39;t set attribute; use &lt;Chemicals&gt;.append instead&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__getnewargs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">),)</span>
+    
+    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">CompiledChemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)([</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">])</span>
+        
+    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Chemicals.append"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append a Chemical.&quot;&quot;&quot;</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Chemicals.extend"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extend with more Chemical objects.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span></div>
+    
+    <span class="n">kwarray</span> <span class="o">=</span> <span class="n">array</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">must_compile</span>
+        
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[{&#39;, &#39;.join(self.__dict__)}]&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;{type(self).__name__}(</span><span class="si">{self}</span><span class="s1">)&#39;</span></div>
+
+
+<span class="nd">@read_only</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;extend&#39;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">CompiledChemicals</span><span class="p">(</span><span class="n">Chemicals</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create CompiledChemicals object that contains Chemical objects as attributes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chemicals : Iterable[str or Chemical]</span>
+<span class="sd">           Strings should be one of the following [-]:</span>
+<span class="sd">              * Name, in IUPAC form or common form or a synonym registered in PubChem</span>
+<span class="sd">              * InChI name, prefixed by &#39;InChI=1S/&#39; or &#39;InChI=1/&#39;</span>
+<span class="sd">              * InChI key, prefixed by &#39;InChIKey=&#39;</span>
+<span class="sd">              * PubChem CID, prefixed by &#39;PubChem=&#39;</span>
+<span class="sd">              * SMILES (prefix with &#39;SMILES=&#39; to ensure smiles parsing)</span>
+<span class="sd">              * CAS number</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDs</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+    
+    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">tup</span> <span class="o">=</span> <span class="nb">tuple</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">tup</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="n">tup</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">CAS</span> <span class="o">=</span> <span class="n">tup</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">tup</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;tuple&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemicals</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;IDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IDs</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">MW</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hc</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span> <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">index</span><span class="p">)))</span>
+        <span class="n">light_values</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="n">heavy_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">nonfinite</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_islight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">in</span> <span class="n">light_values</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_isheavy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">in</span> <span class="n">heavy_values</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_equilibrium&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nonfinite</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index_cache&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">Chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">IDs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_synonyms</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span> <span class="n">new</span><span class="o">.</span><span class="n">set_synonym</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">new</span>
+    
+    <span class="k">def</span> <span class="nf">get_synonyms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">j</span><span class="o">==</span><span class="n">k</span><span class="p">]</span> 
+
+    <span class="k">def</span> <span class="nf">set_synonym</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">synonym</span><span class="p">):</span>
+        <span class="n">chemical</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">)</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="k">if</span> <span class="n">synonym</span> <span class="ow">in</span> <span class="n">dct</span> <span class="ow">and</span> <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">chemical</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;synonym &#39;</span><span class="si">{synonym}</span><span class="s2">&#39; already in use by {repr(dct[synonym])}&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical</span>
+    
+    <span class="k">def</span> <span class="nf">kwarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return an array with entries that correspond to the orded chemical IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ID_data : dict</span>
+<span class="sd">                 ID-data pairs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.kwarray(dict(Water=2))</span>
+<span class="sd">        array([2., 0.])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ID_data</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    
+    <span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return an array with entries that correspond to the ordered chemical IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : iterable</span>
+<span class="sd">              Compound IDs.</span>
+<span class="sd">        data : array_like</span>
+<span class="sd">               Data corresponding to IDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.array([&#39;Water&#39;], [2])</span>
+<span class="sd">        array([2., 0.])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">IDs</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="n">array</span>
+
+    <span class="k">def</span> <span class="nf">iarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ikwarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID_data</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="n">ID_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return index of specified chemical.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ID: str</span>
+<span class="sd">            Chemicl ID</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Index by ID:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.index(&#39;Water&#39;)</span>
+<span class="sd">        1</span>
+
+<span class="sd">        Indices by CAS number:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals.index(&#39;7732-18-5&#39;):</span>
+<span class="sd">        1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return indices of specified chemicals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : iterable</span>
+<span class="sd">              Chemical IDs or CAS numbers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Indices by ID:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.indices([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        [1, 0]</span>
+
+<span class="sd">        Indices by CAS number:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals.indices([&#39;7732-18-5&#39;, &#39;64-17-5&#39;]):</span>
+<span class="sd">        [1, 0]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>     
+    
+    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> 
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span>
+    
+    <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">IDs</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">IDs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid IDs&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+    
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuple</span>
+    
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">equilibrium_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return indices of species in equilibrium.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_equilibrium</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">heavy_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return indices of heavy species not in equilibrium.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_isheavy</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">light_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return indices of light species not in equilibrium.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_islight</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[{&#39;, &#39;.join(self.IDs)}]&quot;</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

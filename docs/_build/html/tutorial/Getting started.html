@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>3. Getting started &mdash; thermosteam  documentation</title>
+  <title>3. Getting started &mdash; ThermoSTEAM  documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> thermosteam
+            <a href="../index.html" class="icon icon-home"> ThermoSTEAM
           
 
           
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functors/functors_module.html">functors</a></li>
 </ul>
 
             
@@ -119,7 +120,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">thermosteam</a>
+          <a href="../index.html">ThermoSTEAM</a>
         
       </nav>
 
@@ -354,9 +355,7 @@ div.nboutput div.output_area.stderr {
 </style>
 <div class="section" id="Getting-started">
 <h1><span class="section-number">3. </span>Getting started<a class="headerlink" href="#Getting-started" title="Permalink to this headline">¶</a></h1>
-<p><strong>ThermoSTEAM is a Functor oriented package that organizes data into
-functors, avoiding circular references and creating a tree-like
-data-structure.</strong></p>
+<p><strong>Pure component chemical properties.</strong></p>
 <p>Chemical objects contain pure component properties:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
@@ -364,9 +363,10 @@ data-structure.</strong></p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">ether</span>
-<span class="n">water</span> <span class="o">=</span> <span class="n">ether</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
-<span class="n">water</span>
+<span></span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="c1"># Initialize with an identifier (e.g. name, CAS, InChI...)</span>
+<span class="n">water</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="n">water</span> <span class="c1"># All attributes of a chemical are presented in the IPython display</span>
 </pre></div>
 </div>
 </div>
@@ -389,15 +389,15 @@ Chemical: Water (phase_ref=&#39;l&#39;)
 [Thermo] S_excess(phase, T, P) -&gt; J/mol
          H_excess(phase, T, P) -&gt; J/mol
          mu(phase, T, P) -&gt; Pa*s
-         k(phase, T, P) -&gt; W/m/K
+         kappa(phase, T, P) -&gt; W/m/K
          V(phase, T, P) -&gt; m^3/mol
          S(phase, T, P) -&gt; J/mol
          H(phase, T) -&gt; J/mol
-         Cp(phase, T) -&gt; J/mol/K
-         Psat(T) -&gt; Pa
-         Hvap(T) -&gt; J/mol
-         sigma(T) -&gt; N/m
-         epsilon(T)
+         Cn(phase, T) -&gt; J/mol/K
+         Psat(T, P=None) -&gt; Pa
+         Hvap(T, P=None) -&gt; J/mol
+         sigma(T, P=None) -&gt; N/m
+         epsilon(T, P=None)
 [Data]   MW: 18.015 g/mol
          Tm: 273.15 K
          Tb: 373.12 K
@@ -407,18 +407,254 @@ Chemical: Water (phase_ref=&#39;l&#39;)
          Vc: 5.6e-05 m^3/mol
          Zc: 0.22947
          Hf: -2.4182e+05 J/mol
+         Hc: 0 J/mol
          Hfus: 6010 J/mol
-         rhoc: 17857 kg/m^3
          omega: 0.344
          dipole: 1.85
          similarity_variable: 0.16653
 </pre></div></div>
 </div>
-<p>Temperature, pressure dependent properties are managed by model handles
-(a functor):</p>
+<p>The names are strings of chemical identifiers:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">CAS</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[2]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&#39;7732-18-5&#39;
+</pre></div>
+</div>
+</div>
+<p>The groups are dictionaries of functional groups identifiers for the
+estimation of activity coefficients through group contribution methods:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">Dortmund</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[3]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;DortmundGroupCounts: 1H2O&gt;
+</pre></div>
+</div>
+</div>
+<p>The keys are group designation numbers and the values are the number of
+each group:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">dict</span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">Dortmund</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[4]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>{16: 1}
+</pre></div>
+</div>
+</div>
+<p>Temperature (in Kelvin) and pressure (in Pascal) dependent properties
+can be computed through the functors:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Calculate vapor pressure (Pa)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">373.15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[5]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>101284.55179999319
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Calculate surface tension (N/m)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">sigma</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[6]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>0.07205503890847455
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Calculate molar volume (m^3/mol)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[7]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>1.687456798143492e-05
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Calculate enthalpy at reference conditions (J/mol; without excess energies)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[8]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>0.0
+</pre></div>
+</div>
+</div>
+<p>Note that the reference state of all chemicals is 25 <img class="math" src="../_images/math/aa7ccbffb40dcc75237a404052776566b273623b.png" alt="^{\circ}"/>C
+and 1 atm:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">T_ref</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[9]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>298.15
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">P_ref</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[10]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>101325.0
+</pre></div>
+</div>
+</div>
+<p>Constant pure component properties are also available:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Molecular weight (g/mol)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">MW</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[11]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>18.01528
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Boiling point (K)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">Tb</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[12]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>373.124
+</pre></div>
+</div>
+</div>
+<p>Temperature dependent properties are managed by model handles (a
+functor):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -431,8 +667,8 @@ Chemical: Water (phase_ref=&#39;l&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-TDependentModelHandle(T) -&gt; Psat [Pa]
-[0] Wagner_McGarry
+TDependentModelHandle(T, P=None) -&gt; Psat [Pa]
+[0] Wagner_McGraw
 [1] Antoine
 [2] DIPPR_EQ101
 [3] Wagner
@@ -443,31 +679,11 @@ TDependentModelHandle(T) -&gt; Psat [Pa]
 [8] Edalat
 </pre></div></div>
 </div>
+<p>A model handle contains a series of models applicable to a certain
+domain:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="mf">373.15</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[3]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>101284.55179999319
-</pre></div>
-</div>
-</div>
-<p>A model handle contains a series of models applicable to certain
-conditions:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [4]:
+<span></span>In [17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -480,16 +696,49 @@ conditions:</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-TDependentModel: Wagner_McGarry
- evaluate: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
+TDependentModel: Wagner_McGraw
+ evaluate: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]
  Tmin: 275.00
  Tmax: 647.35
 </pre></div></div>
 </div>
-<p>A model contains a functor with the data and a compiled function:</p>
+<p>When called, the model handle searches through each model until it finds
+one with an applicable domain. If none are applicable, you get a value
+error:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [5]:
+<span></span>In [15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-intense-fg ansi-bold">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-intense-fg ansi-bold">&lt;ipython-input-15-020628acba16&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">----&gt; 1</span><span class="ansi-yellow-intense-fg ansi-bold"> </span>water<span class="ansi-yellow-intense-fg ansi-bold">.</span>Psat<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-cyan-intense-fg ansi-bold">1000.0</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+
+<span class="ansi-green-intense-fg ansi-bold">~\OneDrive\Code\thermosteam\thermosteam\base\thermo_model_handle.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-intense-fg ansi-bold">(self, T, P)</span>
+<span class="ansi-green-fg">    127</span>             <span class="ansi-green-intense-fg ansi-bold">if</span> model<span class="ansi-yellow-intense-fg ansi-bold">.</span>indomain<span class="ansi-yellow-intense-fg ansi-bold">(</span>T<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span> <span class="ansi-green-intense-fg ansi-bold">return</span> model<span class="ansi-yellow-intense-fg ansi-bold">.</span>evaluate<span class="ansi-yellow-intense-fg ansi-bold">(</span>T<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-fg">    128</span>         <span class="ansi-red-intense-fg ansi-bold"># return model.evaluate(T)</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 129</span><span class="ansi-yellow-intense-fg ansi-bold">         </span><span class="ansi-green-intense-fg ansi-bold">raise</span> ValueError<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">f&#34;{repr(self)} contains no valid model at T={T:.2f} K&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-fg">    130</span>
+<span class="ansi-green-fg">    131</span>     <span class="ansi-green-intense-fg ansi-bold">def</span> differentiate_by_T<span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">,</span> T<span class="ansi-yellow-intense-fg ansi-bold">,</span> P<span class="ansi-yellow-intense-fg ansi-bold">=</span><span class="ansi-green-intense-fg ansi-bold">None</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> dT<span class="ansi-yellow-intense-fg ansi-bold">=</span><span class="ansi-cyan-intense-fg ansi-bold">1e-12</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
+
+<span class="ansi-red-intense-fg ansi-bold">ValueError</span>: &lt;TDependentModelHandle(T, P=None) -&gt; Psat [Pa]&gt; contains no valid model at T=1000.00 K
+</pre></div></div>
+</div>
+<p>Each model contains a functor that stores data to compute the property:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -497,23 +746,9 @@ TDependentModel: Wagner_McGarry
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Functor: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
- a: -7.7645
- b: 1.4584
- c: -2.7758
- d: -1.233
- Tc: 647.35 K
- Pc: 2.2122e+07 Pa
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [6]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -521,24 +756,9 @@ Functor: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[6]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>{&#39;a&#39;: -7.7645100000000005,
- &#39;b&#39;: 1.45838,
- &#39;c&#39;: -2.7758,
- &#39;d&#39;: -1.2330299999999998,
- &#39;Tc&#39;: 647.35,
- &#39;Pc&#39;: 22122300}
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -546,20 +766,22 @@ Functor: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[7]:
+<span></span>In [ ]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>CPUDispatcher(&lt;function Wagner_McGarry at 0x00000250A1150378&gt;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># For further help...</span>
+<span class="n">help</span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Phase dependent properties contain model handles for each phase:</p>
-<div class="nbinput docutils container">
+<p>Phase dependent properties have attributes with model handles for each
+phase:</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -567,39 +789,9 @@ Functor: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[8]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>&lt;ChemicalPhaseTPProperty(phase, T, P) -&gt; V [m^3/mol]&gt;
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="mf">298.15</span><span class="p">,</span> <span class="mf">101325.</span><span class="p">)</span> <span class="c1"># About 1.7e-5 m3/mol</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[9]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>1.687456798143492e-05
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [10]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -607,34 +799,64 @@ Functor: Wagner_McGarry(T, P=None) -&gt; Psat [Pa]
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-TPDependentModelHandle(T, P=101325.0) -&gt; V.l [m^3/mol]
-[0] Rackett
-[1] Costald
-[2] VDI_PPDS
-[3] Costald_Compressed
-[4] Yen_Woods
-[5] Rackett
-[6] Yamada_Gunn
-[7] Bhirud_Normal
-[8] Townsend_Hales
-[9] Rackett
-[10] SNM0
-[11] Campbell_Thodos
-[12] CRC_inorganic_liquid_constant
-</pre></div></div>
-</div>
 <p>Note: It is not required to use these functors. They can be replaced by
-your own function or even a constant.</p>
+your own function or even a constant as shown in the next section.</p>
+<p><strong>Managing pure component thermodynamic models</strong></p>
+<p>The models are ordered in a
+<a class="reference external" href="https://docs.python.org/3.6/library/collections.html#collections.deque">deque</a>
+object to allow for easy reordering:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span>
+</pre></div>
+</div>
+</div>
+<p>You could also insert your own model:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nd">@water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="mf">273.20</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">473.20</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># top=True to place in position 0</span>
+<span class="k">def</span> <span class="nf">user_antoine_model</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">10.116</span> <span class="o">-</span>  <span class="mf">1687.537</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mf">42.98</span><span class="p">))</span>
+
+<span class="n">water</span><span class="o">.</span><span class="n">Psat</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">You</span> <span class="n">can</span> <span class="n">also</span> <span class="nb">set</span> <span class="n">a</span> <span class="n">constant</span> <span class="n">model</span><span class="p">:</span>
+<span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="mf">298.15</span><span class="p">,</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>In the next example, we make an ideal mixture property package from
 chemicals, some of which contain constant values fo</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [11]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -647,28 +869,9 @@ chemicals, some of which contain constant values fo</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-IdealMixture: Water, Ethanol, Methanol, Lignin
- H_excess(phase, z, T, P) -&gt; J/mol
- S_excess(phase, z, T, P) -&gt; J/mol
- mu(phase, z, T, P) -&gt; Pa*s
- V(phase, z, T, P) -&gt; m^3/mol
- k(phase, z, T, P) -&gt; W/m/K
- S(phase, z, T, P) -&gt; J/mol
- H(phase, z, T) -&gt; J/mol
- Cp(phase, z, T) -&gt; J/mol/K
- Hvap(z, T) -&gt; J/mol
- sigma(z, T) -&gt; N/m
- epsilon(z, T)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [12]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -676,33 +879,13 @@ IdealMixture: Water, Ethanol, Methanol, Lignin
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[12]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>&lt;IdealMixturePhaseTProperty(phase, z, T) -&gt; H [J/mol]&gt;
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [13]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ideal_mixture</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="mi">350</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[13]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>54404.253795065866
 </pre></div>
 </div>
 </div>

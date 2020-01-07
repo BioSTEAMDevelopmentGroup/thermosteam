@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermosteam.base.functor &mdash; thermosteam  documentation</title>
+  <title>thermosteam.base.functor &mdash; ThermoSTEAM  documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> thermosteam
+            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
           
 
           
@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
 </ul>
 
             
@@ -117,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">thermosteam</a>
+          <a href="../../../index.html">ThermoSTEAM</a>
         
       </nav>
 
@@ -174,7 +175,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.units_of_measure</span> <span class="kn">import</span> <span class="n">chemical_units_of_measure</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span> <span class="n">types</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">var_with_units</span><span class="p">,</span> <span class="n">get_obj_values</span>
-<span class="kn">from</span> <span class="nn">.autodoc</span> <span class="kn">import</span> <span class="n">autodoc_functor</span>
+<span class="kn">from</span> <span class="nn">.documenter</span> <span class="kn">import</span> <span class="n">autodoc_functor</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 <span class="kn">from</span> <span class="nn">numba.targets.registry</span> <span class="kn">import</span> <span class="n">CPUDispatcher</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
@@ -184,7 +185,7 @@
            <span class="s2">&quot;zTFunctor&quot;</span><span class="p">,</span> <span class="s2">&quot;zTPFunctor&quot;</span><span class="p">,</span>
            <span class="s2">&quot;functor&quot;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">,</span>
            <span class="s1">&#39;Psat&#39;</span><span class="p">,</span> <span class="s1">&#39;Hvap&#39;</span><span class="p">,</span> <span class="s1">&#39;display_asfunctor&#39;</span><span class="p">,</span> <span class="s1">&#39;functor_lookalike&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;functor_matching_params&#39;</span><span class="p">,</span> <span class="s1">&#39;functor_base_and_params&#39;</span><span class="p">)</span>
+           <span class="s1">&#39;functor_matching_params&#39;</span><span class="p">,</span> <span class="s1">&#39;functor_base_and_params&#39;</span><span class="p">,)</span>
 
 <span class="n">RegisteredArgs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 <span class="n">RegisteredFunctors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -192,7 +193,7 @@
 <span class="c1"># %% Utilities</span>
 
 <span class="k">def</span> <span class="nf">functor_name</span><span class="p">(</span><span class="n">functor</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">functor</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
 
 <span class="k">def</span> <span class="nf">display_asfunctor</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_var</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">functor_name</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span>
@@ -232,7 +233,8 @@
 <span class="c1"># %% Decorator</span>
   
 <div class="viewcode-block" id="functor"><a class="viewcode-back" href="../../../functor.html#thermosteam.functor">[docs]</a><span class="k">def</span> <span class="nf">functor</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a Functor subclass from function.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">function</span><span class="p">:</span>
         <span class="n">base</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">functor_base_and_params</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
@@ -248,40 +250,46 @@
         <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
             <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;definitions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">definitions</span>
         <span class="k">if</span> <span class="n">wrap</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span> <span class="ow">or</span> <span class="n">function</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">or</span> <span class="n">autodoc_functor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">autodoc</span> <span class="ow">or</span> <span class="n">kwautodoc</span><span class="p">:</span> <span class="n">autodoc_functor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="k">return</span> <span class="bp">cls</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">function</span><span class="p">:</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">function</span><span class="p">:</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
+                                        <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span>
+                                        <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span></div>
 
 
 <span class="c1"># %% Decorators</span>
     
 <span class="k">class</span> <span class="nc">FunctorFactory</span><span class="p">:</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="s1">&#39;math&#39;</span><span class="p">)</span>
    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var</span>
     
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.s&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">l</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">l</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.l&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.g&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}({repr(self.var)})&quot;</span>
@@ -363,14 +371,14 @@
 
 <span class="k">class</span> <span class="nc">TFunctor</span><span class="p">(</span><span class="n">PureComponentFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,)):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of temperature (T; in K)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">TIntegralFunctor</span><span class="p">(</span><span class="n">PureComponentFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Ta&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">)):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;temperature integral functor (Ta to Tb; in K)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -383,7 +391,7 @@
 
 <span class="k">class</span> <span class="nc">TPFunctor</span><span class="p">(</span><span class="n">PureComponentFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of temperature (T; in K) and pressure (P; in Pa)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -420,7 +428,7 @@
     
 <span class="k">class</span> <span class="nc">zTFunctor</span><span class="p">(</span><span class="n">MixtureFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">)):</span> 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of composition (z) and temperature (T; in K)&quot;</span>
     <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
     
@@ -430,7 +438,7 @@
 
 <span class="k">class</span> <span class="nc">zTPFunctor</span><span class="p">(</span><span class="n">MixtureFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of composition (z), temperature (T; in K) and pressure (P; in Pa)&quot;</span>
     <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
     

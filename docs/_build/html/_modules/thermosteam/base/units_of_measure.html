@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermosteam.base.units_of_measure &mdash; thermosteam  documentation</title>
+  <title>thermosteam.base.units_of_measure &mdash; ThermoSTEAM  documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> thermosteam
+            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
           
 
           
@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
 </ul>
 
             
@@ -117,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">thermosteam</a>
+          <a href="../../../index.html">ThermoSTEAM</a>
         
       </nav>
 
@@ -290,11 +291,14 @@
 
 <span class="n">chemical_units_of_measure</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MW&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;g/mol&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
+                             <span class="s1">&#39;Tr&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Tm&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Tb&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
+                             <span class="s1">&#39;Tbr&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;Pa&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Tt&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;Pa&#39;</span><span class="p">),</span>
+                             <span class="s1">&#39;Pr&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;Pa&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Pc&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;Pa&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Psat&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;Pa&#39;</span><span class="p">),</span>
                              <span class="s1">&#39;Pt&#39;</span><span class="p">:</span> <span class="n">Units</span><span class="p">(</span><span class="s1">&#39;K&#39;</span><span class="p">),</span>
@@ -347,11 +351,14 @@
 
 <span class="n">definitions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MW&#39;</span><span class="p">:</span> <span class="s1">&#39;Molecular weight&#39;</span><span class="p">,</span>
                <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="s1">&#39;Temperature&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Tr&#39;</span><span class="p">:</span> <span class="s1">&#39;Reduced temperature&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Tm&#39;</span><span class="p">:</span> <span class="s1">&#39;Melting point temperature&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Tb&#39;</span><span class="p">:</span> <span class="s1">&#39;Boiling point temperature&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Tbr&#39;</span><span class="p">:</span> <span class="s1">&#39;Reduced boiling point temperature&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Tt&#39;</span><span class="p">:</span> <span class="s1">&#39;Triple point temperature&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="s1">&#39;Critical point temperature&#39;</span><span class="p">,</span>
                <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="s1">&#39;Pressure&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Pr&#39;</span><span class="p">:</span> <span class="s1">&#39;Reduced pressure&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Pc&#39;</span><span class="p">:</span> <span class="s1">&#39;Critical point pressure&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Psat&#39;</span><span class="p">:</span> <span class="s1">&#39;Saturated vapor pressure&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Pt&#39;</span><span class="p">:</span> <span class="s1">&#39;Triple point pressure&#39;</span><span class="p">,</span>
@@ -380,6 +387,7 @@
                <span class="s1">&#39;S_excess&#39;</span><span class="p">:</span> <span class="s1">&#39;Excess entropy&#39;</span><span class="p">,</span>
                <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;Universal gas constant&#39;</span><span class="p">,</span>
                <span class="s1">&#39;Zc&#39;</span><span class="p">:</span> <span class="s1">&#39;Critical compressibility&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;dZ&#39;</span><span class="p">:</span> <span class="s1">&#39;Change in compressibility factor&#39;</span><span class="p">,</span>
                <span class="s1">&#39;omega&#39;</span><span class="p">:</span> <span class="s1">&#39;Acentric factor&#39;</span><span class="p">,</span>
                <span class="s1">&#39;delta&#39;</span><span class="p">:</span> <span class="s1">&#39;Solubility parameter&#39;</span><span class="p">,</span>
                <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="s1">&#39;Relative permittivity&#39;</span><span class="p">,</span>
