@@ -23,7 +23,7 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 # %% Vapor pressure
 
 @Psat(ref='[1]_',
-      math=r"\log_{\text{base}} P^{\text{sat}} = A - \frac{B}{T+C}")
+      math=r"\log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}")
 def Antoine(T, a, b, c):
     """
     {Header}

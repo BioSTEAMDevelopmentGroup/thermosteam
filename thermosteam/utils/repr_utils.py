@@ -31,3 +31,5 @@ def repr_kwarg(name, value, spec=None, dlim=", "):
 
 def repr_couples(dlim, IDs, data):
     return dlim.join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
+
+

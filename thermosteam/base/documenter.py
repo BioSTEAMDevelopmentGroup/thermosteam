@@ -5,6 +5,7 @@ Created on Wed Nov 13 10:06:46 2019
 @author: yoelr
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
+from ..utils import MathString, MathSection
 
 __all__ = ('Documenter', 'autodoc_functor')
 
@@ -73,7 +74,7 @@ class Documenter:
             units = self.get_units(var)
             if units: info += f" [{units}]"
             else: info += f" [-]"
-        return info + "."
+        return info
 
 
 # %% Autodoc
@@ -91,12 +92,12 @@ def autodoc_functor(functor, function,
         math_section = ".. math::"
         if isinstance(math, str):
             math_section += " " + math
-            functor.math = math
+            functor.math = MathString(math)
         else:
             new_line_spaces = (tabs * 4 + 3) * " "
             new_line = "\n" + new_line_spaces
             math_section += new_line + (2 * new_line).join(math)
-            functor.math = "\n\n".join(math)
+            functor.math = MathSection(math)
     else:
         math_section = None
         

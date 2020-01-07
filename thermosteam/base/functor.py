@@ -24,7 +24,7 @@ RegisteredFunctors = []
 # %% Utilities
 
 def functor_name(functor):
-    return type(functor).__name__
+    return functor.__name__ if hasattr(functor, "__name__") else type(functor).__name__
 
 def display_asfunctor(functor, var=None, name=None, show_var=True):
     name = name or functor_name(functor)
@@ -177,6 +177,9 @@ class PureComponentFunctor(Functor):
         cls.params = tuple(signature(kwargs_function).parameters)
         cls.wrap = staticmethod(kwargs_function)
         return cls
+    
+    def help(self):
+        print(self.__doc__)
     
     def show(self):
         info = f"Functor: {display_asfunctor(self)}"

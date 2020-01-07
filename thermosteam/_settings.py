@@ -11,11 +11,13 @@ __all__ = ('settings',)
 class Settings:
     __slots__ = ('_thermo',
                  '_phase_names',
-                 '_debug')
+                 '_debug',
+                 '_dark_mode')
     
     def __init__(self):
         self._thermo = None
         self._debug = __debug__
+        self._dark_mode = True
         self._phase_names = {'s': 'Solid',
                              'l': 'Liquid',
                              'g': 'Gas',
@@ -29,6 +31,13 @@ class Settings:
     @debug.setter
     def debug(self, debug):
         self._debug = bool(debug)
+    
+    @property
+    def dark_mode(self):
+        return self._dark_mode
+    @dark_mode.setter
+    def dark_mode(self, dark_mode):
+        self._dark_mode = bool(dark_mode)
     
     @property
     def phase_names(self):
