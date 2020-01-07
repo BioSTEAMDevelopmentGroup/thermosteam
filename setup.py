@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.1.4',
+    version='0.1.5',
     description="BioSTEAM's Premier Thermodynamic Property Package",
     long_description=open('README.rst').read(),\
     author='Yoel Cortes-Pena',
@@ -34,6 +34,7 @@ setup(
                          'functors/Data/Identifiers/*',
                          'functors/Data/Law/*', 
                          'functors/Data/Misc/*', 
+						 'functors/Data/Misc/element.txt',
                          'functors/Data/Phase Change/*', 
                          'functors/Data/Reactions/*', 
                          'functors/Data/Safety/*', 
