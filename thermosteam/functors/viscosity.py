@@ -100,31 +100,35 @@ def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         handle.model(InterpolatedTDependentModel(Ts, Ys, Ts[0], Ts[-1]))
     if CAS in _Dutt_Prasad:
         _, A, B, C, Tmin, Tmax = _Dutt_Prasad[CAS]
-        handle.model(ViswanathNatarajan3(data=(A, B, C)), Tmin, Tmax)
+        data = (A, B, C)
+        handle.model(ViswanathNatarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN3:
         _, _, A, B, C, Tmin, Tmax = _VN3[CAS]
-        handle.model(ViswanathNatarajan3(data=(A, B, C)), Tmin, Tmax)
+        data = (A, B, C)
+        handle.model(ViswanathNatarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN2:
         _, _, A, B, Tmin, Tmax = _VN2[CAS]
-        handle.model(ViswanathNatarajan2(data=(A, B)), Tmin ,Tmax)
+        data = (A, B)
+        handle.model(ViswanathNatarajan2.from_args(data), Tmin ,Tmax)
     if CAS in _Perrys2_313:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_313[CAS]
-        handle.model(DIPPR_EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax)
+        data = (C1, C2, C3, C4, C5)
+        handle.model(DIPPR_EQ101.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_7:
         coef = _VDI_PPDS_7[CAS][2:]
-        handle.model(VDI(coef))
+        handle.model(VDI.from_args(coef))
     data = (MW, Tc, Pc, omega)
     if all(data):
-        handle.model(Letsou_Stiel(data), Tc/4, Tc)
+        handle.model(Letsou_Stiel.from_args(data), Tc/4, Tc)
     data = (MW, Tm, Tc, Pc, Vc, omega, Vl)
     if all(data):
-        handle.model(Przedziecki_Sridhar(data), Tm, Tc)
+        handle.model(Przedziecki_Sridhar.from_args(data), Tm, Tc)
     data = (Tc, Pc, omega)
     if all(data):
         for mu_l in handle.models:
             if isinstance(mu_l, TDependentModel): break
         data = (Tc, Pc, omega, Psat, mu_l)
-        handle.model(Lucas(data), Tm, Tc)
+        handle.model(Lucas.from_args(data), Tm, Tc)
 
 
 ### Viscosity of Gases - low pressure
@@ -194,21 +198,22 @@ LUCAS_GAS = 'LUCAS_GAS'
 def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
     if CAS in _Perrys2_312:
         _, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_312[CAS]
-        handle.model(DIPPR_EQ102((C1, C2, C3, C4)), Tmin, Tmax)
+        data = (C1, C2, C3, C4)
+        handle.model(DIPPR_EQ102.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_8:
         data = _VDI_PPDS_8[CAS].tolist()[1:]
         data.reverse()
-        handle.model(horner_polynomial({'coeffs':data}))
+        handle.model(horner_polynomial.from_kwargs({'coeffs':data}))
     data = (Tc, Pc, Zc, MW)
     if all(data):
         Tmin = 0; Tmax = 1e3
-        handle.model(lucas_gas(data), Tmin, Tmax)
+        handle.model(lucas_gas.from_args(data), Tmin, Tmax)
     data = (Tc, Pc, MW)
     if all(data):
         Tmin = 0; Tmax = 5e3
-        handle.model(Gharagheizi_gas_viscosity(data), Tmin, Tmax)
-        handle.model(Yoon_Thodos(data), Tmin, Tmax)
-        handle.model(Stiel_Thodos(data), Tmin, Tmax)
+        handle.model(Gharagheizi_gas_viscosity.from_args(data), Tmin, Tmax)
+        handle.model(Yoon_Thodos.from_args(data), Tmin, Tmax)
+        handle.model(Stiel_Thodos.from_args(data), Tmin, Tmax)
         # Intelligently set limit
         # GHARAGHEIZI turns nonsensical at ~15 K, YOON_THODOS fine to 0 K,
         # same as STIEL_THODOS

@@ -60,13 +60,13 @@ def CRC(T, A, B, C, D):
 @TDependentHandleBuilder
 def Permittivity(handle, CAS, Vl):
     if Vl and CAS == '7732-18-5':
-        handle.model(IAPWS_Permittivity((Vl,)))
+        handle.model(IAPWS_Permittivity.from_args((Vl,)))
     if CAS in _CRC_Permittivity:
         _, CRC_CONSTANT_T, CRC_permittivity, A, B, C, D, Tmin, Tmax = _CRC_Permittivity[CAS]
         args = tuple(0 if np.isnan(x) else x for x in [A, B, C, D])
         Tmin = 0 if np.isnan(Tmin) else Tmin
         Tmax = 1e6 if np.isnan(Tmax) else Tmax
-        handle.model(CRC(args), Tmin, Tmax, name='CRC')
+        handle.model(CRC.from_args(args), Tmin, Tmax, name='CRC')
         handle.model(CRC_permittivity, Tmin, Tmax, name='CRC_constant')
 
 

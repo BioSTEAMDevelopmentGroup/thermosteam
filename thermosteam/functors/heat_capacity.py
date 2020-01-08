@@ -42,10 +42,10 @@ __all__ = ('HeatCapacity',)
 # %% Utilities
 
 def CnHS(FCn, FH, FS, data):
-    fCn = FCn(data)
+    fCn = FCn.from_args(data)
     return {'evaluate': fCn,
-            'integrate_by_T': FH(data, fCn.kwargs),
-            'integrate_by_T_over_T': FS(data, fCn.kwargs)}
+            'integrate_by_T': FH.from_other(fCn),
+            'integrate_by_T_over_T': FS.from_other(fCn)}
 
 def CnHSModel(FCn, FH, FS, data=None, Tmin=None, Tmax=None, name=None):
     funcs = CnHS(FCn, FH, FS, data)
@@ -305,7 +305,7 @@ def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
         handle.model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
     if MW and similarity_variable:
         data = (MW, similarity_variable, iscyclic_aliphatic)
-        handle.model(Lastovka_Shaw(data), name=LASTOVKA_SHAW)
+        handle.model(Lastovka_Shaw.from_args(data), name=LASTOVKA_SHAW)
     
 ### Heat capacities of liquids
 
@@ -513,8 +513,8 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
         handle.model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        handle.model(Rowlinson_Bondi(args), name=ROWLINSON_BONDI)
-        handle.model(Rowlinson_Poling(args), name=ROWLINSON_POLING)
+        handle.model(Rowlinson_Bondi.from_args(args), name=ROWLINSON_BONDI)
+        handle.model(Rowlinson_Poling.from_args(args), name=ROWLINSON_POLING)
     # Constant models
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
@@ -527,8 +527,8 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
     # Other
     if MW and similarity_variable:
         handle.model(CnHSModel(*Dadgostar_Shaw_Functors,
-                                 data=(similarity_variable, MW),
-                                 name=DADGOSTAR_SHAW))
+                               data=(similarity_variable, MW),
+                               name=DADGOSTAR_SHAW))
 
 # %% Heat Capacity Solid
 

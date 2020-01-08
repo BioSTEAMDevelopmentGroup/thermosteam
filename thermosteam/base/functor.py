@@ -161,16 +161,51 @@ class Functor:
 
 
 class PureComponentFunctor(Functor):
-    __slots__ = ('kwargs', 'data')
+    __slots__ = ('function_kwargs', '_data')
     
-    def __init__(self, data, kwargs=None):
-        if isinstance(data, dict):
-            self.data = data
-        elif hasattr(data, '__iter__'):
-            self.data = data = dict(zip(self.params, data))
-        else:
-            self.data = data = dict(zip(self.params, get_obj_values(data, self.params)))
-        self.kwargs = kwargs or (self.wrap(**data) if hasattr(self, 'wrap') else data)
+    def __init__(self, *args, **kwargs):
+        for i, j in zip(self.params, args): kwargs[i] = j
+        self.set_data(kwargs)
+    
+    def _load_data(self, data):
+        self.function_kwargs = self.wrap(**data) if hasattr(self, 'wrap') else data
+    
+    def get_data(self):
+        return self._data.copy()
+    
+    def set_data(self, data):
+        self._data = data
+        self._load_data(data)
+    
+    def update_data(self, **kwargs):
+        data = self._data
+        data.update(kwargs)
+        self._load_data(data)
+    
+    @classmethod
+    def from_other(cls, other):
+        self = cls.__new__(cls)
+        self._data = other._data
+        self.function_kwargs = other.function_kwargs
+        return self
+    
+    @classmethod
+    def from_args(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(dict(zip(self.params, data)))
+        return self
+    
+    @classmethod
+    def from_kwargs(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(data)
+        return self
+    
+    @classmethod
+    def from_obj(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(dict(zip(self.params, get_obj_values(data, self.params))))
+        return self
     
     @classmethod
     def wrapper(cls, kwargs_function):
@@ -183,7 +218,7 @@ class PureComponentFunctor(Functor):
     
     def show(self):
         info = f"Functor: {display_asfunctor(self)}"
-        data = self.data
+        data = self._data
         units = self.units_of_measure
         for key, value in data.items():
             if value is None:
@@ -207,14 +242,14 @@ class TFunctor(PureComponentFunctor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
     def __call__(self, T, P=None):
-        return self.function(T, **self.kwargs)
+        return self.function(T, **self.function_kwargs)
 
 
 class TIntegralFunctor(PureComponentFunctor, args=('Ta', 'Tb')):
     __slots__ = ()
     kind = "temperature integral functor (Ta to Tb; in K)"
     def __call__(self, Ta, Tb, P=None):
-        return self.function(Ta, Tb, **self.kwargs)
+        return self.function(Ta, Tb, **self.function_kwargs)
 
 # class PIntegralFunctor(PureComponentFunctor, args=('Pa', 'Pb', 'T')):
 #     __slots__ = ()
@@ -227,17 +262,17 @@ class TPFunctor(PureComponentFunctor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
     def __call__(self, T, P):
-        return self.function(T, P, **self.kwargs)
+        return self.function(T, P, **self.function_kwargs)
 
 
 class MixtureFunctor(Functor):
-    __slots__ = ('kwargs', '_chemicals')
+    __slots__ = ('function_kwargs', '_chemicals')
     
-    def __init__(self, chemicals, kwargs=None):
+    def __init__(self, chemicals, function_kwargs=None):
         chemicals = tuple(chemicals)
-        if kwargs:
+        if function_kwargs:
             self._chemicals = chemicals
-            self.kwargs = kwargs
+            self.function_kwargs = function_kwargs
         else:
             self.chemicals = chemicals
     
@@ -255,9 +290,9 @@ class MixtureFunctor(Functor):
         if chemicals == self._chemicals: return
         self._chemicals = chemicals = tuple(chemicals)
         if chemicals in self.cache:
-            self.kwargs = self.cache[chemicals]
+            self.function_kwargs = self.cache[chemicals]
         else:
-            self.cache[chemicals] = self.kwargs = self.calculate_kwargs(self.chemicals)
+            self.cache[chemicals] = self.function_kwargs = self.calculate_kwargs(self.chemicals)
             
     
 class zTFunctor(MixtureFunctor, args=('z', 'T')): 
@@ -267,7 +302,7 @@ class zTFunctor(MixtureFunctor, args=('z', 'T')):
         self.cache = {}
     
     def __call__(self, z, T, P=None):
-        return self.function(z, T, **self.kwargs)
+        return self.function(z, T, **self.function_kwargs)
         
 
 class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
@@ -277,7 +312,7 @@ class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
         self.cache = {}
     
     def __call__(self, z, T, P):
-        return self.function(z, T, P, **self.kwargs)
+        return self.function(z, T, P, **self.function_kwargs)
     
     
     

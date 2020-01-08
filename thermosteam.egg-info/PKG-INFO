@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: thermosteam
-Version: 0.1.8
+Version: 0.1.9
 Summary: BioSTEAM's Premier Thermodynamic Property Package
 Home-page: https://github.com/yoelcortes/thermosteam
 Author: Yoel Cortes-Pena
@@ -8,7 +8,7 @@ Author-email: yoelcortes@gmail.com
 License: MIT
 Download-URL: https://github.com/yoelcortes/thermosteam.git
 Description: ==============================================================
-        ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package 
+        Thermosteam: BioSTEAM's Premier Thermodynamic Property Package 
         ==============================================================
         
         .. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
@@ -24,15 +24,15 @@ Description: ==============================================================
         
         .. contents::
         
-        What is ThermoSTEAM?
+        What is Thermosteam?
         --------------------
         
-        ThermoSTEAM is an open-source thermodynamic property package with an easily extendable structure.
+        Thermosteam is an open-source thermodynamic property package with an easily extendable structure.
         
         Installation
         ------------
         
-        Get the latest version of ThermoSTEAM from
+        Get the latest version of Thermosteam from
         https://pypi.python.org/pypi/thermosteam/
         
         If you have an installation of Python with pip, simple install it with:
@@ -46,7 +46,7 @@ Description: ==============================================================
         Documentation
         -------------
         
-        ThermoSTEAM's documentation is available on the web:
+        Thermosteam's documentation is available on the web:
         
             http://thermosteam.readthedocs.io/
         
@@ -72,9 +72,9 @@ Description: ==============================================================
         Citation
         --------
         
-        To cite ThermoSTEAM in publications use::
+        To cite Thermosteam in publications use::
         
-            Yoel Cortes-Pena (2019). ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package.
+            Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Property Package.
             https://github.com/yoelcortes/thermosteam
         
 Keywords: thermodynamics chemical engineering mass energy balance material properties phase equilibrium

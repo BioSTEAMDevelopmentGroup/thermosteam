@@ -20,7 +20,7 @@ for p in new_path:
 
 # -- Project information -----------------------------------------------------
 
-project = 'ThermoSTEAM'
+project = 'Thermosteam'
 copyright = '2020, Yoel Cortes-Pena'
 author = 'Yoel Cortes-Pena'
 

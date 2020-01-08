@@ -36,18 +36,35 @@ def Antoine(T, a, b, c):
     --------
     Methane, coefficients from [2]_, at 100 K:
     
-    >>> Antoine(100.0, 8.7687, 395.744, -6.469)
+    >>> antoine = Antoine(a=8.7687, b=395.744, c=-6.469)
+    Functor: Antoine(T, P=None) -> Psat [Pa]
+     a: 8.7687
+     b: 395.74
+     c: -6.469
+    >>> antoine(100)
     34478.367349639906
     
     Tetrafluoromethane, coefficients from [2]_, at 180 K
     
-    >>> Antoine(180, A=8.95894, B=510.595, C=-15.95)
+    >>> antoine = Antoine(a=8.95894, b=510.595, c=-15.95)
+    >>> antoine
+    Functor: Antoine(T, P=None) -> Psat [Pa]
+     a: 8.9589
+     b: 510.6
+     c: -15.95
+    >>> antoine(180)
     702271.0518579542
     
     Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, log10,
     showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)
     
-    >>> Antoine(94.91, 6.83706+2.1249, 339.2095, 268.70-273.15)
+    >>> antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)
+    >>> Antoine
+    Functor: Antoine(T, P=None) -> Psat [Pa]
+     a: 8.962
+     b: 339.21
+     c: -4.45
+    >>> antoine(94.91)
     162978.88655572367
 
     References
@@ -376,29 +393,35 @@ def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
     if CAS in _WagnerMcGarry:
         _, a, b, c, d, Pc, Tc, Tmin = _WagnerMcGarry[CAS]
         Tmax = Tc
-        handle.model(Wagner_McGraw(data=(a, b, c, d, Tc, Pc)), Tmin, Tmax)
+        data = (a, b, c, d, Tc, Pc)
+        handle.model(Wagner_McGraw.from_args(data), Tmin, Tmax)
     if CAS in _Wagner:
         _, a, b, c, d, Tc, Pc, Tmin, Tmax = _Wagner[CAS]
         # Some Tmin values are missing; Arbitrary choice of 0.1 lower limit
         if np.isnan(Tmin): Tmin = Tmax * 0.1
-        handle.model(Wagner_McGraw(data=(a, b, c, d, Tc, Pc)), Tmin, Tmax)
+        data = (a, b, c, d, Tc, Pc)
+        handle.model(Wagner_McGraw.from_args(data), Tmin, Tmax)
     if CAS in _AntoineExtended:
         _, a, b, c, Tc, to, n, E, F, Tmin, Tmax = _AntoineExtended[CAS]
-        handle.model(TRC_Extended_Antoine(data=(a, b, c, Tc, to, n, E, F)), Tmin, Tmax)
+        data = (a, b, c, Tc, to, n, E, F)
+        handle.model(TRC_Extended_Antoine.from_args(data), Tmin, Tmax)
     if CAS in _Antoine:
         _, a, b, c, Tmin, Tmax = _Antoine[CAS]
-        handle.model(Antoine(data=(a, b, c)), Tmin, Tmax)
+        data = (a, b, c)
+        handle.model(Antoine.from_args(data), Tmin, Tmax)
     if CAS in _Perrys2_8:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_8[CAS]
-        handle.model(DIPPR_EQ101(data=(C1, C2, C3, C4, C5)), Tmin, Tmax,)
+        data = (C1, C2, C3, C4, C5)
+        handle.model(DIPPR_EQ101.from_args(data), Tmin, Tmax,)
     if CAS in _VDI_PPDS_3:
         _, Tm, Tc, Pc, a, b, c, d = _VDI_PPDS_3[CAS]
-        handle.model(Wagner(data=(Tc, Pc, a, b, c, d)), 0., Tc,)
+        data = (Tc, Pc, a, b, c, d)
+        handle.model(Wagner.from_args(data), 0., Tc,)
     data = (Tb, Tc, Pc)
     if all(data):
-        handle.model(Boiling_Critical_Relation(data), 0., Tc)
+        handle.model(Boiling_Critical_Relation.from_args(data), 0., Tc)
     data = (Tc, Pc, omega)
     if all(data):
         for f in (Lee_Kesler, Ambrose_Walton, Sanjari, Edalat):
-            handle.model(f(data), 0., Tc)
+            handle.model(f.from_args(data), 0., Tc)
     

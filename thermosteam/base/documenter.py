@@ -30,11 +30,20 @@ class Documenter:
         return self.types.get(var) or types.get(var) or 'float'
 
     def describe_functor(self, functor, equation, ref):
-        description = f"Create a {functor.kind} that returns the {self.describe_return_value(functor.var)} "
-        if equation:
-            description += f"using the {equation} equation"
-        if ref:
-            description += f", as described in {ref}"
+        var = functor.var
+        if var:
+            return_value = self.describe_return_value(var)
+            description = f"Create a {functor.kind} that calcuates {return_value}"
+            if equation:
+                description += f" using the {equation} equation"
+            if ref:
+                description += f", as described in {ref}"
+        else:
+            description = f"Create a {functor.kind}"
+            if equation:
+                description += f"based on the {equation} equation"
+            if ref:
+                description += f", as described in {ref}"
         return description + "."
 
     def describe_parameter_type(self, var):

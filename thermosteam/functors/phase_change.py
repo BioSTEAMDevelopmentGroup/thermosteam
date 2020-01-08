@@ -826,39 +826,39 @@ def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Ps
     if CAS in _Perrys2_150:
         _, Tc, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_150[CAS]
         data = (Tc, C1, C2, C3, C4)
-        handle.model(DIPPR_EQ106(data), Tmin, Tmax)
+        handle.model(DIPPR_EQ106.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_4:
         _,  MW, Tc, A, B, C, D, E = _VDI_PPDS_4[CAS]
-        handle.model(VDI_PPDS(data=(Tc, A, B, C, D, E)), 0, Tc)
+        handle.model(VDI_PPDS.from_args(data=(Tc, A, B, C, D, E)), 0, Tc)
     data = (Tb, Tc, Pc)
     if all(data):
         for f in (Riedel, Chen, Vetere, Liu):
             handle.model(f(*data), 0, Tc)
     if all((Tc, Pc)):
-        handle.model(Clapeyron(data=(Tc, Pc, V, Psat)), 0, Tc)
+        handle.model(Clapeyron.from_args(data=(Tc, Pc, V, Psat)), 0, Tc)
     data = (Tc, omega)
     if all(data):
         for f in (MK, SMK, Velasco, Pitzer):
-            handle.model(f(data), 0, Tc)
+            handle.model(f.from_args(data), 0, Tc)
     if CAS in _VDISaturationDict:
         Ts, Hvaps = VDI_tabular_data(CAS, 'Hvap')
         handle.model(InterpolatedTDependentModel(Ts, Hvaps, Ts[0], Ts[-1]))
     if CAS in _Alibakhshi_Cs and Tc:
         C = float(_Alibakhshi_Cs.at[CAS, 'C'])
-        handle.model(Alibakhshi(data=(Tc, C)), 0, Tc)
+        handle.model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
     if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'HvapTb']):
         Tb = float(_CRCHvap.at[CAS, 'Tb'])
         Hvap = float(_CRCHvap.at[CAS, 'HvapTb'])
         data = dict(Hvap=Hvap, T_ref=Tb, Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
     if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'Hvap298']):
         Hvap = float(_CRCHvap.at[CAS, 'Hvap298'])
         data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
     if CAS in _GharagheiziHvap.index:
         Hvap = float(_GharagheiziHvap.at[CAS, 'Hvap298'])
         data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
 
 
 ### Heat of Fusion

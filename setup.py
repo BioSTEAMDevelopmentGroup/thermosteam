@@ -35,7 +35,7 @@ setup(
                          'functors/Data/Identifiers/*',
                          'functors/Data/Law/*', 
                          'functors/Data/Misc/*', 
-						 'functors/Data/Misc/element.txt',
+					'functors/Data/Misc/element.txt',
                          'functors/Data/Phase Change/*', 
                          'functors/Data/Reactions/*', 
                          'functors/Data/Safety/*', 
