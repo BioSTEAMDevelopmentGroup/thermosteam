@@ -24,7 +24,7 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 
 @Psat(ref="[1]_")
 def Antoine(T, a, b, c):
-    """*
+    r"""*
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -79,7 +79,7 @@ def Antoine(T, a, b, c):
 
 @Psat(ref="[1]_")
 def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
-    """*
+    r"""*
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -123,7 +123,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
 
 @Psat(ref="[1]_")
 def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
-    """*
+    r"""*
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -169,7 +169,7 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
 
 @Psat(ref="[1]_")
 def Wagner(T, Tc, Pc, a, b, c, d):
-    """*
+    r"""*
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:

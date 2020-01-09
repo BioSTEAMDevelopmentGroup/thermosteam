@@ -483,51 +483,32 @@ Eighth Edition. McGraw-Hill Professional, 2007.</p>
 <dl class="class">
 <dt id="thermosteam.functors.phase_change.SMK">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">SMK</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#SMK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.SMK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the SMK equation, as described in <span id="id20">[R2f2b53b5ca54-1]</span>.</p>
-<dl class="field-list">
+<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the SMK equation, as described in <a class="reference internal" href="#r2f2b53b5ca54-1" id="id20">[1]</a>.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><blockquote>
-<div><p>Critical point temperature [K].</p>
-</div></blockquote>
-<dl class="simple">
-<dt>omega<span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
-</dd>
-</dl>
-<dl class="simple">
-<dt>rac{Delta H_{vap}} {RT_c} = </dt><dd><p>left(</p>
-</dd>
-</dl>
-<p>rac{Delta H_{vap}} {RT_c} 
-ight)^{(R1)} + left(</p>
-<p>rac{omega - omega^{(R1)}} {omega^{(R2)} - omega^{(R1)}} 
-ight)</p>
-<blockquote>
-<div><p>left[left(</p>
-</div></blockquote>
-<p>rac{Delta H_{vap}} {RT_c} 
-ight)^{(R2)} - left(</p>
-<p>rac{Delta H_{vap}} {RT_c} 
-ight)^{(R1)} 
-ight]</p>
-<blockquote>
-<div><p>left(</p>
-</div></blockquote>
-<p>rac{Delta H_{vap}} {RT_c} 
-ight)^{(R1)}</p>
-<blockquote>
-<div><blockquote>
-<div><p>= 6.537         au^{1/3} - 2.467        au^{5/6} - 77.251       au^{1.208} +
-59.634  au + 36.009     au^2 - 14.606   au^3</p>
-<blockquote>
-<div><p>au = 1-T/T_c</p>
-</div></blockquote>
-</div></blockquote>
-<p>The original article has been reviewed and found to have coefficients with
+<p class="rubric">Notes</p>
+<p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
+<div class="math">
+<p><img src="../_images/math/b121fb454196f206b1f5338abb4c4cffdffee240.png" alt="\frac{\Delta H_{vap}} {RT_c} = 
+\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
+\frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
+\left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
+\frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
+
+\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}
+= 6.537 \tau^{1/3} - 2.467 \tau^{5/6} - 77.251 \tau^{1.208} +
+59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3
+
+\tau = 1-T/T_c"/></p>
+</div><p>The original article has been reviewed and found to have coefficients with
 slightly more precision. Additionally, the form of the equation is slightly
 different, but numerically equivalent.</p>
 <p>The refence fluids are:</p>
@@ -535,9 +516,18 @@ different, but numerically equivalent.</p>
 <p><img class="math" src="../_images/math/36cd68dd398c255fa352c7e8ab8f676d19b91688.png" alt="\omega_1"/> = carbazole = 0.461</p>
 <p>A sample problem in the article has been verified. The numerical result
 presented by the author requires high numerical accuracy to obtain.</p>
-</div></blockquote>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r2f2b53b5ca54-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id20">1</a>,<a href="#id22">2</a>)</span></dt>
+<dd><p>Sivaraman, Alwarappa, Joe W. Magee, and Riki Kobayashi. “Generalized
+Correlation of Latent Heats of Vaporization of Coal-Liquid Model Compounds
+between Their Freezing Points and Critical Points.” Industrial &amp;
+Engineering Chemistry Fundamentals 23, no. 1 (February 1, 1984): 97-100.
+doi:10.1021/i100013a017.</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<p>Problem in <span id="id21">[R2f2b53b5ca54-1]</span>:</p>
+<p>Problem in <a class="reference internal" href="#r2f2b53b5ca54-1" id="id22">[1]</a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SMK</span><span class="p">(</span><span class="mf">553.15</span><span class="p">,</span> <span class="mf">751.35</span><span class="p">,</span> <span class="mf">0.302</span><span class="p">)</span>
 <span class="go">39866.17647797959</span>
 </pre></div>
@@ -547,32 +537,39 @@ presented by the author requires high numerical accuracy to obtain.</p>
 <dl class="class">
 <dt id="thermosteam.functors.phase_change.MK">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">MK</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#MK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.MK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the MK equation, as described in <span id="id22">[Re79a21264aae-1]</span>.</p>
-<dl class="field-list">
+<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the MK equation, as described in <a class="reference internal" href="#re79a21264aae-1" id="id23">[1]</a>.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><blockquote>
-<div><p>Critical point temperature [K].</p>
-</div></blockquote>
-<dl class="simple">
-<dt>omega<span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
-</dd>
-</dl>
-<p>rac{Delta H_{vap}^{(i)}}{RT_c} = b^{(j)}      au^{1/3} + b_2^{(j)}    au^{5/6} + b_3^{(j)}    au^{1.2083} + b_4^{(j)} au + b_5^{(j)}  au^2 + b_6^{(j)}        au^3)</p>
-<blockquote>
-<div><blockquote>
-<div><p>au = 1-T/T_c</p>
-</div></blockquote>
-<p>The original article has been reviewed. A total of 18 coefficients are used:</p>
+<p class="rubric">Notes</p>
+<p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
+<div class="math">
+<p><img src="../_images/math/51e8b1a1f8512439f618c6c9a0989305ec138b1a.png" alt="\Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
+
+\frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)
+
+\tau = 1-T/T_c"/></p>
+</div><p>The original article has been reviewed. A total of 18 coefficients are used:</p>
 <p>WARNING: The correlation has been implemented as described in the article,
 but its results seem different and with some error.
 Its results match with other functions however.</p>
 <p>Has poor behavior for low-temperature use.</p>
-</div></blockquote>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="re79a21264aae-1"><span class="brackets"><a class="fn-backref" href="#id23">1</a></span></dt>
+<dd><p>Morgan, David L., and Riki Kobayashi. “Extension of Pitzer CSP
+Models for Vapor Pressures and Heats of Vaporization to Long-Chain
+Hydrocarbons.” Fluid Phase Equilibria 94 (March 15, 1994): 51-87.
+doi:10.1016/0378-3812(94)87051-9.</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <p>Problem in article for SMK function.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_mk</span> <span class="o">=</span> <span class="n">MK</span><span class="p">(</span><span class="mf">751.35</span><span class="p">,</span> <span class="mf">0.302</span><span class="p">)</span>
@@ -591,7 +588,7 @@ Its results match with other functions however.</p>
 <dl class="class">
 <dt id="thermosteam.functors.phase_change.Velasco">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Velasco</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Velasco"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Velasco" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the Velasco equation, as described in <a class="reference internal" href="#r7731b7abb465-1" id="id23">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates heat of vaporization (Hvap; in J/mol) using the Velasco equation, as described in <a class="reference internal" href="#r7731b7abb465-1" id="id25">[1]</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -612,7 +609,7 @@ A value in the article was read to be similar, but slightly too low from
 that calculated here.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r7731b7abb465-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id23">1</a>,<a href="#id25">2</a>)</span></dt>
+<dt class="label" id="r7731b7abb465-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id25">1</a>,<a href="#id27">2</a>)</span></dt>
 <dd><p>Velasco, S., M. J. Santos, and J. A. White. “Extended Corresponding
 States Expressions for the Changes in Enthalpy, Compressibility Factor
 and Constant-Volume Heat Capacity at Vaporization.” The Journal of
@@ -621,7 +618,7 @@ doi:10.1016/j.jct.2015.01.011.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>From graph, in <a class="reference internal" href="#r7731b7abb465-1" id="id25">[1]</a> for perfluoro-n-heptane.</p>
+<p>From graph, in <a class="reference internal" href="#r7731b7abb465-1" id="id27">[1]</a> for perfluoro-n-heptane.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Velasco</span><span class="p">(</span><span class="mf">333.2</span><span class="p">,</span> <span class="mf">476.0</span><span class="p">,</span> <span class="mf">0.5559</span><span class="p">)</span>
 <span class="go">33299.41734936356</span>
 </pre></div>
@@ -632,8 +629,8 @@ doi:10.1016/j.jct.2015.01.011.</p>
 <dt id="thermosteam.functors.phase_change.Riedel">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Riedel</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Riedel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Riedel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates enthalpy of vaporization at the boiling point, using the
-Ridel <a class="reference internal" href="#rc854954eeb96-1" id="id26">[1]</a> CSP method. Required information are critical temperature
-and pressure, and boiling point. Equation taken from <a class="reference internal" href="#rc854954eeb96-2" id="id27">[2]</a> and <a class="reference internal" href="#rc854954eeb96-3" id="id28">[3]</a>.</p>
+Ridel <a class="reference internal" href="#rc854954eeb96-1" id="id28">[1]</a> CSP method. Required information are critical temperature
+and pressure, and boiling point. Equation taken from <a class="reference internal" href="#rc854954eeb96-2" id="id29">[2]</a> and <a class="reference internal" href="#rc854954eeb96-3" id="id30">[3]</a>.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
 <div class="math">
 <p><img src="../_images/math/2fc8fb23cda7ba46d46ee385b0dc45e81eea5a67.png" alt="\Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s"/></p>
@@ -659,28 +656,28 @@ and pressure, and boiling point. Equation taken from <a class="reference interna
 <p>This equation has no example calculation in any source. The source has not
 been verified. It is equation 4-144 in Perry’s. Perry’s also claims that
 errors seldom surpass 5%.</p>
-<p><a class="reference internal" href="#rc854954eeb96-2" id="id29">[2]</a> is the source of example work here, showing a calculation at 0.0%
+<p><a class="reference internal" href="#rc854954eeb96-2" id="id31">[2]</a> is the source of example work here, showing a calculation at 0.0%
 error.</p>
 <p>Internal units of pressure are bar.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="rc854954eeb96-1"><span class="brackets"><a class="fn-backref" href="#id26">1</a></span></dt>
+<dt class="label" id="rc854954eeb96-1"><span class="brackets"><a class="fn-backref" href="#id28">1</a></span></dt>
 <dd><p>Riedel, L. “Eine Neue Universelle Dampfdruckformel Untersuchungen
 Uber Eine Erweiterung Des Theorems Der Ubereinstimmenden Zustande. Teil
 I.” Chemie Ingenieur Technik 26, no. 2 (February 1, 1954): 83-89.
 doi:10.1002/cite.330260206.</p>
 </dd>
-<dt class="label" id="rc854954eeb96-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id27">1</a>,<a href="#id29">2</a>,<a href="#id33">3</a>)</span></dt>
+<dt class="label" id="rc854954eeb96-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id29">1</a>,<a href="#id31">2</a>,<a href="#id35">3</a>)</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
-<dt class="label" id="rc854954eeb96-3"><span class="brackets"><a class="fn-backref" href="#id28">3</a></span></dt>
+<dt class="label" id="rc854954eeb96-3"><span class="brackets"><a class="fn-backref" href="#id30">3</a></span></dt>
 <dd><p>Green, Don, and Robert Perry. Perry’s Chemical Engineers’ Handbook,
 Eighth Edition. McGraw-Hill Professional, 2007.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Pyridine, 0.0% err vs. exp: 35090 J/mol; from Poling <a class="reference internal" href="#rc854954eeb96-2" id="id33">[2]</a>.</p>
+<p>Pyridine, 0.0% err vs. exp: 35090 J/mol; from Poling <a class="reference internal" href="#rc854954eeb96-2" id="id35">[2]</a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Riedel</span><span class="p">(</span><span class="mf">388.4</span><span class="p">,</span> <span class="mf">620.0</span><span class="p">,</span> <span class="mf">56.3E5</span><span class="p">)</span>
 <span class="go">35089.78989646058</span>
 </pre></div>
@@ -690,7 +687,7 @@ Eighth Edition. McGraw-Hill Professional, 2007.</p>
 <dl class="function">
 <dt id="thermosteam.functors.phase_change.Chen">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Chen</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Chen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Chen" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates enthalpy of vaporization using the Chen <a class="reference internal" href="#rb7644fb87a51-1" id="id34">[1]</a> correlation
+<dd><p>Calculates enthalpy of vaporization using the Chen <a class="reference internal" href="#rb7644fb87a51-1" id="id36">[1]</a> correlation
 and a chemical’s critical temperature, pressure and boiling point.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
 <div class="math">
@@ -715,19 +712,19 @@ and a chemical’s critical temperature, pressure and boiling point.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The formulation presented in the original article is similar, but uses
-units of atm and calorie instead. The form in <a class="reference internal" href="#rb7644fb87a51-2" id="id35">[2]</a> has adjusted for this.
+units of atm and calorie instead. The form in <a class="reference internal" href="#rb7644fb87a51-2" id="id37">[2]</a> has adjusted for this.
 A method for estimating enthalpy of vaporization at other conditions
 has also been developed, but the article is unclear on its implementation.
 Based on the Pitzer correlation.</p>
 <p>Internal units: bar and K</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="rb7644fb87a51-1"><span class="brackets"><a class="fn-backref" href="#id34">1</a></span></dt>
+<dt class="label" id="rb7644fb87a51-1"><span class="brackets"><a class="fn-backref" href="#id36">1</a></span></dt>
 <dd><p>Chen, N. H. “Generalized Correlation for Latent Heat of Vaporization.”
 Journal of Chemical &amp; Engineering Data 10, no. 2 (April 1, 1965): 207-10.
 doi:10.1021/je60025a047</p>
 </dd>
-<dt class="label" id="rb7644fb87a51-2"><span class="brackets"><a class="fn-backref" href="#id35">2</a></span></dt>
+<dt class="label" id="rb7644fb87a51-2"><span class="brackets"><a class="fn-backref" href="#id37">2</a></span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -744,7 +741,7 @@ New York: McGraw-Hill Professional, 2000.</p>
 <dt id="thermosteam.functors.phase_change.Liu">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Liu</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Liu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Liu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates enthalpy of vaporization at the normal boiling point using
-the Liu <a class="reference internal" href="#r5f90edafd5a9-1" id="id38">[1]</a> correlation, and a chemical’s critical temperature, pressure
+the Liu <a class="reference internal" href="#r5f90edafd5a9-1" id="id40">[1]</a> correlation, and a chemical’s critical temperature, pressure
 and boiling point.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
 <div class="math">
@@ -778,7 +775,7 @@ which only modifies the boiling point, is available but not implemented.</p>
 <p>Internal units: Pa and K</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r5f90edafd5a9-1"><span class="brackets"><a class="fn-backref" href="#id38">1</a></span></dt>
+<dt class="label" id="r5f90edafd5a9-1"><span class="brackets"><a class="fn-backref" href="#id40">1</a></span></dt>
 <dd><p>LIU, ZHI-YONG. “Estimation of Heat of Vaporization of Pure Liquid at
 Its Normal Boiling Temperature.” Chemical Engineering Communications
 184, no. 1 (February 1, 2001): 221-28. doi:10.1080/00986440108912849.</p>
@@ -796,8 +793,8 @@ Its Normal Boiling Temperature.” Chemical Engineering Communications
 <dt id="thermosteam.functors.phase_change.Vetere">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Vetere</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">F=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Vetere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Vetere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates enthalpy of vaporization at the boiling point, using the
-Vetere <a class="reference internal" href="#r51de4785d720-1" id="id40">[1]</a> CSP method. Required information are critical temperature
-and pressure, and boiling point. Equation taken from <a class="reference internal" href="#r51de4785d720-2" id="id41">[2]</a>.</p>
+Vetere <a class="reference internal" href="#r51de4785d720-1" id="id42">[1]</a> CSP method. Required information are critical temperature
+and pressure, and boiling point. Equation taken from <a class="reference internal" href="#r51de4785d720-2" id="id43">[2]</a>.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
 <div class="math">
 <p><img src="../_images/math/85476e34b14110a405ff8768299d211af48a4797.png" alt="\frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}
@@ -829,19 +826,19 @@ second article is its source, or that DIPPR staff have altered the formulation.<
 <p>Internal units of pressure are bar.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r51de4785d720-1"><span class="brackets"><a class="fn-backref" href="#id40">1</a></span></dt>
+<dt class="label" id="r51de4785d720-1"><span class="brackets"><a class="fn-backref" href="#id42">1</a></span></dt>
 <dd><p>Vetere, Alessandro. “Methods to Predict the Vaporization Enthalpies
 at the Normal Boiling Temperature of Pure Compounds Revisited.”
 Fluid Phase Equilibria 106, no. 1-2 (May 1, 1995): 1–10.
 doi:10.1016/0378-3812(94)02627-D.</p>
 </dd>
-<dt class="label" id="r51de4785d720-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id41">1</a>,<a href="#id44">2</a>)</span></dt>
+<dt class="label" id="r51de4785d720-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id43">1</a>,<a href="#id46">2</a>)</span></dt>
 <dd><p>Green, Don, and Robert Perry. Perry’s Chemical Engineers’ Handbook,
 Eighth Edition. McGraw-Hill Professional, 2007.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Example as in <a class="reference internal" href="#r51de4785d720-2" id="id44">[2]</a>, p2-487; exp: 25.73</p>
+<p>Example as in <a class="reference internal" href="#r51de4785d720-2" id="id46">[2]</a>, p2-487; exp: 25.73</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Vetere</span><span class="p">(</span><span class="mf">294.0</span><span class="p">,</span> <span class="mf">466.0</span><span class="p">,</span> <span class="mf">5.55E6</span><span class="p">)</span>
 <span class="go">26363.430021286465</span>
 </pre></div>

@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 from __future__ import division
 
@@ -33,6 +13,10 @@ from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .electrochem import _Laliberte_Viscosity_ParametersDict, Laliberte_viscosity
 from .dippr import DIPPR_EQ101, DIPPR_EQ102
 
+__all__= ('Viswanath_Natarajan2', 'Viswanath_Natarajan3', 'Letsou_Stiel', 'Przedziecki_Sridhar',
+          'VDI', 'Lucas'
+)
+
 read = CASDataReader(__file__, 'Viscosity')
 _Dutt_Prasad = read('Dutt Prasad 3 term.tsv')
 _VN3 = read('Viswanath Natarajan Dynamic 3 term.tsv')
@@ -44,11 +28,11 @@ _VDI_PPDS_7 = read('VDI PPDS Dynamic viscosity of saturated liquids polynomials.
 _VDI_PPDS_8 = read('VDI PPDS Dynamic viscosity of gases polynomials.tsv')
 
 @mu.l
-def ViswanathNatarajan2(T, A, B):
+def Viswanath_Natarajan2(T, A, B):
     return exp(A + B/T) / 100.
 
 @mu.l
-def ViswanathNatarajan3(T, A, B, C):
+def Viswanath_Natarajan3(T, A, B, C):
     return 10**(A + B/(C - T))/1000.
 
 @mu.l
@@ -101,15 +85,15 @@ def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
     if CAS in _Dutt_Prasad:
         _, A, B, C, Tmin, Tmax = _Dutt_Prasad[CAS]
         data = (A, B, C)
-        handle.model(ViswanathNatarajan3.from_args(data), Tmin, Tmax)
+        handle.model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN3:
         _, _, A, B, C, Tmin, Tmax = _VN3[CAS]
         data = (A, B, C)
-        handle.model(ViswanathNatarajan3.from_args(data), Tmin, Tmax)
+        handle.model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN2:
         _, _, A, B, Tmin, Tmax = _VN2[CAS]
         data = (A, B)
-        handle.model(ViswanathNatarajan2.from_args(data), Tmin ,Tmax)
+        handle.model(Viswanath_Natarajan2.from_args(data), Tmin ,Tmax)
     if CAS in _Perrys2_313:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_313[CAS]
         data = (C1, C2, C3, C4, C5)

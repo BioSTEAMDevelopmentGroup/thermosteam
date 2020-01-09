@@ -189,15 +189,12 @@
 <span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
 <span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Yaws_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm_ON_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm&#39;</span><span class="p">,</span> 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EnthalpyVaporization&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Tb_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;Clapeyron&#39;</span><span class="p">,</span> <span class="s1">&#39;Pitzer&#39;</span><span class="p">,</span> <span class="s1">&#39;SMK&#39;</span><span class="p">,</span> <span class="s1">&#39;MK&#39;</span><span class="p">,</span> <span class="s1">&#39;Velasco&#39;</span><span class="p">,</span> <span class="s1">&#39;Riedel&#39;</span><span class="p">,</span> <span class="s1">&#39;Chen&#39;</span><span class="p">,</span> 
-           <span class="s1">&#39;Liu&#39;</span><span class="p">,</span> <span class="s1">&#39;Vetere&#39;</span><span class="p">,</span> <span class="s1">&#39;GharagheiziHvap_data&#39;</span><span class="p">,</span> <span class="s1">&#39;CRCHvap_data&#39;</span><span class="p">,</span> 
-           <span class="s1">&#39;Perrys2_150&#39;</span><span class="p">,</span> <span class="s1">&#39;VDI_PPDS_4&#39;</span><span class="p">,</span> <span class="s1">&#39;Alibakhshi_Cs&#39;</span><span class="p">,</span> <span class="s1">&#39;Watson&#39;</span><span class="p">,</span> 
-           <span class="s1">&#39;enthalpy_vaporization_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;EnthalpyVaporization&#39;</span><span class="p">,</span> 
-           <span class="s1">&#39;CRCHfus_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Hfus&#39;</span><span class="p">,</span> <span class="s1">&#39;GharagheiziHsub_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Hsub&#39;</span><span class="p">,</span> <span class="s1">&#39;Tliquidus&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;Liu&#39;</span><span class="p">,</span> <span class="s1">&#39;Vetere&#39;</span><span class="p">,</span> <span class="s1">&#39;Watson&#39;</span><span class="p">,</span>  <span class="s1">&#39;Hfus&#39;</span><span class="p">,</span> <span class="s1">&#39;Hsub&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">InterpolatedTDependentModel</span><span class="p">,</span> <span class="n">TDependentHandleBuilder</span><span class="p">,</span> <span class="n">Hvap</span>
 <span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">R</span><span class="p">,</span> <span class="n">N_A</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">pi</span>
@@ -514,7 +511,7 @@
 
 <div class="viewcode-block" id="SMK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.SMK">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">SMK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -587,7 +584,7 @@
 
 <div class="viewcode-block" id="MK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.MK">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">MK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -648,7 +645,7 @@
 
 <div class="viewcode-block" id="Velasco"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Velasco">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Velasco</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>

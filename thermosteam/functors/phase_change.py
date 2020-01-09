@@ -20,15 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-__all__ = ['Yaws_data', 'Tb_methods', 'Tb', 'Tm_ON_data', 'Tm_methods', 'Tm', 
+__all__ = ['EnthalpyVaporization',
+           'Tb_methods', 'Tb', 'Tm_methods', 'Tm', 
            'Clapeyron', 'Pitzer', 'SMK', 'MK', 'Velasco', 'Riedel', 'Chen', 
-           'Liu', 'Vetere', 'GharagheiziHvap_data', 'CRCHvap_data', 
-           'Perrys2_150', 'VDI_PPDS_4', 'Alibakhshi_Cs', 'Watson', 
-           'enthalpy_vaporization_methods', 'EnthalpyVaporization', 
-           'CRCHfus_data', 'Hfus', 'GharagheiziHsub_data', 'Hsub', 'Tliquidus']
+           'Liu', 'Vetere', 'Watson',  'Hfus', 'Hsub']
 
 import numpy as np
-from numba import njit
 from ..base import InterpolatedTDependentModel, TDependentHandleBuilder, Hvap
 from .._constants import R, N_A
 from math import log, pi
@@ -345,7 +342,7 @@ def Pitzer(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def SMK(T, Tc, omega):
-    """*
+    r"""*
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:
@@ -418,7 +415,7 @@ def SMK(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def MK(T, Tc, omega):
-    """*
+    r"""*
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:
@@ -479,7 +476,7 @@ def MK(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def Velasco(T, Tc, omega):
-    """*
+    r"""*
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:

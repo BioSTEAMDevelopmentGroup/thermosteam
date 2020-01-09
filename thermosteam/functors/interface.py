@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 from math import log, exp
 from ..base import sigma, TDependentHandleBuilder, InterpolatedTDependentModel
@@ -26,6 +6,10 @@ from .utils import CASDataReader
 from .._constants import N_A, k
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ106
+
+__all__ = ('REFPROP', 'Somayajulu', 'Jasper', 'Brock_Bird', 'Pitzer', 'Sastri_Rao', 'Zuo_Stenby',
+           'Hakim_Steinberg_Stiel', 'Miqueu', 'Aleem', 'Mersmann_Kind_surface_tension'
+)
 
 read = CASDataReader(__file__, 'Interface')
 _Mulero_Cachadina = read('MuleroCachadinaParameters.tsv')
@@ -119,7 +103,6 @@ def Miqueu(T, Tc, Vc, omega):
     t = 1.-T/Tc
     return k*Tc*(N_A/Vc)**(2/3.)*(4.35 + 4.14*omega)*t**1.26*(1+0.19*t**0.5 - 0.25*t)*10000
     
-
 @sigma 
 def Aleem(T, MW, Tb, rhol, Hvap_Tb, Cpl):
     MW = MW/1000. # Use kg/mol for consistency with the other units
@@ -133,30 +116,6 @@ def Mersmann_Kind_surface_tension(T, Tm, Tb, Tc, Pc, n_associated=1):
     sigma_star = ((Tb - Tm)/Tm)**(1/3.)*(6.25*(1. - Tr) + 31.3*(1. - Tr)**(4/3.))
     sigma = sigma_star*(k*Tc)**(1/3.)*(Tm/Tc)*Pc**(2/3.)*n_associated**(-1/3.)
     return sigma
-
-    
-STREFPROP = 'REFPROP'
-SUPERCRITICAL = 'SUPERCRITICAL'
-SOMAYAJULU2 = 'SOMAYAJULU2'
-SOMAYAJULU = 'SOMAYAJULU'
-VDI_TABULAR = 'VDI_TABULAR'
-JASPER = 'JASPER'
-MIQUEU = 'MIQUEU'
-BROCK_BIRD = 'BROCK_BIRD'
-SASTRI_RAO = 'SASTRI_RAO'
-PITZER = 'PITZER'
-ZUO_STENBY = 'ZUO_STENBY'
-HAKIM_STEINBERG_STIEL = 'HAKIM_STEINBERG_STIEL'
-ALEEM = 'Aleem'
-VDI_PPDS = 'VDI_PPDS'
-NONE = 'NONE'
-
-
-surface_tension_methods = [STREFPROP, SOMAYAJULU2, SOMAYAJULU, VDI_PPDS, VDI_TABULAR,
-                           JASPER, MIQUEU, BROCK_BIRD, SASTRI_RAO, PITZER,
-                           ZUO_STENBY, ALEEM]
-'''Holds all methods available for the SurfaceTension class, for use in
-iterating over them.'''
 
 @TDependentHandleBuilder
 def SurfaceTension(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, StielPolar, Hvap_Tb, rhol, Cpl_Tb):

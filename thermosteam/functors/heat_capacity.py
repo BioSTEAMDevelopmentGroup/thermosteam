@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 import os
 from io import open
 from math import log, exp
@@ -36,7 +17,42 @@ from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .coolprop import has_CoolProp, coolprop_dict, CoolProp_T_dependent_property,\
 #                       coolprop_fluids, PropsSI
 
-__all__ = ('HeatCapacity',)
+__all__ = ('HeatCapacity',
+
+           'Lastovka_Shaw',
+           'Lastovka_Shaw_Integral',
+           'Lastovka_Shaw_Integral_Over_T',
+
+           'TRCCn', 
+           'TRCCn_Integral', 
+           'TRCCn_Integral_Over_T',
+
+           'Poling',
+           'Poling_Integral', 
+           'Poling_Integral_Over_T',
+           
+           'Rowlinson_Poling', 'Rowlinson_Bondi',
+
+           'Zabransky_Cubic', 
+           'Zabransky_Cubic_Integral', 
+           'Zabransky_Cubic_Over_T_Integral',
+
+           'Zabransky_Quasi_Polynomial', 
+           'Zabransky_Quasi_Polynomial_Integral', 
+           'Zabransky_Quasi_Polynomial_Over_T_Integral',
+
+           'Dadgostar_Shaw', 
+           'Dadgostar_Shaw_Integral', 
+           'Dadgostar_Shaw_Over_T_Integral',
+
+           'Lastovka_Solid', 
+           'Lastovka_Solid_Integral', 
+           'Lastovka_Solid_Over_T_Integral',
+           
+           'Perry_151', 
+           'Perry_151_Integral', 
+           'Perry_151_Over_T_Integral'
+)
 
 
 # %% Utilities

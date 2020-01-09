@@ -1,0 +1,868 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.heat_capacity &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.heat_capacity</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.heat_capacity</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="nb">open</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">cmath</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">clog</span><span class="p">,</span> <span class="n">exp</span> <span class="k">as</span> <span class="n">cexp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">InterpolatedTDependentModel</span><span class="p">,</span> <span class="n">thermo_model</span><span class="p">,</span> <span class="n">TDependentHandleBuilder</span><span class="p">,</span> \
+                   <span class="n">ChemicalPhaseTPropertyBuilder</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Cn</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">to_nums</span><span class="p">,</span> <span class="n">CASDataReader</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">R</span><span class="p">,</span> <span class="n">calorie</span>
+<span class="kn">from</span> <span class="nn">..functional</span> <span class="kn">import</span> <span class="n">polylog2</span>
+<span class="kn">from</span> <span class="nn">.miscdata</span> <span class="kn">import</span> <span class="n">_VDISaturationDict</span><span class="p">,</span> <span class="n">VDI_tabular_data</span>
+<span class="c1"># from .electrochem import (LaliberteHeatCapacityModel,</span>
+<span class="c1">#                           _Laliberte_Heat_Capacity_ParametersDict)</span>
+<span class="c1"># from .coolprop import has_CoolProp, coolprop_dict, CoolProp_T_dependent_property,\</span>
+<span class="c1">#                       coolprop_fluids, PropsSI</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;HeatCapacity&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Lastovka_Shaw&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Lastovka_Shaw_Integral&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Lastovka_Shaw_Integral_Over_T&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;TRCCn&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;TRCCn_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;TRCCn_Integral_Over_T&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Poling&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Poling_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Poling_Integral_Over_T&#39;</span><span class="p">,</span>
+           
+           <span class="s1">&#39;Rowlinson_Poling&#39;</span><span class="p">,</span> <span class="s1">&#39;Rowlinson_Bondi&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Zabransky_Cubic&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Zabransky_Cubic_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Zabransky_Cubic_Over_T_Integral&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Zabransky_Quasi_Polynomial&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Zabransky_Quasi_Polynomial_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Zabransky_Quasi_Polynomial_Over_T_Integral&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Dadgostar_Shaw&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Dadgostar_Shaw_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Dadgostar_Shaw_Over_T_Integral&#39;</span><span class="p">,</span>
+
+           <span class="s1">&#39;Lastovka_Solid&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Lastovka_Solid_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Lastovka_Solid_Over_T_Integral&#39;</span><span class="p">,</span>
+           
+           <span class="s1">&#39;Perry_151&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Perry_151_Integral&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Perry_151_Over_T_Integral&#39;</span>
+<span class="p">)</span>
+
+
+<span class="c1"># %% Utilities</span>
+
+<span class="k">def</span> <span class="nf">CnHS</span><span class="p">(</span><span class="n">FCn</span><span class="p">,</span> <span class="n">FH</span><span class="p">,</span> <span class="n">FS</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">fCn</span> <span class="o">=</span> <span class="n">FCn</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;evaluate&#39;</span><span class="p">:</span> <span class="n">fCn</span><span class="p">,</span>
+            <span class="s1">&#39;integrate_by_T&#39;</span><span class="p">:</span> <span class="n">FH</span><span class="o">.</span><span class="n">from_other</span><span class="p">(</span><span class="n">fCn</span><span class="p">),</span>
+            <span class="s1">&#39;integrate_by_T_over_T&#39;</span><span class="p">:</span> <span class="n">FS</span><span class="o">.</span><span class="n">from_other</span><span class="p">(</span><span class="n">fCn</span><span class="p">)}</span>
+
+<span class="k">def</span> <span class="nf">CnHSModel</span><span class="p">(</span><span class="n">FCn</span><span class="p">,</span> <span class="n">FH</span><span class="p">,</span> <span class="n">FS</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="n">CnHS</span><span class="p">(</span><span class="n">FCn</span><span class="p">,</span> <span class="n">FH</span><span class="p">,</span> <span class="n">FS</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">thermo_model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">funcs</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ZabranskyModelBuilder</span><span class="p">:</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;casdata&#39;</span><span class="p">,</span> <span class="s1">&#39;funcs&#39;</span><span class="p">,</span> <span class="s1">&#39;many&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">casdata</span><span class="p">,</span> <span class="n">funcs</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">casdata</span> <span class="o">=</span> <span class="n">casdata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span> <span class="o">=</span> <span class="n">funcs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">many</span> <span class="o">=</span> <span class="n">many</span>
+    
+    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">casdata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">many</span><span class="p">:</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">casdata</span><span class="p">[</span><span class="n">CAS</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">casdata</span><span class="p">[</span><span class="n">CAS</span><span class="p">]))</span>
+    
+    <span class="k">def</span> <span class="nf">build_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="n">CnHSModel</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="c1"># %% Data</span>
+
+<span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;Heat Capacity&#39;</span><span class="p">)</span>
+<span class="n">_Poling</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;PolingDatabank.tsv&#39;</span><span class="p">)</span>
+<span class="n">_TRC_gas</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;TRC Thermodynamics of Organic Compounds in the Gas State.tsv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_standard</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Standard Thermodynamic Properties of Chemical Substances.tsv&#39;</span><span class="p">)</span>
+<span class="n">_PerryI</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Perrys Table 2-151.tsv&#39;</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Read in a dict of heat capacities of irnorganic and elemental solids.</span>
+<span class="sd">    These are in section 2, table 151 in:</span>
+<span class="sd">    Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">    Eighth Edition. McGraw-Hill Professional, 2007.</span>
+
+<span class="sd">    Formula:</span>
+<span class="sd">    Cn(Cal/mol/K) = Const + Lin*T + Quadinv/T^2 + Quadinv*T^2</span>
+
+<span class="sd">    Phases: c, gls, l, g.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">_formula</span><span class="p">,</span> <span class="n">_phase</span><span class="p">,</span> <span class="n">_subphase</span><span class="p">,</span> <span class="n">Const</span><span class="p">,</span> <span class="n">Lin</span><span class="p">,</span> <span class="n">Quadinv</span><span class="p">,</span> <span class="n">Quad</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span>
+         <span class="n">Tmax</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="k">if</span> <span class="n">Lin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Lin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Quadinv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Quadinv</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Quad</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Quad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_PerryI</span> <span class="ow">and</span> <span class="n">CASRN</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">_PerryI</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">_phase</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Formula&quot;</span><span class="p">:</span> <span class="n">_formula</span><span class="p">,</span> <span class="s2">&quot;Phase&quot;</span><span class="p">:</span> <span class="n">_phase</span><span class="p">,</span>
+                               <span class="s2">&quot;Subphase&quot;</span><span class="p">:</span> <span class="n">_subphase</span><span class="p">,</span> <span class="s2">&quot;Const&quot;</span><span class="p">:</span> <span class="n">Const</span><span class="p">,</span>
+                               <span class="s2">&quot;Lin&quot;</span><span class="p">:</span> <span class="n">Lin</span><span class="p">,</span> <span class="s2">&quot;Quadinv&quot;</span><span class="p">:</span> <span class="n">Quadinv</span><span class="p">,</span> <span class="s2">&quot;Quad&quot;</span><span class="p">:</span> <span class="n">Quad</span><span class="p">,</span>
+                               <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span> <span class="n">Tmin</span><span class="p">,</span> <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span> <span class="n">Tmax</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">err</span><span class="p">}})</span>
+            <span class="n">_PerryI</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_PerryI</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">_phase</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Formula&quot;</span><span class="p">:</span> <span class="n">_formula</span><span class="p">,</span> <span class="s2">&quot;Phase&quot;</span><span class="p">:</span> <span class="n">_phase</span><span class="p">,</span>
+                                       <span class="s2">&quot;Subphase&quot;</span><span class="p">:</span> <span class="n">_subphase</span><span class="p">,</span> <span class="s2">&quot;Const&quot;</span><span class="p">:</span> <span class="n">Const</span><span class="p">,</span>
+                                       <span class="s2">&quot;Lin&quot;</span><span class="p">:</span> <span class="n">Lin</span><span class="p">,</span> <span class="s2">&quot;Quadinv&quot;</span><span class="p">:</span> <span class="n">Quadinv</span><span class="p">,</span>
+                                       <span class="s2">&quot;Quad&quot;</span><span class="p">:</span> <span class="n">Quad</span><span class="p">,</span> <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span> <span class="n">Tmin</span><span class="p">,</span>
+                                       <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span> <span class="n">Tmax</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="n">err</span><span class="p">}}</span>
+
+
+
+<span class="c1"># %% Heat Capacities Gas</span>
+
+<span class="nd">@Cn</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Lastovka_Shaw</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">B11</span> <span class="o">=</span> <span class="mf">0.73917383</span>
+    <span class="n">B12</span> <span class="o">=</span> <span class="mf">8.88308889</span>
+    <span class="n">C11</span> <span class="o">=</span> <span class="mf">1188.28051</span>
+    <span class="n">C12</span> <span class="o">=</span> <span class="mf">1813.04613</span>
+    <span class="n">B21</span> <span class="o">=</span> <span class="mf">0.0483019</span>
+    <span class="n">B22</span> <span class="o">=</span> <span class="mf">4.35656721</span>
+    <span class="n">C21</span> <span class="o">=</span> <span class="mf">2897.01927</span>
+    <span class="n">C22</span> <span class="o">=</span> <span class="mf">5987.80407</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="n">term</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="n">B11</span> <span class="o">+</span> <span class="n">B12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="n">C11</span><span class="o">+</span><span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">C11</span> <span class="o">+</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">C11</span><span class="o">+</span><span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="n">B21</span> <span class="o">+</span> <span class="n">B22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="n">C21</span><span class="o">+</span><span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">C21</span> <span class="o">+</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">C21</span><span class="o">+</span><span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Lastovka_Shaw"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Shaw">[docs]</a><span class="nd">@Lastovka_Shaw</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">Lastovka_Shaw</span><span class="p">(</span><span class="n">MW</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">iscyclic_aliphatic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">similarity_variable</span>
+    <span class="k">if</span> <span class="n">iscyclic_aliphatic</span><span class="p">:</span>
+        <span class="n">A1</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1793547</span>
+        <span class="n">A2</span> <span class="o">=</span> <span class="mf">3.86944439</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="n">A1</span> <span class="o">+</span> <span class="n">A2</span><span class="o">*</span><span class="n">a</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">A1</span> <span class="o">=</span> <span class="mf">0.58</span>
+        <span class="n">A2</span> <span class="o">=</span> <span class="mf">1.25</span>
+        <span class="n">A3</span> <span class="o">=</span> <span class="mf">0.17338003</span> <span class="c1"># 803 instead of 8003 in another paper</span>
+        <span class="n">A4</span> <span class="o">=</span> <span class="mf">0.014</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="n">A2</span> <span class="o">+</span> <span class="p">(</span><span class="n">A1</span><span class="o">-</span><span class="n">A2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span> <span class="o">-</span> <span class="n">A3</span><span class="p">)</span><span class="o">/</span><span class="n">A4</span><span class="p">))</span>
+        <span class="c1"># Personal communication confirms the change</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;MW&#39;</span><span class="p">:</span> <span class="n">MW</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span><span class="n">term</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Lastovka_Shaw_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">wrap</span><span class="o">=</span><span class="n">Lastovka_Shaw</span><span class="o">.</span><span class="n">wrap</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Lastovka_Shaw_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">B11</span> <span class="o">=</span> <span class="mf">0.73917383</span>
+    <span class="n">B12</span> <span class="o">=</span> <span class="mf">8.88308889</span>
+    <span class="n">C11</span> <span class="o">=</span> <span class="mf">1188.28051</span>
+    <span class="n">C12</span> <span class="o">=</span> <span class="mf">1813.04613</span>
+    <span class="n">B21</span> <span class="o">=</span> <span class="mf">0.0483019</span>
+    <span class="n">B22</span> <span class="o">=</span> <span class="mf">4.35656721</span>
+    <span class="n">C21</span> <span class="o">=</span> <span class="mf">2897.01927</span>
+    <span class="n">C22</span> <span class="o">=</span> <span class="mf">5987.80407</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">term</span> <span class="o">-</span> <span class="p">(</span><span class="n">B11</span> <span class="o">+</span> <span class="n">B12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">C11</span> <span class="o">-</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">C11</span> <span class="o">-</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="p">(</span><span class="n">C11</span> 
+                 <span class="o">+</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="n">C11</span> <span class="o">-</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">B21</span> <span class="o">+</span> <span class="n">B22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">C21</span> <span class="o">-</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">C21</span> 
+                 <span class="o">-</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="p">(</span><span class="n">C21</span> <span class="o">+</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="n">C21</span> <span class="o">-</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Lastovka_Shaw_Integral_Over_T"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral_Over_T">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">wrap</span><span class="o">=</span><span class="n">Lastovka_Shaw</span><span class="o">.</span><span class="n">wrap</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Lastovka_Shaw_Integral_Over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span>
+    <span class="n">B11</span> <span class="o">=</span> <span class="mf">0.73917383</span>
+    <span class="n">B12</span> <span class="o">=</span> <span class="mf">8.88308889</span>
+    <span class="n">C11</span> <span class="o">=</span> <span class="mf">1188.28051</span>
+    <span class="n">C12</span> <span class="o">=</span> <span class="mf">1813.04613</span>
+    <span class="n">B21</span> <span class="o">=</span> <span class="mf">0.0483019</span>
+    <span class="n">B22</span> <span class="o">=</span> <span class="mf">4.35656721</span>
+    <span class="n">C21</span> <span class="o">=</span> <span class="mf">2897.01927</span>
+    <span class="n">C22</span> <span class="o">=</span> <span class="mf">5987.80407</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">term</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">B11</span> <span class="o">-</span> <span class="n">B12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">cexp</span><span class="p">((</span><span class="o">-</span><span class="n">C11</span> <span class="o">-</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> 
+        <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">B11</span><span class="o">*</span><span class="n">C11</span> <span class="o">-</span> <span class="n">B11</span><span class="o">*</span><span class="n">C12</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="n">B12</span><span class="o">*</span><span class="n">C11</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="n">B12</span><span class="o">*</span><span class="n">C12</span><span class="o">*</span><span class="n">a2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">cexp</span><span class="p">((</span><span class="o">-</span><span class="n">C11</span>
+        <span class="o">-</span> <span class="n">C12</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">B11</span><span class="o">*</span><span class="n">C11</span> <span class="o">+</span> <span class="n">B11</span><span class="o">*</span><span class="n">C12</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">B12</span><span class="o">*</span><span class="n">C11</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">B12</span><span class="o">*</span><span class="n">C12</span><span class="o">*</span><span class="n">a2</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">+=</span> <span class="p">((</span><span class="o">-</span><span class="n">B21</span> <span class="o">-</span> <span class="n">B22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">cexp</span><span class="p">((</span><span class="o">-</span><span class="n">C21</span> <span class="o">-</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">B21</span><span class="o">*</span><span class="n">C21</span> <span class="o">-</span> <span class="n">B21</span><span class="o">*</span><span class="n">C22</span><span class="o">*</span><span class="n">a</span>
+        <span class="o">-</span> <span class="n">B22</span><span class="o">*</span><span class="n">C21</span><span class="o">*</span><span class="n">a</span> <span class="o">-</span> <span class="n">B22</span><span class="o">*</span><span class="n">C22</span><span class="o">*</span><span class="n">a2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">cexp</span><span class="p">((</span><span class="o">-</span><span class="n">C21</span> <span class="o">-</span> <span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">B21</span><span class="o">*</span><span class="n">C21</span>
+        <span class="o">+</span> <span class="n">B21</span><span class="o">*</span><span class="n">C22</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">B22</span><span class="o">*</span><span class="n">C21</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">B22</span><span class="o">*</span><span class="n">C22</span><span class="o">*</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+    <span class="c1"># There is a non-real component, but it is only a function of similariy </span>
+    <span class="c1"># variable and so will always cancel out.</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">real</span></div>
+    
+<div class="viewcode-block" id="TRCCn"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.TRCCn">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">TRCCn</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="n">a7</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">a7</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="p">(</span><span class="n">a1</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a2</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">a3</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">a4</span> <span class="o">-</span> <span class="n">a5</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="n">a7</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="mf">8.</span><span class="p">)</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">TRCCn_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">):</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">a6</span> <span class="o">+</span> <span class="n">a7</span>    
+    <span class="n">y</span> <span class="o">=</span> <span class="mf">0.</span> <span class="k">if</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="n">a7</span> <span class="k">else</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">a7</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span>
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span>
+    <span class="n">y4</span> <span class="o">=</span> <span class="n">y2</span><span class="o">*</span><span class="n">y2</span>
+    <span class="k">if</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="n">a7</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">a3</span> <span class="o">+</span> <span class="mf">8.</span><span class="o">*</span><span class="n">a4</span><span class="p">)</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">third</span> <span class="o">=</span> <span class="p">(</span><span class="n">a3</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="p">(</span><span class="mf">7.</span> <span class="o">+</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)))</span><span class="o">*</span><span class="n">y</span>
+        <span class="n">fourth</span> <span class="o">=</span> <span class="n">a4</span><span class="o">*</span><span class="p">(</span><span class="mf">3.</span><span class="o">*</span><span class="n">y2</span> <span class="o">+</span> <span class="mf">5.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">y2</span> <span class="o">+</span> <span class="n">y4</span> <span class="o">+</span> <span class="mf">0.6</span><span class="o">*</span><span class="n">y4</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">y4</span><span class="o">*</span><span class="n">y2</span><span class="p">)</span>
+        <span class="n">fifth</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">7.</span><span class="o">*</span><span class="p">(</span><span class="n">a4</span> <span class="o">-</span> <span class="n">a5</span><span class="o">/</span><span class="p">((</span><span class="n">a6</span> <span class="o">+</span> <span class="n">a7</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="n">y4</span><span class="o">*</span><span class="n">y2</span><span class="o">*</span><span class="n">y</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">first</span><span class="o">*</span><span class="p">(</span><span class="n">second</span> <span class="o">+</span> <span class="n">third</span> <span class="o">+</span> <span class="n">fourth</span> <span class="o">+</span> <span class="n">fifth</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a0</span> <span class="o">+</span> <span class="n">a1</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a2</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a2</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span>
+
+<div class="viewcode-block" id="TRCCn_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.TRCCn_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">TRCCn_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">TRCCn_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">TRCCn_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">))</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">TRCCn_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">):</span>
+    <span class="c1"># Possible optimizations: pre-cache as much as possible.</span>
+    <span class="c1"># If this were replaced by a cache, much of this would not need to be computed.</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mf">0.</span> <span class="k">if</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="n">a7</span> <span class="k">else</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">a7</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a7</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span><span class="o">/</span><span class="n">a7</span>
+    <span class="k">if</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="n">a7</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a72</span> <span class="o">=</span> <span class="n">a7</span><span class="o">*</span><span class="n">a7</span>
+        <span class="n">a62</span> <span class="o">=</span> <span class="n">a6</span><span class="o">*</span><span class="n">a6</span>
+        <span class="n">a7_a6</span> <span class="o">=</span> <span class="n">a7</span><span class="o">/</span><span class="n">a6</span> <span class="c1"># a7/a6</span>
+        <span class="n">a7_a6_2</span> <span class="o">=</span> <span class="n">a7_a6</span><span class="o">*</span><span class="n">a7_a6</span>
+        <span class="n">a7_a6_4</span> <span class="o">=</span> <span class="n">a7_a6_2</span><span class="o">*</span><span class="n">a7_a6_2</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="p">(</span><span class="n">a4</span><span class="o">*</span><span class="n">a72</span> <span class="o">-</span> <span class="n">a5</span><span class="p">)</span><span class="o">/</span><span class="n">a62</span> <span class="c1"># part of third, sum</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="p">(</span><span class="n">a3</span> <span class="o">+</span> <span class="p">((</span><span class="n">a4</span><span class="o">*</span><span class="n">a72</span> <span class="o">-</span> <span class="n">a5</span><span class="p">)</span><span class="o">/</span><span class="n">a62</span><span class="p">)</span><span class="o">*</span><span class="n">a7_a6_4</span><span class="p">)</span><span class="o">*</span><span class="n">a7_a6_2</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="n">a3</span> <span class="o">+</span> <span class="n">a4</span><span class="p">)</span><span class="o">*</span><span class="n">log</span><span class="p">((</span><span class="n">T</span> <span class="o">+</span> <span class="n">a6</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a6</span> <span class="o">+</span> <span class="n">a7</span><span class="p">))</span>
+        <span class="n">fourth</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">a3</span><span class="o">/</span><span class="n">a6</span><span class="o">*</span><span class="p">(</span><span class="n">a6</span> <span class="o">+</span> <span class="n">a7</span><span class="p">)</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="mi">6</span><span class="o">/</span><span class="p">(</span><span class="mf">7.</span><span class="o">*</span><span class="n">a7</span><span class="o">*</span><span class="p">(</span><span class="n">a6</span> <span class="o">+</span> <span class="n">a7</span><span class="p">)))</span><span class="o">*</span><span class="n">y</span>
+        <span class="n">third</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">x1</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">a7_a6</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">6</span><span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="n">a4</span><span class="p">)</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="n">i</span><span class="o">/</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span> <span class="o">+</span> <span class="n">third</span> <span class="o">+</span> <span class="n">fourth</span>
+    <span class="k">return</span> <span class="n">a0</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">a1</span><span class="o">/</span><span class="p">(</span><span class="n">a2</span><span class="o">*</span><span class="n">a2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">a2</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a2</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">s</span>
+
+<div class="viewcode-block" id="TRCCn_Integral_Over_T"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.TRCCn_Integral_Over_T">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">TRCCn_Integral_Over_T</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">TRCCn_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">)</span>
+              <span class="o">-</span> <span class="n">TRCCn_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Poling"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Poling">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Poling</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">e</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Poling_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(((((</span><span class="mf">0.2</span><span class="o">*</span><span class="n">e</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">d</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">T</span>
+
+<div class="viewcode-block" id="Poling_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Poling_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Poling_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">Poling_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+              <span class="o">-</span> <span class="n">Poling_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Poling_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">((((</span><span class="mf">0.25</span><span class="o">*</span><span class="n">e</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">d</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">T</span>
+
+<div class="viewcode-block" id="Poling_Integral_Over_T"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Poling_Integral_Over_T">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Poling_Integral_Over_T</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">Poling_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+              <span class="o">-</span> <span class="n">Poling_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+              <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Tb</span><span class="o">/</span><span class="n">Ta</span><span class="p">))</span></div>
+
+<span class="c1"># Heat capacity gas methods</span>
+<span class="n">TRCIG</span> <span class="o">=</span> <span class="s1">&#39;TRC Thermodynamics of Organic Compounds in the Gas State (1994)&#39;</span>
+<span class="n">POLING</span> <span class="o">=</span> <span class="s1">&#39;Poling et al. (2001)&#39;</span>
+<span class="n">POLING_CONST</span> <span class="o">=</span> <span class="s1">&#39;Poling et al. (2001) constant&#39;</span>
+<span class="n">CRCSTD</span> <span class="o">=</span> <span class="s1">&#39;CRC Standard Thermodynamic Properties of Chemical Substances&#39;</span>
+<span class="n">VDI_TABULAR</span> <span class="o">=</span> <span class="s1">&#39;VDI Heat Atlas&#39;</span>
+<span class="n">LASTOVKA_SHAW</span> <span class="o">=</span> <span class="s1">&#39;Lastovka and Shaw (2013)&#39;</span>
+
+<span class="n">TRCCn_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">TRCCn</span><span class="p">,</span>
+                  <span class="n">TRCCn_Integral</span><span class="p">,</span>
+                  <span class="n">TRCCn_Integral_Over_T</span><span class="p">)</span>
+<span class="n">Poling_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Poling</span><span class="p">,</span>
+                   <span class="n">Poling_Integral</span><span class="p">,</span> 
+                   <span class="n">Poling_Integral_Over_T</span><span class="p">)</span>
+
+
+<span class="nd">@TDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">HeatCapacityGas</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">iscyclic_aliphatic</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_TRC_gas</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_TRC_gas</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">CnHS</span><span class="p">(</span><span class="o">*</span><span class="n">TRCCn_Functors</span><span class="p">,</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">))</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TRCIG</span><span class="p">,</span> <span class="o">**</span><span class="n">funcs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Poling</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">Cn_g</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_Poling</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="n">funcs</span> <span class="o">=</span> <span class="n">CnHS</span><span class="p">(</span><span class="o">*</span><span class="n">Poling_Functors</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Tmax</span><span class="p">,</span> <span class="o">**</span><span class="n">funcs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">POLING</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Cn_g</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Cn_g</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Cn.g&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">POLING_CONST</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_standard</span><span class="p">:</span>
+        <span class="n">Cn_g</span> <span class="o">=</span> <span class="n">_CRC_standard</span><span class="p">[</span><span class="n">CAS</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Cn_g</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Cn_g</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">CRCSTD</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
+        <span class="c1"># NOTE: VDI data is for the saturation curve, i.e. at increasing</span>
+        <span class="c1"># pressure; it is normally substantially higher than the ideal gas</span>
+        <span class="c1"># value</span>
+        <span class="n">Ts</span><span class="p">,</span> <span class="n">Cn_gs</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Cp (g)&#39;</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Cn_gs</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">VDI_TABULAR</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">MW</span> <span class="ow">and</span> <span class="n">similarity_variable</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">MW</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">iscyclic_aliphatic</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Lastovka_Shaw</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">LASTOVKA_SHAW</span><span class="p">)</span>
+    
+<span class="c1">### Heat capacities of liquids</span>
+
+<div class="viewcode-block" id="Rowlinson_Poling"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Rowlinson_Poling">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Rowlinson_Poling</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">ω</span><span class="p">,</span> <span class="n">Cn_g</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">Cn_g</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="mf">1.586</span> <span class="o">+</span> <span class="mf">0.49</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="n">ω</span><span class="o">*</span><span class="p">(</span><span class="mf">4.2775</span> <span class="o">+</span> <span class="mf">6.3</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">/</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">0.4355</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">Tr</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Rowlinson_Bondi"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Rowlinson_Bondi">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Rowlinson_Bondi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">ω</span><span class="p">,</span> <span class="n">Cn_g</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">Cn_g</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="mf">1.45</span> <span class="o">+</span> <span class="mf">0.45</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">ω</span><span class="o">*</span><span class="p">(</span><span class="mf">17.11</span> <span class="o">+</span> <span class="mf">25.2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">/</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">1.742</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">Tr</span><span class="p">)))</span></div>
+
+<span class="nd">@Cn</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">third</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">MW</span>
+
+<div class="viewcode-block" id="Dadgostar_Shaw"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Dadgostar_Shaw">[docs]</a><span class="nd">@Dadgostar_Shaw</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw</span><span class="p">(</span><span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">similarity_variable</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span>
+    <span class="n">a11</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.3416</span>
+    <span class="n">a12</span> <span class="o">=</span> <span class="mf">2.2671</span>
+    <span class="n">a21</span> <span class="o">=</span> <span class="mf">0.1064</span>
+    <span class="n">a22</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.3874</span>
+    <span class="n">a31</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.8231E-05</span>
+    <span class="n">a32</span> <span class="o">=</span> <span class="mf">4.182E-04</span>
+    <span class="c1"># Didn&#39;t seem to improve the comparison; sum of errors on some</span>
+    <span class="c1"># points included went from 65.5  to 286.</span>
+    <span class="c1"># Author probably used more precision in their calculation.</span>
+    <span class="c1">#    theta = 151.8675</span>
+    <span class="c1">#    constant = 3*R*(theta/T)**2*exp(theta/T)/(exp(theta/T)-1)**2</span>
+    <span class="n">constant</span> <span class="o">=</span> <span class="mf">24.5</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;MW&#39;</span><span class="p">:</span> <span class="n">MW</span><span class="p">,</span>
+            <span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">constant</span><span class="o">*</span><span class="p">(</span><span class="n">a11</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">a12</span><span class="o">*</span><span class="n">a2</span><span class="p">),</span>
+            <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">a21</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">a22</span><span class="o">*</span><span class="n">a2</span><span class="p">,</span>
+            <span class="s1">&#39;third&#39;</span><span class="p">:</span> <span class="n">a31</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">a32</span><span class="o">*</span><span class="n">a2</span><span class="p">}</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw_Indefinte_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">):</span>
+    <span class="n">T2</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">T2</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">third</span> <span class="o">+</span> <span class="n">T2</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">second</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="n">first</span>
+
+<div class="viewcode-block" id="Dadgostar_Shaw_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Dadgostar_Shaw_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">wrap</span><span class="o">=</span><span class="n">Dadgostar_Shaw</span><span class="o">.</span><span class="n">wrap</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MW</span><span class="o">*</span><span class="p">(</span><span class="n">Dadgostar_Shaw_Indefinte_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">)</span>
+               <span class="o">-</span> <span class="n">Dadgostar_Shaw_Indefinte_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">))</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">T</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">third</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="n">second</span> <span class="o">+</span> <span class="n">first</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Dadgostar_Shaw_Over_T_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Dadgostar_Shaw_Over_T_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">wrap</span><span class="o">=</span><span class="n">Dadgostar_Shaw</span><span class="o">.</span><span class="n">wrap</span><span class="p">)</span> 
+<span class="k">def</span> <span class="nf">Dadgostar_Shaw_Over_T_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">third</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MW</span><span class="o">*</span><span class="p">(</span><span class="n">Dadgostar_Shaw_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">)</span>
+               <span class="o">-</span> <span class="n">Dadgostar_Shaw_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">))</span></div>
+
+<span class="n">zabransky_dict_sat_s</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">zabransky_dict_sat_p</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">zabransky_dict_const_s</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">zabransky_dict_const_p</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">zabransky_dict_iso_s</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">zabransky_dict_iso_p</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># C means average heat capacity values, from less rigorous experiments</span>
+<span class="c1"># sat means heat capacity along the saturation line</span>
+<span class="c1"># p means constant-pressure values, </span>
+<span class="c1"># True means it has a splie, False otherwise</span>
+<span class="n">type_to_zabransky_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span> <span class="n">zabransky_dict_const_s</span><span class="p">,</span> 
+                          <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>   <span class="n">zabransky_dict_const_p</span><span class="p">,</span>
+                          <span class="p">(</span><span class="s1">&#39;sat&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>  <span class="n">zabransky_dict_sat_s</span><span class="p">,</span>
+                          <span class="p">(</span><span class="s1">&#39;sat&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span> <span class="n">zabransky_dict_sat_p</span><span class="p">,</span>
+                          <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>    <span class="n">zabransky_dict_iso_s</span><span class="p">,</span>
+                          <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>   <span class="n">zabransky_dict_iso_p</span><span class="p">}</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Zabransky.tsv&#39;</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">a1s</span><span class="p">,</span> <span class="n">a2s</span><span class="p">,</span> <span class="n">a3s</span><span class="p">,</span> <span class="n">a4s</span><span class="p">,</span> <span class="n">a1p</span><span class="p">,</span> <span class="n">a2p</span><span class="p">,</span> <span class="n">a3p</span><span class="p">,</span> <span class="n">a4p</span><span class="p">,</span> <span class="n">a5p</span><span class="p">,</span> <span class="n">a6p</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">spline</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">a1s</span><span class="p">)</span> <span class="c1"># False if Quasypolynomial, True if spline</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">type_to_zabransky_dict</span><span class="p">[(</span><span class="n">Type</span><span class="p">,</span> <span class="n">spline</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">spline</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">CAS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a1s</span><span class="p">,</span> <span class="n">a2s</span><span class="p">,</span> <span class="n">a3s</span><span class="p">,</span> <span class="n">a4s</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">a1s</span><span class="p">,</span> <span class="n">a2s</span><span class="p">,</span> <span class="n">a3s</span><span class="p">,</span> <span class="n">a4s</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No duplicates for quasipolynomials</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">a1p</span><span class="p">,</span> <span class="n">a2p</span><span class="p">,</span> <span class="n">a3p</span><span class="p">,</span> <span class="n">a4p</span><span class="p">,</span> <span class="n">a5p</span><span class="p">,</span> <span class="n">a6p</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Zabransky_Quasi_Polynomial"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Zabransky_Quasi_Polynomial</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">a1</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="n">a2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="n">a3</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">a6</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Zabransky_Quasi_Polynomial_Indefinte_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="n">Tc2</span> <span class="o">=</span> <span class="n">Tc</span><span class="o">*</span><span class="n">Tc</span>
+    <span class="n">Tc3</span> <span class="o">=</span> <span class="n">Tc2</span><span class="o">*</span><span class="n">Tc</span>    
+    <span class="n">term</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">a6</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">*</span><span class="n">Tc3</span><span class="p">)</span> <span class="o">+</span> <span class="n">a5</span><span class="o">/</span><span class="p">(</span><span class="mf">3.</span><span class="o">*</span><span class="n">Tc2</span><span class="p">))</span> <span class="o">+</span> <span class="n">a4</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">Tc</span><span class="p">))</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">+</span> <span class="n">a3</span><span class="p">)</span> 
+              <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="n">a1</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">a2</span><span class="p">)</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">term</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Zabransky_Quasi_Polynomial_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Zabransky_Quasi_Polynomial_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Zabransky_Quasi_Polynomial_Indefinte_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Zabransky_Quasi_Polynomial_Indefinte_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">))</span></div>
+
+<span class="c1">#@njit</span>
+<span class="k">def</span> <span class="nf">Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="n">Tc2</span> <span class="o">=</span> <span class="n">Tc</span><span class="o">*</span><span class="n">Tc</span>
+    <span class="n">Tc3</span> <span class="o">=</span> <span class="n">Tc2</span><span class="o">*</span><span class="n">Tc</span>    
+    <span class="n">term</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">term</span> <span class="o">=</span> <span class="n">T</span> <span class="o">-</span> <span class="n">Tc</span>
+    <span class="n">logT</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">a3</span><span class="o">*</span><span class="n">logT</span> <span class="o">-</span><span class="n">a1</span><span class="o">*</span><span class="n">polylog2</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span> <span class="o">-</span> <span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">logT</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">term</span><span class="o">*</span><span class="n">term</span><span class="p">))</span>
+              <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">a6</span><span class="o">/</span><span class="p">(</span><span class="mf">3.</span><span class="o">*</span><span class="n">Tc3</span><span class="p">)</span> <span class="o">+</span> <span class="n">a5</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">Tc2</span><span class="p">))</span> <span class="o">+</span> <span class="n">a4</span><span class="o">/</span><span class="n">Tc</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Zabransky_Quasi_Polynomial_Over_T_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Over_T_Integral">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Zabransky_Quasi_Polynomial_Over_T_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Zabransky_Cubic"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Cubic">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Zabransky_Cubic</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="mf">100.</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(((</span><span class="n">a4</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a3</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a2</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a1</span><span class="p">)</span></div>
+   
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Zabransky_Cubic_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="mf">100.</span>
+    <span class="k">return</span> <span class="mf">100.</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">a4</span><span class="o">*</span><span class="mf">0.25</span> <span class="o">+</span> <span class="n">a3</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">a2</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="n">a1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Zabransky_Cubic_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Cubic_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Zabransky_Cubic_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Zabransky_Cubic_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Zabransky_Cubic_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">))</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Zabransky_Cubic_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="mf">100.</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">a4</span><span class="o">/</span><span class="mf">3.</span> <span class="o">+</span> <span class="n">a3</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span> <span class="o">+</span> <span class="n">a2</span><span class="p">)</span> <span class="o">+</span> <span class="n">a1</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Zabransky_Cubic_Over_T_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Zabransky_Cubic_Over_T_Integral">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Zabransky_Cubic_Over_T_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Zabransky_Cubic_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Zabransky_Cubic_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">))</span></div>
+    
+
+<span class="c1"># Heat capacity liquid methods:</span>
+<span class="n">ZABRANSKY_SPLINE</span> <span class="o">=</span> <span class="s1">&#39;Zabransky spline, averaged heat capacity&#39;</span>
+<span class="n">ZABRANSKY_QUASIPOLYNOMIAL</span> <span class="o">=</span> <span class="s1">&#39;Zabransky quasipolynomial, averaged heat capacity&#39;</span>
+<span class="n">ZABRANSKY_SPLINE_C</span> <span class="o">=</span> <span class="s1">&#39;Zabransky spline, constant-pressure&#39;</span>
+<span class="n">ZABRANSKY_QUASIPOLYNOMIAL_C</span> <span class="o">=</span> <span class="s1">&#39;Zabransky quasipolynomial, constant-pressure&#39;</span>
+<span class="n">ZABRANSKY_SPLINE_SAT</span> <span class="o">=</span> <span class="s1">&#39;Zabransky spline, saturation&#39;</span>
+<span class="n">ZABRANSKY_QUASIPOLYNOMIAL_SAT</span> <span class="o">=</span> <span class="s1">&#39;Zabransky quasipolynomial, saturation&#39;</span>
+<span class="n">ROWLINSON_POLING</span> <span class="o">=</span> <span class="s1">&#39;Rowlinson and Poling (2001)&#39;</span>
+<span class="n">ROWLINSON_BONDI</span> <span class="o">=</span> <span class="s1">&#39;Rowlinson and Bondi (1969)&#39;</span>
+<span class="n">DADGOSTAR_SHAW</span> <span class="o">=</span> <span class="s1">&#39;Dadgostar and Shaw (2011)&#39;</span>
+
+<span class="n">Zabransky_Cubic_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Zabransky_Cubic</span><span class="p">,</span>
+                            <span class="n">Zabransky_Cubic_Integral</span><span class="p">,</span>
+                            <span class="n">Zabransky_Cubic_Over_T_Integral</span><span class="p">)</span>
+<span class="n">Zabransky_Quasi_Polynomial_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Zabransky_Quasi_Polynomial</span><span class="p">,</span>
+                                    <span class="n">Zabransky_Quasi_Polynomial_Integral</span><span class="p">,</span> 
+                                    <span class="n">Zabransky_Quasi_Polynomial_Over_T_Integral</span><span class="p">)</span>
+<span class="n">Dadgostar_Shaw_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Dadgostar_Shaw</span><span class="p">,</span>
+                           <span class="n">Dadgostar_Shaw_Integral</span><span class="p">,</span>
+                           <span class="n">Dadgostar_Shaw_Over_T_Integral</span><span class="p">)</span>
+
+<span class="n">zabransky_model_data</span> <span class="o">=</span> <span class="p">((</span><span class="n">ZABRANSKY_SPLINE</span><span class="p">,</span>
+                         <span class="n">zabransky_dict_const_s</span><span class="p">,</span>
+                         <span class="n">Zabransky_Cubic_Functors</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">ZABRANSKY_QUASIPOLYNOMIAL</span><span class="p">,</span>
+                         <span class="n">zabransky_dict_const_p</span><span class="p">,</span>
+                         <span class="n">Zabransky_Quasi_Polynomial_Functors</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">ZABRANSKY_SPLINE_C</span><span class="p">,</span>
+                         <span class="n">zabransky_dict_iso_s</span><span class="p">,</span> 
+                         <span class="n">Zabransky_Cubic_Functors</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">ZABRANSKY_QUASIPOLYNOMIAL_C</span><span class="p">,</span> 
+                         <span class="n">zabransky_dict_iso_p</span><span class="p">,</span>
+                         <span class="n">Zabransky_Quasi_Polynomial_Functors</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">ZABRANSKY_SPLINE_SAT</span><span class="p">,</span>
+                         <span class="n">zabransky_dict_sat_s</span><span class="p">,</span>
+                         <span class="n">Zabransky_Cubic_Functors</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">ZABRANSKY_QUASIPOLYNOMIAL_SAT</span><span class="p">,</span> 
+                         <span class="n">zabransky_dict_sat_p</span><span class="p">,</span>
+                         <span class="n">Zabransky_Quasi_Polynomial_Functors</span><span class="p">))</span>
+
+<span class="n">zabransky_model_builders</span> <span class="o">=</span> <span class="p">[</span><span class="n">ZabranskyModelBuilder</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">zabransky_model_data</span><span class="p">]</span>
+<span class="n">zabransky_model_builders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">many</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">zabransky_model_builders</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">many</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">zabransky_model_builders</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">many</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nd">@TDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">HeatCapacityLiquid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">Cn</span><span class="p">):</span>
+    <span class="n">Cn_g</span> <span class="o">=</span> <span class="n">Cn</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">Tb</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">Tb</span> <span class="ow">and</span> <span class="n">Cn</span><span class="o">.</span><span class="n">g</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">zabransky_model_builders</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>        
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
+        <span class="c1"># NOTE: VDI data is for the saturation curve, i.e. at increasing</span>
+        <span class="c1"># pressure; it is normally substantially higher than the ideal gas</span>
+        <span class="c1"># value</span>
+        <span class="n">Ts</span><span class="p">,</span> <span class="n">Cn_ls</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Cp (l)&#39;</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Cn_ls</span><span class="p">,</span> <span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">VDI_TABULAR</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">omega</span> <span class="ow">and</span> <span class="n">Cn_g</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Cn_g</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rowlinson_Bondi</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">ROWLINSON_BONDI</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rowlinson_Poling</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">ROWLINSON_POLING</span><span class="p">)</span>
+    <span class="c1"># Constant models</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Poling</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">Cn_g</span><span class="p">,</span> <span class="n">Cn_l</span> <span class="o">=</span> <span class="n">_Poling</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Cn_g</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Cn_l</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">POLING_CONST</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s2">&quot;Cn.l&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_standard</span><span class="p">:</span>
+        <span class="n">Cn_l</span> <span class="o">=</span> <span class="n">_CRC_standard</span><span class="p">[</span><span class="n">CAS</span><span class="p">][</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Cn_l</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Cn_l</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">CRCSTD</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s2">&quot;Cn.l&quot;</span><span class="p">)</span>
+    <span class="c1"># Other</span>
+    <span class="k">if</span> <span class="n">MW</span> <span class="ow">and</span> <span class="n">similarity_variable</span><span class="p">:</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CnHSModel</span><span class="p">(</span><span class="o">*</span><span class="n">Dadgostar_Shaw_Functors</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">),</span>
+                               <span class="n">name</span><span class="o">=</span><span class="n">DADGOSTAR_SHAW</span><span class="p">))</span>
+
+<span class="c1"># %% Heat Capacity Solid</span>
+
+<div class="viewcode-block" id="Lastovka_Solid"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Solid">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Lastovka_Solid</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="mf">0.013183</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="mf">0.249381</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mf">151.8675</span>
+    <span class="n">C1</span> <span class="o">=</span> <span class="mf">0.026526</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.024942</span>
+    <span class="n">D1</span> <span class="o">=</span> <span class="mf">0.000025</span>
+    <span class="n">D2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.000123</span>
+    <span class="n">sim2</span> <span class="o">=</span> <span class="n">similarity_variable</span><span class="o">*</span><span class="n">similarity_variable</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">A1</span><span class="o">*</span><span class="n">similarity_variable</span> <span class="o">+</span> <span class="n">A2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+                 <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="n">C1</span><span class="o">*</span><span class="n">similarity_variable</span> <span class="o">+</span> <span class="n">C2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span><span class="o">*</span><span class="n">T</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="n">D1</span><span class="o">*</span><span class="n">similarity_variable</span> <span class="o">+</span> <span class="n">D2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Lastovka_Solid_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="mf">0.013183</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="mf">0.249381</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mf">151.8675</span>
+    <span class="n">C1</span> <span class="o">=</span> <span class="mf">0.026526</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.024942</span>
+    <span class="n">D1</span> <span class="o">=</span> <span class="mf">0.000025</span>
+    <span class="n">D2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.000123</span>
+    <span class="n">sim2</span> <span class="o">=</span> <span class="n">similarity_variable</span><span class="o">*</span><span class="n">similarity_variable</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="mf">1000.</span><span class="o">*</span><span class="n">D1</span><span class="o">*</span><span class="n">similarity_variable</span><span class="o">/</span><span class="mf">3.</span> 
+        <span class="o">+</span> <span class="mf">1000.</span><span class="o">*</span><span class="n">D2</span><span class="o">*</span><span class="n">sim2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mf">500.</span><span class="o">*</span><span class="n">C1</span><span class="o">*</span><span class="n">similarity_variable</span> 
+        <span class="o">+</span> <span class="mf">500.</span><span class="o">*</span><span class="n">C2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="mf">3000.</span><span class="o">*</span><span class="n">A1</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">similarity_variable</span><span class="o">*</span><span class="n">theta</span>
+        <span class="o">+</span> <span class="mf">3000.</span><span class="o">*</span><span class="n">A2</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">sim2</span><span class="o">*</span><span class="n">theta</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Lastovka_Solid_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Solid_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Lastovka_Solid_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Lastovka_Solid_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Lastovka_Solid_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">))</span></div>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">Lastovka_Solid_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="mf">0.013183</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="mf">0.249381</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mf">151.8675</span>
+    <span class="n">C1</span> <span class="o">=</span> <span class="mf">0.026526</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.024942</span>
+    <span class="n">D1</span> <span class="o">=</span> <span class="mf">0.000025</span>
+    <span class="n">D2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.000123</span>
+    <span class="n">sim2</span> <span class="o">=</span> <span class="n">similarity_variable</span><span class="o">*</span><span class="n">similarity_variable</span>
+    <span class="n">exp_theta_T</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">3000.</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">similarity_variable</span><span class="o">*</span><span class="p">(</span><span class="n">A1</span> <span class="o">+</span> <span class="n">A2</span><span class="o">*</span><span class="n">similarity_variable</span><span class="p">)</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">exp_theta_T</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> 
+                 <span class="o">+</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">500.</span><span class="o">*</span><span class="n">D1</span><span class="o">*</span><span class="n">similarity_variable</span> <span class="o">+</span> <span class="mf">500.</span><span class="o">*</span><span class="n">D2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span>
+                 <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mf">1000.</span><span class="o">*</span><span class="n">C1</span><span class="o">*</span><span class="n">similarity_variable</span> <span class="o">+</span> <span class="mf">1000.</span><span class="o">*</span><span class="n">C2</span><span class="o">*</span><span class="n">sim2</span><span class="p">)</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="mf">3000.</span><span class="o">*</span><span class="n">A1</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">similarity_variable</span><span class="o">*</span><span class="n">theta</span> 
+                    <span class="o">+</span> <span class="mf">3000.</span><span class="o">*</span><span class="n">A2</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">sim2</span><span class="o">*</span><span class="n">theta</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">exp_theta_T</span> <span class="o">-</span> <span class="n">T</span><span class="p">)</span> 
+                 <span class="o">+</span> <span class="p">(</span><span class="mf">3000.</span><span class="o">*</span><span class="n">A1</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">similarity_variable</span><span class="o">*</span><span class="n">theta</span> 
+                    <span class="o">+</span> <span class="mf">3000.</span><span class="o">*</span><span class="n">A2</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">sim2</span><span class="o">*</span><span class="n">theta</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+ 
+<div class="viewcode-block" id="Lastovka_Solid_Over_T_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Lastovka_Solid_Over_T_Integral">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Lastovka_Solid_Over_T_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Lastovka_Solid_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">Lastovka_Solid_Over_T_Indefinite_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">))</span></div>
+    
+    
+<div class="viewcode-block" id="Perry_151"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Perry_151">[docs]</a><span class="nd">@Cn</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Perry_151</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Const</span><span class="p">,</span> <span class="n">Lin</span><span class="p">,</span> <span class="n">Quad</span><span class="p">,</span> <span class="n">Quadinv</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Const</span> <span class="o">+</span> <span class="n">Lin</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">Quad</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span><span class="n">Quadinv</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">calorie</span></div>
+
+<div class="viewcode-block" id="Perry_151_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Perry_151_Integral">[docs]</a><span class="nd">@H</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Perry_151_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Const</span><span class="p">,</span> <span class="n">Lin</span><span class="p">,</span> <span class="n">Quad</span><span class="p">,</span> <span class="n">Quadinv</span><span class="p">):</span>
+    <span class="n">H1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Const</span><span class="o">*</span><span class="n">Ta</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">Lin</span><span class="o">*</span><span class="n">Ta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Quadinv</span><span class="o">/</span><span class="n">Ta</span> <span class="o">+</span> <span class="n">Quad</span><span class="o">*</span><span class="n">Ta</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="n">H2</span> <span class="o">=</span> <span class="p">(</span><span class="n">Const</span><span class="o">*</span><span class="n">Tb</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">Lin</span><span class="o">*</span><span class="n">Tb</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Quadinv</span><span class="o">/</span><span class="n">Tb</span> <span class="o">+</span> <span class="n">Quad</span><span class="o">*</span><span class="n">Tb</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">H2</span> <span class="o">-</span> <span class="n">H1</span><span class="p">)</span><span class="o">*</span><span class="n">calorie</span></div>
+
+<div class="viewcode-block" id="Perry_151_Over_T_Integral"><a class="viewcode-back" href="../../../functors/heat_capacity.html#thermosteam.functors.heat_capacity.Perry_151_Over_T_Integral">[docs]</a><span class="nd">@S</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Perry_151_Over_T_Integral</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Const</span><span class="p">,</span> <span class="n">Lin</span><span class="p">,</span> <span class="n">Quad</span><span class="p">,</span> <span class="n">Quadinv</span><span class="p">):</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">Const</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Ta</span><span class="p">)</span> <span class="o">+</span> <span class="n">Lin</span><span class="o">*</span><span class="n">Ta</span> <span class="o">-</span> <span class="n">Quadinv</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">Ta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">Quad</span><span class="o">*</span><span class="n">Ta</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">Const</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Tb</span><span class="p">)</span> <span class="o">+</span> <span class="n">Lin</span><span class="o">*</span><span class="n">Tb</span> <span class="o">-</span> <span class="n">Quadinv</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">Tb</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">Quad</span><span class="o">*</span><span class="n">Tb</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">S2</span> <span class="o">-</span> <span class="n">S1</span><span class="p">)</span><span class="o">*</span><span class="n">calorie</span></div>
+
+<span class="n">Lastovka_Solid_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lastovka_Solid</span><span class="p">,</span> <span class="n">Lastovka_Solid_Integral</span><span class="p">,</span> <span class="n">Lastovka_Solid_Over_T_Integral</span><span class="p">)</span>
+<span class="n">Perry_151_Functors</span> <span class="o">=</span> <span class="p">(</span><span class="n">Perry_151</span><span class="p">,</span> <span class="n">Perry_151_Integral</span><span class="p">,</span> <span class="n">Perry_151_Over_T_Integral</span><span class="p">)</span>
+
+<span class="c1"># Heat capacity solid methods</span>
+<span class="n">LASTOVKA_S</span> <span class="o">=</span> <span class="s1">&#39;Lastovka, Fulem, Becerra and Shaw (2008)&#39;</span>
+<span class="n">PERRY151</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;Perry&#39;s Table 2-151&#39;&#39;&#39;</span>
+
+<span class="nd">@TDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">HeatCapacitySolid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">Tmin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">Tmax</span> <span class="o">=</span> <span class="mi">2000</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_PerryI</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">_PerryI</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;c&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+            <span class="n">Tmin</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;Tmin&#39;</span><span class="p">]</span>
+            <span class="n">Tmax</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;Tmax&#39;</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;Const&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;Lin&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;Quad&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;Quadinv&#39;</span><span class="p">])</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CnHSModel</span><span class="p">(</span><span class="o">*</span><span class="n">Perry_151_Functors</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_standard</span><span class="p">:</span>
+        <span class="n">Cnc</span> <span class="o">=</span> <span class="n">_CRC_standard</span><span class="p">[</span><span class="n">CAS</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Cnc</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">Cnc</span><span class="p">),</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">similarity_variable</span> <span class="ow">and</span> <span class="n">MW</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">similarity_variable</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CnHSModel</span><span class="p">(</span><span class="o">*</span><span class="n">Lastovka_Solid_Functors</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+
+
+<span class="n">HeatCapacity</span> <span class="o">=</span> <span class="n">ChemicalPhaseTPropertyBuilder</span><span class="p">(</span><span class="n">HeatCapacitySolid</span><span class="p">,</span> <span class="n">HeatCapacityLiquid</span><span class="p">,</span> <span class="n">HeatCapacityGas</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

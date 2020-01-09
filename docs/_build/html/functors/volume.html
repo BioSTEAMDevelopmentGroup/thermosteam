@@ -222,23 +222,322 @@
 </style>
 <div class="section" id="module-thermosteam.functors.volume">
 <span id="volume"></span><h1>volume<a class="headerlink" href="#module-thermosteam.functors.volume" title="Permalink to this headline">¶</a></h1>
-<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<dl class="class">
+<dt id="thermosteam.functors.volume.Yen_Woods">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Yen_Woods</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Yen_Woods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Yen_Woods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Yen Woods equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">float</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Rackett">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Rackett</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Rackett"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Rackett" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Rackett equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">float</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+<dt><strong>R</strong><span class="classifier">float</span></dt><dd><p>Universal gas constant [J/mol/K].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Yamada_Gunn">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Yamada_Gunn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Yamada_Gunn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Yamada_Gunn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid molar volume (V.l; in m^3/mol) using the Yamada Gunn equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Townsend_Hales">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Townsend_Hales</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Townsend_Hales"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Townsend_Hales" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Townsend Hales equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Bhirud_Normal">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Bhirud_Normal</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Bhirud_Normal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Bhirud_Normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Bhirud Normal equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Costald">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Costald</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Costald"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Costald" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Costald equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Campbell_Thodos">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Campbell_Thodos</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Campbell_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Campbell_Thodos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Campbell Thodos equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>M, dipole, hydroxyl</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.SNM0">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">SNM0</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#SNM0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.SNM0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the SNM0 equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>delta_SRK</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.CRC_Inorganic">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">CRC_Inorganic</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#CRC_Inorganic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.CRC_Inorganic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the CRC Inorganic equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting point temperature [K].</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>rho0, k</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.VDI_PPDS">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">VDI_PPDS</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#VDI_PPDS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.VDI_PPDS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the VDI PPDS equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Helmholtz energy [J/mol].</p>
+</dd>
+<dt><strong>rhoc</strong><span class="classifier">float</span></dt><dd><p>Critical point density [kg/m^3].</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>B, C, D</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Costald_Compressed">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Costald_Compressed</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Costald_Compressed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Costald_Compressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid molar volume (V.l; in m^3/mol) using the Costald Compressed equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Psat</strong><span class="classifier">float</span></dt><dd><p>Saturated vapor pressure [Pa].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Vs</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Tsonopoulos_extended">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Tsonopoulos_extended</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Tsonopoulos_extended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Tsonopoulos_extended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas molar volume (V.g; in m^3/mol) using the Tsonopoulos extended equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>a, b, species_type, dipole, order</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Tsonopoulos">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Tsonopoulos</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Tsonopoulos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Tsonopoulos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas molar volume (V.g; in m^3/mol) using the Tsonopoulos equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Abbott">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Abbott</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Abbott"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Abbott" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas molar volume (V.g; in m^3/mol) using the Abbott equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Pitzer_Curl">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Pitzer_Curl</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Pitzer_Curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Pitzer_Curl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas molar volume (V.g; in m^3/mol) using the Pitzer Curl equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.CRCVirial">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">CRCVirial</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#CRCVirial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.CRCVirial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas molar volume (V.g; in m^3/mol) using the CRCVirial equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a1, a2, a3, a4, a5</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Goodman">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Goodman</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Goodman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Goodman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar volume (V.s; in m^3/mol) using the Goodman equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tt</strong><span class="classifier">float</span></dt><dd><p>Triple point temperature [K].</p>
+</dd>
+<dt><strong>Vl</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

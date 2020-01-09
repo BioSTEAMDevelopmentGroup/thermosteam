@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 import numpy as np
 from numba import njit
@@ -32,7 +12,10 @@ from .dippr import DIPPR_EQ105
 # from .electrochem import _Laliberte_Density_ParametersDict, Laliberte_Density
 from ..base import V, InterpolatedTDependentModel, TPDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder
 
-__all__ = ("Volume",)
+__all__ = ('Volume',
+           'Yen_Woods', 'Rackett', 'Yamada_Gunn', 'Townsend_Hales', 'Bhirud_Normal', 'Costald',
+           'Campbell_Thodos', 'SNM0', 'CRC_Inorganic', 'VDI_PPDS', 'Costald_Compressed', 'ideal_gas',
+           'Tsonopoulos_extended', 'Tsonopoulos', 'Abbott', 'Pitzer_Curl', 'CRCVirial', 'Goodman')
 
 read = CASDataReader(__file__, "Density")
 _COSTALD = read('COSTALD Parameters.tsv')

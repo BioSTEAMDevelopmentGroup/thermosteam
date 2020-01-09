@@ -89,7 +89,7 @@ class Documenter:
 
 # %% Autodoc
 
-def autodoc_functor(functor, equation=None, ref="[1]_", tabs=1):
+def autodoc_functor(functor, equation=None, ref=None, tabs=1):
     if not functor.var: return
     autodoc = Documenter(functor.units_of_measure, functor.definitions, functor.types)
     function = functor.function

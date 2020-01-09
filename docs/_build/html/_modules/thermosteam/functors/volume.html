@@ -1,0 +1,502 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.volume &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.volume</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.volume</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CASDataReader</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">R</span>
+<span class="kn">from</span> <span class="nn">.virial</span> <span class="kn">import</span> <span class="n">BVirial_Pitzer_Curl</span><span class="p">,</span> <span class="n">BVirial_Abbott</span><span class="p">,</span> <span class="n">BVirial_Tsonopoulos</span><span class="p">,</span> <span class="n">BVirial_Tsonopoulos_extended</span>
+<span class="kn">from</span> <span class="nn">.miscdata</span> <span class="kn">import</span> <span class="n">_VDISaturationDict</span><span class="p">,</span> <span class="n">VDI_tabular_data</span>
+<span class="kn">from</span> <span class="nn">.dippr</span> <span class="kn">import</span> <span class="n">DIPPR_EQ105</span>
+<span class="c1"># from .electrochem import _Laliberte_Density_ParametersDict, Laliberte_Density</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">V</span><span class="p">,</span> <span class="n">InterpolatedTDependentModel</span><span class="p">,</span> <span class="n">TPDependentModel</span><span class="p">,</span> <span class="n">TPDependentHandleBuilder</span><span class="p">,</span> <span class="n">ChemicalPhaseTPPropertyBuilder</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Volume&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Yen_Woods&#39;</span><span class="p">,</span> <span class="s1">&#39;Rackett&#39;</span><span class="p">,</span> <span class="s1">&#39;Yamada_Gunn&#39;</span><span class="p">,</span> <span class="s1">&#39;Townsend_Hales&#39;</span><span class="p">,</span> <span class="s1">&#39;Bhirud_Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Costald&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Campbell_Thodos&#39;</span><span class="p">,</span> <span class="s1">&#39;SNM0&#39;</span><span class="p">,</span> <span class="s1">&#39;CRC_Inorganic&#39;</span><span class="p">,</span> <span class="s1">&#39;VDI_PPDS&#39;</span><span class="p">,</span> <span class="s1">&#39;Costald_Compressed&#39;</span><span class="p">,</span> <span class="s1">&#39;ideal_gas&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Tsonopoulos_extended&#39;</span><span class="p">,</span> <span class="s1">&#39;Tsonopoulos&#39;</span><span class="p">,</span> <span class="s1">&#39;Abbott&#39;</span><span class="p">,</span> <span class="s1">&#39;Pitzer_Curl&#39;</span><span class="p">,</span> <span class="s1">&#39;CRCVirial&#39;</span><span class="p">,</span> <span class="s1">&#39;Goodman&#39;</span><span class="p">)</span>
+
+<span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s2">&quot;Density&quot;</span><span class="p">)</span>
+<span class="n">_COSTALD</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;COSTALD Parameters.tsv&#39;</span><span class="p">)</span>
+<span class="n">_SNM0</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Mchaweh SN0 deltas.tsv&#39;</span><span class="p">)</span>
+<span class="n">_Perry_l</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Perry Parameters 105.tsv&#39;</span><span class="p">)</span>
+<span class="n">_VDI_PPDS_2</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;VDI PPDS Density of Saturated Liquids.tsv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_inorg_l</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Inorganics densties of molten compounds and salts.tsv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_inorg_l_const</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Liquid Inorganic Constant Densities.tsv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_inorg_s_const</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Solid Inorganic Constant Densities.tsv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_virial</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Virial polynomials.tsv&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Liquids</span>
+
+<span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Yen_Woods</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">Vc</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Yen_Woods"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yen_Woods">[docs]</a><span class="nd">@Yen_Woods</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">Yen_Woods</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+    <span class="n">Zc2</span> <span class="o">=</span> <span class="n">Zc</span><span class="o">*</span><span class="n">Zc</span>
+    <span class="n">Zc3</span> <span class="o">=</span> <span class="n">Zc2</span><span class="o">*</span><span class="n">Zc</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="mf">17.4425</span> <span class="o">-</span> <span class="mf">214.578</span><span class="o">*</span><span class="n">Zc</span> <span class="o">+</span> <span class="mf">989.625</span><span class="o">*</span><span class="n">Zc2</span> <span class="o">-</span> <span class="mf">1522.06</span><span class="o">*</span><span class="n">Zc3</span>
+    <span class="k">if</span> <span class="n">Zc</span> <span class="o">&lt;=</span> <span class="mf">0.26</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.28257</span> <span class="o">+</span> <span class="mf">13.6377</span><span class="o">*</span><span class="n">Zc</span> <span class="o">+</span> <span class="mf">107.4844</span><span class="o">*</span><span class="n">Zc2</span> <span class="o">-</span> <span class="mf">384.211</span><span class="o">*</span><span class="n">Zc3</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="mf">60.2091</span> <span class="o">-</span> <span class="mf">402.063</span><span class="o">*</span><span class="n">Zc</span> <span class="o">+</span> <span class="mf">501.0</span><span class="o">*</span><span class="n">Zc2</span> <span class="o">+</span> <span class="mf">641.0</span><span class="o">*</span><span class="n">Zc3</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="mf">0.93</span> <span class="o">-</span> <span class="n">B</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">Vc</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="n">D</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Rackett"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Rackett">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Rackett</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="n">Zc</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span></div>
+
+<span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">k</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Yamada_Gunn"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yamada_Gunn">[docs]</a><span class="nd">@Yamada_Gunn</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="p">(</span><span class="mf">0.29056</span> <span class="o">-</span> <span class="mf">0.08775</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span><span class="s1">&#39;k&#39;</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Townsend_Hales"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Townsend_Hales">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Townsend_Hales</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">Vc</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.85</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.692</span> <span class="o">+</span> <span class="mf">0.986</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span></div>
+
+<span class="n">Bhirud_normal_Trs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.98</span><span class="p">,</span> <span class="mf">0.982</span><span class="p">,</span> <span class="mf">0.984</span><span class="p">,</span> <span class="mf">0.986</span><span class="p">,</span>
+                     <span class="mf">0.988</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.992</span><span class="p">,</span> <span class="mf">0.994</span><span class="p">,</span>
+                     <span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.998</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">Bhirud_normal_lnU0s</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.6198</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.604</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.59</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.578</span><span class="p">,</span>
+                       <span class="o">-</span><span class="mf">1.564</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.548</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.533</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.515</span><span class="p">,</span>
+                       <span class="o">-</span><span class="mf">1.489</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.454</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.425</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.243</span><span class="p">]</span>
+<span class="n">Bhirud_normal_lnU1</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.4626</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.459</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.451</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.441</span><span class="p">,</span>
+                      <span class="o">-</span><span class="mf">0.428</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.412</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.392</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.367</span><span class="p">,</span>
+                      <span class="o">-</span><span class="mf">0.337</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.302</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.283</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2629</span><span class="p">]</span>
+<span class="n">Bhirud_normal_lnU0_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">Bhirud_normal_Trs</span><span class="p">,</span>
+                                     <span class="n">Bhirud_normal_lnU0s</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+<span class="n">Bhirud_normal_lnU1_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">Bhirud_normal_Trs</span><span class="p">,</span>
+                                     <span class="n">Bhirud_normal_lnU1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Bhirud_Normal"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Bhirud_Normal">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Bhirud_Normal</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">if</span> <span class="n">Tr</span> <span class="o">&lt;=</span> <span class="mf">0.98</span><span class="p">:</span>
+        <span class="n">lnU0</span> <span class="o">=</span> <span class="mf">1.39644</span> <span class="o">-</span> <span class="mf">24.076</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">102.615</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">255.719</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span> \
+            <span class="o">+</span> <span class="mf">355.805</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="mf">256.671</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">5</span> <span class="o">+</span> <span class="mf">75.1088</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">6</span>
+        <span class="n">lnU1</span> <span class="o">=</span> <span class="mf">13.4412</span> <span class="o">-</span> <span class="mf">135.7437</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">533.380</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mf">1091.453</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span> \
+            <span class="o">+</span> <span class="mf">1231.43</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="mf">728.227</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">5</span> <span class="o">+</span> <span class="mf">176.737</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">6</span>
+    <span class="k">elif</span> <span class="n">Tr</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Critical phase, correlation does not apply&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lnU0</span> <span class="o">=</span> <span class="n">Bhirud_normal_lnU0_interp</span><span class="p">(</span><span class="n">Tr</span><span class="p">)</span>
+        <span class="n">lnU1</span> <span class="o">=</span> <span class="n">Bhirud_normal_lnU1_interp</span><span class="p">(</span><span class="n">Tr</span><span class="p">)</span>
+
+    <span class="n">Unonpolar</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">lnU0</span> <span class="o">+</span> <span class="n">omega</span><span class="o">*</span><span class="n">lnU1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Unonpolar</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">Pc</span></div>
+
+<div class="viewcode-block" id="Costald"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Costald</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">V_delta</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.296123</span> <span class="o">+</span> <span class="mf">0.386914</span><span class="o">*</span><span class="n">Tr</span> <span class="o">-</span> <span class="mf">0.0427258</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span>
+        <span class="o">-</span> <span class="mf">0.0480645</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Tr</span> <span class="o">-</span> <span class="mf">1.00001</span><span class="p">)</span>
+    <span class="n">V_0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1.52816</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.43907</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> \
+        <span class="o">-</span> <span class="mf">0.81446</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.190454</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V_0</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">omega</span><span class="o">*</span><span class="n">V_delta</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Campbell_Thodos"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Campbell_Thodos">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Campbell_Thodos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hydroxyl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">Tbr</span> <span class="o">=</span> <span class="n">Tb</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Tbr</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tbr</span><span class="p">)</span>
+    <span class="n">Lambda</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mf">6.</span><span class="p">))</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3883</span> <span class="o">-</span> <span class="mf">0.0179</span><span class="o">*</span><span class="n">s</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.00318</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mf">0.0211</span> <span class="o">+</span> <span class="mf">0.625</span><span class="o">*</span><span class="n">Lambda</span><span class="o">**</span><span class="p">(</span><span class="mf">1.35</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dipole</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">*</span><span class="n">dipole</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">alpha</span> <span class="o">-=</span> <span class="mi">130540</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">2.41</span>
+        <span class="n">beta</span> <span class="o">+=</span> <span class="mf">9.74E6</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">3.38</span>
+    <span class="k">if</span> <span class="n">hydroxyl</span><span class="p">:</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.00318</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mf">0.0211</span> <span class="o">+</span> <span class="mf">0.625</span><span class="o">*</span><span class="n">Lambda</span><span class="o">**</span><span class="p">(</span><span class="mf">1.35</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.90</span><span class="o">*</span><span class="n">theta</span><span class="o">**</span><span class="mf">0.835</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.69</span><span class="o">*</span><span class="n">Tbr</span> <span class="o">-</span> <span class="mf">0.3342</span> <span class="o">+</span> <span class="mf">5.79E-10</span><span class="o">/</span><span class="n">Tbr</span><span class="o">**</span><span class="mf">32.75</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">**</span><span class="mf">0.145</span>
+    <span class="n">Zra</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="n">Pc</span><span class="o">*</span><span class="mi">101325</span><span class="p">)</span><span class="o">*</span><span class="n">Zra</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Vs</span></div>
+
+<span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">SNM0</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">delta_SRK</span><span class="p">):</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">alpha_SRK</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="o">**</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="o">/</span><span class="n">alpha_SRK</span>
+    <span class="n">rho0</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">1.169</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.818</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.658</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="mf">2.161</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="n">V0</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">rho0</span>
+    <span class="k">return</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">delta_SRK</span><span class="o">*</span><span class="p">(</span><span class="n">alpha_SRK</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span> <span class="k">if</span> <span class="n">delta_SRK</span> <span class="k">else</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V0</span>
+
+<div class="viewcode-block" id="SNM0"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.SNM0">[docs]</a><span class="nd">@SNM0</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">SNM0</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">delta_SRK</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="mf">0.480</span> <span class="o">+</span> <span class="mf">1.574</span><span class="o">*</span><span class="n">omega</span> <span class="o">-</span> <span class="mf">0.176</span><span class="o">*</span><span class="n">omega</span><span class="o">*</span><span class="n">omega</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">Vc</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="s1">&#39;delta_SRK&#39;</span><span class="p">:</span><span class="n">delta_SRK</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="CRC_Inorganic"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.CRC_Inorganic">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">CRC_Inorganic</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">rho0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">MW</span><span class="o">/</span><span class="mi">1000</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">rho0</span> <span class="o">-</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="n">Tm</span><span class="p">))</span><span class="o">*</span><span class="n">f</span></div>
+
+<span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">VDI_PPDS</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">Vc</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="mf">0.35</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VDI_PPDS"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.VDI_PPDS">[docs]</a><span class="nd">@VDI_PPDS</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="k">def</span> <span class="nf">VDI_PPDS</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">MW</span> <span class="o">/</span> <span class="mf">1e9</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">rhoc</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">D</span><span class="p">}</span></div>
+   
+<div class="viewcode-block" id="Costald_Compressed"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald_Compressed">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="k">def</span> <span class="nf">Costald_Compressed</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Vs</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.070217</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">62.45326</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">135.1102</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mf">4.79594</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="mf">0.250047</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1.14188</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mf">0.0861488</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mf">0.0344483</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">f</span> <span class="o">+</span> <span class="n">g</span><span class="o">*</span><span class="n">omega</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">omega</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">e</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Vs</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">log</span><span class="p">((</span><span class="n">B</span> <span class="o">+</span> <span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="p">))))</span></div>
+
+<span class="nd">@TPDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">VolumeLiquid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">eos</span><span class="p">):</span>
+    <span class="n">Tmin</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">Tmax</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_l</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_CRC_inorg_l</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">MW</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CRC_Inorganic</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Perry_l</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Perry_l</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ105</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
+        <span class="n">Zc_</span> <span class="o">=</span> <span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Z_RA&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Zc_</span><span class="p">):</span> <span class="n">Zc_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Zc_</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc_</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="c1"># Roughly data at STP; not guaranteed however; not used for Trange</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vchar&#39;</span><span class="p">])</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;omega_SRK&#39;</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDI_PPDS_2</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tc_</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">_VDI_PPDS_2</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">VDI_PPDS</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
+        <span class="n">Ts</span><span class="p">,</span> <span class="n">Vls</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Volume (l)&#39;</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Vls</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald_Compressed</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Yen_Woods</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Yamada_Gunn</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Bhirud_Normal</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Townsend_Hales</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_SNM0</span><span class="p">:</span>
+            <span class="n">SNM0_delta_SRK</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_SNM0</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;delta_SRK&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">SNM0_delta_SRK</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">MW</span><span class="p">)):</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Campbell_Thodos</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_l_const</span><span class="p">:</span>
+        <span class="n">Vl</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRC_inorg_l_const</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vm&#39;</span><span class="p">])</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Vl</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CRC_inorganic_liquid_constant&quot;</span><span class="p">)</span>
+        
+
+<span class="c1"># %% Gases</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span> <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span>
+
+<span class="n">ideal_gas_model</span> <span class="o">=</span> <span class="n">TPDependentModel</span><span class="p">(</span><span class="n">ideal_gas</span><span class="p">,</span>
+                                   <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">,</span>
+                                   <span class="mi">0</span><span class="p">,</span> <span class="mf">10e12</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Tsonopoulos_extended"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Tsonopoulos_extended">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Tsonopoulos_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Tsonopoulos_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span>
+                                                          <span class="n">species_type</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Tsonopoulos"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Tsonopoulos">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span> 
+<span class="k">def</span> <span class="nf">Tsonopoulos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Tsonopoulos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Abbott"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Abbott">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Abbott</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Abbott</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pitzer_Curl"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Pitzer_Curl">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Pitzer_Curl</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Pitzer_Curl</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="CRCVirial"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.CRCVirial">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">CRCVirial</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mf">298.15</span><span class="o">/</span><span class="n">T</span> <span class="o">-</span> <span class="mf">1.</span>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">a2</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">a3</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span></div>
+
+<span class="nd">@TPDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">VolumeGas</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">eos</span><span class="p">):</span>
+    <span class="c1"># no point in getting Tmin, Tmax</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tsonopoulos_extended</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tsonopoulos</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Abbott</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Pitzer_Curl</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_virial</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="n">_CRC_virial</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CRCVirial</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">ideal_gas_model</span><span class="p">)</span>
+
+
+<span class="c1"># %% Solids</span>
+
+<div class="viewcode-block" id="Goodman"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Goodman">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">s</span>
+<span class="k">def</span> <span class="nf">Goodman</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tt</span><span class="p">,</span> <span class="n">Vl</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">1.28</span> <span class="o">-</span> <span class="mf">0.16</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tt</span><span class="p">))</span><span class="o">*</span><span class="n">Vl</span></div>
+
+<span class="nd">@TPDependentHandleBuilder</span>
+<span class="k">def</span> <span class="nf">VolumeSolid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_s_const</span><span class="p">:</span>
+        <span class="n">CRC_INORG_S_Vm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRC_inorg_s_const</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vm&#39;</span><span class="p">])</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">CRC_INORG_S_Vm</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e12</span><span class="p">)</span>
+
+
+<span class="n">Volume</span> <span class="o">=</span> <span class="n">ChemicalPhaseTPPropertyBuilder</span><span class="p">(</span><span class="n">VolumeSolid</span><span class="p">,</span> <span class="n">VolumeLiquid</span><span class="p">,</span> <span class="n">VolumeGas</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">)</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 import numpy as np
 from scipy.interpolate import interp2d
@@ -30,6 +10,14 @@ from ..functional import horner_polynomial
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ100, DIPPR_EQ102
 
+
+__all__ = ('ThermalConductivity',
+           'Sheffy_Johnson', 'Sato_Riedel', 'Lakshmi_Prasad', 'Gharagheizi_liquid',
+           'Nicola_original', 'Nicola', 'Bahadori_liquid', 'Mersmann_Kind_thermal_conductivity_liquid',
+           'DIPPR9G', 'Missenard', 'Eucken', 'Eucken_modified', 'DIPPR9B_linear',
+           'DIPPR9B_monoatomic', 'DIPPR9B_nonlinear', 'Chung', 'Eli_Hanley',
+           'Gharagheizi_gas', 'Bahadori_gas', 'Stiel_Thodos_dense',
+           'Eli_Hanley_dense', )
 
 read = CASDataReader(__file__, 'Thermal Conductivity')
 
@@ -95,22 +83,6 @@ def Mersmann_Kind_thermal_conductivity_liquid(T, MW, Tc, Vc, atoms):
     N_A2 = N_A*1000 # Their avogadro's constant is per kmol
     kl = lambda_star*(k*Tc)**1.5*N_A2**(7/6.)*Vc**(-2/3.)/Tc*MW**-0.5
     return kl
-
-VDI_TABULAR = 'VDI_TABULAR'
-VDI_PPDS = 'VDI_PPDS'
-COOLPROP = 'COOLPROP'
-GHARAGHEIZI_L = 'GHARAGHEIZI_L'
-NICOLA = 'NICOLA'
-NICOLA_ORIGINAL = 'NICOLA_ORIGINAL'
-SATO_RIEDEL = 'SATO_RIEDEL'
-SHEFFY_JOHNSON = 'SHEFFY_JOHNSON'
-BAHADORI_L = 'BAHADORI_L'
-LAKSHMI_PRASAD = 'LAKSHMI_PRASAD'
-MISSENARD = 'MISSENARD'
-NONE = 'NONE'
-DIPPR_PERRY_8E = 'DIPPR_PERRY_8E'
-NEGLIGIBLE = 'NEGLIGIBLE'
-DIPPR_9G = 'DIPPR_9G'
 
 @TPDependentHandleBuilder
 def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
@@ -251,7 +223,7 @@ def Chung(T, MW, Tc, omega, Cp, mu):
     return 3.75*psi/(Cv/R)/MW*mu*Cv
 
 @kappa.g(njitcompile=False)
-def eli_hanley(T, MW, Tc, Vc, Zc, omega, Cp):
+def Eli_Hanley(T, MW, Tc, Vc, Zc, omega, Cp):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5, 
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1, 2.037119479E-1]
     if callable(Cp):
@@ -297,7 +269,7 @@ def Bahadori_gas(T, MW):
 ### Thermal Conductivity of dense gases
 
 @kappa.g(njitcompile=False)
-def stiel_thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
+def Stiel_Thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
     Vm = Vg(T, P)
     for i in kg_models:
         if isinstance(i, TDependentModel):
@@ -317,7 +289,7 @@ def stiel_thodos_dense(T,P, MW, Tc, Pc, Vc, Zc, Vg, kg_models):
     return kg
 
 @kappa.g(njitcompile=False)
-def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
+def Eli_Hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
     Cs = [2.907741307E6, -3.312874033E6, 1.608101838E6, -4.331904871E5,
           7.062481330E4, -7.116620750E3, 4.325174400E2, -1.445911210E1,
           2.037119479E-1]
@@ -379,7 +351,7 @@ def eli_hanley_dense(T, P, MW, Tc, Vc, Zc, omega, Cp, Vg):
     return k
 
 @kappa.g(njitcompile=False)
-def chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
+def Chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
     if callable(Cp):
         Cvm = Cp(T) - R # J/mol/K to J/kmol/K
     else:
@@ -406,27 +378,6 @@ def chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
     q = 3.586E-3*(Tc/(MW/1000.))**0.5/(Vc*1E6)**(2/3.)
     return 31.2*mu*psi/(MW/1000.)*(G2**-1 + B6*y) + q*B7*y**2*Tr**0.5*G2
 
-GHARAGHEIZI_G = 'GHARAGHEIZI_G'
-CHUNG = 'CHUNG'
-ELI_HANLEY = 'ELI_HANLEY'
-ELI_HANLEY_DENSE = 'ELI_HANLEY_DENSE'
-CHUNG_DENSE = 'CHUNG_DENSE'
-EUCKEN_MOD = 'EUCKEN_MOD'
-EUCKEN = 'EUCKEN'
-BAHADORI_G = 'BAHADORI_G'
-STIEL_THODOS_DENSE = 'STIEL_THODOS_DENSE'
-DIPPR_9B = 'DIPPR_9B'
-
-
-thermal_conductivity_gas_methods = [COOLPROP, DIPPR_PERRY_8E, VDI_PPDS, VDI_TABULAR, GHARAGHEIZI_G,
-                                    DIPPR_9B, CHUNG, ELI_HANLEY, EUCKEN_MOD,
-                                    EUCKEN, BAHADORI_G]
-'''Holds all low-pressure methods available for the ThermalConductivityGas
-class, for use in iterating over them.'''
-thermal_conductivity_gas_methods_P = [COOLPROP, ELI_HANLEY_DENSE, CHUNG_DENSE,
-                                      STIEL_THODOS_DENSE]
-'''Holds all high-pressure methods available for the ThermalConductivityGas
-class, for use in iterating over them.'''
 
 @TPDependentHandleBuilder
 def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, Vg, Cp, mug):
@@ -448,20 +399,20 @@ def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V
         handle.model(Chung.from_args(data))
     data = (MW, Tc, Vc, Zc, omega, Cp)
     if all(data):
-        handle.model(eli_hanley.from_args(data))
+        handle.model(Eli_Hanley.from_args(data))
     data = (MW, Cp, mug)
     if all(data):
         handle.model(Eucken_modified.from_args(data))
         handle.model(Eucken.from_args(data))
     data = (MW, Tc, Vc, Zc, omega, Cp, Vg)
     if all((MW, Tc, Vc, Zc, omega, Cp, Vg)):
-        handle.model(eli_hanley_dense.from_args(data))
+        handle.model(Eli_Hanley_dense.from_args(data))
     data = (MW, Tc, Vc, omega, Cp, Vg, mug, dipole)
     if all(data):
-        handle.model(chung_dense.from_args(data))
+        handle.model(Chung_dense.from_args(data))
     data = (MW, Tc, Pc, Vc, Zc, Vg, handle.models)
     if all(data):
-        handle.model(stiel_thodos_dense.from_args(data))
+        handle.model(Stiel_Thodos_dense.from_args(data))
     # TODO: Fix propblem with values
     # if CAS in _Perrys2_314:
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]

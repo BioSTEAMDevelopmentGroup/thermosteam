@@ -168,26 +168,6 @@
             
   <h1>Source code for thermosteam.functors.interface</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
-<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
-
-<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
-<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
-<span class="sd">in the Software without restriction, including without limitation the rights</span>
-<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
-<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
-<span class="sd">furnished to do so, subject to the following conditions:</span>
-
-<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
-<span class="sd">copies or substantial portions of the Software.</span>
-
-<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
-<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
-<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
-<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
-<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
-<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
-<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
 
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">TDependentHandleBuilder</span><span class="p">,</span> <span class="n">InterpolatedTDependentModel</span>
@@ -195,6 +175,10 @@
 <span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">N_A</span><span class="p">,</span> <span class="n">k</span>
 <span class="kn">from</span> <span class="nn">.miscdata</span> <span class="kn">import</span> <span class="n">_VDISaturationDict</span><span class="p">,</span> <span class="n">VDI_tabular_data</span>
 <span class="kn">from</span> <span class="nn">.dippr</span> <span class="kn">import</span> <span class="n">DIPPR_EQ106</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;REFPROP&#39;</span><span class="p">,</span> <span class="s1">&#39;Somayajulu&#39;</span><span class="p">,</span> <span class="s1">&#39;Jasper&#39;</span><span class="p">,</span> <span class="s1">&#39;Brock_Bird&#39;</span><span class="p">,</span> <span class="s1">&#39;Pitzer&#39;</span><span class="p">,</span> <span class="s1">&#39;Sastri_Rao&#39;</span><span class="p">,</span> <span class="s1">&#39;Zuo_Stenby&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Hakim_Steinberg_Stiel&#39;</span><span class="p">,</span> <span class="s1">&#39;Miqueu&#39;</span><span class="p">,</span> <span class="s1">&#39;Aleem&#39;</span><span class="p">,</span> <span class="s1">&#39;Mersmann_Kind_surface_tension&#39;</span>
+<span class="p">)</span>
 
 <span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;Interface&#39;</span><span class="p">)</span>
 <span class="n">_Mulero_Cachadina</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;MuleroCachadinaParameters.tsv&#39;</span><span class="p">)</span>
@@ -288,7 +272,6 @@
     <span class="n">t</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">return</span> <span class="n">k</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="n">N_A</span><span class="o">/</span><span class="n">Vc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">4.35</span> <span class="o">+</span> <span class="mf">4.14</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">1.26</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.19</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">-</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="mi">10000</span></div>
     
-
 <div class="viewcode-block" id="Aleem"><a class="viewcode-back" href="../../../functors/interface.html#thermosteam.functors.interface.Aleem">[docs]</a><span class="nd">@sigma</span> 
 <span class="k">def</span> <span class="nf">Aleem</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">rhol</span><span class="p">,</span> <span class="n">Hvap_Tb</span><span class="p">,</span> <span class="n">Cpl</span><span class="p">):</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">MW</span><span class="o">/</span><span class="mf">1000.</span> <span class="c1"># Use kg/mol for consistency with the other units</span>
@@ -302,30 +285,6 @@
     <span class="n">sigma_star</span> <span class="o">=</span> <span class="p">((</span><span class="n">Tb</span> <span class="o">-</span> <span class="n">Tm</span><span class="p">)</span><span class="o">/</span><span class="n">Tm</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">6.25</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="mf">31.3</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span>
     <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_star</span><span class="o">*</span><span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Tm</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">*</span><span class="n">n_associated</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sigma</span></div>
-
-    
-<span class="n">STREFPROP</span> <span class="o">=</span> <span class="s1">&#39;REFPROP&#39;</span>
-<span class="n">SUPERCRITICAL</span> <span class="o">=</span> <span class="s1">&#39;SUPERCRITICAL&#39;</span>
-<span class="n">SOMAYAJULU2</span> <span class="o">=</span> <span class="s1">&#39;SOMAYAJULU2&#39;</span>
-<span class="n">SOMAYAJULU</span> <span class="o">=</span> <span class="s1">&#39;SOMAYAJULU&#39;</span>
-<span class="n">VDI_TABULAR</span> <span class="o">=</span> <span class="s1">&#39;VDI_TABULAR&#39;</span>
-<span class="n">JASPER</span> <span class="o">=</span> <span class="s1">&#39;JASPER&#39;</span>
-<span class="n">MIQUEU</span> <span class="o">=</span> <span class="s1">&#39;MIQUEU&#39;</span>
-<span class="n">BROCK_BIRD</span> <span class="o">=</span> <span class="s1">&#39;BROCK_BIRD&#39;</span>
-<span class="n">SASTRI_RAO</span> <span class="o">=</span> <span class="s1">&#39;SASTRI_RAO&#39;</span>
-<span class="n">PITZER</span> <span class="o">=</span> <span class="s1">&#39;PITZER&#39;</span>
-<span class="n">ZUO_STENBY</span> <span class="o">=</span> <span class="s1">&#39;ZUO_STENBY&#39;</span>
-<span class="n">HAKIM_STEINBERG_STIEL</span> <span class="o">=</span> <span class="s1">&#39;HAKIM_STEINBERG_STIEL&#39;</span>
-<span class="n">ALEEM</span> <span class="o">=</span> <span class="s1">&#39;Aleem&#39;</span>
-<span class="n">VDI_PPDS</span> <span class="o">=</span> <span class="s1">&#39;VDI_PPDS&#39;</span>
-<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
-
-
-<span class="n">surface_tension_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">STREFPROP</span><span class="p">,</span> <span class="n">SOMAYAJULU2</span><span class="p">,</span> <span class="n">SOMAYAJULU</span><span class="p">,</span> <span class="n">VDI_PPDS</span><span class="p">,</span> <span class="n">VDI_TABULAR</span><span class="p">,</span>
-                           <span class="n">JASPER</span><span class="p">,</span> <span class="n">MIQUEU</span><span class="p">,</span> <span class="n">BROCK_BIRD</span><span class="p">,</span> <span class="n">SASTRI_RAO</span><span class="p">,</span> <span class="n">PITZER</span><span class="p">,</span>
-                           <span class="n">ZUO_STENBY</span><span class="p">,</span> <span class="n">ALEEM</span><span class="p">]</span>
-<span class="sd">&#39;&#39;&#39;Holds all methods available for the SurfaceTension class, for use in</span>
-<span class="sd">iterating over them.&#39;&#39;&#39;</span>
 
 <span class="nd">@TDependentHandleBuilder</span>
 <span class="k">def</span> <span class="nf">SurfaceTension</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">StielPolar</span><span class="p">,</span> <span class="n">Hvap_Tb</span><span class="p">,</span> <span class="n">rhol</span><span class="p">,</span> <span class="n">Cpl_Tb</span><span class="p">):</span>

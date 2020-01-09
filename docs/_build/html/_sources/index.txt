@@ -9,15 +9,15 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Property Package
 Key Features & Capabilities
 ---------------------------
 
-* **Simple** and straight foward methods to estimate mixture properties and thermodynamic equilibrium with just a few lines of code.
+* **Simple** and straight foward estimation of mixture properties and thermodynamic equilibrium with just a few lines of code.
 
-* **Clear** representation of chemical and phase data throughout every object using IPython's rich display.
+* **Clear** representation of chemical and phase data within every object using IPython's rich display system.
 
-* **Fast** thermodynamic equilibrium computations within hundreds of microseconds through the smart use of cache and Numba Jit compiled functions.
+* **Fast** estimation of thermodynamic equilibrium within hundreds of microseconds through the smart use of cache and Numba Jit compiled functions.
 
 * **Flexible** implemention of thermodynamic models for estimating pure component properties in just a few lines of code.
 
-* **Extendable** framework allows for easy integration of new methods for computing thermodynamic equilibrium coefficients and mixture properties.
+* **Extendable** framework that allows easy integration of new methods for computing thermodynamic equilibrium coefficients and mixture properties.
 
 .. toctree::
    :maxdepth: 1

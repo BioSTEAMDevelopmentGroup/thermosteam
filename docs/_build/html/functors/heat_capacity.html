@@ -223,23 +223,402 @@
 </style>
 <div class="section" id="module-thermosteam.functors.heat_capacity">
 <span id="heat-capacity"></span><h1>heat_capacity<a class="headerlink" href="#module-thermosteam.functors.heat_capacity" title="Permalink to this headline">¶</a></h1>
-<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Shaw">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Shaw</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Shaw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Shaw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the Lastovka Shaw equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable, iscyclic_aliphatic</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Shaw_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Shaw_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas enthalpy (H.g; in J/mol) using the Lastovka Shaw Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable, iscyclic_aliphatic</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral_Over_T">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Shaw_Integral_Over_T</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Shaw_Integral_Over_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Shaw_Integral_Over_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas entropy (S.g; in J/mol) using the Lastovka Shaw Integral Over T equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable, iscyclic_aliphatic</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.TRCCn">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">TRCCn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#TRCCn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.TRCCn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the TRCCn equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a0, a1, a2, a3, a4, a5, a6, a7</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.TRCCn_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">TRCCn_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#TRCCn_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.TRCCn_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates gas enthalpy (H.g; in J/mol) using the TRCCn Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a0, a1, a2, a3, a4, a5, a6, a7</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.TRCCn_Integral_Over_T">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">TRCCn_Integral_Over_T</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#TRCCn_Integral_Over_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.TRCCn_Integral_Over_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates gas entropy (S.g; in J/mol) using the TRCCn Integral Over T equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a0, a1, a2, a3, a4, a5, a6, a7</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Poling">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Poling</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Poling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Poling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the Poling equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a, b, c, d, e</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Poling_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Poling_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Poling_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Poling_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates gas enthalpy (H.g; in J/mol) using the Poling Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a, b, c, d, e</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Poling_Integral_Over_T">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Poling_Integral_Over_T</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Poling_Integral_Over_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Poling_Integral_Over_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates gas entropy (S.g; in J/mol) using the Poling Integral Over T equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a, b, c, d, e</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Rowlinson_Poling">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Rowlinson_Poling</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Rowlinson_Poling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Rowlinson_Poling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Rowlinson Poling equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>ω</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cn_g</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Rowlinson_Bondi">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Rowlinson_Bondi</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Rowlinson_Bondi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Rowlinson_Bondi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Rowlinson Bondi equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>ω</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cn_g</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Dadgostar_Shaw">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Dadgostar_Shaw</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Dadgostar_Shaw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Dadgostar_Shaw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Dadgostar Shaw equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Dadgostar_Shaw_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Dadgostar_Shaw_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Dadgostar_Shaw_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Dadgostar_Shaw_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid enthalpy (H.l; in J/mol) using the Dadgostar Shaw Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Dadgostar_Shaw_Over_T_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Dadgostar_Shaw_Over_T_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Dadgostar_Shaw_Over_T_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Dadgostar_Shaw_Over_T_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid enthalpy (H.l; in J/mol) using the Dadgostar Shaw Over T Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Quasi_Polynomial</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Quasi_Polynomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Quasi Polynomial equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>a1, a2, a3, a4, a5, a6</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Quasi_Polynomial_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Quasi_Polynomial_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid enthalpy (H.l; in J/mol) using the Zabransky Quasi Polynomial Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>a1, a2, a3, a4, a5, a6</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Over_T_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Quasi_Polynomial_Over_T_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Quasi_Polynomial_Over_T_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial_Over_T_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid entropy (S.l; in J/mol) using the Zabransky Quasi Polynomial Over T Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>a1, a2, a3, a4, a5, a6</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Cubic">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Cubic</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Cubic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Cubic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Cubic equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a1, a2, a3, a4</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Cubic_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Cubic_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Cubic_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Cubic_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid enthalpy (H.l; in J/mol) using the Zabransky Cubic Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a1, a2, a3, a4</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Zabransky_Cubic_Over_T_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Cubic_Over_T_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Cubic_Over_T_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Cubic_Over_T_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates liquid entropy (S.l; in J/mol) using the Zabransky Cubic Over T Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a1, a2, a3, a4</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Solid">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Solid</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Solid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Solid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar heat capacity (Cn.s; in J/mol/K) using the Lastovka Solid equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Solid_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Solid_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Solid_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Solid_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates solid enthalpy (H.s; in J/mol) using the Lastovka Solid Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Lastovka_Solid_Over_T_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Solid_Over_T_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Solid_Over_T_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Solid_Over_T_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates solid entropy (S.s; in J/mol) using the Lastovka Solid Over T Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Perry_151">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Perry_151</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Perry_151"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Perry_151" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar heat capacity (Cn.s; in J/mol/K) using the Perry 151 equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Const, Lin, Quad, Quadinv</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Perry_151_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Perry_151_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Perry_151_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Perry_151_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates solid enthalpy (H.s; in J/mol) using the Perry 151 Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Const, Lin, Quad, Quadinv</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.heat_capacity.Perry_151_Over_T_Integral">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Perry_151_Over_T_Integral</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Perry_151_Over_T_Integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Perry_151_Over_T_Integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temperature integral functor (Ta to Tb; in K) that calcuates solid entropy (S.s; in J/mol) using the Perry 151 Over T Integral equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Const, Lin, Quad, Quadinv</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
