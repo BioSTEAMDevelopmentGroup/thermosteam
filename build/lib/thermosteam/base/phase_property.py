@@ -5,7 +5,7 @@ Created on Thu Oct 31 02:38:40 2019
 @author: yoelr
 """
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
-from .functor import functor_lookalike
+from .functor import functor_lookalike, Functor
 from ..utils import copy_maybe
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
@@ -19,7 +19,8 @@ getattr = getattr
 
 def set_phase_property(phase_property, phase, builder, data):
     if not builder: return
-    setattr(phase_property, phase, builder(data))
+    setattr(phase_property, phase, builder.from_args(data) if hasattr(builder, 'from_args') else builder(data))
+    
     
 
 # %% Abstract class    

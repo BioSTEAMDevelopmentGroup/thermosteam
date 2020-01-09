@@ -29,7 +29,7 @@ def Antoine(T, a, b, c):
     -----
     The vapor pressure (Psat; in Pa) is given by:
     
-        .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}
+    .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}
     
     Examples
     --------

@@ -64,8 +64,8 @@ def functor_base_and_params(function):
 # %% Decorator
   
 def functor(function=None, var=None, njitcompile=False, wrap=None,
-            definitions=None, units_of_measure=None, types=None,
-            autodoc=False, **kwautodoc):
+            units_of_measure=None, types=None, definitions=None,
+            autodoc=True, **kwautodoc):
     """Return a Functor subclass from function."""
     if function:
         base, params = functor_base_and_params(function)
@@ -75,52 +75,57 @@ def functor(function=None, var=None, njitcompile=False, wrap=None,
                'function': staticmethod(function),
                'params': params,
                'var': var}
+        if units_of_measure: dct['units_of_measure'] = units_of_measure
+        if types: dct['types'] = types
+        if definitions: dct['definitions'] = definitions
         cls = type(function.__name__, (base,), dct)
-        if units_of_measure:
-            dct['units_of_measure'] = units_of_measure
-        if definitions:
-            dct['definitions'] = definitions
-        if wrap: cls.wrapper(wrap)
-        if autodoc or kwautodoc: autodoc_functor(cls, function, **kwautodoc)
+        if wrap:
+            cls.wrapper(wrap, autodoc=False)
+        cls._kwautodoc_ = kwautodoc
+        if autodoc: autodoc_functor(cls, **kwautodoc)
         cls.__module__ = function.__module__
         return cls
     else:
         return lambda function: functor(function, var, njitcompile, wrap,
-                                        definitions, units_of_measure, types,
+                                        units_of_measure, types, definitions,
                                         autodoc, **kwautodoc)
 
 
 # %% Decorators
     
 class FunctorFactory:
-    __slots__ = ('var', 'math')
+    __slots__ = ('var',)
    
     def __init__(self, var):
         self.var = var
     
     def __call__(self, function=None, njitcompile=False, wrap=None,
-                 definitions=None, units_of_measure=None, types=None,
-                 autodoc=False, **kwautodoc):
-        return functor(function, self.var, njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                 units_of_measure=None, types=None, definitions=None,
+                 autodoc=True, **kwautodoc):
+        return functor(function, self.var, njitcompile, wrap, 
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def s(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.s', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def l(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.l', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def g(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.g', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.var)})"
@@ -161,29 +166,65 @@ class Functor:
 
 
 class PureComponentFunctor(Functor):
-    __slots__ = ('kwargs', 'data')
+    __slots__ = ('function_kwargs', '_data')
     
-    def __init__(self, data, kwargs=None):
-        if isinstance(data, dict):
-            self.data = data
-        elif hasattr(data, '__iter__'):
-            self.data = data = dict(zip(self.params, data))
-        else:
-            self.data = data = dict(zip(self.params, get_obj_values(data, self.params)))
-        self.kwargs = kwargs or (self.wrap(**data) if hasattr(self, 'wrap') else data)
+    def __init__(self, *args, **kwargs):
+        for i, j in zip(self.params, args): kwargs[i] = j
+        self.set_data(kwargs)
+    
+    def _load_data(self, data):
+        self.function_kwargs = self.wrap(**data) if hasattr(self, 'wrap') else data
+    
+    def get_data(self):
+        return self._data.copy()
+    
+    def set_data(self, data):
+        self._data = data
+        self._load_data(data)
+    
+    def update_data(self, **kwargs):
+        data = self._data
+        data.update(kwargs)
+        self._load_data(data)
     
     @classmethod
-    def wrapper(cls, kwargs_function):
-        cls.params = tuple(signature(kwargs_function).parameters)
-        cls.wrap = staticmethod(kwargs_function)
-        return cls
+    def from_other(cls, other):
+        self = cls.__new__(cls)
+        self._data = other._data
+        self.function_kwargs = other.function_kwargs
+        return self
     
-    def help(self):
-        print(self.__doc__)
+    @classmethod
+    def from_args(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(dict(zip(self.params, data)))
+        return self
+    
+    @classmethod
+    def from_kwargs(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(data)
+        return self
+    
+    @classmethod
+    def from_obj(cls, data):
+        self = cls.__new__(cls)
+        self.set_data(dict(zip(self.params, get_obj_values(data, self.params))))
+        return self
+    
+    @classmethod
+    def wrapper(cls, wrap=None, autodoc=True):
+        if wrap:
+            cls.params = tuple(signature(wrap).parameters)
+            cls.wrap = staticmethod(wrap)
+            if autodoc: autodoc_functor(cls, **cls._kwautodoc_)
+            return cls
+        else:
+            return lambda wrap: cls.wrapper(wrap, autodoc)
     
     def show(self):
         info = f"Functor: {display_asfunctor(self)}"
-        data = self.data
+        data = self._data
         units = self.units_of_measure
         for key, value in data.items():
             if value is None:
@@ -207,14 +248,14 @@ class TFunctor(PureComponentFunctor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
     def __call__(self, T, P=None):
-        return self.function(T, **self.kwargs)
+        return self.function(T, **self.function_kwargs)
 
 
 class TIntegralFunctor(PureComponentFunctor, args=('Ta', 'Tb')):
     __slots__ = ()
     kind = "temperature integral functor (Ta to Tb; in K)"
     def __call__(self, Ta, Tb, P=None):
-        return self.function(Ta, Tb, **self.kwargs)
+        return self.function(Ta, Tb, **self.function_kwargs)
 
 # class PIntegralFunctor(PureComponentFunctor, args=('Pa', 'Pb', 'T')):
 #     __slots__ = ()
@@ -227,17 +268,17 @@ class TPFunctor(PureComponentFunctor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
     def __call__(self, T, P):
-        return self.function(T, P, **self.kwargs)
+        return self.function(T, P, **self.function_kwargs)
 
 
 class MixtureFunctor(Functor):
-    __slots__ = ('kwargs', '_chemicals')
+    __slots__ = ('function_kwargs', '_chemicals')
     
-    def __init__(self, chemicals, kwargs=None):
+    def __init__(self, chemicals, function_kwargs=None):
         chemicals = tuple(chemicals)
-        if kwargs:
+        if function_kwargs:
             self._chemicals = chemicals
-            self.kwargs = kwargs
+            self.function_kwargs = function_kwargs
         else:
             self.chemicals = chemicals
     
@@ -255,9 +296,9 @@ class MixtureFunctor(Functor):
         if chemicals == self._chemicals: return
         self._chemicals = chemicals = tuple(chemicals)
         if chemicals in self.cache:
-            self.kwargs = self.cache[chemicals]
+            self.function_kwargs = self.cache[chemicals]
         else:
-            self.cache[chemicals] = self.kwargs = self.calculate_kwargs(self.chemicals)
+            self.cache[chemicals] = self.function_kwargs = self.calculate_kwargs(self.chemicals)
             
     
 class zTFunctor(MixtureFunctor, args=('z', 'T')): 
@@ -267,7 +308,7 @@ class zTFunctor(MixtureFunctor, args=('z', 'T')):
         self.cache = {}
     
     def __call__(self, z, T, P=None):
-        return self.function(z, T, **self.kwargs)
+        return self.function(z, T, **self.function_kwargs)
         
 
 class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
@@ -277,7 +318,7 @@ class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
         self.cache = {}
     
     def __call__(self, z, T, P):
-        return self.function(z, T, P, **self.kwargs)
+        return self.function(z, T, P, **self.function_kwargs)
     
     
     

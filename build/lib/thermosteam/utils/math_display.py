@@ -35,6 +35,9 @@ class MathString(str):
         from thermosteam import settings
         color = 'white' if settings.dark_mode else 'black'
         png = latex_to_png("$$" + self + "$$", color=color)
-        image = Image(png)
-        display(image)
+        try:
+            image = Image(png)
+            display(image)
+        except:
+            print(self)
     _ipython_display_ = show

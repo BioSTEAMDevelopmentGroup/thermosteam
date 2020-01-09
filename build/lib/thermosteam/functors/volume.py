@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 import numpy as np
 from numba import njit
@@ -32,7 +12,10 @@ from .dippr import DIPPR_EQ105
 # from .electrochem import _Laliberte_Density_ParametersDict, Laliberte_Density
 from ..base import V, InterpolatedTDependentModel, TPDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder
 
-__all__ = ("Volume",)
+__all__ = ('Volume',
+           'Yen_Woods', 'Rackett', 'Yamada_Gunn', 'Townsend_Hales', 'Bhirud_Normal', 'Costald',
+           'Campbell_Thodos', 'SNM0', 'CRC_Inorganic', 'VDI_PPDS', 'Costald_Compressed', 'ideal_gas',
+           'Tsonopoulos_extended', 'Tsonopoulos', 'Abbott', 'Pitzer_Curl', 'CRCVirial', 'Goodman')
 
 read = CASDataReader(__file__, "Density")
 _COSTALD = read('COSTALD Parameters.tsv')
@@ -193,54 +176,54 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos):
     if CAS in _CRC_inorg_l:
         _, MW, rho, k, Tm, Tmax = _CRC_inorg_l[CAS]
         data = (MW, rho, k, Tm)
-        handle.model(CRC_Inorganic(data), Tm, Tmax)
+        handle.model(CRC_Inorganic.from_args(data), Tm, Tmax)
     if CAS in _Perry_l:
         _, C1, C2, C3, C4, Tmin, Tmax = _Perry_l[CAS]
         data = (C1, C2, C3, C4, True)
-        handle.model(DIPPR_EQ105(data), Tmin, Tmax)
+        handle.model(DIPPR_EQ105.from_args(data), Tmin, Tmax)
     if Tc and Pc and CAS in _COSTALD:
         Zc_ = _COSTALD.at[CAS, 'Z_RA']
         if not np.isnan(Zc_): Zc_ = float(Zc_)
         data = (Tc, Pc, Zc_)
-        handle.model(Rackett(data), Tmin, Tmax)
+        handle.model(Rackett.from_args(data), Tmin, Tmax)
         # Roughly data at STP; not guaranteed however; not used for Trange
     if Tc and CAS in _COSTALD:
         Vc = float(_COSTALD.at[CAS, 'Vchar'])
         omega = float(_COSTALD.at[CAS, 'omega_SRK'])
         data = (Tc, Vc, omega)
-        handle.model(Costald(data), 0, Tc, )
+        handle.model(Costald.from_args(data), 0, Tc, )
     if CAS in _VDI_PPDS_2:
         _, MW, Tc_, rhoc, A, B, C, D = _VDI_PPDS_2[CAS]
         data = (Tc, A, B, C, D, rhoc, MW)
-        handle.model(VDI_PPDS(data), 0., Tc_)
+        handle.model(VDI_PPDS.from_args(data), 0., Tc_)
     if CAS in _VDISaturationDict:
         Ts, Vls = VDI_tabular_data(CAS, 'Volume (l)')
         handle.model(InterpolatedTDependentModel(Ts, Vls, Tmin=Ts[0], Tmax=Ts[-1]))
     if all((Tc, Pc, omega)):
         data = (Psat, Tc, Pc, omega, handle)
-        handle.model(Costald_Compressed(data), 50, 500)
+        handle.model(Costald_Compressed.from_args(data), 50, 500)
     if all((Tc, Vc, Zc)):
         data = (Tc, Vc, Zc)
-        handle.model(Yen_Woods(data))
+        handle.model(Yen_Woods.from_args(data))
     if all((Tc, Pc, Zc)):
         data = (Tc, Pc, Zc)
-        handle.model(Rackett(data), 0, Tc)
+        handle.model(Rackett.from_args(data), 0, Tc)
     if all((Tc, Pc, omega)):
         data = (Tc, Pc, omega)
-        handle.model(Yamada_Gunn(data), 0, Tc)
-        handle.model(Bhirud_Normal(data), 0, Tc)
+        handle.model(Yamada_Gunn.from_args(data), 0, Tc)
+        handle.model(Bhirud_Normal.from_args(data), 0, Tc)
     if all((Tc, Vc, omega)):
         data = (Tc, Vc, omega)
-        handle.model(Townsend_Hales(data), 0, Tc)
-        handle.model(Rackett(data), 0, Tc)
+        handle.model(Townsend_Hales.from_args(data), 0, Tc)
+        handle.model(Rackett.from_args(data), 0, Tc)
         if CAS in _SNM0:
             SNM0_delta_SRK = float(_SNM0.at[CAS, 'delta_SRK'])
             data = (Tc, Vc, omega, SNM0_delta_SRK)
-            handle.model(SNM0(data))
+            handle.model(SNM0.from_args(data))
         else:
-            handle.model(SNM0(data), 0, Tc)
+            handle.model(SNM0.from_args(data), 0, Tc)
     if all((Tc, Vc, omega, Tb, MW)):
-        handle.model(Campbell_Thodos(data), 0, Tc)
+        handle.model(Campbell_Thodos.from_args(data), 0, Tc)
     if CAS in _CRC_inorg_l_const:
         Vl = float(_CRC_inorg_l_const.at[CAS, 'Vm'])
         handle.model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant")
@@ -281,13 +264,13 @@ def VolumeGas(handle, CAS, Tc, Pc, omega, eos):
     # no point in getting Tmin, Tmax
     if all((Tc, Pc, omega)):
         data = (Tc, Pc, omega)
-        handle.model(Tsonopoulos_extended(data))
-        handle.model(Tsonopoulos(data))
-        handle.model(Abbott(data))
-        handle.model(Pitzer_Curl(data))
+        handle.model(Tsonopoulos_extended.from_args(data))
+        handle.model(Tsonopoulos.from_args(data))
+        handle.model(Abbott.from_args(data))
+        handle.model(Pitzer_Curl.from_args(data))
     if CAS in _CRC_virial:
         _, *data = _CRC_virial[CAS]
-        handle.model(CRCVirial(data))
+        handle.model(CRCVirial.from_args(data))
     handle.model(ideal_gas_model)
 
 

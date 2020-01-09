@@ -1,34 +1,11 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
-
-__all__ = ['Yaws_data', 'Tb_methods', 'Tb', 'Tm_ON_data', 'Tm_methods', 'Tm', 
+__all__ = ['EnthalpyVaporization',
+           'Tb_methods', 'Tb', 'Tm_methods', 'Tm', 
            'Clapeyron', 'Pitzer', 'SMK', 'MK', 'Velasco', 'Riedel', 'Chen', 
-           'Liu', 'Vetere', 'GharagheiziHvap_data', 'CRCHvap_data', 
-           'Perrys2_150', 'VDI_PPDS_4', 'Alibakhshi_Cs', 'Watson', 
-           'enthalpy_vaporization_methods', 'EnthalpyVaporization', 
-           'CRCHfus_data', 'Hfus', 'GharagheiziHsub_data', 'Hsub', 'Tliquidus']
+           'Liu', 'Vetere', 'Watson',  'Hfus', 'Hsub']
 
 import numpy as np
-from numba import njit
 from ..base import InterpolatedTDependentModel, TDependentHandleBuilder, Hvap
 from .._constants import R, N_A
 from math import log, pi
@@ -121,10 +98,10 @@ def Tb(CASRN, AvailableMethods=False, Method=None, IgnoreMethods=[PSAT_DEFINITIO
     References
     ----------
     .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
-       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.
+           Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.
     .. [2] Yaws, Carl L. Thermophysical Properties of Chemicals and
-       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
-       Publishing, 2014.
+           Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+           Publishing, 2014.
     '''
     def list_methods():
         methods = []
@@ -231,10 +208,10 @@ def Tm(CASRN, AvailableMethods=False, Method=None, IgnoreMethods=[]):
     References
     ----------
     .. [1] Bradley, Jean-Claude, Antony Williams, and Andrew Lang.
-       "Jean-Claude Bradley Open Melting Point Dataset", May 20, 2014.
-       https://figshare.com/articles/Jean_Claude_Bradley_Open_Melting_Point_Datset/1031637.
+           "Jean-Claude Bradley Open Melting Point Dataset", May 20, 2014.
+           https://figshare.com/articles/Jean_Claude_Bradley_Open_Melting_Point_Datset/1031637.
     .. [2] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
-       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.
+           Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.
     '''
     def list_methods():
         methods = []
@@ -269,155 +246,128 @@ def Tm(CASRN, AvailableMethods=False, Method=None, IgnoreMethods=[]):
 
 ### Enthalpy of Vaporization at T
 
-@Hvap(math=r"\Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}",
+@Hvap(ref="[1]_",
       types={'dZ': 'function(T)', 'Psat': 'function(T)'})
 def Clapeyron(T, Tc, Pc, V, Psat):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-    
+    r"""*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+     
+    .. math:: \Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}
+    
     No original source is available for this equation.
     [1]_ claims this equation overpredicts enthalpy by several percent.
     Under Tr = 0.8, dZ = 1 is a reasonable assumption.
     This equation is most accurate at the normal boiling point.
-
+    
     Internal units are bar.
-
-    WARNING: I believe it possible that the adjustment for pressure may be incorrect
-
+    
+    WARNING: It is possible that the adjustment for pressure may be incorrect
+    
     Examples
     --------
     Problem from Perry's examples.
-
+    
     >>> Clapeyron(T=294.0, Tc=466.0, Pc=5.55E6)
     26512.354585061985
-
+    
     References
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     P = Psat(T)
     return R*T*Z(T, P, V.g(T, P))*log(Pc/P)/(1. - Tr)
 
-@Hvap(ref="[2, 1]_",
-      math=r"\frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}")
+@Hvap(ref="[2, 1]_")
 def Pitzer(T, Tc, omega):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-
+    r"""*
     Notes
     -----
+    
+    .. math:: \frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}
+    
     This equation is listed in [3]_, page 2-487 as method #2 for estimating
     Hvap. This cites [2]_.
-
+    
     The recommended range is 0.6 to 1 Tr. Users should expect up to 5% error.
     T must be under Tc, or an exception is raised.
-
+    
     The original article has been reviewed and found to have a set of tabulated
     values which could be used instead of the fit function to provide additional
     accuracy.
-
+    
     Examples
     --------
     Example as in [3]_, p2-487; exp: 37.51 kJ/mol
-
+    
     >>> Pitzer(452, 645.6, 0.35017)
     36696.736640106414
-
+    
     References
     ----------
     .. [1] Pitzer, Kenneth S. "The Volumetric and Thermodynamic Properties of
-       Fluids. I. Theoretical Basis and Virial Coefficients."
-       Journal of the American Chemical Society 77, no. 13 (July 1, 1955):
-       3427-33. doi:10.1021/ja01618a001
+           Fluids. I. Theoretical Basis and Virial Coefficients."
+           Journal of the American Chemical Society 77, no. 13 (July 1, 1955):
+           3427-33. doi:10.1021/ja01618a001
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+           Eighth Edition. McGraw-Hill Professional, 2007.
     """
     Tr = T/Tc
     return R*Tc * (7.08*(1. - Tr)**0.354 + 10.95*omega*(1. - Tr)**0.456)
 
-@Hvap
+@Hvap(ref="[1]_")
 def SMK(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
+    r"""*
+    Notes
+    -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+        
     .. math::
-         \frac{\Delta H_{vap}} {RT_c} =
-         \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
-         \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
-         \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
-         \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
-
+        \frac{\Delta H_{vap}} {RT_c} = 
+        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
+        \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
+        \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
+        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
+        
         \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}
         = 6.537 \tau^{1/3} - 2.467 \tau^{5/6} - 77.251 \tau^{1.208} +
         59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3
-
-        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
-        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}=-0.133 \tau^{1/3} - 28.215
-        \tau^{5/6} - 82.958 \tau^{1.208} + 99.00 \tau  + 19.105 \tau^2 -2.796 \tau^3
-
+        
         \tau = 1-T/T_c
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
-    Notes
-    -----
+    
     The original article has been reviewed and found to have coefficients with
     slightly more precision. Additionally, the form of the equation is slightly
     different, but numerically equivalent.
 
     The refence fluids are:
-
+        
     :math:`\omega_0` = benzene = 0.212
-
+    
     :math:`\omega_1` = carbazole = 0.461
-
+    
     A sample problem in the article has been verified. The numerical result
     presented by the author requires high numerical accuracy to obtain.
-
+    
     Examples
     --------
     Problem in [1]_:
-
+    
     >>> SMK(553.15, 751.35, 0.302)
     39866.17647797959
-
+    
     References
     ----------
     .. [1] Sivaraman, Alwarappa, Joe W. Magee, and Riki Kobayashi. "Generalized
-       Correlation of Latent Heats of Vaporization of Coal-Liquid Model Compounds
-       between Their Freezing Points and Critical Points." Industrial &
-       Engineering Chemistry Fundamentals 23, no. 1 (February 1, 1984): 97-100.
-       doi:10.1021/i100013a017.
-    '''
+           Correlation of Latent Heats of Vaporization of Coal-Liquid Model Compounds
+           between Their Freezing Points and Critical Points." Industrial &
+           Engineering Chemistry Fundamentals 23, no. 1 (February 1, 1984): 97-100.
+           doi:10.1021/i100013a017.
+    """
     omegaR1, omegaR2 = 0.212, 0.461
     A10 = 6.536924
     A20 = -2.466698
@@ -443,68 +393,56 @@ def SMK(T, Tc, omega):
     domega = (omega - omegaR1)/(omegaR2 - omegaR1)
     return R*Tc*(L0 + domega*L1)
 
-@Hvap
+@Hvap(ref="[1]_")
 def MK(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
-    .. math::
-        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
-
-        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6}
-        + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3
-
-        \tau = 1-T/T_c
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
+    r"""*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+    
+    .. math::
+        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
+        
+        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)
+        
+        \tau = 1-T/T_c
+    
     The original article has been reviewed. A total of 18 coefficients are used:
-
+    
     WARNING: The correlation has been implemented as described in the article,
     but its results seem different and with some error.
     Its results match with other functions however.
-
+    
     Has poor behavior for low-temperature use.
-
+    
     Examples
     --------
     Problem in article for SMK function.
-
-    >>> MK(553.15, 751.35, 0.302)
+    
+    >>> f_mk = MK(751.35, 0.302)
+    >>> f_mk
+    Functor: MK(T, P=None)
+     Tc: 751.35 K
+     omega: 0.302
+    
+    >>> f_mk(553.15)
     38727.993546377205
-
+    
     References
     ----------
     .. [1] Morgan, David L., and Riki Kobayashi. "Extension of Pitzer CSP
-       Models for Vapor Pressures and Heats of Vaporization to Long-Chain
-       Hydrocarbons." Fluid Phase Equilibria 94 (March 15, 1994): 51-87.
-       doi:10.1016/0378-3812(94)87051-9.
-    '''
+           Models for Vapor Pressures and Heats of Vaporization to Long-Chain
+           Hydrocarbons." Fluid Phase Equilibria 94 (March 15, 1994): 51-87.
+           doi:10.1016/0378-3812(94)87051-9.
+    """
     bs = [[5.2804, 0.080022, 7.2543],
           [12.8650, 273.23, -346.45],
           [1.1710, 465.08, -610.48],
           [-13.1160, -638.51, 839.89],
           [0.4858, -145.12, 160.05],
           [-1.0880, 74.049, -50.711]]
-
     tau = 1. - T/Tc
+    # TODO: Use numpy arrays
     H0 = (bs[0][0]*tau**(0.3333) + bs[1][0]*tau**(0.8333) + bs[2][0]*tau**(1.2083) +
     bs[3][0]*tau + bs[4][0]*tau**(2) + bs[5][0]*tau**(3))*R*Tc
 
@@ -516,69 +454,51 @@ def MK(T, Tc, omega):
 
     return H0 + omega*H1 + omega**2*H2
 
-@Hvap
+@Hvap(ref="[1]_")
 def Velasco(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
-    .. math::
-        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
+    r"""*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+    
+    .. math::
+        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}
+    
     The original article has been reviewed. It is regressed from enthalpy of
     vaporization values at 0.7Tr, from 121 fluids in REFPROP 9.1.
     A value in the article was read to be similar, but slightly too low from
     that calculated here.
-
+    
     Examples
     --------
     From graph, in [1]_ for perfluoro-n-heptane.
-
+    
     >>> Velasco(333.2, 476.0, 0.5559)
     33299.41734936356
-
+    
     References
     ----------
     .. [1] Velasco, S., M. J. Santos, and J. A. White. "Extended Corresponding
-       States Expressions for the Changes in Enthalpy, Compressibility Factor
-       and Constant-Volume Heat Capacity at Vaporization." The Journal of
-       Chemical Thermodynamics 85 (June 2015): 68-76.
-       doi:10.1016/j.jct.2015.01.011.
-    '''
+           States Expressions for the Changes in Enthalpy, Compressibility Factor
+           and Constant-Volume Heat Capacity at Vaporization." The Journal of
+           Chemical Thermodynamics 85 (June 2015): 68-76.
+           doi:10.1016/j.jct.2015.01.011.
+    """
     return (7.2729 + 10.4962*omega + 0.6061*omega**2)*(1-T/Tc)**0.38*R*Tc
 
 
 ### Enthalpy of Vaporization at Normal Boiling Point.
 
-@njit
 def Riedel(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization at the boiling point, using the
     Ridel [1]_ CSP method. Required information are critical temperature
     and pressure, and boiling point. Equation taken from [2]_ and [3]_.
-
-    The enthalpy of vaporization is given by:
-
+    
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+    
     .. math::
-        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}
-
+        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s
+    
     Parameters
     ----------
     Tb : float
@@ -587,55 +507,54 @@ def Riedel(Tb, Tc, Pc):
         Critical temperature of fluid [K]
     Pc : float
         Critical pressure of fluid [Pa]
-
+        
     Returns
     -------
     Hvap : float
         Enthalpy of vaporization at the normal boiling point, [J/mol]
-
+    
     Notes
     -----
     This equation has no example calculation in any source. The source has not
     been verified. It is equation 4-144 in Perry's. Perry's also claims that
     errors seldom surpass 5%.
-
+    
     [2]_ is the source of example work here, showing a calculation at 0.0%
     error.
-
+    
     Internal units of pressure are bar.
-
+    
     Examples
     --------
     Pyridine, 0.0% err vs. exp: 35090 J/mol; from Poling [2]_.
-
+    
     >>> Riedel(388.4, 620.0, 56.3E5)
     35089.78989646058
-
+    
     References
     ----------
     .. [1] Riedel, L. "Eine Neue Universelle Dampfdruckformel Untersuchungen
-       Uber Eine Erweiterung Des Theorems Der Ubereinstimmenden Zustande. Teil
-       I." Chemie Ingenieur Technik 26, no. 2 (February 1, 1954): 83-89.
-       doi:10.1002/cite.330260206.
+           Uber Eine Erweiterung Des Theorems Der Ubereinstimmenden Zustande. Teil
+           I." Chemie Ingenieur Technik 26, no. 2 (February 1, 1954): 83-89.
+           doi:10.1002/cite.330260206.
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+           Eighth Edition. McGraw-Hill Professional, 2007.
     '''
     Pc = Pc/1E5  # Pa to bar
     Tbr = Tb/Tc
     return 1.093*Tb*R*(log(Pc) - 1.013)/(0.93 - Tbr)
 
-@njit
 def Chen(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization using the Chen [1]_ correlation
     and a chemical's critical temperature, pressure and boiling point.
-
-    The enthalpy of vaporization is given by:
-
+    
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+        
     .. math::
         \Delta H_{vb} = RT_b \frac{3.978 T_r - 3.958 + 1.555 \ln P_c}{1.07 - T_r}
-
+        
     Parameters
     ----------
     Tb : float
@@ -644,12 +563,12 @@ def Chen(Tb, Tc, Pc):
         Critical temperature of fluid [K]
     Pc : float
         Critical pressure of fluid [Pa]
-
+        
     Returns
     -------
     Hvap : float
         Enthalpy of vaporization, [J/mol]
-
+    
     Notes
     -----
     The formulation presented in the original article is similar, but uses
@@ -657,35 +576,34 @@ def Chen(Tb, Tc, Pc):
     A method for estimating enthalpy of vaporization at other conditions
     has also been developed, but the article is unclear on its implementation.
     Based on the Pitzer correlation.
-
+    
     Internal units: bar and K
-
+    
     Examples
     --------
     Same problem as in Perry's examples.
-
+    
     >>> Chen(294.0, 466.0, 5.55E6)
     26705.893506174052
-
+    
     References
     ----------
     .. [1] Chen, N. H. "Generalized Correlation for Latent Heat of Vaporization."
-       Journal of Chemical & Engineering Data 10, no. 2 (April 1, 1965): 207-10.
-       doi:10.1021/je60025a047
+           Journal of Chemical & Engineering Data 10, no. 2 (April 1, 1965): 207-10.
+           doi:10.1021/je60025a047
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     '''
     Tbr = Tb/Tc
     Pc = Pc/1E5  # Pa to bar
     return R*Tb*(3.978*Tbr - 3.958 + 1.555*log(Pc))/(1.07 - Tbr)
 
-@njit
 def Liu(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization at the normal boiling point using
     the Liu [1]_ correlation, and a chemical's critical temperature, pressure
     and boiling point.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
         \Delta H_{vap} = RT_b \left[ \frac{T_b}{220}\right]^{0.0627} \frac{
@@ -728,20 +646,19 @@ def Liu(Tb, Tc, Pc):
     References
     ----------
     .. [1] LIU, ZHI-YONG. "Estimation of Heat of Vaporization of Pure Liquid at
-       Its Normal Boiling Temperature." Chemical Engineering Communications
-       184, no. 1 (February 1, 2001): 221-28. doi:10.1080/00986440108912849.
+           Its Normal Boiling Temperature." Chemical Engineering Communications
+           184, no. 1 (February 1, 2001): 221-28. doi:10.1080/00986440108912849.
     '''
     Tbr = Tb/Tc
     return R*Tb*(Tb/220.)**0.0627*(1. - Tbr)**0.38*log(Pc/101325.) \
         / (1 - Tbr + 0.38*Tbr*log(Tbr))
 
-@njit
 def Vetere(Tb, Tc, Pc, F=1):
     r'''Calculates enthalpy of vaporization at the boiling point, using the
     Vetere [1]_ CSP method. Required information are critical temperature
     and pressure, and boiling point. Equation taken from [2]_.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
         \frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}
@@ -781,11 +698,11 @@ def Vetere(Tb, Tc, Pc, F=1):
     References
     ----------
     .. [1] Vetere, Alessandro. "Methods to Predict the Vaporization Enthalpies
-       at the Normal Boiling Temperature of Pure Compounds Revisited."
-       Fluid Phase Equilibria 106, no. 1-2 (May 1, 1995): 1–10.
-       doi:10.1016/0378-3812(94)02627-D.
+           at the Normal Boiling Temperature of Pure Compounds Revisited."
+           Fluid Phase Equilibria 106, no. 1-2 (May 1, 1995): 1–10.
+           doi:10.1016/0378-3812(94)02627-D.
     .. [2] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+           Eighth Edition. McGraw-Hill Professional, 2007.
     '''
     Tbr = Tb/Tc
     taub = 1-Tb/Tc
@@ -826,39 +743,39 @@ def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Ps
     if CAS in _Perrys2_150:
         _, Tc, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_150[CAS]
         data = (Tc, C1, C2, C3, C4)
-        handle.model(DIPPR_EQ106(data), Tmin, Tmax)
+        handle.model(DIPPR_EQ106.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_4:
         _,  MW, Tc, A, B, C, D, E = _VDI_PPDS_4[CAS]
-        handle.model(VDI_PPDS(data=(Tc, A, B, C, D, E)), 0, Tc)
+        handle.model(VDI_PPDS.from_args(data=(Tc, A, B, C, D, E)), 0, Tc)
     data = (Tb, Tc, Pc)
     if all(data):
         for f in (Riedel, Chen, Vetere, Liu):
             handle.model(f(*data), 0, Tc)
     if all((Tc, Pc)):
-        handle.model(Clapeyron(data=(Tc, Pc, V, Psat)), 0, Tc)
+        handle.model(Clapeyron.from_args(data=(Tc, Pc, V, Psat)), 0, Tc)
     data = (Tc, omega)
     if all(data):
         for f in (MK, SMK, Velasco, Pitzer):
-            handle.model(f(data), 0, Tc)
+            handle.model(f.from_args(data), 0, Tc)
     if CAS in _VDISaturationDict:
         Ts, Hvaps = VDI_tabular_data(CAS, 'Hvap')
         handle.model(InterpolatedTDependentModel(Ts, Hvaps, Ts[0], Ts[-1]))
     if CAS in _Alibakhshi_Cs and Tc:
         C = float(_Alibakhshi_Cs.at[CAS, 'C'])
-        handle.model(Alibakhshi(data=(Tc, C)), 0, Tc)
+        handle.model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
     if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'HvapTb']):
         Tb = float(_CRCHvap.at[CAS, 'Tb'])
         Hvap = float(_CRCHvap.at[CAS, 'HvapTb'])
         data = dict(Hvap=Hvap, T_ref=Tb, Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
     if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'Hvap298']):
         Hvap = float(_CRCHvap.at[CAS, 'Hvap298'])
         data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
     if CAS in _GharagheiziHvap.index:
         Hvap = float(_GharagheiziHvap.at[CAS, 'Hvap298'])
         data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson(data), 0, 10e6)
+        handle.model(Watson.from_args(data), 0, 10e6)
 
 
 ### Heat of Fusion

@@ -1,26 +1,4 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
-
-from __future__ import division
 
 __all__ = ('Permittivity',)
 
@@ -60,13 +38,13 @@ def CRC(T, A, B, C, D):
 @TDependentHandleBuilder
 def Permittivity(handle, CAS, Vl):
     if Vl and CAS == '7732-18-5':
-        handle.model(IAPWS_Permittivity((Vl,)))
+        handle.model(IAPWS_Permittivity.from_args((Vl,)))
     if CAS in _CRC_Permittivity:
         _, CRC_CONSTANT_T, CRC_permittivity, A, B, C, D, Tmin, Tmax = _CRC_Permittivity[CAS]
         args = tuple(0 if np.isnan(x) else x for x in [A, B, C, D])
         Tmin = 0 if np.isnan(Tmin) else Tmin
         Tmax = 1e6 if np.isnan(Tmax) else Tmax
-        handle.model(CRC(args), Tmin, Tmax, name='CRC')
+        handle.model(CRC.from_args(args), Tmin, Tmax, name='CRC')
         handle.model(CRC_permittivity, Tmin, Tmax, name='CRC_constant')
 
 

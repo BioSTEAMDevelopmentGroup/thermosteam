@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 import os
 from io import open
 from math import log, exp
@@ -36,16 +17,51 @@ from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .coolprop import has_CoolProp, coolprop_dict, CoolProp_T_dependent_property,\
 #                       coolprop_fluids, PropsSI
 
-__all__ = ('HeatCapacity',)
+__all__ = ('HeatCapacity',
+
+           'Lastovka_Shaw',
+           'Lastovka_Shaw_Integral',
+           'Lastovka_Shaw_Integral_Over_T',
+
+           'TRCCn', 
+           'TRCCn_Integral', 
+           'TRCCn_Integral_Over_T',
+
+           'Poling',
+           'Poling_Integral', 
+           'Poling_Integral_Over_T',
+           
+           'Rowlinson_Poling', 'Rowlinson_Bondi',
+
+           'Zabransky_Cubic', 
+           'Zabransky_Cubic_Integral', 
+           'Zabransky_Cubic_Over_T_Integral',
+
+           'Zabransky_Quasi_Polynomial', 
+           'Zabransky_Quasi_Polynomial_Integral', 
+           'Zabransky_Quasi_Polynomial_Over_T_Integral',
+
+           'Dadgostar_Shaw', 
+           'Dadgostar_Shaw_Integral', 
+           'Dadgostar_Shaw_Over_T_Integral',
+
+           'Lastovka_Solid', 
+           'Lastovka_Solid_Integral', 
+           'Lastovka_Solid_Over_T_Integral',
+           
+           'Perry_151', 
+           'Perry_151_Integral', 
+           'Perry_151_Over_T_Integral'
+)
 
 
 # %% Utilities
 
 def CnHS(FCn, FH, FS, data):
-    fCn = FCn(data)
+    fCn = FCn.from_args(data)
     return {'evaluate': fCn,
-            'integrate_by_T': FH(data, fCn.kwargs),
-            'integrate_by_T_over_T': FS(data, fCn.kwargs)}
+            'integrate_by_T': FH.from_other(fCn),
+            'integrate_by_T_over_T': FS.from_other(fCn)}
 
 def CnHSModel(FCn, FH, FS, data=None, Tmin=None, Tmax=None, name=None):
     funcs = CnHS(FCn, FH, FS, data)
@@ -305,7 +321,7 @@ def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
         handle.model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
     if MW and similarity_variable:
         data = (MW, similarity_variable, iscyclic_aliphatic)
-        handle.model(Lastovka_Shaw(data), name=LASTOVKA_SHAW)
+        handle.model(Lastovka_Shaw.from_args(data), name=LASTOVKA_SHAW)
     
 ### Heat capacities of liquids
 
@@ -513,8 +529,8 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
         handle.model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        handle.model(Rowlinson_Bondi(args), name=ROWLINSON_BONDI)
-        handle.model(Rowlinson_Poling(args), name=ROWLINSON_POLING)
+        handle.model(Rowlinson_Bondi.from_args(args), name=ROWLINSON_BONDI)
+        handle.model(Rowlinson_Poling.from_args(args), name=ROWLINSON_POLING)
     # Constant models
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
@@ -527,8 +543,8 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
     # Other
     if MW and similarity_variable:
         handle.model(CnHSModel(*Dadgostar_Shaw_Functors,
-                                 data=(similarity_variable, MW),
-                                 name=DADGOSTAR_SHAW))
+                               data=(similarity_variable, MW),
+                               name=DADGOSTAR_SHAW))
 
 # %% Heat Capacity Solid
 

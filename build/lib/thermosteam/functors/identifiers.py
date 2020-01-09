@@ -30,7 +30,8 @@ import os
 from .utils import CAS2int, int2CAS, to_nums
 from .elements import periodic_table, homonuclear_elemental_gases, charge_from_formula, serialize_formula
 
-folder = os.path.join(os.path.dirname(__file__), 'Data/Identifiers')
+folder = os.path.join('Data', 'Identifiers')
+folder = os.path.join(os.path.dirname(__file__), folder)
 
 def checkCAS(CASRN):
     '''Checks if a CAS number is valid. Returns False if the parser cannot 
