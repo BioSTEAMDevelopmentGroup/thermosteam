@@ -191,14 +191,14 @@
 
 <span class="c1"># %% Vapor pressure</span>
 
-<div class="viewcode-block" id="Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Antoine">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
 <span class="sd">    </span>
-<span class="sd">        .. math:: log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}</span>
+<span class="sd">        .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}</span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -223,7 +223,7 @@
 <span class="sd">    &gt;&gt;&gt; antoine(180)</span>
 <span class="sd">    702271.0518579542</span>
 <span class="sd">    </span>
-<span class="sd">    Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, log10,</span>
+<span class="sd">    Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, </span>
 <span class="sd">    showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; f_antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)</span>
@@ -234,19 +234,19 @@
 <span class="sd">     c: -4.45</span>
 <span class="sd">    &gt;&gt;&gt; f_antoine(94.91)</span>
 <span class="sd">    162978.88655572367</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les </span>
-<span class="sd">       Tensions et les Tempé. Compt.Rend. 107:681-684.</span>
+<span class="sd">           Tensions et les Tempé. Compt.Rend. 107:681-684.</span>
 <span class="sd">    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
-<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">           New York: McGraw-Hill Professional, 2000.</span>
 <span class="sd">    .. [3] Yaws, Carl L. The Yaws Handbook of Vapor Pressure: Antoine </span>
-<span class="sd">       Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</span>
+<span class="sd">           Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TRC_Extended_Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="TRC_Extended_Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">TRC_Extended_Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -261,7 +261,7 @@
 <span class="sd">    Parameters are chemical dependent, and said to be from the </span>
 <span class="sd">    Thermodynamics Research Center (TRC) at Texas A&amp;M.</span>
 <span class="sd">    Coefficients for various chemicals can be found in [1]_.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Tetrafluoromethane, coefficients from [1]_, at 180 K:</span>
@@ -281,7 +281,7 @@
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; f_extended_antoine(180.0)</span>
 <span class="sd">    706317.0898414153</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids.</span>
@@ -290,7 +290,7 @@
     <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">T</span> <span class="o">-</span> <span class="n">to</span> <span class="o">-</span> <span class="mf">273.15</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tc</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.43429</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="n">n</span> <span class="o">+</span> <span class="n">E</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">8</span> <span class="o">+</span> <span class="n">F</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">12</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Wagner_McGraw"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner_McGraw">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Wagner_McGraw"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner_McGraw">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Wagner_McGraw</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -298,7 +298,6 @@
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
 <span class="sd">    </span>
 <span class="sd">    .. math ::</span>
-<span class="sd">    </span>
 <span class="sd">        \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}</span>
 <span class="sd">        </span>
 <span class="sd">        \tau = 1 - \frac{T}{T_c}</span>
@@ -306,11 +305,11 @@
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
 <span class="sd">    Pc is often treated as adjustable constant.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Methane, coefficients from [2]_, at 100 K.</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw = Wagner_McGraw(a=-6.00435, b=1.1885, c=-0.834082,</span>
 <span class="sd">    ...                                 d=-1.22833, Tc=190.53, Pc=4596420.)</span>
 <span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw</span>
@@ -323,21 +322,21 @@
 <span class="sd">     Pc: 4.5964e+06 Pa</span>
 <span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw(100)</span>
 <span class="sd">    34520.44601450496</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
-<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">           New York: McGraw-Hill Professional, 2000.</span>
 <span class="sd">    .. [2] McGarry, Jack. &quot;Correlation and Prediction of the Vapor Pressures of</span>
-<span class="sd">       Pure Liquids over Large Pressure Ranges.&quot; Industrial &amp; Engineering</span>
-<span class="sd">       Chemistry Process Design and Development 22, no. 2 (April 1, 1983):</span>
-<span class="sd">       313-22. doi:10.1021/i200021a023.</span>
+<span class="sd">           Pure Liquids over Large Pressure Ranges.&quot; Industrial &amp; Engineering</span>
+<span class="sd">           Chemistry Process Design and Development 22, no. 2 (April 1, 1983):</span>
+<span class="sd">           313-22. doi:10.1021/i200021a023.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Tr</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Wagner"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Wagner"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Wagner</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -352,11 +351,11 @@
 <span class="sd">    Warnings</span>
 <span class="sd">    --------</span>
 <span class="sd">    Pc is often treated as adjustable constant.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Methane, coefficients from [2]_, at 100 K.</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; f_wagner = Wagner(190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)</span>
 <span class="sd">    Functor: Wagner(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">     Tc: 190.55 K</span>
@@ -367,20 +366,20 @@
 <span class="sd">     d: -1.366</span>
 <span class="sd">    &gt;&gt;&gt; f_wagner(100)</span>
 <span class="sd">    34415.00476263708</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Wagner, W. &quot;New Vapour Pressure Measurements for Argon and Nitrogen and</span>
-<span class="sd">       a New Method for Establishing Rational Vapour Pressure Equations.&quot;</span>
-<span class="sd">       Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9</span>
+<span class="sd">           a New Method for Establishing Rational Vapour Pressure Equations.&quot;</span>
+<span class="sd">           Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9</span>
 <span class="sd">    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
-<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">           New York: McGraw-Hill Professional, 2000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">τ</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Tr</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span><span class="o">*</span><span class="n">τ</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">2.5</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<span class="nd">@Psat</span><span class="p">(</span><span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@Psat</span><span class="p">(</span><span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Boiling_Critical_Relation</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Tbr</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -394,18 +393,18 @@
 <span class="sd">        </span>
 <span class="sd">    Formulation makes intuitive sense; a logarithmic form of</span>
 <span class="sd">    interpolation.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Example as in [1]_ for ethylbenzene</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; Boiling_Critical_Relation(347.2, 409.3, 617.1, 36E5)</span>
 <span class="sd">    15209.467273093938</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.</span>
-<span class="sd">       The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</span>
+<span class="sd">           The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tc</span> <span class="o">/</span> <span class="n">T</span><span class="p">))</span> <span class="o">*</span> <span class="n">Pc</span>
 
@@ -415,7 +414,7 @@
     <span class="n">h</span> <span class="o">=</span> <span class="n">Tbr</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">Pc</span> <span class="o">/</span> <span class="mf">101325.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">:</span><span class="n">Pc</span><span class="p">,</span> <span class="s1">&#39;Tbr&#39;</span><span class="p">:</span> <span class="n">Tbr</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span><span class="n">h</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="Lee_Kesler"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Lee_Kesler">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Lee_Kesler"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Lee_Kesler">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Lee_Kesler</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -432,21 +431,21 @@
 <span class="sd">    This equation appears in [1]_ in expanded form.</span>
 <span class="sd">    The reduced pressure form of the equation ensures predicted vapor pressure </span>
 <span class="sd">    cannot surpass the critical pressure.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Example from [2]_; ethylbenzene at 347.2 K.</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; Lee_Kesler(347.2, 617.1, 36E5, 0.299)</span>
 <span class="sd">    13078.694162949312</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Lee, Byung Ik, and Michael G. Kesler. &quot;A Generalized Thermodynamic</span>
-<span class="sd">       Correlation Based on Three-Parameter Corresponding States.&quot; AIChE Journal</span>
-<span class="sd">       21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</span>
+<span class="sd">           Correlation Based on Three-Parameter Corresponding States.&quot; AIChE Journal</span>
+<span class="sd">           21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</span>
 <span class="sd">    .. [2] Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.</span>
-<span class="sd">       The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</span>
+<span class="sd">           The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">Tra</span> <span class="o">=</span> <span class="n">Tr</span><span class="o">**</span><span class="mi">6</span>
@@ -455,7 +454,7 @@
     <span class="n">f1</span> <span class="o">=</span> <span class="mf">15.2518</span> <span class="o">-</span> <span class="mf">15.6875</span> <span class="o">/</span> <span class="n">Tr</span> <span class="o">-</span> <span class="mf">13.4721</span> <span class="o">*</span> <span class="n">logTr</span> <span class="o">+</span> <span class="mf">0.43577</span> <span class="o">*</span> <span class="n">Tra</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">f0</span> <span class="o">+</span> <span class="n">ω</span> <span class="o">*</span> <span class="n">f1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Pc</span></div>
 
-<div class="viewcode-block" id="Ambrose_Walton"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Ambrose_Walton">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Ambrose_Walton"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Ambrose_Walton">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Ambrose_Walton</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -474,21 +473,21 @@
 <span class="sd">        \tau = 1-T_{r}</span>
 <span class="sd">        </span>
 <span class="sd">    Somewhat more accurate than the :obj:`Lee_Kesler` formulation.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Example from [2]_; ethylbenzene at 347.25 K.</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; Ambrose_Walton(347.25, 617.15, 36.09E5, 0.304)</span>
 <span class="sd">    13278.878504306222</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Ambrose, D., and J. Walton. &quot;Vapour Pressures up to Their Critical</span>
-<span class="sd">       Temperatures of Normal Alkanes and 1-Alkanols.&quot; Pure and Applied</span>
-<span class="sd">       Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.</span>
+<span class="sd">           Temperatures of Normal Alkanes and 1-Alkanols.&quot; Pure and Applied</span>
+<span class="sd">           Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.</span>
 <span class="sd">    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
-<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">           New York: McGraw-Hill Professional, 2000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">τ</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Tr</span>
@@ -500,7 +499,7 @@
     <span class="n">f2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.64771</span> <span class="o">*</span> <span class="n">τ</span> <span class="o">+</span> <span class="mf">2.41539</span> <span class="o">*</span> <span class="n">τa</span> <span class="o">-</span> <span class="mf">4.26979</span> <span class="o">*</span> <span class="n">τb</span> <span class="o">+</span> <span class="mf">3.25259</span> <span class="o">*</span> <span class="n">τc</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">f0</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">*</span> <span class="n">ω</span> <span class="o">+</span> <span class="n">f2</span> <span class="o">*</span> <span class="n">ω</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Sanjari"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Sanjari">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Sanjari"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Sanjari">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Sanjari</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -522,28 +521,28 @@
 <span class="sd">    6.83377, -5.76051, 0.90654, -1.16906,</span>
 <span class="sd">    5.32034, -28.1460, -58.0352, 23.57466,</span>
 <span class="sd">    18.19967, 16.33839, 65.6995, -35.9739.</span>
-
+<span class="sd">    </span>
 <span class="sd">    For a claimed fluid not included in the regression, R128, the claimed AARD</span>
 <span class="sd">    was 0.428%. A re-calculation using 200 data points from 125.45 K to</span>
 <span class="sd">    343.90225 K evenly spaced by 1.09775 K as generated by NIST Webbook April</span>
 <span class="sd">    2016 produced an AARD of 0.644%. It is likely that the author&#39;s regression</span>
 <span class="sd">    used more precision in its coefficients than was shown here. Nevertheless,</span>
 <span class="sd">    the function is reproduced as shown in [1]_.</span>
-
+<span class="sd">    </span>
 <span class="sd">    For Tc=808 K, Pc=1100000 Pa, omega=1.1571, this function actually declines</span>
 <span class="sd">    after 770 K.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; Sanjari(347.2, 617.1, 36E5, 0.299)</span>
 <span class="sd">    13651.916109552498</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Sanjari, Ehsan, Mehrdad Honarmand, Hamidreza Badihi, and Ali</span>
-<span class="sd">       Ghaheri. &quot;An Accurate Generalized Model for Predict Vapor Pressure of</span>
-<span class="sd">       Refrigerants.&quot; International Journal of Refrigeration 36, no. 4</span>
-<span class="sd">       (June 2013): 1327-32. doi:10.1016/j.ijrefrig.2013.01.007.</span>
+<span class="sd">           Ghaheri. &quot;An Accurate Generalized Model for Predict Vapor Pressure of</span>
+<span class="sd">           Refrigerants.&quot; International Journal of Refrigeration 36, no. 4</span>
+<span class="sd">           (June 2013): 1327-32. doi:10.1016/j.ijrefrig.2013.01.007.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">logTr</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">Tr</span><span class="p">)</span>
@@ -553,7 +552,7 @@
     <span class="n">f2</span> <span class="o">=</span> <span class="mf">18.19967</span> <span class="o">+</span> <span class="mf">16.33839</span> <span class="o">/</span> <span class="n">Tr</span> <span class="o">+</span> <span class="mf">65.6995</span> <span class="o">*</span> <span class="n">logTr</span> <span class="o">+</span> <span class="o">-</span><span class="mf">35.9739</span> <span class="o">*</span> <span class="n">Ta</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="n">f0</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">*</span> <span class="n">ω</span> <span class="o">+</span> <span class="n">f2</span> <span class="o">*</span> <span class="n">ω</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Edalat"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Edalat">[docs]</a><span class="nd">@Psat</span>
+<div class="viewcode-block" id="Edalat"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Edalat">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Edalat</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
@@ -580,12 +579,12 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; Edalat(347.2, 617.1, 36E5, 0.299)</span>
 <span class="sd">    13461.273080743307</span>
-
+<span class="sd">    </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Edalat, M., R. B. Bozar-Jomehri, and G. A. Mansoori. &quot;Generalized </span>
-<span class="sd">       Equation Predicts Vapor Pressure of Hydrocarbons.&quot; Oil and Gas Journal; </span>
-<span class="sd">       91:5 (February 1, 1993).</span>
+<span class="sd">           Equation Predicts Vapor Pressure of Hydrocarbons.&quot; Oil and Gas Journal; </span>
+<span class="sd">           91:5 (February 1, 1993).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">τ</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">6.1559</span> <span class="o">-</span> <span class="mf">4.0855</span> <span class="o">*</span> <span class="n">ω</span>

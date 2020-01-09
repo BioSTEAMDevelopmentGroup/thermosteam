@@ -193,7 +193,7 @@
 <span class="c1"># %% Utilities</span>
 
 <span class="k">def</span> <span class="nf">functor_name</span><span class="p">(</span><span class="n">functor</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="n">functor</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
 
 <span class="k">def</span> <span class="nf">display_asfunctor</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_var</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">functor_name</span><span class="p">(</span><span class="n">functor</span><span class="p">)</span>
@@ -233,8 +233,8 @@
 <span class="c1"># %% Decorator</span>
   
 <div class="viewcode-block" id="functor"><a class="viewcode-back" href="../../../functor.html#thermosteam.functor">[docs]</a><span class="k">def</span> <span class="nf">functor</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
+            <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a Functor subclass from function.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">function</span><span class="p">:</span>
         <span class="n">base</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">functor_base_and_params</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
@@ -244,52 +244,57 @@
                <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">function</span><span class="p">),</span>
                <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
                <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">units_of_measure</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;units_of_measure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units_of_measure</span>
+        <span class="k">if</span> <span class="n">types</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">types</span>
+        <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;definitions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">definitions</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">base</span><span class="p">,),</span> <span class="n">dct</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">units_of_measure</span><span class="p">:</span>
-            <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;units_of_measure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units_of_measure</span>
-        <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
-            <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;definitions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">definitions</span>
-        <span class="k">if</span> <span class="n">wrap</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">autodoc</span> <span class="ow">or</span> <span class="n">kwautodoc</span><span class="p">:</span> <span class="n">autodoc_functor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wrap</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">wrap</span><span class="p">,</span> <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_kwautodoc_</span> <span class="o">=</span> <span class="n">kwautodoc</span>
+        <span class="k">if</span> <span class="n">autodoc</span><span class="p">:</span> <span class="n">autodoc_functor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="k">return</span> <span class="bp">cls</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">function</span><span class="p">:</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                                        <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span>
+                                        <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span>
                                         <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span></div>
 
 
 <span class="c1"># %% Decorators</span>
     
 <span class="k">class</span> <span class="nc">FunctorFactory</span><span class="p">:</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="s1">&#39;math&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,)</span>
    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
+                 <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span> 
+                       <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span>
+                       <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
+          <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.s&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
+                       <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span>
+                       <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">l</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
+          <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.l&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
+                       <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span>
+                       <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">njitcompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
+          <span class="n">units_of_measure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">functor</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;.g&#39;</span><span class="p">,</span> <span class="n">njitcompile</span><span class="p">,</span> <span class="n">wrap</span><span class="p">,</span>
-                       <span class="n">definitions</span><span class="p">,</span> <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
+                       <span class="n">units_of_measure</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span>
+                       <span class="n">autodoc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwautodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}({repr(self.var)})&quot;</span>
@@ -330,26 +335,65 @@
 
 
 <span class="k">class</span> <span class="nc">PureComponentFunctor</span><span class="p">(</span><span class="n">Functor</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;function_kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;_data&#39;</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">get_obj_values</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;wrap&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;wrap&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span>
+    
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kwargs_function</span><span class="p">):</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">kwargs_function</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">wrap</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">kwargs_function</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span>
+    <span class="k">def</span> <span class="nf">from_other</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">function_kwargs</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">data</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_kwargs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_obj</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">get_obj_values</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autodoc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">wrap</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">wrap</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">autodoc</span><span class="p">:</span> <span class="n">autodoc_functor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="bp">cls</span><span class="o">.</span><span class="n">_kwautodoc_</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="n">wrap</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">wrap</span><span class="p">,</span> <span class="n">autodoc</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Functor: {display_asfunctor(self)}&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
         <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_of_measure</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -373,14 +417,14 @@
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of temperature (T; in K)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">TIntegralFunctor</span><span class="p">(</span><span class="n">PureComponentFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Ta&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">)):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;temperature integral functor (Ta to Tb; in K)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span><span class="p">)</span>
 
 <span class="c1"># class PIntegralFunctor(PureComponentFunctor, args=(&#39;Pa&#39;, &#39;Pb&#39;, &#39;T&#39;)):</span>
 <span class="c1">#     __slots__ = ()</span>
@@ -393,17 +437,17 @@
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;functor of temperature (T; in K) and pressure (P; in Pa)&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">MixtureFunctor</span><span class="p">(</span><span class="n">Functor</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;_chemicals&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;function_kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;_chemicals&#39;</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">,</span> <span class="n">function_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">function_kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="n">chemicals</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span> <span class="o">=</span> <span class="n">function_kwargs</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">chemicals</span>
     
@@ -421,9 +465,9 @@
         <span class="k">if</span> <span class="n">chemicals</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">:</span> <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">chemicals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">)</span>
             
     
 <span class="k">class</span> <span class="nc">zTFunctor</span><span class="p">(</span><span class="n">MixtureFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">)):</span> 
@@ -433,7 +477,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span><span class="p">)</span>
         
 
 <span class="k">class</span> <span class="nc">zTPFunctor</span><span class="p">(</span><span class="n">MixtureFunctor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
@@ -443,7 +487,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">function_kwargs</span><span class="p">)</span>
     
     
     

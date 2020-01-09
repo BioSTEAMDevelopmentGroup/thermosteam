@@ -89,7 +89,7 @@ class Documenter:
 
 # %% Autodoc
 
-def autodoc_functor(functor, equation=None, ref=None, tabs=1):
+def autodoc_functor(functor, equation=None, ref="[1]_", tabs=1):
     if not functor.var: return
     autodoc = Documenter(functor.units_of_measure, functor.definitions, functor.types)
     function = functor.function
@@ -116,8 +116,8 @@ def autodoc_functor(functor, equation=None, ref=None, tabs=1):
     functor.__doc__ = doc
 
 def _join_sections(header, parameters, new_line):
-    doc = header
     double_new_line = 2 * new_line
+    doc = header + double_new_line 
     if parameters:
-        doc += double_new_line + parameters 
+        doc += parameters + double_new_line
     return doc

@@ -22,14 +22,14 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 
 # %% Vapor pressure
 
-@Psat
+@Psat(ref="[1]_")
 def Antoine(T, a, b, c):
     """*
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
     
-        .. math:: log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}
+        .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}
     
     Examples
     --------
@@ -54,7 +54,7 @@ def Antoine(T, a, b, c):
     >>> antoine(180)
     702271.0518579542
     
-    Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, log10,
+    Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, 
     showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)
     
     >>> f_antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)
@@ -65,19 +65,19 @@ def Antoine(T, a, b, c):
      c: -4.45
     >>> f_antoine(94.91)
     162978.88655572367
-
+    
     References
     ----------
     .. [1] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les 
-       Tensions et les Tempé. Compt.Rend. 107:681-684.
+           Tensions et les Tempé. Compt.Rend. 107:681-684.
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     .. [3] Yaws, Carl L. The Yaws Handbook of Vapor Pressure: Antoine 
-       Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.
+           Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.
     """
     return 10.0**(a - b / (T + c))
 
-@Psat
+@Psat(ref="[1]_")
 def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
     """*
     Notes
@@ -92,7 +92,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
     Parameters are chemical dependent, and said to be from the 
     Thermodynamics Research Center (TRC) at Texas A&M.
     Coefficients for various chemicals can be found in [1]_.
-
+    
     Examples
     --------
     Tetrafluoromethane, coefficients from [1]_, at 180 K:
@@ -112,7 +112,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
     
     >>> f_extended_antoine(180.0)
     706317.0898414153
-
+    
     References
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids.
@@ -121,7 +121,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
     x = max((T - to - 273.15) / Tc, 0.0)
     return 10.0**(a - b / (T + c) + 0.43429 * x**n + E * x**8 + F * x**12)
 
-@Psat
+@Psat(ref="[1]_")
 def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
     """*
     Notes
@@ -129,7 +129,6 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
     The vapor pressure (Psat; in Pa) is given by:
     
     .. math ::
-    
         \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}
         
         \tau = 1 - \frac{T}{T_c}
@@ -137,11 +136,11 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
     Warnings
     --------
     Pc is often treated as adjustable constant.
-
+    
     Examples
     --------
     Methane, coefficients from [2]_, at 100 K.
-
+    
     >>> f_wagner_mcgraw = Wagner_McGraw(a=-6.00435, b=1.1885, c=-0.834082,
     ...                                 d=-1.22833, Tc=190.53, Pc=4596420.)
     >>> f_wagner_mcgraw
@@ -154,21 +153,21 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
      Pc: 4.5964e+06 Pa
     >>> f_wagner_mcgraw(100)
     34520.44601450496
-
+    
     References
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     .. [2] McGarry, Jack. "Correlation and Prediction of the Vapor Pressures of
-       Pure Liquids over Large Pressure Ranges." Industrial & Engineering
-       Chemistry Process Design and Development 22, no. 2 (April 1, 1983):
-       313-22. doi:10.1021/i200021a023.
+           Pure Liquids over Large Pressure Ranges." Industrial & Engineering
+           Chemistry Process Design and Development 22, no. 2 (April 1, 1983):
+           313-22. doi:10.1021/i200021a023.
     """
     Tr = T / Tc
     tau = 1.0 - Tr
     return Pc * exp((a * tau + b * tau**1.5 + c * tau**3 + d * tau**6) / Tr)
 
-@Psat
+@Psat(ref="[1]_")
 def Wagner(T, Tc, Pc, a, b, c, d):
     """*
     Notes
@@ -183,11 +182,11 @@ def Wagner(T, Tc, Pc, a, b, c, d):
     Warnings
     --------
     Pc is often treated as adjustable constant.
-
+    
     Examples
     --------
     Methane, coefficients from [2]_, at 100 K.
-
+    
     >>> f_wagner = Wagner(190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)
     Functor: Wagner(T, P=None) -> Psat [Pa]
      Tc: 190.55 K
@@ -198,20 +197,20 @@ def Wagner(T, Tc, Pc, a, b, c, d):
      d: -1.366
     >>> f_wagner(100)
     34415.00476263708
-
+    
     References
     ----------
     .. [1] Wagner, W. "New Vapour Pressure Measurements for Argon and Nitrogen and
-       a New Method for Establishing Rational Vapour Pressure Equations."
-       Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9
+           a New Method for Establishing Rational Vapour Pressure Equations."
+           Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     """
     Tr = T / Tc
     τ = 1.0 - Tr
     return Pc * exp((a*τ + b*τ**1.5 + c*τ**2.5 + d*τ**5) / Tr)
 
-@Psat(autodoc=False)
+@Psat(autodoc=False, ref=1)
 def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
     r"""*
     Notes
@@ -225,18 +224,18 @@ def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
         
     Formulation makes intuitive sense; a logarithmic form of
     interpolation.
-
+    
     Examples
     --------
     Example as in [1]_ for ethylbenzene
-
+    
     >>> Boiling_Critical_Relation(347.2, 409.3, 617.1, 36E5)
     15209.467273093938
-
+    
     References
     ----------
     .. [1] Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
-       The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
+           The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
     """
     return exp(h * (1 - Tc / T)) * Pc
 
@@ -246,7 +245,7 @@ def Boiling_Critical_Relation(Tb, Tc, Pc):
     h = Tbr * log(Pc / 101325.0) / (1 - Tbr)
     return {'Tc':Tc, 'Pc':Pc, 'Tbr': Tbr, 'h':h}
 
-@Psat
+@Psat(ref="[1]_")
 def Lee_Kesler(T, Tc, Pc, ω):
     r"""*
     Notes
@@ -263,21 +262,21 @@ def Lee_Kesler(T, Tc, Pc, ω):
     This equation appears in [1]_ in expanded form.
     The reduced pressure form of the equation ensures predicted vapor pressure 
     cannot surpass the critical pressure.
-
+    
     Examples
     --------
     Example from [2]_; ethylbenzene at 347.2 K.
-
+    
     >>> Lee_Kesler(347.2, 617.1, 36E5, 0.299)
     13078.694162949312
-
+    
     References
     ----------
     .. [1] Lee, Byung Ik, and Michael G. Kesler. "A Generalized Thermodynamic
-       Correlation Based on Three-Parameter Corresponding States." AIChE Journal
-       21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.
+           Correlation Based on Three-Parameter Corresponding States." AIChE Journal
+           21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.
     .. [2] Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
-       The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
+           The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
     """
     Tr = T / Tc
     Tra = Tr**6
@@ -286,7 +285,7 @@ def Lee_Kesler(T, Tc, Pc, ω):
     f1 = 15.2518 - 15.6875 / Tr - 13.4721 * logTr + 0.43577 * Tra
     return exp(f0 + ω * f1) * Pc
 
-@Psat
+@Psat(ref="[1]_")
 def Ambrose_Walton(T, Tc, Pc, ω):
     r"""*
     Notes
@@ -305,21 +304,21 @@ def Ambrose_Walton(T, Tc, Pc, ω):
         \tau = 1-T_{r}
         
     Somewhat more accurate than the :obj:`Lee_Kesler` formulation.
-
+    
     Examples
     --------
     Example from [2]_; ethylbenzene at 347.25 K.
-
+    
     >>> Ambrose_Walton(347.25, 617.15, 36.09E5, 0.304)
     13278.878504306222
-
+    
     References
     ----------
     .. [1] Ambrose, D., and J. Walton. "Vapour Pressures up to Their Critical
-       Temperatures of Normal Alkanes and 1-Alkanols." Pure and Applied
-       Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.
+           Temperatures of Normal Alkanes and 1-Alkanols." Pure and Applied
+           Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+           New York: McGraw-Hill Professional, 2000.
     """
     Tr = T / Tc
     τ = 1 - Tr
@@ -331,7 +330,7 @@ def Ambrose_Walton(T, Tc, Pc, ω):
     f2 = -0.64771 * τ + 2.41539 * τa - 4.26979 * τb + 3.25259 * τc
     return Pc * exp((f0 + f1 * ω + f2 * ω**2) / Tr)
 
-@Psat
+@Psat(ref="[1]_")
 def Sanjari(T, Tc, Pc, ω):
     r"""*
     Notes
@@ -353,28 +352,28 @@ def Sanjari(T, Tc, Pc, ω):
     6.83377, -5.76051, 0.90654, -1.16906,
     5.32034, -28.1460, -58.0352, 23.57466,
     18.19967, 16.33839, 65.6995, -35.9739.
-
+    
     For a claimed fluid not included in the regression, R128, the claimed AARD
     was 0.428%. A re-calculation using 200 data points from 125.45 K to
     343.90225 K evenly spaced by 1.09775 K as generated by NIST Webbook April
     2016 produced an AARD of 0.644%. It is likely that the author's regression
     used more precision in its coefficients than was shown here. Nevertheless,
     the function is reproduced as shown in [1]_.
-
+    
     For Tc=808 K, Pc=1100000 Pa, omega=1.1571, this function actually declines
     after 770 K.
-
+    
     Examples
     --------
     >>> Sanjari(347.2, 617.1, 36E5, 0.299)
     13651.916109552498
-
+    
     References
     ----------
     .. [1] Sanjari, Ehsan, Mehrdad Honarmand, Hamidreza Badihi, and Ali
-       Ghaheri. "An Accurate Generalized Model for Predict Vapor Pressure of
-       Refrigerants." International Journal of Refrigeration 36, no. 4
-       (June 2013): 1327-32. doi:10.1016/j.ijrefrig.2013.01.007.
+           Ghaheri. "An Accurate Generalized Model for Predict Vapor Pressure of
+           Refrigerants." International Journal of Refrigeration 36, no. 4
+           (June 2013): 1327-32. doi:10.1016/j.ijrefrig.2013.01.007.
     """
     Tr = T / Tc
     logTr = log(Tr)
@@ -384,7 +383,7 @@ def Sanjari(T, Tc, Pc, ω):
     f2 = 18.19967 + 16.33839 / Tr + 65.6995 * logTr + -35.9739 * Ta
     return Pc * exp(f0 + f1 * ω + f2 * ω**2)
 
-@Psat
+@Psat(ref="[1]_")
 def Edalat(T, Tc, Pc, ω):
     r"""*
     Notes
@@ -411,12 +410,12 @@ def Edalat(T, Tc, Pc, ω):
     --------
     >>> Edalat(347.2, 617.1, 36E5, 0.299)
     13461.273080743307
-
+    
     References
     ----------
     .. [1] Edalat, M., R. B. Bozar-Jomehri, and G. A. Mansoori. "Generalized 
-       Equation Predicts Vapor Pressure of Hydrocarbons." Oil and Gas Journal; 
-       91:5 (February 1, 1993).
+           Equation Predicts Vapor Pressure of Hydrocarbons." Oil and Gas Journal; 
+           91:5 (February 1, 1993).
     """
     τ = 1.0 - T / Tc
     a = -6.1559 - 4.0855 * ω

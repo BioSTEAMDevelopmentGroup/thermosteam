@@ -1,5 +1,0 @@
-acentric
-========
-
-.. automodule:: functors.acentric
-   :members:

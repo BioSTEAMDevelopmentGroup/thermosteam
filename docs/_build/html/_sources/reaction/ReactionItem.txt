@@ -1,7 +1,0 @@
-ReactionItem
-------------
-
-.. module:: thermosteam.reaction
-
-.. autoclass:: ReactionItem
-   :members:

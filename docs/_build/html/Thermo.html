@@ -191,6 +191,28 @@
 </style>
 <div class="section" id="thermo">
 <h1>Thermo<a class="headerlink" href="#thermo" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="thermosteam.Thermo">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">Thermo</code><span class="sig-paren">(</span><em class="sig-param">chemicals</em>, <em class="sig-param">mixture=None</em>, <em class="sig-param">Gamma=&lt;class 'thermosteam.equilibrium.activity_coefficients.DortmundActivityCoefficients'&gt;</em>, <em class="sig-param">Phi=&lt;class 'thermosteam.equilibrium.fugacity_coefficients.IdealFugacityCoefficients'&gt;</em>, <em class="sig-param">PCF=&lt;class 'thermosteam.equilibrium.poyinting_correction_factors.IdealPoyintingCorrectionFactors'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_thermo.html#Thermo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Thermo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Thermo object that defines a thermodynamic property package</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>chemicals</strong><span class="classifier">Chemicals or Iterable[str]</span></dt><dd><p>Pure component chemical data.</p>
+</dd>
+<dt><strong>mixture</strong><span class="classifier">Mixture</span></dt><dd><p>Calculator for mixture properties.</p>
+</dd>
+<dt><strong>Gamma</strong><span class="classifier">ActivityCoefficients subclass</span></dt><dd><p>Class for computing activity coefficiente.</p>
+</dd>
+<dt><strong>Phi</strong><span class="classifier">FugacityCoefficients subclass</span></dt><dd><p>Class for computing fugacity coefficiente.</p>
+</dd>
+<dt><strong>PCF</strong><span class="classifier">PoyntingCorrectionFactor subclass.</span></dt><dd><p>Class for computing poynting correction factors.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

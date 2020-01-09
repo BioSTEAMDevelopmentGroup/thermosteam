@@ -1,5 +1,0 @@
-functors
-========
-
-.. automodule:: thermosteam.functors
-   :members:

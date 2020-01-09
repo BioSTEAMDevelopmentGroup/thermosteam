@@ -191,6 +191,92 @@
 </style>
 <div class="section" id="stream">
 <h1>Stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="thermosteam.Stream">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">Stream</code><span class="sig-paren">(</span><em class="sig-param">ID=''</em>, <em class="sig-param">flow=()</em>, <em class="sig-param">phase='l'</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em>, <em class="sig-param">units='kmol/hr'</em>, <em class="sig-param">price=0.0</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">**chemical_flows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID=’’</strong><span class="classifier">str, defaults to a unique ID</span></dt><dd><p>A unique identification. If ID is None, stream will not be
+registered.</p>
+</dd>
+<dt><strong>flow=()</strong><span class="classifier">tuple, optional</span></dt><dd><p>All flow rates corresponding to chemical <cite>IDs</cite>.</p>
+</dd>
+<dt><strong>thermo=()</strong><span class="classifier">Thermo, defaults to settings.Thermo</span></dt><dd><p>Thermodynamic equilibrium package.</p>
+</dd>
+<dt><strong>units=’kmol/hr’</strong><span class="classifier">str, optional</span></dt><dd><p>Flow rate units of measure (only mass, molar, and
+volumetric flow rates are valid)</p>
+</dd>
+<dt><strong>phase=’l’</strong><span class="classifier">{‘l’, ‘g’, ‘s’}, optional</span></dt><dd><p>Either gas (“g”), liquid (“l”), or solid (“s”).</p>
+</dd>
+<dt><strong>T=298.15</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature (K).</p>
+</dd>
+<dt><strong>P=101325</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure (Pa).</p>
+</dd>
+<dt><strong>price=0</strong><span class="classifier">float, optional</span></dt><dd><p>Price in USD/kg.</p>
+</dd>
+<dt><strong>**chemical_flows</strong><span class="classifier">float</span></dt><dd><p>ID - flow pairs</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="thermosteam.Stream.display_units">
+<code class="sig-name descname">display_units</code><em class="property"> = DisplayUnits(T='K', P='Pa', flow='kmol/hr', N=5)</em><a class="headerlink" href="#thermosteam.Stream.display_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>[DisplayUnits] Units of measure for IPython display (class attribute)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Stream.copy_flow">
+<code class="sig-name descname">copy_flow</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">stream</em>, <em class="sig-param">IDs=None</em>, <em class="sig-param">*</em>, <em class="sig-param">remove=False</em>, <em class="sig-param">exclude=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.copy_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.copy_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy flow rates of stream to self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>stream</strong><span class="classifier">Stream</span></dt><dd><p>Flow rates will be copied from here.</p>
+</dd>
+<dt><strong>IDs=None</strong><span class="classifier">iterable[str], defaults to all chemicals.</span></dt><dd><p>Chemical IDs.</p>
+</dd>
+<dt><strong>remove=False: bool, optional</strong></dt><dd><p>If True, copied chemicals will be removed from <cite>stream</cite>.</p>
+</dd>
+<dt><strong>exclude=False: bool, optional</strong></dt><dd><p>If True, exclude designated chemicals when copying.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Stream.ID">
+<em class="property">property </em><code class="sig-name descname">ID</code><a class="headerlink" href="#thermosteam.Stream.ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique identification (str). If set as ‘’, it will choose a default ID.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Stream.show">
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em>, <em class="sig-param">flow=None</em>, <em class="sig-param">N=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print all specifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T: str, optional</strong></dt><dd><p>Temperature units.</p>
+</dd>
+<dt><strong>P: str, optional</strong></dt><dd><p>Pressure units.</p>
+</dd>
+<dt><strong>flow: str, optional</strong></dt><dd><p>Flow rate units.</p>
+</dd>
+<dt><strong>N: int, optional</strong></dt><dd><p>Number of compounds to display.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Default values are stored in <cite>Stream.display_units</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
