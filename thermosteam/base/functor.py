@@ -64,8 +64,8 @@ def functor_base_and_params(function):
 # %% Decorator
   
 def functor(function=None, var=None, njitcompile=False, wrap=None,
-            definitions=None, units_of_measure=None, types=None,
-            autodoc=False, **kwautodoc):
+            units_of_measure=None, types=None, definitions=None,
+            autodoc=True, **kwautodoc):
     """Return a Functor subclass from function."""
     if function:
         base, params = functor_base_and_params(function)
@@ -75,18 +75,19 @@ def functor(function=None, var=None, njitcompile=False, wrap=None,
                'function': staticmethod(function),
                'params': params,
                'var': var}
+        if units_of_measure: dct['units_of_measure'] = units_of_measure
+        if types: dct['types'] = types
+        if definitions: dct['definitions'] = definitions
         cls = type(function.__name__, (base,), dct)
-        if units_of_measure:
-            dct['units_of_measure'] = units_of_measure
-        if definitions:
-            dct['definitions'] = definitions
-        if wrap: cls.wrapper(wrap)
-        if autodoc or kwautodoc: autodoc_functor(cls, function, **kwautodoc)
+        if wrap:
+            cls.wrapper(wrap, autodoc=False)
+        cls._kwautodoc_ = kwautodoc
+        if autodoc: autodoc_functor(cls, **kwautodoc)
         cls.__module__ = function.__module__
         return cls
     else:
         return lambda function: functor(function, var, njitcompile, wrap,
-                                        definitions, units_of_measure, types,
+                                        units_of_measure, types, definitions,
                                         autodoc, **kwautodoc)
 
 
@@ -99,28 +100,32 @@ class FunctorFactory:
         self.var = var
     
     def __call__(self, function=None, njitcompile=False, wrap=None,
-                 definitions=None, units_of_measure=None, types=None,
-                 autodoc=False, **kwautodoc):
-        return functor(function, self.var, njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                 units_of_measure=None, types=None, definitions=None,
+                 autodoc=True, **kwautodoc):
+        return functor(function, self.var, njitcompile, wrap, 
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def s(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.s', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def l(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.l', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def g(self, function=None, njitcompile=False, wrap=None,
-          definitions=None, units_of_measure=None, types=None,
-          autodoc=False, **kwautodoc):
+          units_of_measure=None, types=None, definitions=None,
+          autodoc=True, **kwautodoc):
         return functor(function, self.var + '.g', njitcompile, wrap,
-                       definitions, units_of_measure, autodoc, **kwautodoc)
+                       units_of_measure, types, definitions,
+                       autodoc, **kwautodoc)
     
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.var)})"
@@ -208,13 +213,14 @@ class PureComponentFunctor(Functor):
         return self
     
     @classmethod
-    def wrapper(cls, kwargs_function):
-        cls.params = tuple(signature(kwargs_function).parameters)
-        cls.wrap = staticmethod(kwargs_function)
-        return cls
-    
-    def help(self):
-        print(self.__doc__)
+    def wrapper(cls, wrap=None, autodoc=True):
+        if wrap:
+            cls.params = tuple(signature(wrap).parameters)
+            cls.wrap = staticmethod(wrap)
+            if autodoc: autodoc_functor(cls, **cls._kwautodoc_)
+            return cls
+        else:
+            return lambda wrap: cls.wrapper(wrap, autodoc)
     
     def show(self):
         info = f"Functor: {display_asfunctor(self)}"

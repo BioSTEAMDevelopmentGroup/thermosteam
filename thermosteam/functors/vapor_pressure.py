@@ -22,32 +22,31 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 
 # %% Vapor pressure
 
-@Psat(ref='[1]_',
-      math=r"\log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}")
+@Psat
 def Antoine(T, a, b, c):
-    """
-    {Header}
-
-    {Math}
-
-    {Parameters}
-
+    """*
+    Notes
+    -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+        .. math:: log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}
+    
     Examples
     --------
     Methane, coefficients from [2]_, at 100 K:
     
-    >>> antoine = Antoine(a=8.7687, b=395.744, c=-6.469)
+    >>> f_antoine = Antoine(a=8.7687, b=395.744, c=-6.469)
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.7687
      b: 395.74
      c: -6.469
-    >>> antoine(100)
+    >>> f_antoine(100)
     34478.367349639906
     
     Tetrafluoromethane, coefficients from [2]_, at 180 K
     
-    >>> antoine = Antoine(a=8.95894, b=510.595, c=-15.95)
-    >>> antoine
+    >>> f_antoine = Antoine(a=8.95894, b=510.595, c=-15.95)
+    >>> f_antoine
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.9589
      b: 510.6
@@ -58,13 +57,13 @@ def Antoine(T, a, b, c):
     Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, log10,
     showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)
     
-    >>> antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)
-    >>> Antoine
+    >>> f_antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)
+    >>> f_antoine
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.962
      b: 339.21
      c: -4.45
-    >>> antoine(94.91)
+    >>> f_antoine(94.91)
     162978.88655572367
 
     References
@@ -78,57 +77,82 @@ def Antoine(T, a, b, c):
     """
     return 10.0**(a - b / (T + c))
 
-@Psat(ref='[1]_',
-      math=(r"\log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}",
-           r"x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)"))
+@Psat
 def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
-    """
-    {Header}
+    """*
+    Notes
+    -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        \log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}
+        
+        x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)
+        
     Parameters are chemical dependent, and said to be from the 
-    Thermodynamics Research Center (TRC) at Texas A&M. Coefficients for various
-    chemicals can be found in [1]_.
-
-    {Math}
-
-    {Parameters}
+    Thermodynamics Research Center (TRC) at Texas A&M.
+    Coefficients for various chemicals can be found in [1]_.
 
     Examples
     --------
     Tetrafluoromethane, coefficients from [1]_, at 180 K:
     
-    >>> TRC_Antoine_extended(180.0, 227.51, -120., 8.95894, 510.595, -15.95, 
-    ... 2.41377, -93.74, 7425.9) 
+    >>> f_extended_antoine = TRC_Extended_Antoine(227.51, -120., 8.95894, 510.595,
+    ...                                           -15.95, 2.41377, -93.74, 7425.9)
+    >>> f_extended_antoine
+    Functor: TRC_Extended_Antoine(T, P=None) -> Psat [Pa]
+     Tc: 227.51 K
+     to: -120
+     a: 8.9589
+     b: 510.6
+     c: -15.95
+     n: 2.4138
+     E: -93.74
+     F: 7425.9
+    
+    >>> f_extended_antoine(180.0)
     706317.0898414153
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids.
+           5th edition. New York: McGraw-Hill Professional, 2000.
     """
     x = max((T - to - 273.15) / Tc, 0.0)
     return 10.0**(a - b / (T + c) + 0.43429 * x**n + E * x**8 + F * x**12)
 
-@Psat(ref='[1]_',
-      math=(r"\ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}",
-            r"\tau = 1 - \frac{T}{T_c}"))
+@Psat
 def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
-    """
-    {Header}
-
-    {Math}
-
-    {Parameters}
-
+    """*
     Notes
     -----
-    Warning: Pc is often treated as adjustable constant.
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math ::
+    
+        \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}
+        
+        \tau = 1 - \frac{T}{T_c}
+    
+    Warnings
+    --------
+    Pc is often treated as adjustable constant.
 
     Examples
     --------
     Methane, coefficients from [2]_, at 100 K.
 
-    >>> Wagner_McGraw(100.0, a=-6.00435, b=1.1885, 
-    ... c=-0.834082, d=-1.22833, Tc=190.53, Pc=4596420.)
+    >>> f_wagner_mcgraw = Wagner_McGraw(a=-6.00435, b=1.1885, c=-0.834082,
+    ...                                 d=-1.22833, Tc=190.53, Pc=4596420.)
+    >>> f_wagner_mcgraw
+    Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
+     a: -6.0043
+     b: 1.1885
+     c: -0.83408
+     d: -1.2283
+     Tc: 190.53 K
+     Pc: 4.5964e+06 Pa
+    >>> f_wagner_mcgraw(100)
     34520.44601450496
 
     References
@@ -144,26 +168,35 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
     tau = 1.0 - Tr
     return Pc * exp((a * tau + b * tau**1.5 + c * tau**3 + d * tau**6) / Tr)
 
-@Psat(ref='[1]_',
-      math=(r"\ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5} + d\tau^5} {T_r}",
-            r"\tau = 1 - \frac{T}{T_c}"))
+@Psat
 def Wagner(T, Tc, Pc, a, b, c, d):
-    """
-    {Header}
-
-    {Math}
-    
-    {Parameters}
-
+    """*
     Notes
     -----
-    Warning: Pc is often treated as adjustable constant.
+    The vapor pressure (Psat; in Pa) is given by:
+        
+    .. math::
+        \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5} + d\tau^5} {T_r}
+        
+        \tau = 1 - \frac{T}{T_c}
+        
+    Warnings
+    --------
+    Pc is often treated as adjustable constant.
 
     Examples
     --------
     Methane, coefficients from [2]_, at 100 K.
 
-    >>> Wagner(100., 190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)
+    >>> f_wagner = Wagner(190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)
+    Functor: Wagner(T, P=None) -> Psat [Pa]
+     Tc: 190.55 K
+     Pc: 4.5992e+06 Pa
+     a: -6.0224
+     b: 1.2665
+     c: -0.5707
+     d: -1.366
+    >>> f_wagner(100)
     34415.00476263708
 
     References
@@ -178,20 +211,19 @@ def Wagner(T, Tc, Pc, a, b, c, d):
     τ = 1.0 - Tr
     return Pc * exp((a*τ + b*τ**1.5 + c*τ**2.5 + d*τ**5) / Tr)
 
-@Psat(ref="[1]_",
-      math=(r"\ln P^{sat}_r = h\left( 1 - \frac{1}{T_r} \right)",
-            r"h = T_{br} \frac{\ln(P_c/101325)}{1-T_{br}}"))
+@Psat(autodoc=False)
 def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-    
+    r"""*
     Notes
     -----
-    Units are Pa. Formulation makes intuitive sense; a logarithmic form of
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        \ln P^{sat}_r = h\left( 1 - \frac{1}{T_r} \right)
+        
+        h = T_{br} \frac{\ln(P_c/101325)}{1-T_{br}}
+        
+    Formulation makes intuitive sense; a logarithmic form of
     interpolation.
 
     Examples
@@ -214,20 +246,20 @@ def Boiling_Critical_Relation(Tb, Tc, Pc):
     h = Tbr * log(Pc / 101325.0) / (1 - Tbr)
     return {'Tc':Tc, 'Pc':Pc, 'Tbr': Tbr, 'h':h}
 
-@Psat(ref='[1]_',
-      math=(r"\ln P^{sat}_r = f^{(0)} + \omega f^{(1)}",
-            r"f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6",
-            r"f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6"))
+@Psat
 def Lee_Kesler(T, Tc, Pc, ω):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-    
+    r"""*
     Notes
     -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        \ln P^{sat}_r = f^{(0)} + \omega f^{(1)}
+        
+        f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6
+        
+        f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6
+        
     This equation appears in [1]_ in expanded form.
     The reduced pressure form of the equation ensures predicted vapor pressure 
     cannot surpass the critical pressure.
@@ -254,22 +286,24 @@ def Lee_Kesler(T, Tc, Pc, ω):
     f1 = 15.2518 - 15.6875 / Tr - 13.4721 * logTr + 0.43577 * Tra
     return exp(f0 + ω * f1) * Pc
 
-@Psat(ref="[1]_",
-      math=(r"\ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}",
-            r"f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}-1.06841\tau^5}{T_r}",
-            r"f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}-7.46628\tau^5}{T_r}",
-            r"f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}+3.25259\tau^5}{T_r}",
-            r"\tau = 1-T_{r}"))
+@Psat
 def Ambrose_Walton(T, Tc, Pc, ω):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-
+    r"""*
     Notes
     -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        \ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}
+        
+        f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}-1.06841\tau^5}{T_r}
+        
+        f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}-7.46628\tau^5}{T_r}
+            
+        f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}+3.25259\tau^5}{T_r}
+            
+        \tau = 1-T_{r}
+        
     Somewhat more accurate than the :obj:`Lee_Kesler` formulation.
 
     Examples
@@ -297,21 +331,22 @@ def Ambrose_Walton(T, Tc, Pc, ω):
     f2 = -0.64771 * τ + 2.41539 * τa - 4.26979 * τb + 3.25259 * τc
     return Pc * exp((f0 + f1 * ω + f2 * ω**2) / Tr)
 
-@Psat(ref="[1]_",
-      math=(r"P^{sat} = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2 f^{(2)})",
-            r"f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}",
-            r"f^{(1)} = a_5 + \frac{a_6}{T_r} + a_7\ln T_r + a_8 T_r^{1.9}",
-            "rf^{(2)} = a_9 + \frac{a_{10}}{T_r} + a_{11}\ln T_r + a_{12} T_r^{1.9}"))
+@Psat
 def Sanjari(T, Tc, Pc, ω):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-    
+    r"""*
     Notes
     -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        P^{sat} = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2 f^{(2)})
+        
+        f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}
+        
+        f^{(1)} = a_5 + \frac{a_6}{T_r} + a_7\ln T_r + a_8 T_r^{1.9}
+        
+        f^{(2)} = a_9 + \frac{a_{10}}{T_r} + a_{11}\ln T_r + a_{12} T_r^{1.9}
+        
     Although developed for refrigerants, this model should have some general predictive ability.
     
     a[1-12] are as follows:
@@ -349,23 +384,26 @@ def Sanjari(T, Tc, Pc, ω):
     f2 = 18.19967 + 16.33839 / Tr + 65.6995 * logTr + -35.9739 * Ta
     return Pc * exp(f0 + f1 * ω + f2 * ω**2)
 
-@Psat(ref='[1]_',
-      math=(r"\ln(P^{sat}/P_c) = \frac{a\tau + b\tau^{1.5} + c\tau^3 + d\tau^6}{1-\tau}",
-            r"a = -6.1559 - 4.0855\omega",
-            r"b = 1.5737 - 1.0540\omega - 4.4365\times 10^{-3} d",
-            r"c = -0.8747 - 7.8874\omega",
-            r"d = \frac{1}{-0.4893 - 0.9912\omega + 3.1551\omega^2}",
-            r"\tau = 1 - \frac{T}{T_c})"))
+@Psat
 def Edalat(T, Tc, Pc, ω):
-    r"""
-    {Header}
-
-    {Math}
-        
-    {Parameters}
-
+    r"""*
     Notes
     -----
+    The vapor pressure (Psat; in Pa) is given by:
+    
+    .. math::
+        \ln(P^{sat}/P_c) = \frac{a\tau + b\tau^{1.5} + c\tau^3 + d\tau^6}{1-\tau}
+        
+        a = -6.1559 - 4.0855\omega
+        
+        b = 1.5737 - 1.0540\omega - 4.4365\times 10^{-3} d
+        
+        c = -0.8747 - 7.8874\omega
+        
+        d = \frac{1}{-0.4893 - 0.9912\omega + 3.1551\omega^2}
+        
+        \tau = 1 - \frac{T}{T_c})
+        
     Claimed to have a higher accuracy than the Lee-Kesler CSP relationship.
     [1]_ found an average error of 6.06% on 94 compounds and 1106 data points.
     

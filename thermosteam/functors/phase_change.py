@@ -269,18 +269,15 @@ def Tm(CASRN, AvailableMethods=False, Method=None, IgnoreMethods=[]):
 
 ### Enthalpy of Vaporization at T
 
-@Hvap(math=r"\Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}",
-      types={'dZ': 'function(T)', 'Psat': 'function(T)'})
+@Hvap(types={'dZ': 'function(T)', 'Psat': 'function(T)'})
 def Clapeyron(T, Tc, Pc, V, Psat):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-    
+    r"""*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+        
+    .. math:: \Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}
+    
     No original source is available for this equation.
     [1]_ claims this equation overpredicts enthalpy by several percent.
     Under Tr = 0.8, dZ = 1 is a reasonable assumption.
@@ -306,18 +303,14 @@ def Clapeyron(T, Tc, Pc, V, Psat):
     P = Psat(T)
     return R*T*Z(T, P, V.g(T, P))*log(Pc/P)/(1. - Tr)
 
-@Hvap(ref="[2, 1]_",
-      math=r"\frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}")
+@Hvap(ref="[2, 1]_")
 def Pitzer(T, Tc, omega):
-    r"""
-    {Header}
-
-    {Math}
-
-    {Parameters}
-
+    r"""*
     Notes
     -----
+    
+    .. math:: \frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}
+    
     This equation is listed in [3]_, page 2-487 as method #2 for estimating
     Hvap. This cites [2]_.
 
@@ -351,45 +344,24 @@ def Pitzer(T, Tc, omega):
 
 @Hvap
 def SMK(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
+    """*
+    Notes
+    -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+        
     .. math::
-         \frac{\Delta H_{vap}} {RT_c} =
-         \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
-         \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
-         \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
-         \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
-
+        \frac{\Delta H_{vap}} {RT_c} = 
+        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
+        \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
+        \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
+        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
+        
         \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}
         = 6.537 \tau^{1/3} - 2.467 \tau^{5/6} - 77.251 \tau^{1.208} +
         59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3
-
-        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
-        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}=-0.133 \tau^{1/3} - 28.215
-        \tau^{5/6} - 82.958 \tau^{1.208} + 99.00 \tau  + 19.105 \tau^2 -2.796 \tau^3
-
+        
         \tau = 1-T/T_c
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
-    Notes
-    -----
+    
     The original article has been reviewed and found to have coefficients with
     slightly more precision. Additionally, the form of the equation is slightly
     different, but numerically equivalent.
@@ -417,7 +389,7 @@ def SMK(T, Tc, omega):
        between Their Freezing Points and Critical Points." Industrial &
        Engineering Chemistry Fundamentals 23, no. 1 (February 1, 1984): 97-100.
        doi:10.1021/i100013a017.
-    '''
+    """
     omegaR1, omegaR2 = 0.212, 0.461
     A10 = 6.536924
     A20 = -2.466698
@@ -445,36 +417,18 @@ def SMK(T, Tc, omega):
 
 @Hvap
 def MK(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
-    .. math::
-        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
-
-        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6}
-        + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3
-
-        \tau = 1-T/T_c
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
+    """*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+        
+    .. math::
+        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
+        
+        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)
+            
+        \tau = 1-T/T_c
+    
     The original article has been reviewed. A total of 18 coefficients are used:
 
     WARNING: The correlation has been implemented as described in the article,
@@ -487,7 +441,13 @@ def MK(T, Tc, omega):
     --------
     Problem in article for SMK function.
 
-    >>> MK(553.15, 751.35, 0.302)
+    >>> f_mk = MK(751.35, 0.302)
+    >>> f_mk
+    Functor: MK(T, P=None)
+     Tc: 751.35 K
+     omega: 0.302
+    
+    >>> f_mk(553.15)
     38727.993546377205
 
     References
@@ -496,15 +456,15 @@ def MK(T, Tc, omega):
        Models for Vapor Pressures and Heats of Vaporization to Long-Chain
        Hydrocarbons." Fluid Phase Equilibria 94 (March 15, 1994): 51-87.
        doi:10.1016/0378-3812(94)87051-9.
-    '''
+    """
     bs = [[5.2804, 0.080022, 7.2543],
           [12.8650, 273.23, -346.45],
           [1.1710, 465.08, -610.48],
           [-13.1160, -638.51, 839.89],
           [0.4858, -145.12, 160.05],
           [-1.0880, 74.049, -50.711]]
-
     tau = 1. - T/Tc
+    # TODO: Use numpy arrays
     H0 = (bs[0][0]*tau**(0.3333) + bs[1][0]*tau**(0.8333) + bs[2][0]*tau**(1.2083) +
     bs[3][0]*tau + bs[4][0]*tau**(2) + bs[5][0]*tau**(3))*R*Tc
 
@@ -518,31 +478,14 @@ def MK(T, Tc, omega):
 
 @Hvap
 def Velasco(T, Tc, omega):
-    r'''Calculates enthalpy of vaporization at arbitrary temperatures using a
-    the work of [1]_; requires a chemical's critical temperature and
-    acentric factor.
-
-    The enthalpy of vaporization is given by:
-
-    .. math::
-        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}
-
-    Parameters
-    ----------
-    T : float
-        Temperature of fluid [K]
-    Tc : float
-        Critical temperature of fluid [K]
-    omega : float
-        Acentric factor [-]
-
-    Returns
-    -------
-    Hvap : float
-        Enthalpy of vaporization, [J/mol]
-
+    """*
     Notes
     -----
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
+    
+    .. math::
+        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}
+    
     The original article has been reviewed. It is regressed from enthalpy of
     vaporization values at 0.7Tr, from 121 fluids in REFPROP 9.1.
     A value in the article was read to be similar, but slightly too low from
@@ -562,22 +505,21 @@ def Velasco(T, Tc, omega):
        and Constant-Volume Heat Capacity at Vaporization." The Journal of
        Chemical Thermodynamics 85 (June 2015): 68-76.
        doi:10.1016/j.jct.2015.01.011.
-    '''
+    """
     return (7.2729 + 10.4962*omega + 0.6061*omega**2)*(1-T/Tc)**0.38*R*Tc
 
 
 ### Enthalpy of Vaporization at Normal Boiling Point.
 
-@njit
 def Riedel(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization at the boiling point, using the
     Ridel [1]_ CSP method. Required information are critical temperature
     and pressure, and boiling point. Equation taken from [2]_ and [3]_.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
-        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}
+        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s
 
     Parameters
     ----------
@@ -626,12 +568,11 @@ def Riedel(Tb, Tc, Pc):
     Tbr = Tb/Tc
     return 1.093*Tb*R*(log(Pc) - 1.013)/(0.93 - Tbr)
 
-@njit
 def Chen(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization using the Chen [1]_ correlation
     and a chemical's critical temperature, pressure and boiling point.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
         \Delta H_{vb} = RT_b \frac{3.978 T_r - 3.958 + 1.555 \ln P_c}{1.07 - T_r}
@@ -679,13 +620,12 @@ def Chen(Tb, Tc, Pc):
     Pc = Pc/1E5  # Pa to bar
     return R*Tb*(3.978*Tbr - 3.958 + 1.555*log(Pc))/(1.07 - Tbr)
 
-@njit
 def Liu(Tb, Tc, Pc):
     r'''Calculates enthalpy of vaporization at the normal boiling point using
     the Liu [1]_ correlation, and a chemical's critical temperature, pressure
     and boiling point.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
         \Delta H_{vap} = RT_b \left[ \frac{T_b}{220}\right]^{0.0627} \frac{
@@ -735,13 +675,12 @@ def Liu(Tb, Tc, Pc):
     return R*Tb*(Tb/220.)**0.0627*(1. - Tbr)**0.38*log(Pc/101325.) \
         / (1 - Tbr + 0.38*Tbr*log(Tbr))
 
-@njit
 def Vetere(Tb, Tc, Pc, F=1):
     r'''Calculates enthalpy of vaporization at the boiling point, using the
     Vetere [1]_ CSP method. Required information are critical temperature
     and pressure, and boiling point. Equation taken from [2]_.
 
-    The enthalpy of vaporization is given by:
+    The enthalpy of vaporization (Hvap; in J/mol) is given by:
 
     .. math::
         \frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}

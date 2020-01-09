@@ -7,7 +7,8 @@ Created on Mon Nov 25 20:55:06 2019
 __all__ = ('UndefinedChemical',
            'UndefinedPhase',
            'UndefinedPhaseOrChemical',
-           'DimensionError')
+           'DimensionError',
+           'AutodocError')
 
 class UndefinedChemical(AttributeError):
     """AttributeError regarding undefined chemicals."""
@@ -23,3 +24,6 @@ class UndefinedPhaseOrChemical(AttributeError):
 
 class DimensionError(ValueError):
     """ValueError regarding wrong dimensions."""
+
+class AutodocError(RuntimeError):
+    """RuntimeError regarding automatic documentation."""

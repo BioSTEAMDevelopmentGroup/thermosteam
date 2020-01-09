@@ -6,6 +6,7 @@ Created on Wed Nov 13 10:06:46 2019
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
 from ..utils import MathString, MathSection
+from ..exceptions import AutodocError
 
 __all__ = ('Documenter', 'autodoc_functor')
 
@@ -88,12 +89,14 @@ class Documenter:
 
 # %% Autodoc
 
-def autodoc_functor(functor, function,
+def autodoc_functor(functor,
                     equation=None, math=None, ref=None, tabs=1):
     if not functor.var: return
     autodoc = Documenter(functor.units_of_measure, functor.definitions, functor.types)
-    equation = equation or function.__name__.replace('_', ' ')
-    header = autodoc.describe_functor(functor, equation, ref)
+    function = functor.function
+    header = autodoc.describe_functor(functor,
+                                      equation or function.__name__.replace('_', ' '),
+                                      ref)
     params = functor.params
     new_line = "\n" + (tabs * 4) * " "
     parameters = autodoc.describe_all_parameters(params, new_line) if params else "" 
@@ -103,9 +106,9 @@ def autodoc_functor(functor, function,
             math_section += " " + math
             functor.math = MathString(math)
         else:
-            new_line_spaces = (tabs * 4 + 3) * " "
-            new_line = "\n" + new_line_spaces
-            math_section += new_line + (2 * new_line).join(math)
+            math_line_spaces = (tabs * 4 + 3) * " "
+            math_line = "\n" + math_line_spaces
+            math_section += math_line + (2 * math_line).join(math)
             functor.math = MathSection(math)
     else:
         math_section = None
@@ -113,9 +116,26 @@ def autodoc_functor(functor, function,
     doc = function.__doc__
     function.__doc__ = None
     if doc:
-        functor.__doc__ = doc.format(Header=header, Math=math_section, Parameters=parameters)
+        if doc[:2] == '*\n':
+            doc = _join_sections(header, math_section,
+                                 parameters, new_line) + doc[1:]
+        else:
+            try:
+                doc = doc.format(Header=header,
+                                 Math=math_section,
+                                 Parameters=parameters)
+            except Exception as error:
+                raise AutodocError('formatting issue => '
+                                  f'{type(error).__name__}: {error}')
     else:
-        functor.__doc__ = header + "\n\n" + math_section + "\n\n" + parameters 
-    
+        doc = _join_sections(header, math_section, parameters, new_line)
+    functor.__doc__ = doc
 
-
+def _join_sections(header, math_section, parameters, new_line):
+    doc = header
+    double_new_line = 2 * new_line
+    if math_section:
+        doc += double_new_line + math_section 
+    if parameters:
+        doc += double_new_line + parameters 
+    return doc
