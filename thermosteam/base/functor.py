@@ -94,7 +94,7 @@ def functor(function=None, var=None, njitcompile=False, wrap=None,
 # %% Decorators
     
 class FunctorFactory:
-    __slots__ = ('var', 'math')
+    __slots__ = ('var',)
    
     def __init__(self, var):
         self.var = var

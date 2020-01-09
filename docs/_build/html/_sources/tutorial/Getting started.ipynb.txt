@@ -4,14 +4,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Getting started"
+    "# Getting started"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**Pure component chemical properties.**"
+    "### Pure component chemical properties."
    ]
   },
   {
@@ -349,6 +349,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "### Functors"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "Temperature dependent properties are managed by model handles (a functor):"
    ]
   },
@@ -387,7 +394,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 14,
    "metadata": {},
    "outputs": [
     {
@@ -443,39 +450,164 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 16,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]\n",
+      " a: -7.7645\n",
+      " b: 1.4584\n",
+      " c: -2.7758\n",
+      " d: -1.233\n",
+      " Tc: 647.35 K\n",
+      " Pc: 2.2122e+07 Pa\n"
+     ]
+    }
+   ],
    "source": [
-    "water.Psat[0].evaluate"
+    "functor = water.Psat[0].evaluate\n",
+    "functor"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 17,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<function thermosteam.functors.vapor_pressure.Wagner_McGraw(T, a, b, c, d, Tc, Pc)>"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "water.Psat[0].evaluate.data"
+    "functor.function"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 18,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'a': -7.7645100000000005,\n",
+       " 'b': 1.45838,\n",
+       " 'c': -2.7758,\n",
+       " 'd': -1.2330299999999998,\n",
+       " 'Tc': 647.35,\n",
+       " 'Pc': 22122300}"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "water.Psat[0].evaluate.function"
+    "functor.data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It may be useful to look at the math:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 19,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<IPython.core.display.Image object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAFsAAAAhCAYAAAC2j9c+AAAABHNCSVQICAgIfAhkiAAAAkpJREFUaIHt2D+MDGEYx/HPXfyJhDtBocEhEQUuOZVE4YKrSYjQUGh0J9FRXNSuopWQSChJRKJSiIZwBI2EbIQT/woXhSic4l0x2Nn5s7c7e+v9Jm9mZ/aZZ377m3fnfeYhEulyxjCbMQ5Xpq7HWILVifEW5/46trAydT3MSmEm769ayP/AXsHstVmB/e3X0hIHcB53MSP8qCuVKvqX7fiM11mBC9qvpSXOYBhf8Qabq5XTkBE8yhPY7TP7JDZhACcq1pLGCB7mCUzO7FX4gL6Mc75jEN9KSSvGnQ5coxUGsUHOmZ00eynOJvaHcFS4azcTxz/qjNHzgRFhchY2u4aJxP5xwexrQg2ZxTiW57lonce4XiC+GxnBF7xqNdEFYfXfkzO+JvutKjkuFdSzS3dWI7lptkAO17dPcuYaEv5SecexwmrLUVNsErTtZqaVfn3YhmnhGT2feanYGjPdLiFpZq8Xyq17BXJ16zN79xzlmW01QZrZv14enhXINY51BeIvm18LZFZJnEma2QP17UyBXEOtSel90sx+Ud+OYwUe4GpHFP3JvvogtC1hh9+VzCec6pCWMdzOiDmipE+n8Q4/MFkmwRwwoXnlUOugltjDrojYw+4guXvYSbq969et5O5hJ4lmlyN3DztJNLsczXrYa3ADU3guvCBGSjIoVGgHG3y3CE8xmohd3CFdPcmosDhubPDdIVxMOzE+RorTrIe9FffTToxmF2dSaLg1aky9x5b6536hHo+0iWW4JTTwprCzWjmRSCQSKctPR4SB+D5HXWsAAAAASUVORK5CYII=\n",
+      "text/plain": [
+       "<IPython.core.display.Image object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "tmo.settings.dark_mode = False # Default is True\n",
+    "functor.math"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "    Create a functor of temperature (T; in K) that returns the saturated vapor pressure (Psat; in Pa) using the Wagner McGraw equation, as described in [1]_.\n",
+      "\n",
+      "    .. math::\n",
+      "       \\ln P^{sat}= \\ln P_c + \\frac{a\\tau + b \\tau^{1.5} + c\\tau^3 + d\\tau^6} {T_r}\n",
+      "       \n",
+      "       \\tau = 1 - \\frac{T}{T_c}\n",
+      "\n",
+      "    Parameters\n",
+      "    ----------\n",
+      "    Tc : float\n",
+      "        Critical point temperature [K].\n",
+      "    Pc : float\n",
+      "        Critical point pressure [Pa].\n",
+      "    a, b, c, d : float\n",
+      "        Regressed coefficients.\n",
+      "\n",
+      "    Notes\n",
+      "    -----\n",
+      "    Warning: Pc is often treated as adjustable constant.\n",
+      "\n",
+      "    Examples\n",
+      "    --------\n",
+      "    Methane, coefficients from [2]_, at 100 K.\n",
+      "\n",
+      "    >>> Wagner_McGraw(100.0, a=-6.00435, b=1.1885, \n",
+      "    ... c=-0.834082, d=-1.22833, Tc=190.53, Pc=4596420.)\n",
+      "    34520.44601450496\n",
+      "\n",
+      "    References\n",
+      "    ----------\n",
+      "    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.\n",
+      "       New York: McGraw-Hill Professional, 2000.\n",
+      "    .. [2] McGarry, Jack. \"Correlation and Prediction of the Vapor Pressures of\n",
+      "       Pure Liquids over Large Pressure Ranges.\" Industrial & Engineering\n",
+      "       Chemistry Process Design and Development 22, no. 2 (April 1, 1983):\n",
+      "       313-22. doi:10.1021/i200021a023.\n",
+      "    \n"
+     ]
+    }
+   ],
    "source": [
     "# For further help...\n",
-    "help(water.Psat[0].evaluate.function)"
+    "functor.help()"
    ]
   },
   {
@@ -487,34 +619,57 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 21,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ChemicalPhaseTPProperty(phase, T, P) -> V [m^3/mol]>"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "water.V"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 22,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>,\n",
+       " <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "water.V.l"
+    "water.V.l, water.V.g"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Note: It is not required to use these functors. They can be replaced by your own function or even a constant as shown in the next section."
+    "Note: It is not required to use these models. They can be replaced by your own function or even a constant as shown in the next section."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**Managing pure component thermodynamic models**"
+    "### Pure component thermodynamic models"
    ]
   },
   {
@@ -526,18 +681,56 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 23,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "deque([<TDependentModel: Wagner_McGraw>,\n",
+       "       <TDependentModel: Antoine>,\n",
+       "       <TDependentModel: DIPPR_EQ101>,\n",
+       "       <TDependentModel: Wagner>,\n",
+       "       <TDependentModel: Boiling_Critical_Relation>,\n",
+       "       <TDependentModel: Lee_Kesler>,\n",
+       "       <TDependentModel: Ambrose_Walton>,\n",
+       "       <TDependentModel: Sanjari>,\n",
+       "       <TDependentModel: Edalat>])"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "water.Psat.models"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 24,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "deque([<TDependentModel: Antoine>,\n",
+       "       <TDependentModel: DIPPR_EQ101>,\n",
+       "       <TDependentModel: Wagner>,\n",
+       "       <TDependentModel: Boiling_Critical_Relation>,\n",
+       "       <TDependentModel: Lee_Kesler>,\n",
+       "       <TDependentModel: Ambrose_Walton>,\n",
+       "       <TDependentModel: Sanjari>,\n",
+       "       <TDependentModel: Edalat>,\n",
+       "       <TDependentModel: Wagner_McGraw>])"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "water.Psat.models.rotate(-1)\n",
     "water.Psat.models"
@@ -552,65 +745,150 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 26,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "TDependentModelHandle(T, P=None) -> Psat [Pa]\n",
+      "[0] User_antoine_model\n",
+      "[1] user_antoine_model\n",
+      "[2] Antoine\n",
+      "[3] DIPPR_EQ101\n",
+      "[4] Wagner\n",
+      "[5] Boiling_Critical_Relation\n",
+      "[6] Lee_Kesler\n",
+      "[7] Ambrose_Walton\n",
+      "[8] Sanjari\n",
+      "[9] Edalat\n",
+      "[10] Wagner_McGraw\n"
+     ]
+    }
+   ],
    "source": [
-    "@water.Psat.model(Tmin=273.20, Tmax=473.20, top=True) # top=True to place in position 0\n",
-    "def user_antoine_model(T):\n",
+    "@water.Psat.model(Tmin=273.20, Tmax=473.20, top=True) # top=True to append left\n",
+    "def User_antoine_model(T):\n",
     "    return 10.0**(10.116 -  1687.537 / (T + 42.98))\n",
     "\n",
     "water.Psat"
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": null,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [],
    "source": [
-    "You can also set a constant model:\n",
-    "water.V.l(298.15, )"
+    "You can also set a constant model:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ConstantThermoModel: Constant\n",
+      " value: 1.687e-05\n",
+      " Tmin: 0 K\n",
+      " Tmax: inf K\n",
+      " Pmin: 0 Pa\n",
+      " Pmax: inf Pa\n"
+     ]
+    }
+   ],
+   "source": [
+    "water.V.l.model(1.687e-05)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In the next example, we make an ideal mixture property package from chemicals, some of which contain constant values fo"
+    "### Ideal mixtures"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In the next example, we make an ideal mixture property package from chemicals:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 32,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "IdealMixture([Water, Ethanol, Methanol, Lignin])"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "water =  ether.Chemical('Water')\n",
-    "ethanol = ether.Chemical('Ethanol')\n",
-    "methanol = ether.Chemical('Methanol')\n",
-    "lignin = ether.Chemical('Lignin')\n",
-    "ideal_mixture = ether.IdealMixture(chemicals=(water, ethanol, methanol, lignin))\n",
+    "water =  tmo.Chemical('Water')\n",
+    "ethanol = tmo.Chemical('Ethanol')\n",
+    "methanol = tmo.Chemical('Methanol')\n",
+    "lignin = tmo.Chemical('Lignin')\n",
+    "ideal_mixture = tmo.mixture.IdealMixture(chemicals=(water, ethanol, methanol, lignin))\n",
     "ideal_mixture"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 33,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<bound method IdealMixture.H of IdealMixture([Water, Ethanol, Methanol, Lignin])>"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "ideal_mixture.H"
    ]
   },
   {
    "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "54404.253795065866"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ideal_mixture.H('l', [0.1, 0.2, 0.3, 0.4], 350, 101325)"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": null,
    "metadata": {},
    "outputs": [],
-   "source": [
-    "ideal_mixture.H('l', [0.1, 0.2, 0.3, 0.4], 350)"
-   ]
+   "source": []
   }
  ],
  "metadata": {

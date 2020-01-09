@@ -89,8 +89,7 @@ class Documenter:
 
 # %% Autodoc
 
-def autodoc_functor(functor,
-                    equation=None, math=None, ref=None, tabs=1):
+def autodoc_functor(functor, equation=None, ref=None, tabs=1):
     if not functor.var: return
     autodoc = Documenter(functor.units_of_measure, functor.definitions, functor.types)
     function = functor.function
@@ -100,42 +99,25 @@ def autodoc_functor(functor,
     params = functor.params
     new_line = "\n" + (tabs * 4) * " "
     parameters = autodoc.describe_all_parameters(params, new_line) if params else "" 
-    if math: 
-        math_section = ".. math::"
-        if isinstance(math, str):
-            math_section += " " + math
-            functor.math = MathString(math)
-        else:
-            math_line_spaces = (tabs * 4 + 3) * " "
-            math_line = "\n" + math_line_spaces
-            math_section += math_line + (2 * math_line).join(math)
-            functor.math = MathSection(math)
-    else:
-        math_section = None
         
     doc = function.__doc__
     function.__doc__ = None
     if doc:
         if doc[:2] == '*\n':
-            doc = _join_sections(header, math_section,
-                                 parameters, new_line) + doc[1:]
+            doc = _join_sections(header, parameters, new_line) + doc[1:]
         else:
             try:
-                doc = doc.format(Header=header,
-                                 Math=math_section,
-                                 Parameters=parameters)
+                doc = doc.format(Header=header, Parameters=parameters)
             except Exception as error:
                 raise AutodocError('formatting issue => '
                                   f'{type(error).__name__}: {error}')
     else:
-        doc = _join_sections(header, math_section, parameters, new_line)
+        doc = _join_sections(header, parameters, new_line)
     functor.__doc__ = doc
 
-def _join_sections(header, math_section, parameters, new_line):
+def _join_sections(header, parameters, new_line):
     doc = header
     double_new_line = 2 * new_line
-    if math_section:
-        doc += double_new_line + math_section 
     if parameters:
         doc += double_new_line + parameters 
     return doc

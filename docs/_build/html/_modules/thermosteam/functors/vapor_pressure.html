@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermosteam.functors.vapor_pressure &mdash; ThermoSTEAM  documentation</title>
+  <title>thermosteam.functors.vapor_pressure &mdash; Thermosteam  documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
           
 
           
@@ -118,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">ThermoSTEAM</a>
+          <a href="../../../index.html">Thermosteam</a>
         
       </nav>
 
@@ -191,32 +191,48 @@
 
 <span class="c1"># %% Vapor pressure</span>
 
-<div class="viewcode-block" id="Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\log_{\text</span><span class="si">{base}</span><span class="s2">} P^{\text</span><span class="si">{sat}</span><span class="s2">} = A - \frac</span><span class="si">{B}</span><span class="s2">{T+C}&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Antoine">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">        .. math:: log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}</span>
+<span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Methane, coefficients from [2]_, at 100 K:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; Antoine(100.0, 8.7687, 395.744, -6.469)</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine = Antoine(a=8.7687, b=395.744, c=-6.469)</span>
+<span class="sd">    Functor: Antoine(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     a: 8.7687</span>
+<span class="sd">     b: 395.74</span>
+<span class="sd">     c: -6.469</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine(100)</span>
 <span class="sd">    34478.367349639906</span>
 <span class="sd">    </span>
 <span class="sd">    Tetrafluoromethane, coefficients from [2]_, at 180 K</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; Antoine(180, A=8.95894, B=510.595, C=-15.95)</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine = Antoine(a=8.95894, b=510.595, c=-15.95)</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine</span>
+<span class="sd">    Functor: Antoine(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     a: 8.9589</span>
+<span class="sd">     b: 510.6</span>
+<span class="sd">     c: -15.95</span>
+<span class="sd">    &gt;&gt;&gt; antoine(180)</span>
 <span class="sd">    702271.0518579542</span>
 <span class="sd">    </span>
 <span class="sd">    Oxygen at 94.91 K, with coefficients from [3]_ in units of °C, mmHg, log10,</span>
 <span class="sd">    showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; Antoine(94.91, 6.83706+2.1249, 339.2095, 268.70-273.15)</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine</span>
+<span class="sd">    Functor: Antoine(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     a: 8.962</span>
+<span class="sd">     b: 339.21</span>
+<span class="sd">     c: -4.45</span>
+<span class="sd">    &gt;&gt;&gt; f_antoine(94.91)</span>
 <span class="sd">    162978.88655572367</span>
 
 <span class="sd">    References</span>
@@ -230,57 +246,82 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TRC_Extended_Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\log_</span><span class="si">{10}</span><span class="s2"> P^</span><span class="si">{sat}</span><span class="s2"> = A - \frac</span><span class="si">{B}</span><span class="s2">{T + C} + 0.43429x^n + Ex^8 + Fx^</span><span class="si">{12}</span><span class="s2">&quot;</span><span class="p">,</span>
-           <span class="sa">r</span><span class="s2">&quot;x = \max \left(\frac{T-t_o-273.15}</span><span class="si">{T_c}</span><span class="s2">, 0 \right)&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="TRC_Extended_Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">TRC_Extended_Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}</span>
+<span class="sd">        </span>
+<span class="sd">        x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)</span>
+<span class="sd">        </span>
 <span class="sd">    Parameters are chemical dependent, and said to be from the </span>
-<span class="sd">    Thermodynamics Research Center (TRC) at Texas A&amp;M. Coefficients for various</span>
-<span class="sd">    chemicals can be found in [1]_.</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
+<span class="sd">    Thermodynamics Research Center (TRC) at Texas A&amp;M.</span>
+<span class="sd">    Coefficients for various chemicals can be found in [1]_.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Tetrafluoromethane, coefficients from [1]_, at 180 K:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; TRC_Antoine_extended(180.0, 227.51, -120., 8.95894, 510.595, -15.95, </span>
-<span class="sd">    ... 2.41377, -93.74, 7425.9) </span>
+<span class="sd">    &gt;&gt;&gt; f_extended_antoine = TRC_Extended_Antoine(227.51, -120., 8.95894, 510.595,</span>
+<span class="sd">    ...                                           -15.95, 2.41377, -93.74, 7425.9)</span>
+<span class="sd">    &gt;&gt;&gt; f_extended_antoine</span>
+<span class="sd">    Functor: TRC_Extended_Antoine(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     Tc: 227.51 K</span>
+<span class="sd">     to: -120</span>
+<span class="sd">     a: 8.9589</span>
+<span class="sd">     b: 510.6</span>
+<span class="sd">     c: -15.95</span>
+<span class="sd">     n: 2.4138</span>
+<span class="sd">     E: -93.74</span>
+<span class="sd">     F: 7425.9</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; f_extended_antoine(180.0)</span>
 <span class="sd">    706317.0898414153</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
-<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids.</span>
+<span class="sd">           5th edition. New York: McGraw-Hill Professional, 2000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">T</span> <span class="o">-</span> <span class="n">to</span> <span class="o">-</span> <span class="mf">273.15</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tc</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.43429</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="n">n</span> <span class="o">+</span> <span class="n">E</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">8</span> <span class="o">+</span> <span class="n">F</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">12</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Wagner_McGraw"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner_McGraw">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln P^</span><span class="si">{sat}</span><span class="s2">= \ln P_c + \frac{a\tau + b \tau^</span><span class="si">{1.5}</span><span class="s2"> + c\tau^3 + d\tau^6} </span><span class="si">{T_r}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;\tau = 1 - \frac</span><span class="si">{T}{T_c}</span><span class="s2">&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Wagner_McGraw"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner_McGraw">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Wagner_McGraw</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Warning: Pc is often treated as adjustable constant.</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math ::</span>
+<span class="sd">    </span>
+<span class="sd">        \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}</span>
+<span class="sd">        </span>
+<span class="sd">        \tau = 1 - \frac{T}{T_c}</span>
+<span class="sd">    </span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    Pc is often treated as adjustable constant.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Methane, coefficients from [2]_, at 100 K.</span>
 
-<span class="sd">    &gt;&gt;&gt; Wagner_McGraw(100.0, a=-6.00435, b=1.1885, </span>
-<span class="sd">    ... c=-0.834082, d=-1.22833, Tc=190.53, Pc=4596420.)</span>
+<span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw = Wagner_McGraw(a=-6.00435, b=1.1885, c=-0.834082,</span>
+<span class="sd">    ...                                 d=-1.22833, Tc=190.53, Pc=4596420.)</span>
+<span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw</span>
+<span class="sd">    Functor: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     a: -6.0043</span>
+<span class="sd">     b: 1.1885</span>
+<span class="sd">     c: -0.83408</span>
+<span class="sd">     d: -1.2283</span>
+<span class="sd">     Tc: 190.53 K</span>
+<span class="sd">     Pc: 4.5964e+06 Pa</span>
+<span class="sd">    &gt;&gt;&gt; f_wagner_mcgraw(100)</span>
 <span class="sd">    34520.44601450496</span>
 
 <span class="sd">    References</span>
@@ -296,26 +337,35 @@
     <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Tr</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Wagner"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln P^</span><span class="si">{sat}</span><span class="s2">= \ln P_c + \frac{a\tau + b \tau^</span><span class="si">{1.5}</span><span class="s2"> + c\tau^</span><span class="si">{2.5}</span><span class="s2"> + d\tau^5} </span><span class="si">{T_r}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;\tau = 1 - \frac</span><span class="si">{T}{T_c}</span><span class="s2">&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Wagner"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Wagner</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-<span class="sd">    </span>
-<span class="sd">    {Parameters}</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Warning: Pc is often treated as adjustable constant.</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5} + d\tau^5} {T_r}</span>
+<span class="sd">        </span>
+<span class="sd">        \tau = 1 - \frac{T}{T_c}</span>
+<span class="sd">        </span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    Pc is often treated as adjustable constant.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Methane, coefficients from [2]_, at 100 K.</span>
 
-<span class="sd">    &gt;&gt;&gt; Wagner(100., 190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)</span>
+<span class="sd">    &gt;&gt;&gt; f_wagner = Wagner(190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)</span>
+<span class="sd">    Functor: Wagner(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     Tc: 190.55 K</span>
+<span class="sd">     Pc: 4.5992e+06 Pa</span>
+<span class="sd">     a: -6.0224</span>
+<span class="sd">     b: 1.2665</span>
+<span class="sd">     c: -0.5707</span>
+<span class="sd">     d: -1.366</span>
+<span class="sd">    &gt;&gt;&gt; f_wagner(100)</span>
 <span class="sd">    34415.00476263708</span>
 
 <span class="sd">    References</span>
@@ -330,20 +380,19 @@
     <span class="n">τ</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Tr</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span><span class="o">*</span><span class="n">τ</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">2.5</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln P^</span><span class="si">{sat}</span><span class="s2">_r = h\left( 1 - \frac</span><span class="si">{1}{T_r}</span><span class="s2"> \right)&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;h = T_</span><span class="si">{br}</span><span class="s2"> \frac{\ln(P_c/101325)}{1-T_</span><span class="si">{br}</span><span class="s2">}&quot;</span><span class="p">))</span>
+<span class="nd">@Psat</span><span class="p">(</span><span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Boiling_Critical_Relation</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Tbr</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-<span class="sd">    </span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Units are Pa. Formulation makes intuitive sense; a logarithmic form of</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \ln P^{sat}_r = h\left( 1 - \frac{1}{T_r} \right)</span>
+<span class="sd">        </span>
+<span class="sd">        h = T_{br} \frac{\ln(P_c/101325)}{1-T_{br}}</span>
+<span class="sd">        </span>
+<span class="sd">    Formulation makes intuitive sense; a logarithmic form of</span>
 <span class="sd">    interpolation.</span>
 
 <span class="sd">    Examples</span>
@@ -366,20 +415,20 @@
     <span class="n">h</span> <span class="o">=</span> <span class="n">Tbr</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">Pc</span> <span class="o">/</span> <span class="mf">101325.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">:</span><span class="n">Pc</span><span class="p">,</span> <span class="s1">&#39;Tbr&#39;</span><span class="p">:</span> <span class="n">Tbr</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span><span class="n">h</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="Lee_Kesler"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Lee_Kesler">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln P^</span><span class="si">{sat}</span><span class="s2">_r = f^{(0)} + \omega f^{(1)}&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(0)} = 5.92714-\frac</span><span class="si">{6.09648}{T_r}</span><span class="s2">-1.28862\ln T_r + 0.169347T_r^6&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(1)} = 15.2518-\frac</span><span class="si">{15.6875}{T_r}</span><span class="s2"> - 13.4721 \ln T_r + 0.43577T_r^6&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Lee_Kesler"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Lee_Kesler">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Lee_Kesler</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-<span class="sd">    </span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \ln P^{sat}_r = f^{(0)} + \omega f^{(1)}</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6</span>
+<span class="sd">        </span>
 <span class="sd">    This equation appears in [1]_ in expanded form.</span>
 <span class="sd">    The reduced pressure form of the equation ensures predicted vapor pressure </span>
 <span class="sd">    cannot surpass the critical pressure.</span>
@@ -406,22 +455,24 @@
     <span class="n">f1</span> <span class="o">=</span> <span class="mf">15.2518</span> <span class="o">-</span> <span class="mf">15.6875</span> <span class="o">/</span> <span class="n">Tr</span> <span class="o">-</span> <span class="mf">13.4721</span> <span class="o">*</span> <span class="n">logTr</span> <span class="o">+</span> <span class="mf">0.43577</span> <span class="o">*</span> <span class="n">Tra</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">f0</span> <span class="o">+</span> <span class="n">ω</span> <span class="o">*</span> <span class="n">f1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Pc</span></div>
 
-<div class="viewcode-block" id="Ambrose_Walton"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Ambrose_Walton">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^</span><span class="si">{1.5}</span><span class="s2">- 0.60394\tau^</span><span class="si">{2.5}</span><span class="s2">-1.06841\tau^5}</span><span class="si">{T_r}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^</span><span class="si">{1.5}</span><span class="s2">- 5.41217\tau^</span><span class="si">{2.5}</span><span class="s2">-7.46628\tau^5}</span><span class="si">{T_r}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^</span><span class="si">{1.5}</span><span class="s2">- 4.26979\tau^</span><span class="si">{2.5}</span><span class="s2">+3.25259\tau^5}</span><span class="si">{T_r}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;\tau = 1-T_</span><span class="si">{r}</span><span class="s2">&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Ambrose_Walton"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Ambrose_Walton">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Ambrose_Walton</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}-1.06841\tau^5}{T_r}</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}-7.46628\tau^5}{T_r}</span>
+<span class="sd">            </span>
+<span class="sd">        f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}+3.25259\tau^5}{T_r}</span>
+<span class="sd">            </span>
+<span class="sd">        \tau = 1-T_{r}</span>
+<span class="sd">        </span>
 <span class="sd">    Somewhat more accurate than the :obj:`Lee_Kesler` formulation.</span>
 
 <span class="sd">    Examples</span>
@@ -449,21 +500,22 @@
     <span class="n">f2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.64771</span> <span class="o">*</span> <span class="n">τ</span> <span class="o">+</span> <span class="mf">2.41539</span> <span class="o">*</span> <span class="n">τa</span> <span class="o">-</span> <span class="mf">4.26979</span> <span class="o">*</span> <span class="n">τb</span> <span class="o">+</span> <span class="mf">3.25259</span> <span class="o">*</span> <span class="n">τc</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">f0</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">*</span> <span class="n">ω</span> <span class="o">+</span> <span class="n">f2</span> <span class="o">*</span> <span class="n">ω</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Sanjari"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Sanjari">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;P^</span><span class="si">{sat}</span><span class="s2"> = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2 f^{(2)})&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(0)} = a_1 + \frac</span><span class="si">{a_2}{T_r}</span><span class="s2"> + a_3\ln T_r + a_4 T_r^</span><span class="si">{1.9}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;f^{(1)} = a_5 + \frac</span><span class="si">{a_6}{T_r}</span><span class="s2"> + a_7\ln T_r + a_8 T_r^</span><span class="si">{1.9}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;rf^{(2)} = a_9 + </span><span class="se">\f</span><span class="s2">rac{a_</span><span class="si">{10}</span><span class="s2">}</span><span class="si">{T_r}</span><span class="s2"> + a_</span><span class="si">{11}</span><span class="s2">\ln T_r + a_</span><span class="si">{12}</span><span class="s2"> T_r^</span><span class="si">{1.9}</span><span class="s2">&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Sanjari"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Sanjari">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Sanjari</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-<span class="sd">    </span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P^{sat} = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2 f^{(2)})</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(1)} = a_5 + \frac{a_6}{T_r} + a_7\ln T_r + a_8 T_r^{1.9}</span>
+<span class="sd">        </span>
+<span class="sd">        f^{(2)} = a_9 + \frac{a_{10}}{T_r} + a_{11}\ln T_r + a_{12} T_r^{1.9}</span>
+<span class="sd">        </span>
 <span class="sd">    Although developed for refrigerants, this model should have some general predictive ability.</span>
 <span class="sd">    </span>
 <span class="sd">    a[1-12] are as follows:</span>
@@ -501,23 +553,26 @@
     <span class="n">f2</span> <span class="o">=</span> <span class="mf">18.19967</span> <span class="o">+</span> <span class="mf">16.33839</span> <span class="o">/</span> <span class="n">Tr</span> <span class="o">+</span> <span class="mf">65.6995</span> <span class="o">*</span> <span class="n">logTr</span> <span class="o">+</span> <span class="o">-</span><span class="mf">35.9739</span> <span class="o">*</span> <span class="n">Ta</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="n">f0</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">*</span> <span class="n">ω</span> <span class="o">+</span> <span class="n">f2</span> <span class="o">*</span> <span class="n">ω</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Edalat"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Edalat">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\ln(P^</span><span class="si">{sat}</span><span class="s2">/P_c) = \frac{a\tau + b\tau^</span><span class="si">{1.5}</span><span class="s2"> + c\tau^3 + d\tau^6}{1-\tau}&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;a = -6.1559 - 4.0855\omega&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;b = 1.5737 - 1.0540\omega - 4.4365\times 10^{-3} d&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;c = -0.8747 - 7.8874\omega&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;d = \frac</span><span class="si">{1}</span><span class="s2">{-0.4893 - 0.9912\omega + 3.1551\omega^2}&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;\tau = 1 - \frac</span><span class="si">{T}{T_c}</span><span class="s2">)&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="Edalat"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Edalat">[docs]</a><span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Edalat</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-<span class="sd">        </span>
-<span class="sd">    {Parameters}</span>
-
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \ln(P^{sat}/P_c) = \frac{a\tau + b\tau^{1.5} + c\tau^3 + d\tau^6}{1-\tau}</span>
+<span class="sd">        </span>
+<span class="sd">        a = -6.1559 - 4.0855\omega</span>
+<span class="sd">        </span>
+<span class="sd">        b = 1.5737 - 1.0540\omega - 4.4365\times 10^{-3} d</span>
+<span class="sd">        </span>
+<span class="sd">        c = -0.8747 - 7.8874\omega</span>
+<span class="sd">        </span>
+<span class="sd">        d = \frac{1}{-0.4893 - 0.9912\omega + 3.1551\omega^2}</span>
+<span class="sd">        </span>
+<span class="sd">        \tau = 1 - \frac{T}{T_c})</span>
+<span class="sd">        </span>
 <span class="sd">    Claimed to have a higher accuracy than the Lee-Kesler CSP relationship.</span>
 <span class="sd">    [1]_ found an average error of 6.06% on 94 compounds and 1106 data points.</span>
 <span class="sd">    </span>
@@ -545,31 +600,37 @@
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_WagnerMcGarry</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Tmin</span> <span class="o">=</span> <span class="n">_WagnerMcGarry</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="n">Tmax</span> <span class="o">=</span> <span class="n">Tc</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner_McGraw</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner_McGraw</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Wagner</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Wagner</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="c1"># Some Tmin values are missing; Arbitrary choice of 0.1 lower limit</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Tmin</span><span class="p">):</span> <span class="n">Tmin</span> <span class="o">=</span> <span class="n">Tmax</span> <span class="o">*</span> <span class="mf">0.1</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner_McGraw</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner_McGraw</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_AntoineExtended</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_AntoineExtended</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">TRC_Extended_Antoine</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">)),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">TRC_Extended_Antoine</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Antoine</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Antoine</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Antoine</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Antoine</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Perrys2_8</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">C5</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Perrys2_8</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ101</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">C5</span><span class="p">)),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">C5</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ101</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDI_PPDS_3</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">_VDI_PPDS_3</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Wagner</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Boiling_Critical_Relation</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Boiling_Critical_Relation</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Lee_Kesler</span><span class="p">,</span> <span class="n">Ambrose_Walton</span><span class="p">,</span> <span class="n">Sanjari</span><span class="p">,</span> <span class="n">Edalat</span><span class="p">):</span>
-            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     
 </pre></div>
 

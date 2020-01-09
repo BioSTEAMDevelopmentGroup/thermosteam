@@ -17,7 +17,7 @@ order_not_found_msg = ('Only the actual property calculation, first temperature 
                        'temperature integral over temperature are supported '
                        'with order=  0, 1, -1, or -1j respectively')
 
-@functor(math=r"Y = A + BT + CT^2 + DT^3 + ET^4 + FT^5 + GT^6")
+@functor(autodoc=False)
 def DIPPR_EQ100(T, A=0., B=0., C=0., D=0., E=0., F=0., G=0., order=0.):
     r'''Used in calculating the molar heat capacities
     of liquids and solids, liquid thermal conductivity, and solid density.
@@ -25,7 +25,7 @@ def DIPPR_EQ100(T, A=0., B=0., C=0., D=0., E=0., F=0., G=0., order=0.):
     no restrictions on parameters apply. Note that high-order polynomials like
     this may need large numbers of decimal places to avoid unnecessary error.
 
-    {Math}
+    .. math:: Y = A + BT + CT^2 + DT^3 + ET^4 + FT^5 + GT^6
 
     Parameters
     ----------

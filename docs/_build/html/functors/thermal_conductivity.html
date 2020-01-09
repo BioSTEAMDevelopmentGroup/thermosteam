@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermal_conductivity &mdash; ThermoSTEAM  documentation</title>
+  <title>thermal_conductivity &mdash; Thermosteam  documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> ThermoSTEAM
+            <a href="../index.html" class="icon icon-home"> Thermosteam
           
 
           
@@ -150,7 +150,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">ThermoSTEAM</a>
+          <a href="../index.html">Thermosteam</a>
         
       </nav>
 
@@ -240,6 +240,430 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Sheffy_Johnson">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Sheffy_Johnson</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Sheffy_Johnson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Sheffy_Johnson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Sheffy Johnson equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting point temperature [K].</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Sato_Riedel">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Sato_Riedel</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Sato_Riedel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Sato_Riedel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Sato Riedel equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Lakshmi_Prasad">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Lakshmi_Prasad</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Lakshmi_Prasad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Lakshmi_Prasad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Lakshmi Prasad equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Gharagheizi_liquid">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Gharagheizi_liquid</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Gharagheizi_liquid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Gharagheizi_liquid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Gharagheizi liquid equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Nicola_original">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Nicola_original</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Nicola_original"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Nicola_original" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Nicola original equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Hfus</strong><span class="classifier">float</span></dt><dd><p>Heat of fusion [J/mol].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Nicola">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Nicola</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Nicola"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Nicola" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Nicola equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Bahadori_liquid">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Bahadori_liquid</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Bahadori_liquid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Bahadori_liquid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Bahadori liquid equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Mersmann_Kind_thermal_conductivity_liquid">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Mersmann_Kind_thermal_conductivity_liquid</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Mersmann_Kind_thermal_conductivity_liquid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Mersmann_Kind_thermal_conductivity_liquid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Mersmann Kind thermal conductivity liquid equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>atoms</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.DIPPR9G">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">DIPPR9G</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#DIPPR9G"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.DIPPR9G" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the DIPPR9G equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>kl_models</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Missenard">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Missenard</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Missenard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Missenard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid thermal conductivity (kappa.l; in W/m/K) using the Missenard equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>kl_models</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Eucken">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Eucken</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Eucken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Eucken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the Eucken equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Eucken_modified">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Eucken_modified</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Eucken_modified"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Eucken_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the Eucken modified equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.DIPPR9B_linear">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">DIPPR9B_linear</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#DIPPR9B_linear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.DIPPR9B_linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the DIPPR9B linear equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.DIPPR9B_monoatomic">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">DIPPR9B_monoatomic</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#DIPPR9B_monoatomic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.DIPPR9B_monoatomic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the DIPPR9B monoatomic equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.DIPPR9B_nonlinear">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">DIPPR9B_nonlinear</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#DIPPR9B_nonlinear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.DIPPR9B_nonlinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the DIPPR9B nonlinear equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Chung">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Chung</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Chung"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Chung" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the Chung equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.eli_hanley">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">eli_hanley</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#eli_hanley"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.eli_hanley" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the eli hanley equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">float</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Gharagheizi_gas">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Gharagheizi_gas</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Gharagheizi_gas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Gharagheizi_gas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the Gharagheizi gas equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.Bahadori_gas">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">Bahadori_gas</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#Bahadori_gas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.Bahadori_gas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the Bahadori gas equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.stiel_thodos_dense">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">stiel_thodos_dense</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#stiel_thodos_dense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.stiel_thodos_dense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the stiel thodos dense equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">float</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+<dt><strong>Vg, kg_models</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.eli_hanley_dense">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">eli_hanley_dense</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#eli_hanley_dense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.eli_hanley_dense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the eli hanley dense equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">float</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>Vg</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.thermal_conductivity.chung_dense">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">chung_dense</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/thermal_conductivity.html#chung_dense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.chung_dense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates gas thermal conductivity (kappa.g; in W/m/K) using the chung dense equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>Cp</strong><span class="classifier">float</span></dt><dd><p>Specific heat capacity [J/g/K].</p>
+</dd>
+<dt><strong>Vg, mug, dipole, association</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="data">
 <dt id="thermosteam.functors.thermal_conductivity.thermal_conductivity_gas_methods">
 <code class="sig-prename descclassname">thermosteam.functors.thermal_conductivity.</code><code class="sig-name descname">thermal_conductivity_gas_methods</code><em class="property"> = ['COOLPROP', 'DIPPR_PERRY_8E', 'VDI_PPDS', 'VDI_TABULAR', 'GHARAGHEIZI_G', 'DIPPR_9B', 'CHUNG', 'ELI_HANLEY', 'EUCKEN_MOD', 'EUCKEN', 'BAHADORI_G']</em><a class="headerlink" href="#thermosteam.functors.thermal_conductivity.thermal_conductivity_gas_methods" title="Permalink to this definition">¶</a></dt>

@@ -3,26 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ThermoSTEAM: BioSTEAM's Premier Thermodynamic Property Package
+Thermosteam: BioSTEAM's Premier Thermodynamic Property Package
 ==============================================================
 
 Key Features & Capabilities
 ---------------------------
 
-* **Simple:** 
-  Straight foward methods to estimate mixture properties and thermodynamic equilibrium with just a few lines of code.
+* **Simple** and straight foward methods to estimate mixture properties and thermodynamic equilibrium with just a few lines of code.
 
-* **Clear:**
-  Chemical and phase data are clearly represented throughout every object using IPython's rich display.
+* **Clear** representation of chemical and phase data throughout every object using IPython's rich display.
 
-* **Fast:**
-  Smart use of cache and Numba Jit compiled functions allows thermodynamic equilibrium computations within hundreds of microseconds.
+* **Fast** thermodynamic equilibrium computations within hundreds of microseconds through the smart use of cache and Numba Jit compiled functions.
 
-* **Flexible:**
-  New thermodynamic models for estimating pure component properties can be implemented in just a few lines of code.
+* **Flexible** implemention of thermodynamic models for estimating pure component properties in just a few lines of code.
 
-* **Extendable:**
-  New methods for computing thermodynamic equilibrium coefficients and mixture properties can be easily integrated.
+* **Extendable** framework allows for easy integration of new methods for computing thermodynamic equilibrium coefficients and mixture properties.
 
 .. toctree::
    :maxdepth: 1

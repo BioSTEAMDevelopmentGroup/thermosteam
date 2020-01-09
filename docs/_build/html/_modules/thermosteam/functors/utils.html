@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermosteam.functors.utils &mdash; ThermoSTEAM  documentation</title>
+  <title>thermosteam.functors.utils &mdash; Thermosteam  documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
           
 
           
@@ -118,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">ThermoSTEAM</a>
+          <a href="../../../index.html">Thermosteam</a>
         
       </nav>
 
@@ -199,8 +199,11 @@
 
 <span class="k">class</span> <span class="nc">CASDataReader</span><span class="p">:</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;Data/&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">tag</span><span class="o">+</span><span class="n">folder</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">):</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span>
+        <span class="n">join</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">join</span>
+        <span class="n">parent_path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">fpath</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">parent_path</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>

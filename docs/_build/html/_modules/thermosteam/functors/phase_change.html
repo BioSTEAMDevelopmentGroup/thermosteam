@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>thermosteam.functors.phase_change &mdash; ThermoSTEAM  documentation</title>
+  <title>thermosteam.functors.phase_change &mdash; Thermosteam  documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> ThermoSTEAM
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
           
 
           
@@ -118,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">ThermoSTEAM</a>
+          <a href="../../../index.html">Thermosteam</a>
         
       </nav>
 
@@ -438,18 +438,15 @@
 
 <span class="c1">### Enthalpy of Vaporization at T</span>
 
-<div class="viewcode-block" id="Clapeyron"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Clapeyron">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">math</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\Delta H_</span><span class="si">{vap}</span><span class="s2"> = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_</span><span class="si">{r}</span><span class="s2">)}&quot;</span><span class="p">,</span>
-      <span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dZ&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">,</span> <span class="s1">&#39;Psat&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">})</span>
+<div class="viewcode-block" id="Clapeyron"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Clapeyron">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dZ&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">,</span> <span class="s1">&#39;Psat&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">})</span>
 <span class="k">def</span> <span class="nf">Clapeyron</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">Psat</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-<span class="sd">    </span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
+<span class="sd">        </span>
+<span class="sd">    .. math:: \Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}</span>
+<span class="sd">    </span>
 <span class="sd">    No original source is available for this equation.</span>
 <span class="sd">    [1]_ claims this equation overpredicts enthalpy by several percent.</span>
 <span class="sd">    Under Tr = 0.8, dZ = 1 is a reasonable assumption.</span>
@@ -475,18 +472,14 @@
     <span class="n">P</span> <span class="o">=</span> <span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">Z</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">))</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="o">/</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pitzer"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Pitzer">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[2, 1]_&quot;</span><span class="p">,</span>
-      <span class="n">math</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\frac{\Delta_</span><span class="si">{vap}</span><span class="s2"> H}</span><span class="si">{RT_c}</span><span class="s2">=7.08(1-T_r)^</span><span class="si">{0.354}</span><span class="s2">+10.95\omega(1-T_r)^</span><span class="si">{0.456}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="Pitzer"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Pitzer">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[2, 1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Pitzer</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {Header}</span>
-
-<span class="sd">    {Math}</span>
-
-<span class="sd">    {Parameters}</span>
-
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    </span>
+<span class="sd">    .. math:: \frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}</span>
+<span class="sd">    </span>
 <span class="sd">    This equation is listed in [3]_, page 2-487 as method #2 for estimating</span>
 <span class="sd">    Hvap. This cites [2]_.</span>
 
@@ -518,47 +511,26 @@
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span> <span class="o">*</span> <span class="p">(</span><span class="mf">7.08</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="mf">0.354</span> <span class="o">+</span> <span class="mf">10.95</span><span class="o">*</span><span class="n">omega</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="mf">0.456</span><span class="p">)</span></div>
 
-<span class="nd">@Hvap</span>
+<div class="viewcode-block" id="SMK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.SMK">[docs]</a><span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">SMK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at arbitrary temperatures using a</span>
-<span class="sd">    the work of [1]_; requires a chemical&#39;s critical temperature and</span>
-<span class="sd">    acentric factor.</span>
-
-<span class="sd">    The enthalpy of vaporization is given by:</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
+<span class="sd">        </span>
 <span class="sd">    .. math::</span>
-<span class="sd">         \frac{\Delta H_{vap}} {RT_c} =</span>
-<span class="sd">         \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(</span>
-<span class="sd">         \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)</span>
-<span class="sd">         \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(</span>
-<span class="sd">         \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]</span>
-
+<span class="sd">        \frac{\Delta H_{vap}} {RT_c} = </span>
+<span class="sd">        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(</span>
+<span class="sd">        \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)</span>
+<span class="sd">        \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(</span>
+<span class="sd">        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]</span>
+<span class="sd">        </span>
 <span class="sd">        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}</span>
 <span class="sd">        = 6.537 \tau^{1/3} - 2.467 \tau^{5/6} - 77.251 \tau^{1.208} +</span>
 <span class="sd">        59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3</span>
-
-<span class="sd">        \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(</span>
-<span class="sd">        \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}=-0.133 \tau^{1/3} - 28.215</span>
-<span class="sd">        \tau^{5/6} - 82.958 \tau^{1.208} + 99.00 \tau  + 19.105 \tau^2 -2.796 \tau^3</span>
-
+<span class="sd">        </span>
 <span class="sd">        \tau = 1-T/T_c</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    T : float</span>
-<span class="sd">        Temperature of fluid [K]</span>
-<span class="sd">    Tc : float</span>
-<span class="sd">        Critical temperature of fluid [K]</span>
-<span class="sd">    omega : float</span>
-<span class="sd">        Acentric factor [-]</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Hvap : float</span>
-<span class="sd">        Enthalpy of vaporization, [J/mol]</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
+<span class="sd">    </span>
 <span class="sd">    The original article has been reviewed and found to have coefficients with</span>
 <span class="sd">    slightly more precision. Additionally, the form of the equation is slightly</span>
 <span class="sd">    different, but numerically equivalent.</span>
@@ -586,7 +558,7 @@
 <span class="sd">       between Their Freezing Points and Critical Points.&quot; Industrial &amp;</span>
 <span class="sd">       Engineering Chemistry Fundamentals 23, no. 1 (February 1, 1984): 97-100.</span>
 <span class="sd">       doi:10.1021/i100013a017.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">omegaR1</span><span class="p">,</span> <span class="n">omegaR2</span> <span class="o">=</span> <span class="mf">0.212</span><span class="p">,</span> <span class="mf">0.461</span>
     <span class="n">A10</span> <span class="o">=</span> <span class="mf">6.536924</span>
     <span class="n">A20</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.466698</span>
@@ -610,40 +582,22 @@
         <span class="n">B11</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">B21</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">B31</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="mi">3</span>
 
     <span class="n">domega</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega</span> <span class="o">-</span> <span class="n">omegaR1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">omegaR2</span> <span class="o">-</span> <span class="n">omegaR1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="n">L0</span> <span class="o">+</span> <span class="n">domega</span><span class="o">*</span><span class="n">L1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="n">L0</span> <span class="o">+</span> <span class="n">domega</span><span class="o">*</span><span class="n">L1</span><span class="p">)</span></div>
 
-<span class="nd">@Hvap</span>
+<div class="viewcode-block" id="MK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.MK">[docs]</a><span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">MK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at arbitrary temperatures using a</span>
-<span class="sd">    the work of [1]_; requires a chemical&#39;s critical temperature and</span>
-<span class="sd">    acentric factor.</span>
-
-<span class="sd">    The enthalpy of vaporization is given by:</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}</span>
-
-<span class="sd">        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6}</span>
-<span class="sd">        + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3</span>
-
-<span class="sd">        \tau = 1-T/T_c</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    T : float</span>
-<span class="sd">        Temperature of fluid [K]</span>
-<span class="sd">    Tc : float</span>
-<span class="sd">        Critical temperature of fluid [K]</span>
-<span class="sd">    omega : float</span>
-<span class="sd">        Acentric factor [-]</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Hvap : float</span>
-<span class="sd">        Enthalpy of vaporization, [J/mol]</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}</span>
+<span class="sd">        </span>
+<span class="sd">        \frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)</span>
+<span class="sd">            </span>
+<span class="sd">        \tau = 1-T/T_c</span>
+<span class="sd">    </span>
 <span class="sd">    The original article has been reviewed. A total of 18 coefficients are used:</span>
 
 <span class="sd">    WARNING: The correlation has been implemented as described in the article,</span>
@@ -656,7 +610,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    Problem in article for SMK function.</span>
 
-<span class="sd">    &gt;&gt;&gt; MK(553.15, 751.35, 0.302)</span>
+<span class="sd">    &gt;&gt;&gt; f_mk = MK(751.35, 0.302)</span>
+<span class="sd">    &gt;&gt;&gt; f_mk</span>
+<span class="sd">    Functor: MK(T, P=None)</span>
+<span class="sd">     Tc: 751.35 K</span>
+<span class="sd">     omega: 0.302</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; f_mk(553.15)</span>
 <span class="sd">    38727.993546377205</span>
 
 <span class="sd">    References</span>
@@ -665,15 +625,15 @@
 <span class="sd">       Models for Vapor Pressures and Heats of Vaporization to Long-Chain</span>
 <span class="sd">       Hydrocarbons.&quot; Fluid Phase Equilibria 94 (March 15, 1994): 51-87.</span>
 <span class="sd">       doi:10.1016/0378-3812(94)87051-9.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bs</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">5.2804</span><span class="p">,</span> <span class="mf">0.080022</span><span class="p">,</span> <span class="mf">7.2543</span><span class="p">],</span>
           <span class="p">[</span><span class="mf">12.8650</span><span class="p">,</span> <span class="mf">273.23</span><span class="p">,</span> <span class="o">-</span><span class="mf">346.45</span><span class="p">],</span>
           <span class="p">[</span><span class="mf">1.1710</span><span class="p">,</span> <span class="mf">465.08</span><span class="p">,</span> <span class="o">-</span><span class="mf">610.48</span><span class="p">],</span>
           <span class="p">[</span><span class="o">-</span><span class="mf">13.1160</span><span class="p">,</span> <span class="o">-</span><span class="mf">638.51</span><span class="p">,</span> <span class="mf">839.89</span><span class="p">],</span>
           <span class="p">[</span><span class="mf">0.4858</span><span class="p">,</span> <span class="o">-</span><span class="mf">145.12</span><span class="p">,</span> <span class="mf">160.05</span><span class="p">],</span>
           <span class="p">[</span><span class="o">-</span><span class="mf">1.0880</span><span class="p">,</span> <span class="mf">74.049</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.711</span><span class="p">]]</span>
-
     <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="c1"># TODO: Use numpy arrays</span>
     <span class="n">H0</span> <span class="o">=</span> <span class="p">(</span><span class="n">bs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">0.3333</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">0.8333</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">1.2083</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">bs</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">Tc</span>
 
@@ -683,35 +643,18 @@
     <span class="n">H2</span> <span class="o">=</span> <span class="p">(</span><span class="n">bs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">0.3333</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">0.8333</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mf">1.2083</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">bs</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">Tc</span>
 
-    <span class="k">return</span> <span class="n">H0</span> <span class="o">+</span> <span class="n">omega</span><span class="o">*</span><span class="n">H1</span> <span class="o">+</span> <span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">H2</span>
+    <span class="k">return</span> <span class="n">H0</span> <span class="o">+</span> <span class="n">omega</span><span class="o">*</span><span class="n">H1</span> <span class="o">+</span> <span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">H2</span></div>
 
-<span class="nd">@Hvap</span>
+<div class="viewcode-block" id="Velasco"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Velasco">[docs]</a><span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">Velasco</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at arbitrary temperatures using a</span>
-<span class="sd">    the work of [1]_; requires a chemical&#39;s critical temperature and</span>
-<span class="sd">    acentric factor.</span>
-
-<span class="sd">    The enthalpy of vaporization is given by:</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    T : float</span>
-<span class="sd">        Temperature of fluid [K]</span>
-<span class="sd">    Tc : float</span>
-<span class="sd">        Critical temperature of fluid [K]</span>
-<span class="sd">    omega : float</span>
-<span class="sd">        Acentric factor [-]</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Hvap : float</span>
-<span class="sd">        Enthalpy of vaporization, [J/mol]</span>
-
+    <span class="sd">&quot;&quot;&quot;*</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}</span>
+<span class="sd">    </span>
 <span class="sd">    The original article has been reviewed. It is regressed from enthalpy of</span>
 <span class="sd">    vaporization values at 0.7Tr, from 121 fluids in REFPROP 9.1.</span>
 <span class="sd">    A value in the article was read to be similar, but slightly too low from</span>
@@ -731,22 +674,21 @@
 <span class="sd">       and Constant-Volume Heat Capacity at Vaporization.&quot; The Journal of</span>
 <span class="sd">       Chemical Thermodynamics 85 (June 2015): 68-76.</span>
 <span class="sd">       doi:10.1016/j.jct.2015.01.011.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mf">7.2729</span> <span class="o">+</span> <span class="mf">10.4962</span><span class="o">*</span><span class="n">omega</span> <span class="o">+</span> <span class="mf">0.6061</span><span class="o">*</span><span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="mf">0.38</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">Tc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">7.2729</span> <span class="o">+</span> <span class="mf">10.4962</span><span class="o">*</span><span class="n">omega</span> <span class="o">+</span> <span class="mf">0.6061</span><span class="o">*</span><span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="mf">0.38</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">Tc</span></div>
 
 
 <span class="c1">### Enthalpy of Vaporization at Normal Boiling Point.</span>
 
-<div class="viewcode-block" id="Riedel"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Riedel">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">Riedel</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+<div class="viewcode-block" id="Riedel"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Riedel">[docs]</a><span class="k">def</span> <span class="nf">Riedel</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at the boiling point, using the</span>
 <span class="sd">    Ridel [1]_ CSP method. Required information are critical temperature</span>
 <span class="sd">    and pressure, and boiling point. Equation taken from [2]_ and [3]_.</span>
 
-<span class="sd">    The enthalpy of vaporization is given by:</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}</span>
+<span class="sd">        \Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -795,12 +737,11 @@
     <span class="n">Tbr</span> <span class="o">=</span> <span class="n">Tb</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">return</span> <span class="mf">1.093</span><span class="o">*</span><span class="n">Tb</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.013</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">0.93</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Chen"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Chen">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">Chen</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+<div class="viewcode-block" id="Chen"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Chen">[docs]</a><span class="k">def</span> <span class="nf">Chen</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization using the Chen [1]_ correlation</span>
 <span class="sd">    and a chemical&#39;s critical temperature, pressure and boiling point.</span>
 
-<span class="sd">    The enthalpy of vaporization is given by:</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \Delta H_{vb} = RT_b \frac{3.978 T_r - 3.958 + 1.555 \ln P_c}{1.07 - T_r}</span>
@@ -848,13 +789,12 @@
     <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E5</span>  <span class="c1"># Pa to bar</span>
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tb</span><span class="o">*</span><span class="p">(</span><span class="mf">3.978</span><span class="o">*</span><span class="n">Tbr</span> <span class="o">-</span> <span class="mf">3.958</span> <span class="o">+</span> <span class="mf">1.555</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">1.07</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Liu"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Liu">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">Liu</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+<div class="viewcode-block" id="Liu"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Liu">[docs]</a><span class="k">def</span> <span class="nf">Liu</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at the normal boiling point using</span>
 <span class="sd">    the Liu [1]_ correlation, and a chemical&#39;s critical temperature, pressure</span>
 <span class="sd">    and boiling point.</span>
 
-<span class="sd">    The enthalpy of vaporization is given by:</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \Delta H_{vap} = RT_b \left[ \frac{T_b}{220}\right]^{0.0627} \frac{</span>
@@ -904,13 +844,12 @@
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tb</span><span class="o">*</span><span class="p">(</span><span class="n">Tb</span><span class="o">/</span><span class="mf">220.</span><span class="p">)</span><span class="o">**</span><span class="mf">0.0627</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span><span class="o">**</span><span class="mf">0.38</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span><span class="p">)</span> \
         <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tbr</span> <span class="o">+</span> <span class="mf">0.38</span><span class="o">*</span><span class="n">Tbr</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Tbr</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Vetere"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Vetere">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">Vetere</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Vetere"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Vetere">[docs]</a><span class="k">def</span> <span class="nf">Vetere</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates enthalpy of vaporization at the boiling point, using the</span>
 <span class="sd">    Vetere [1]_ CSP method. Required information are critical temperature</span>
 <span class="sd">    and pressure, and boiling point. Equation taken from [2]_.</span>
 
-<span class="sd">    The enthalpy of vaporization is given by:</span>
+<span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}</span>
@@ -967,7 +906,7 @@
 
 
 <span class="c1">### Enthalpy of Vaporization adjusted for T</span>
-<span class="nd">@Hvap</span>
+<div class="viewcode-block" id="Watson"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Watson">[docs]</a><span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">Watson</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Hvap_ref</span><span class="p">,</span> <span class="n">T_ref</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Adjusts enthalpy of vaporization of enthalpy for another temperature, for one temperature.</span>
@@ -975,7 +914,7 @@
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">Trefr</span> <span class="o">=</span> <span class="n">T_ref</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">H2</span> <span class="o">=</span> <span class="n">Hvap_ref</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Trefr</span><span class="p">))</span><span class="o">**</span><span class="n">exponent</span>
-    <span class="k">return</span> <span class="n">H2</span>
+    <span class="k">return</span> <span class="n">H2</span></div>
 
 <span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">Alibakhshi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
@@ -995,39 +934,39 @@
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Perrys2_150</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Perrys2_150</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ106</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ106</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDI_PPDS_4</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span>  <span class="n">MW</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">_VDI_PPDS_4</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">VDI_PPDS</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">VDI_PPDS</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Riedel</span><span class="p">,</span> <span class="n">Chen</span><span class="p">,</span> <span class="n">Vetere</span><span class="p">,</span> <span class="n">Liu</span><span class="p">):</span>
             <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)):</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Clapeyron</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">Psat</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Clapeyron</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">Psat</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MK</span><span class="p">,</span> <span class="n">SMK</span><span class="p">,</span> <span class="n">Velasco</span><span class="p">,</span> <span class="n">Pitzer</span><span class="p">):</span>
-            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
         <span class="n">Ts</span><span class="p">,</span> <span class="n">Hvaps</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap&#39;</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Hvaps</span><span class="p">,</span> <span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Alibakhshi_Cs</span> <span class="ow">and</span> <span class="n">Tc</span><span class="p">:</span>
         <span class="n">C</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_Alibakhshi_Cs</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">])</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Alibakhshi</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Alibakhshi</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">]):</span>
         <span class="n">Tb</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">])</span>
         <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">]):</span>
         <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
         <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
 
 
 <span class="c1">### Heat of Fusion</span>
