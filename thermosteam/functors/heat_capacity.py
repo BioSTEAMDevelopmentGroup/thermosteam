@@ -441,7 +441,7 @@ def Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(T, Tc, a1, a2, a3, a4, 
     return R*(a3*logT -a1*polylog2(T/Tc) - a2*(-logT + 0.5*log(term*term))
               + T*(T*(T*a6/(3.*Tc3) + a5/(2.*Tc2)) + a4/Tc))
 
-@S.l(njitcompile=False)
+@S.l
 def Zabransky_Quasi_Polynomial_Over_T_Integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a6):
     return (Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Tb, Tc, a1, a2, a3, a4, a5, a6)
             - Zabransky_Quasi_Polynomial_Over_T_Indefinte_Integral(Ta, Tc, a1, a2, a3, a4, a5, a6))

@@ -5,7 +5,6 @@ Created on Wed Nov 13 10:06:46 2019
 @author: yoelr
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
-from ..utils import MathString, MathSection
 from ..exceptions import AutodocError
 
 __all__ = ('Documenter', 'autodoc_functor')
@@ -13,22 +12,34 @@ __all__ = ('Documenter', 'autodoc_functor')
 # %% Utilities
 
 class Documenter:
-    __slots__ = ('definitions', 'units', 'types')
+    __slots__ = ('units_of_measure', 'definitions', 'types')
     
     def __init__(self, units_of_measure, definitions, types):
-        self.units = units_of_measure
+        self.units_of_measure = units_of_measure
         self.definitions = definitions
         self.types = types
 
     def get_definition(self, var):
-        return self.definitions.get(var, "") or definitions.get(var, "")
+        user_defs = self.definitions
+        if user_defs:
+            return user_defs.get(var, "") or definitions.get(var, "")
+        else:
+            return definitions.get(var, "")
     
     def get_units(self, var):
         var, *_ = var.split(".")
-        return self.units.get(var) or chemical_units_of_measure.get(var)
+        units_of_measure = self.units_of_measure
+        if units_of_measure:
+            return self.units_of_measure.get(var) or chemical_units_of_measure.get(var)
+        else:
+            return chemical_units_of_measure.get(var)
     
     def get_type(self, var):
-        return self.types.get(var) or types.get(var) or 'float'
+        user_types = self.types
+        if user_types:
+            return user_types.get(var) or types.get(var) or 'float'
+        else:
+            return types.get(var)
 
     def describe_functor(self, functor, equation, ref):
         var = functor.var
@@ -54,11 +65,11 @@ class Documenter:
         parameters = ("Parameters" + new_line 
                      +"----------" + new_line)
         sub_line = new_line + "    "
-        definitions = self.definitions
+        defs = self.definitions or definitions
         defined_vars = []
         coefficients = []
         for var in vars:
-            if var in definitions: defined_vars.append(var)
+            if var in defs: defined_vars.append(var)
             else: coefficients.append(var)
         for var in defined_vars:
             parameters += (self.describe_parameter_type(var) + sub_line
@@ -89,9 +100,19 @@ class Documenter:
 
 # %% Autodoc
 
-def autodoc_functor(functor, equation=None, ref=None, tabs=1):
-    if not functor.var: return
-    autodoc = Documenter(functor.units_of_measure, functor.definitions, functor.types)
+def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
+                    units_of_measure=None, definitions=None, types=None):
+    auto = merge = fill = False
+    if doc == 'auto-doc':
+        auto = True
+    elif doc == 'auto-merge':
+        merge = True
+    elif doc == 'auto-fill': 
+        fill = True
+    else:
+        raise ValueError("`doc` key-word argument must be either 'auto-doc', 'auto-merge', or 'auto-fill'")
+    
+    autodoc = Documenter(units_of_measure, definitions, types)
     function = functor.function
     header = autodoc.describe_functor(functor,
                                       equation or function.__name__.replace('_', ' '),
@@ -99,22 +120,20 @@ def autodoc_functor(functor, equation=None, ref=None, tabs=1):
     params = functor.params
     new_line = "\n" + (tabs * 4) * " "
     parameters = autodoc.describe_all_parameters(params, new_line) if params else "" 
-        
-    doc = function.__doc__
-    function.__doc__ = None
-    if doc:
-        if doc[:2] == '*\n':
-            doc = _join_sections(header, parameters, new_line) + doc[1:]
-        else:
-            try:
-                doc = doc.format(Header=header, Parameters=parameters)
-            except Exception as error:
-                raise AutodocError('formatting issue => '
-                                  f'{type(error).__name__}: {error}')
-    else:
-        doc = _join_sections(header, parameters, new_line)
-    functor.__doc__ = doc
-
+    
+    if auto:
+        functor.__doc__ = _join_sections(header, parameters, new_line)
+        return
+    elif merge:
+        functor.__doc__ = _join_sections(header, parameters, new_line) + (function.__doc__ or "")
+    elif fill:
+        try:
+            functor.__doc__ = function.__doc__.format(Header=header,
+                                                      Parameters=parameters)
+        except Exception as error:
+            raise AutodocError('formatting issue => '
+                              f'{type(error).__name__}: {error}')
+    
 def _join_sections(header, parameters, new_line):
     double_new_line = 2 * new_line
     doc = header + double_new_line 

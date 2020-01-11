@@ -181,17 +181,17 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos):
         _, C1, C2, C3, C4, Tmin, Tmax = _Perry_l[CAS]
         data = (C1, C2, C3, C4, True)
         handle.model(DIPPR_EQ105.from_args(data), Tmin, Tmax)
-    if Tc and Pc and CAS in _COSTALD:
-        Zc_ = _COSTALD.at[CAS, 'Z_RA']
-        if not np.isnan(Zc_): Zc_ = float(Zc_)
-        data = (Tc, Pc, Zc_)
-        handle.model(Rackett.from_args(data), Tmin, Tmax)
-        # Roughly data at STP; not guaranteed however; not used for Trange
-    if Tc and CAS in _COSTALD:
-        Vc = float(_COSTALD.at[CAS, 'Vchar'])
-        omega = float(_COSTALD.at[CAS, 'omega_SRK'])
-        data = (Tc, Vc, omega)
-        handle.model(Costald.from_args(data), 0, Tc, )
+    # if Tc and Pc and CAS in _COSTALD:
+    #     Zc_ = _COSTALD.at[CAS, 'Z_RA']
+    #     if not np.isnan(Zc_): Zc_ = float(Zc_)
+    #     data = (Tc, Pc, Zc_)
+    #     handle.model(Rackett.from_args(data), Tmin, Tmax)
+    #     # Roughly data at STP; not guaranteed however; not used for Trange
+    # if Tc and CAS in _COSTALD:
+    #     Vc = float(_COSTALD.at[CAS, 'Vchar'])
+    #     omega = float(_COSTALD.at[CAS, 'omega_SRK'])
+    #     data = (Tc, Vc, omega)
+    #     handle.model(Costald.from_args(data), 0, Tc, )
     if CAS in _VDI_PPDS_2:
         _, MW, Tc_, rhoc, A, B, C, D = _VDI_PPDS_2[CAS]
         data = (Tc, A, B, C, D, rhoc, MW)

@@ -222,9 +222,13 @@ definitions = {'MW': 'Molecular weight',
                'omega': 'Acentric factor',
                'delta': 'Solubility parameter',
                'epsilon': 'Relative permittivity',
+               'similarity_variable': 'Heat capacity similarity variable',
+               'iscyclic_aliphatic': 'Whether a chemical is cyclic aliphatic',
 }
 
 types = {}
+types['iscyclic_aliphatic'] = 'bool'
+
 # Synonyms
 for i, j in [('ω', 'omega')]:
     definitions[i] = definitions[j]

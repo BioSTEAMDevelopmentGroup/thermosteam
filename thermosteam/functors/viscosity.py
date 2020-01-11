@@ -66,7 +66,7 @@ def VDI(T, A, B, C, D, E):
     term2 = term*term1
     return E*exp(A*term1 + B*term2)
 
-@mu.l(njitcompile=False)
+@mu.l
 def Lucas(T, P, Tc, Pc, omega, P_sat, mu):
     Tr = T/Tc
     C = -0.07921+2.1616*Tr - 13.4040*Tr**2 + 44.1706*Tr**3 - 84.8291*Tr**4 \

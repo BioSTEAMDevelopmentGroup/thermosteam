@@ -419,7 +419,7 @@ class Stream:
             
         self.mol[index] = mol[index]
         if remove: 
-            if isinstance(stream, multi_stream.MultiStream):
+            if isinstance(stream, ms.MultiStream):
                 mol[..., index] = 0
             else:
                 mol[index] = 0

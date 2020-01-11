@@ -249,7 +249,7 @@ def Tm(CASRN, AvailableMethods=False, Method=None, IgnoreMethods=[]):
 @Hvap(ref="[1]_",
       types={'dZ': 'function(T)', 'Psat': 'function(T)'})
 def Clapeyron(T, Tc, Pc, V, Psat):
-    r"""*
+    r"""
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:
@@ -283,7 +283,7 @@ def Clapeyron(T, Tc, Pc, V, Psat):
 
 @Hvap(ref="[2, 1]_")
 def Pitzer(T, Tc, omega):
-    r"""*
+    r"""
     Notes
     -----
     
@@ -322,7 +322,7 @@ def Pitzer(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def SMK(T, Tc, omega):
-    r"""*
+    r"""
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:
@@ -395,7 +395,7 @@ def SMK(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def MK(T, Tc, omega):
-    r"""*
+    r"""
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:
@@ -456,7 +456,7 @@ def MK(T, Tc, omega):
 
 @Hvap(ref="[1]_")
 def Velasco(T, Tc, omega):
-    r"""*
+    r"""
     Notes
     -----
     The enthalpy of vaporization (Hvap; in J/mol) is given by:

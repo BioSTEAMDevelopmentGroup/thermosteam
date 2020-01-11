@@ -140,6 +140,7 @@ class CompiledChemicals(Chemicals):
         dct['tuple'] = chemicals
         dct['size'] = N
         dct['IDs'] = IDs
+        dct['CASs'] = tup([i.CAS for i in chemicals])
         dct['MW'] = np.array([i.MW for i in chemicals])
         dct['Hf'] = np.array([i.Hf for i in chemicals])
         dct['Hc'] = np.array([i.Hc for i in chemicals])

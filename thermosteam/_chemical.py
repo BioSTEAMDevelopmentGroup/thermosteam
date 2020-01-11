@@ -300,7 +300,7 @@ class Chemical:
         # Other
         self.dipole = dipole(CAS)
         self.similarity_variable = similarity_variable(atoms, MW)
-        self.iscyclic_aliphatic = None
+        self.iscyclic_aliphatic = False
 
     def _init_eos(self, eos, Tc, Pc, omega):
         self.eos = create_eos(eos, Tc, Pc, omega)
