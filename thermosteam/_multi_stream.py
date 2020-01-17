@@ -293,7 +293,7 @@ class MultiStream(Stream):
     
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
-        from .material_indexer import nonzeros
+        from .indexer import nonzeros
         IDs = self.chemicals.IDs
         basic_info = self._basic_info()
         all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol)

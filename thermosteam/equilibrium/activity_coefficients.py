@@ -148,11 +148,13 @@ class GroupActivityCoefficients(ActivityCoefficients):
         x = np.asarray(x)
         psis = self.psi(T, self._interactions.copy())
         self._group_psis[self._group_mask] =  psis[self._group_mask]
-        return group_activity_coefficients(x, self._chemgroups,
-                                           self.loggammacs(self._qs, self._rs, x),
-                                           self._Qs, psis,
-                                           self._chem_Qfractions,
-                                           self._group_psis)
+        gamma =  group_activity_coefficients(x, self._chemgroups,
+                                             self.loggammacs(self._qs, self._rs, x),
+                                             self._Qs, psis,
+                                             self._chem_Qfractions,
+                                             self._group_psis)
+        gamma[np.isnan(gamma)] = 1
+        return gamma
     
     
 class UNIFACActivityCoefficiencts(GroupActivityCoefficients):

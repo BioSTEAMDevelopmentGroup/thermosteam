@@ -157,6 +157,7 @@ chemical_units_of_measure = {'MW': Units('g/mol'),
                              'H_excess': Units('J/mol'), 
                              'S_excess': Units('J/mol'),
                              'R': Units('J/mol/K'),
+                             'dipole': Units('Debye'),
                              'delta': Units('Pa^0.5'),
                              'epsilon': Units(''),
 }
@@ -220,14 +221,16 @@ definitions = {'MW': 'Molecular weight',
                'Zc': 'Critical compressibility',
                'dZ': 'Change in compressibility factor',
                'omega': 'Acentric factor',
+               'dipole': 'Dipole momment',
                'delta': 'Solubility parameter',
                'epsilon': 'Relative permittivity',
                'similarity_variable': 'Heat capacity similarity variable',
                'iscyclic_aliphatic': 'Whether a chemical is cyclic aliphatic',
+               'has_hydroxyl': 'Whether a polar chemical has hydroxyl groups',
 }
 
 types = {}
-types['iscyclic_aliphatic'] = 'bool'
+types['iscyclic_aliphatic'] = types['has_hydroxy'] = 'bool'
 
 # Synonyms
 for i, j in [('ω', 'omega')]:

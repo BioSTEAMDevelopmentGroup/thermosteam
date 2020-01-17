@@ -136,7 +136,8 @@ def SurfaceTension(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, StielPolar, Hvap_
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'sigma')
         Tmin = Ts[0]
-        Tmax = Ts[-1]
+        *Ts, Tmax = Ts
+        Ys = Ys[:-1]
         handle.model(InterpolatedTDependentModel(Ts, Ys), Tmin, Tmax)
     if CAS in _Jasper_Lange:
         _, a, b, Tmin, Tmax= _Jasper_Lange[CAS]

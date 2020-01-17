@@ -5,7 +5,6 @@ Created on Wed Nov 13 10:06:46 2019
 @author: yoelr
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
-from ..exceptions import AutodocError
 
 __all__ = ('Documenter', 'autodoc_functor')
 
@@ -102,15 +101,17 @@ class Documenter:
 
 def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
                     units_of_measure=None, definitions=None, types=None):
-    auto = merge = fill = False
+    auto = merge = header = param = False
     if doc == 'auto-doc':
         auto = True
     elif doc == 'auto-merge':
         merge = True
-    elif doc == 'auto-fill': 
-        fill = True
+    elif doc == 'auto-header': 
+        header = True
+    elif doc == 'auto-param':
+        param = True
     else:
-        raise ValueError("`doc` key-word argument must be either 'auto-doc', 'auto-merge', or 'auto-fill'")
+        raise ValueError("`doc` key-word argument must be either 'auto-doc', 'auto-merge', 'auto-header', or 'auto-param'")
     
     autodoc = Documenter(units_of_measure, definitions, types)
     function = functor.function
@@ -126,13 +127,10 @@ def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
         return
     elif merge:
         functor.__doc__ = _join_sections(header, parameters, new_line) + (function.__doc__ or "")
-    elif fill:
-        try:
-            functor.__doc__ = function.__doc__.format(Header=header,
-                                                      Parameters=parameters)
-        except Exception as error:
-            raise AutodocError('formatting issue => '
-                              f'{type(error).__name__}: {error}')
+    elif header:
+        functor.__doc__ = header + function.__doc__
+    elif param:
+        functor.__doc__ = function.__doc__.replace('[Parameters]\n', parameters + "\n")
     
 def _join_sections(header, parameters, new_line):
     double_new_line = 2 * new_line

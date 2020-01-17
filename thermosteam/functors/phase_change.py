@@ -760,22 +760,23 @@ def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Ps
     if CAS in _VDISaturationDict:
         Ts, Hvaps = VDI_tabular_data(CAS, 'Hvap')
         handle.model(InterpolatedTDependentModel(Ts, Hvaps, Ts[0], Ts[-1]))
-    if CAS in _Alibakhshi_Cs and Tc:
-        C = float(_Alibakhshi_Cs.at[CAS, 'C'])
-        handle.model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
-    if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'HvapTb']):
-        Tb = float(_CRCHvap.at[CAS, 'Tb'])
-        Hvap = float(_CRCHvap.at[CAS, 'HvapTb'])
-        data = dict(Hvap=Hvap, T_ref=Tb, Tc=Tc, exponent=0.38)
-        handle.model(Watson.from_args(data), 0, 10e6)
-    if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'Hvap298']):
-        Hvap = float(_CRCHvap.at[CAS, 'Hvap298'])
-        data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson.from_args(data), 0, 10e6)
-    if CAS in _GharagheiziHvap.index:
-        Hvap = float(_GharagheiziHvap.at[CAS, 'Hvap298'])
-        data = dict(Hvap=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-        handle.model(Watson.from_args(data), 0, 10e6)
+    if Tc:
+        if CAS in _Alibakhshi_Cs:
+            C = float(_Alibakhshi_Cs.at[CAS, 'C'])
+            handle.model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
+        if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'HvapTb']):
+            Tb = float(_CRCHvap.at[CAS, 'Tb'])
+            Hvap = float(_CRCHvap.at[CAS, 'HvapTb'])
+            data = dict(Hvap_ref=Hvap, T_ref=Tb, Tc=Tc, exponent=0.38)
+            handle.model(Watson.from_kwargs(data), 0, 10e6)
+        if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'Hvap298']):
+            Hvap = float(_CRCHvap.at[CAS, 'Hvap298'])
+            data = dict(Hvap_ref=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
+            handle.model(Watson.from_kwargs(data), 0, 10e6)
+        if CAS in _GharagheiziHvap.index:
+            Hvap = float(_GharagheiziHvap.at[CAS, 'Hvap298'])
+            data = dict(Hvap_ref=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
+            handle.model(Watson.from_kwargs(data), 0, 10e6)
 
 
 ### Heat of Fusion

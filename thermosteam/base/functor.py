@@ -5,7 +5,7 @@ Created on Sat Oct 26 04:26:20 2019
 @author: yoelr
 """
 from .units_of_measure import chemical_units_of_measure, definitions, types
-from ..utils import var_with_units, get_obj_values
+from ..utils import var_with_units, get_obj_values, repr_kwargs
 from .documenter import autodoc_functor
 from inspect import signature
 
@@ -195,23 +195,50 @@ class PureComponentFunctor(Functor):
         else:
             return lambda wrap: cls.wrapper(wrap, **autodoc)
     
-    def show(self):
+    def _object_info(self):
+        return f"{type(self).__name__}({repr_kwargs(self.get_data(), start='')})"
+    
+    def _functor_info(self):
         info = f"Functor: {display_asfunctor(self)}"
         data = self._data
         units = self.units_of_measure
         for key, value in data.items():
-            if value is None:
+            if callable(value):
+                value = display_asfunctor(value, show_var=False)
                 info += f"\n {key}: {value}"
                 continue
+            try:
+                info += f"\n {key}: {value:.5g}"
+            except:
+                info += f"\n {key}: {value}"
             else:
-                try:
-                    info += f"\n {key}: {value:.5g}"
-                except:
-                    info += f"\n {key}: {value}"    
-                else:
-                    key, *_ = key.split('_')
-                    u = units.get(key) or chemical_units_of_measure.get(key)
-                    if u: info += ' ' + str(u)
+                key, *_ = key.split('_')
+                u = units.get(key) or chemical_units_of_measure.get(key)
+                if u: info += ' ' + str(u)
+        return info
+    
+    def _example_info(self, **kwargs):
+        obj_info = self._object_info()
+        f_info = self._functor_info()
+        f_info.replace('\n', 4*' ')
+        value = self(**kwargs)
+        call_sig = repr_kwargs(kwargs, start="")
+        return (f">>> f = {obj_info}\n"
+                f">>> f\n"
+                f"{f_info}\n"
+                f">>> f({call_sig})\n"
+                f"{value}")
+    
+    def _show_example(self, **kwargs):
+        print(self._example_info(**kwargs))
+    
+    def show(self, format='functor'):
+        if format == 'object':
+            info = self._object_info()
+        elif format == 'functor':
+            info = self._functor_info()
+        else:
+            raise ValueError(f"format must be either 'functor' or 'object', not {repr(format)}")
         print(info)
         
     _ipython_display_ = show
