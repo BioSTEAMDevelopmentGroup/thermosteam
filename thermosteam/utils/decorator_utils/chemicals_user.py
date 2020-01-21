@@ -18,5 +18,5 @@ def chemicals(self):
     return self._chemicals
 
 def _load_chemicals(self, chemicals):
-    self._chemicals = tmo.settings.get_chemicals(chemicals)
+    self._chemicals = chemicals = tmo.settings.get_default_chemicals(chemicals)
     return chemicals

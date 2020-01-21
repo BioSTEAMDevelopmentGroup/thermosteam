@@ -77,11 +77,19 @@ class Chemicals:
     
     def append(self, chemical):
         """Append a Chemical."""
+        assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
+                                               f"not '{type(chemical).__name__}'")
         setattr(self, chemical.ID, chemical)
     
     def extend(self, chemicals):
         """Extend with more Chemical objects."""
-        for c in chemicals: setattr(self, c.ID, c)
+        if isinstance(chemicals, Chemicals):
+            self.__dict__.update(chemicals.__dict__)
+        else:
+            for chemical in chemicals:
+                assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
+                                                        f"not '{type(chemical).__name__}'")
+                setattr(self, chemical.ID, chemical)
     
     kwarray = array = index = indices = must_compile
         

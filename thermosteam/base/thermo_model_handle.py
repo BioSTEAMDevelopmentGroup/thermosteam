@@ -14,13 +14,6 @@ __all__ = ('ThermoModelHandle',
 
 # %% Utilities
 
-def find_constant_model(models, T, P):
-    isa = isinstance
-    CTM = ConstantThermoModel
-    for model in models:
-        if isa(model, CTM) and model.indomain(T, P): return model
-            
-
 def get_not_a(obj, cls):
     isa = isinstance
     if isa(obj, cls):
@@ -88,7 +81,7 @@ class ThermoModelHandle:
             self.models.appendleft(model)
         else:
             self.models.append(model)    
-        return model
+        return evaluate
        
     def show(self):
         if self.models:
@@ -107,13 +100,8 @@ class TDependentModelHandle(ThermoModelHandle):
     
     def lock_TP(self, T, P=None):
         models = self.models
-        constant_model = find_constant_model(models, T, P)
-        if constant_model:
-            models.remove(constant_model)
-        else:
-            constant_model = ConstantThermoModel(self(T))
-        models.insert(0, constant_model)
-        return constant_model.value
+        constant_model = ConstantThermoModel(self(T))
+        models.appendleft(constant_model)
         
     @property
     def Tmin(self):
@@ -195,13 +183,8 @@ class TPDependentModelHandle(ThermoModelHandle):
     
     def lock_TP(self, T, P):
         models = self.models
-        constant_model = find_constant_model(models, T, P)
-        if constant_model:
-            models.remove(constant_model)
-        else:
-            constant_model = ConstantThermoModel(self(T, P))
-        models.insert(0, constant_model)
-        return constant_model.value
+        constant_model = ConstantThermoModel(self(T, P))
+        models.appendleft(constant_model)
     
     @property
     def Pmin(self):

@@ -12,12 +12,13 @@ class Settings:
     __slots__ = ('_thermo',
                  '_phase_names',
                  '_debug',
-                 '_dark_mode')
+    #             '_dark_mode'
+    )
     
     def __init__(self):
         self._thermo = None
         self._debug = __debug__
-        self._dark_mode = True
+        # self._dark_mode = True
         self._phase_names = {'s': 'Solid',
                              'l': 'Liquid',
                              'g': 'Gas',
@@ -32,25 +33,25 @@ class Settings:
     def debug(self, debug):
         self._debug = bool(debug)
     
-    @property
-    def dark_mode(self):
-        return self._dark_mode
-    @dark_mode.setter
-    def dark_mode(self, dark_mode):
-        self._dark_mode = bool(dark_mode)
+    # @property
+    # def dark_mode(self):
+    #     return self._dark_mode
+    # @dark_mode.setter
+    # def dark_mode(self, dark_mode):
+    #     self._dark_mode = bool(dark_mode)
     
     @property
     def phase_names(self):
         return self._phase_names
     
-    def get_thermo(self, thermo):
+    def get_default_thermo(self, thermo):
         if not thermo:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
                             "set settings.thermo first")
         return thermo
     
-    def get_chemicals(self, chemicals):
+    def get_default_chemicals(self, chemicals):
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
         if not chemicals:
@@ -62,7 +63,7 @@ class Settings:
             chemicals.compile()
         return chemicals
     
-    def get_mixture(self, mixture):
+    def get_default_mixture(self, mixture):
         if not mixture:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
@@ -82,6 +83,6 @@ class Settings:
                             f"not a '{type(thermo).__name__}'")
     
     def __repr__(self):
-        return "<ThermoSTEAM Settings>"
+        return "<Settings>"
     
 settings = Settings()

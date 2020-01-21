@@ -215,9 +215,11 @@ class MultiStream(Stream):
         """
         chemicals = self.chemicals
         if exclude:
-            IDs = chemicals.get_index(IDs)
+            not_index = chemicals.get_index(IDs)
             index = np.ones(chemicals.size, dtype=bool)
-            index[IDs] = False
+            index[not_index] = False
+        else:
+            index = chemicals.get_index(IDs)
         
         if isinstance(stream, MultiStream):
             stream_phase_imol = stream.imol[phase]

@@ -357,6 +357,7 @@ class Stream:
     ### Stream methods ###
     
     def mix_from(self, others):
+        others = [i for i in others if i]
         if len(others) == 1:
             self.copy_like(others[0])
         else:
@@ -427,7 +428,7 @@ class Stream:
     def copy(self):
         cls = self.__class__
         new = cls.__new__(cls)
-        new._ID = None
+        new._sink = new._source = new._ID = None
         new._thermo = self._thermo
         new._imol = self._imol.copy()
         new._TP = self._TP.copy()
