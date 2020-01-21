@@ -26,7 +26,7 @@ class DewPointValues:
         self.x = x
         
     def __repr__(self):
-        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, x={self.y})"
+        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, x={self.x})"
 
 
 # %% Dew point calculation
@@ -46,7 +46,7 @@ class DewPoint:
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
-        thermo = settings.get_thermo(thermo)
+        thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo)
         cached = self._cached
@@ -64,13 +64,13 @@ class DewPoint:
             self.P = self.T = self.x = None
             cached[key] = self
     
-    def _T_error(self, T, P, z, zP):
-        x_gamma_pcf = zP/array([i(T) for i in self.Psats]) * self.phi(z, T, P)
+    def _T_error(self, T, P, z_norm, zP):
+        x_gamma_pcf = zP/array([i(T) for i in self.Psats]) * self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
-    def _P_error(self, P, T, z, z_over_Psats):
-        x_gamma_pcf = z_over_Psats*P*self.phi(z, T, P)
+    def _P_error(self, P, T, z_norm, z_over_Psats):
+        x_gamma_pcf = z_over_Psats*P*self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
@@ -110,8 +110,9 @@ class DewPoint:
         (357.45184742263075, array([0.151, 0.849]))
         """
         z = asarray(z)
+        z_norm = z/z.sum()
         zP = z * P
-        args = (P, z, zP)
+        args = (P, z_norm, zP)
         self.P = P
         T = self.T or (z * self.Tbs).sum()
         try:
@@ -152,9 +153,10 @@ class DewPoint:
  
        """
         z = asarray(z)
+        z_norm = z/z.sum()
         Psats = array([i(T) for i in self.Psats], dtype=float)
         z_over_Psats = z/Psats
-        args = (T, z, z_over_Psats)
+        args = (T, z_norm, z_over_Psats)
         self.T = T
         P = self.P or (z * Psats).sum()
         try:

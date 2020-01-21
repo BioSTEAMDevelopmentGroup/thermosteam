@@ -152,14 +152,29 @@ class CompiledChemicals(Chemicals):
         dct['MW'] = np.array([i.MW for i in chemicals])
         dct['Hf'] = np.array([i.Hf for i in chemicals])
         dct['Hc'] = np.array([i.Hc for i in chemicals])
-        dct['_index'] = dict((*zip(CAS, index), *zip(IDs, index)))
-        light_values = (0, -np.inf)
-        heavy_values = (np.inf, None)
-        nonfinite = (np.inf, -np.inf, None)
-        dct['_islight'] = np.array([(i.Tb in light_values) for i in chemicals], dtype=bool)
-        dct['_isheavy'] = np.array([(i.Tb in heavy_values) for i in chemicals])
-        dct['_has_equilibrium'] = np.array([(i.Tb not in nonfinite) for i in chemicals])
+        dct['_index'] = index = dict((*zip(CAS, index),
+                                      *zip(IDs, index)))
         dct['_index_cache'] = {}
+        dct['equilibrium_chemicals'] = equilibrium_chemicals = []
+        dct['heavy_chemicals'] = heavy_chemicals = []
+        dct['light_chemicals'] = light_chemicals = []
+        for i in chemicals:
+            locked_phase = i.locked_state.phase
+            if locked_phase:
+                if locked_phase in ('s', 'l'):
+                    heavy_chemicals.append(i)
+                elif locked_phase == 'g':
+                    light_chemicals.append(i)
+                else:
+                    raise Exception('chemical locked state has an invalid phase')
+            else:
+                equilibrium_chemicals.append(i)
+        dct['_equilibrium_indices'] = eq_index = [index[i.ID] for i in equilibrium_chemicals]
+        dct['_has_equilibrium'] = has_equilibrium = np.zeros(N, dtype=bool)
+        dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
+        dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
+        has_equilibrium[eq_index] = True
+        
     
     def subgroup(self, IDs):
         chemicals = self.retrieve(IDs)
@@ -319,17 +334,9 @@ class CompiledChemicals(Chemicals):
     def __iter__(self):
         return iter(self.tuple)
         
-    def equilibrium_indices(self, nonzero):
+    def get_equilibrium_indices(self, nonzero):
         """Return indices of species in equilibrium."""
         return np.where(self._has_equilibrium & nonzero)[0]
-
-    def heavy_indices(self, nonzero):
-        """Return indices of heavy species not in equilibrium."""
-        return np.where(self._isheavy & nonzero)[0]
-
-    def light_indices(self, nonzero):
-        """Return indices of light species not in equilibrium."""
-        return np.where(self._islight & nonzero)[0]
     
     def __str__(self):
         return f"[{', '.join(self.IDs)}]"

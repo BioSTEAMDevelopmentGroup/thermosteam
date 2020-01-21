@@ -554,6 +554,19 @@ class Chemical:
             self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self.eos_1atm = self.eos.to_TP(298.15, 101325)
         if 'Cn' in slots:
+            MW = self.MW
+            Cn = self.Cn
+            phase_ref = self.phase_ref
+            getfield = getattr
+            single_phase = isinstance(Cn, TDependentModelHandle)
+            if single_phase:
+                Cn.model(4.18*MW, var='Cn')
+                Cn_phase = Cn
+            else:
+                Cn_phase = getfield(Cn, phase_ref)
+                Cn_phase.model(4.18*MW, var='Cn')
+            self.load_free_energies()
+        elif 'H' in slots:
             self.load_free_energies()
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
@@ -562,23 +575,14 @@ class Chemical:
         return missing
     
     def load_free_energies(self):
-        MW = self.MW
         Cn = self.Cn
-        phase_ref = self.phase_ref
-        getfield = getattr
         single_phase = isinstance(Cn, TDependentModelHandle)
-        if single_phase:
-            Cn.model(4.18*MW, var='Cn')
-            Cn_phase = Cn
-        else:
-            Cn_phase = getfield(Cn, phase_ref)
-            Cn_phase.model(4.18*MW, var='Cn')
         if not self.eos:
             self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self.eos_1atm = self.eos.to_TP(298.15, 101325)
         self._init_energies(Cn, self.Hvap, self.Psat, self.Hfus, self.Tm,
                             self.Tb, self.eos, self.eos_1atm, self.phase_ref,
-                            single_phase and phase_ref)
+                            single_phase and self.phase_ref)
     
     def get_missing_slots(self, slots=None):
         getfield = getattr

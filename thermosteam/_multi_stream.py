@@ -53,7 +53,7 @@ class MultiStream(Stream):
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='gl', units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
-        self._thermo = thermo = thermo or settings.get_thermo(thermo)
+        thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
         self.price = price
         if units:
@@ -251,6 +251,18 @@ class MultiStream(Stream):
         z = self.imass[..., IDs].sum(0)
         z /= z.sum()
         return z
+    
+    def get_molar_composition(self, IDs):
+        return self.imol[..., IDs].sum(0)/self.F_mol
+    
+    def get_mass_composition(self, IDs):
+        return self.imass[..., IDs].sum(0)/self.F_mass
+    
+    def get_volumetric_composition(self, IDs):
+        return self.ivol[..., IDs].sum(0)/self.F_vol
+    
+    def get_concentration(self, phase, IDs):
+        return self.imol[phase, IDs]/self.F_vol
     
     def mix_from(self, others):
         if settings._debug: assert_same_chemicals(self, others)

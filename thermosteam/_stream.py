@@ -287,7 +287,7 @@ class Stream:
     
     @property
     def C(self):
-        return self.mixture.Cn_at_TP(self.mol, self._TP)
+        return self.mixture.Cn_at_TP(self.phase, self.mol, self._TP)
     
     ### Composition properties ###
     
@@ -362,6 +362,8 @@ class Stream:
             self.copy_like(others[0])
         else:
             assert_same_chemicals(self, others)
+            phase = others[0].phase
+            self.phase = phase
             self.mol[:] = sum([i.mol for i in others])
             self.H = sum([i.H for i in others])
     
@@ -417,6 +419,8 @@ class Stream:
             IDs = chemicals.get_index(IDs)
             index = np.ones(chemicals.size, dtype=bool)
             index[IDs] = False
+        else:
+            index = chemicals.get_index(IDs)
             
         self.mol[index] = mol[index]
         if remove: 
@@ -461,7 +465,7 @@ class Stream:
     def equilibrim_chemicals(self):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.equilibrium_indices(self.mol != 0)
+        indices = chemicals.get_equilibrium_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs=None):
@@ -474,24 +478,24 @@ class Stream:
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
         return dp
     
-    def bubble_point_at_T(self, IDs=None, T=None):
+    def bubble_point_at_T(self, T=None, IDs=None):
         bp = self.get_bubble_point(IDs)
-        z = self.get_normalized_mol(bp.IDs)
+        z = self.get_molar_composition(bp.IDs)
         return bp(z, T=T or self.T)
     
-    def bubble_point_at_P(self, IDs=None, P=None):
+    def bubble_point_at_P(self, P=None, IDs=None):
         bp = self.get_bubble_point(IDs)
-        z = self.get_normalized_mol(bp.IDs)
+        z = self.get_molar_composition(bp.IDs)
         return bp(z, P=P or self.P)
     
-    def dew_point_at_T(self, IDs=None, T=None):
+    def dew_point_at_T(self, T=None, IDs=None):
         dp = self.get_dew_point(IDs)
-        z = self.get_normalized_mol(dp.IDs)
+        z = self.get_molar_composition(dp.IDs)
         return dp(z, T=T or self.T)
     
-    def dew_point_at_P(self, IDs=None, P=None):
+    def dew_point_at_P(self, P=None, IDs=None):
         dp = self.get_dew_point(IDs)
-        z = self.get_normalized_mol(dp.IDs)
+        z = self.get_molar_composition(dp.IDs)
         return dp(z, P=P or self.P)
     
     def get_normalized_mol(self, IDs):
@@ -508,6 +512,26 @@ class Stream:
         z = self.ivol[IDs]
         z /= z.sum()
         return z
+    
+    def get_molar_composition(self, IDs):
+        return self.imol[IDs]/self.F_mol
+    
+    def get_mass_composition(self, IDs):
+        return self.imass[IDs]/self.F_mass
+    
+    def get_volumetric_composition(self, IDs):
+        return self.ivol[IDs]/self.F_vol
+    
+    def get_concentration(self, IDs):
+        return self.imol[IDs]/self.F_vol
+    
+    def recieve_vent(self, other):
+        bp = other.bubble_point_at_T()
+        index = self.chemicals.get_index(bp.IDs)
+        mol = self.mol
+        mol_old = mol[index]
+        mol[index] = mol_new = self.F_mol * bp.y * bp.P / self.P
+        other.mol[index] += mol_old - mol_new 
     
     ### Casting ###
     

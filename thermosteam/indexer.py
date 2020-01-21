@@ -564,12 +564,15 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     f_mol = self.mol[self.index] 
-    return 1000. * f_mol * self.V(self.phase or self.phase_container.phase, *self.TP) if f_mol else 0
+    phase = self.phase or self.phase_container.phase
+    V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+    return 1000. * f_mol * V(*self.TP) if f_mol else 0
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     if value:
-        self.mol[self.index] = value / self.V(self.phase or self.phase_container.phase, *self.TP) / 1000.
+        V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+        self.mol[self.index] = value / V(*self.TP) / 1000.
     else:
         self.mol[self.index] = 0
 
