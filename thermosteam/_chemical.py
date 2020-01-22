@@ -91,7 +91,7 @@ def fill_from_obj(chemical, obj, slots=None):
     for i in slots :
         attr = getfield(obj, i)
         if attr:
-            setfield(obj, i, attr)
+            setfield(chemical, i, attr)
         else:
             missing.append(i)
     return missing
@@ -566,7 +566,7 @@ class Chemical:
                 Cn_phase = getfield(Cn, phase_ref)
                 Cn_phase.model(4.18*MW, var='Cn')
             self.load_free_energies()
-        elif 'H' in slots:
+        if not self.H:
             self.load_free_energies()
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
@@ -659,6 +659,7 @@ class Chemical:
             section = []
             for field in fields:
                 value = getfield(self, field)
+                field = field.lstrip('_')
                 if value is None: continue
                 else:
                     if callable(value):

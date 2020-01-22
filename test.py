@@ -33,7 +33,8 @@ chemicals = chems.retrieve(['Water', 'Ethanol', 'Methanol',
 bp_tmo = eq.BubblePoint(chemicals)
 dp_tmo = eq.DewPoint(chemicals)
 
-mol = imol[..., ('Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol')].sum(0)
+equilibrium_IDs = ('Water', 'Ethanol', 'Methanol', 'Glycerol', 'Propanol')
+mol = imol[..., equilibrium_IDs].sum(0)
 z =  mol / mol.sum()
 T_bp = 350.
 P_bp = 101325 / 5

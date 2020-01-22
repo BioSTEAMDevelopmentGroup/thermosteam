@@ -63,6 +63,7 @@ class Stream:
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
                  '_vle_cache', '_sink', '_source', 'price')
+    line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = thermo_units.DisplayUnits(T='K', P='Pa',
@@ -437,13 +438,15 @@ class Stream:
         new._imol = self._imol.copy()
         new._TP = self._TP.copy()
         new._init_cache()
+        new.price = 0
         return new
     __copy__ = copy
     
     def flow_proxy(self):
         cls = self.__class__
         new = cls.__new__(cls)
-        new._ID = None
+        new._sink = new._source = new._ID = None
+        new.price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data(self._imol)
         imol._data = self._imol._data

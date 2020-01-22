@@ -6,12 +6,14 @@ Created on Sat Nov 23 09:41:02 2019
 """
 from .utils import read_only
 from .exceptions import UndefinedChemical
-from ._chemical import Chemical
+from ._chemical import Chemical, _thermo
 from .indexer import ChemicalIndexer
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
+
+key_thermo_props = ('V', 'S', 'H', 'Cn')
 
 # %% Utilities
 
@@ -140,6 +142,8 @@ class CompiledChemicals(Chemicals):
         dct = self.__dict__
         tup = tuple
         chemicals = tup(dct.values())
+        for i in chemicals:
+            assert not i.get_missing_slots(key_thermo_props), f"{i} is missing key thermodynamic properties"
         IDs = tup([i.ID for i in chemicals])
         CAS = tup([i.CAS for i in chemicals])
         N = len(IDs)

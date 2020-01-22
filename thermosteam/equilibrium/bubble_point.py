@@ -5,7 +5,7 @@ Created on Sun Jul 21 21:30:33 2019
 @author: yoelr
 """
 from numpy import asarray, array
-from flexsolve import aitken_secant
+from flexsolve import aitken_secant, IQ_interpolation
 from .solve_composition import solve_y
 from ..utils import fill_like
 from .._settings import settings
@@ -120,11 +120,16 @@ class BubblePoint:
         try:
             self.T = self.rootsolver(self._T_error, T, T+0.01,
                                      1e-6, 5e-8, args)
-        except:
+        except Exception as Error:
             self.y = z.copy()
             T = (z * self.Tbs).sum()
-            self.T = self.rootsolver(self._T_error, T, T+0.01,
-                                     1e-6, 5e-8, args)
+            f = lambda T: self._T_error(T, *args)
+            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
+            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
+            if Tmin < 10: Tmin = 10
+            self.T = IQ_interpolation(f, Tmin, Tmax,
+                                      f(Tmin), f(Tmax),
+                                      T, 0., 1e-6, 5e-8)
         self.y /= self.y.sum()
         return self.T, self.y
     

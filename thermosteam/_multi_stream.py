@@ -268,12 +268,16 @@ class MultiStream(Stream):
         if settings._debug: assert_same_chemicals(self, others)
         multi = []; single = []; isa = isinstance
         for i in others:
-            (multi if isa(i, MultiStream) else single).append(i)
+            if i: (multi if isa(i, MultiStream) else single).append(i)
         self.empty()
         for i in single:
             self._imol[i.phase] += i.mol    
         self._imol._data[:] += sum([i._imol._data for i in multi])
-        self.H = sum([i.H for i in others])
+        T = others[0].T
+        if all([T==i.T for i in others[1:]]):
+            self.T = T
+        else:
+            self.H = sum([i.H for i in others])
         
     def link_with(self, other):
         if settings._debug:

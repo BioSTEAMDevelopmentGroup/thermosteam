@@ -7,7 +7,8 @@ Created on Mon Sep 30 23:02:53 2019
 __all__ = ('chemical_units_of_measure', 
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
-           'DisplayUnits', 'Units', 'convert')
+           'DisplayUnits', 'Units', 'convert',
+           'Quantity')
 
 from ..exceptions import DimensionError
 
@@ -22,6 +23,7 @@ ureg = UnitRegistry()
 ureg.default_format = '~P'
 ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
 convert = ureg.convert
+Quantity = ureg.Quantity
 del os, UnitRegistry
 
 # %% Manage conversion factors
