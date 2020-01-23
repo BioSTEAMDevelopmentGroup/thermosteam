@@ -24,15 +24,6 @@ class ThermalCache:
         self.condition = condition
         self.nonzero = nonzero
         self.data = data
-    
-    @property
-    def tuple(self):
-        return (self.condition, self.nonzero, self.data)
-    
-    def __iter__(self):
-        yield self.condition
-        yield self.nonzero
-        yield self.data
         
     def __repr__(self):
         return f"{type(self).__name__}(condition={self.condition}, nonzero={self.nonzero}, data={self.data})"
@@ -186,7 +177,7 @@ class IdealMixture:
                  'include_excess_energies', *mixture_methods)
     units = {}
     
-    def __init__(self, chemicals=(), rigorous_energy_balance=False, include_excess_energies=False):
+    def __init__(self, chemicals=(), rigorous_energy_balance=True, include_excess_energies=False):
         self.rigorous_energy_balance = rigorous_energy_balance
         self.include_excess_energies = include_excess_energies
         getfield = getattr
@@ -275,13 +266,13 @@ class IdealMixture:
             it = 0
             it2 = 0
             Cn = self.Cn(phase, z, T_guess)
-            while abs(T - T_guess) > 0.01:
+            while abs(T - T_guess) > 0.1:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    Cn = self.Cn(phase, z, T_guess)
                     if it2 > 5: break # Its good enough, no need to find exact solution
+                    Cn = self.Cn(phase, z, T_guess)
                 else:
                     it += 1
                 T += (H - self.H(phase, z, T, P))/Cn
@@ -295,13 +286,13 @@ class IdealMixture:
             # Solve enthalpy by iteration
             it2 = it = 0
             Cn = self.xCn(phase_data, T_guess)
-            while abs(T - T_guess) > 0.01:
+            while abs(T - T_guess) > 0.1:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    Cn = self.xCn(phase_data, T_guess)
                     if it2 > 5: break # Its good enough, no need to find exact solution
+                    Cn = self.xCn(phase_data, T_guess)
                 else:
                     it += 1
                 T += (H - self.xH(phase_data, T, P))/Cn

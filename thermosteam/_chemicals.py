@@ -240,7 +240,7 @@ class CompiledChemicals(Chemicals):
         
         """
         array = np.zeros(len(self))
-        array[self.indices(IDs)] = data
+        array[self.get_index(tuple(IDs))] = data
         return array
 
     def iarray(self, IDs, data):
