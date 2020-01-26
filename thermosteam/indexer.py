@@ -122,7 +122,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._chemicals)
+        return self.from_data, (self._data, self._phase, self._chemicals)
     
     def _set_cache(self):
         self._index_cache = self._chemicals._index_cache
@@ -275,11 +275,11 @@ class MaterialIndexer(Indexer):
         self = cls.blank(phases or phase_data, chemicals)
         if phase_data:
             data = self._data
-            chemical_indices = self._chemicals.indices
+            get_index = self._chemicals.get_index
             phase_index = self._get_phase_index
             for phase, ID_data in phase_data.items():
                 IDs, row = zip(*ID_data)
-                data[phase_index(phase), chemical_indices(IDs)] = row
+                data[phase_index(phase), get_index(IDs)] = row
             if units:
                 self.set_data(data, units)
         return self
@@ -288,7 +288,11 @@ class MaterialIndexer(Indexer):
         return self.from_data, (self._data, self._phases, self._chemicals)
     
     def copy_like(self, other):
-        self._data[:] = other._data
+        if isa(other, ChemicalIndexer):
+            self._data[:] = 0
+            self[other.phase] = other._data
+        else:
+            self._data[:] = other._data
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(sorted(phases))

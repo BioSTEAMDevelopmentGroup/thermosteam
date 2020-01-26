@@ -54,13 +54,12 @@ class Settings:
     def get_default_chemicals(self, chemicals):
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
-        if not chemicals:
+        elif not chemicals:
             thermo = settings._thermo
             assert thermo, "no available 'Thermo' object"
             chemicals = thermo.chemicals
         else:
-            chemicals = tmo.Chemicals(chemicals)
-            chemicals.compile()
+            raise ValueError("chemicals must be a 'Chemicals' object")
         return chemicals
     
     def get_default_mixture(self, mixture):

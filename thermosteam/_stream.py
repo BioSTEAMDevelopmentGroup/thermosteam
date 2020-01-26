@@ -373,7 +373,7 @@ class Stream:
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
         
-    def link_with(self, other, flow, phase, TP):
+    def link_with(self, other, flow=True, phase=True, TP=False):
         assert isinstance(other, self.__class__), "other must be of same type to link with"
         
         if TP and flow and phase:
@@ -399,14 +399,14 @@ class Stream:
         self._imol.copy_like(other._imol)
         self._TP.copy_like(other._TP)
     
-    def copy_flow(self, stream, IDs=None, *, remove=False, exclude=False):
+    def copy_flow(self, stream, IDs=..., *, remove=False, exclude=False):
         """Copy flow rates of stream to self.
         
         Parameters
         ----------
         stream : Stream
             Flow rates will be copied from here.
-        IDs=None : iterable[str], defaults to all chemicals.
+        IDs=... : iterable[str], defaults to all chemicals.
             Chemical IDs. 
         remove=False: bool, optional
             If True, copied chemicals will be removed from `stream`.
@@ -422,7 +422,7 @@ class Stream:
             index[IDs] = False
         else:
             index = chemicals.get_index(IDs)
-            
+        
         self.mol[index] = mol[index]
         if remove: 
             if isinstance(stream, ms.MultiStream):

@@ -220,22 +220,24 @@ class MultiStream(Stream):
             index[not_index] = False
         else:
             index = chemicals.get_index(IDs)
-        
         if isinstance(stream, MultiStream):
-            stream_phase_imol = stream.imol[phase]
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = stream_phase_imol[index]
+            stream_phase_mol = stream.imol[phase]
+            self_phase_mol = self.imol[phase]
+            self_phase_mol[index] = stream_phase_mol[index]
             if remove: 
-                stream_phase_imol[index] = 0
-        elif stream.phase == phase:
-            stream_imol = stream.imol
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = stream_imol[index]
-            if remove: 
-                stream_imol[index] = 0
+                stream_phase_mol[index] = 0
         else:
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = 0
+            if phase is Ellipsis:
+                phase = stream.phase
+                self_imol = self.imol
+                for i in self.phases:
+                    if i != phase: self_imol[i] = 0.
+            if stream.phase == phase:
+                stream_mol = stream.mol
+                self_phase_mol = self.imol[phase]
+                self_phase_mol[index] = stream_mol[index]
+                if remove: 
+                    stream_mol[index] = 0
     
     def get_normalized_mol(self, IDs):
         z = self.imol[..., IDs].sum(0)

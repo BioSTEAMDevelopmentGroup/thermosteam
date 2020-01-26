@@ -21,7 +21,6 @@ def must_compile(*args, **kwargs):
     raise TypeError("method valid only for compiled chemicals; "
                     "run <chemicals>.compile() to compile")
 
-
 # %% Chemicals
 
 class Chemicals:
@@ -39,22 +38,13 @@ class Chemicals:
               * CAS number
         
     """
-    _cache = {}
-    def __new__(cls, chemicals):
-        chemicals = tuple(chemicals)
-        cache = cls._cache
-        if chemicals in cache:
-            return cache[chemicals]
-        else:
-            self = super().__new__(cls)
-            isa = isinstance
-            for chem in chemicals:
-                if isa(chem, Chemical):
-                    setattr(self, chem.ID, chem)
-                else:
-                    setattr(self, chem, Chemical(chem))
-            cache[chemicals] = self
-            return self
+    def __init__(self, chemicals):
+        isa = isinstance
+        for chem in chemicals:
+            if isa(chem, Chemical):
+                setattr(self, chem.ID, chem)
+            else:
+                setattr(self, chem, Chemical(chem))
     
     def __setattr__(self, ID, chemical):
         raise TypeError("can't set attribute; use <Chemicals>.append instead")
@@ -127,17 +117,37 @@ class CompiledChemicals(Chemicals):
               * CAS number
         
     """
-    
+    _cache = {}
     def __new__(cls, chemicals):
-        self = super().__new__(cls, chemicals)
-        self._compile()
+        isa = isinstance
+        chemicals = tuple(chemicals)
+        assert all([isa(chem, Chemical) for chem in chemicals]), "chemicals must be an iterable of 'Chemical' objects"
+        cache = cls._cache
+        if chemicals in cache:
+            self = cache[chemicals]
+        else:
+            self = super().__new__(cls)
+            setfield = setattr
+            for chem in chemicals:
+                setfield(self, chem.ID, chem)
+            self._compile()
         return self
     
     def __dir__(self):
         return self.IDs + tuple(dir(type(self)))
     
+    def __reduce__(self):
+        return CompiledChemicals, (self.tuple,)
+    
     def compile(self): pass
     
+    def refresh_constants(self):
+        dct = self.__dict__
+        chemicals = self.tuple
+        dct['MW'] = np.array([i.MW for i in chemicals])
+        dct['Hf'] = np.array([i.Hf for i in chemicals])
+        dct['Hc'] = np.array([i.Hc for i in chemicals])
+
     def _compile(self):
         dct = self.__dict__
         tup = tuple

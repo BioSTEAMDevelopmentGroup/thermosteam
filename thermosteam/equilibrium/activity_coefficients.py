@@ -43,6 +43,13 @@ def group_activity_coefficients(x, chemgroups, loggammacs,
     loggammars = ((loggamma_groups - chem_loggamma_groups) * chemgroups).sum(1)
     return np.exp(loggammacs + loggammars)
 
+def get_interaction(all_interactions, i, j, no_interaction):
+    if i==j:
+        return no_interaction
+    try:
+        return all_interactions[i][j]
+    except:
+        return no_interaction
 
 # %% Activity Coefficients
 
@@ -117,10 +124,11 @@ class GroupActivityCoefficients(ActivityCoefficients):
         all_interactions = self.all_interactions
         N_groups = len(all_groups)
         group_shape = (N_groups, N_groups)
-        none = self._no_interaction
-        self._interactions = np.array([[none if i==j else all_interactions[i][j]
-                                        for i in main_group_ids]
-                                       for j in main_group_ids])
+        no_interaction = self._no_interaction
+        self._interactions = np.array(
+            [[get_interaction(all_interactions, i, j, no_interaction)
+              for i in main_group_ids]
+             for j in main_group_ids])
         # Psis array with only symmetrically available groups
         self._group_psis = np.zeros(group_shape, dtype=float)
         # Make mask for retrieving symmetrically available groups
@@ -133,6 +141,9 @@ class GroupActivityCoefficients(ActivityCoefficients):
         self._cached[chemicals] = self
         self._chemicals = chemicals
         return self
+    
+    def __reduce__(self):
+        return type(self), (self.chemicals,)
     
     def __call__(self, x, T):
         """Return UNIFAC coefficients.

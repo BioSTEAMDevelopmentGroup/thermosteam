@@ -2,8 +2,9 @@
 
 __all__ = ('Chemical',)
 
+import re
 from flexsolve import bounded_wegstein
-from .utils import copy_maybe, cucumber
+from .utils import copy_maybe
 from .functors.identifiers import CAS_from_any, pubchem_db
 from .functors.vapor_pressure import VaporPressure
 from .functors.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -39,7 +40,12 @@ from .equilibrium.unifac_data import \
 # from .refractivity import refractive_index
 # from .electrochem import conductivity
 
-# %% Utilities
+# %% Search tools
+
+def to_searchable_format(ID):    
+    return re.sub(r"\B([A-Z])", r" \1", ID).capitalize().replace('_', ' ')
+
+# %% Locked chemical state settings
                                       
 class LockedState:
     __slots__ = ('_phase', '_T', '_P')
@@ -100,6 +106,21 @@ def fill(chemical, other, slots=None):
     fill = fill_from_dict if isinstance(other, dict) else fill_from_obj
     return fill(chemical, other, slots)
 
+def get_chemical_data(chemical):
+    getfield = getattr
+    return {i:getfield(chemical, i) for i in chemical.__slots__}
+
+def unpickle_chemical(chemical_data):
+    cache = Chemical._cache
+    CAS = chemical_data['_CAS']
+    if CAS in cache:
+        chemical = cache[CAS]
+    else:
+        chemical = object.__new__(Chemical)
+        setfield = setattr
+        for field, value in chemical_data.items():
+            setfield(chemical, field, value)
+    return chemical
 
 # %% Representation
     
@@ -157,7 +178,7 @@ _chemical_fields = {'\n[Names]  ': _names,
 
 
 # %% Chemical
-@cucumber # Just means you can pickle it
+
 class Chemical:
     """Creates a Chemical object which contains basic information such as 
     molecular weight and the structure of the species, as well as thermodynamic
@@ -182,9 +203,21 @@ class Chemical:
     
     def __new__(cls, ID, *, search_ID=None, eos=PR, phase_ref=None):
         cache = cls._cache
-        CAS = CAS_from_any(search_ID or ID)
+        search_ID = search_ID or ID
+        try:
+            CAS = CAS_from_any(search_ID)
+        except Exception as Error:
+            search_ID = to_searchable_format(search_ID)
+            try: CAS = CAS_from_any(search_ID)
+            except: raise Error
+            
         if CAS in cache:
             self = cache[CAS]
+            if ID != self.ID:
+                if ID in cache:
+                    self = cache[ID]
+                else:
+                    cache[ID] = self = self.copy(ID=ID, CAS=self.CAS)                    
         else:
             info = pubchem_db.search_CAS(CAS)
             self = super().__new__(cls)
@@ -214,6 +247,10 @@ class Chemical:
             cache[CAS] = self
         return self
 
+
+    def __reduce__(self):
+        return unpickle_chemical, (get_chemical_data(self),)
+
     @property
     def ID(self):
         return self._ID
@@ -236,6 +273,8 @@ class Chemical:
         return bounded_wegstein(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-2, 1e-1)
 
     def copy(self, ID, CAS=None):
+        cache = self._cache
+        CAS = CAS or ID
         new = super().__new__(self.__class__)
         getfield = getattr
         setfield = setattr
@@ -243,10 +282,11 @@ class Chemical:
             value = getfield(self, field)
             setfield(new, field, copy_maybe(value))
         new._ID = ID
-        new._CAS = CAS or ID
+        new._CAS = CAS
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
                            new._locked_state.phase)
+        cache[CAS] = new
         return new
     __copy__ = copy
     
@@ -345,9 +385,12 @@ class Chemical:
         
         # Surface tension
         if Tb:
-            Hvap_Tb = Hvap(Tb) if (Hvap) else None
-            Cnl_Tb = Cn.l(Tb) if (Cn.l) else None
-            rhol = 1/V.l(Tb, 101325.) * MW if (V.l and MW) else None
+            try:    Hvap_Tb = Hvap(Tb)
+            except: Hvap_Tb = None
+            try:    Cnl_Tb = Cn.l(Tb)
+            except: Cnl_Tb = None
+            try:    rhol = 1/V.l(Tb, 101325.) * MW
+            except: rhol = None
         else:
             Hvap_Tb = Cnl_Tb = rhol = None
         data = (CAS, MW, Tb, Tc, Pc, Vc, Zc,
@@ -636,21 +679,19 @@ class Chemical:
     def locked_state(self):
         return self._locked_state
     
-    def at_state(self, ID=None, phase=None, T=None, P=None):
-        new = self.copy(ID or self.ID, CAS=self.CAS)
-        if new.locked_state:
+    def at_state(self, phase=None, T=None, P=None):
+        if self.locked_state:
             raise TypeError(f"{self}'s state is already locked")    
         elif T and P:
             if phase:
-                lock_TPphase(new, phase, T, P)
+                lock_TPphase(self, phase, T, P)
             else:
-                lock_TP(new, T, P)                
+                lock_TP(self, T, P)                
         elif phase:
-            lock_phase(new, phase)
+            lock_phase(self, phase)
         else:
             raise ValueError("must pass a either a phase, T and P, or both to lock state")
-        new._locked_state.__init__(phase, T, P)
-        return new
+        self._locked_state.__init__(phase, T, P)
     
     def show(self):
         getfield = getattr

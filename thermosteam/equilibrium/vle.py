@@ -188,9 +188,8 @@ class VLE:
                  '_phi', '_pcf', '_gamma', '_imol',
                  '_liquid_mol', '_vapor_mol', '_phase_data',
                  '_v',  '_index', '_F_mass', '_chemical',
-                 '_mol', '_N', '_solve_V', '_Vf_light',
-                 '_z', '_z_vapor', '_z_liquid', '_Ks', '_nonzero',
-                 '_F_mol', '_F_mol_heavy', '_F_mol_equilibrium',
+                 '_mol', '_N', '_solve_V',
+                 '_z', '_Ks', '_nonzero', '_F_mol', '_F_mol_equilibrium',
                  '_dew_point_cache', '_bubble_point_cache')
     
     solver = staticmethod(IQ_interpolation)
@@ -208,7 +207,7 @@ class VLE:
         
         Specify two:
             * **P:** Operating pressure (Pa)
-            * **Q:** Energy input (kJ/hr)
+            * **H:** Energy input (kJ/hr)
             * **T:** Operating temperature (K)
             * **V:** Molar vapor fraction
             * **x:** Molar composition of liquid (for binary mixture)
@@ -278,6 +277,7 @@ class VLE:
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = imol['g']
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
+        self._index = ()
         self._y = None
     
     def _setup(self):
@@ -331,13 +331,10 @@ class VLE:
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
         F_mol_light = light_mol.sum()
+        F_mol_heavy = heavy_mol.sum()
         self._F_mol = F_mol
-        self._F_mol_heavy = F_mol_heavy = heavy_mol.sum()
         self._F_mol_equilibrium = F_mol_equilibrium = F_mol - F_mol_light - F_mol_heavy
         self._z = self._mol / F_mol_equilibrium
-        self._z_liquid = self._mol / (F_mol - F_mol_light)
-        self._z_vapor = self._mol / (F_mol - F_mol_heavy)
-        self._Vf_light = F_mol_light / F_mol
 
     @property
     def imol(self):
@@ -437,7 +434,7 @@ class VLE:
             split_frac = 1
         elif split_frac < 0:
             split_frac = 0
-        self._vapor_mol[self._index] = v = self._F_mol * split_frac * y
+        self._vapor_mol[self._index] = v = self._F_mol_equilibrium * split_frac * y
         self._liquid_mol[self._index] = self._mol - v
     
     def set_Tx(self, T, x):
@@ -471,8 +468,8 @@ class VLE:
         self._P = TP.P = P
         if self._N == 1: return self._set_TP_chemical(T, P)
         # Setup bounderies
-        P_dew, x_dew = self._dew_point.solve_Px(self._z_vapor, T)
-        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z_liquid, T)
+        P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
         
         # Check if there is equilibrium
         if P <= P_dew:
@@ -502,8 +499,8 @@ class VLE:
         TP = self._TP
         TP.T = self._T = T
         if self._N == 1: return self._set_TV_chemical(T, V)
-        P_dew, x_dew = self._dew_point.solve_Px(self._z_vapor, T)
-        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z_liquid, T)
+        P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
         if V == 1:
             self._vapor_mol[self._index] = self._mol
             self._liquid_mol[self._index] = 0
@@ -513,15 +510,15 @@ class VLE:
             self._liquid_mol[self._index] = self._mol
             TP.P = P_bubble
         else:
-            self._V = V - self._Vf_light
-            self._refresh_v(self._V, y_bubble)
+            self._V = V 
+            self._refresh_v(V, y_bubble)
             try:
                 P = self.solver(self._V_at_P,
                                 P_bubble, P_dew, 0, 1,
                                 self._P, self._V,
                                 self.P_tol, self.V_tol)
             except:
-                self._V = V - self._Vf_light
+                self._V = V
                 self._v = self._estimate_v(V, y_bubble)
                 P = self.solver(self._V_at_P,
                                 P_bubble, P_dew, 0, 1,
@@ -538,8 +535,8 @@ class VLE:
         self._T = T
         
         # Setup bounderies
-        P_dew, x_dew = self._dew_point.solve_Px(self._z_vapor, T)
-        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z_liquid, T)
+        P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
         index = self._index
         mol = self._mol
         vapor_mol = self._vapor_mol
@@ -593,8 +590,8 @@ class VLE:
         if self._N == 1: return self._set_PV_chemical(P, V)
         
         # Setup bounderies
-        T_dew, x_dew = self._dew_point.solve_Tx(self._z_vapor, P)
-        T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z_liquid, P)
+        T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
+        T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
         
         index = self._index
         mol = self._mol
@@ -610,8 +607,8 @@ class VLE:
             liquid_mol[index] = mol
             self._TP.T = T_bubble
         else:
-            self._refresh_v(V - self._Vf_light, y_bubble)
-            self._V = V - self._Vf_light
+            self._refresh_v(V, y_bubble)
+            self._V = V 
             try:
                 T = self.solver(self._V_at_T,
                                 T_bubble, T_dew, 0, 1,
@@ -634,8 +631,8 @@ class VLE:
         if self._N == 1: return self._set_PH_chemical(P, H)
         
         # Setup bounderies
-        T_dew, x_dew = self._dew_point.solve_Tx(self._z_vapor, P)
-        T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z_liquid, P)
+        T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
+        T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
         
         index = self._index
         mol = self._mol
@@ -691,10 +688,10 @@ class VLE:
         return self.mixture.xH(self._phase_data, self._T, P)/self._F_mass
     
     def _V_at_P(self, P):
-        return self._solve_v(self._T , P).sum()/self._F_mol + self._Vf_light
+        return self._solve_v(self._T , P).sum()/self._F_mol
     
     def _V_at_T(self, T):
-        V = self._solve_v(T, self._P).sum()/self._F_mol + self._Vf_light
+        V = self._solve_v(T, self._P).sum()/self._F_mol 
         return V
     
     def _x_iter(self, x, Psat_over_P_phi):
@@ -702,19 +699,12 @@ class VLE:
         self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
         return self._z/(1. + self._solve_V() * (self._Ks - 1.))
     
-    def x_adjust_iter(self, x):
-        v = self._F_mol_equilibrium * self._V * x * self._Ks     
-        l = self._mol - v
-        return l / (l + self._F_mol_heavy)
-    
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
         Psat_over_P_phi = Psats_over_P / phi
         self._x = x = self.itersolver(self._x_iter,
                                       self._x, 1e-4,
                                       args=(Psat_over_P_phi,))
-        if self._F_mol_heavy:
-            x = self.itersolver(self._x_adjust_iter, x, 1e-4)
         self._v = v = self._F_mol_equilibrium * self._V * x * self._Ks     
         return v / v.sum()
     

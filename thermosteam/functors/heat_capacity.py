@@ -914,15 +914,15 @@ def Perry_151(T, a, b, c, d):
     return (a + b*T + c/T**2 + d*T**2)*calorie
 
 @H.s
-def Perry_151_Integral(Ta, Tb, Const, Lin, Quad, Quadinv):
-    H1 = (Const*Ta + 0.5*Lin*Ta**2 - Quadinv/Ta + Quad*Ta**3/3.)
-    H2 = (Const*Tb + 0.5*Lin*Tb**2 - Quadinv/Tb + Quad*Tb**3/3.)
+def Perry_151_Integral(Ta, Tb, a, b, c, d):
+    H1 = (a*Ta + 0.5*b*Ta**2 - d/Ta + c*Ta**3/3.)
+    H2 = (a*Tb + 0.5*b*Tb**2 - d/Tb + c*Tb**3/3.)
     return (H2 - H1)*calorie
 
 @S.s
-def Perry_151_Over_T_Integral(Ta, Tb, Const, Lin, Quad, Quadinv):
-    S1 = Const*log(Ta) + Lin*Ta - Quadinv/(2.*Ta**2) + 0.5*Quad*Ta**2
-    S2 = Const*log(Tb) + Lin*Tb - Quadinv/(2.*Tb**2) + 0.5*Quad*Tb**2
+def Perry_151_Over_T_Integral(Ta, Tb, a, b, c, d):
+    S1 = a*log(Ta) + b*Ta - d/(2.*Ta**2) + 0.5*c*Ta**2
+    S2 = a*log(Tb) + b*Tb - d/(2.*Tb**2) + 0.5*c*Tb**2
     return (S2 - S1)*calorie
 
 Lastovka_Solid_Functors = (Lastovka_Solid, Lastovka_Solid_Integral, Lastovka_Solid_Over_T_Integral)

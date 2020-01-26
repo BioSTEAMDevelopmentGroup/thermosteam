@@ -120,7 +120,8 @@ class DewPoint:
                                      1e-6, 5e-8, args)
         except:
             self.x = z.copy()
-            T = (z * self.Tbs).sum()
+            Tbs = [i.Tsat(P) for i in self.chemicals]
+            T = (z * Tbs).sum()
             self.T = self.rootsolver(self._T_error, T, T-0.01,
                                      1e-6, 5e-8, args)
                 
