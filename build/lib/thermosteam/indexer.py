@@ -122,7 +122,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._chemicals)
+        return self.from_data, (self._data, self._phase, self._chemicals)
     
     def _set_cache(self):
         self._index_cache = self._chemicals._index_cache
@@ -275,11 +275,11 @@ class MaterialIndexer(Indexer):
         self = cls.blank(phases or phase_data, chemicals)
         if phase_data:
             data = self._data
-            chemical_indices = self._chemicals.indices
+            get_index = self._chemicals.get_index
             phase_index = self._get_phase_index
             for phase, ID_data in phase_data.items():
                 IDs, row = zip(*ID_data)
-                data[phase_index(phase), chemical_indices(IDs)] = row
+                data[phase_index(phase), get_index(IDs)] = row
             if units:
                 self.set_data(data, units)
         return self
@@ -288,7 +288,11 @@ class MaterialIndexer(Indexer):
         return self.from_data, (self._data, self._phases, self._chemicals)
     
     def copy_like(self, other):
-        self._data[:] = other._data
+        if isa(other, ChemicalIndexer):
+            self._data[:] = 0
+            self[other.phase] = other._data
+        else:
+            self._data[:] = other._data
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(sorted(phases))
@@ -486,7 +490,7 @@ def _replace_indexer_doc(Indexer, Parent):
     doc = doc[:doc.index("Notes")]
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
     
-def new_Indexer(name, units, slots=()):
+def _new_Indexer(name, units, slots=()):
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
     
@@ -505,10 +509,9 @@ def new_Indexer(name, units, slots=()):
     return ChemicalIndexerSubclass, MaterialIndexerSubclass
 
 ChemicalIndexer._MaterialIndexer = MaterialIndexer
-ChemicalMolarFlowIndexer, MolarFlowIndexer = new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
-ChemicalMassFlowIndexer, MassFlowIndexer = new_Indexer('MassFlow', 'kg/hr')
-ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = new_Indexer('VolumetricFlow', 'm^3/hr')
-del new_Indexer, _replace_indexer_doc
+ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
+ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr')
+ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr')
 
 # %% Mass flow properties
 
@@ -564,12 +567,16 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     f_mol = self.mol[self.index] 
-    return 1000. * f_mol * self.V(self.phase or self.phase_container.phase, *self.TP) if f_mol else 0
+    phase = self.phase or self.phase_container.phase
+    V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+    return 1000. * f_mol * V(*self.TP) if f_mol else 0
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     if value:
-        self.mol[self.index] = value / self.V(self.phase or self.phase_container.phase, *self.TP) / 1000.
+        phase = self.phase or self.phase_container.phase
+        V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+        self.mol[self.index] = value / V(*self.TP) / 1000.
     else:
         self.mol[self.index] = 0
 

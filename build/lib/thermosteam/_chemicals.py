@@ -13,12 +13,13 @@ import numpy as np
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
 
+key_thermo_props = ('V', 'S', 'H', 'Cn')
+
 # %% Utilities
 
 def must_compile(*args, **kwargs):
     raise TypeError("method valid only for compiled chemicals; "
                     "run <chemicals>.compile() to compile")
-
 
 # %% Chemicals
 
@@ -35,24 +36,30 @@ class Chemicals:
               * PubChem CID, prefixed by 'PubChem='
               * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
               * CAS number
+    Examples
+    --------
+    
+    Create a Chemicals object from chemical identifiers:
+    
+    >>> from thermosteam import Chemicals
+    >>> chemicals = Chemicals(['Water', 'Ethanol'])
+    >>> chemicals
+    Chemicals([Water, Ethanol])
+    
+    All chemicals are stored as attributes:
+        
+    >>> chemicals.Water, chemicals.Ethanol
+    (Chemical('Water'), Chemical('Ethanol'))
+    
         
     """
-    _cache = {}
-    def __new__(cls, chemicals):
-        chemicals = tuple(chemicals)
-        cache = cls._cache
-        if chemicals in cache:
-            return cache[chemicals]
-        else:
-            self = super().__new__(cls)
-            isa = isinstance
-            for chem in chemicals:
-                if isa(chem, Chemical):
-                    setattr(self, chem.ID, chem)
-                else:
-                    setattr(self, chem, Chemical(chem))
-            cache[chemicals] = self
-            return self
+    def __init__(self, chemicals):
+        isa = isinstance
+        for chem in chemicals:
+            if isa(chem, Chemical):
+                setattr(self, chem.ID, chem)
+            else:
+                setattr(self, chem, Chemical(chem))
     
     def __setattr__(self, ID, chemical):
         raise TypeError("can't set attribute; use <Chemicals>.append instead")
@@ -61,13 +68,57 @@ class Chemicals:
         return (tuple(self),)
     
     def compile(self):
+        """
+        Cast as a CompiledChemicals object.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemicals
+        >>> chemicals = Chemicals(['Water', 'Ethanol'])
+        >>> chemicals.compile()
+        >>> chemicals
+        CompiledChemicals([Water, Ethanol])
+        
+        """
         setattr(self, '__class__', CompiledChemicals)
         self._compile()
     
     def subgroup(self, IDs):
+        """
+        Create a new subgroup of chemicals.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str]
+              Chemical identifiers.
+              
+        Examples
+        --------
+        
+        >>> chemicals = Chemicals(['Water', 'Ethanol', 'Propane'])
+        >>> chemicals.subgroup(['Propane', 'Water'])
+        Chemicals([Propane, Water])
+        
+        """
         return type(self)([getattr(self, i) for i in IDs])
         
     def retrieve(self, IDs):
+        """
+        Return a list of chemicals.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str]
+              Chemical identifiers.
+              
+        Examples
+        --------
+        
+        >>> chemicals = Chemicals(['Water', 'Ethanol', 'Propane'])
+        >>> chemicals.retrieve(['Propane', 'Water'])
+        [Chemical('Propane'), Chemical('Water')]
+        
+        """
         dct = self.__dict__
         try:
             return [dct[i] for i in IDs]
@@ -77,11 +128,19 @@ class Chemicals:
     
     def append(self, chemical):
         """Append a Chemical."""
+        assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
+                                               f"not '{type(chemical).__name__}'")
         setattr(self, chemical.ID, chemical)
     
     def extend(self, chemicals):
         """Extend with more Chemical objects."""
-        for c in chemicals: setattr(self, c.ID, c)
+        if isinstance(chemicals, Chemicals):
+            self.__dict__.update(chemicals.__dict__)
+        else:
+            for chemical in chemicals:
+                assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
+                                                        f"not '{type(chemical).__name__}'")
+                setattr(self, chemical.ID, chemical)
     
     kwarray = array = index = indices = must_compile
         
@@ -116,43 +175,169 @@ class CompiledChemicals(Chemicals):
               * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
               * CAS number
         
-    """
+    Attributes
+    ----------
+    tuple : tuple[Chemical]
+            All compiled chemicals.
+    size : int
+           Number of chemicals.
+    IDs : tuple[str]
+          IDs of all chemicals.
+    CASs : tuple[str]
+           CASs of all chemicals
+    MW : 1d ndarray
+         MWs of all chemicals.
+    Hf : 1d ndarray
+         Heats of formation of all chemicals.
+    Hc : 1d ndarray
+         Heats of combustion of all chemicals.
+    equilibrium_chemicals : tuple[str]
+                            IDs of chemicals that may have multiple phases.
+    heavy_chemicals : tuple[str]
+                      IDs of chemicals that are only present in liquid or solid phases.
+    light_chemicals : tuple[str]
+                      IDs of chemicals that are only present in gas phases.
+        
+    Examples
+    --------
     
+    Create a CompiledChemicals object from chemical identifiers
+    
+    >>> from thermosteam import CompiledChemicals, Chemical
+    >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+    >>> chemicals
+    CompiledChemicals([Water, Ethanol])
+    
+    All chemicals are stored as attributes:
+        
+    >>> chemicals.Water, chemicals.Ethanol
+    (Chemical('Water'), Chemical('Ethanol'))
+    
+    Note that because they are compiled, the append and extend methods do not work:
+        
+    >>> # Propane = Chemical('Propane')
+    >>> # chemicals.append(Propane)
+    >>> # TypeError: 'CompiledChemicals' object is read-only
+        
+    
+    """
+    _cache = {}
     def __new__(cls, chemicals):
-        self = super().__new__(cls, chemicals)
-        self._compile()
+        isa = isinstance
+        chemicals = tuple([chem if isa(chem, Chemical) else Chemical(chem)
+                           for chem in chemicals])        
+        cache = cls._cache
+        if chemicals in cache:
+            self = cache[chemicals]
+        else:
+            self = super().__new__(cls)
+            setfield = setattr
+            for chem in chemicals:
+                setfield(self, chem.ID, chem)
+            self._compile()
         return self
     
     def __dir__(self):
         return self.IDs + tuple(dir(type(self)))
     
-    def compile(self): pass
+    def __reduce__(self):
+        return CompiledChemicals, (self.tuple,)
     
+    def compile(self):
+        """Do nothing, CompiledChemicals objects are already compiled."""
+    
+    def refresh_constants(self):
+        """
+        Refresh constant arrays according to their chemical values,
+        including the molecular weight, heats of formation,
+        and heats of combustion.
+        
+        Examples
+        --------
+        Some chemical constants may not be defined in thermosteam, 
+        such as the heat of combustion of glucose:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Glucose'])
+        >>> chemicals.Hc
+        array([0.0])
+        
+        We can update it and refresh the compiled constants:
+        
+        >>> chemicals.Glucose.Hc = 2291836.024
+        >>> chemicals.refresh_constants()
+        >>> chemicals.Hc
+        array([2291836.024])
+        
+        """
+        dct = self.__dict__
+        chemicals = self.tuple
+        dct['MW'] = np.array([i.MW for i in chemicals])
+        dct['Hf'] = np.array([i.Hf for i in chemicals])
+        dct['Hc'] = np.array([i.Hc for i in chemicals])
+
     def _compile(self):
         dct = self.__dict__
-        tup = tuple
-        chemicals = tup(dct.values())
-        IDs = tup([i.ID for i in chemicals])
-        CAS = tup([i.CAS for i in chemicals])
+        tuple_ = tuple
+        chemicals = tuple_(dct.values())
+        for i in chemicals:
+            assert not i.get_missing_slots(key_thermo_props), f"{i} is missing key thermodynamic properties"
+        IDs = tuple_([i.ID for i in chemicals])
+        CAS = tuple_([i.CAS for i in chemicals])
         N = len(IDs)
-        index = tup(range(N))
+        index = tuple_(range(N))
         for i in chemicals: dct[i.CAS] = i
         dct['tuple'] = chemicals
         dct['size'] = N
         dct['IDs'] = IDs
+        dct['CASs'] = tuple_([i.CAS for i in chemicals])
         dct['MW'] = np.array([i.MW for i in chemicals])
         dct['Hf'] = np.array([i.Hf for i in chemicals])
         dct['Hc'] = np.array([i.Hc for i in chemicals])
-        dct['_index'] = dict((*zip(CAS, index), *zip(IDs, index)))
-        light_values = (0, -np.inf)
-        heavy_values = (np.inf, None)
-        nonfinite = (np.inf, -np.inf, None)
-        dct['_islight'] = np.array([(i.Tb in light_values) for i in chemicals], dtype=bool)
-        dct['_isheavy'] = np.array([(i.Tb in heavy_values) for i in chemicals])
-        dct['_has_equilibrium'] = np.array([(i.Tb not in nonfinite) for i in chemicals])
+        dct['_index'] = index = dict((*zip(CAS, index),
+                                      *zip(IDs, index)))
         dct['_index_cache'] = {}
+        equilibrium_chemicals = []
+        heavy_chemicals = []
+        light_chemicals = []
+        for i in chemicals:
+            locked_phase = i.locked_state.phase
+            if locked_phase:
+                if locked_phase in ('s', 'l'):
+                    heavy_chemicals.append(i)
+                elif locked_phase == 'g':
+                    light_chemicals.append(i)
+                else:
+                    raise Exception('chemical locked state has an invalid phase')
+            else:
+                equilibrium_chemicals.append(i)
+        dct['equilibrium_chemicals'] = tuple_(equilibrium_chemicals)
+        dct['heavy_chemicals'] = tuple_(heavy_chemicals)
+        dct['light_chemicals'] = tuple_(light_chemicals)
+        dct['_equilibrium_indices'] = eq_index = [index[i.ID] for i in equilibrium_chemicals]
+        dct['_has_equilibrium'] = has_equilibrium = np.zeros(N, dtype=bool)
+        dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
+        dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
+        has_equilibrium[eq_index] = True
+        
     
     def subgroup(self, IDs):
+        """
+        Create a new subgroup of chemicals.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str]
+              Chemical identifiers.
+              
+        Examples
+        --------
+        
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'])
+        >>> chemicals.subgroup(['Propane', 'Water'])
+        CompiledChemicals([Propane, Water])
+        
+        """
         chemicals = self.retrieve(IDs)
         new = Chemicals(chemicals)
         new.compile()
@@ -163,10 +348,50 @@ class CompiledChemicals(Chemicals):
         return new
     
     def get_synonyms(self, ID):
+        """Get all synonyms of a chemical.
+        
+        Parameters
+        ----------
+        ID : str
+            Chemical identifier.
+            
+        Examples
+        --------
+        Get all synonyms of water:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water'])
+        >>> chemicals.get_synonyms('Water')
+        ['7732-18-5', 'Water']
+        
+        
+        """
         k = self._index[ID]
         return [i for i, j in self._index.items() if j==k] 
 
     def set_synonym(self, ID, synonym):
+        """
+        Set a new synonym for a chemical.
+        
+        Parameters
+        ----------
+        ID : str
+            Chemical identifier.
+        synonym : str
+            New identifier for chemical.
+            
+        Examples
+        --------
+        Set new synonym for water:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water'])
+        >>> chemicals.set_synonym('Water', 'H2O')
+        >>> chemicals.H2O is chemicals.Water
+        True
+        
+        
+        """
         chemical = getattr(self, ID)
         dct = self.__dict__
         if synonym in dct and dct[synonym] is not chemical:
@@ -176,7 +401,8 @@ class CompiledChemicals(Chemicals):
             dct[synonym] = chemical
     
     def kwarray(self, ID_data):
-        """Return an array with entries that correspond to the orded chemical IDs.
+        """
+        Return an array with entries that correspond to the orded chemical IDs.
         
         Parameters
         ----------
@@ -185,7 +411,7 @@ class CompiledChemicals(Chemicals):
             
         Examples
         --------
-        >>> from ether import CompiledChemicals
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.kwarray(dict(Water=2))
         array([2., 0.])
@@ -194,7 +420,8 @@ class CompiledChemicals(Chemicals):
         return self.array(*zip(*ID_data.items()))
     
     def array(self, IDs, data):
-        """Return an array with entries that correspond to the ordered chemical IDs.
+        """
+        Return an array with entries that correspond to the ordered chemical IDs.
         
         Parameters
         ----------
@@ -205,37 +432,96 @@ class CompiledChemicals(Chemicals):
             
         Examples
         --------
-        >>> from ether import CompiledChemicals
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.array(['Water'], [2])
         array([2., 0.])
         
         """
         array = np.zeros(len(self))
-        array[self.indices(IDs)] = data
+        array[self.get_index(tuple(IDs))] = data
         return array
 
     def iarray(self, IDs, data):
+        """
+        Return a chemical indexer.
+        
+        Parameters
+        ----------
+        IDs : iterable
+              Chemical IDs.
+        data : array_like
+               Data corresponding to IDs.
+            
+        Examples
+        --------
+        Create a chemical indexer from chemical IDs and data:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemical_indexer = chemicals.iarray(['Water', 'Ethanol'], [2., 1.])
+        >>> chemical_indexer
+        ChemicalIndexer:
+         Water    2
+         Ethanol  1
+        
+        Note that indexers allow for computationally efficient indexing using identifiers:
+            
+        >>> chemical_indexer['Ethanol', 'Water']
+        array([1., 2.])
+        >>> chemical_indexer['Ethanol']
+        1.0
+        
+        """
         array = self.array(IDs, data)
         return ChemicalIndexer.from_data(array, phase=None, chemicals=self)
 
     def ikwarray(self, ID_data):
+        """
+        Return a chemical indexer.
+        
+        Parameters
+        ----------
+        ID_data : Dict[str: float]
+              Chemical ID-value pairs.
+            
+        Examples
+        --------
+        Create a chemical indexer from chemical IDs and data:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemical_indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))
+        >>> chemical_indexer
+        ChemicalIndexer:
+         Water    2
+         Ethanol  1
+        
+        Note that indexers allow for computationally efficient indexing using identifiers:
+            
+        >>> chemical_indexer['Ethanol', 'Water']
+        array([1., 2.])
+        >>> chemical_indexer['Ethanol']
+        1.0
+        
+        """
         array = self.kwarray(ID_data)
         return ChemicalIndexer.from_data(array, phase=None, chemicals=self)
 
     def index(self, ID):
-        """Return index of specified chemical.
+        """
+        Return index of specified chemical.
 
         Parameters
         ----------
         ID: str
-            Chemicl ID
+            Chemical ID
 
         Examples
         --------
         Index by ID:
         
-        >>> from ether import CompiledChemicals
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.index('Water')
         1
@@ -251,7 +537,8 @@ class CompiledChemicals(Chemicals):
             raise UndefinedChemical(ID)
 
     def indices(self, IDs):
-        """Return indices of specified chemicals.
+        """
+        Return indices of specified chemicals.
 
         Parameters
         ----------
@@ -262,15 +549,15 @@ class CompiledChemicals(Chemicals):
         --------
         Indices by ID:
         
-        >>> from ether import CompiledChemicals
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.indices(['Water', 'Ethanol'])
-        [1, 0]
+        [0, 1]
 
         Indices by CAS number:
         
-        >>> chemicals.indices(['7732-18-5', '64-17-5']):
-        [1, 0]
+        >>> chemicals.indices(['7732-18-5', '64-17-5'])
+        [0, 1]
 
         """
         try:
@@ -281,6 +568,33 @@ class CompiledChemicals(Chemicals):
                 if i not in dct: raise UndefinedChemical(i)     
     
     def get_index(self, key):
+        """
+        Return index/indices of specified chemicals.
+
+        Parameters
+        ----------
+        key : iterable[str] or str
+              A single chemical identifier or multiple.
+
+        Notes
+        -----
+        CAS numbers are also supported.
+
+        Examples
+        --------
+        Get multiple indices:
+        
+        >>> from ether import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals.get_index(['Water', 'Ethanol'])
+        [0, 1]
+        
+        Get a single index:
+        
+        >>> chemicals.get_index('Ethanol'):
+        1
+
+        """
         cache = self._index_cache
         try: 
             index = cache[key]
@@ -310,17 +624,22 @@ class CompiledChemicals(Chemicals):
     def __iter__(self):
         return iter(self.tuple)
         
-    def equilibrium_indices(self, nonzero):
-        """Return indices of species in equilibrium."""
-        return np.where(self._has_equilibrium & nonzero)[0]
-
-    def heavy_indices(self, nonzero):
-        """Return indices of heavy species not in equilibrium."""
-        return np.where(self._isheavy & nonzero)[0]
-
-    def light_indices(self, nonzero):
-        """Return indices of light species not in equilibrium."""
-        return np.where(self._islight & nonzero)[0]
+    def get_equilibrium_indices(self, nonzeros):
+        """
+        Return indices of species in equilibrium
+        given an array dictating whether or not
+        the chemicals are present.
+        
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
+        >>> chemicals.get_equilibrium_indices(data!=0)
+        [0, 2]
+        
+        """
+        return np.where(self._has_equilibrium & nonzeros)[0]
     
     def __str__(self):
         return f"[{', '.join(self.IDs)}]"

@@ -7,7 +7,8 @@ Created on Mon Sep 30 23:02:53 2019
 __all__ = ('chemical_units_of_measure', 
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
-           'DisplayUnits', 'Units', 'convert')
+           'DisplayUnits', 'Units', 'convert',
+           'Quantity')
 
 from ..exceptions import DimensionError
 
@@ -22,6 +23,7 @@ ureg = UnitRegistry()
 ureg.default_format = '~P'
 ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
 convert = ureg.convert
+Quantity = ureg.Quantity
 del os, UnitRegistry
 
 # %% Manage conversion factors
@@ -157,6 +159,7 @@ chemical_units_of_measure = {'MW': Units('g/mol'),
                              'H_excess': Units('J/mol'), 
                              'S_excess': Units('J/mol'),
                              'R': Units('J/mol/K'),
+                             'dipole': Units('Debye'),
                              'delta': Units('Pa^0.5'),
                              'epsilon': Units(''),
 }
@@ -177,7 +180,9 @@ stream_units_of_measure = {'mol': Units('kmol/hr'),
                            'A': Units('kJ/hr'),
                            'C': Units('kJ/hr/K'),
 }
-for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma', 'kappa', 'nu', 'epsilon', 'delta', 'Psat', 'Cp', 'Cn'):
+for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma',
+          'kappa', 'nu', 'epsilon', 'delta',
+          'Psat', 'Cp', 'Cn', 'alpha'):
     stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 definitions = {'MW': 'Molecular weight',
@@ -220,11 +225,17 @@ definitions = {'MW': 'Molecular weight',
                'Zc': 'Critical compressibility',
                'dZ': 'Change in compressibility factor',
                'omega': 'Acentric factor',
+               'dipole': 'Dipole momment',
                'delta': 'Solubility parameter',
                'epsilon': 'Relative permittivity',
+               'similarity_variable': 'Heat capacity similarity variable',
+               'iscyclic_aliphatic': 'Whether a chemical is cyclic aliphatic',
+               'has_hydroxyl': 'Whether a polar chemical has hydroxyl groups',
 }
 
 types = {}
+types['iscyclic_aliphatic'] = types['has_hydroxy'] = 'bool'
+
 # Synonyms
 for i, j in [('ω', 'omega')]:
     definitions[i] = definitions[j]

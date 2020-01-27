@@ -5,7 +5,7 @@ Created on Sun Jul 21 21:30:33 2019
 @author: yoelr
 """
 from numpy import asarray, array
-from flexsolve import aitken_secant
+from flexsolve import aitken_secant, IQ_interpolation
 from .solve_composition import solve_y
 from ..utils import fill_like
 from .._settings import settings
@@ -45,7 +45,7 @@ class BubblePoint:
     rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
-        thermo = settings.get_thermo(thermo)
+        thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo)
         cached = self._cached
@@ -63,16 +63,16 @@ class BubblePoint:
             self.P = self.T = self.y = None
             cached[key] = self
     
-    def _T_error(self, T, z, P, z_over_P):
+    def _T_error(self, T, P, z_over_P, z_norm,):
         y_phi =  (z_over_P
                   * array([i(T) for i in self.Psats])
-                  * self.gamma(z, T) 
-                  * self.pcf(z, T))
+                  * self.gamma(z_norm, T) 
+                  * self.pcf(z_norm, T))
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
     
-    def _P_error(self, P, T, z, Psat_gamma_pcf):
-        y_phi = z * Psat_gamma_pcf / P
+    def _P_error(self, P, T, z_Psat_gamma_pcf):
+        y_phi = z_Psat_gamma_pcf / P
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
     
@@ -113,17 +113,23 @@ class BubblePoint:
         """
         
         z = asarray(z)
+        z_norm = z / z.sum()
         self.P = P
-        args = (z, P, z/P)
+        args = (P, z/P, z_norm)
         T = self.T or (z * self.Tbs).sum()
         try:
             self.T = self.rootsolver(self._T_error, T, T+0.01,
                                      1e-6, 5e-8, args)
-        except:
+        except Exception as Error:
             self.y = z.copy()
             T = (z * self.Tbs).sum()
-            self.T = self.rootsolver(self._T_error, T, T+0.01,
-                                     1e-6, 5e-8, args)
+            f = lambda T: self._T_error(T, *args)
+            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
+            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
+            if Tmin < 10: Tmin = 10
+            self.T = IQ_interpolation(f, Tmin, Tmax,
+                                      f(Tmin), f(Tmax),
+                                      T, 0., 1e-6, 5e-8)
         self.y /= self.y.sum()
         return self.T, self.y
     
@@ -154,9 +160,10 @@ class BubblePoint:
         """
         z = asarray(z)
         Psat = array([i(T) for i in self.Psats])
-        Psat_gamma_pcf =  Psat * self.gamma(z, T) * self.pcf(z, T)
+        z_norm = z / z.sum()
+        y_phi = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
         self.T = T
-        args = (T, z, Psat_gamma_pcf)
+        args = (T, y_phi)
         P = self.P or (z * Psat).sum()
         try:
             self.P = self.rootsolver(self._P_error, P, P-1,

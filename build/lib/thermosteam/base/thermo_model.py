@@ -58,6 +58,7 @@ def thermo_model(evaluate,
 class ThermoModel:
     Tmin = Pmin = 0.0
     Tmax = Pmax = infinity
+    IGNORE_DOMAIN = False
     
     def __init_subclass__(cls, Functor=None):
         if Functor:
@@ -88,7 +89,7 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
         except: return None
     
     def indomain(self, T, P=None):
-        return self.Tmin < T < self.Tmax
+        return self.IGNORE_DOMAIN or self.Tmin < T < self.Tmax
     
     def integrate_by_T(self, Ta, Tb, P=None):
         return self.evaluate((Tb+Ta)/2.)*(Tb - Ta)
@@ -119,7 +120,8 @@ class TPDependentModel(ThermoModel, Functor=TPFunctor):
     var = TDependentModel.var
     
     def indomain(self, T, P):
-        return (self.Tmin < T < self.Tmax) and (self.Pmin < P < self.Pmax)
+        return self.IGNORE_DOMAIN or (self.Tmin < T < self.Tmax
+                                   and self.Pmin < P < self.Pmax)
     
     def integrate_by_T(self, Ta, Tb, P):
         return self.evaluate((Tb+Ta)/2, P)*(Tb - Ta)

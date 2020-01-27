@@ -53,7 +53,7 @@ class MultiStream(Stream):
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='gl', units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
-        self._thermo = thermo = thermo or settings.get_thermo(thermo)
+        thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
         self.price = price
         if units:
@@ -215,25 +215,29 @@ class MultiStream(Stream):
         """
         chemicals = self.chemicals
         if exclude:
-            IDs = chemicals.get_index(IDs)
+            not_index = chemicals.get_index(IDs)
             index = np.ones(chemicals.size, dtype=bool)
-            index[IDs] = False
-        
-        if isinstance(stream, MultiStream):
-            stream_phase_imol = stream.imol[phase]
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = stream_phase_imol[index]
-            if remove: 
-                stream_phase_imol[index] = 0
-        elif stream.phase == phase:
-            stream_imol = stream.imol
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = stream_imol[index]
-            if remove: 
-                stream_imol[index] = 0
+            index[not_index] = False
         else:
-            self_phase_imol = self.imol[phase]
-            self_phase_imol[index] = 0
+            index = chemicals.get_index(IDs)
+        if isinstance(stream, MultiStream):
+            stream_phase_mol = stream.imol[phase]
+            self_phase_mol = self.imol[phase]
+            self_phase_mol[index] = stream_phase_mol[index]
+            if remove: 
+                stream_phase_mol[index] = 0
+        else:
+            if phase is Ellipsis:
+                phase = stream.phase
+                self_imol = self.imol
+                for i in self.phases:
+                    if i != phase: self_imol[i] = 0.
+            if stream.phase == phase:
+                stream_mol = stream.mol
+                self_phase_mol = self.imol[phase]
+                self_phase_mol[index] = stream_mol[index]
+                if remove: 
+                    stream_mol[index] = 0
     
     def get_normalized_mol(self, IDs):
         z = self.imol[..., IDs].sum(0)
@@ -250,16 +254,32 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
+    def get_molar_composition(self, IDs):
+        return self.imol[..., IDs].sum(0)/self.F_mol
+    
+    def get_mass_composition(self, IDs):
+        return self.imass[..., IDs].sum(0)/self.F_mass
+    
+    def get_volumetric_composition(self, IDs):
+        return self.ivol[..., IDs].sum(0)/self.F_vol
+    
+    def get_concentration(self, phase, IDs):
+        return self.imol[phase, IDs]/self.F_vol
+    
     def mix_from(self, others):
         if settings._debug: assert_same_chemicals(self, others)
         multi = []; single = []; isa = isinstance
         for i in others:
-            (multi if isa(i, MultiStream) else single).append(i)
+            if i: (multi if isa(i, MultiStream) else single).append(i)
         self.empty()
         for i in single:
             self._imol[i.phase] += i.mol    
         self._imol._data[:] += sum([i._imol._data for i in multi])
-        self.H = sum([i.H for i in others])
+        T = others[0].T
+        if all([T==i.T for i in others[1:]]):
+            self.T = T
+        else:
+            self.H = sum([i.H for i in others])
         
     def link_with(self, other):
         if settings._debug:
@@ -293,7 +313,7 @@ class MultiStream(Stream):
     
     def _info(self, T, P, flow, N):
         """Return string with all specifications."""
-        from .material_indexer import nonzeros
+        from .indexer import nonzeros
         IDs = self.chemicals.IDs
         basic_info = self._basic_info()
         all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol)

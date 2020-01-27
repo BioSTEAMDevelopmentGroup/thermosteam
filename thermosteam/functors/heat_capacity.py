@@ -150,8 +150,6 @@ def Lastovka_Shaw(T, MW, term, a):
         + (B_{21} + B_{22}\alpha)\left(-\frac{(C_{21} + C_{22}\alpha)}{T}\right)^2
         \frac{\exp(-(C_{21} + C_{22}\alpha)/T)}{[1-\exp(-(C_{21}+C_{22}\alpha)/T)]^2}
 
-    Notes
-    -----
     Original model is in terms of J/g/K, but is translated to molar heat capacity in J/mol/K.
 
     A1 = 0.58, A2 = 1.25, A3 = 0.17338003, A4 = 0.014, B11 = 0.73917383,
@@ -256,8 +254,6 @@ def TRCCn(T, a0, a1, a2, a3, a4, a5, a6, a7):
 
         y = \frac{T-a_7}{T+a_6} \text{ for } T > a_7 \text{ otherwise } 0
 
-    Notes
-    -----
     j is set to 8. Analytical integrals are available for this expression.
 
     Examples
@@ -442,8 +438,6 @@ def Rowlinson_Poling(T, Tc, ω, Cn_g):
         \frac{Cn^{L} - Cn^{g}}{R} = 1.586 + \frac{0.49}{1-T_r} +
         \omega\left[ 4.2775 + \frac{6.3(1-T_r)^{1/3}}{T_r} + \frac{0.4355}{1-T_r}\right]
 
-    Notes
-    -----
     This equation is not too accurate.
     Poling compared 212 substances, and found error at 298K larger than 10%
     for 18 of them, mostly associating. Of the other 194 compounds, AARD is 2.5%.
@@ -480,8 +474,6 @@ def Rowlinson_Bondi(T, Tc, ω, Cn_g):
         \frac{Cn^L - Cn^{ig}}{R} = 1.45 + 0.45(1-T_r)^{-1} + 0.25\omega
         [17.11 + 25.2(1-T_r)^{1/3}T_r^{-1} + 1.742(1-T_r)^{-1}]
 
-    Notes
-    -----
     Less accurate than `Rowlinson_Poling`.
 
     Examples
@@ -522,8 +514,6 @@ def Dadgostar_Shaw(T, MW, first, second, third):
         + a_{22}\alpha^2)T +(a_{31}\alpha + a_{32}\alpha^2)T^2
         C_n = MW \cdot Cp
 
-    Notes
-    -----
     Many restrictions on its use.
 
     Original model is in terms of J/g/K, but it has been modified to give molar heat capacity in J/mol/K.
@@ -674,7 +664,7 @@ def Zabransky_Quasi_Polynomial_Over_T_Integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a
 
 @Cn.l(ref='[1]_')
 def Zabransky_Cubic(T, a1, a2, a3, a4):
-    """
+    r"""
     Notes
     -----
     The liquid heat capacity is given by:
@@ -688,6 +678,7 @@ def Zabransky_Cubic(T, a1, a2, a3, a4):
     .. [1] Zabransky, M., V. Ruzicka Jr, V. Majer, and Eugene S. Domalski.
        Heat Capacity of Liquids: Critical Review and Recommended Values.
        2 Volume Set. Washington, D.C.: Amer Inst of Physics, 1996.
+    
     """
     T = T/100.
     return R*(((a4*T + a3)*T + a2)*T + a1)

@@ -11,7 +11,8 @@ def repr_IDs_data(IDs, data, dlim=", ", start=None):
 
 def repr_kwargs(kwargs, dlim=", ", start=None):
     if kwargs:
-        return (start or dlim) + dlim.join([f"{key}={value}" for key, value in kwargs.items()])
+        start = dlim if start is None else ""
+        return start + dlim.join([f"{key}={value}" for key, value in kwargs.items()])
     else:
         return ""
 

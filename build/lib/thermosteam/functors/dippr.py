@@ -6,7 +6,6 @@ __all__ = ['DIPPR_EQ100', 'DIPPR_EQ101', 'DIPPR_EQ102',
            'DIPPR_EQ116', 'DIPPR_EQ127']
 
 from ..base.functor import functor
-from ..base.thermo_model import TDependentModel
 from math import log, exp, sinh, cosh, atan, atanh, sqrt, tanh
 from cmath import log as clog
 from cmath import sqrt as csqrt
@@ -17,7 +16,7 @@ order_not_found_msg = ('Only the actual property calculation, first temperature 
                        'temperature integral over temperature are supported '
                        'with order=  0, 1, -1, or -1j respectively')
 
-@functor(autodoc=False)
+@functor
 def DIPPR_EQ100(T, A=0., B=0., C=0., D=0., E=0., F=0., G=0., order=0.):
     r'''Used in calculating the molar heat capacities
     of liquids and solids, liquid thermal conductivity, and solid density.

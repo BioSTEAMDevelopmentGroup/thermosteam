@@ -21,7 +21,10 @@ class Phase:
         self = new(cls)
         self.phase = phase
         return self
-        
+    
+    def __reduce__(self):
+        return Phase, (self.phase,)
+    
     def copy(self):
         return self.__class__(self.phase)
     __copy__ = copy
@@ -42,7 +45,10 @@ class LockedPhase(Phase):
             cache[phase] = self = new(cls)
             setfield(self, 'phase', phase)
         return self
-        
+    
+    def __reduce__(self):
+        return Phase, (self.phase,)
+    
     def __setattr__(self, name, value):
         raise AttributeError('phase is locked')
         

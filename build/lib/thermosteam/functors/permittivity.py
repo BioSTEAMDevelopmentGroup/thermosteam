@@ -10,7 +10,7 @@ from ..base import TDependentHandleBuilder, epsilon
 read = CASDataReader(__file__, 'Electrolytes')
 _CRC_Permittivity = read('Permittivity (Dielectric Constant) of Liquids.tsv')
 
-@epsilon(njitcompile=False)
+@epsilon
 def IAPWS_Permittivity(T, Vl,
                        dipole = 6.138E-30, # actual molecular dipole moment of water, in C*m
                        polarizability = 1.636E-40, # actual mean molecular polarizability of water, C^2/J*m^2
@@ -21,7 +21,7 @@ def IAPWS_Permittivity(T, Vl,
                    -0.298217036956, -0.108863472196, 0.949327488264E-1, 
                    -.980469816509E-2, 0.165167634970E-4, 0.937359795772E-4, 
                    -0.12317921872E-9])):
-    rhom = 1/Vl(T)
+    rhom = 1/Vl(T, 101325)
     rho = MW * rhom
     delta = rho/322.
     tau = 647.096/T

@@ -1,4 +1,5 @@
 Whr = 3600*J = Wh
+Debye = 0.020819434*e*nm = debye = D
 bu = 56*lb
 s2 = s**2
 s3 = s**3

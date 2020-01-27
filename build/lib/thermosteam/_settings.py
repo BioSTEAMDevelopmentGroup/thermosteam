@@ -12,12 +12,11 @@ class Settings:
     __slots__ = ('_thermo',
                  '_phase_names',
                  '_debug',
-                 '_dark_mode')
+    )
     
     def __init__(self):
         self._thermo = None
         self._debug = __debug__
-        self._dark_mode = True
         self._phase_names = {'s': 'Solid',
                              'l': 'Liquid',
                              'g': 'Gas',
@@ -33,36 +32,26 @@ class Settings:
         self._debug = bool(debug)
     
     @property
-    def dark_mode(self):
-        return self._dark_mode
-    @dark_mode.setter
-    def dark_mode(self, dark_mode):
-        self._dark_mode = bool(dark_mode)
-    
-    @property
     def phase_names(self):
         return self._phase_names
     
-    def get_thermo(self, thermo):
+    def get_default_thermo(self, thermo):
         if not thermo:
-            thermo = settings.thermo
-            assert thermo, ("no available 'Thermo' object; "
-                            "set settings.thermo first")
+            thermo = self.get_thermo()
         return thermo
     
-    def get_chemicals(self, chemicals):
+    def get_default_chemicals(self, chemicals):
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
-        if not chemicals:
+        elif not chemicals:
             thermo = settings._thermo
-            assert thermo, "no available 'Thermo' object"
+            assert thermo, "no available 'Chemicals' object"
             chemicals = thermo.chemicals
         else:
-            chemicals = tmo.Chemicals(chemicals)
-            chemicals.compile()
+            raise ValueError("chemicals must be a 'Chemicals' object")
         return chemicals
     
-    def get_mixture(self, mixture):
+    def get_default_mixture(self, mixture):
         if not mixture:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
@@ -70,18 +59,22 @@ class Settings:
             mixture = thermo.mixture
         return mixture
     
-    @property
-    def thermo(self):
-        return self._thermo
-    @thermo.setter
-    def thermo(self, thermo):
-        if isinstance(thermo, tmo.Thermo):
-            self._thermo = thermo
-        else:
-            raise ValueError("thermo must be a 'Thermo' object, "
-                            f"not a '{type(thermo).__name__}'")
+    def get_thermo(self):
+        thermo = self._thermo
+        assert thermo, ("no available 'Thermo' object; "
+                        "use settings.set_thermo")
+        return thermo
+    
+    def set_thermo(self, thermo):
+        if isinstance(thermo, tmo.Chemicals):
+            thermo = tmo.Thermo(thermo)
+        elif not isinstance(thermo, tmo.Thermo):
+            raise ValueError("thermo must be either a 'Thermo' "
+                             "or a 'Chemicals' object, not a "
+                            f"'{type(thermo).__name__}'")
+        self._thermo = thermo
     
     def __repr__(self):
-        return "<ThermoSTEAM Settings>"
+        return "<Settings>"
     
 settings = Settings()

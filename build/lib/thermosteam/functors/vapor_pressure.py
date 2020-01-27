@@ -24,7 +24,7 @@ _VDI_PPDS_3 = read("VDI PPDS Boiling temperatures at different pressures.tsv")
 
 @Psat(ref="[1]_")
 def Antoine(T, a, b, c):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -79,7 +79,7 @@ def Antoine(T, a, b, c):
 
 @Psat(ref="[1]_")
 def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -123,7 +123,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
 
 @Psat(ref="[1]_")
 def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -169,7 +169,7 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
 
 @Psat(ref="[1]_")
 def Wagner(T, Tc, Pc, a, b, c, d):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -210,9 +210,9 @@ def Wagner(T, Tc, Pc, a, b, c, d):
     τ = 1.0 - Tr
     return Pc * exp((a*τ + b*τ**1.5 + c*τ**2.5 + d*τ**5) / Tr)
 
-@Psat(autodoc=False, ref=1)
+@Psat
 def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -239,7 +239,7 @@ def Boiling_Critical_Relation(T, Tc, Pc, Tbr, h):
     """
     return exp(h * (1 - Tc / T)) * Pc
 
-@Boiling_Critical_Relation.wrapper
+@Boiling_Critical_Relation.wrapper(ref="[1]_")
 def Boiling_Critical_Relation(Tb, Tc, Pc):
     Tbr = Tb / Tc
     h = Tbr * log(Pc / 101325.0) / (1 - Tbr)
@@ -247,7 +247,7 @@ def Boiling_Critical_Relation(Tb, Tc, Pc):
 
 @Psat(ref="[1]_")
 def Lee_Kesler(T, Tc, Pc, ω):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -287,7 +287,7 @@ def Lee_Kesler(T, Tc, Pc, ω):
 
 @Psat(ref="[1]_")
 def Ambrose_Walton(T, Tc, Pc, ω):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -332,7 +332,7 @@ def Ambrose_Walton(T, Tc, Pc, ω):
 
 @Psat(ref="[1]_")
 def Sanjari(T, Tc, Pc, ω):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:
@@ -385,7 +385,7 @@ def Sanjari(T, Tc, Pc, ω):
 
 @Psat(ref="[1]_")
 def Edalat(T, Tc, Pc, ω):
-    r"""*
+    r"""
     Notes
     -----
     The vapor pressure (Psat; in Pa) is given by:

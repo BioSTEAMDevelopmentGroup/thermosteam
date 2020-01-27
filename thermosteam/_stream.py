@@ -706,7 +706,37 @@ class Stream:
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
         
-    def link_with(self, other, flow=True, phase=True, TP=False):
+    def link_with(self, other, flow=True, phase=True, TP=True):
+        """
+        Link with another stream.
+        
+        Parameters
+        ----------
+        other : Stream
+        flow : bool, defaults to True
+            Whether to link the flow rate data.
+        phase : bool, defaults to True
+            Whether to link the phase.
+        TP : bool, defaults to True
+            Whether to link the temperature and pressure.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        >>> s2.link_with(s1)
+        >>> s1.mol is s2.mol
+        True
+        >>> s2.thermal_condition is s1.thermal_condition
+        True
+        >>> s1.phase = 'g'
+        >>> s2.phase
+        'g'
+        
+        """
         assert isinstance(other, self.__class__), "other must be of same type to link with"
         
         if TP and flow and phase:
@@ -722,6 +752,22 @@ class Stream:
             self._imol._phase = other._imol._phase
             
     def unlink(self):
+        """
+        Unlink stream from other streams.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        >>> s2.link_with(s1)
+        >>> s1.unlink()
+        >>> s2.mol is s1.mol
+        False
+        
+        """
         self._imol._data_cache.clear()
         self._TP = self._TP.copy()
         self._imol._data = self._imol._data.copy()
@@ -729,6 +775,23 @@ class Stream:
         self._init_cache()
     
     def copy_like(self, other):
+        """
+        Copy all conditions of another stream.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
+        >>> s1.copy_like(s2)
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water  2
+
+        """
         self._imol.copy_like(other._imol)
         self._TP.copy_like(other._TP)
     
@@ -764,6 +827,23 @@ class Stream:
                 mol[index] = 0
     
     def copy(self):
+        """
+        Return a copy of the stream.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s1_copy = s1.copy()
+        >>> s1_copy.show(flow='kg/hr')
+        Stream: 
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    20
+                       Ethanol  10
+        
+        """
         cls = self.__class__
         new = cls.__new__(cls)
         new._sink = new._source = new._ID = None

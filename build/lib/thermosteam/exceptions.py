@@ -8,7 +8,8 @@ __all__ = ('UndefinedChemical',
            'UndefinedPhase',
            'UndefinedPhaseOrChemical',
            'DimensionError',
-           'AutodocError')
+           'AutodocError',
+           'DeprecatedAttribute')
 
 class UndefinedChemical(AttributeError):
     """AttributeError regarding undefined chemicals."""
@@ -27,3 +28,9 @@ class DimensionError(ValueError):
 
 class AutodocError(RuntimeError):
     """RuntimeError regarding automatic documentation."""
+    
+class DeprecatedAttribute(AttributeError):
+    def __init__(self, old, new):
+        super().__init__(f"'{old}' is deprecated; please use '{new}' instead")
+        
+        

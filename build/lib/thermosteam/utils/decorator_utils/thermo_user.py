@@ -16,7 +16,7 @@ def thermo_user(cls):
     return cls
     
 def _load_thermo(self, thermo):
-    self._thermo = thermo = tmo.settings.get_thermo(thermo)
+    self._thermo = thermo = tmo.settings.get_default_thermo(thermo)
     return thermo
 
 @property

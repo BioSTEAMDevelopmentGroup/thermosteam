@@ -190,6 +190,7 @@ thermosteam/mixture/mixture_method_names.py
 thermosteam/reaction/__init__.py
 thermosteam/reaction/_parse.py
 thermosteam/reaction/_reaction.py
+thermosteam/utils/Lipid_chemical
 thermosteam/utils/__init__.py
 thermosteam/utils/assert_utils.py
 thermosteam/utils/cache.py

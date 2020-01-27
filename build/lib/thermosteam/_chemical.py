@@ -1,29 +1,10 @@
 # -*- coding: utf-8 -*-
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
 
 __all__ = ('Chemical',)
 
-from scipy.optimize import newton
-from .utils import copy_maybe, cucumber
+import re
+from flexsolve import bounded_wegstein
+from .utils import copy_maybe
 from .functors.identifiers import CAS_from_any, pubchem_db
 from .functors.vapor_pressure import VaporPressure
 from .functors.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
@@ -44,10 +25,10 @@ from .functors.free_energy import \
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
     ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
 from .base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, \
-                  display_asfunctor, TDependentModelHandle
+                  display_asfunctor, TDependentModelHandle, TPDependentModelHandle
 from .base.units_of_measure import chemical_units_of_measure
 from .functors.dipole import dipole_moment as dipole
-from .functional import Z, rho_to_V #, isentropic_exponent, Joule_Thomson, B_from_Z, isobaric_expansion
+from . import functional as fn 
 from .functors.permittivity import Permittivity
 from .functors.interface import SurfaceTension
 from .equilibrium.unifac_data import \
@@ -59,7 +40,12 @@ from .equilibrium.unifac_data import \
 # from .refractivity import refractive_index
 # from .electrochem import conductivity
 
-# %% Utilities
+# %% Search tools
+
+def to_searchable_format(ID):    
+    return re.sub(r"\B([A-Z])", r" \1", ID).capitalize().replace('_', ' ')
+
+# %% Locked chemical state settings
                                       
 class LockedState:
     __slots__ = ('_phase', '_T', '_P')
@@ -93,7 +79,7 @@ class LockedState:
 # %% Filling missing properties
 
 def fill_from_dict(chemical, dict, slots=None):
-    if not slots: slots = chemical.missing(slots)
+    if not slots: slots = chemical.get_missing_slots(slots)
     missing = []
     setfield = setattr
     for i in slots :
@@ -104,14 +90,14 @@ def fill_from_dict(chemical, dict, slots=None):
     return missing
 
 def fill_from_obj(chemical, obj, slots=None):
-    if not slots: slots = chemical.missing(slots)
+    if not slots: slots = chemical.get_missing_slots(slots)
     missing = []
     setfield = setattr
     getfield = getattr
     for i in slots :
         attr = getfield(obj, i)
         if attr:
-            setfield(obj, i, attr)
+            setfield(chemical, i, attr)
         else:
             missing.append(i)
     return missing
@@ -120,6 +106,21 @@ def fill(chemical, other, slots=None):
     fill = fill_from_dict if isinstance(other, dict) else fill_from_obj
     return fill(chemical, other, slots)
 
+def get_chemical_data(chemical):
+    getfield = getattr
+    return {i:getfield(chemical, i) for i in chemical.__slots__}
+
+def unpickle_chemical(chemical_data):
+    cache = Chemical._cache
+    CAS = chemical_data['_CAS']
+    if CAS in cache:
+        chemical = cache[CAS]
+    else:
+        chemical = object.__new__(Chemical)
+        setfield = setattr
+        for field, value in chemical_data.items():
+            setfield(chemical, field, value)
+    return chemical
 
 # %% Representation
     
@@ -149,7 +150,7 @@ def create_eos(eos, Tc, Pc, omega):
 
 # %% Chemical fields
 
-_names = ('CAS', 'InChI', 'InChI_key',
+_names = ('_CAS', 'InChI', 'InChI_key',
          'common_name', 'iupac_name',
          'pubchemid', 'smiles')
 
@@ -177,7 +178,7 @@ _chemical_fields = {'\n[Names]  ': _names,
 
 
 # %% Chemical
-@cucumber # Just means you can pickle it
+
 class Chemical:
     """Creates a Chemical object which contains basic information such as 
     molecular weight and the structure of the species, as well as thermodynamic
@@ -200,11 +201,23 @@ class Chemical:
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
     _cache = {}
     
-    def __new__(cls, ID, *, eos=PR):
+    def __new__(cls, ID, *, search_ID=None, eos=PR, phase_ref=None):
         cache = cls._cache
-        CAS = CAS_from_any(ID)
+        search_ID = search_ID or ID
+        try:
+            CAS = CAS_from_any(search_ID)
+        except Exception as Error:
+            search_ID = to_searchable_format(search_ID)
+            try: CAS = CAS_from_any(search_ID)
+            except: raise Error
+            
         if CAS in cache:
             self = cache[CAS]
+            if ID != self.ID:
+                if ID in cache:
+                    self = cache[ID]
+                else:
+                    cache[ID] = self = self.copy(ID=ID, CAS=self.CAS)                    
         else:
             info = pubchem_db.search_CAS(CAS)
             self = super().__new__(cls)
@@ -217,38 +230,69 @@ class Chemical:
                 self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
             self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
             self._init_eos(eos, self.Tc, self.Pc, self.omega)
+            has_hydroxyl = False
+            for dct in (self.Dortmund, self.UNIFAC, self.PSRK):
+                for n in (14, 15, 16, 81):
+                    if n in dct:
+                       has_hydroxyl = True
+                       break
+                if has_hydroxyl: break
             self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
                                   self.Pc, self.Zc, self.Vc, self.Hfus,
                                   self.omega, self.dipole, self.similarity_variable,
-                                  self.iscyclic_aliphatic, self.eos)
+                                  self.iscyclic_aliphatic, self.eos, has_hydroxyl)
             self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
-                                self.Tm, self.Tb, self.eos, self.eos_1atm)
+                                self.Tm, self.Tb, self.eos, self.eos_1atm,
+                                phase_ref)
             cache[CAS] = self
         return self
+
+
+    def __reduce__(self):
+        return unpickle_chemical, (get_chemical_data(self),)
 
     @property
     def ID(self):
         return self._ID
+    @property
+    def CAS(self):
+        return self._CAS
 
-    def Tsat(self, P, T_min=200):
-        return newton(lambda T: P - self.Psat(T if T > T_min else T_min), self.Tb)
+    def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None):
+        Tb = self.Tb
+        Psat = self.Psat
+        if not Tmin: Tmin = Psat.Tmin 
+        if not Tmax: Tmax = Psat.Tmax
+        if Tb:
+            if P == 101325:
+                return Tb
+            elif not Tguess:
+                Tguess = Tb * (P / 101325)
+        elif not Tguess:
+            Tguess = (Tmin + Tmax)/2
+        return bounded_wegstein(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-2, 1e-1)
 
-    def copy(self, ID):
+    def copy(self, ID, CAS=None):
+        cache = self._cache
+        CAS = CAS or ID
         new = super().__new__(self.__class__)
         getfield = getattr
         setfield = setattr
         for field in self.__slots__: 
             value = getfield(self, field)
             setfield(new, field, copy_maybe(value))
+        new._ID = ID
+        new._CAS = CAS
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
                            new._locked_state.phase)
+        cache[CAS] = new
         return new
     __copy__ = copy
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
                     pubchemid, iupac_name, common_name):
-        self.CAS = CAS
+        self._CAS = CAS
         self.smiles = smiles
         self.InChI = InChI
         self.InChI_key = InChI_key
@@ -260,15 +304,15 @@ class Chemical:
         if InChI_key in DDBST_UNIFAC_assignments:
             self.UNIFAC = DDBST_UNIFAC_assignments[InChI_key]
         else:
-            self.UNIFAC = None
+            self.UNIFAC = {}
         if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
             self.Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
         else:
-            self.Dortmund = None
+            self.Dortmund = {}
         if InChI_key in DDBST_PSRK_assignments:
             self.PSRK = DDBST_PSRK_assignments[InChI_key]
         else:
-            self.PSRK = None
+            self.PSRK = {}
 
     def _init_data(self, CAS, MW, atoms):
         self.MW = MW
@@ -280,7 +324,7 @@ class Chemical:
         self.Pc = Pc(CAS)
         self.Vc = Vc(CAS)
         self.omega = omega(CAS)
-        self.Zc = Z(self.Tc, self.Pc, self.Vc) if all((self.Tc, self.Pc, self.Vc)) else None
+        self.Zc = fn.Z(self.Tc, self.Pc, self.Vc) if all((self.Tc, self.Pc, self.Vc)) else None
 
         # Triple point
         self.Pt = Pt(CAS)
@@ -300,20 +344,21 @@ class Chemical:
         # Other
         self.dipole = dipole(CAS)
         self.similarity_variable = similarity_variable(atoms, MW)
-        self.iscyclic_aliphatic = None
+        self.iscyclic_aliphatic = False
 
     def _init_eos(self, eos, Tc, Pc, omega):
         self.eos = create_eos(eos, Tc, Pc, omega)
         self.eos_1atm = self.eos.to_TP(298.15, 101325)
 
     def _init_properties(self, CAS, MW, Tm, Tb, Tc, Pc, Zc, Vc, Hfus, omega,
-                         dipole, similarity_variable, iscyclic_aliphatic, eos):
+                         dipole, similarity_variable, iscyclic_aliphatic, eos,
+                         has_hydroxyl):
         # Vapor pressure
         self.Psat = Psat = VaporPressure((CAS, Tb, Tc, Pc, omega))
         
         # Volume
         sdata = (CAS,)
-        ldata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos)
+        ldata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, has_hydroxyl)
         gdata = (CAS, Tc, Pc, omega, eos)
         self.V = V = Volume(sdata, ldata, gdata)
         
@@ -339,9 +384,15 @@ class Chemical:
         self.kappa = ThermalConductivity(None, ldata, gdata)
         
         # Surface tension
-        Hvap_Tb = Hvap(Tb) if Tb else None
-        Cnl_Tb = Cn.l(Tb) if (Cn.l and Tb) else None
-        rhol = 1/V.l(Tb, 101325.) * MW if (V.l and MW) else None
+        if Tb:
+            try:    Hvap_Tb = Hvap(Tb)
+            except: Hvap_Tb = None
+            try:    Cnl_Tb = Cn.l(Tb)
+            except: Cnl_Tb = None
+            try:    rhol = 1/V.l(Tb, 101325.) * MW
+            except: rhol = None
+        else:
+            Hvap_Tb = Cnl_Tb = rhol = None
         data = (CAS, MW, Tb, Tc, Pc, Vc, Zc,
                 omega, StielPolar, Hvap_Tb, rhol, Cnl_Tb)
         self.sigma = SurfaceTension(data)
@@ -376,7 +427,9 @@ class Chemical:
             has_Cns = has_Cnl = has_Cng = False
         
         if any((has_Cns, has_Cnl, has_Cng)):
-            if not phase_ref:
+            if phase_ref:
+                self._phase_ref = phase_ref
+            else:
                 if Tm and T_ref <= Tm:
                     self._phase_ref = phase_ref = 's'
                 elif Tb and T_ref >= Tb:
@@ -384,8 +437,11 @@ class Chemical:
                 else:
                     self._phase_ref = phase_ref = 'l'
 
-            Hvap_Tb = Hvap(Tb) if Tb else None
-            Svap_Tb = Hvap_Tb / Tb if Tb else None
+            if Hvap:
+                Hvap_Tb = Hvap(Tb) if Tb else None
+                Svap_Tb = Hvap_Tb / Tb if Tb else None
+            else:
+                Hvap_Tb = Svap_Tb = None
             
             # Enthalpy and entropy integrals
             if phase_ref != 'l' and has_Cnl and (Tm and Tb):
@@ -489,23 +545,21 @@ class Chemical:
                 ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_1atm)
                 gdata = (eos, S_dep_ref_g)
                 self.S_excess = ExcessEntropyRefGas((), ldata, gdata)
+                
+            if single_phase:
+                getfield = getattr
+                self.H = getfield(self.H, single_phase)
+                self.S = getfield(self.S, single_phase)
+                self.H_excess = getfield(self.H_excess, single_phase)
+                self.S_excess = getfield(self.S_excess, single_phase)
         else:
             self.H = self.S = self.S_excess = self.H_excess = None
-            
-        if single_phase:
-            getfield = getattr
-            self.H = getfield(self.H, single_phase)
-            self.S = getfield(self.S, single_phase)
-            self.H_excess = getfield(self.H_excess, single_phase)
-            self.S_excess = getfield(self.S_excess, single_phase)
 
     def default(self, slots=None):
         if not slots:
-            slots = self.missing(slots)   
+            slots = self.get_missing_slots(slots)   
         hasfield = hasattr
         # Default to Water property values
-        if 'CAS' in slots:
-            self.CAS = self.ID
         if 'MW' in slots:
             self.MW = MW = 1
         else:
@@ -520,7 +574,7 @@ class Chemical:
                 mu.model(0.00091272)
         if 'V' in slots:
             V = self.V
-            V_default = rho_to_V(1050, MW)
+            V_default = fn.rho_to_V(1050, MW)
             if hasfield(V, 'l'):
                 V.l.model(V_default)
             elif not V:
@@ -543,6 +597,7 @@ class Chemical:
             self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self.eos_1atm = self.eos.to_TP(298.15, 101325)
         if 'Cn' in slots:
+            MW = self.MW
             Cn = self.Cn
             phase_ref = self.phase_ref
             getfield = getattr
@@ -553,53 +608,64 @@ class Chemical:
             else:
                 Cn_phase = getfield(Cn, phase_ref)
                 Cn_phase.model(4.18*MW, var='Cn')
-            self._init_energies(Cn, self.Hvap, self.Psat, self.Hfus, self.Tm,
-                                self.Tb, self.eos, self.eos_1atm, self.phase_ref,
-                                single_phase and phase_ref)
+            self.load_free_energies()
+        if not self.H:
+            self.load_free_energies()
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
                                    'mu', 'kappa', 'Hc', 'epsilon', 'H',
                                    'S', 'H_excess', 'S_excess', '_phase_ref'})
         return missing
     
-    def missing(self, slots=None):
+    def load_free_energies(self):
+        Cn = self.Cn
+        single_phase = isinstance(Cn, TDependentModelHandle)
+        if not self.eos:
+            self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
+            self.eos_1atm = self.eos.to_TP(298.15, 101325)
+        self._init_energies(Cn, self.Hvap, self.Psat, self.Hfus, self.Tm,
+                            self.Tb, self.eos, self.eos_1atm, self.phase_ref,
+                            single_phase and self.phase_ref)
+    
+    def get_missing_slots(self, slots=None):
         getfield = getattr
         return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
     def fill(self, *sources, slots=None, default=True):
-        missing = slots if slots else self.missing(slots)
+        missing = slots if slots else self.get_missing_slots(slots)
         for source in sources:
-            missing = fill(source, missing)
+            missing = fill(self, source, missing)
         if default:
             missing = self.default(missing)
         return missing
     
     @classmethod
-    def blank(cls, ID):
+    def blank(cls, ID, CAS=None, phase_ref=None, phase=None, **data):
         self = super().__new__(cls)
         setfield = setattr
-        self.eos = self.eos_1atm = self._phase_ref = None
+        self.eos = self.eos_1atm = None
         for i in _names: setfield(self, i, None)
         for i in _groups: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _free_energies: setfield(self, i, None)
-        for i in ('kappa', 'mu', 'V'):
-            setfield(self, i, ChemicalPhaseTPProperty())
-        self.Cn = ChemicalPhaseTProperty()
+        if phase:
+            for i in ('kappa', 'mu', 'V'):
+                setfield(self, i, TPDependentModelHandle())
+            self.Cn = TDependentModelHandle()
+        else:
+            for i in ('kappa', 'mu', 'V'):
+                setfield(self, i, ChemicalPhaseTPProperty())
+            self.Cn = ChemicalPhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
-        self._locked_state = LockedState()
+        self._locked_state = LockedState(phase=phase)
         self._ID = ID
+        self._phase_ref = phase_ref or phase
+        self._CAS = CAS or ID
+        for i,j in data.items(): setfield(self, i , j)
         return self
     
-    @classmethod
-    def new(cls, ID, *sources, slots=None, default=True):
-        try: self = cls(ID)
-        except: self = cls.blank(ID)
-        self.fill(*sources, slots=slots, default=default)
-        return self
-    
-    def phase(self, T=298.15, P=101325.):
+    def get_phase(self, T=298.15, P=101325.):
         if self._locked_state.phase: return self._locked_state.phase
         if self.Tm and T <= self.Tm: return 's'
         if self.Psat and P <= self.Psat(T): return 'g'
@@ -613,21 +679,19 @@ class Chemical:
     def locked_state(self):
         return self._locked_state
     
-    def at_state(self, ID, phase=None, T=None, P=None):
-        new = self.copy(ID)
-        if new.locked_state:
+    def at_state(self, phase=None, T=None, P=None):
+        if self.locked_state:
             raise TypeError(f"{self}'s state is already locked")    
         elif T and P:
             if phase:
-                lock_locked_state(new, phase, T, P)
+                lock_TPphase(self, phase, T, P)
             else:
-                lock_TP(new, T, P)                
+                lock_TP(self, T, P)                
         elif phase:
-            lock_phase(new, phase)
+            lock_phase(self, phase)
         else:
             raise ValueError("must pass a either a phase, T and P, or both to lock state")
-        new._locked_state.__init__(phase, T, P)
-        return new
+        self._locked_state.__init__(phase, T, P)
     
     def show(self):
         getfield = getattr
@@ -636,6 +700,7 @@ class Chemical:
             section = []
             for field in fields:
                 value = getfield(self, field)
+                field = field.lstrip('_')
                 if value is None: continue
                 else:
                     if callable(value):
@@ -672,9 +737,8 @@ def lock_TP(chemical, T, P):
         phase_property = getfield(chemical, field)
         for phase in phases:
             model_handle = getfield(phase_property, phase)
-            try: value = model_handle.lock_TP(T, P)
-            except: value = None
-            setfield(phase_property, phase, value)
+            try: model_handle.lock_TP(T, P)
+            except: pass
     for field in _liquid_only_properties:
         model_handle = getfield(chemical, field) 
         value = model_handle.lock_TP(T, P)
@@ -683,29 +747,30 @@ def lock_TP(chemical, T, P):
 def lock_phase(chemical, phase):
     getfield = getattr
     setfield = setattr
+    hasfield = hasattr
     for field in _phase_properties:
         phase_property = getfield(chemical, field)
         model_handle = getfield(phase_property, phase)
         setfield(chemical, field, model_handle)
     for field in _free_energies:
         phase_property = getfield(chemical, field)
-        functor = getfield(phase_property, phase)
-        setfield(chemical, field, functor)
+        if hasfield(phase_property, phase):
+            functor = getfield(phase_property, phase)
+            setfield(chemical, field, functor)
 
-def lock_locked_state(chemical, phase, T, P):
+def lock_TPphase(chemical, phase, T, P):
     getfield = getattr
     setfield = setattr
     for field in _phase_properties:
         phase_property = getfield(chemical, field)
         model_handle = getfield(phase_property, phase)
-        try: value = model_handle.lock_TP(T, P)
-        except: value = None
-        setfield(chemical, field, value)
+        try: model_handle.lock_TP(T, P)
+        except: pass
+        setfield(chemical, field, model_handle)
     for field in _liquid_only_properties:
         model_handle = getfield(chemical, field) 
-        try: value = model_handle.lock_TP(T, P)
-        except: value = None
-        setfield(chemical, field, value) 
+        try: model_handle.lock_TP(T, P)
+        except: pass
     for field in _free_energies:
         phase_property = getfield(chemical, field)
         functor = getfield(phase_property, phase)
