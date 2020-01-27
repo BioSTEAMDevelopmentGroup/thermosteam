@@ -575,6 +575,7 @@ def VolumetricFlowProperty(self):
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     if value:
+        phase = self.phase or self.phase_container.phase
         V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
         self.mol[self.index] = value / V(*self.TP) / 1000.
     else:
