@@ -72,7 +72,6 @@ class Stream:
     >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
     >>> tmo.settings.set_thermo(chemicals)
     
-    
     Create a stream, defining the thermodynamic condition and flow rates:
         
     >>> s1 = tmo.Stream(ID='s1',
@@ -270,9 +269,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals)
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298.15, P=101325, phase='l')
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_flow('kg/hr', 'Water')
         20.0
 
@@ -325,9 +322,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals)
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298.15, P=101325, phase='l')
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_total_flow('kg/hr')
         30.0
 
@@ -352,9 +347,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals)
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298.15, P=101325, phase='l')
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_total_flow(1.0,'kg/hr')
         >>> s1.get_total_flow('kg/hr')
         0.9999999999999999
@@ -379,11 +372,9 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals) 
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298)
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_property('sigma', 'N/m') # Surface tension
-        0.06387134949249304
+        0.06384967976396348
 
         """
         units_dct = thermo_units.stream_units_of_measure
@@ -413,9 +404,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals) 
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298)
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_property('P', 2, 'atm')
         >>> s1.P
         202650.0
@@ -656,6 +645,24 @@ class Stream:
     ### Stream methods ###
     
     def mix_from(self, others):
+        """
+        Mix all other streams into this one, ignoring its initial contents.
+        
+        Examples
+        -------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = s1.copy()
+        >>> s1.mix_from([s1, s2])
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+                       Ethanol  20
+        
+        """
         others = [i for i in others if i]
         if len(others) == 1:
             self.copy_like(others[0])
@@ -667,6 +674,34 @@ class Stream:
             self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
+        """
+        Split molar flow rate from this stream to two others given
+        the split fraction or an array of split fractions.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s = tmo.Stream('s', Water=20, Ethanol=10, units='kg/hr')
+        >>> s1 = tmo.Stream('s1')
+        >>> s2 = tmo.Stream('s2')
+        >>> split = chemicals.kwarray(dict(Water=0.5, Ethanol=0.1))
+        >>> s.split_to(s1, s2, split)
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    10
+                       Ethanol  1
+        
+        >>> s2.show(flow='kg/hr')
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    10
+                       Ethanol  9
+        
+        
+        """
         mol = self.mol
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
