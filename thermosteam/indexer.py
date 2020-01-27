@@ -490,7 +490,7 @@ def _replace_indexer_doc(Indexer, Parent):
     doc = doc[:doc.index("Notes")]
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
     
-def new_Indexer(name, units, slots=()):
+def _new_Indexer(name, units, slots=()):
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
     
@@ -509,10 +509,9 @@ def new_Indexer(name, units, slots=()):
     return ChemicalIndexerSubclass, MaterialIndexerSubclass
 
 ChemicalIndexer._MaterialIndexer = MaterialIndexer
-ChemicalMolarFlowIndexer, MolarFlowIndexer = new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
-ChemicalMassFlowIndexer, MassFlowIndexer = new_Indexer('MassFlow', 'kg/hr')
-ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = new_Indexer('VolumetricFlow', 'm^3/hr')
-del new_Indexer, _replace_indexer_doc
+ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
+ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr')
+ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr')
 
 # %% Mass flow properties
 

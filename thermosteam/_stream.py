@@ -100,11 +100,11 @@ class Stream:
     >>> # Set flow
     >>> s1.set_flow(1, 'gpm', 'Water')
     >>> s1.get_flow('gpm', 'Water')
-    1
+    1.0
     >>> # Set multiple flows
     >>> s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
     >>> s1.get_flow('kg/hr', ('Ethanol', 'Water'))
-    array([10.0, 20.0])
+    array([10., 20.])
     
     Thermodynamic properties are available as stream properties:
     
@@ -157,7 +157,7 @@ class Stream:
     Set vapor fraction and pressure of the stream:
         
     >>> s1.vle(P=101325, V=0.5)
-    >>> s1
+    >>> s1.show()
     MultiStream: s1
      phases: ('g', 'l'), T: 364.8 K, P: 101325 Pa
      flow (kmol/hr): (g) Water     0.4721
@@ -168,13 +168,13 @@ class Stream:
     Note that the stream is a now a MultiStream to manage multiple phases.
     Each phase can be accessed separately too:
     
-    >>> s1['l']
+    >>> s1['l'].show()
     Stream: 
      phase: 'l', T: 364.8 K, P: 101325 Pa
      flow (kmol/hr): Water    0.638
                      Ethanol  0.0255
     
-    >>> s1['g']
+    >>> s1['g'].show()
     Stream: 
      phase: 'g', T: 364.8 K, P: 101325 Pa
      flow (kmol/hr): Water    0.472
@@ -304,7 +304,7 @@ class Stream:
         ...                 T=298.15, P=101325, phase='l')
         >>> s1.set_flow(10, 'kg/hr', 'Water')
         >>> s1.get_flow('kg/hr', 'Water')
-        20.0
+        10.0
 
         """
         name, factor = self._get_flow_name_and_factor(units)
@@ -355,9 +355,9 @@ class Stream:
         >>> s1 = tmo.Stream(ID='s1',
         ...                 Water=20, Ethanol=10, units='kg/hr',
         ...                 T=298.15, P=101325, phase='l')
-        >>> s1.set_total_flow(1,'kg/hr')
+        >>> s1.set_total_flow(1.0,'kg/hr')
         >>> s1.get_total_flow('kg/hr')
-        1.0
+        0.9999999999999999
 
         """
         name, factor = self._get_flow_name_and_factor(units)
@@ -381,9 +381,9 @@ class Stream:
         >>> tmo.settings.set_thermo(chemicals) 
         >>> s1 = tmo.Stream(ID='s1',
         ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298
+        ...                 T=298)
         >>> s1.get_property('sigma', 'N/m') # Surface tension
-        0.06384967976396348
+        0.06387134949249304
 
         """
         units_dct = thermo_units.stream_units_of_measure
@@ -437,21 +437,7 @@ class Stream:
 
     @property
     def thermal_condition(self):
-        """
-        [ThermalCondition] Contains the temperature and pressure conditions of the stream.
-        
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298)
-        >>> s1.thermal_condition
-        ThermalCondition(T=298.00, P=101325)
-        
-        """
+        """ [ThermalCondition] Contains the temperature and pressure conditions of the stream."""
         return self._TP
 
     @property
@@ -652,15 +638,19 @@ class Stream:
         return self.Cn / self.MW
     @property
     def alpha(self):
+        """[float] Thermal diffusivity [m^2/s]."""
         return fn.alpha(self.kappa, self.rho, self.Cp)
     @property
     def rho(self):
+        """[float] Density [kg/m^3]."""
         return fn.V_to_rho(self.V, self.MW)
     @property
     def nu(self):
+        """[float] Kinematic viscosity [-]."""
         return fn.mu_to_nu(self.mu, self.rho)
     @property
     def Pr(self):
+        """[float] Prandtl number [-]."""
         return fn.Pr(self.Cp, self.mu, self.k)
     
     ### Stream methods ###

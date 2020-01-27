@@ -180,7 +180,9 @@ stream_units_of_measure = {'mol': Units('kmol/hr'),
                            'A': Units('kJ/hr'),
                            'C': Units('kJ/hr/K'),
 }
-for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma', 'kappa', 'nu', 'epsilon', 'delta', 'Psat', 'Cp', 'Cn'):
+for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma',
+          'kappa', 'nu', 'epsilon', 'delta',
+          'Psat', 'Cp', 'Cn', 'alpha'):
     stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 definitions = {'MW': 'Molecular weight',
