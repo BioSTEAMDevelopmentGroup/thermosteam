@@ -255,7 +255,7 @@ class Stream:
 
     def get_flow(self, units, IDs=...):
         """
-        Return an array of flow rates in requested units.
+        Return an flow rates in requested units.
         
         Parameters
         ----------
@@ -832,6 +832,8 @@ class Stream:
 
         Examples
         --------
+        Create a copy of a new stream:
+        
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals) 
@@ -842,6 +844,8 @@ class Stream:
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Water    20
                        Ethanol  10
+        
+        Note that the copy does not have an ID and its not registerd.
         
         """
         cls = self.__class__
@@ -856,92 +860,376 @@ class Stream:
     __copy__ = copy
     
     def flow_proxy(self):
+        """Return a new stream that shares flow rate data with this one.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = s1.flow_proxy()
+        >>> s2.mol is s1.mol
+        True
+        
+        """
         cls = self.__class__
         new = cls.__new__(cls)
         new._sink = new._source = new._ID = None
         new.price = 0
         new._thermo = self._thermo
-        new._imol = imol = self._imol._copy_without_data(self._imol)
+        new._imol = imol = self._imol._copy_without_data()
         imol._data = self._imol._data
         new._TP = self._TP.copy()
         new._init_cache()
         return new
     
     def empty(self):
+        """Empty stream flow rates.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s1.empty()
+        >>> s1.F_mol
+        0.0
+        
+        """
         self._imol._data[:] = 0
     
     ### Equilibrium ###
 
     @property
     def vle(self):
+        """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
         self.phases = 'gl'
         return self.vle
 
     @property
     def equilibrim_chemicals(self):
+        """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.get_equilibrium_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs=None):
+        """
+        Return a BubblePoint object capable of computing bubble points.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.get_bubble_point()
+        BubblePoint([Water, Ethanol])
+        
+        """
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         bp = self._bubble_point_cache.reload(chemicals, self._thermo)
         return bp
     
     def get_dew_point(self, IDs=None):
+        """
+        Return a DewPoint object capable of computing dew points.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.get_dew_point()
+        DewPoint([Water, Ethanol])
+        
+        """
         chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
         return dp
     
     def bubble_point_at_T(self, T=None, IDs=None):
+        """
+        Return a BubblePointResults object with all data on the bubble point at constant temperature.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.bubble_point_at_T()
+        BubblePointValues(T=350, P=76621.54388128374, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
+        
+        """
         bp = self.get_bubble_point(IDs)
         z = self.get_molar_composition(bp.IDs)
         return bp(z, T=T or self.T)
     
     def bubble_point_at_P(self, P=None, IDs=None):
+        """
+        Return a BubblePointResults object with all data on the bubble point at constant pressure.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.bubble_point_at_P()
+        BubblePointValues(T=357.0881141715846, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
+        
+        """
         bp = self.get_bubble_point(IDs)
         z = self.get_molar_composition(bp.IDs)
         return bp(z, P=P or self.P)
     
     def dew_point_at_T(self, T=None, IDs=None):
+        """
+        Return a DewPointResults object with all data on the dew point at constant temperature.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.dew_point_at_T()
+        DewPointValues(T=350, P=48990.56398459762, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        
+        """
         dp = self.get_dew_point(IDs)
         z = self.get_molar_composition(dp.IDs)
         return dp(z, T=T or self.T)
     
     def dew_point_at_P(self, P=None, IDs=None):
+        """
+        Return a DewPointResults object with all data on the dew point at constant pressure.
+        
+        Parameters
+        ----------
+        IDs : Iterable[str], optional
+            Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
+            
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
+        >>> s1.dew_point_at_P()
+        DewPointValues(T=368.6573659718087, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        
+        """
         dp = self.get_dew_point(IDs)
         z = self.get_molar_composition(dp.IDs)
         return dp(z, P=P or self.P)
     
     def get_normalized_mol(self, IDs):
+        """
+        Return normalized molar fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
+        >>> s1.get_normalized_mol(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.imol[IDs]
         z /= z.sum()
         return z
     
     def get_normalized_mass(self, IDs):
+        """
+        Return normalized mass fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
+        >>> s1.get_normalized_mass(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.imass[IDs]
-        z /= z.sum()
-        return z
+        return z / z.sum()
     
     def get_normalized_vol(self, IDs):
+        """
+        Return normalized mass fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
+        >>> s1.get_normalized_vol(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.ivol[IDs]
-        z /= z.sum()
-        return z
+        return z / z.sum()
     
     def get_molar_composition(self, IDs):
+        """
+        Return molar composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
+        >>> s1.get_molar_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.imol[IDs]/self.F_mol
     
     def get_mass_composition(self, IDs):
+        """
+        Return mass composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
+        >>> s1.get_mass_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.imass[IDs]/self.F_mass
     
     def get_volumetric_composition(self, IDs):
+        """
+        Return volumetric composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
+        >>> s1.get_volumetric_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.ivol[IDs]/self.F_vol
     
     def get_concentration(self, IDs):
+        """
+        Return concentration of given chemicals in kmol/m3.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
+        >>> s1.get_concentration(('Water', 'Ethanol'))
+        array([27.823,  4.265])
+
+        """
         return self.imol[IDs]/self.F_vol
     
     def recieve_vent(self, other):
+        """
+        Recieve vapors from another stream as if in equilibrium.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol', 'N2'])
+        >>> chemicals.N2.at_state(phase='g')
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', N2=10, units='m3/hr', phase='g', T=330)
+        >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
+        >>> s1.recieve_vent(s2)
+        >>> s1.show(flow='kmol/hr')
+        Stream: s1
+         phase: 'g', T: 330 K, P: 101325 Pa
+         flow (kmol/hr): Water    0.0557
+                         Ethanol  0.0616
+                         N2       0.369
+        """
         bp = other.bubble_point_at_T()
         index = self.chemicals.get_index(bp.IDs)
         mol = self.mol
@@ -953,6 +1241,7 @@ class Stream:
     
     @property
     def phases(self):
+        """tuple[str] All phases that may be present."""
         raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phases'")
     @phases.setter
     def phases(self, phases):
@@ -974,7 +1263,7 @@ class Stream:
         s = '' if isinstance(phase, str) else 's'
         return f" phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
     
-    def _info(self, T, P, flow, N):
+    def _info(self, T, P, flow, composition, N):
         """Return string with all specifications."""
         from .indexer import nonzeros
         basic_info = self._basic_info()
@@ -988,35 +1277,43 @@ class Stream:
         flow_units = flow or display_units.flow
         N = N or display_units.N
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
-        len_ = len(IDs)
-        if len_ == 0:
+        N_IDs = len(IDs)
+        if N_IDs == 0:
             return basic_info + ' flow: 0' 
         
         # Start of third line (flow rates)
         name, factor = self._get_flow_name_and_factor(flow_units)
         indexer = getattr(self, 'i' + name)
-        beginning = f' flow ({flow_units}): '
             
         # Remaining lines (all flow rates)
-        new_line_spaces = len(beginning) * ' '
         flow_array = factor * indexer[IDs]
+        if composition:
+            total_flow = flow_array.sum()
+            beginning = " composition: "
+            new_line = '\n' + 14 * ' '
+            flow_array /= total_flow
+        else:
+            beginning = f' flow ({flow_units}): '
+            new_line = '\n' + len(beginning) * ' '
         flowrates = ''
         lengths = [len(i) for i in IDs]
-        maxlen = max(lengths) + 1
+        maxlen = max(lengths) + 2
         _N = N - 1
-        for i in range(len_-1):
+        for i in range(N_IDs):
             spaces = ' ' * (maxlen - lengths[i])
             if i == _N:
-                flowrates += '...\n' + new_line_spaces
+                flowrates += '...' + new_line
                 break
-            flowrates += IDs[i] + spaces + f' {flow_array[i]:.3g}\n' + new_line_spaces
-        spaces = ' ' * (maxlen - lengths[len_-1])
-        flowrates += IDs[len_-1] + spaces + f' {flow_array[len_-1]:.3g}'
+            flowrates += IDs[i] + spaces + f'{flow_array[i]:.3g}'
+            if i != N_IDs-1: flowrates += new_line
+        if composition:
+            dashes = '-' * (maxlen - 2)
+            flowrates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
         return (basic_info 
               + beginning
               + flowrates)
 
-    def show(self, T=None, P=None, flow=None, N=None):
+    def show(self, T=None, P=None, flow=None, composition=False, N=None):
         """Print all specifications.
         
         Parameters
@@ -1027,6 +1324,8 @@ class Stream:
             Pressure units.
         flow: str, optional
             Flow rate units.
+        composition: bool, optional
+            Whether to show composition.
         N: int, optional
             Number of compounds to display.
         
@@ -1035,7 +1334,7 @@ class Stream:
         Default values are stored in `Stream.display_units`.
         
         """
-        print(self._info(T, P, flow, N))
+        print(self._info(T, P, flow, composition, N))
     _ipython_display_ = show
     
     def print(self):

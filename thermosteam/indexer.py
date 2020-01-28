@@ -41,7 +41,7 @@ class Indexer:
     units = None
     
     def copy(self):
-        new = self._copy_without_data(self)
+        new = self._copy_without_data()
         new._data = self._data.copy()
         return new
     __copy__ = copy
@@ -137,9 +137,8 @@ class ChemicalIndexer(Indexer):
         self._data[:] = other._data
         self.phase = other.phase
     
-    @classmethod
-    def _copy_without_data(cls, self):
-        new = _new(cls)
+    def _copy_without_data(self):
+        new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._index_cache = self._index_cache
         new._phase = self._phase.copy()
@@ -310,9 +309,8 @@ class MaterialIndexer(Indexer):
         except KeyError:
             self._index_cache = caches[key] = {}
     
-    @classmethod
-    def _copy_without_data(cls, self):
-        new = _new(cls)
+    def _copy_without_data(self):
+        new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._phases = self._phases
         new._phase_index = self._phase_index

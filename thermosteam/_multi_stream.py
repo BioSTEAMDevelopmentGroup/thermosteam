@@ -311,7 +311,7 @@ class MultiStream(Stream):
         
     ### Representation ###
     
-    def _info(self, T, P, flow, N):
+    def _info(self, T, P, flow, composition, N):
         """Return string with all specifications."""
         from .indexer import nonzeros
         IDs = self.chemicals.IDs
@@ -324,17 +324,20 @@ class MultiStream(Stream):
         flow_units = flow or display_units.flow
         N = N or display_units.N
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
-        len_ = len(all_IDs)
-        if len_ == 0:
+        N_all_IDs = len(all_IDs)
+        if N_all_IDs == 0:
             return basic_info + ' flow: 0' 
 
         # Length of chemical column
         all_lengths = [len(i) for i in all_IDs]
-        maxlen = max(all_lengths + [8]) 
+        maxlen = max(all_lengths) 
 
         name, factor = self._get_flow_name_and_factor(flow_units)
         indexer = getattr(self, 'i' + name)
-        first_line = f' flow ({flow_units}):'
+        if composition:
+            first_line = " composition:"
+        else:
+            first_line = f' flow ({flow_units}):'
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases
@@ -343,29 +346,30 @@ class MultiStream(Stream):
             phase_data = factor * indexer[phase, all_IDs] 
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue
+            if composition:
+                total_flow = data.sum()
+                data /= total_flow
         
-            # Get basic structure for phase data
-            
+            # Get basic structure for phase data            
             beginning = (first_line or first_line_spaces) + f' ({phase}) '
             first_line = False
-            new_line_spaces = len(beginning) * ' '
+            new_line = '\n' + len(beginning) * ' '
 
             # Set chemical data
             flowrates = ''
-            l = len(data)
+            N_IDs = len(data)
             lengths = [len(i) for i in IDs]
-            _N = N - 1
-            for i in range(l-1):
+            for i in range(N_IDs):
                 spaces = ' ' * (maxlen - lengths[i])
-                if i == _N:
-                    flowrates += '...\n' + new_line_spaces
+                if i == N - 1:
+                    flowrates += '...' + new_line
                     break
-                flowrates += f'{IDs[i]} ' + spaces + \
-                    f' {data[i]:.4g}\n' + new_line_spaces
-            spaces = ' ' * (maxlen - lengths[l-1])
-            flowrates += (f'{IDs[l-1]} ' + spaces
-                          + f' {data[l-1]:.4g}')
-
+                flowrates += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
+                if i != N_IDs - 1:
+                    flowrates += new_line
+            if composition:
+                dashes = '-' * maxlen
+                flowrates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
             # Put it together
             phases_flowrates_info += beginning + flowrates + '\n'
             

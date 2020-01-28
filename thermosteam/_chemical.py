@@ -680,8 +680,12 @@ class Chemical:
         return self._locked_state
     
     def at_state(self, phase=None, T=None, P=None):
-        if self.locked_state:
-            raise TypeError(f"{self}'s state is already locked")    
+        locked_state = self.locked_state
+        if locked_state:
+            if locked_state.phase != phase or locked_state.T != T or locked_state.P != P:
+                raise TypeError(f"{self}'s state is already locked")   
+            else:
+                return
         elif T and P:
             if phase:
                 lock_TPphase(self, phase, T, P)
@@ -691,7 +695,7 @@ class Chemical:
             lock_phase(self, phase)
         else:
             raise ValueError("must pass a either a phase, T and P, or both to lock state")
-        self._locked_state.__init__(phase, T, P)
+        locked_state.__init__(phase, T, P)
     
     def show(self):
         getfield = getattr
