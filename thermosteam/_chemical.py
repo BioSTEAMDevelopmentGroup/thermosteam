@@ -195,6 +195,189 @@ class Chemical:
             * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
             * CAS number
     
+    Examples
+    --------
+    Chemical objects contain pure component properties:
+    
+    >>> import thermosteam as tmo
+    >>> # Initialize with an identifier
+    >>> # (e.g. by name, CAS, InChI...)
+    >>> water = tmo.Chemical('Water') 
+    >>> water.show()
+    Chemical: Water (phase_ref='l')
+    [Names]  CAS: 7732-18-5
+             InChI: H2O/h1H2
+             InChI_key: XLYOFNOQVPJJNP-U...
+             common_name: water
+             iupac_name: oxidane
+             pubchemid: 962
+             smiles: O
+    [Groups] Dortmund: <1H2O>
+             UNIFAC: <1H2O>
+             PSRK: <1H2O>
+    [Thermo] S_excess(phase, T, P) -> J/mol
+             H_excess(phase, T, P) -> J/mol
+             mu(phase, T, P) -> Pa*s
+             kappa(phase, T, P) -> W/m/K
+             V(phase, T, P) -> m^3/mol
+             S(phase, T, P) -> J/mol
+             H(phase, T) -> J/mol
+             Cn(phase, T) -> J/mol/K
+             Psat(T, P=None) -> Pa
+             Hvap(T, P=None) -> J/mol
+             sigma(T, P=None) -> N/m
+             epsilon(T, P=None)
+    [Data]   MW: 18.015 g/mol
+             Tm: 273.15 K
+             Tb: 373.12 K
+             Tt: 273.15 K
+             Tc: 647.14 K
+             Pc: 2.2048e+07 Pa
+             Vc: 5.6e-05 m^3/mol
+             Zc: 0.22947
+             Hf: -2.4182e+05 J/mol
+             Hc: 0 J/mol
+             Hfus: 6010 J/mol
+             omega: 0.344
+             dipole: 1.85
+             similarity_variable: 0.16653
+
+    All fields shown are accessible:
+    
+    >>> water.CAS
+    '7732-18-5'
+
+    Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods in streams:
+        
+    >>> water.Dortmund
+    <DortmundGroupCounts: 1H2O>
+    
+    These are, in fact, dictionaries with keys as group designation numbers and values as the number of each group:
+
+    >>> dict(water.Dortmund)
+    {16: 1}
+    
+    Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:
+        
+    >>> # Vapor pressure (Pa)
+    >>> water.Psat(T=373.15)
+    101284.55179999319
+    >>> # Surface tension (N/m)
+    >>> water.sigma(T=298.15)
+    0.07205503890847455
+    >>> # Molar volume (m^3/mol)
+    >>> water.V(phase='l' ,T=298.15, P=101325)
+    1.687456798143492e-05
+    
+    Note that the reference state of all chemicals is 25 degC and 1 atm:
+    
+    >>> (water.T_ref, water.P_ref)
+    (298.15, 101325.0)
+    >>> # Enthalpy at reference conditions (J/mol; without excess energies)
+    >>> water.H(T=298.15, phase='l')
+    0.0
+    
+    Constant pure component properties are also available:
+    
+    >>> # Molecular weight (g/mol)
+    >>> water.MW
+    18.01528
+    >>> # Boiling point (K)
+    >>> water.Tb
+    373.124
+    
+    Temperature dependent properties are managed by model handles:
+    
+    >>> water.Psat.show()
+    TDependentModelHandle(T, P=None) -> Psat [Pa]
+    [0] Wagner_McGraw
+    [1] Antoine
+    [2] DIPPR_EQ101
+    [3] Wagner
+    [4] Boiling_Critical_Relation
+    [5] Lee_Kesler
+    [6] Ambrose_Walton
+    [7] Sanjari
+    [8] Edalat
+
+    Phase dependent properties have attributes with model handles for each phase:
+
+    >>> water.V
+    <ChemicalPhaseTPProperty(phase, T, P) -> V [m^3/mol]>
+    >>> (water.V.l, water.V.g)
+    (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>,
+     <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
+
+    A model handle contains a series of models applicable to a certain domain:
+    
+    >>> water.Psat[0]
+    TDependentModel: Wagner_McGraw
+     evaluate: Wagner_McGraw(T, P=None) -> Psat [Pa]
+     Tmin: 275.00
+     Tmax: 647.35
+
+    When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
+        
+    >>> # water.Psat(1000.0) ->
+    >>> # ValueError: <TDependentModelHandle(T, P=None) -> Psat [Pa]>
+    >>> # contains no valid model at T=1000.00 K
+    
+    Each model contains a functor (a function with stored data) to compute the property:
+        
+    >>> functor = water.Psat[0].evaluate
+    >>> functor.show()
+    Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
+     a: -7.7645
+     b: 1.4584
+     c: -2.7758
+     d: -1.233
+     Tc: 647.35 K
+     Pc: 2.2122e+07 Pa
+    >>> functor.data # Coefficients are stored here
+    {'a': -7.7645100000000005,
+     'b': 1.45838,
+     'c': -2.7758,
+     'd': -1.2330299999999998,
+     'Tc': 647.35,
+     'Pc': 22122300}
+    >>> functor.function # This is the function it calls
+    <function thermosteam.functors.vapor_pressure.Wagner_McGraw(T, a, b, c, d, Tc, Pc)>
+    
+    .. Note::
+       All functor classes are available in the thermosteam.functors subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
+    
+    A new model can be added easily to a model handle through the `model` method, for example:
+        
+    >>> @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True) # top=True to place model in postion [0]
+    >>> def User_antoine_model(T):
+    >>>     return 10.0**(10.116 -  1687.537 / (T + 42.98))
+    >>> water.Psat
+    TDependentModelHandle(T, P=None) -> Psat [Pa]
+    [0] User_antoine_model
+    [1] Wagner_McGraw
+    [2] Antoine
+    [3] DIPPR_EQ101
+    [4] Wagner
+    [5] Boiling_Critical_Relation
+    [6] Lee_Kesler
+    [7] Ambrose_Walton
+    [8] Sanjari
+    [9] Edalat
+
+    The `model` method is a high level interface that even lets you create a constant model:
+        
+    >>> water.V.l.model(1.687e-05)
+    >>> water.V.l[-1] # Model is appended at the end by default
+    ConstantThermoModel: Constant
+     value: 1.687e-05
+     Tmin: 0 K
+     Tmax: inf K
+     Pmin: 0 Pa
+     Pmax: inf Pa
+    
+    .. Note::
+       Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
+    
     """
     __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref',
                  *_names, *_groups, *_thermo, *_data)

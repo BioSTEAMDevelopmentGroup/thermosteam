@@ -329,9 +329,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals)
-        >>> s1 = tmo.Stream(ID='s1',
-        ...                 Water=20, Ethanol=10, units='kg/hr',
-        ...                 T=298.15, P=101325, phase='l')
+        >>> s1 = tmo.Stream(ID='s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_flow(10, 'kg/hr', 'Water')
         >>> s1.get_flow('kg/hr', 'Water')
         10.0
@@ -518,15 +516,15 @@ class Stream:
         
     @property
     def imol(self):
-        """[ChemicalMolarFlowIndexer] Flow rate indexer with data in kmol/hr."""
+        """[Indexer] Flow rate indexer with data in kmol/hr."""
         return self._imol
     @property
     def imass(self):
-        """[ChemicalMassFlowIndexer] Flow rate indexer with data in kg/hr."""
+        """[Indexer] Flow rate indexer with data in kg/hr."""
         return self._imol.by_mass()
     @property
     def ivol(self):
-        """[ChemicalVolumetricFlowIndexer] Flow rate indexer with data in m3/hr."""
+        """[Indexer] Flow rate indexer with data in m3/hr."""
         return self._imol.by_volume(self._TP)
     
     ### Net flow properties ###
@@ -842,6 +840,49 @@ class Stream:
         exclude=False: bool, optional
             If True, exclude designated chemicals when copying.
         
+        Examples
+        --------
+        Initialize streams:
+        
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        
+        Copy all flows:
+        
+        >>> s2.copy_flow(s1)
+        >>> s2.show(flow='kg/hr')
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    20
+                       Ethanol  10
+        
+        Reset and copy just water flow:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, 'Water')
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water  20
+        
+        Reset and copy all flows except water:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, 'Water', exclude=True)
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Ethanol  10
+        
+        Cut and paste flows:
+        
+        >>> s2.copy_flow(s1, remove=True)
+        >>> s1.show()
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow: 0
+         
         """
         chemicals = self.chemicals
         mol = stream.mol
