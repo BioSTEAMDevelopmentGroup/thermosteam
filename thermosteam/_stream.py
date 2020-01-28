@@ -88,6 +88,27 @@ class Stream:
     >>> s1.mol # Molar flow rates [kmol/hr]
     array([1.11 , 0.217])
     
+    Mass and volumetric flow rates are available as property arrays:
+        
+    >>> s1.mass
+    property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
+    >>> s1.vol
+    property_array([<Water: 0.01995 m^3/hr>, <Ethanol: 0.012724 m^3/hr>])
+    
+    These arrays work just like ordinary arrays, but the data is linked to the molar flows:
+    
+    >>> # Mass flows are always up to date with molar flows
+    >>> s1.mol[0] = 1
+    >>> s1.mass[0]
+    <MassFlowProperty(Water): 18.015 kg/hr>
+    >>> # Changing mass flows changes molar flows
+    >>> s1.mass[0] *= 2
+    >>> s1.mol[0]
+    2.0
+    >>> # Property arrays act just like normal arrays
+    >>> s1.mass + 2
+    array([38.031, 12.   ])
+    
     The temperature, pressure and phase are attributes as well:
     
     >>> (s1.T, s1.P, s1.phase)
@@ -104,6 +125,18 @@ class Stream:
     >>> s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
     >>> s1.get_flow('kg/hr', ('Ethanol', 'Water'))
     array([10., 20.])
+    
+    It is also possible to index using IDs through the
+    `imol`, `imass`, and `ivol` indexers:
+    
+    >>> s1.imol
+    ChemicalMolarFlowIndexer (kmol/hr):
+     (l) Water    1.11
+         Ethanol  0.2171
+    >>> s1.imol['Water']
+    1.1101687012358397
+    >>> s1.imol['Ethanol', 'Water']
+    array([0.217, 1.11 ])
     
     Thermodynamic properties are available as stream properties:
     
