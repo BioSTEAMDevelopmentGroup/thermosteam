@@ -483,8 +483,6 @@ def CRC_Inorganic(T, rho0, k, Tm, MW):
     .. math::
         \rho = \rho_{0} - k(T-T_m)
 
-    Notes
-    -----
     [1]_ has units of g/mL. While the individual densities could have been
     converted to molar units, the temperature coefficient could only be
     converted by refitting to calculated data. To maintain compatibility with
@@ -552,8 +550,6 @@ def Costald_Compressed(T, P, Psat, Tc, Pc, omega, Vs):
 
         C = j + k \omega_{SRK}
 
-    Notes
-    -----
     Original equation was in terms of density, but it is converted here.
 
     The example is from DIPPR, and exactly correct.

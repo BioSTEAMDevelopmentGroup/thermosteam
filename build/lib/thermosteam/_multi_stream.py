@@ -15,7 +15,8 @@ import numpy as np
 __all__ = ('MultiStream', )
 
 class MultiStream(Stream):
-    """Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
+    """
+    Create a MultiStream object that defines material flow rates for multiple phases along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
 
     Parameters
     ----------
@@ -33,7 +34,7 @@ class MultiStream(Stream):
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid)
 
-    phases='gl' : tuple['g', 'l', 's', 'G', 'L', 'S'], optional
+    phases=('g, l') : tuple['g', 'l', 's', 'G', 'L', 'S'], optional
         Tuple denoting the phases present.
 
     T=298.15 : float, optional
@@ -48,9 +49,97 @@ class MultiStream(Stream):
     **phase_flow : tuple[str, float]
         phase-(ID, flow) pairs
     
+    Examples
+    --------
+    Before creating streams, first set the chemicals:
+        
+    >>> import thermosteam as tmo
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(chemicals)
+    
+    Create a multi phase stream, defining the thermodynamic condition and flow rates:
+        
+    >>> s1 = tmo.MultiStream(ID='s1',T=298.15, P=101325,
+    ...                      l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+    >>> s1.show(flow='kg/hr') # Use the show method to select units of display
+    MultiStream: s1
+     phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+     flow (kg/hr): (l) Water    20
+                       Ethanol  10
+    
+    All flow rates are stored in the `imol` attribute:
+    
+    >>> s1.imol # Molar flow rates [kmol/hr]
+    MolarFlowIndexer (kmol/hr):
+     (l) Water     1.11
+         Ethanol   0.2171
+    >>> # Index a single chemical in the liquid phase
+    >>> s1.imol['l', 'Water']
+    1.1101687012358397
+    >>> # Index multiple chemicals in the liquid phase
+    >>> s1.imol['l', ('Ethanol', 'Water')]
+    array([0.217, 1.11 ])
+    >>> # Index the vapor phase
+    >>> s1.imol['g']
+    array([0., 0.])
+    
+    The `mol` attribute no longer stores any data,
+    it simply returns the total flow rate of each chemical.
+    Setting an element of the array raises an error to 
+    prevent the wrong assumption that the data is linked:
+    
+    >>> s1.mol
+    array([1.11 , 0.217])
+    >>> # s1.mol[0] = 1
+    >>> # -> ValueError: assignment destination is read-only
+    
+    The temperature and pressure are stored as attributes:
+    
+    >>> (s1.T, s1.P)
+    (298.15, 101325)
+    
+    The most convinient way to get and set flow rates is through
+    the `get_flow` and `set_flow` methods:
+    
+    >>> # Set flow
+    >>> s1.set_flow(1, 'gpm', 'l', 'Water')
+    >>> s1.get_flow('gpm', 'l', 'Water')
+    1.0
+    >>> # Set multiple flows
+    >>> s1.set_flow([10, 20], 'kg/hr', 'l', ('Ethanol', 'Water'))
+    >>> s1.get_flow('kg/hr', 'l', ('Ethanol', 'Water'))
+    array([10., 20.])
+    
+    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list:
+    * T [Temperature; in K]
+    * P [Pressure; in K]
+    * V [Vapor fraction]
+    * H [Enthalpy; in kJ/hr]:
+        
+    >>> s1.vle(P=101325, T=365)
+    
+    Each phase can be accessed separately too:
+    
+    >>> s1['l'].show()
+    Stream: 
+     phase: 'l', T: 365 K, P: 101325 Pa
+     flow (kmol/hr): Water    0.619
+                     Ethanol  0.0238
+    
+    >>> s1['g'].show()
+    Stream: 
+     phase: 'g', T: 365 K, P: 101325 Pa
+     flow (kmol/hr): Water    0.491
+                     Ethanol  0.193
+    
+    Note that the phase cannot be changed:
+    
+    >>> # s1['g'].phase = 'l'
+    >>> # -> AttributeError: phase is locked
+    
     """
     __slots__ = ()
-    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases='gl', units=None,
+    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), units=None,
                  thermo=None, price=None, **phase_flows):
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
@@ -105,11 +194,56 @@ class MultiStream(Stream):
     ### Property getters ###
     
     def get_flow(self, units, phase, IDs=...):
+        """
+        Return an flow rates in requested units.
+        
+        Parameters
+        ----------
+        units : str
+            Units of measure.
+        phase : str
+        IDs : Iterable[str] or str, optional
+            Chemical identifiers.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> s1.get_flow('kg/hr', 'l', 'Water')
+        20.0
+
+        """
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
         return factor * indexer[phase, IDs]
     
     def set_flow(self, data, units, phase, IDs=...):
+        """
+        Set flow rates in given units.
+
+        Parameters
+        ----------
+        data : 1d ndarray or float
+            Flow rate data.
+        units : str
+            Units of measure.
+        phase : str
+        IDs : Iterable[str] or str, optional
+            Chemical identifiers.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> s1.set_flow(10, 'kg/hr', 'l', 'Water')
+        >>> s1.get_flow('kg/hr', 'l', 'Water')
+        10.0
+
+        """
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
         indexer[phase, IDs] = np.asarray(data, dtype=float) / factor
@@ -118,6 +252,7 @@ class MultiStream(Stream):
     
     @property
     def phases(self):
+        """tuple[str] All phases avaiable."""
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
@@ -130,16 +265,19 @@ class MultiStream(Stream):
             
     @property
     def mol(self):
+        """[Array] Chemical molar flow rates (total of all phases)."""
         mol = self._imol._data.sum(0)
         mol.setflags(0)
         return mol
     @property
     def mass(self):
+        """[Array] Chemical mass flow rates (total of all phases)."""
         mass = self.mol * self.chemicals.MW
         mass.setflags(0)
         return mass
     @property
     def vol(self):
+        """[Array] Chemical volumetric flow rates (total of all phases)."""
         vol = self.ivol._data.sum(0)
         vol.setflags(0)
         return vol
@@ -148,6 +286,7 @@ class MultiStream(Stream):
     
     @property
     def H(self):
+        """[float] Enthalpy flow rate in kJ/hr."""
         return self.mixture.xH_at_TP(self._imol.iter_data(), self._TP)
     @H.setter
     def H(self, H):
@@ -155,12 +294,15 @@ class MultiStream(Stream):
 
     @property
     def S(self):
+        """[float] Entropy flow rate in kJ/hr."""
         return self.mixture.xS_at_TP(self._imol.iter_data(), self._TP)
     @property
     def C(self):
+        """[float] Heat capacity flow rate in kJ/hr."""
         return self.mixture.xCn_at_TP(self._imol.iter_data(), self._TP)
     @property
     def F_vol(self):
+        """[float] Total volumetric flow rate in m3/hr."""
         return 1000. * self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
     @F_vol.setter
     def F_vol(self, value):
@@ -170,29 +312,36 @@ class MultiStream(Stream):
     
     @property
     def Hvap(self):
+        """[float] Enthalpy of vaporization flow rate in kJ/hr."""
         return self.mixture.Hvap_at_TP(self._imol['l'], self._TP)
     
     ### Composition properties ###
     
     @property
     def V(self):
+        """[float] Molar volume [m^3/mol]."""
         return self.mixture.xV_at_TP(self._imol.iter_composition(), self._TP)
     @property
     def kappa(self):
+        """[float] Thermal conductivity [W/m/k]."""
         return self.mixture.xkappa_at_TP(self._imol.iter_composition(), self._TP)        
     @property
     def Cn(self):
+        """[float] Molar heat capacity [J/mol/K]."""
         return self.mixture.xCn_at_TP(self._imol.iter_composition(), self._TP)
     @property
     def mu(self):
+        """[float] Hydrolic viscosity [Pa*s]."""
         return self.mixture.xmu_at_TP(self._imol.iter_composition(), self._TP)
 
     @property
     def sigma(self):
+        """[float] Surface tension [N/m]."""
         mol = self._imol['l']
         return self.mixture.sigma_at_TP(mol / mol.sum(), self._TP)
     @property
     def epsilon(self):
+        """[float] Relative permittivity [-]."""
         mol = self._imol['l']
         return self.mixture.epsilon_at_TP(mol / mol.sum(), self._TP)
         
@@ -205,12 +354,17 @@ class MultiStream(Stream):
         ----------
         stream : Stream
             Flow rates will be copied from here.
+        phase : str or Ellipsis
         IDs=None : iterable[str], defaults to all chemicals.
             Chemical IDs. 
         remove=False: bool, optional
             If True, copied chemicals will be removed from `stream`.
         exclude=False: bool, optional
             If True, exclude designated chemicals when copying.
+        
+        Notes
+        -----
+        Works just like <Stream>.copy_flow, but the phase must be specified.
         
         """
         chemicals = self.chemicals

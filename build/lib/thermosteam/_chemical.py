@@ -195,6 +195,189 @@ class Chemical:
             * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
             * CAS number
     
+    Examples
+    --------
+    Chemical objects contain pure component properties:
+    
+    >>> import thermosteam as tmo
+    >>> # Initialize with an identifier
+    >>> # (e.g. by name, CAS, InChI...)
+    >>> water = tmo.Chemical('Water') 
+    >>> water.show()
+    Chemical: Water (phase_ref='l')
+    [Names]  CAS: 7732-18-5
+             InChI: H2O/h1H2
+             InChI_key: XLYOFNOQVPJJNP-U...
+             common_name: water
+             iupac_name: oxidane
+             pubchemid: 962
+             smiles: O
+    [Groups] Dortmund: <1H2O>
+             UNIFAC: <1H2O>
+             PSRK: <1H2O>
+    [Thermo] S_excess(phase, T, P) -> J/mol
+             H_excess(phase, T, P) -> J/mol
+             mu(phase, T, P) -> Pa*s
+             kappa(phase, T, P) -> W/m/K
+             V(phase, T, P) -> m^3/mol
+             S(phase, T, P) -> J/mol
+             H(phase, T) -> J/mol
+             Cn(phase, T) -> J/mol/K
+             Psat(T, P=None) -> Pa
+             Hvap(T, P=None) -> J/mol
+             sigma(T, P=None) -> N/m
+             epsilon(T, P=None)
+    [Data]   MW: 18.015 g/mol
+             Tm: 273.15 K
+             Tb: 373.12 K
+             Tt: 273.15 K
+             Tc: 647.14 K
+             Pc: 2.2048e+07 Pa
+             Vc: 5.6e-05 m^3/mol
+             Zc: 0.22947
+             Hf: -2.4182e+05 J/mol
+             Hc: 0 J/mol
+             Hfus: 6010 J/mol
+             omega: 0.344
+             dipole: 1.85
+             similarity_variable: 0.16653
+
+    All fields shown are accessible:
+    
+    >>> water.CAS
+    '7732-18-5'
+
+    Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods in streams:
+        
+    >>> water.Dortmund
+    <DortmundGroupCounts: 1H2O>
+    
+    These are, in fact, dictionaries with keys as group designation numbers and values as the number of each group:
+
+    >>> dict(water.Dortmund)
+    {16: 1}
+    
+    Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:
+        
+    >>> # Vapor pressure (Pa)
+    >>> water.Psat(T=373.15)
+    101284.55179999319
+    >>> # Surface tension (N/m)
+    >>> water.sigma(T=298.15)
+    0.07205503890847455
+    >>> # Molar volume (m^3/mol)
+    >>> water.V(phase='l' ,T=298.15, P=101325)
+    1.687456798143492e-05
+    
+    Note that the reference state of all chemicals is 25 degC and 1 atm:
+    
+    >>> (water.T_ref, water.P_ref)
+    (298.15, 101325.0)
+    >>> # Enthalpy at reference conditions (J/mol; without excess energies)
+    >>> water.H(T=298.15, phase='l')
+    0.0
+    
+    Constant pure component properties are also available:
+    
+    >>> # Molecular weight (g/mol)
+    >>> water.MW
+    18.01528
+    >>> # Boiling point (K)
+    >>> water.Tb
+    373.124
+    
+    Temperature dependent properties are managed by model handles:
+    
+    >>> water.Psat.show()
+    TDependentModelHandle(T, P=None) -> Psat [Pa]
+    [0] Wagner_McGraw
+    [1] Antoine
+    [2] DIPPR_EQ101
+    [3] Wagner
+    [4] Boiling_Critical_Relation
+    [5] Lee_Kesler
+    [6] Ambrose_Walton
+    [7] Sanjari
+    [8] Edalat
+
+    Phase dependent properties have attributes with model handles for each phase:
+
+    >>> water.V
+    <ChemicalPhaseTPProperty(phase, T, P) -> V [m^3/mol]>
+    >>> (water.V.l, water.V.g)
+    (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>,
+     <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
+
+    A model handle contains a series of models applicable to a certain domain:
+    
+    >>> water.Psat[0]
+    TDependentModel: Wagner_McGraw
+     evaluate: Wagner_McGraw(T, P=None) -> Psat [Pa]
+     Tmin: 275.00
+     Tmax: 647.35
+
+    When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
+        
+    >>> # water.Psat(1000.0) ->
+    >>> # ValueError: <TDependentModelHandle(T, P=None) -> Psat [Pa]>
+    >>> # contains no valid model at T=1000.00 K
+    
+    Each model may contain either a function or a functor (a function with stored data) to compute the property:
+        
+    >>> functor = water.Psat[0].evaluate
+    >>> functor.show()
+    Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
+     a: -7.7645
+     b: 1.4584
+     c: -2.7758
+     d: -1.233
+     Tc: 647.35 K
+     Pc: 2.2122e+07 Pa
+    >>> functor.data # Coefficients are stored here
+    {'a': -7.7645100000000005,
+     'b': 1.45838,
+     'c': -2.7758,
+     'd': -1.2330299999999998,
+     'Tc': 647.35,
+     'Pc': 22122300}
+    >>> functor.function # This is the function it calls
+    <function thermosteam.functors.vapor_pressure.Wagner_McGraw(T, a, b, c, d, Tc, Pc)>
+    
+    .. Note::
+       All functor classes are available in the thermosteam.functors subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
+    
+    A new model can be added easily to a model handle through the `model` method, for example:
+        
+    >>> @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True) # top=True to place model in postion [0]
+    >>> def User_antoine_model(T):
+    >>>     return 10.0**(10.116 -  1687.537 / (T + 42.98))
+    >>> water.Psat
+    TDependentModelHandle(T, P=None) -> Psat [Pa]
+    [0] User_antoine_model
+    [1] Wagner_McGraw
+    [2] Antoine
+    [3] DIPPR_EQ101
+    [4] Wagner
+    [5] Boiling_Critical_Relation
+    [6] Lee_Kesler
+    [7] Ambrose_Walton
+    [8] Sanjari
+    [9] Edalat
+
+    The `model` method is a high level interface that even lets you create a constant model:
+        
+    >>> water.V.l.model(1.687e-05)
+    >>> water.V.l[-1] # Model is appended at the end by default
+    ConstantThermoModel: Constant
+     value: 1.687e-05
+     Tmin: 0 K
+     Tmax: inf K
+     Pmin: 0 Pa
+     Pmax: inf Pa
+    
+    .. Note::
+       Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
+    
     """
     __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref',
                  *_names, *_groups, *_thermo, *_data)
@@ -219,46 +402,65 @@ class Chemical:
                 else:
                     cache[ID] = self = self.copy(ID=ID, CAS=self.CAS)                    
         else:
-            info = pubchem_db.search_CAS(CAS)
             self = super().__new__(cls)
             self._ID = ID
-            self._locked_state = LockedState()
-            self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
-                             info.pubchemid, info.iupac_name, info.common_name)
-            self._init_groups(info.InChI_key)
-            if CAS == '56-81-5': # TODO: Make this part of data
-                self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
-            self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
-            self._init_eos(eos, self.Tc, self.Pc, self.omega)
-            has_hydroxyl = False
-            for dct in (self.Dortmund, self.UNIFAC, self.PSRK):
-                for n in (14, 15, 16, 81):
-                    if n in dct:
-                       has_hydroxyl = True
-                       break
-                if has_hydroxyl: break
-            self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
-                                  self.Pc, self.Zc, self.Vc, self.Hfus,
-                                  self.omega, self.dipole, self.similarity_variable,
-                                  self.iscyclic_aliphatic, self.eos, has_hydroxyl)
-            self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
-                                self.Tm, self.Tb, self.eos, self.eos_1atm,
-                                phase_ref)
+            self.load_chemical(CAS)
             cache[CAS] = self
         return self
 
+    def load_chemical(self, CAS, eos=PR, phase_ref=None):
+        """
+        Load all chemical properties.
+
+        Parameters
+        ----------
+        CAS : str
+            CAS number of chemical to load.
+        eos : optional
+            Equation of state. The default is Peng Robinson.
+        phase_ref : str, optional
+            Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.
+
+        """
+        info = pubchem_db.search_CAS(CAS)
+        self._locked_state = LockedState()
+        self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
+                         info.pubchemid, info.iupac_name, info.common_name)
+        self._init_groups(info.InChI_key)
+        if CAS == '56-81-5': # TODO: Make this part of data
+            self.Dortmund = {2: 2, 3: 1, 14: 2, 81: 1}
+        self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
+        self._init_eos(eos, self.Tc, self.Pc, self.omega)
+        has_hydroxyl = False
+        for dct in (self.Dortmund, self.UNIFAC, self.PSRK):
+            for n in (14, 15, 16, 81):
+                if n in dct:
+                   has_hydroxyl = True
+                   break
+            if has_hydroxyl: break
+        self._init_properties(CAS, self.MW, self.Tm, self.Tb, self.Tc,
+                              self.Pc, self.Zc, self.Vc, self.Hfus,
+                              self.omega, self.dipole, self.similarity_variable,
+                              self.iscyclic_aliphatic, self.eos, has_hydroxyl)
+        self._init_energies(self.Cn, self.Hvap, self.Psat, self.Hfus,
+                            self.Tm, self.Tb, self.eos, self.eos_1atm,
+                            phase_ref)
+        
 
     def __reduce__(self):
         return unpickle_chemical, (get_chemical_data(self),)
 
     @property
     def ID(self):
+        """[str] Identification of chemical."""
         return self._ID
     @property
     def CAS(self):
+        """[str] CAS number of chemical."""
         return self._CAS
 
     def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None):
+        """Return the saturated temperature (in Kelvin) given the pressure (in Pascal)."""
         Tb = self.Tb
         Psat = self.Psat
         if not Tmin: Tmin = Psat.Tmin 
@@ -273,6 +475,7 @@ class Chemical:
         return bounded_wegstein(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-2, 1e-1)
 
     def copy(self, ID, CAS=None):
+        """Return a copy of the chemical with a new ID."""
         cache = self._cache
         CAS = CAS or ID
         new = super().__new__(self.__class__)
@@ -556,6 +759,7 @@ class Chemical:
             self.H = self.S = self.S_excess = self.H_excess = None
 
     def default(self, slots=None):
+        """Default all `slots` with the chemical properties of water. If no `slots` given, all essential chemical properties that are missing are defaulted. `slots which are still missing are returned."""
         if not slots:
             slots = self.get_missing_slots(slots)   
         hasfield = hasattr
@@ -618,6 +822,7 @@ class Chemical:
         return missing
     
     def load_free_energies(self):
+        """Load the `H`, `S`, `H_excess`, and `S_excess` functors."""
         Cn = self.Cn
         single_phase = isinstance(Cn, TDependentModelHandle)
         if not self.eos:
@@ -628,10 +833,12 @@ class Chemical:
                             single_phase and self.phase_ref)
     
     def get_missing_slots(self, slots=None):
+        """Return a list all missing thermodynamic properties."""
         getfield = getattr
         return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
     def fill(self, *sources, slots=None, default=True):
+        """Fill the missing thermodynamic properties by copying from sources. Also return any thermodynamic properties that are still missing."""
         missing = slots if slots else self.get_missing_slots(slots)
         for source in sources:
             missing = fill(self, source, missing)
@@ -641,6 +848,23 @@ class Chemical:
     
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None, **data):
+        """
+        Return a new Chemical object without any thermodynamic models or data (unless provided).
+
+        Parameters
+        ----------
+        ID : str
+            Chemical identifier.
+        CAS : str, optional
+            CAS number.
+        phase_ref : str, optional
+            Phase at the reference state (T=298.15, P=101325).
+        phase : str, optional
+            Phase to set state as a single phase chemical.
+        **data : 
+            Any data to fill chemical with.
+        
+        """
         self = super().__new__(cls)
         setfield = setattr
         self.eos = self.eos_1atm = None
@@ -666,6 +890,7 @@ class Chemical:
         return self
     
     def get_phase(self, T=298.15, P=101325.):
+        """Return phase of chemical at given state."""
         if self._locked_state.phase: return self._locked_state.phase
         if self.Tm and T <= self.Tm: return 's'
         if self.Psat and P <= self.Psat(T): return 'g'
@@ -673,13 +898,16 @@ class Chemical:
     
     @property
     def phase_ref(self):
+        """[str] Phase at reference state."""
         return self._phase_ref
     
     @property
     def locked_state(self):
+        """[LockedState] State settings."""
         return self._locked_state
     
     def at_state(self, phase=None, T=None, P=None):
+        """Set the state of chemical."""
         locked_state = self.locked_state
         if locked_state:
             if locked_state.phase != phase or locked_state.T != T or locked_state.P != P:
@@ -698,6 +926,7 @@ class Chemical:
         locked_state.__init__(phase, T, P)
     
     def show(self):
+        """Print all specifications"""
         getfield = getattr
         info = chemical_identity(self, pretty=True)
         for header, fields in _chemical_fields.items():
