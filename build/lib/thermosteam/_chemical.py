@@ -64,8 +64,9 @@ class LockedState:
     def P(self):
         return self._P
     
-    def __bool__(self):
-        return any(self)
+    @property
+    def islocked(self):
+        return any((self._phase, self._T, self._P))
     
     def __iter__(self):
         yield self._phase
@@ -232,15 +233,19 @@ class Chemical:
              Tb: 373.12 K
              Tt: 273.15 K
              Tc: 647.14 K
+             Pt: None
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
              Zc: 0.22947
              Hf: -2.4182e+05 J/mol
              Hc: 0 J/mol
              Hfus: 6010 J/mol
+             Hsub: None
              omega: 0.344
-             dipole: 1.85
+             dipole: 1.85 Debye
+             StielPolar: None
              similarity_variable: 0.16653
+             iscyclic_aliphatic: 0
 
     All fields shown are accessible:
     
@@ -759,7 +764,52 @@ class Chemical:
             self.H = self.S = self.S_excess = self.H_excess = None
 
     def default(self, slots=None):
-        """Default all `slots` with the chemical properties of water. If no `slots` given, all essential chemical properties that are missing are defaulted. `slots which are still missing are returned."""
+        """Default all `slots` with the chemical properties of water. If no `slots` given, all essential chemical properties that are missing are defaulted. `slots` which are still missing are returned as set.
+        
+        Parameters
+        ----------
+        slots : Iterable[str], optional
+            Names of chemical properties to default.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemical
+        >>> Substance = Chemical.blank('Substance')
+        >>> missing_slots = Substance.default()
+        >>> missing_slots
+        {'Dortmund',
+         'Hfus',
+         'Hsub',
+         'Hvap',
+         'InChI',
+         'InChI_key',
+         'PSRK',
+         'Pc',
+         'Psat',
+         'Pt',
+         'StielPolar',
+         'Tb',
+         'Tc',
+         'Tm',
+         'Tt',
+         'UNIFAC',
+         'V',
+         'Vc',
+         'Zc',
+         'common_name',
+         'dipole',
+         'eos',
+         'eos_1atm',
+         'iscyclic_aliphatic',
+         'iupac_name',
+         'omega',
+         'pubchemid',
+         'similarity_variable',
+         'smiles'}
+        
+        Note that missing slots does not include essential properties volume, heat capacity, and conductivity.
+        
+        """
         if not slots:
             slots = self.get_missing_slots(slots)   
         hasfield = hasattr
@@ -833,7 +883,56 @@ class Chemical:
                             single_phase and self.phase_ref)
     
     def get_missing_slots(self, slots=None):
-        """Return a list all missing thermodynamic properties."""
+        """Return a list all missing thermodynamic properties.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemical
+        >>> Substance = Chemical.blank('Substance')
+        >>> Substance.get_missing_slots(phase_ref='l')
+        ['eos',
+         'eos_1atm',
+         'InChI',
+         'InChI_key',
+         'common_name',
+         'iupac_name',
+         'pubchemid',
+         'smiles',
+         'Dortmund',
+         'UNIFAC',
+         'PSRK',
+         'S_excess',
+         'H_excess',
+         'mu',
+         'kappa',
+         'V',
+         'S',
+         'H',
+         'Cn',
+         'Psat',
+         'Hvap',
+         'sigma',
+         'epsilon',
+         'MW',
+         'Tm',
+         'Tb',
+         'Tt',
+         'Tc',
+         'Pt',
+         'Pc',
+         'Vc',
+         'Zc',
+         'Hf',
+         'Hc',
+         'Hfus',
+         'Hsub',
+         'omega',
+         'dipole',
+         'StielPolar',
+         'similarity_variable',
+         'iscyclic_aliphatic']
+        
+        """
         getfield = getattr
         return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
@@ -856,13 +955,60 @@ class Chemical:
         ID : str
             Chemical identifier.
         CAS : str, optional
-            CAS number.
+            CAS number. If none provide, it defaults to the `ID`.
         phase_ref : str, optional
             Phase at the reference state (T=298.15, P=101325).
         phase : str, optional
             Phase to set state as a single phase chemical.
         **data : 
             Any data to fill chemical with.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemical
+        >>> Substance = Chemical.blank('Substance')
+        >>> Substance
+        Chemical: Substance (phase_ref=None)
+        [Names]  CAS: Substance
+                 InChI: None
+                 InChI_key: None
+                 common_name: None
+                 iupac_name: None
+                 pubchemid: None
+                 smiles: None
+        [Groups] Dortmund: None
+                 UNIFAC: None
+                 PSRK: None
+        [Thermo] S_excess: None
+                 H_excess: None
+                 mu(phase, T, P) -> Pa*s
+                 kappa(phase, T, P) -> W/m/K
+                 V(phase, T, P) -> m^3/mol
+                 S: None
+                 H: None
+                 Cn(phase, T) -> J/mol/K
+                 Psat(T, P=None) -> Pa
+                 Hvap(T, P=None) -> J/mol
+                 sigma(T, P=None) -> N/m
+                 epsilon(T, P=None)
+        [Data]   MW: None
+                 Tm: None
+                 Tb: None
+                 Tt: None
+                 Tc: None
+                 Pt: None
+                 Pc: None
+                 Vc: None
+                 Zc: None
+                 Hf: None
+                 Hc: None
+                 Hfus: None
+                 Hsub: None
+                 omega: None
+                 dipole: None
+                 StielPolar: None
+                 similarity_variable: None
+                 iscyclic_aliphatic: None
         
         """
         self = super().__new__(cls)
@@ -890,7 +1036,15 @@ class Chemical:
         return self
     
     def get_phase(self, T=298.15, P=101325.):
-        """Return phase of chemical at given state."""
+        """Return phase of chemical at given state.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemical
+        >>> Water = Chemical('Water')
+        >>> Water.get_phase(T=400, P=101325)
+        'g'
+        """
         if self._locked_state.phase: return self._locked_state.phase
         if self.Tm and T <= self.Tm: return 's'
         if self.Psat and P <= self.Psat(T): return 'g'
@@ -907,9 +1061,59 @@ class Chemical:
         return self._locked_state
     
     def at_state(self, phase=None, T=None, P=None):
-        """Set the state of chemical."""
+        """Set the state of chemical.
+        
+        Examples
+        --------
+        >>> from thermosteam import Chemical
+        >>> N2 = Chemical('N2')
+        >>> N2.at_state(phase='g')
+        >>> N2 # Note how all functors are not a function of phase anymore
+        Chemical: N2 (phase_ref='g') at phase='g'
+        [Names]  CAS: 7727-37-9
+                 InChI: N2/c1-2
+                 InChI_key: IJGRMHOSHXDMSA-U...
+                 common_name: nitrogen
+                 iupac_name: molecular nitro...
+                 pubchemid: 947
+                 smiles: N#N
+        [Groups] Dortmund: {}
+                 UNIFAC: {}
+                 PSRK: {}
+        [Thermo] S_excess(T, P) -> J/mol
+                 H_excess(T, P) -> J/mol
+                 mu(T, P) -> Pa*s
+                 kappa(T, P) -> W/m/K
+                 V(T, P) -> m^3/mol
+                 S(T, P) -> J/mol
+                 H(T, P=None) -> J/mol
+                 Cn(T, P=None) -> J/mol/K
+                 Psat(T, P=None) -> Pa
+                 Hvap(T, P=None) -> J/mol
+                 sigma(T, P=None) -> N/m
+                 epsilon(T, P=None)
+        [Data]   MW: 28.013 g/mol
+                 Tm: 63.15 K
+                 Tb: 77.355 K
+                 Tt: 63.15 K
+                 Tc: 126.2 K
+                 Pt: 12527 K
+                 Pc: 3.3944e+06 Pa
+                 Vc: 8.95e-05 m^3/mol
+                 Zc: 0.28953
+                 Hf: 0 J/mol
+                 Hc: 0 J/mol
+                 Hfus: 710 J/mol
+                 Hsub: None
+                 omega: 0.04
+                 dipole: 0 Debye
+                 StielPolar: None
+                 similarity_variable: 0.071394
+                 iscyclic_aliphatic: 0
+        
+        """
         locked_state = self.locked_state
-        if locked_state:
+        if locked_state.islocked:
             if locked_state.phase != phase or locked_state.T != T or locked_state.P != P:
                 raise TypeError(f"{self}'s state is already locked")   
             else:
@@ -934,20 +1138,20 @@ class Chemical:
             for field in fields:
                 value = getfield(self, field)
                 field = field.lstrip('_')
-                if value is None: continue
+                if value is None:
+                    line = f"{field}: None"
+                if callable(value):
+                    line = f"{display_asfunctor(value, name=field, var=field, show_var=False)}"
                 else:
-                    if callable(value):
-                        line = f"{display_asfunctor(value, name=field, var=field, show_var=False)}"
+                    try:
+                        line = f"{field}: {value:.5g}"
+                    except:
+                        value = str(value)
+                        line = f"{field}: {value}"
+                        if len(line) > 27: line = line[:27] + '...'
                     else:
-                        try:
-                            line = f"{field}: {value:.5g}"
-                        except:
-                            value = str(value)
-                            line = f"{field}: {value}"
-                            if len(line) > 27: line = line[:27] + '...'
-                        else:
-                            units = chemical_units_of_measure.get(field, "")
-                            if units: line += f' {units}'
+                        units = chemical_units_of_measure.get(field, "")
+                        if units: line += f' {units}'
                 section.append(line)
             if section:
                 info += header + ("\n" + 9*" ").join(section)

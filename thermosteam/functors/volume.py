@@ -516,17 +516,13 @@ def VDI_PPDS(Tc, A, B, C, D, rhoc, MW):
     k = MW / 1e9
     return {'Tc':Tc, 'k':k, 'Vc':k*rhoc, 'A':k*A, 'B':k*B, 'C':k*C, 'D':k*D}
    
-@V.l(ref="[1]_")
+@V.l(ref="[1]_", doc="auto-header")
 def Costald_Compressed(T, P, Psat, Tc, Pc, omega, Vs):
     r'''
     Parameters
     ----------
-    T : float
-        Temperature of fluid [K]
-    P : float
-        Pressure of fluid [Pa]
-    Psat : float
-        Saturation pressure of the fluid [Pa]
+    Psat : function(T)
+        Should return saturation pressure of the fluid [Pa]
     Tc : float
         Critical temperature of fluid [K]
     Pc : float
@@ -534,8 +530,8 @@ def Costald_Compressed(T, P, Psat, Tc, Pc, omega, Vs):
     omega : float
         (ideally SRK) Acentric factor for fluid, [-]
         This parameter is alternatively a fit parameter.
-    Vs : float
-        Saturation liquid volume, [m^3/mol]
+    Vs : function(T, P)
+        Should return saturation liquid volume, [m^3/mol]
     
     Notes
     -----
