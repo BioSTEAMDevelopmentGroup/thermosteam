@@ -338,15 +338,6 @@ class Chemical:
      d: -1.233
      Tc: 647.35 K
      Pc: 2.2122e+07 Pa
-    >>> functor.data # Coefficients are stored here
-    {'a': -7.7645100000000005,
-     'b': 1.45838,
-     'c': -2.7758,
-     'd': -1.2330299999999998,
-     'Tc': 647.35,
-     'Pc': 22122300}
-    >>> functor.function # This is the function it calls
-    <function thermosteam.functors.vapor_pressure.Wagner_McGraw(T, a, b, c, d, Tc, Pc)>
     
     .. Note::
        All functor classes are available in the thermosteam.functors subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.

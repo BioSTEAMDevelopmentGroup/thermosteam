@@ -252,15 +252,10 @@ class Chemical:
     >>> water.CAS
     '7732-18-5'
 
-    Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods in streams:
+    Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods. In other words, these attributes define the functional groups for thermodynamic equilibrium calculations:
         
     >>> water.Dortmund
     <DortmundGroupCounts: 1H2O>
-    
-    These are, in fact, dictionaries with keys as group designation numbers and values as the number of each group:
-
-    >>> dict(water.Dortmund)
-    {16: 1}
     
     Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:
         
@@ -271,8 +266,8 @@ class Chemical:
     >>> water.sigma(T=298.15)
     0.07205503890847455
     >>> # Molar volume (m^3/mol)
-    >>> water.V(phase='l' ,T=298.15, P=101325)
-    1.687456798143492e-05
+    >>> water.V(phase='l', T=298.15, P=101325)
+    1.7970632558091718e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
@@ -310,12 +305,11 @@ class Chemical:
     >>> water.V
     <ChemicalPhaseTPProperty(phase, T, P) -> V [m^3/mol]>
     >>> (water.V.l, water.V.g)
-    (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>,
-     <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
+    (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>, <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
 
     A model handle contains a series of models applicable to a certain domain:
     
-    >>> water.Psat[0]
+    >>> water.Psat[0].show()
     TDependentModel: Wagner_McGraw
      evaluate: Wagner_McGraw(T, P=None) -> Psat [Pa]
      Tmin: 275.00
@@ -344,10 +338,12 @@ class Chemical:
     
     A new model can be added easily to a model handle through the `model` method, for example:
         
-    >>> @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True) # top=True to place model in postion [0]
-    >>> def User_antoine_model(T):
-    >>>     return 10.0**(10.116 -  1687.537 / (T + 42.98))
-    >>> water.Psat
+    
+    >>> # Set top=True to place model in postion [0]
+    >>> @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True)
+    ... def User_antoine_model(T):
+    ...     return 10.0**(10.116 -  1687.537 / (T + 42.98))
+    >>> water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] User_antoine_model
     [1] Wagner_McGraw
@@ -362,8 +358,10 @@ class Chemical:
 
     The `model` method is a high level interface that even lets you create a constant model:
         
-    >>> water.V.l.model(1.687e-05)
-    >>> water.V.l[-1] # Model is appended at the end by default
+    >>> constant = water.V.l.model(1.687e-05)
+    >>> # Model is appended at the end by default
+    >>> added_model = water.V.l[-1] 
+    >>> added_model.show()
     ConstantThermoModel: Constant
      value: 1.687e-05
      Tmin: 0 K
@@ -400,7 +398,7 @@ class Chemical:
         else:
             self = super().__new__(cls)
             self._ID = ID
-            self.load_chemical(CAS)
+            self.load_chemical(CAS, eos, phase_ref)
             cache[CAS] = self
         return self
 
@@ -767,36 +765,8 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance')
         >>> missing_slots = Substance.default()
-        >>> missing_slots
-        {'Dortmund',
-         'Hfus',
-         'Hsub',
-         'Hvap',
-         'InChI',
-         'InChI_key',
-         'PSRK',
-         'Pc',
-         'Psat',
-         'Pt',
-         'StielPolar',
-         'Tb',
-         'Tc',
-         'Tm',
-         'Tt',
-         'UNIFAC',
-         'V',
-         'Vc',
-         'Zc',
-         'common_name',
-         'dipole',
-         'eos',
-         'eos_1atm',
-         'iscyclic_aliphatic',
-         'iupac_name',
-         'omega',
-         'pubchemid',
-         'similarity_variable',
-         'smiles'}
+        >>> sorted(missing_slots)
+        ['Dortmund', 'Hfus', 'Hsub', 'Hvap', 'InChI', 'InChI_key', 'PSRK', 'Pc', 'Psat', 'Pt', 'StielPolar', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'Zc', 'common_name', 'dipole', 'eos', 'eos_1atm', 'iscyclic_aliphatic', 'iupac_name', 'omega', 'pubchemid', 'similarity_variable', 'smiles']
         
         Note that missing slots does not include essential properties volume, heat capacity, and conductivity.
         
@@ -879,49 +849,9 @@ class Chemical:
         Examples
         --------
         >>> from thermosteam import Chemical
-        >>> Substance = Chemical.blank('Substance')
-        >>> Substance.get_missing_slots(phase_ref='l')
-        ['eos',
-         'eos_1atm',
-         'InChI',
-         'InChI_key',
-         'common_name',
-         'iupac_name',
-         'pubchemid',
-         'smiles',
-         'Dortmund',
-         'UNIFAC',
-         'PSRK',
-         'S_excess',
-         'H_excess',
-         'mu',
-         'kappa',
-         'V',
-         'S',
-         'H',
-         'Cn',
-         'Psat',
-         'Hvap',
-         'sigma',
-         'epsilon',
-         'MW',
-         'Tm',
-         'Tb',
-         'Tt',
-         'Tc',
-         'Pt',
-         'Pc',
-         'Vc',
-         'Zc',
-         'Hf',
-         'Hc',
-         'Hfus',
-         'Hsub',
-         'omega',
-         'dipole',
-         'StielPolar',
-         'similarity_variable',
-         'iscyclic_aliphatic']
+        >>> Substance = Chemical.blank('Substance', phase_ref='l')
+        >>> Substance.get_missing_slots()
+        ['eos', 'eos_1atm', 'InChI', 'InChI_key', 'common_name', 'iupac_name', 'pubchemid', 'smiles', 'Dortmund', 'UNIFAC', 'PSRK', 'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 'MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc', 'Hf', 'Hc', 'Hfus', 'Hsub', 'omega', 'dipole', 'StielPolar', 'similarity_variable', 'iscyclic_aliphatic']
         
         """
         getfield = getattr
@@ -958,7 +888,7 @@ class Chemical:
         --------
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance')
-        >>> Substance
+        >>> Substance.show()
         Chemical: Substance (phase_ref=None)
         [Names]  CAS: Substance
                  InChI: None
@@ -1059,7 +989,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> N2 = Chemical('N2')
         >>> N2.at_state(phase='g')
-        >>> N2 # Note how all functors are not a function of phase anymore
+        >>> N2.show() # Note how all functors are not a function of phase anymore
         Chemical: N2 (phase_ref='g') at phase='g'
         [Names]  CAS: 7727-37-9
                  InChI: N2/c1-2

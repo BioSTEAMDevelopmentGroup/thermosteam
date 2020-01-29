@@ -5,7 +5,7 @@ Created on Mon Dec  2 01:41:50 2019
 @author: yoelr
 """
 
-from .base import Units
+from .base import UnitsOfMeasure
 from .utils import repr_IDs_data, repr_couples, chemicals_user
 from ._settings import settings
 from .exceptions import UndefinedPhase
@@ -496,7 +496,7 @@ def _new_Indexer(name, units, slots=()):
     MaterialIndexerSubclass.__slots__ = slots
     
     ChemicalIndexerSubclass.units = \
-    MaterialIndexerSubclass.units = Units(units)
+    MaterialIndexerSubclass.units = UnitsOfMeasure(units)
     
     MaterialIndexerSubclass._ChemicalIndexer = ChemicalIndexerSubclass
     ChemicalIndexerSubclass._MaterialIndexer = MaterialIndexerSubclass

@@ -17,4 +17,10 @@ def test_chemicals_docs():
     doctest.testmod(tmo._chemicals)
     
 def test_chemical_docs():
-    doctest.testmod(tmo._chemicals)
+    doctest.testmod(tmo._chemical)
+    
+if __name__ == '__main__':
+    test_stream_docs()
+    test_multi_stream_docs()
+    test_chemicals_docs()
+    test_chemical_docs()
