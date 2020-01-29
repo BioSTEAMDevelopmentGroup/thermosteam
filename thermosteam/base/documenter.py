@@ -118,6 +118,8 @@ def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
     header = autodoc.describe_functor(functor,
                                       equation or function.__name__.replace('_', ' '),
                                       ref)
+    function_doc = function.__doc__
+    function.__doc__ = None
     params = functor.params
     new_line = "\n" + (tabs * 4) * " "
     parameters = autodoc.describe_all_parameters(params, new_line) if params else "" 
@@ -126,9 +128,9 @@ def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
         functor.__doc__ = _join_sections(header, parameters, new_line)
         return
     elif merge:
-        functor.__doc__ = _join_sections(header, parameters, new_line) + (function.__doc__ or "")
+        functor.__doc__ = _join_sections(header, parameters, new_line) + (function_doc or "")
     elif header:
-        functor.__doc__ = header + function.__doc__
+        functor.__doc__ = header + new_line + function_doc    
     elif param:
         functor.__doc__ = function.__doc__.replace('[Parameters]\n', parameters + "\n")
     
