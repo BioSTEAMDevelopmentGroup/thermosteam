@@ -284,7 +284,7 @@ class IdealMixture:
             it = 0
             it2 = 0
             Cn = self.Cn(phase, z, T_guess)
-            while abs(T - T_guess) > 0.1:
+            while abs(T - T_guess) > 0.05:
                 T_guess = T
                 if it == 3:
                     it = 0
@@ -304,7 +304,7 @@ class IdealMixture:
             # Solve enthalpy by iteration
             it2 = it = 0
             Cn = self.xCn(phase_data, T_guess)
-            while abs(T - T_guess) > 0.1:
+            while abs(T - T_guess) > 0.05:
                 T_guess = T
                 if it == 3:
                     it = 0

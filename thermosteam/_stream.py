@@ -180,11 +180,7 @@ class Stream:
     >>> bp.y # Vapor composition
     array([0.49, 0.51])
     
-    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list:
-    * T [Temperature; in K]
-    * P [Pressure; in K]
-    * V [Vapor fraction]
-    * H [Enthalpy; in kJ/hr]
+    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list: `T` [Temperature; in K], `P` [Pressure; in Pa], `V` [Vapor fraction], `H` [Enthalpy; in kJ/hr].
     
     Set vapor fraction and pressure of the stream:
         
@@ -235,7 +231,7 @@ class Stream:
         if units != 'kmol/hr':
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, name)
-            flow[:] = self.mol * factor
+            flow[:] = self.mol / factor
         self._sink = self._source = None # For BioSTEAM
         self._init_cache()
         self._register(ID)
@@ -408,14 +404,18 @@ class Stream:
         0.06384967976396348
 
         """
-        units_dct = thermo_units.stream_units_of_measure
-        if name in units_dct:
-            original_units = units_dct[name]
-        else:
-            raise ValueError(f"no property with name '{name}'")
         value = getattr(self, name)
-        factor = original_units.conversion_factor(units)
-        return value * factor
+        if name == 'T':
+            value = convert(value, 'K', units)
+        else:
+            units_dct = thermo_units.stream_units_of_measure
+            if name in units_dct:
+                original_units = units_dct[name]
+            else:
+                raise ValueError(f"no property with name '{name}'")
+            factor = original_units.conversion_factor(units)
+            value *= factor
+        return value
     
     def set_property(self, name, value, units):
         """
@@ -441,14 +441,14 @@ class Stream:
         202650.0
 
         """
-        units_dct = thermo_units.stream_units_of_measure
-        if name in units_dct:
-            original_units = units_dct[name]
-        else:
-            raise ValueError(f"no property with name '{name}'")
         if name == 'T':
             value = convert(value, units, 'K')
         else:
+            units_dct = thermo_units.stream_units_of_measure
+            if name in units_dct:
+                original_units = units_dct[name]
+            else:
+                raise ValueError(f"no property with name '{name}'")
             factor = original_units.conversion_factor(units)
             value /= factor
         setattr(self, name, value)
