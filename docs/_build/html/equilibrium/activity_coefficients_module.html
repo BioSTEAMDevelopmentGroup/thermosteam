@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -206,7 +207,19 @@
 <dl class="class">
 <dt id="thermosteam.equilibrium.activity_coefficients.ActivityCoefficients">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.equilibrium.activity_coefficients.</code><code class="sig-name descname">ActivityCoefficients</code><a class="reference internal" href="../_modules/thermosteam/equilibrium/activity_coefficients.html#ActivityCoefficients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.activity_coefficients.ActivityCoefficients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract class for the estimation of activity coefficients.</p>
+<dd><p>Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:</p>
+<dl class="simple">
+<dt>__init__(self, chemicals: Iterable[Chemicals]):</dt><dd><p>Should use pure component data from chemicals to setup future calculations of activity coefficients.</p>
+</dd>
+<dt>__call__(self, x: 1d array, T: float):</dt><dd><p>Should accept an array of liquid molar compositions <cite>x</cite>, and temperature <cite>T</cite> (in Kelvin), and return an array of activity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the ActivityCoefficients object.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="thermosteam.equilibrium.activity_coefficients.ActivityCoefficients.chemicals">
+<em class="property">property </em><code class="sig-name descname">chemicals</code><a class="headerlink" href="#thermosteam.equilibrium.activity_coefficients.ActivityCoefficients.chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>tuple[Chemical] All chemicals involved in the calculation of activity coefficients.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">

@@ -25,6 +25,7 @@
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -191,6 +192,11 @@
 </style>
 <div class="section" id="overview">
 <h1><span class="section-number">1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Thermosteam is an extensive object oriented package for the estimation of thermodynamic equilibrium and mixture properties, and mass and energy balances. The Stream object is the main interface for performing these calculations. Before creating streams, a thermodynamic property package must be defined through a Thermo object, which compiles the working chemicals and the equlibrium estimation methods. Each Chemical object contains model handles that manages the thermodynamic models and makes sure to use a valid model to estimate properties at the given temperature and pressure. The functional algorithms for estimating pure component properties are presented as functors which implicitly store and use fitted coefficients for the estimation of temperature and pressure dependent properties.</p>
+<div class="figure align-default" id="id1">
+<img alt="_images/UML.png" src="_images/UML.png" />
+<p class="caption"><span class="caption-text">A simplified UML class diagram of the core classes of Thermosteam.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 
 

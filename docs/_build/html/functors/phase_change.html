@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -36,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="reaction" href="reaction.html" />
-    <link rel="prev" title="miscdata" href="miscdata.html" /> 
+    <link rel="prev" title="permitivity" href="permittivity.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -223,23 +225,6 @@
 </style>
 <div class="section" id="module-thermosteam.functors.phase_change">
 <span id="phase-change"></span><h1>phase_change<a class="headerlink" href="#module-thermosteam.functors.phase_change" title="Permalink to this headline">¶</a></h1>
-<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
 <dl class="function">
 <dt id="thermosteam.functors.phase_change.Tb">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Tb</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['PSAT_DEFINITION']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Tb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Tb" title="Permalink to this definition">¶</a></dt>
@@ -408,9 +393,9 @@ Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/f3762e45a51ae8e8436fa8f969faa0aeec3f8916.png" alt="\Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}"/></p>
-</div><p>No original source is available for this equation.
+<div class="math notranslate nohighlight">
+\[\Delta H_{vap} = RT \Delta Z \frac{\ln (P_c/Psat)}{(1-T_{r})}\]</div>
+<p>No original source is available for this equation.
 <a class="reference internal" href="#rd86322761834-1" id="id12">[1]</a> claims this equation overpredicts enthalpy by several percent.
 Under Tr = 0.8, dZ = 1 is a reasonable assumption.
 This equation is most accurate at the normal boiling point.</p>
@@ -438,17 +423,17 @@ New York: McGraw-Hill Professional, 2000.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
 </dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<div class="math">
-<p><img src="../_images/math/0c65666bbe24839d6fc1ada0a40fbae7a605fb00.png" alt="\frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}"/></p>
-</div><p>This equation is listed in <a class="reference internal" href="#rf23bcba76efc-3" id="id14">[3]</a>, page 2-487 as method #2 for estimating
+<div class="math notranslate nohighlight">
+\[\frac{\Delta_{vap} H}{RT_c}=7.08(1-T_r)^{0.354}+10.95\omega(1-T_r)^{0.456}\]</div>
+<p>This equation is listed in <a class="reference internal" href="#rf23bcba76efc-3" id="id14">[3]</a>, page 2-487 as method #2 for estimating
 Hvap. This cites <a class="reference internal" href="#rf23bcba76efc-2" id="id15">[2]</a>.</p>
 <p>The recommended range is 0.6 to 1 Tr. Users should expect up to 5% error.
 T must be under Tc, or an exception is raised.</p>
@@ -487,33 +472,29 @@ Eighth Edition. McGraw-Hill Professional, 2007.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
 </dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/b121fb454196f206b1f5338abb4c4cffdffee240.png" alt="\frac{\Delta H_{vap}} {RT_c} = 
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{\Delta H_{vap}} {RT_c} = 
 \left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} + \left(
 \frac{\omega - \omega^{(R1)}} {\omega^{(R2)} - \omega^{(R1)}} \right)
 \left[\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R2)} - \left(
-\frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]
-
-\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}
+\frac{\Delta H_{vap}} {RT_c} \right)^{(R1)} \right]\\\left( \frac{\Delta H_{vap}} {RT_c} \right)^{(R1)}
 = 6.537 \tau^{1/3} - 2.467 \tau^{5/6} - 77.251 \tau^{1.208} +
-59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3
-
-\tau = 1-T/T_c"/></p>
-</div><p>The original article has been reviewed and found to have coefficients with
+59.634 \tau + 36.009 \tau^2 - 14.606 \tau^3\\\tau = 1-T/T_c\end{aligned}\end{align} \]</div>
+<p>The original article has been reviewed and found to have coefficients with
 slightly more precision. Additionally, the form of the equation is slightly
 different, but numerically equivalent.</p>
 <p>The refence fluids are:</p>
-<p><img class="math" src="../_images/math/10e98fd8b1d2f2cc751e43da0bd0a43b8ffb4223.png" alt="\omega_0"/> = benzene = 0.212</p>
-<p><img class="math" src="../_images/math/36cd68dd398c255fa352c7e8ab8f676d19b91688.png" alt="\omega_1"/> = carbazole = 0.461</p>
+<p><span class="math notranslate nohighlight">\(\omega_0\)</span> = benzene = 0.212</p>
+<p><span class="math notranslate nohighlight">\(\omega_1\)</span> = carbazole = 0.461</p>
 <p>A sample problem in the article has been verified. The numerical result
 presented by the author requires high numerical accuracy to obtain.</p>
 <p class="rubric">References</p>
@@ -541,22 +522,18 @@ doi:10.1021/i100013a017.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
 </dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/51e8b1a1f8512439f618c6c9a0989305ec138b1a.png" alt="\Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}
-
-\frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)
-
-\tau = 1-T/T_c"/></p>
-</div><p>The original article has been reviewed. A total of 18 coefficients are used:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\Delta H_{vap} =  \Delta H_{vap}^{(0)} + \omega \Delta H_{vap}^{(1)} + \omega^2 \Delta H_{vap}^{(2)}\\\frac{\Delta H_{vap}^{(i)}}{RT_c} = b^{(j)} \tau^{1/3} + b_2^{(j)} \tau^{5/6} + b_3^{(j)} \tau^{1.2083} + b_4^{(j)}\tau + b_5^{(j)} \tau^2 + b_6^{(j)} \tau^3)\\\tau = 1-T/T_c\end{aligned}\end{align} \]</div>
+<p>The original article has been reviewed. A total of 18 coefficients are used:</p>
 <p>WARNING: The correlation has been implemented as described in the article,
 but its results seem different and with some error.
 Its results match with other functions however.</p>
@@ -592,18 +569,18 @@ doi:10.1016/0378-3812(94)87051-9.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
 </dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/ba19460e4f9a3151705e322dca690377d06d0b89.png" alt="\Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}"/></p>
-</div><p>The original article has been reviewed. It is regressed from enthalpy of
+<div class="math notranslate nohighlight">
+\[\Delta_{vap} H = RT_c(7.2729 + 10.4962\omega + 0.6061\omega^2)(1-T_r)^{0.38}\]</div>
+<p>The original article has been reviewed. It is regressed from enthalpy of
 vaporization values at 0.7Tr, from 121 fluids in REFPROP 9.1.
 A value in the article was read to be similar, but slightly too low from
 that calculated here.</p>
@@ -632,9 +609,9 @@ doi:10.1016/j.jct.2015.01.011.</p>
 Ridel <a class="reference internal" href="#rc854954eeb96-1" id="id28">[1]</a> CSP method. Required information are critical temperature
 and pressure, and boiling point. Equation taken from <a class="reference internal" href="#rc854954eeb96-2" id="id29">[2]</a> and <a class="reference internal" href="#rc854954eeb96-3" id="id30">[3]</a>.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/2fc8fb23cda7ba46d46ee385b0dc45e81eea5a67.png" alt="\Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\Delta_{vap} H=1.093 T_b R\frac{\ln P_c-1.013}{0.930-T_{br}}s\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of fluid [K]</p>
@@ -690,9 +667,9 @@ Eighth Edition. McGraw-Hill Professional, 2007.</p>
 <dd><p>Calculates enthalpy of vaporization using the Chen <a class="reference internal" href="#rb7644fb87a51-1" id="id36">[1]</a> correlation
 and a chemical’s critical temperature, pressure and boiling point.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/9f5bfb919820913783e7c34ac56bf655e54ea9db.png" alt="\Delta H_{vb} = RT_b \frac{3.978 T_r - 3.958 + 1.555 \ln P_c}{1.07 - T_r}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\Delta H_{vb} = RT_b \frac{3.978 T_r - 3.958 + 1.555 \ln P_c}{1.07 - T_r}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of the fluid [K]</p>
@@ -744,10 +721,10 @@ New York: McGraw-Hill Professional, 2000.</p>
 the Liu <a class="reference internal" href="#r5f90edafd5a9-1" id="id40">[1]</a> correlation, and a chemical’s critical temperature, pressure
 and boiling point.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/b43f9ca00c8e4e3a8ee684a2e58ee50c6b782482.png" alt="\Delta H_{vap} = RT_b \left[ \frac{T_b}{220}\right]^{0.0627} \frac{
-(1-T_{br})^{0.38} \ln(P_c/P_A)}{1-T_{br} + 0.38 T_{br} \ln T_{br}}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\Delta H_{vap} = RT_b \left[ \frac{T_b}{220}\right]^{0.0627} \frac{
+(1-T_{br})^{0.38} \ln(P_c/P_A)}{1-T_{br} + 0.38 T_{br} \ln T_{br}}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of the fluid [K]</p>
@@ -796,11 +773,11 @@ Its Normal Boiling Temperature.” Chemical Engineering Communications
 Vetere <a class="reference internal" href="#r51de4785d720-1" id="id42">[1]</a> CSP method. Required information are critical temperature
 and pressure, and boiling point. Equation taken from <a class="reference internal" href="#r51de4785d720-2" id="id43">[2]</a>.</p>
 <p>The enthalpy of vaporization (Hvap; in J/mol) is given by:</p>
-<div class="math">
-<p><img src="../_images/math/85476e34b14110a405ff8768299d211af48a4797.png" alt="\frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}
+<div class="math notranslate nohighlight">
+\[\frac {\Delta H_{vap}}{RT_b} = \frac{\tau_b^{0.38}
 \left[ \ln P_c - 0.513 + \frac{0.5066}{P_cT_{br}^2}\right]}
-{\tau_b + F(1-\tau_b^{0.38})\ln T_{br}}"/></p>
-</div><dl class="field-list simple">
+{\tau_b + F(1-\tau_b^{0.38})\ln T_{br}}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of fluid [K]</p>
@@ -845,12 +822,6 @@ Eighth Edition. McGraw-Hill Professional, 2007.</p>
 </div>
 </dd></dl>
 
-<dl class="class">
-<dt id="thermosteam.functors.phase_change.Watson">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Watson</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Watson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Watson" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adjusts enthalpy of vaporization of enthalpy for another temperature, for one temperature.</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="thermosteam.functors.phase_change.Hfus">
 <code class="sig-prename descclassname">thermosteam.functors.phase_change.</code><code class="sig-name descname">Hfus</code><span class="sig-paren">(</span><em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325</em>, <em class="sig-param">MW=None</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em>, <em class="sig-param">CASRN=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/phase_change.html#Hfus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.phase_change.Hfus" title="Permalink to this definition">¶</a></dt>
@@ -885,7 +856,7 @@ future release in favor of a more complete object-oriented interface.</p>
         <a href="reaction.html" class="btn btn-neutral float-right" title="reaction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="miscdata.html" class="btn btn-neutral float-left" title="miscdata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="permittivity.html" class="btn btn-neutral float-left" title="permitivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

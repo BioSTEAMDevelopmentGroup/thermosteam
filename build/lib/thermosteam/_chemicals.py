@@ -255,15 +255,11 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         Some chemical constants may not be defined in thermosteam, 
-        such as the heat of combustion of glucose:
+        such as the heat of combustion.
+        We can update it and refresh the compiled constants::
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Glucose'])
-        >>> chemicals.Hc
-        array([0.0])
-        
-        We can update it and refresh the compiled constants:
-        
         >>> chemicals.Glucose.Hc = 2291836.024
         >>> chemicals.refresh_constants()
         >>> chemicals.Hc
@@ -460,7 +456,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> chemical_indexer = chemicals.iarray(['Water', 'Ethanol'], [2., 1.])
-        >>> chemical_indexer
+        >>> chemical_indexer.show()
         ChemicalIndexer:
          Water    2
          Ethanol  1
@@ -492,7 +488,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> chemical_indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))
-        >>> chemical_indexer
+        >>> chemical_indexer.show()
         ChemicalIndexer:
          Water    2
          Ethanol  1
@@ -524,12 +520,12 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.index('Water')
-        1
+        0
 
         Indices by CAS number:
         
-        >>> chemicals.index('7732-18-5'):
-        1
+        >>> chemicals.index('7732-18-5')
+        0
 
         """
         try: return self._index[ID]
@@ -584,14 +580,14 @@ class CompiledChemicals(Chemicals):
         --------
         Get multiple indices:
         
-        >>> from ether import CompiledChemicals
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
         >>> chemicals.get_index(['Water', 'Ethanol'])
         [0, 1]
         
         Get a single index:
         
-        >>> chemicals.get_index('Ethanol'):
+        >>> chemicals.get_index('Ethanol')
         1
 
         """
@@ -636,7 +632,7 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
         >>> chemicals.get_equilibrium_indices(data!=0)
-        [0, 2]
+        array([0, 2], dtype=int64)
         
         """
         return np.where(self._has_equilibrium & nonzeros)[0]

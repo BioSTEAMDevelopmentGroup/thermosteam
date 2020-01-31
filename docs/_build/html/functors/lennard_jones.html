@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -401,9 +403,9 @@ Ranges of Temperature and Density.” The Journal of Supercritical Fluids
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Flynn</code><span class="sig-paren">(</span><em class="sig-param">Vc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Flynn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Flynn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical volume. CSP method by <a class="reference internal" href="#r0df79a83d79a-1" id="id7">[1]</a> as reported in <a class="reference internal" href="#r0df79a83d79a-2" id="id8">[2]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/24d2f7e5ab025cc704c84501073d9127e160166c.png" alt="\sigma = 0.561(V_c^{1/3})^{5/4}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 0.561(V_c^{1/3})^{5/4}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical volume of fluid [m^3/mol]</p>
@@ -442,9 +444,9 @@ Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_critical_2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_critical_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical temperature and pressure. CSP method by <a class="reference internal" href="#rbd9dec5216fd-1" id="id11">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/85672042544edad867c322d8387b25eb64d9aaf0.png" alt="\sigma = 2.44(T_c/P_c)^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 2.44(T_c/P_c)^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -482,9 +484,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_critical_1</code><span class="sig-paren">(</span><em class="sig-param">Vc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_critical_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical volume. CSP method by <a class="reference internal" href="#r35abc67bb9c0-1" id="id13">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/f9c649693f6c4f338d5b5aa5299657104131441b.png" alt="\sigma = 0.841 V_c^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 0.841 V_c^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical volume of fluid [m^3/mol]</p>
@@ -520,9 +522,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_boiling</code><span class="sig-paren">(</span><em class="sig-param">Vb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_boiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Bird_Stewart_Lightfoot_boiling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses molar volume of liquid at boiling. CSP method by <a class="reference internal" href="#r14066e6041ea-1" id="id15">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/1e3a8ef433a19c5357e2c084a07a420d12ac6347.png" alt="\sigma = 1.166V_{b,liq}^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 1.166V_{b,liq}^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Vb</strong><span class="classifier">float</span></dt><dd><p>Boiling molar volume of liquid [m^3/mol]</p>
@@ -558,9 +560,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_melting</code><span class="sig-paren">(</span><em class="sig-param">Vm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_melting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Bird_Stewart_Lightfoot_melting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses molar volume of a liquid at its melting point. CSP method by <a class="reference internal" href="#r68e0fe5fb693-1" id="id17">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/03e96e1ed5080026c01f492a41eecb65b920f2e0.png" alt="\sigma = 1.222 V_{m,sol}^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 1.222 V_{m,sol}^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Vm</strong><span class="classifier">float</span></dt><dd><p>Melting molar volume of a liquid at its melting point [m^3/mol]</p>
@@ -596,9 +598,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Stiel_Thodos</code><span class="sig-paren">(</span><em class="sig-param">Vc</em>, <em class="sig-param">Zc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Stiel_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Stiel_Thodos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical volume and compressibility. CSP method by <a class="reference internal" href="#r22a0e0ae72d4-1" id="id19">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/ddde815049deb4c9820b257f5dd5f4f6198b7670.png" alt="\sigma = 0.1866 V_c^{1/3} Z_c^{-6/5}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 0.1866 V_c^{1/3} Z_c^{-6/5}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical volume of fluid [m^3/mol]</p>
@@ -637,9 +639,9 @@ Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Tee_Gotoh_Steward_1</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Tee_Gotoh_Steward_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Tee_Gotoh_Steward_1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical temperature and pressure. CSP method by <a class="reference internal" href="#r1dbcd19fac0e-1" id="id21">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/da8a0fea4bc29227ff6ff9735da136f852e96ab2.png" alt="\sigma = 2.3647 \left(\frac{T_c}{P_c}\right)^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = 2.3647 \left(\frac{T_c}{P_c}\right)^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -681,9 +683,9 @@ doi:10.1021/i160019a011</p>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical temperature, pressure, and acentric factor. CSP method by
 <a class="reference internal" href="#r64207ebd30e2-1" id="id24">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/c7a04d6619766b9615f8602c74c3ed0c36735130.png" alt="\sigma = (2.3551 - 0.0874\omega)\left(\frac{T_c}{P_c}\right)^{1/3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma = (2.3551 - 0.0874\omega)\left(\frac{T_c}{P_c}\right)^{1/3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -726,10 +728,10 @@ doi:10.1021/i160019a011</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">sigma_Silva_Liu_Macedo</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#sigma_Silva_Liu_Macedo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.sigma_Silva_Liu_Macedo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones molecular diameter.
 Uses critical temperature and pressure. CSP method by <a class="reference internal" href="#r0a48f437987d-1" id="id27">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/fe51d1b9188441759ce31117369e282d1656c7e7.png" alt="\sigma_{LJ}^3 = 0.17791 + 11.779 \left( \frac{T_c}{P_c}\right)
-- 0.049029\left( \frac{T_c}{P_c}\right)^2"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\sigma_{LJ}^3 = 0.17791 + 11.779 \left( \frac{T_c}{P_c}\right)
+- 0.049029\left( \frac{T_c}{P_c}\right)^2\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -770,9 +772,9 @@ Substances.” Chemical Engineering Science 53, no. 13 (July 1, 1998):
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Flynn</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Flynn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Flynn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses critical temperature. CSP method by <a class="reference internal" href="#r81bed3d56117-1" id="id29">[1]</a> as reported in <a class="reference internal" href="#r81bed3d56117-2" id="id30">[2]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/c54d4520bf583a1419e1b840d7542ab03f400941.png" alt="\epsilon/k = 1.77 T_c^{5/6}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.77 T_c^{5/6}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -809,9 +811,9 @@ Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_critical</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_critical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_critical" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses critical temperature. CSP method by <a class="reference internal" href="#r2da7b247e6a1-1" id="id33">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/70cb7e29fe3d8bf9d1a758cca1ef8bbc6e74ab13.png" alt="\epsilon/k = 0.77T_c"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 0.77T_c\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -845,9 +847,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_boiling</code><span class="sig-paren">(</span><em class="sig-param">Tb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_boiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses boiling temperature. CSP method by <a class="reference internal" href="#r60694ddb7ddf-1" id="id35">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/b3af31c8c2935b599c68e3e7714679951ec367ac.png" alt="\epsilon/k = 1.15 T_b"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.15 T_b\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature [K]</p>
@@ -881,9 +883,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_melting</code><span class="sig-paren">(</span><em class="sig-param">Tm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_melting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_melting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses melting temperature. CSP method by <a class="reference internal" href="#rce14511f7fb5-1" id="id37">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/6b5586f86213249f7573ef10877feaac3f2acae4.png" alt="\epsilon/k = 1.92T_m"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.92T_m\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting temperature [K]</p>
@@ -917,9 +919,9 @@ John Wiley &amp; Sons, Inc., 2006</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Stiel_Thodos</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Zc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Stiel_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Stiel_Thodos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses Critical temperature and critical compressibility. CSP method by <a class="reference internal" href="#r685c729a9438-1" id="id39">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/034748e8f2dd7dbfc53c36eb0fecc0d1c0b1cc74.png" alt="\epsilon/k = 65.3 T_c Z_c^{3.6}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 65.3 T_c Z_c^{3.6}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -956,9 +958,9 @@ Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Tee_Gotoh_Steward_1</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Tee_Gotoh_Steward_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Tee_Gotoh_Steward_1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses Critical temperature. CSP method by <a class="reference internal" href="#r0859fdf04cf3-1" id="id41">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/225f0e442341668200347d410608cd0b092ea405.png" alt="\epsilon/k = 0.7740T_c"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 0.7740T_c\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -996,9 +998,9 @@ doi:10.1021/i160019a011</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">epsilon_Tee_Gotoh_Steward_2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">omega</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#epsilon_Tee_Gotoh_Steward_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.epsilon_Tee_Gotoh_Steward_2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
 Uses critical temperature and acentric factor. CSP method by <a class="reference internal" href="#r38dccdbeff6c-1" id="id44">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/f0cc6037c9fcb37d1ce2e643a9bf8e60e083881d.png" alt="\epsilon/k = (0.7915 + 0.1693 \omega)T_c"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\epsilon/k = (0.7915 + 0.1693 \omega)T_c\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
@@ -1041,10 +1043,10 @@ doi:10.1021/i160019a011</p>
 0.1 % of actual values, but the calculation of actual values is
 computationally intensive and so these simplifications are used, developed
 in <a class="reference internal" href="#rac847e2ff9a8-1" id="id47">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/b1009e636f4fb40005874815ed6c58f2b6faa565.png" alt="\Omega_D = \frac{A}{T^{*B}} + \frac{C}{\exp(DT^*)} +
-\frac{E}{\exp(FT^{*})} + \frac{G}{\exp(HT^*)} + RT^{*B}\sin(ST^{*W}-P)"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\Omega_D = \frac{A}{T^{*B}} + \frac{C}{\exp(DT^*)} +
+\frac{E}{\exp(FT^{*})} + \frac{G}{\exp(HT^*)} + RT^{*B}\sin(ST^{*W}-P)\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tstar</strong><span class="classifier">float</span></dt><dd><p>Reduced temperature of the fluid [-]</p>
@@ -1066,9 +1068,9 @@ in <a class="reference internal" href="#rac847e2ff9a8-1" id="id47">[1]</a>.</p>
 <p>Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
 (1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),
 (3, 5), and (4, 4).</p>
-<div class="math">
-<p><img src="../_images/math/8c583c20f4330f289887aa92f5659ebfa59e261f.png" alt="T^* = \frac{k_b T}{\epsilon}"/></p>
-</div><p>Results are very similar to those of the more modern formulation,
+<div class="math notranslate nohighlight">
+\[T^* = \frac{k_b T}{\epsilon}\]</div>
+<p>Results are very similar to those of the more modern formulation,
 <cite>collision_integral_Kim_Monroe</cite>.</p>
 <p>Calculations begin to yield overflow errors in some values of (l, 2) after
 Tstar = 75, beginning with (1, 7). Also susceptible are (1, 5) and (1, 6).</p>
@@ -1097,10 +1099,10 @@ doi:10.1063/1.1678363</p>
 0.007 % of actual values, but the calculation of actual values is
 computationally intensive and so these simplifications are used, developed
 in <a class="reference internal" href="#r7bdf5352c73e-1" id="id49">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/ffeb5454a5f44dfd24b8429e9165c22d3b9bbe9b.png" alt="\Omega^{(l,s)*} = A^{(l,s)} + \sum_{k=1}^6 \left[ \frac{B_k^{(l,s)}}
-{(T^*)^k} + C_k^{(l,s)} (\ln T^*)^k \right]"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\Omega^{(l,s)*} = A^{(l,s)} + \sum_{k=1}^6 \left[ \frac{B_k^{(l,s)}}
+{(T^*)^k} + C_k^{(l,s)} (\ln T^*)^k \right]\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tstar</strong><span class="classifier">float</span></dt><dd><p>Reduced temperature of the fluid [-]</p>
@@ -1122,9 +1124,9 @@ in <a class="reference internal" href="#r7bdf5352c73e-1" id="id49">[1]</a>.</p>
 <p>Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
 (1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),
 (3, 5), and (4, 4).</p>
-<div class="math">
-<p><img src="../_images/math/8c583c20f4330f289887aa92f5659ebfa59e261f.png" alt="T^* = \frac{k_b T}{\epsilon}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[T^* = \frac{k_b T}{\epsilon}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r7bdf5352c73e-1"><span class="brackets"><a class="fn-backref" href="#id49">1</a></span></dt>
 <dd><p>Kim, Sun Ung, and Charles W. Monroe. “High-Accuracy Calculations of
@@ -1146,9 +1148,9 @@ doi:10.1016/j.jcp.2014.05.018.</p>
 <code class="sig-prename descclassname">thermosteam.functors.lennard_jones.</code><code class="sig-name descname">Tstar</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">epsilon_k=None</em>, <em class="sig-param">epsilon=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/lennard_jones.html#Tstar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.lennard_jones.Tstar" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calculates the parameter <cite>Tstar</cite> as needed in performing
 collision integral calculations.</p>
-<div class="math">
-<p><img src="../_images/math/472244ab2584953507e94bec3020c5fc415a2077.png" alt="T^* = \frac{kT}{\epsilon}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[T^* = \frac{kT}{\epsilon}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>epsilon_k</strong><span class="classifier">float, optional</span></dt><dd><p>Lennard-Jones depth of potential-energy minimum over k, [K]</p>

@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -199,6 +200,16 @@
 <span class="sd">        Class for computing fugacity coefficiente.</span>
 <span class="sd">    PCF : PoyntingCorrectionFactor subclass.</span>
 <span class="sd">        Class for computing poynting correction factors.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from thermosteam import Thermo, Chemicals</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = Chemicals([&#39;Ethanol&#39;, &#39;Water&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; Thermo(chemicals)</span>
+<span class="sd">    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)</span>
+<span class="sd">    </span>
+<span class="sd">    Note how chemicals are compiled when it becomes part of a Thermo object.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;mixture&#39;</span><span class="p">,</span> <span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Phi&#39;</span><span class="p">,</span> <span class="s1">&#39;PCF&#39;</span><span class="p">)</span> 
     
@@ -225,8 +236,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PCF&#39;</span><span class="p">,</span> <span class="n">PCF</span><span class="p">)</span>    
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">IDs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span><span class="p">]</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(IDs)}])&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(chemicals=</span><span class="si">{self.chemicals}</span><span class="s2">, mixture={type(self.mixture).__name__}(...), Gamma=</span><span class="si">{self.Gamma.__name__}</span><span class="s2">, Phi=</span><span class="si">{self.Phi.__name__}</span><span class="s2">, PCF=</span><span class="si">{self.PCF.__name__}</span><span class="s2">)&quot;</span></div>
     
 
     

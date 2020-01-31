@@ -69,7 +69,7 @@ class MultiStream(Stream):
     
     All flow rates are stored in the `imol` attribute:
     
-    >>> s1.imol # Molar flow rates [kmol/hr]
+    >>> s1.imol.show() # Molar flow rates [kmol/hr]
     MolarFlowIndexer (kmol/hr):
      (l) Water     1.11
          Ethanol   0.2171

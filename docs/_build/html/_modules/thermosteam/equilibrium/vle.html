@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -177,6 +178,7 @@
 <span class="kn">from</span> <span class="nn">..utils.decorator_utils</span> <span class="kn">import</span> <span class="n">thermo_user</span>
 <span class="kn">from</span> <span class="nn">.dew_point</span> <span class="kn">import</span> <span class="n">DewPoint</span>
 <span class="kn">from</span> <span class="nn">.bubble_point</span> <span class="kn">import</span> <span class="n">BubblePoint</span>
+<span class="kn">from</span> <span class="nn">.fugacity_coefficients</span> <span class="kn">import</span> <span class="n">IdealFugacityCoefficients</span>
 <span class="kn">from</span> <span class="nn">.._thermal_condition</span> <span class="kn">import</span> <span class="n">ThermalCondition</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">Cache</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
@@ -352,13 +354,12 @@
 <span class="k">class</span> <span class="nc">VLE</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Create a VLE object for solving VLE.&quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_T&#39;</span><span class="p">,</span> <span class="s1">&#39;_P&#39;</span><span class="p">,</span> <span class="s1">&#39;_H_hat&#39;</span><span class="p">,</span> <span class="s1">&#39;_V&#39;</span><span class="p">,</span> <span class="s1">&#39;_thermo&#39;</span><span class="p">,</span> <span class="s1">&#39;_TP&#39;</span><span class="p">,</span> <span class="s1">&#39;_y&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_dew_point&#39;</span><span class="p">,</span> <span class="s1">&#39;_bubble_point&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_dew_point&#39;</span><span class="p">,</span> <span class="s1">&#39;_bubble_point&#39;</span><span class="p">,</span> <span class="s1">&#39;_x&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_phi&#39;</span><span class="p">,</span> <span class="s1">&#39;_pcf&#39;</span><span class="p">,</span> <span class="s1">&#39;_gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;_imol&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_liquid_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_vapor_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_phase_data&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_v&#39;</span><span class="p">,</span>  <span class="s1">&#39;_index&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;_chemical&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_update_V&#39;</span><span class="p">,</span> <span class="s1">&#39;_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_N&#39;</span><span class="p">,</span> <span class="s1">&#39;_solve_V&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_zs&#39;</span><span class="p">,</span> <span class="s1">&#39;_Ks&#39;</span><span class="p">,</span> <span class="s1">&#39;_Psat_over_P_phi&#39;</span><span class="p">,</span> <span class="s1">&#39;_keys&#39;</span><span class="p">,</span> <span class="s1">&#39;_LNK&#39;</span><span class="p">,</span> <span class="s1">&#39;_HNK&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_nonzero&#39;</span><span class="p">,</span> <span class="s1">&#39;_LNK_index&#39;</span><span class="p">,</span> <span class="s1">&#39;_HNK_index&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_N&#39;</span><span class="p">,</span> <span class="s1">&#39;_solve_V&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_z&#39;</span><span class="p">,</span> <span class="s1">&#39;_Ks&#39;</span><span class="p">,</span> <span class="s1">&#39;_nonzero&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mol_equilibrium&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_dew_point_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_bubble_point_cache&#39;</span><span class="p">)</span>
     
     <span class="n">solver</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">IQ_interpolation</span><span class="p">)</span>
@@ -376,7 +377,7 @@
 <span class="sd">        </span>
 <span class="sd">        Specify two:</span>
 <span class="sd">            * **P:** Operating pressure (Pa)</span>
-<span class="sd">            * **Q:** Energy input (kJ/hr)</span>
+<span class="sd">            * **H:** Energy input (kJ/hr)</span>
 <span class="sd">            * **T:** Operating temperature (K)</span>
 <span class="sd">            * **V:** Molar vapor fraction</span>
 <span class="sd">            * **x:** Molar composition of liquid (for binary mixture)</span>
@@ -426,8 +427,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can only pass either &#39;x&#39; or &#39;y&#39; arguments, not both&quot;</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imol</span><span class="p">,</span> <span class="n">thermal_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">LNK</span><span class="o">=</span><span class="p">(),</span> <span class="n">HNK</span><span class="o">=</span><span class="p">(),</span> <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bubble_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dew_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bubble_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dew_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a VLE object that performs vapor-liquid equilibrium when called.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -436,18 +436,8 @@
 <span class="sd">        </span>
 <span class="sd">        thermal_condition : ThermalCondition</span>
 <span class="sd">        </span>
-<span class="sd">        keys = None : tuple, optional</span>
-<span class="sd">                     keys of chemicals in equilibrium.</span>
-<span class="sd">        LNK = None : tuple[str], optional</span>
-<span class="sd">              Light non-keys that remain as a vapor (disregards equilibrium).</span>
-<span class="sd">        HNK = None : tuple[str], optional</span>
-<span class="sd">              Heavy non-keys that remain as a liquid (disregards equilibrium).</span>
-<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="n">keys</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_LNK</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LNK</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_HNK</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">HNK</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span> <span class="o">=</span> <span class="n">dew_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">DewPoint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span> <span class="o">=</span> <span class="n">bubble_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">BubblePoint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
@@ -457,13 +447,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span> <span class="o">=</span> <span class="n">liquid_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nonzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">liquid_mol</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
     
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span>
-        <span class="n">LNK</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LNK</span>
-        <span class="n">HNK</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_HNK</span>
-        
         <span class="c1"># Get flow rates</span>
         <span class="n">liquid_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span>
         <span class="n">vapor_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span>
@@ -472,31 +459,15 @@
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nonzero</span> <span class="o">==</span> <span class="n">notzero</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
-            <span class="n">LNK_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LNK_index</span>
-            <span class="n">HNK_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_HNK_index</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Set up indices for both equilibrium and non-equilibrium species</span>
-            <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
-                <span class="n">index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># TODO: Fix this according to equilibrium indices</span>
-                <span class="n">index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">equilibrium_indices</span><span class="p">(</span><span class="n">notzero</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">LNK</span><span class="p">:</span>
-                <span class="n">LNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">LNK</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">LNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">light_indices</span><span class="p">(</span><span class="n">notzero</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">HNK</span><span class="p">:</span>
-                <span class="n">HNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">HNK</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">HNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">heavy_indices</span><span class="p">(</span><span class="n">notzero</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_equilibrium_indices</span><span class="p">(</span><span class="n">notzero</span><span class="p">)</span>
             
             <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
             <span class="n">eq_chems</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">tuple</span>
             <span class="n">eq_chems</span> <span class="o">=</span> <span class="p">[</span><span class="n">eq_chems</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nonzero</span> <span class="o">=</span> <span class="n">notzero</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_LNK_index</span> <span class="o">=</span> <span class="n">LNK_index</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_HNK_index</span> <span class="o">=</span> <span class="n">HNK_index</span>
             <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_chemical</span><span class="p">,</span> <span class="o">=</span> <span class="n">eq_chems</span>
                 <span class="k">return</span> 
@@ -516,19 +487,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_phi</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">phi</span>
         
         <span class="c1"># Get overall composition</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_F_mass</span> <span class="o">=</span> <span class="p">(</span><span class="n">chemicals</span><span class="o">.</span><span class="n">MW</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span> <span class="o">=</span> <span class="n">F_mol</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">F_mol</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">F_mol</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;empty stream cannot perform equilibrium&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
 
         <span class="c1"># Set light and heavy keys</span>
+        <span class="n">LNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">_light_indices</span>
+        <span class="n">HNK_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">_heavy_indices</span>
         <span class="n">vapor_mol</span><span class="p">[</span><span class="n">HNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">vapor_mol</span><span class="p">[</span><span class="n">LNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">LNK_index</span><span class="p">]</span>
+        <span class="n">vapor_mol</span><span class="p">[</span><span class="n">LNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">light_mol</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">LNK_index</span><span class="p">]</span>
         <span class="n">liquid_mol</span><span class="p">[</span><span class="n">LNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">liquid_mol</span><span class="p">[</span><span class="n">HNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">HNK_index</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span><span class="o">/</span><span class="n">F_mol</span>
-        <span class="k">return</span> <span class="n">index</span>
+        <span class="n">liquid_mol</span><span class="p">[</span><span class="n">HNK_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">heavy_mol</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">HNK_index</span><span class="p">]</span>
+        <span class="n">F_mol_light</span> <span class="o">=</span> <span class="n">light_mol</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">F_mol_heavy</span> <span class="o">=</span> <span class="n">heavy_mol</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span> <span class="o">=</span> <span class="n">F_mol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol_equilibrium</span> <span class="o">=</span> <span class="n">F_mol_equilibrium</span> <span class="o">=</span> <span class="n">F_mol</span> <span class="o">-</span> <span class="n">F_mol_light</span> <span class="o">-</span> <span class="n">F_mol_heavy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">/</span> <span class="n">F_mol_equilibrium</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">imol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -536,12 +512,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">thermal_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">LNK</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LNK</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">HNK</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_HNK</span>
 
     <span class="c1">### Single component equilibrium case ###</span>
         
@@ -628,13 +598,13 @@
         <span class="n">liquid_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol</span> <span class="o">-</span> <span class="n">vapor_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         
     <span class="k">def</span> <span class="nf">_lever_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">split_frac</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">split_frac</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">assert</span> <span class="o">-</span><span class="mf">0.00001</span> <span class="o">&lt;</span> <span class="n">split_frac</span> <span class="o">&lt;</span> <span class="mf">1.00001</span><span class="p">,</span> <span class="s1">&#39;desired composition is infeasible&#39;</span>
         <span class="k">if</span> <span class="n">split_frac</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">split_frac</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="n">split_frac</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">split_frac</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span> <span class="o">*</span> <span class="n">split_frac</span> <span class="o">*</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol_equilibrium</span> <span class="o">*</span> <span class="n">split_frac</span> <span class="o">*</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">-</span> <span class="n">v</span>
     
     <span class="k">def</span> <span class="nf">set_Tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -668,8 +638,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">TP</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_TP_chemical</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         <span class="c1"># Setup bounderies</span>
-        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
         
         <span class="c1"># Check if there is equilibrium</span>
         <span class="k">if</span> <span class="n">P</span> <span class="o">&lt;=</span> <span class="n">P_dew</span><span class="p">:</span>
@@ -696,11 +666,11 @@
         
     <span class="k">def</span> <span class="nf">set_TV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="n">T</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_TV_chemical</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
-        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
         <span class="n">TP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span>
+        <span class="n">TP</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_TV_chemical</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">V</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -710,7 +680,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
             <span class="n">TP</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P_bubble</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_v</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_V_at_P</span><span class="p">,</span>
@@ -718,10 +688,11 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">P_tol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_tol</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_v</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">)</span>
                 <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_V_at_P</span><span class="p">,</span>
                                 <span class="n">P_bubble</span><span class="p">,</span> <span class="n">P_dew</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">P_tol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_tol</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">TP</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span>
@@ -734,8 +705,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="n">T</span>
         
         <span class="c1"># Setup bounderies</span>
-        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">P_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">P_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
         <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
         <span class="n">vapor_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span>
@@ -780,7 +751,8 @@
                             <span class="n">H_bubble</span><span class="o">/</span><span class="n">F_mass</span><span class="p">,</span> <span class="n">H_dew</span><span class="o">/</span><span class="n">F_mass</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_hat</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">P_tol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_hat_tol</span><span class="p">)</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">P</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
     
     <span class="k">def</span> <span class="nf">set_PV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
@@ -788,8 +760,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_PV_chemical</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
         
         <span class="c1"># Setup bounderies</span>
-        <span class="n">T_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Tx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
-        <span class="n">T_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">T_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Tx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">T_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         
         <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
@@ -806,7 +778,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T_bubble</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_v</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span> 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_V_at_T</span><span class="p">,</span>
                                 <span class="n">T_bubble</span><span class="p">,</span> <span class="n">T_dew</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
@@ -829,8 +801,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_PH_chemical</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
         
         <span class="c1"># Setup bounderies</span>
-        <span class="n">T_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Tx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
-        <span class="n">T_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">T_dew</span><span class="p">,</span> <span class="n">x_dew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Tx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">T_bubble</span><span class="p">,</span> <span class="n">y_bubble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         
         <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
@@ -866,14 +838,14 @@
                                            <span class="bp">self</span><span class="o">.</span><span class="n">T_tol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_hat_tol</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">_estimate_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">V</span><span class="p">)</span><span class="o">*</span><span class="n">y_bubble</span><span class="p">)</span><span class="o">*</span><span class="n">V</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">V</span><span class="p">)</span><span class="o">*</span><span class="n">y_bubble</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol_equilibrium</span>
     
     <span class="k">def</span> <span class="nf">_refresh_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">):</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
         <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_v</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">y_bubble</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span> <span class="o">*</span> <span class="n">V</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol_equilibrium</span> <span class="o">*</span> <span class="n">V</span>
     
     <span class="k">def</span> <span class="nf">_H_hat_at_T</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_v</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">)</span>
@@ -889,71 +861,67 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_v</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="p">,</span> <span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span>
     
     <span class="k">def</span> <span class="nf">_V_at_T</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_v</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_v</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span> 
+        <span class="k">return</span> <span class="n">V</span>
     
-    <span class="k">def</span> <span class="nf">_x_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_x_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">Psat_over_P_phi</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Psat_over_P_phi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gamma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_V</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="o">-</span><span class="mf">1.</span><span class="p">))</span>
-     
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span> <span class="o">=</span> <span class="n">Psat_over_P_phi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gamma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_V</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">))</span>
+    
+    <span class="k">def</span> <span class="nf">_y_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Psats_over_P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">Psat_over_P_phi</span> <span class="o">=</span> <span class="n">Psats_over_P</span> <span class="o">/</span> <span class="n">phi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itersolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x_iter</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span>
+                                      <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">Psat_over_P_phi</span><span class="p">,))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol_equilibrium</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span>     
+        <span class="k">return</span> <span class="n">v</span> <span class="o">/</span> <span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    
     <span class="k">def</span> <span class="nf">_solve_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Solve for vapor mol&quot;&quot;&quot;</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span>
-        <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phi</span>
-        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">mol</span> <span class="o">-</span> <span class="n">v</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">Psats_over_P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bp</span><span class="o">.</span><span class="n">Psats</span><span class="p">])</span> <span class="o">/</span> <span class="n">P</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_Psat_over_P_phi</span> <span class="o">=</span> <span class="n">Psats_over_P</span> <span class="o">/</span> <span class="n">phi</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">Psats_over_P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">Psats</span><span class="p">])</span> <span class="o">/</span> <span class="n">P</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="n">T</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itersolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x_iter</span><span class="p">,</span> <span class="n">l</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mf">1e-4</span><span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="o">*</span><span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span>            
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">Psat_over_P_phi</span> <span class="o">=</span> <span class="n">Psats_over_P</span> <span class="o">/</span> <span class="n">phi</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Psat_over_P_phi</span> <span class="o">-</span> <span class="n">Psat_over_P_phi</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">:</span>
-            <span class="c1"># TODO: Make y solve iteratively with Psat_over_P_phi</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">-</span> <span class="n">v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">l</span> <span class="o">/</span> <span class="n">l</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phi</span><span class="p">,</span> <span class="n">IdealFugacityCoefficients</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y_iter</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Psats_over_P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_Psat_over_P_phi</span> <span class="o">=</span> <span class="n">Psat_over_P_phi</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itersolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x_iter</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F_mol</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="o">*</span><span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span>     
-            <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">v</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itersolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_iter</span><span class="p">,</span> <span class="n">v</span><span class="o">/</span><span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mf">1e-4</span><span class="p">,</span>
+                                      <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">Psats_over_P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span>
 
-    <span class="k">def</span> <span class="nf">_set_V</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_load_V</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">V</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="p">:</span>
             <span class="n">V</span> <span class="o">=</span> <span class="mf">1.</span>
         <span class="k">elif</span> <span class="n">V</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span>
             <span class="n">V</span> <span class="o">=</span> <span class="mf">0.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="n">V</span>
+        <span class="k">return</span> <span class="n">V</span>
 
     <span class="k">def</span> <span class="nf">_V_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Vapor fraction error.&quot;&quot;&quot;</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="o">-</span><span class="mf">1.</span><span class="p">)))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">V</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">V</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="o">-</span><span class="mf">1.</span><span class="p">)))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_solve_V_N</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update V for N components.&quot;&quot;&quot;</span>
         <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_V_error</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_V_error</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V_error</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_V</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-7</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">V</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_solve_V_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update V for 2 components.&quot;&quot;&quot;</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="n">V_2N</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">V</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">V_2N</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">_solve_V_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update V for 3 components.&quot;&quot;&quot;</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="n">V_3N</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">V</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">V_3N</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_V</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tabs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tabs</span><span class="p">:</span> <span class="n">tabs</span> <span class="o">=</span> <span class="mi">1</span>
@@ -964,10 +932,8 @@
             <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dlim}{self._keys}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">HNK</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dlim}{self._HNK}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_HNK</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">LNK</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dlim}{self._LNK}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LNK</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLE(imol=</span><span class="si">{imol}</span><span class="s2">,</span><span class="si">{dlim}</span><span class="s2">thermal_condition=</span><span class="si">{self.thermal_condition}{keys}{LNK}{HNK}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VLE(imol=</span><span class="si">{imol}</span><span class="s2">,</span><span class="si">{dlim}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;thermal_condition=</span><span class="si">{self.thermal_condition}</span><span class="s2">)&quot;</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span></div>

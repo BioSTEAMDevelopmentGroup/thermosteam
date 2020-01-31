@@ -136,7 +136,7 @@ with open(os.path.join(read.folder, 'Perrys Table 2-151.tsv'), encoding='utf-8')
 
 # %% Heat Capacities Gas
 
-@Cn.g(ref="[1]_")
+@Cn.g
 def Lastovka_Shaw(T, MW, term, a):
     r'''
     Notes
@@ -177,6 +177,7 @@ def Lastovka_Shaw(T, MW, term, a):
            Ideal Gas Heat Capacities of Pure Hydrocarbons and Petroleum Fractions."
            Fluid Phase Equilibria 356 (October 25, 2013): 338-370.
            doi:10.1016/j.fluid.2013.07.023.
+    
     '''
     B11 = 0.73917383
     B12 = 8.88308889
@@ -190,7 +191,7 @@ def Lastovka_Shaw(T, MW, term, a):
                  + (B11 + B12*a)*((C11+C12*a)/T)**2*exp(-(C11 + C12*a)/T)/(1.-exp(-(C11+C12*a)/T))**2
                  + (B21 + B22*a)*((C21+C22*a)/T)**2*exp(-(C21 + C22*a)/T)/(1.-exp(-(C21+C22*a)/T))**2)
 
-@Lastovka_Shaw.wrapper
+@Lastovka_Shaw.wrapper(ref="[1]_")
 def Lastovka_Shaw(MW, similarity_variable, iscyclic_aliphatic=False):
     a = similarity_variable
     if iscyclic_aliphatic:
@@ -445,6 +446,7 @@ def Rowlinson_Poling(T, Tc, ω, Cn_g):
     Examples
     --------
     Compute the liquid heat capacity of methane at 100 K:
+    
     >>> Cn_g = Poling(a=4.568, b=-0.008975, c=3.631e-05,
                       d=-3.407e-08, e=1.091e-11)
     >>> f_Cnl = Rowlinson_Poling(Tc=190.564, ω=0.008, Cn_g=Cn_g)
@@ -459,6 +461,7 @@ def Rowlinson_Poling(T, Tc, ω, Cn_g):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    
     '''
     Tr = T/Tc
     return Cn_g(T) + R*(1.586 + 0.49/(1.-Tr) + ω*(4.2775 + 6.3*(1-Tr)**(1/3.)/Tr + 0.4355/(1.-Tr)))
@@ -498,16 +501,17 @@ def Rowlinson_Bondi(T, Tc, ω, Cn_g):
        Berlin; New York:: Springer, 2010.
     .. [3] J.S. Rowlinson, Liquids and Liquid Mixtures, 2nd Ed.,
        Butterworth, London (1969).
+      
     '''
     Tr = T/Tc
     return Cn_g(T) + R*(1.45 + 0.45/(1.-Tr) + 0.25*ω*(17.11 + 25.2*(1-Tr)**(1/3.)/Tr + 1.742/(1.-Tr)))
 
-@Cn.l(ref='[1]_')
+@Cn.l
 def Dadgostar_Shaw(T, MW, first, second, third):
     r'''
     Notes
     -----
-    The liquid heat capacity if given by:
+    The liquid heat capacity is given by:
 
     .. math::
         C_{p} = 24.5(a_{11}\alpha + a_{12}\alpha^2)+ (a_{21}\alpha
@@ -532,11 +536,12 @@ def Dadgostar_Shaw(T, MW, first, second, third):
        the Constant-Pressure Specific Heat Capacity of Pure and Ill-Defined
        Liquid Hydrocarbons." Fluid Phase Equilibria 313 (January 15, 2012):
        211-226. doi:10.1016/j.fluid.2011.09.015.
+      
     '''
     first *= 3*R*(151.8675/T)**2*exp(151.8675/T)/(exp(151.8675/T)-1)**2
     return (first + second*T + third*T**2) * MW
 
-@Dadgostar_Shaw.wrapper
+@Dadgostar_Shaw.wrapper(ref='[1]_')
 def Dadgostar_Shaw(similarity_variable, MW):
     a = similarity_variable
     a2 = a*a
@@ -897,7 +902,7 @@ def Perry_151(T, a, b, c, d):
     Coefficients are listed in section 2, table 151 of [1]_. Note that the original model was in a Calorie basis, but has been translated to Joules.
     
     References
-    ---------
+    ----------
     .. [1] Green, Don, and Robert Perry.
            Perry's Chemical Engineers' Handbook,
            Eighth Edition. McGraw-Hill Professional, 2007.

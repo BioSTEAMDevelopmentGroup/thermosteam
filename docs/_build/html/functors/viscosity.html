@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -223,122 +225,6 @@
 </style>
 <div class="section" id="module-thermosteam.functors.viscosity">
 <span id="viscosity"></span><h1>viscosity<a class="headerlink" href="#module-thermosteam.functors.viscosity" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.Viswanath_Natarajan2">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">Viswanath_Natarajan2</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#Viswanath_Natarajan2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.Viswanath_Natarajan2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates mu.l in Pa*s using the Viswanath Natarajan2 equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Helmholtz energy [J/mol].</p>
-</dd>
-<dt><strong>B</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.Viswanath_Natarajan3">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">Viswanath_Natarajan3</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#Viswanath_Natarajan3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.Viswanath_Natarajan3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates mu.l in Pa*s using the Viswanath Natarajan3 equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Helmholtz energy [J/mol].</p>
-</dd>
-<dt><strong>B, C</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.Letsou_Stiel">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">Letsou_Stiel</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#Letsou_Stiel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.Letsou_Stiel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates mu.l in Pa*s using the Letsou Stiel equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.Przedziecki_Sridhar">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">Przedziecki_Sridhar</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#Przedziecki_Sridhar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.Przedziecki_Sridhar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates mu.l in Pa*s using the Przedziecki Sridhar equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting point temperature [K].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
-</dd>
-<dt><strong>Vm</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.VDI">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">VDI</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#VDI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.VDI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates mu.l in Pa*s using the VDI equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Helmholtz energy [J/mol].</p>
-</dd>
-<dt><strong>B, C, D, E</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.viscosity.Lucas">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.viscosity.</code><code class="sig-name descname">Lucas</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/viscosity.html#Lucas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.viscosity.Lucas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates mu.l in Pa*s using the Lucas equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-<dt><strong>mu</strong><span class="classifier">float</span></dt><dd><p>Hydrolic viscosity [Pa*s].</p>
-</dd>
-<dt><strong>P_sat</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 

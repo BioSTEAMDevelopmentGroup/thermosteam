@@ -680,7 +680,7 @@ class Stream:
         Mix all other streams into this one, ignoring its initial contents.
         
         Examples
-        -------
+        --------
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals) 

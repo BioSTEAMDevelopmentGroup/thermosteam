@@ -54,11 +54,20 @@ def get_interaction(all_interactions, i, j, no_interaction):
 # %% Activity Coefficients
 
 class ActivityCoefficients:
-    """Abstract class for the estimation of activity coefficients."""
+    """Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:
+        
+    __init__(self, chemicals: Iterable[Chemicals]):
+        Should use pure component data from chemicals to setup future calculations of activity coefficients.
+    
+    __call__(self, x: 1d array, T: float):
+        Should accept an array of liquid molar compositions `x`, and temperature `T` (in Kelvin), and return an array of activity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the ActivityCoefficients object.
+    
+    """
     __slots__ = ('_chemicals',)
     
     @property
     def chemicals(self):
+        """tuple[Chemical] All chemicals involved in the calculation of activity coefficients."""
         return self._chemicals
     
     def __repr__(self):
@@ -71,7 +80,6 @@ class IdealActivityCoefficients(ActivityCoefficients):
     
     Parameters
     ----------
-    
     chemicals : Iterable[Chemical]
     
     """

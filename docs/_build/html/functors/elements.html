@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -303,9 +305,9 @@ G R Hutchison. “Open Babel: An open chemical toolbox.” J. Cheminf.
 <code class="sig-prename descclassname">thermosteam.functors.elements.</code><code class="sig-name descname">molecular_weight</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/elements.html#molecular_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.elements.molecular_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates molecular weight of a molecule given a dictionary of its
 atoms and their counts, in the format {symbol: count}.</p>
-<div class="math">
-<p><img src="../_images/math/be3c61b1cb83a8977612b543f5d82831491f6460.png" alt="MW = \sum_i n_i MW_i"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[MW = \sum_i n_i MW_i\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
@@ -343,9 +345,9 @@ supported, as are deutreium and tritium.</p>
 <dd><p>Calculates the mass fractions of each element in a compound,
 given a dictionary of its atoms and their counts, in the format
 {symbol: count}.</p>
-<div class="math">
-<p><img src="../_images/math/755289f87f44c8f7c14f96bb297c2b48f8aebb8f.png" alt="w_i =  \frac{n_i MW_i}{\sum_i n_i MW_i}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[w_i =  \frac{n_i MW_i}{\sum_i n_i MW_i}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
@@ -388,9 +390,9 @@ supported.</p>
 <dd><p>Calculates the atomic fractions of each element in a compound,
 given a dictionary of its atoms and their counts, in the format
 {symbol: count}.</p>
-<div class="math">
-<p><img src="../_images/math/59a3a2bf365c59e851c59241cd80f3704a56aa9d.png" alt="a_i =  \frac{n_i}{\sum_i n_i}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[a_i =  \frac{n_i}{\sum_i n_i}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
@@ -427,9 +429,9 @@ would not raise an error.</p>
 <code class="sig-prename descclassname">thermosteam.functors.elements.</code><code class="sig-name descname">similarity_variable</code><span class="sig-paren">(</span><em class="sig-param">atoms</em>, <em class="sig-param">MW=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/elements.html#similarity_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.elements.similarity_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the similarity variable of an compound, as defined in <a class="reference internal" href="#r3b9b1a1bac8b-1" id="id5">[1]</a>.
 Currently only applied for certain heat capacity estimation routines.</p>
-<div class="math">
-<p><img src="../_images/math/bd6f4fbc0f9265d719dc356932c4cf46b79901f3.png" alt="\alpha = \frac{N}{MW} = \frac{\sum_i n_i}{\sum_i n_i MW_i}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\alpha = \frac{N}{MW} = \frac{\sum_i n_i}{\sum_i n_i MW_i}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with

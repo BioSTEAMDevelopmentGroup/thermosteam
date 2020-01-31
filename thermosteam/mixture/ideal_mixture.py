@@ -173,9 +173,26 @@ class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
 
 
 class IdealMixture:
+    """
+    Create an IdealMixture object for estimating mixture properties.
+    
+    Parameters
+    ----------
+    chemicals : Chemicals
+        For retrieving pure component chemical data.
+    rigorous_energy_balance=True : bool
+        Whether to rigorously solve for temperature in energy balance or simply approximate.
+    include_excess_energies=False : bool
+        Whether to include excess energies in enthalpy and entropy calculations.
+        
+    Examples
+    --------
+    >>> from thermosteam import IdealMixture, Chemicals
+    
+    
+    """
     __slots__ = ('chemicals', 'rigorous_energy_balance', 
                  'include_excess_energies', *mixture_methods)
-    units = {}
     
     def __init__(self, chemicals=(), rigorous_energy_balance=True, include_excess_energies=False):
         self.rigorous_energy_balance = rigorous_energy_balance
@@ -183,6 +200,7 @@ class IdealMixture:
         getfield = getattr
         setfield = setattr
         any_ = any
+        chemicals.compile()
         self.chemicals = chemicals
         # TODO: Divide this up to functions
         for attr in mixture_hidden_T_methods:
@@ -363,6 +381,5 @@ class IdealMixture:
         return sum([k(phase, z, TP) for phase, z in phase_data])
     
     def __repr__(self):
-        IDs = [str(i) for i in self.chemicals]
-        return f"{type(self).__name__}([{', '.join(IDs)}])"
+        return f"{type(self).__name__}(chemicals={self.chemicals}, rigorous_energy_balance={self.rigorous_energy_balance}, include_excess_energies={self.include_excess_energies})"
     

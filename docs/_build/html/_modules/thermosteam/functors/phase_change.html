@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -168,26 +169,6 @@
             
   <h1>Source code for thermosteam.functors.phase_change</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
-<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
-
-<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
-<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
-<span class="sd">in the Software without restriction, including without limitation the rights</span>
-<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
-<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
-<span class="sd">furnished to do so, subject to the following conditions:</span>
-
-<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
-<span class="sd">copies or substantial portions of the Software.</span>
-
-<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
-<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
-<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
-<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
-<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
-<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
-<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EnthalpyVaporization&#39;</span><span class="p">,</span>
            <span class="s1">&#39;Tb_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm&#39;</span><span class="p">,</span> 
@@ -438,7 +419,7 @@
 <div class="viewcode-block" id="Clapeyron"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Clapeyron">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">,</span>
       <span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dZ&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">,</span> <span class="s1">&#39;Psat&#39;</span><span class="p">:</span> <span class="s1">&#39;function(T)&#39;</span><span class="p">})</span>
 <span class="k">def</span> <span class="nf">Clapeyron</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">Psat</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -472,7 +453,7 @@
 
 <div class="viewcode-block" id="Pitzer"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Pitzer">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[2, 1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Pitzer</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    </span>
@@ -511,7 +492,7 @@
 
 <div class="viewcode-block" id="SMK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.SMK">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">SMK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -584,7 +565,7 @@
 
 <div class="viewcode-block" id="MK"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.MK">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">MK</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -645,7 +626,7 @@
 
 <div class="viewcode-block" id="Velasco"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Velasco">[docs]</a><span class="nd">@Hvap</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Velasco</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The enthalpy of vaporization (Hvap; in J/mol) is given by:</span>
@@ -904,7 +885,7 @@
 
 
 <span class="c1">### Enthalpy of Vaporization adjusted for T</span>
-<div class="viewcode-block" id="Watson"><a class="viewcode-back" href="../../../functors/phase_change.html#thermosteam.functors.phase_change.Watson">[docs]</a><span class="nd">@Hvap</span>
+<span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">Watson</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Hvap_ref</span><span class="p">,</span> <span class="n">T_ref</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Adjusts enthalpy of vaporization of enthalpy for another temperature, for one temperature.</span>
@@ -912,7 +893,7 @@
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">Trefr</span> <span class="o">=</span> <span class="n">T_ref</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">H2</span> <span class="o">=</span> <span class="n">Hvap_ref</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Trefr</span><span class="p">))</span><span class="o">**</span><span class="n">exponent</span>
-    <span class="k">return</span> <span class="n">H2</span></div>
+    <span class="k">return</span> <span class="n">H2</span>
 
 <span class="nd">@Hvap</span>
 <span class="k">def</span> <span class="nf">Alibakhshi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
@@ -949,22 +930,23 @@
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
         <span class="n">Ts</span><span class="p">,</span> <span class="n">Hvaps</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap&#39;</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Hvaps</span><span class="p">,</span> <span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Alibakhshi_Cs</span> <span class="ow">and</span> <span class="n">Tc</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_Alibakhshi_Cs</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">])</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Alibakhshi</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">]):</span>
-        <span class="n">Tb</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">])</span>
-        <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">]):</span>
-        <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-        <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">Tc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_Alibakhshi_Cs</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_Alibakhshi_Cs</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">])</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Alibakhshi</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">C</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">]):</span>
+            <span class="n">Tb</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">])</span>
+            <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;HvapTb&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap_ref</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_kwargs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRCHvap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">]):</span>
+            <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRCHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap_ref</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_kwargs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">Hvap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_GharagheiziHvap</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Hvap298&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Hvap_ref</span><span class="o">=</span><span class="n">Hvap</span><span class="p">,</span> <span class="n">T_ref</span><span class="o">=</span><span class="mf">298.</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="n">Tc</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.38</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Watson</span><span class="o">.</span><span class="n">from_kwargs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">)</span>
 
 
 <span class="c1">### Heat of Fusion</span>

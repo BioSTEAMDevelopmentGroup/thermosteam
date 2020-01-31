@@ -85,11 +85,11 @@ def omega(CASRN, AvailableMethods=False, Method=None,
     A total of five sources are available for this function. They are:
 
         * 'PSRK', a compillation of experimental and estimated data published 
-          in the Appendix of [15]_, the fourth revision of the PSRK model.
+          in the Appendix of [2]_, the fourth revision of the PSRK model.
         * 'PD', an older compillation of
-          data published in (Passut & Danner, 1973) [16]_.
+          data published in (Passut & Danner, 1973) [3]_.
         * 'YAWS', a large compillation of data from a
-          variety of sources; no data points are sourced in the work of [17]_.
+          variety of sources; no data points are sourced in the work of [4]_.
         * 'LK', a estimation method for hydrocarbons.
         * 'DEFINITION', based on the definition of omega as
           presented in [1]_, using vapor pressure data.

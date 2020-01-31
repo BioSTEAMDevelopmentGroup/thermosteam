@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">refractivity</a></li>
@@ -287,10 +289,10 @@ Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
 <code class="sig-prename descclassname">thermosteam.functors.refractivity.</code><code class="sig-name descname">polarizability_from_RI</code><span class="sig-paren">(</span><em class="sig-param">RI</em>, <em class="sig-param">Vm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/refractivity.html#polarizability_from_RI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.refractivity.polarizability_from_RI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the polarizability of a fluid given its molar volume and
 refractive index.</p>
-<div class="math">
-<p><img src="../_images/math/a63b5acf6cce6dbd22ed3989f968343980798057.png" alt="\alpha = \left(\frac{3}{4\pi N_A}\right)
-\left(\frac{n^2-1}{n^2+2}\right)V_m"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\alpha = \left(\frac{3}{4\pi N_A}\right)
+\left(\frac{n^2-1}{n^2+2}\right)V_m\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on Na D line, [-]</p>
@@ -333,9 +335,9 @@ doi:10.1007/s10765-016-2075-8.</p>
 <code class="sig-prename descclassname">thermosteam.functors.refractivity.</code><code class="sig-name descname">molar_refractivity_from_RI</code><span class="sig-paren">(</span><em class="sig-param">RI</em>, <em class="sig-param">Vm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/refractivity.html#molar_refractivity_from_RI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.refractivity.molar_refractivity_from_RI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the molar refractivity of a fluid given its molar volume and
 refractive index.</p>
-<div class="math">
-<p><img src="../_images/math/1a57f329e2351b2921f02d119b8229820fad8d5e.png" alt="R_m = \left(\frac{n^2-1}{n^2+2}\right)V_m"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[R_m = \left(\frac{n^2-1}{n^2+2}\right)V_m\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on Na D line, [-]</p>
@@ -373,9 +375,9 @@ doi:10.1007/s10765-016-2075-8.</p>
 <code class="sig-prename descclassname">thermosteam.functors.refractivity.</code><code class="sig-name descname">RI_from_molar_refractivity</code><span class="sig-paren">(</span><em class="sig-param">Rm</em>, <em class="sig-param">Vm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/refractivity.html#RI_from_molar_refractivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.refractivity.RI_from_molar_refractivity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the refractive index of a fluid given its molar volume and
 molar refractivity.</p>
-<div class="math">
-<p><img src="../_images/math/98d8fca45a0cc3e84424f27ac0e9b9927b9d8ca1.png" alt="RI = \sqrt{\frac{-2R_m - V_m}{R_m-V_m}}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[RI = \sqrt{\frac{-2R_m - V_m}{R_m-V_m}}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Rm</strong><span class="classifier">float</span></dt><dd><p>Molar refractivity [m^3/mol]</p>

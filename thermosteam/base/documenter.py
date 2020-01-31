@@ -75,7 +75,7 @@ class Documenter:
                          + self.describe_parameter(var) + '.' + new_line)
         if coefficients:
             parameters += (", ".join(coefficients) + " : float" + sub_line
-                         + "Regressed coefficients.")
+                         + "Regressed coefficients." + new_line)
         return parameters
     
     def describe_return_value(self, var):
@@ -118,7 +118,7 @@ def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
     header = autodoc.describe_functor(functor,
                                       equation or function.__name__.replace('_', ' '),
                                       ref)
-    function_doc = function.__doc__
+    function_doc = function.__doc__ or ""
     function.__doc__ = None
     params = functor.params
     new_line = "\n" + (tabs * 4) * " "
@@ -128,15 +128,14 @@ def autodoc_functor(functor, doc='auto-merge', equation=None, ref=None, tabs=1,
         functor.__doc__ = _join_sections(header, parameters, new_line)
         return
     elif merge:
-        functor.__doc__ = _join_sections(header, parameters, new_line) + (function_doc or "")
+        functor.__doc__ = _join_sections(header, parameters, new_line) + function_doc
     elif header:
         functor.__doc__ = header + new_line + function_doc    
     elif param:
         functor.__doc__ = function.__doc__.replace('[Parameters]\n', parameters + "\n")
     
 def _join_sections(header, parameters, new_line):
-    double_new_line = 2 * new_line
-    doc = header + double_new_line 
+    doc = header + new_line 
     if parameters:
-        doc += parameters + double_new_line
+        doc += new_line + parameters
     return doc

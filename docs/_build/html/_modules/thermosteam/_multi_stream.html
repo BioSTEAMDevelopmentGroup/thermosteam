@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -184,7 +185,8 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MultiStream&#39;</span><span class="p">,</span> <span class="p">)</span>
 
 <div class="viewcode-block" id="MultiStream"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream">[docs]</a><span class="k">class</span> <span class="nc">MultiStream</span><span class="p">(</span><span class="n">Stream</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a Stream object that defines material flow rates along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. </span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a MultiStream object that defines material flow rates for multiple phases along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -202,7 +204,7 @@
 <span class="sd">        Flow rate units of measure (only mass, molar, and</span>
 <span class="sd">        volumetric flow rates are valid)</span>
 
-<span class="sd">    phases=&#39;gl&#39; : tuple[&#39;g&#39;, &#39;l&#39;, &#39;s&#39;, &#39;G&#39;, &#39;L&#39;, &#39;S&#39;], optional</span>
+<span class="sd">    phases=(&#39;g, l&#39;) : tuple[&#39;g&#39;, &#39;l&#39;, &#39;s&#39;, &#39;G&#39;, &#39;L&#39;, &#39;S&#39;], optional</span>
 <span class="sd">        Tuple denoting the phases present.</span>
 
 <span class="sd">    T=298.15 : float, optional</span>
@@ -217,12 +219,100 @@
 <span class="sd">    **phase_flow : tuple[str, float]</span>
 <span class="sd">        phase-(ID, flow) pairs</span>
 <span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Before creating streams, first set the chemicals:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">    </span>
+<span class="sd">    Create a multi phase stream, defining the thermodynamic condition and flow rates:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; s1 = tmo.MultiStream(ID=&#39;s1&#39;,T=298.15, P=101325,</span>
+<span class="sd">    ...                      l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; s1.show(flow=&#39;kg/hr&#39;) # Use the show method to select units of display</span>
+<span class="sd">    MultiStream: s1</span>
+<span class="sd">     phases: (&#39;g&#39;, &#39;l&#39;), T: 298.15 K, P: 101325 Pa</span>
+<span class="sd">     flow (kg/hr): (l) Water    20</span>
+<span class="sd">                       Ethanol  10</span>
+<span class="sd">    </span>
+<span class="sd">    All flow rates are stored in the `imol` attribute:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; s1.imol.show() # Molar flow rates [kmol/hr]</span>
+<span class="sd">    MolarFlowIndexer (kmol/hr):</span>
+<span class="sd">     (l) Water     1.11</span>
+<span class="sd">         Ethanol   0.2171</span>
+<span class="sd">    &gt;&gt;&gt; # Index a single chemical in the liquid phase</span>
+<span class="sd">    &gt;&gt;&gt; s1.imol[&#39;l&#39;, &#39;Water&#39;]</span>
+<span class="sd">    1.1101687012358397</span>
+<span class="sd">    &gt;&gt;&gt; # Index multiple chemicals in the liquid phase</span>
+<span class="sd">    &gt;&gt;&gt; s1.imol[&#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;)]</span>
+<span class="sd">    array([0.217, 1.11 ])</span>
+<span class="sd">    &gt;&gt;&gt; # Index the vapor phase</span>
+<span class="sd">    &gt;&gt;&gt; s1.imol[&#39;g&#39;]</span>
+<span class="sd">    array([0., 0.])</span>
+<span class="sd">    </span>
+<span class="sd">    The `mol` attribute no longer stores any data,</span>
+<span class="sd">    it simply returns the total flow rate of each chemical.</span>
+<span class="sd">    Setting an element of the array raises an error to </span>
+<span class="sd">    prevent the wrong assumption that the data is linked:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; s1.mol</span>
+<span class="sd">    array([1.11 , 0.217])</span>
+<span class="sd">    &gt;&gt;&gt; # s1.mol[0] = 1</span>
+<span class="sd">    &gt;&gt;&gt; # -&gt; ValueError: assignment destination is read-only</span>
+<span class="sd">    </span>
+<span class="sd">    The temperature and pressure are stored as attributes:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; (s1.T, s1.P)</span>
+<span class="sd">    (298.15, 101325)</span>
+<span class="sd">    </span>
+<span class="sd">    The most convinient way to get and set flow rates is through</span>
+<span class="sd">    the `get_flow` and `set_flow` methods:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; # Set flow</span>
+<span class="sd">    &gt;&gt;&gt; s1.set_flow(1, &#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">    1.0</span>
+<span class="sd">    &gt;&gt;&gt; # Set multiple flows</span>
+<span class="sd">    &gt;&gt;&gt; s1.set_flow([10, 20], &#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    array([10., 20.])</span>
+<span class="sd">    </span>
+<span class="sd">    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list:</span>
+<span class="sd">    * T [Temperature; in K]</span>
+<span class="sd">    * P [Pressure; in K]</span>
+<span class="sd">    * V [Vapor fraction]</span>
+<span class="sd">    * H [Enthalpy; in kJ/hr]:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; s1.vle(P=101325, T=365)</span>
+<span class="sd">    </span>
+<span class="sd">    Each phase can be accessed separately too:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; s1[&#39;l&#39;].show()</span>
+<span class="sd">    Stream: </span>
+<span class="sd">     phase: &#39;l&#39;, T: 365 K, P: 101325 Pa</span>
+<span class="sd">     flow (kmol/hr): Water    0.619</span>
+<span class="sd">                     Ethanol  0.0238</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; s1[&#39;g&#39;].show()</span>
+<span class="sd">    Stream: </span>
+<span class="sd">     phase: &#39;g&#39;, T: 365 K, P: 101325 Pa</span>
+<span class="sd">     flow (kmol/hr): Water    0.491</span>
+<span class="sd">                     Ethanol  0.193</span>
+<span class="sd">    </span>
+<span class="sd">    Note that the phase cannot be changed:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; # s1[&#39;g&#39;].phase = &#39;l&#39;</span>
+<span class="sd">    &gt;&gt;&gt; # -&gt; AttributeError: phase is locked</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="p">(),</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="s1">&#39;gl&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="p">(),</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">),</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_flows</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">ThermalCondition</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span> <span class="o">=</span> <span class="n">thermo</span> <span class="o">=</span> <span class="n">thermo</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
+        <span class="n">thermo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_indexer</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">thermo</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">phase_flows</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">price</span>
         <span class="k">if</span> <span class="n">units</span><span class="p">:</span>
@@ -273,20 +363,66 @@
     
     <span class="c1">### Property getters ###</span>
     
-    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an flow rates in requested units.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        units : str</span>
+<span class="sd">            Units of measure.</span>
+<span class="sd">        phase : str</span>
+<span class="sd">        IDs : Iterable[str] or str, optional</span>
+<span class="sd">            Chemical identifiers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; s1 = tmo.MultiStream(&#39;s1&#39;, l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">        20.0</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span></div>
     
-    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.set_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set flow rates in given units.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : 1d ndarray or float</span>
+<span class="sd">            Flow rate data.</span>
+<span class="sd">        units : str</span>
+<span class="sd">            Units of measure.</span>
+<span class="sd">        phase : str</span>
+<span class="sd">        IDs : Iterable[str] or str, optional</span>
+<span class="sd">            Chemical identifiers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; s1 = tmo.MultiStream(&#39;s1&#39;, l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s1.set_flow(10, &#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">        10.0</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span></div>
     
     <span class="c1">### Stream data ###</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tuple[str] All phases avaiable.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_phases</span>
     <span class="nd">@phases</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
@@ -299,16 +435,19 @@
             
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Array] Chemical molar flow rates (total of all phases).&quot;&quot;&quot;</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">mol</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mol</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Array] Chemical mass flow rates (total of all phases).&quot;&quot;&quot;</span>
         <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">MW</span>
         <span class="n">mass</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mass</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Array] Chemical volumetric flow rates (total of all phases).&quot;&quot;&quot;</span>
         <span class="n">vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ivol</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">vol</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">vol</span>
@@ -317,6 +456,7 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">H</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Enthalpy flow rate in kJ/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xH_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@H</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
@@ -324,12 +464,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">S</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Entropy flow rate in kJ/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xS_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">C</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Heat capacity flow rate in kJ/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xCn_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">F_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Total volumetric flow rate in m3/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mf">1000.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xV_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@F_vol</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">F_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -339,29 +482,36 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Hvap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Enthalpy of vaporization flow rate in kJ/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">Hvap_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     
     <span class="c1">### Composition properties ###</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">V</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Molar volume [m^3/mol].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xV_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_composition</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">kappa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Thermal conductivity [W/m/k].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xkappa_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_composition</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>        
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Cn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Molar heat capacity [J/mol/K].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xCn_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_composition</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Hydrolic viscosity [Pa*s].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xmu_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_composition</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Surface tension [N/m].&quot;&quot;&quot;</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">sigma_at_TP</span><span class="p">(</span><span class="n">mol</span> <span class="o">/</span> <span class="n">mol</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Relative permittivity [-].&quot;&quot;&quot;</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">epsilon_at_TP</span><span class="p">(</span><span class="n">mol</span> <span class="o">/</span> <span class="n">mol</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>
         
@@ -374,6 +524,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        stream : Stream</span>
 <span class="sd">            Flow rates will be copied from here.</span>
+<span class="sd">        phase : str or Ellipsis</span>
 <span class="sd">        IDs=None : iterable[str], defaults to all chemicals.</span>
 <span class="sd">            Chemical IDs. </span>
 <span class="sd">        remove=False: bool, optional</span>
@@ -381,56 +532,80 @@
 <span class="sd">        exclude=False: bool, optional</span>
 <span class="sd">            If True, exclude designated chemicals when copying.</span>
 <span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works just like &lt;Stream&gt;.copy_flow, but the phase must be specified.</span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
         <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
-            <span class="n">IDs</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+            <span class="n">not_index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">chemicals</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-            <span class="n">index</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">MultiStream</span><span class="p">):</span>
-            <span class="n">stream_phase_imol</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
-            <span class="n">self_phase_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
-            <span class="n">self_phase_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream_phase_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">remove</span><span class="p">:</span> 
-                <span class="n">stream_phase_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">stream</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="n">phase</span><span class="p">:</span>
-            <span class="n">stream_imol</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">imol</span>
-            <span class="n">self_phase_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
-            <span class="n">self_phase_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">remove</span><span class="p">:</span> 
-                <span class="n">stream_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">index</span><span class="p">[</span><span class="n">not_index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">self_phase_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
-            <span class="n">self_phase_imol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">MultiStream</span><span class="p">):</span>
+            <span class="n">stream_phase_mol</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+            <span class="n">self_phase_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+            <span class="n">self_phase_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream_phase_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">remove</span><span class="p">:</span> 
+                <span class="n">stream_phase_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="bp">Ellipsis</span><span class="p">:</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">phase</span>
+                <span class="n">self_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">phase</span><span class="p">:</span> <span class="n">self_imol</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="n">phase</span><span class="p">:</span>
+                <span class="n">stream_mol</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">mol</span>
+                <span class="n">self_phase_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+                <span class="n">self_phase_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">remove</span><span class="p">:</span> 
+                    <span class="n">stream_mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
     
-    <span class="k">def</span> <span class="nf">get_normalized_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_normalized_mol"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_normalized_mol">[docs]</a>    <span class="k">def</span> <span class="nf">get_normalized_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">z</span> <span class="o">/=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="n">z</span></div>
     
-    <span class="k">def</span> <span class="nf">get_normalized_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_normalized_vol"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_normalized_vol">[docs]</a>    <span class="k">def</span> <span class="nf">get_normalized_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ivol</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">z</span> <span class="o">/=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="n">z</span></div>
     
-    <span class="k">def</span> <span class="nf">get_normalized_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_normalized_mass"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_normalized_mass">[docs]</a>    <span class="k">def</span> <span class="nf">get_normalized_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imass</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">z</span> <span class="o">/=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="n">z</span></div>
     
-    <span class="k">def</span> <span class="nf">mix_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_molar_composition"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_molar_composition">[docs]</a>    <span class="k">def</span> <span class="nf">get_molar_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">F_mol</span></div>
+    
+<div class="viewcode-block" id="MultiStream.get_mass_composition"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_mass_composition">[docs]</a>    <span class="k">def</span> <span class="nf">get_mass_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imass</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">F_mass</span></div>
+    
+<div class="viewcode-block" id="MultiStream.get_volumetric_composition"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_volumetric_composition">[docs]</a>    <span class="k">def</span> <span class="nf">get_volumetric_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ivol</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">F_vol</span></div>
+    
+<div class="viewcode-block" id="MultiStream.get_concentration"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_concentration">[docs]</a>    <span class="k">def</span> <span class="nf">get_concentration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">F_vol</span></div>
+    
+<div class="viewcode-block" id="MultiStream.mix_from"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.mix_from">[docs]</a>    <span class="k">def</span> <span class="nf">mix_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span> <span class="n">assert_same_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">)</span>
         <span class="n">multi</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">single</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">others</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">multi</span> <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">MultiStream</span><span class="p">)</span> <span class="k">else</span> <span class="n">single</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">multi</span> <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">MultiStream</span><span class="p">)</span> <span class="k">else</span> <span class="n">single</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">single</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span> <span class="o">+=</span> <span class="n">i</span><span class="o">.</span><span class="n">mol</span>    
         <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">multi</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">H</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">others</span><span class="p">])</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">others</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">T</span><span class="o">==</span><span class="n">i</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">others</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">H</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">others</span><span class="p">])</span></div>
         
-    <span class="k">def</span> <span class="nf">link_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.link_with"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.link_with">[docs]</a>    <span class="k">def</span> <span class="nf">link_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="s2">&quot;other must be of same type to link with&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_TP</span>
@@ -439,7 +614,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_vle_cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_dew_point_cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_bubble_point_cache</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span></div>
     
     <span class="c1">### Equilibrium ###</span>
     
@@ -460,9 +635,9 @@
         
     <span class="c1">### Representation ###</span>
     
-    <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">composition</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return string with all specifications.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.material_indexer</span> <span class="kn">import</span> <span class="n">nonzeros</span>
+        <span class="kn">from</span> <span class="nn">.indexer</span> <span class="kn">import</span> <span class="n">nonzeros</span>
         <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span>
         <span class="n">basic_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basic_info</span><span class="p">()</span>
         <span class="n">all_IDs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
@@ -473,17 +648,20 @@
         <span class="n">flow_units</span> <span class="o">=</span> <span class="n">flow</span> <span class="ow">or</span> <span class="n">display_units</span><span class="o">.</span><span class="n">flow</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">N</span> <span class="ow">or</span> <span class="n">display_units</span><span class="o">.</span><span class="n">N</span>
         <span class="n">basic_info</span> <span class="o">+=</span> <span class="n">Stream</span><span class="o">.</span><span class="n">_info_phaseTP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="n">T_units</span><span class="p">,</span> <span class="n">P_units</span><span class="p">)</span>
-        <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_IDs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">N_all_IDs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_IDs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">N_all_IDs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">basic_info</span> <span class="o">+</span> <span class="s1">&#39; flow: 0&#39;</span> 
 
         <span class="c1"># Length of chemical column</span>
         <span class="n">all_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">all_IDs</span><span class="p">]</span>
-        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_lengths</span> <span class="o">+</span> <span class="p">[</span><span class="mi">8</span><span class="p">])</span> 
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_lengths</span><span class="p">)</span> 
 
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">flow_units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="n">first_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; flow (</span><span class="si">{flow_units}</span><span class="s1">):&#39;</span>
+        <span class="k">if</span> <span class="n">composition</span><span class="p">:</span>
+            <span class="n">first_line</span> <span class="o">=</span> <span class="s2">&quot; composition:&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">first_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; flow (</span><span class="si">{flow_units}</span><span class="s1">):&#39;</span>
         <span class="n">first_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_line</span><span class="p">)</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
 
         <span class="c1"># Set up chemical data for all phases</span>
@@ -492,29 +670,30 @@
             <span class="n">phase_data</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">all_IDs</span><span class="p">]</span> 
             <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">all_IDs</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">IDs</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">composition</span><span class="p">:</span>
+                <span class="n">total_flow</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">data</span> <span class="o">/=</span> <span class="n">total_flow</span>
         
-            <span class="c1"># Get basic structure for phase data</span>
-            
+            <span class="c1"># Get basic structure for phase data            </span>
             <span class="n">beginning</span> <span class="o">=</span> <span class="p">(</span><span class="n">first_line</span> <span class="ow">or</span> <span class="n">first_line_spaces</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{phase}</span><span class="s1">) &#39;</span>
             <span class="n">first_line</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">new_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
 
             <span class="c1"># Set chemical data</span>
             <span class="n">flowrates</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">N_IDs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
-            <span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_IDs</span><span class="p">):</span>
                 <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">_N</span><span class="p">:</span>
-                    <span class="n">flowrates</span> <span class="o">+=</span> <span class="s1">&#39;...</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">flowrates</span> <span class="o">+=</span> <span class="s1">&#39;...&#39;</span> <span class="o">+</span> <span class="n">new_line</span>
                     <span class="k">break</span>
-                <span class="n">flowrates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> \
-                    <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
-            <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">flowrates</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[l-1]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span>
-                          <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[l-1]:.4g}</span><span class="s1">&#39;</span><span class="p">)</span>
-
+                <span class="n">flowrates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">N_IDs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">flowrates</span> <span class="o">+=</span> <span class="n">new_line</span>
+            <span class="k">if</span> <span class="n">composition</span><span class="p">:</span>
+                <span class="n">dashes</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="n">maxlen</span>
+                <span class="n">flowrates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{new_line}{dashes}</span><span class="s2">  </span><span class="si">{total_flow:.3g}</span><span class="s2"> </span><span class="si">{flow_units}</span><span class="s2">&quot;</span>
             <span class="c1"># Put it together</span>
             <span class="n">phases_flowrates_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">flowrates</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
             

@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -212,15 +213,31 @@
     <span class="n">loggammars</span> <span class="o">=</span> <span class="p">((</span><span class="n">loggamma_groups</span> <span class="o">-</span> <span class="n">chem_loggamma_groups</span><span class="p">)</span> <span class="o">*</span> <span class="n">chemgroups</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loggammacs</span> <span class="o">+</span> <span class="n">loggammars</span><span class="p">)</span>
 
+<span class="k">def</span> <span class="nf">get_interaction</span><span class="p">(</span><span class="n">all_interactions</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">no_interaction</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">no_interaction</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">all_interactions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">no_interaction</span>
 
 <span class="c1"># %% Activity Coefficients</span>
 
 <div class="viewcode-block" id="ActivityCoefficients"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.ActivityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">ActivityCoefficients</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of activity coefficients.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:</span>
+<span class="sd">        </span>
+<span class="sd">    __init__(self, chemicals: Iterable[Chemicals]):</span>
+<span class="sd">        Should use pure component data from chemicals to setup future calculations of activity coefficients.</span>
+<span class="sd">    </span>
+<span class="sd">    __call__(self, x: 1d array, T: float):</span>
+<span class="sd">        Should accept an array of liquid molar compositions `x`, and temperature `T` (in Kelvin), and return an array of activity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the ActivityCoefficients object.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_chemicals&#39;</span><span class="p">,)</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tuple[Chemical] All chemicals involved in the calculation of activity coefficients.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -233,7 +250,6 @@
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    </span>
 <span class="sd">    chemicals : Iterable[Chemical]</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -286,10 +302,11 @@
         <span class="n">all_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span>
         <span class="n">N_groups</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
         <span class="n">group_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_groups</span><span class="p">,</span> <span class="n">N_groups</span><span class="p">)</span>
-        <span class="n">none</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_interaction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">none</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">j</span> <span class="k">else</span> <span class="n">all_interactions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-                                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">]</span>
-                                       <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">])</span>
+        <span class="n">no_interaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_interaction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">get_interaction</span><span class="p">(</span><span class="n">all_interactions</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">no_interaction</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">]</span>
+             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">])</span>
         <span class="c1"># Psis array with only symmetrically available groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">group_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Make mask for retrieving symmetrically available groups</span>
@@ -302,6 +319,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="n">chemicals</span>
         <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,)</span>
     
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return UNIFAC coefficients.</span>
@@ -317,11 +337,13 @@
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">psis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interactions</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_mask</span><span class="p">]</span> <span class="o">=</span>  <span class="n">psis</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_mask</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">group_activity_coefficients</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemgroups</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">loggammacs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rs</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_Qs</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_chem_Qfractions</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">)</span></div>
+        <span class="n">gamma</span> <span class="o">=</span>  <span class="n">group_activity_coefficients</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemgroups</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">loggammacs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rs</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_Qs</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_chem_Qfractions</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">)</span>
+        <span class="n">gamma</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">gamma</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">gamma</span></div>
     
     
 <div class="viewcode-block" id="UNIFACActivityCoefficiencts"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.UNIFACActivityCoefficiencts">[docs]</a><span class="k">class</span> <span class="nc">UNIFACActivityCoefficiencts</span><span class="p">(</span><span class="n">GroupActivityCoefficients</span><span class="p">):</span>

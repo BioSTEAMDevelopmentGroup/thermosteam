@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -178,7 +179,15 @@
            <span class="s1">&#39;IdealPoyintingCorrectionFactors&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PoyintingCorrectionFactors"><a class="viewcode-back" href="../../../equilibrium/poyinting_correction_factors_module.html#thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors">[docs]</a><span class="k">class</span> <span class="nc">PoyintingCorrectionFactors</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of poyinting correction factors.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of Poyinting correction factors. Non-abstract subclasses should implement the following methods:</span>
+<span class="sd">        </span>
+<span class="sd">    __init__(self, chemicals: Iterable[Chemicals]):</span>
+<span class="sd">        Should use pure component data from chemicals to setup future calculations of Poyinting correction factors.</span>
+<span class="sd">    </span>
+<span class="sd">    __call__(self, y: 1d array, T: float):</span>
+<span class="sd">        Should accept an array of vapor molar compositions `y`, and temperature `T` (in Kelvin), and return an array of Poyinting correction factors. Note that the molar compositions must be in the same order as the chemicals defined when creating the PoyintingCorrectionFactors object.</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>

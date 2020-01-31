@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -177,7 +178,15 @@
            <span class="s1">&#39;IdealFugacityCoefficients&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FugacityCoefficients"><a class="viewcode-back" href="../../../equilibrium/fugacity_coefficients_module.html#thermosteam.equilibrium.fugacity_coefficients.FugacityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">FugacityCoefficients</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of fugacity coefficients.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of fugacity coefficients. Non-abstract subclasses should implement the following methods:</span>
+<span class="sd">        </span>
+<span class="sd">    __init__(self, chemicals: Iterable[Chemicals]):</span>
+<span class="sd">        Should use pure component data from chemicals to setup future calculations of fugacity coefficients.</span>
+<span class="sd">    </span>
+<span class="sd">    __call__(self, y: 1d array, T: float, P:float):</span>
+<span class="sd">        Should accept an array of vapor molar compositions `y`, temperature `T` (in Kelvin), and pressure `P` (in Pascal), and return an array of fugacity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the FugacityCoefficients object.</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
@@ -201,6 +210,7 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tuple[Chemical] All chemicals involved in the calculation of fugacity coefficients.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
     <span class="nd">@chemicals</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>

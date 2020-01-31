@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -222,7 +223,6 @@
     <span class="sd">&quot;&quot;&quot;Iterative Aitken solver.&quot;&quot;&quot;</span>
     <span class="n">gg</span> <span class="o">=</span> <span class="n">x</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">abs_</span> <span class="o">=</span> <span class="nb">abs</span>
     <span class="n">np_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span>
     <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -230,10 +230,10 @@
             <span class="n">x</span> <span class="o">=</span> <span class="n">gg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
         <span class="n">dxg</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">g</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">abs_</span><span class="p">(</span><span class="n">dxg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> <span class="k">return</span> <span class="n">g</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np_abs</span><span class="p">(</span><span class="n">dxg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> <span class="k">return</span> <span class="n">g</span>
         <span class="n">gg</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
         <span class="n">dgg_g</span> <span class="o">=</span> <span class="n">gg</span> <span class="o">-</span> <span class="n">g</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">abs_</span><span class="p">(</span><span class="n">dgg_g</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> <span class="k">return</span> <span class="n">gg</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np_abs</span><span class="p">(</span><span class="n">dgg_g</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> <span class="k">return</span> <span class="n">gg</span>
         <span class="n">dummy</span> <span class="o">=</span> <span class="n">dgg_g</span> <span class="o">+</span> <span class="n">dxg</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np_abs</span><span class="p">(</span><span class="n">dummy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-16</span>
         <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-=</span> <span class="n">dxg</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dummy</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>

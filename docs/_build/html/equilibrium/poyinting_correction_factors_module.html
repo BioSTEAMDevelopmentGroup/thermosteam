@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -206,7 +207,13 @@
 <dl class="class">
 <dt id="thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.equilibrium.poyinting_correction_factors.</code><code class="sig-name descname">PoyintingCorrectionFactors</code><span class="sig-paren">(</span><em class="sig-param">chemicals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/poyinting_correction_factors.html#PoyintingCorrectionFactors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract class for the estimation of poyinting correction factors.</p>
+<dd><p>Abstract class for the estimation of Poyinting correction factors. Non-abstract subclasses should implement the following methods:</p>
+<dl class="simple">
+<dt>__init__(self, chemicals: Iterable[Chemicals]):</dt><dd><p>Should use pure component data from chemicals to setup future calculations of Poyinting correction factors.</p>
+</dd>
+<dt>__call__(self, y: 1d array, T: float):</dt><dd><p>Should accept an array of vapor molar compositions <cite>y</cite>, and temperature <cite>T</cite> (in Kelvin), and return an array of Poyinting correction factors. Note that the molar compositions must be in the same order as the chemicals defined when creating the PoyintingCorrectionFactors object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">

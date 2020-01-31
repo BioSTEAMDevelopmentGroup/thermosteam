@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -404,9 +406,9 @@ are returned.</p>
 <em class="property">static </em><code class="sig-name descname">Tb</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Tb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Tb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates the normal boiling temperature of an organic compound 
 using the Joback method as a function of chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/87292a039faecd29402f4fb7c75f23f9cbe0bad8.png" alt="T_b = 198.2 + \sum_i {T_{b,i}}"/></p>
-</div><p>For 438 compounds tested by Joback, the absolute average error was
+<div class="math notranslate nohighlight">
+\[T_b = 198.2 + \sum_i {T_{b,i}}\]</div>
+<p>For 438 compounds tested by Joback, the absolute average error was
 12.91 K  and standard deviation was 17.85 K; the average relative error
 was 3.6%.</p>
 <dl class="field-list simple">
@@ -436,9 +438,9 @@ counts, [-]</p>
 <em class="property">static </em><code class="sig-name descname">Tm</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Tm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Tm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates the melting temperature of an organic compound using the 
 Joback method as a function of chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/b095b662eeadc4e12f7506edaf3495e8102a7572.png" alt="T_m = 122.5 + \sum_i {T_{m,i}}"/></p>
-</div><p>For 388 compounds tested by Joback, the absolute average error was
+<div class="math notranslate nohighlight">
+\[T_m = 122.5 + \sum_i {T_{m,i}}\]</div>
+<p>For 388 compounds tested by Joback, the absolute average error was
 22.6 K  and standard deviation was 24.68 K; the average relative error
 was 11.2%.</p>
 <dl class="field-list simple">
@@ -471,10 +473,10 @@ Joback method as a function of chemical structure only, or optionally
 improved by using an experimental boiling point. If the experimental
 boiling point is not provided it will be estimated with the Joback
 method as well.</p>
-<div class="math">
-<p><img src="../_images/math/616b48c848aa37b8d91d01f5aa8eb61a48461a57.png" alt="T_c = T_b \left[0.584 + 0.965 \sum_i {T_{c,i}}
-- \left(\sum_i {T_{c,i}}\right)^2 \right]^{-1}"/></p>
-</div><p>For 409 compounds tested by Joback, the absolute average error was
+<div class="math notranslate nohighlight">
+\[T_c = T_b \left[0.584 + 0.965 \sum_i {T_{c,i}}
+- \left(\sum_i {T_{c,i}}\right)^2 \right]^{-1}\]</div>
+<p>For 409 compounds tested by Joback, the absolute average error was
 4.76 K  and standard deviation was 6.94 K; the average relative error
 was 0.81%.</p>
 <p>Appendix BI of Joback’s work lists 409 estimated critical temperatures.</p>
@@ -509,9 +511,9 @@ counts, [-]</p>
 Joback method as a function of chemical structure only. This 
 correlation was developed using the actual number of atoms forming 
 the molecule as well.</p>
-<div class="math">
-<p><img src="../_images/math/9bb5a0823e911ba4dd39bbd9ff942e00e3411df5.png" alt="P_c = \left [0.113 + 0.0032N_A - \sum_i {P_{c,i}}\right ]^{-2}"/></p>
-</div><p>In the above equation, critical pressure is calculated in bar; it is
+<div class="math notranslate nohighlight">
+\[P_c = \left [0.113 + 0.0032N_A - \sum_i {P_{c,i}}\right ]^{-2}\]</div>
+<p>In the above equation, critical pressure is calculated in bar; it is
 converted to Pa here.</p>
 <p>392 compounds were used by Joback in this determination, with an 
 absolute average error of 2.06 bar, standard devaition 3.2 bar, and
@@ -545,9 +547,9 @@ counts, [-]</p>
 <em class="property">static </em><code class="sig-name descname">Vc</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Vc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates the critcal volume of an organic compound using the 
 Joback method as a function of chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/c658d7bc953e1427d76410f7779c5143904e46af.png" alt="V_c = 17.5 + \sum_i {V_{c,i}}"/></p>
-</div><p>In the above equation, critical volume is calculated in cm^3/mol; it 
+<div class="math notranslate nohighlight">
+\[V_c = 17.5 + \sum_i {V_{c,i}}\]</div>
+<p>In the above equation, critical volume is calculated in cm^3/mol; it 
 is converted to m^3/mol here.</p>
 <p>310 compounds were used by Joback in this determination, with an 
 absolute average error of 7.54 cm^3/mol, standard devaition 13.16
@@ -580,9 +582,9 @@ counts, [-]</p>
 <dd><p>Estimates the ideal-gas enthalpy of formation at 298.15 K of an  
 organic compound using the Joback method as a function of chemical 
 structure only.</p>
-<div class="math">
-<p><img src="../_images/math/a8d82ebed8ed1f1efda9e76fdafe41792ece3078.png" alt="H_{formation} = 68.29 + \sum_i {H_{f,i}}"/></p>
-</div><p>In the above equation, enthalpy of formation is calculated in kJ/mol;  
+<div class="math notranslate nohighlight">
+\[H_{formation} = 68.29 + \sum_i {H_{f,i}}\]</div>
+<p>In the above equation, enthalpy of formation is calculated in kJ/mol;  
 it is converted to J/mol here.</p>
 <p>370 compounds were used by Joback in this determination, with an 
 absolute average error of 2.2 kcal/mol, standard devaition 2.0 
@@ -615,9 +617,9 @@ counts, [-]</p>
 <dd><p>Estimates the ideal-gas Gibbs energy of formation at 298.15 K of an  
 organic compound using the Joback method as a function of chemical 
 structure only.</p>
-<div class="math">
-<p><img src="../_images/math/6cc666df1062a707b74fe3087595438dffba6d2b.png" alt="G_{formation} = 53.88 + \sum {G_{f,i}}"/></p>
-</div><p>In the above equation, Gibbs energy of formation is calculated in 
+<div class="math notranslate nohighlight">
+\[G_{formation} = 53.88 + \sum {G_{f,i}}\]</div>
+<p>In the above equation, Gibbs energy of formation is calculated in 
 kJ/mol; it is converted to J/mol here.</p>
 <p>328 compounds were used by Joback in this determination, with an 
 absolute average error of 2.0 kcal/mol, standard devaition 4.37
@@ -650,9 +652,9 @@ counts, [-]</p>
 <dd><p>Estimates the enthalpy of fusion of an organic compound at its 
 melting point using the Joback method as a function of chemical 
 structure only.</p>
-<div class="math">
-<p><img src="../_images/math/6b82dffc28923e7ca161729432e5f34dc5791343.png" alt="\Delta H_{fus} = -0.88 + \sum_i H_{fus,i}"/></p>
-</div><p>In the above equation, enthalpy of fusion is calculated in 
+<div class="math notranslate nohighlight">
+\[\Delta H_{fus} = -0.88 + \sum_i H_{fus,i}\]</div>
+<p>In the above equation, enthalpy of fusion is calculated in 
 kJ/mol; it is converted to J/mol here.</p>
 <p>For 155 compounds tested by Joback, the absolute average error was
 485.2 cal/mol  and standard deviation was 661.4 cal/mol; the average 
@@ -686,9 +688,9 @@ counts, [-]</p>
 <dd><p>Estimates the enthalpy of vaporization of an organic compound at  
 its normal boiling point using the Joback method as a function of  
 chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/9923248a4c3f3a44fa10135fadab058c389210d0.png" alt="\Delta H_{vap} = 15.30 + \sum_i H_{vap,i}"/></p>
-</div><p>In the above equation, enthalpy of fusion is calculated in 
+<div class="math notranslate nohighlight">
+\[\Delta H_{vap} = 15.30 + \sum_i H_{vap,i}\]</div>
+<p>In the above equation, enthalpy of fusion is calculated in 
 kJ/mol; it is converted to J/mol here.</p>
 <p>For 368 compounds tested by Joback, the absolute average error was
 303.5 cal/mol  and standard deviation was 429 cal/mol; the average 
@@ -722,11 +724,11 @@ boiling point, [J/mol]</p>
 <dd><p>Computes the ideal-gas polynomial heat capacity coefficients 
 of an organic compound using the Joback method as a function of  
 chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/aa2058c7dec0d1e1f5dfe9f137a5a99a93ac2a62.png" alt="C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
+<div class="math notranslate nohighlight">
+\[C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
 + \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 
-+ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3"/></p>
-</div><p>288 compounds were used by Joback in this determination. No overall 
++ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3\]</div>
+<p>288 compounds were used by Joback in this determination. No overall 
 error was reported.</p>
 <p>The ideal gas heat capacity values used in developing the heat 
 capacity polynomials used 9 data points between 298 K and 1000 K.</p>
@@ -763,10 +765,10 @@ in units of J/mol/K, [-]</p>
 <dd><p>Computes the liquid phase viscosity Joback coefficients 
 of an organic compound using the Joback method as a function of  
 chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/64d5cb88b278f21522e0403a2779bd4f1867b69c.png" alt="\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T} 
-+ \sum_i \mu_b - 11.202 \right)"/></p>
-</div><p>288 compounds were used by Joback in this determination. No overall 
+<div class="math notranslate nohighlight">
+\[\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T} 
++ \sum_i \mu_b - 11.202 \right)\]</div>
+<p>288 compounds were used by Joback in this determination. No overall 
 error was reported.</p>
 <p>The liquid viscosity data used was specified to be at “several 
 temperatures for each compound” only. A small and unspecified number
@@ -805,11 +807,11 @@ in units of Pa*s, [-]</p>
 <dd><p>Computes ideal-gas heat capacity at a specified temperature 
 of an organic compound using the Joback method as a function of  
 chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/aa2058c7dec0d1e1f5dfe9f137a5a99a93ac2a62.png" alt="C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
+<div class="math notranslate nohighlight">
+\[C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
 + \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 
-+ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3"/></p>
-</div><dl class="field-list simple">
++ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
@@ -837,10 +839,10 @@ chemical structure only.</p>
 <dd><p>Computes liquid viscosity at a specified temperature 
 of an organic compound using the Joback method as a function of  
 chemical structure only.</p>
-<div class="math">
-<p><img src="../_images/math/3e14e6c46fc9c3e526c64d3b9ab9695454c98923.png" alt="\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T}
-+ \sum_i \mu_b - 11.202 \right)"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T}
++ \sum_i \mu_b - 11.202 \right)\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>

@@ -153,11 +153,8 @@ class Chemicals:
     def __iter__(self):
         yield from self.__dict__.values()
     
-    def __str__(self):
-        return f"[{', '.join(self.__dict__)}]"
-    
     def __repr__(self):
-        return f'{type(self).__name__}({self})'
+        return f"{type(self).__name__}([{', '.join(self.__dict__)}])"
 
 
 @read_only(methods=('append', 'extend'))
@@ -637,5 +634,5 @@ class CompiledChemicals(Chemicals):
         """
         return np.where(self._has_equilibrium & nonzeros)[0]
     
-    def __str__(self):
-        return f"[{', '.join(self.IDs)}]"
+    def __repr__(self):
+        return f"{type(self).__name__}([{', '.join(self.IDs)}])"

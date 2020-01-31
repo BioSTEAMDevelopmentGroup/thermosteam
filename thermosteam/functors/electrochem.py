@@ -225,10 +225,7 @@ def conductivity(CASRN):
         
     Notes
     -----
-    Only one source is available in this function. It is:
-
-        * 'LANGE_COND' which is from Lange's Handbook, Table 8.34 Electrical 
-        Conductivity of Various Pure Liquids', a compillation of data in [1]_.
+    Only one source is available in this function: 'LANGE_COND' which is from Lange's Handbook, Table 8.34 Electrical Conductivity of Various Pure Liquids', a compillation of data in [1]_.
 
     Examples
     --------

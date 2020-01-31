@@ -14,7 +14,6 @@ The functors subpackage contains all pure component functors for Chemical object
    datasheet
    electrochem
    elements
-   environment
    eos
    heat_capacity
    identifiers

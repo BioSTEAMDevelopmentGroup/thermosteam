@@ -30,6 +30,16 @@ class Thermo:
         Class for computing fugacity coefficiente.
     PCF : PoyntingCorrectionFactor subclass.
         Class for computing poynting correction factors.
+    
+    Examples
+    --------
+    >>> from thermosteam import Thermo, Chemicals
+    >>> chemicals = Chemicals(['Ethanol', 'Water'])
+    >>> Thermo(chemicals)
+    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
+    
+    Note how chemicals are compiled when it becomes part of a Thermo object.
+    
     """
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
     
@@ -56,8 +66,7 @@ class Thermo:
         setattr(self, 'PCF', PCF)    
     
     def __repr__(self):
-        IDs = [i for i in self.chemicals.IDs]
-        return f"{type(self).__name__}([{', '.join(IDs)}])"
+        return f"{type(self).__name__}(chemicals={self.chemicals}, mixture={type(self.mixture).__name__}(...), Gamma={self.Gamma.__name__}, Phi={self.Phi.__name__}, PCF={self.PCF.__name__})"
     
 
     

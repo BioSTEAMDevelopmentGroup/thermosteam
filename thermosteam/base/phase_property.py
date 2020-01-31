@@ -99,7 +99,7 @@ class MixturePhaseTPProperty(PhaseProperty):
         return getattr(self, phase).at_TP(z, TP)
     
     def __call__(self, phase, z, T, P):
-        return getattr(self, phase).at_TP(z, T, P)
+        return getattr(self, phase)(z, T, P)
     
 
 # %% Builders

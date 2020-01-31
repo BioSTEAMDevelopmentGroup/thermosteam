@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -250,9 +252,9 @@ critical temperature and pressure for use of the correlations. Requires
 accurate vapor pressure data for direct calculation.</p>
 <p>Will automatically select a method to use if no Method is provided;
 returns None if the data is not available and cannot be calculated.</p>
-<div class="math">
-<p><img src="../_images/math/963bfbb9a07fb0b3ab25fa7c6c1cc5b458041146.png" alt="\omega \equiv -\log_{10}\left[\lim_{T/T_c=0.7}(P^{sat}/P_c)\right]-1.0"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\omega \equiv -\log_{10}\left[\lim_{T/T_c=0.7}(P^{sat}/P_c)\right]-1.0\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
@@ -288,11 +290,11 @@ useful for for performance reasons and ignoring inaccurate methods</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>‘PSRK’, a compillation of experimental and estimated data published 
-in the Appendix of <a href="#id15"><span class="problematic" id="id1">[15]_</span></a>, the fourth revision of the PSRK model.</p></li>
+in the Appendix of <a class="reference internal" href="#r645944b61468-2" id="id1">[2]</a>, the fourth revision of the PSRK model.</p></li>
 <li><p>‘PD’, an older compillation of
-data published in (Passut &amp; Danner, 1973) <a href="#id16"><span class="problematic" id="id2">[16]_</span></a>.</p></li>
+data published in (Passut &amp; Danner, 1973) <a class="reference internal" href="#r645944b61468-3" id="id2">[3]</a>.</p></li>
 <li><p>‘YAWS’, a large compillation of data from a
-variety of sources; no data points are sourced in the work of <a href="#id17"><span class="problematic" id="id3">[17]_</span></a>.</p></li>
+variety of sources; no data points are sourced in the work of <a class="reference internal" href="#r645944b61468-4" id="id3">[4]</a>.</p></li>
 <li><p>‘LK’, a estimation method for hydrocarbons.</p></li>
 <li><p>‘DEFINITION’, based on the definition of omega as
 presented in <a class="reference internal" href="#r645944b61468-1" id="id4">[1]</a>, using vapor pressure data.</p></li>
@@ -306,20 +308,20 @@ D. E. Petersen: The Volumetric and Thermodynamic Properties of Fluids.
 II. Compressibility Factor, Vapor Pressure and Entropy of Vaporization.
 J. Am. Chem. Soc., 77: 3433 (1955).</p>
 </dd>
-<dt class="label" id="r645944b61468-2"><span class="brackets">2</span></dt>
+<dt class="label" id="r645944b61468-2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
 <dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
 Jürgen Gmehling. “PSRK Group Contribution Equation of State:
 Comprehensive Revision and Extension IV, Including Critical Constants
 and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
 227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
 </dd>
-<dt class="label" id="r645944b61468-3"><span class="brackets">3</span></dt>
+<dt class="label" id="r645944b61468-3"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
 <dd><p>Passut, Charles A., and Ronald P. Danner. “Acentric Factor. A
 Valuable Correlating Parameter for the Properties of Hydrocarbons.”
 Industrial &amp; Engineering Chemistry Process Design and Development 12,
 no. 3 (July 1, 1973): 365-68. doi:10.1021/i260047a026.</p>
 </dd>
-<dt class="label" id="r645944b61468-4"><span class="brackets">4</span></dt>
+<dt class="label" id="r645944b61468-4"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
 <dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
 Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
 Publishing, 2014.</p>
@@ -336,11 +338,11 @@ Publishing, 2014.</p>
 <dt id="thermosteam.functors.acentric.LK_omega">
 <code class="sig-prename descclassname">thermosteam.functors.acentric.</code><code class="sig-name descname">LK_omega</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/acentric.html#LK_omega"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.acentric.LK_omega" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates the acentric factor of a fluid using a correlation in <a class="reference internal" href="#r43e80b2758ca-1" id="id9">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/202832ba0bf7c7ae701f6b0f0650d7969ed472c2.png" alt="\omega = \frac{\ln P_{br}^{sat} - 5.92714 + 6.09648/T_{br} + 1.28862
+<div class="math notranslate nohighlight">
+\[\omega = \frac{\ln P_{br}^{sat} - 5.92714 + 6.09648/T_{br} + 1.28862
 \ln T_{br} -0.169347T_{br}^6}
-{15.2518 - 15.6875/T_{br} - 13.4721 \ln T_{br} + 0.43577 T_{br}^6}"/></p>
-</div><dl class="field-list simple">
+{15.2518 - 15.6875/T_{br} - 13.4721 \ln T_{br} + 0.43577 T_{br}^6}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of the fluid [K]</p>
@@ -385,9 +387,9 @@ factor, directly through the definition of Stiel-polar factor if possible.
 Requires Tc, Pc, acentric factor, and a vapor pressure datum at Tr=0.6.</p>
 <p>Will automatically select a method to use if no Method is provided;
 returns None if the data is not available and cannot be calculated.</p>
-<div class="math">
-<p><img src="../_images/math/e365ba6b2e4373275e5ba3de1ff4005f97ae7185.png" alt="x = \log P_r|_{T_r=0.6} + 1.70 \omega + 1.552"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[x = \log P_r|_{T_r=0.6} + 1.70 \omega + 1.552\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>

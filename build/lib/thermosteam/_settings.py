@@ -26,6 +26,7 @@ class Settings:
     
     @property
     def debug(self):
+        """[bool] If True, preventive assertions are run at runtime."""
         return self._debug
     @debug.setter
     def debug(self, debug):
@@ -33,14 +34,23 @@ class Settings:
     
     @property
     def phase_names(self):
+        """[dict] All phase definitions."""
         return self._phase_names
     
     def get_default_thermo(self, thermo):
+        """
+        Return a default Thermo object.
+        If `thermo` is a Thermo object, return the same object.
+        """
         if not thermo:
             thermo = self.get_thermo()
         return thermo
     
     def get_default_chemicals(self, chemicals):
+        """
+        Return a default CompiledChemicals object.
+        If `chemicals` is a Chemicals object, return the same object.
+        """
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
         elif not chemicals:
@@ -52,6 +62,10 @@ class Settings:
         return chemicals
     
     def get_default_mixture(self, mixture):
+        """
+        Return a default Mixture object.
+        If `mixture` is a Mixture object, return the same object.
+        """
         if not mixture:
             thermo = settings.thermo
             assert thermo, ("no available 'Thermo' object; "
@@ -60,12 +74,14 @@ class Settings:
         return mixture
     
     def get_thermo(self):
+        """Return a default Thermo object."""
         thermo = self._thermo
         assert thermo, ("no available 'Thermo' object; "
                         "use settings.set_thermo")
         return thermo
     
     def set_thermo(self, thermo):
+        """Set the default Thermo object."""
         if isinstance(thermo, tmo.Chemicals):
             thermo = tmo.Thermo(thermo)
         elif not isinstance(thermo, tmo.Thermo):

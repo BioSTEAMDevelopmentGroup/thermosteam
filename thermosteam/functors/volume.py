@@ -29,7 +29,7 @@ _CRC_virial = read('CRC Virial polynomials.tsv')
 
 # %% Liquids
 
-@V.l(ref="[1]_")
+@V.l
 def Yen_Woods(T, Tc, Vc, A, B, D):
     r'''
     Notes
@@ -59,7 +59,7 @@ def Yen_Woods(T, Tc, Vc, A, B, D):
     Examples
     --------
     >>> f = Yen_Woods(Tc=647.14, Vc=5.6e-05, Zc=0.2294728175007233)
-    >>> f
+    >>> f.show()
     Functor: Yen_Woods(T, P=None) -> V.l [m^3/mol]
      Tc: 647.14 K
      Vc: 5.6e-05 m^3/mol
@@ -76,7 +76,7 @@ def Yen_Woods(T, Tc, Vc, A, B, D):
     Tr = T/Tc
     return Vc/(1 + A*(1-Tr)**(1/3.) + B*(1-Tr)**(2/3.) + D*(1-Tr)**(4./3.))
 
-@Yen_Woods.wrapper
+@Yen_Woods.wrapper(ref="[1]_")
 def Yen_Woods(Tc, Vc, Zc):
     Zc2 = Zc*Zc
     Zc3 = Zc2*Zc
@@ -105,7 +105,7 @@ def Rackett(T, Tc, Pc, Zc):
     Propane, example from the API Handbook
 
     >>> f = Rackett(Tc=369.83, Pc=4248000.0, Zc=0.2763)
-    >>> f
+    >>> f.show()
     Functor: Rackett(T, P=None) -> V.l [m^3/mol]
      Tc: 369.83 K
      Pc: 4.248e+06 Pa
@@ -139,7 +139,7 @@ def Yamada_Gunn(T, P, Tc, k):
     Examples
     --------
     >>> f = Yamada_Gunn(Tc=647.14, Pc=22048320.0, omega=0.344)
-    >>> f
+    >>> f.show()
     Functor: Yamada_Gunn(T, P) -> V.l [m^3/mol]
      Tc: 647.14 K
      Pc: 2.2048e+07 Pa
@@ -181,7 +181,7 @@ def Townsend_Hales(T, Tc, Vc, omega):
     Calculate the molar volume of water at 300 K:
     
     >>> f = Townsend_Hales(Tc=647.14, Vc=5.6e-05, omega=0.344)
-    >>> f
+    >>> f.show()
     Functor: Townsend_Hales(T, P=None) -> V.l [m^3/mol]
      Tc: 647.14 K
      Vc: 5.6e-05 m^3/mol
@@ -239,7 +239,7 @@ def Bhirud_Normal(T, Tc, Pc, omega):
     Calculate the molar volume of water at 300 K:
 
     >>> f = Bhirud_Normal(Tc=647.14, Pc=22048320.0, omega=0.344)
-    >>> f
+    >>> f.show()
     Functor: Bhirud_Normal(T, P=None) -> V.l [m^3/mol]
      Tc: 647.14 K
      Pc: 2.2048e+07 Pa
@@ -297,8 +297,9 @@ def Costald(T, Tc, Vc, omega):
     Examples
     --------
     Calculate the volume of water at 300 K and 1 atm:
+    
     >>> f = Costald(Tc=647.14, Vc=5.6e-05, omega=0.344)
-    >>> f
+    >>> f.show()
     Functor: Costald(T, P=None) -> V.l [m^3/mol]
      Tc: 647.14 K
      Vc: 5.6e-05 m^3/mol
@@ -306,12 +307,12 @@ def Costald(T, Tc, Vc, omega):
     >>> f(T=300, P=101325)
     1.8188550933914777e-05
 
-
     References
     ----------
     .. [1] Hankinson, Risdon W., and George H. Thomson. "A New Correlation for
        Saturated Densities of Liquids and Their Mixtures." AIChE Journal
        25, no. 4 (1979): 653-663. doi:10.1002/aic.690250412
+    
     '''
     Tr = T/Tc
     V_delta = (-0.296123 + 0.386914*Tr - 0.0427258*Tr**2
@@ -365,9 +366,10 @@ def Campbell_Thodos(T, Tb, Tc, Pc, MW, dipole=None, has_hydroxyl=False):
 
     Examples
     --------
-    Calculate the volume of water at 300 K:    
+    Calculate the volume of water at 300 K:   
+    
     >>> f = Campbell_Thodos(Tb=373.124, Tc=647.14, Pc=22048320.0, MW=18.02, dipole=1.85, has_hydroxyl=True)
-    >>> f
+    >>> f.show()
     Functor: Campbell_Thodos(T, P=None) -> V.l [m^3/mol]
      Tb: 373.12 K
      Tc: 647.14 K
@@ -384,6 +386,7 @@ def Campbell_Thodos(T, Tb, Tc, Pc, MW, dipole=None, has_hydroxyl=False):
        Liquid Densities and Critical Volumes for Polar and Nonpolar
        Substances." Journal of Chemical & Engineering Data 30, no. 1
        (January 1, 1985): 102-11. doi:10.1021/je00039a032.
+    
     '''
     Pc = Pc/101325.
     Tr = T/Tc
@@ -443,6 +446,7 @@ def SNM0(T, Tc, Vc, m, delta_SRK):
        "A Simplified Method for Calculating Saturated Liquid Densities."
        Fluid Phase Equilibria 224, no. 2 (October 1, 2004): 157-67.
        doi:10.1016/j.fluid.2004.06.054
+    
     '''
     Tr = T/Tc
     alpha_SRK = (1. + m*(1. - Tr**0.5))**2
@@ -492,7 +496,6 @@ def CRC_Inorganic(T, rho0, k, Tm, MW):
     Coefficients for one compound could be used to predict the temperature
     dependence of density of a similar compound.
 
-
     Examples
     --------
     >>> CRC_inorganic(300, 2370.0, 2.687, 239.08)
@@ -502,6 +505,7 @@ def CRC_Inorganic(T, rho0, k, Tm, MW):
     ----------
     .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
         Chemistry and Physics, 95E. [Boca Raton, FL]: CRC press, 2014.
+    
     '''
     f = MW/1000
     return (rho0 - k*(T-Tm))*f
@@ -563,6 +567,7 @@ def Costald_Compressed(T, P, Psat, Tc, Pc, omega, Vs):
     .. [1]  Thomson, G. H., K. R. Brobst, and R. W. Hankinson. "An Improved
        Correlation for Densities of Compressed Liquids and Liquid Mixtures."
        AIChE Journal 28, no. 4 (July 1, 1982): 671-76. doi:10.1002/aic.690280420
+    
     '''
     a = -9.070217
     b = 62.45326

@@ -36,6 +36,7 @@ def Antoine(T, a, b, c):
     Methane, coefficients from [2]_, at 100 K:
     
     >>> f_antoine = Antoine(a=8.7687, b=395.744, c=-6.469)
+    >>> f_antoine.show()
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.7687
      b: 395.74
@@ -46,7 +47,7 @@ def Antoine(T, a, b, c):
     Tetrafluoromethane, coefficients from [2]_, at 180 K
     
     >>> f_antoine = Antoine(a=8.95894, b=510.595, c=-15.95)
-    >>> f_antoine
+    >>> f_antoine.show()
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.9589
      b: 510.6
@@ -58,7 +59,7 @@ def Antoine(T, a, b, c):
     showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)
     
     >>> f_antoine = Antoine(6.83706+2.1249, 339.2095, 268.70-273.15)
-    >>> f_antoine
+    >>> f_antoine.show()
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 8.962
      b: 339.21
@@ -99,7 +100,7 @@ def TRC_Extended_Antoine(T, Tc, to, a, b, c, n, E, F):
     
     >>> f_extended_antoine = TRC_Extended_Antoine(227.51, -120., 8.95894, 510.595,
     ...                                           -15.95, 2.41377, -93.74, 7425.9)
-    >>> f_extended_antoine
+    >>> f_extended_antoine.show()
     Functor: TRC_Extended_Antoine(T, P=None) -> Psat [Pa]
      Tc: 227.51 K
      to: -120
@@ -143,7 +144,7 @@ def Wagner_McGraw(T, a, b, c, d, Tc, Pc):
     
     >>> f_wagner_mcgraw = Wagner_McGraw(a=-6.00435, b=1.1885, c=-0.834082,
     ...                                 d=-1.22833, Tc=190.53, Pc=4596420.)
-    >>> f_wagner_mcgraw
+    >>> f_wagner_mcgraw.show()
     Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
      a: -6.0043
      b: 1.1885
@@ -188,6 +189,7 @@ def Wagner(T, Tc, Pc, a, b, c, d):
     Methane, coefficients from [2]_, at 100 K.
     
     >>> f_wagner = Wagner(190.551, 4599200, -6.02242, 1.26652, -0.5707, -1.366)
+    >>> f_wagner.show()
     Functor: Wagner(T, P=None) -> Psat [Pa]
      Tc: 190.55 K
      Pc: 4.5992e+06 Pa

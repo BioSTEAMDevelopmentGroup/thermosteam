@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -193,12 +194,12 @@
 
 <div class="viewcode-block" id="Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
 <span class="sd">    </span>
-<span class="sd">        .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}</span>
+<span class="sd">    .. math:: \log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}</span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -248,7 +249,7 @@
 
 <div class="viewcode-block" id="TRC_Extended_Antoine"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">TRC_Extended_Antoine</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -292,7 +293,7 @@
 
 <div class="viewcode-block" id="Wagner_McGraw"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner_McGraw">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Wagner_McGraw</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -338,7 +339,7 @@
 
 <div class="viewcode-block" id="Wagner"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Wagner">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Wagner</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -379,9 +380,9 @@
     <span class="n">τ</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Tr</span>
     <span class="k">return</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">a</span><span class="o">*</span><span class="n">τ</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mf">2.5</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">τ</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tr</span><span class="p">)</span></div>
 
-<span class="nd">@Psat</span><span class="p">(</span><span class="n">autodoc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nd">@Psat</span>
 <span class="k">def</span> <span class="nf">Boiling_Critical_Relation</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Tbr</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -408,7 +409,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tc</span> <span class="o">/</span> <span class="n">T</span><span class="p">))</span> <span class="o">*</span> <span class="n">Pc</span>
 
-<div class="viewcode-block" id="Boiling_Critical_Relation"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Boiling_Critical_Relation">[docs]</a><span class="nd">@Boiling_Critical_Relation</span><span class="o">.</span><span class="n">wrapper</span>
+<div class="viewcode-block" id="Boiling_Critical_Relation"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Boiling_Critical_Relation">[docs]</a><span class="nd">@Boiling_Critical_Relation</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Boiling_Critical_Relation</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
     <span class="n">Tbr</span> <span class="o">=</span> <span class="n">Tb</span> <span class="o">/</span> <span class="n">Tc</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">Tbr</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">Pc</span> <span class="o">/</span> <span class="mf">101325.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Tbr</span><span class="p">)</span>
@@ -416,7 +417,7 @@
 
 <div class="viewcode-block" id="Lee_Kesler"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Lee_Kesler">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Lee_Kesler</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -456,7 +457,7 @@
 
 <div class="viewcode-block" id="Ambrose_Walton"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Ambrose_Walton">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Ambrose_Walton</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -501,7 +502,7 @@
 
 <div class="viewcode-block" id="Sanjari"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Sanjari">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Sanjari</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>
@@ -554,7 +555,7 @@
 
 <div class="viewcode-block" id="Edalat"><a class="viewcode-back" href="../../../functors/vapor_pressure.html#thermosteam.functors.vapor_pressure.Edalat">[docs]</a><span class="nd">@Psat</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Edalat</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ω</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;*</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The vapor pressure (Psat; in Pa) is given by:</span>

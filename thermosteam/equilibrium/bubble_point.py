@@ -120,7 +120,7 @@ class BubblePoint:
         try:
             self.T = self.rootsolver(self._T_error, T, T+0.01,
                                      1e-6, 5e-8, args)
-        except Exception as Error:
+        except:
             self.y = z.copy()
             T = (z * self.Tbs).sum()
             f = lambda T: self._T_error(T, *args)

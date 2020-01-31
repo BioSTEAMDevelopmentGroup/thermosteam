@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -245,9 +247,9 @@ SOFTWARE.</p>
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">ppmv_to_mgm3</code><span class="sig-paren">(</span><em class="sig-param">ppmv</em>, <em class="sig-param">MW</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#ppmv_to_mgm3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.ppmv_to_mgm3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a concentration in ppmv to units of mg/m^3. Used in
 industrial toxicology.</p>
-<div class="math">
-<p><img src="../_images/math/70d9599f9d4e211ce2a8dc5fb2936c06372b874c.png" alt="\frac{mg}{m^3} = \frac{ppmv\cdot P}{RT}\cdot \frac{MW}{1000}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\frac{mg}{m^3} = \frac{ppmv\cdot P}{RT}\cdot \frac{MW}{1000}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>ppmv</strong><span class="classifier">float</span></dt><dd><p>Concentratoin of a component in a gas mixure [parts per million,
@@ -291,9 +293,9 @@ Hygenists, 2004.</p>
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">mgm3_to_ppmv</code><span class="sig-paren">(</span><em class="sig-param">mgm3</em>, <em class="sig-param">MW</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#mgm3_to_ppmv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.mgm3_to_ppmv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a concentration in  mg/m^3 to units of ppmv. Used in
 industrial toxicology.</p>
-<div class="math">
-<p><img src="../_images/math/84f290133bbe51bf080025614bb0c2a7bc161c28.png" alt="ppmv = \frac{1000RT}{MW\cdot P} \cdot \frac{mg}{m^3}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ppmv = \frac{1000RT}{MW\cdot P} \cdot \frac{mg}{m^3}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mgm3</strong><span class="classifier">float</span></dt><dd><p>Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
@@ -749,10 +751,10 @@ Prentice Hall, 2001.</p>
 <dd><p>Calculates lower flammability limit, using the Suzuki <a class="reference internal" href="#r7577fec27c56-1" id="id28">[1]</a> correlation.
 Uses heat of combustion only.</p>
 <p>The lower flammability limit of a gas is air is:</p>
-<div class="math">
-<p><img src="../_images/math/2b7761b4350b34a43d42b2fac35a344b064dde32.png" alt="\text{LFL} = \frac{-3.42}{\Delta H_c^{\circ}} + 0.569
-\Delta H_c^{\circ} + 0.0538\Delta H_c^{\circ 2} + 1.80"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\text{LFL} = \frac{-3.42}{\Delta H_c^{\circ}} + 0.569
+\Delta H_c^{\circ} + 0.0538\Delta H_c^{\circ 2} + 1.80\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
@@ -799,9 +801,9 @@ doi:10.1002/fam.810180509.</p>
 <dd><p>Calculates upper flammability limit, using the Suzuki <a class="reference internal" href="#r99d928d6b280-1" id="id30">[1]</a> correlation.
 Uses heat of combustion only.</p>
 <p>The upper flammability limit of a gas is air is:</p>
-<div class="math">
-<p><img src="../_images/math/c634860e7cc73d1950d37efeb3550e2254c0693b.png" alt="\text{UFL} = 6.3\Delta H_c^\circ + 0.567\Delta H_c^{\circ 2} + 23.5"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\text{UFL} = 6.3\Delta H_c^\circ + 0.567\Delta H_c^{\circ 2} + 23.5\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
@@ -849,11 +851,9 @@ Organic Compounds.” Fire and Materials 18, no. 6 (November 1, 1994):
 <dd><p>Calculates lower flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r104a4ec74e2d-1" id="id32">[1]</a>
 correlation. Uses molecular formula only.</p>
 <p>The lower flammability limit of a gas is air is:</p>
-<div class="math">
-<p><img src="../_images/math/75ef408a9d3209805a218cc954edcfeb6af469ba.png" alt="C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O
-
-\text{LFL} = \frac{0.55}{4.76m + 1.19x - 2.38y + 1}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{LFL} = \frac{0.55}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>
@@ -896,11 +896,9 @@ in Hazardous Industrial Operations.” Chemical Reviews 22, no. 1
 <dd><p>Calculates upper flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r33696c8df0a1-1" id="id37">[1]</a>
 correlation. Uses molecular formula only.</p>
 <p>The upper flammability limit of a gas is air is:</p>
-<div class="math">
-<p><img src="../_images/math/cc1b62d08910346f2ed8244619661531272ee131.png" alt="C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O
-
-\text{UFL} = \frac{3.5}{4.76m + 1.19x - 2.38y + 1}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{UFL} = \frac{3.5}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>

@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -227,9 +229,9 @@
 <dt id="thermosteam.functors.electrochem.Laliberte_water_viscosity">
 <code class="sig-prename descclassname">thermosteam.functors.electrochem.</code><code class="sig-name descname">Laliberte_water_viscosity</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/electrochem.html#Laliberte_water_viscosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.electrochem.Laliberte_water_viscosity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the viscosity of a water (Pa*s) at arbitrary temperatures (K) using the form proposed by <a class="reference internal" href="#re9e28c17b948-1" id="id1">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/e57bd17040ea8caf446903070105759157a47744.png" alt="\mu_w = \frac{T - 27.15}{(0.05594T-25.27581)t + 2867.723}"/></p>
-</div><p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\mu_w = \frac{T - 27.15}{(0.05594T-25.27581)t + 2867.723}\]</div>
+<p class="rubric">Notes</p>
 <p>Original source or pure water viscosity is not cited.
 No temperature range is given for this equation.</p>
 <p class="rubric">References</p>
@@ -301,13 +303,7 @@ Lookup is based on CASRNs.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Only one source is available in this function. It is:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>‘LANGE_COND’ which is from Lange’s Handbook, Table 8.34 Electrical</p></li>
-</ul>
-<p>Conductivity of Various Pure Liquids’, a compillation of data in <a class="reference internal" href="#re1eee48db202-1" id="id3">[1]</a>.</p>
-</div></blockquote>
+<p>Only one source is available in this function: ‘LANGE_COND’ which is from Lange’s Handbook, Table 8.34 Electrical Conductivity of Various Pure Liquids’, a compillation of data in <a class="reference internal" href="#re1eee48db202-1" id="id3">[1]</a>.</p>
 <p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="re1eee48db202-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>

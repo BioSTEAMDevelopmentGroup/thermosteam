@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -173,8 +174,6 @@
 
 <span class="sd">@author: yoelr</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">SolverError</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;false_position&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded_wegstein&#39;</span><span class="p">,</span>
            <span class="s1">&#39;bounded_aitken&#39;</span><span class="p">,</span> <span class="s1">&#39;IQ_interpolation&#39;</span><span class="p">)</span>
@@ -184,13 +183,15 @@
     <span class="n">_abs</span> <span class="o">=</span> <span class="nb">abs</span>
     <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
     <span class="n">dx</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span>
     <span class="n">yval_ub</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">+</span> <span class="n">ytol</span>
     <span class="n">yval_lb</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">ytol</span>
-    <span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
     <span class="k">while</span> <span class="n">_abs</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">xtol</span><span class="p">:</span>
+        <span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yval_ub</span><span class="p">:</span>
             <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span>
@@ -198,11 +199,14 @@
         <span class="k">elif</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yval_lb</span><span class="p">:</span>
             <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-            <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
         <span class="k">else</span><span class="p">:</span> <span class="k">break</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_old</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dx</span><span class="o">/</span><span class="mi">10</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">y1</span><span class="o">-</span><span class="n">y0</span>
+        <span class="k">if</span> <span class="n">dy</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="n">dy</span>
+        <span class="k">if</span> <span class="n">_abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_old</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dx</span><span class="o">/</span><span class="mi">10</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span>
     <span class="k">return</span> <span class="n">x</span>
 
 <span class="k">def</span> <span class="nf">IQ_interpolation</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">yval</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">ytol</span><span class="p">):</span>
@@ -210,17 +214,13 @@
     <span class="n">_abs</span> <span class="o">=</span> <span class="nb">abs</span>
     <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
     <span class="n">dx1</span> <span class="o">=</span> <span class="n">dx0</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-    <span class="n">f0</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
+    <span class="n">df0</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
-        <span class="n">dy</span> <span class="o">=</span> <span class="n">y1</span><span class="o">-</span><span class="n">y0</span>
-        <span class="k">if</span> <span class="n">dy</span><span class="p">:</span>
-            <span class="c1"># False position</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">f0</span><span class="o">*</span><span class="n">dx0</span><span class="o">/</span><span class="n">dy</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># False position</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df0</span><span class="o">*</span><span class="n">dx0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
             <span class="c1"># Bisection</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> 
     <span class="n">yval_ub</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">+</span> <span class="n">ytol</span>
     <span class="n">yval_lb</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">ytol</span>
     <span class="k">while</span> <span class="n">_abs</span><span class="p">(</span><span class="n">dx1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">xtol</span><span class="p">:</span>
@@ -235,35 +235,32 @@
             <span class="n">x2</span> <span class="o">=</span> <span class="n">x0</span>
             <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-            <span class="n">f0</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
+            <span class="n">df0</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
         <span class="k">else</span><span class="p">:</span> <span class="k">break</span>
         <span class="n">dx1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Inverse quadratic interpolation</span>
-            <span class="n">f1</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y1</span>
-            <span class="n">f2</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y2</span>
-            <span class="n">d01</span> <span class="o">=</span> <span class="n">f0</span><span class="o">-</span><span class="n">f1</span>
-            <span class="n">d02</span> <span class="o">=</span> <span class="n">f0</span><span class="o">-</span><span class="n">f2</span>
-            <span class="n">d12</span> <span class="o">=</span> <span class="n">f1</span><span class="o">-</span><span class="n">f2</span>
-            <span class="n">f0_d12</span> <span class="o">=</span> <span class="n">f0</span><span class="o">/</span><span class="n">d12</span>
-            <span class="n">f1_d02</span> <span class="o">=</span> <span class="n">f1</span><span class="o">/</span><span class="n">d02</span>
-            <span class="n">f2_d01</span> <span class="o">=</span> <span class="n">f2</span><span class="o">/</span><span class="n">d01</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span><span class="o">*</span><span class="n">f1_d02</span><span class="o">*</span><span class="n">f2_d01</span> <span class="o">-</span> <span class="n">x1</span><span class="o">*</span><span class="n">f0_d12</span><span class="o">*</span><span class="n">f2_d01</span> <span class="o">+</span> <span class="n">x2</span><span class="o">*</span><span class="n">f0_d12</span><span class="o">*</span><span class="n">f1_d02</span>
+            <span class="n">df1</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y1</span>
+            <span class="n">df2</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y2</span>
+            <span class="n">d01</span> <span class="o">=</span> <span class="n">df0</span><span class="o">-</span><span class="n">df1</span>
+            <span class="n">d02</span> <span class="o">=</span> <span class="n">df0</span><span class="o">-</span><span class="n">df2</span>
+            <span class="n">d12</span> <span class="o">=</span> <span class="n">df1</span><span class="o">-</span><span class="n">df2</span>
+            <span class="n">df0_d12</span> <span class="o">=</span> <span class="n">df0</span><span class="o">/</span><span class="n">d12</span>
+            <span class="n">df1_d02</span> <span class="o">=</span> <span class="n">df1</span><span class="o">/</span><span class="n">d02</span>
+            <span class="n">df2_d01</span> <span class="o">=</span> <span class="n">df2</span><span class="o">/</span><span class="n">d01</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span><span class="o">*</span><span class="n">df1_d02</span><span class="o">*</span><span class="n">df2_d01</span> <span class="o">-</span> <span class="n">x1</span><span class="o">*</span><span class="n">df0_d12</span><span class="o">*</span><span class="n">df2_d01</span> <span class="o">+</span> <span class="n">x2</span><span class="o">*</span><span class="n">df0_d12</span><span class="o">*</span><span class="n">df1_d02</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="n">dy</span> <span class="o">=</span> <span class="n">y1</span><span class="o">-</span><span class="n">y0</span>
             <span class="k">if</span> <span class="n">dy</span><span class="p">:</span>
                 <span class="c1"># False position</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">f0</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="n">dy</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
-                    <span class="c1"># Overshoot to prevent getting stuck</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.1</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x0</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">dx1</span><span class="o">/</span><span class="n">dx0</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Bisection</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>    
+                <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df0</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="n">dy</span>
+                <span class="c1"># Overshoot to prevent getting stuck</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.1</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x0</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">dx1</span><span class="o">/</span><span class="n">dx0</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
+                <span class="c1"># Bisection</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
         <span class="n">dx0</span> <span class="o">=</span> <span class="n">dx1</span>
     <span class="k">return</span> <span class="n">x</span>
 
@@ -271,8 +268,11 @@
     <span class="sd">&quot;&quot;&quot;False position solver with Wegstein acceleration.&quot;&quot;&quot;</span>
     <span class="n">_abs</span> <span class="o">=</span> <span class="nb">abs</span>
     <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
-    <span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span> <span class="k">else</span> <span class="n">x0</span><span class="o">+</span><span class="n">dy</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
+        <span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x_old</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span><span class="o">+</span><span class="n">df</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">yval_ub</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">+</span> <span class="n">ytol</span>
     <span class="n">yval_lb</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">ytol</span>
@@ -282,11 +282,11 @@
     <span class="k">elif</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yval_lb</span><span class="p">:</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-        <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">x</span>
     <span class="n">dx1x0</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">g0</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx1x0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">g0</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx1x0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">_abs</span><span class="p">(</span><span class="n">dx1x0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">xtol</span><span class="p">:</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yval_ub</span><span class="p">:</span>
@@ -295,10 +295,10 @@
         <span class="k">elif</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yval_lb</span><span class="p">:</span>
             <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-            <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">y</span>
         <span class="k">else</span><span class="p">:</span> <span class="k">break</span>
         <span class="n">dx1x0</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-        <span class="n">g1</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx1x0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">g1</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx1x0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x_old</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">dx</span><span class="o">/</span><span class="p">(</span><span class="n">dx</span><span class="o">-</span><span class="n">g1</span><span class="o">+</span><span class="n">g0</span><span class="p">)</span>
@@ -316,9 +316,9 @@
     <span class="n">_abs</span> <span class="o">=</span> <span class="nb">abs</span>
     <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
     <span class="n">dx1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y0</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x1</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
     <span class="n">yval_ub</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">+</span> <span class="n">ytol</span>
     <span class="n">yval_lb</span> <span class="o">=</span> <span class="n">yval</span> <span class="o">-</span> <span class="n">ytol</span>
     <span class="k">while</span> <span class="n">_abs</span><span class="p">(</span><span class="n">dx1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">xtol</span><span class="p">:</span>
@@ -329,14 +329,13 @@
         <span class="k">elif</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yval_lb</span><span class="p">:</span>
             <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-            <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
         <span class="k">else</span><span class="p">:</span> 
             <span class="k">return</span> <span class="n">x</span>
         <span class="n">dx0</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx0</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_abs</span><span class="p">(</span><span class="n">dx0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">g</span>
-        
         <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yval_ub</span><span class="p">:</span>
             <span class="n">x1</span> <span class="o">=</span> <span class="n">g</span>
@@ -344,11 +343,11 @@
         <span class="k">elif</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yval_lb</span><span class="p">:</span>
             <span class="n">x0</span> <span class="o">=</span> <span class="n">g</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span>
-            <span class="n">dy</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">yval</span><span class="o">-</span><span class="n">y</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">g</span>
         <span class="n">dx1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
-        <span class="n">gg</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">gg</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">df</span><span class="o">*</span><span class="n">dx1</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span>
         <span class="n">dxg</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">g</span>
         <span class="k">try</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">dxg</span><span class="o">**</span><span class="mf">2.</span><span class="o">/</span><span class="p">(</span><span class="n">gg</span> <span class="o">+</span> <span class="n">dxg</span> <span class="o">-</span> <span class="n">g</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>

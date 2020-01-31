@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -249,9 +251,9 @@ subclassed by an equation of state class which uses it. Works for mixtures
 or pure species for all properties except fugacity. All properties are 
 derived with the CAS SymPy, not relying on any derivations previously 
 published.</p>
-<div class="math">
-<p><img src="../_images/math/9aeb71484643645ecacb7651fa89f241898efbb5.png" alt="P=\frac{RT}{V-b}-\frac{a\alpha(T)}{V^2 + \delta V + \epsilon}"/></p>
-</div><p>Main methods (in order they are called) are <cite>solve</cite>, <cite>set_from_PT</cite>,
+<div class="math notranslate nohighlight">
+\[P=\frac{RT}{V-b}-\frac{a\alpha(T)}{V^2 + \delta V + \epsilon}\]</div>
+<p>Main methods (in order they are called) are <cite>solve</cite>, <cite>set_from_PT</cite>,
 <cite>volume_solutions</cite>, <cite>set_properties_from_solution</cite>,  and
 <cite>derivatives_and_departures</cite>.</p>
 <p><cite>solve</cite> calls <cite>check_sufficient_input</cite>, which checks if two of <cite>T</cite>, <cite>P</cite>, 
@@ -380,50 +382,32 @@ for <cite>kappa</cite>, see isothermal_compressibility; for <cite>Cp_minus_Cv</c
 <cite>Cp_minus_Cv</cite>; for <cite>phase_identification_parameter</cite>, see 
 <cite>phase_identification_parameter</cite>.</p>
 <p>First derivatives; in part using the Triple Product Rule <a class="reference internal" href="#r4006778e4168-2" id="id1">[2]</a>, <a class="reference internal" href="#r4006778e4168-3" id="id2">[3]</a>:</p>
-<div class="math">
-<p><img src="../_images/math/f9d007622620170794f2ddb56c87094c90d715c5.png" alt="\left(\frac{\partial P}{\partial T}\right)_V = \frac{R}{V - b}
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\left(\frac{\partial P}{\partial T}\right)_V = \frac{R}{V - b}
 - \frac{a \frac{d \alpha{\left (T \right )}}{d T}}{V^{2} + V \delta
-+ \epsilon}
-
-\left(\frac{\partial P}{\partial V}\right)_T = - \frac{R T}{\left(
++ \epsilon}\\\left(\frac{\partial P}{\partial V}\right)_T = - \frac{R T}{\left(
 V - b\right)^{2}} - \frac{a \left(- 2 V - \delta\right) \alpha{
-\left (T \right )}}{\left(V^{2} + V \delta + \epsilon\right)^{2}}
-
-\left(\frac{\partial V}{\partial T}\right)_P =-\frac{
+\left (T \right )}}{\left(V^{2} + V \delta + \epsilon\right)^{2}}\\\left(\frac{\partial V}{\partial T}\right)_P =-\frac{
 \left(\frac{\partial P}{\partial T}\right)_V}{
-\left(\frac{\partial P}{\partial V}\right)_T}
-
-\left(\frac{\partial V}{\partial P}\right)_T =-\frac{
+\left(\frac{\partial P}{\partial V}\right)_T}\\\left(\frac{\partial V}{\partial P}\right)_T =-\frac{
 \left(\frac{\partial V}{\partial T}\right)_P}{
-\left(\frac{\partial P}{\partial T}\right)_V}            
-
-\left(\frac{\partial T}{\partial V}\right)_P = \frac{1}
-{\left(\frac{\partial V}{\partial T}\right)_P}
-
-\left(\frac{\partial T}{\partial P}\right)_V = \frac{1}
-{\left(\frac{\partial P}{\partial T}\right)_V}"/></p>
-</div><p>Second derivatives with respect to one variable; those of <cite>T</cite> and <cite>V</cite>
+\left(\frac{\partial P}{\partial T}\right)_V}            \\\left(\frac{\partial T}{\partial V}\right)_P = \frac{1}
+{\left(\frac{\partial V}{\partial T}\right)_P}\\\left(\frac{\partial T}{\partial P}\right)_V = \frac{1}
+{\left(\frac{\partial P}{\partial T}\right)_V}\end{aligned}\end{align} \]</div>
+<p>Second derivatives with respect to one variable; those of <cite>T</cite> and <cite>V</cite>
 use identities shown in <a class="reference internal" href="#r4006778e4168-1" id="id3">[1]</a> and verified numerically:</p>
-<div class="math">
-<p><img src="../_images/math/01df53258577e8eadd246e64abbdc0946d484332.png" alt="\left(\frac{\partial^2  P}{\partial T^2}\right)_V =  - \frac{a 
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\left(\frac{\partial^2  P}{\partial T^2}\right)_V =  - \frac{a 
 \frac{d^{2} \alpha{\left (T \right )}}{d T^{2}}}{V^{2} + V \delta 
-+ \epsilon}
-
-\left(\frac{\partial^2  P}{\partial V^2}\right)_T = 2 \left(\frac{
++ \epsilon}\\\left(\frac{\partial^2  P}{\partial V^2}\right)_T = 2 \left(\frac{
 R T}{\left(V - b\right)^{3}} - \frac{a \left(2 V + \delta\right)^{
 2} \alpha{\left (T \right )}}{\left(V^{2} + V \delta + \epsilon
 \right)^{3}} + \frac{a \alpha{\left (T \right )}}{\left(V^{2} + V 
-\delta + \epsilon\right)^{2}}\right)
-
-\left(\frac{\partial^2 T}{\partial P^2}\right)_V = -\left(\frac{
+\delta + \epsilon\right)^{2}}\right)\\\left(\frac{\partial^2 T}{\partial P^2}\right)_V = -\left(\frac{
 \partial^2 P}{\partial T^2}\right)_V \left(\frac{\partial P}{
-\partial T}\right)^{-3}_V
-
-\left(\frac{\partial^2 V}{\partial P^2}\right)_T = -\left(\frac{
+\partial T}\right)^{-3}_V\\\left(\frac{\partial^2 V}{\partial P^2}\right)_T = -\left(\frac{
 \partial^2 P}{\partial V^2}\right)_T \left(\frac{\partial P}{
-\partial V}\right)^{-3}_T
-
-\left(\frac{\partial^2 T}{\partial V^2}\right)_P = -\left[
+\partial V}\right)^{-3}_T\\\left(\frac{\partial^2 T}{\partial V^2}\right)_P = -\left[
 \left(\frac{\partial^2 P}{\partial V^2}\right)_T
 \left(\frac{\partial P}{\partial T}\right)_V
 - \left(\frac{\partial P}{\partial V}\right)_T
@@ -434,9 +418,7 @@ R T}{\left(V - b\right)^{3}} - \frac{a \left(2 V + \delta\right)^{
 - \left(\frac{\partial P}{\partial V}\right)_T
 \left(\frac{\partial^2 P}{\partial T^2}\right)_V\right]
 \left(\frac{\partial P}{\partial T}\right)_V^{-3}
-\left(\frac{\partial P}{\partial V}\right)_T
-
-\left(\frac{\partial^2 V}{\partial T^2}\right)_P = -\left[
+\left(\frac{\partial P}{\partial V}\right)_T\\\left(\frac{\partial^2 V}{\partial T^2}\right)_P = -\left[
 \left(\frac{\partial^2 P}{\partial T^2}\right)_V
 \left(\frac{\partial P}{\partial V}\right)_T
 - \left(\frac{\partial P}{\partial T}\right)_V
@@ -447,57 +429,37 @@ R T}{\left(V - b\right)^{3}} - \frac{a \left(2 V + \delta\right)^{
 - \left(\frac{\partial P}{\partial T}\right)_V
 \left(\frac{\partial^2 P}{\partial V^2}\right)_T\right]
 \left(\frac{\partial P}{\partial V}\right)_T^{-3}
-\left(\frac{\partial P}{\partial T}\right)_V"/></p>
-</div><p>Second derivatives with respect to the other two variables; those of 
+\left(\frac{\partial P}{\partial T}\right)_V\end{aligned}\end{align} \]</div>
+<p>Second derivatives with respect to the other two variables; those of 
 <cite>T</cite> and <cite>V</cite> use identities shown in <a class="reference internal" href="#r4006778e4168-1" id="id4">[1]</a> and verified numerically:</p>
-<div class="math">
-<p><img src="../_images/math/715f319623e30fc07a7b45460b2530e182cfe311.png" alt="\left(\frac{\partial^2 P}{\partial T \partial V}\right) = - \frac{
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\left(\frac{\partial^2 P}{\partial T \partial V}\right) = - \frac{
  R}{\left(V - b\right)^{2}} + \frac{a \left(2 V + \delta\right) 
  \frac{d \alpha{\left (T \right )}}{d T}}{\left(V^{2} + V \delta 
- + \epsilon\right)^{2}}
-
-\left(\frac{\partial^2 T}{\partial P\partial V}\right) = 
+ + \epsilon\right)^{2}}\\\left(\frac{\partial^2 T}{\partial P\partial V}\right) = 
  - \left[\left(\frac{\partial^2 P}{\partial T \partial V}\right)
  \left(\frac{\partial P}{\partial T}\right)_V
  - \left(\frac{\partial P}{\partial V}\right)_T
  \left(\frac{\partial^2 P}{\partial T^2}\right)_V
- \right]\left(\frac{\partial P}{\partial T}\right)_V^{-3}
-
- \left(\frac{\partial^2 V}{\partial T\partial P}\right) = 
+ \right]\left(\frac{\partial P}{\partial T}\right)_V^{-3}\\ \left(\frac{\partial^2 V}{\partial T\partial P}\right) = 
  - \left[\left(\frac{\partial^2 P}{\partial T \partial V}\right)
  \left(\frac{\partial P}{\partial V}\right)_T
  - \left(\frac{\partial P}{\partial T}\right)_V
  \left(\frac{\partial^2 P}{\partial V^2}\right)_T
- \right]\left(\frac{\partial P}{\partial V}\right)_T^{-3}"/></p>
-</div><p>Excess properties</p>
-<div class="math">
-<p><img src="../_images/math/797430c626626898d53de1ece6a2ba0cd03e019b.png" alt="H_{dep} = \int_{\infty}^V \left[T\frac{\partial P}{\partial T}_V 
+ \right]\left(\frac{\partial P}{\partial V}\right)_T^{-3}\end{aligned}\end{align} \]</div>
+<p>Excess properties</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}H_{dep} = \int_{\infty}^V \left[T\frac{\partial P}{\partial T}_V 
 - P\right]dV + PV - RT= P V - R T + \frac{2}{\sqrt{
 \delta^{2} - 4 \epsilon}} \left(T a \frac{d \alpha{\left (T \right 
 )}}{d T}  - a \alpha{\left (T \right )}\right) \operatorname{atanh}
 {\left (\frac{2 V + \delta}{\sqrt{\delta^{2} - 4 \epsilon}} 
-\right)}
-
-S_{dep} = \int_{\infty}^V\left[\frac{\partial P}{\partial T} 
+\right)}\\S_{dep} = \int_{\infty}^V\left[\frac{\partial P}{\partial T} 
 - \frac{R}{V}\right] dV + R\log\frac{PV}{RT} = - R \log{\left (V 
 \right )} + R \log{\left (\frac{P V}{R T} \right )} + R \log{\left
 (V - b \right )} + \frac{2 a \frac{d\alpha{\left (T \right )}}{d T}
 }{\sqrt{\delta^{2} - 4 \epsilon}} \operatorname{atanh}{\left (\frac
-{2 V + \delta}{\sqrt{\delta^{2} - 4 \epsilon}} \right )}
-
-V_{dep} = V - \frac{RT}{P}
-
-U_{dep} = H_{dep} - P V_{dep}
-
-G_{dep} = H_{dep} - T S_{dep}
-
-A_{dep} = U_{dep} - T S_{dep}
-
-\text{fugacity} = P\exp\left(\frac{G_{dep}}{RT}\right)
-
-\phi = \frac{\text{fugacity}}{P}
-
-C_{v, dep} = T\int_\infty^V \left(\frac{\partial^2 P}{\partial 
+{2 V + \delta}{\sqrt{\delta^{2} - 4 \epsilon}} \right )}\\V_{dep} = V - \frac{RT}{P}\\U_{dep} = H_{dep} - P V_{dep}\\G_{dep} = H_{dep} - T S_{dep}\\A_{dep} = U_{dep} - T S_{dep}\\\text{fugacity} = P\exp\left(\frac{G_{dep}}{RT}\right)\\\phi = \frac{\text{fugacity}}{P}\\C_{v, dep} = T\int_\infty^V \left(\frac{\partial^2 P}{\partial 
 T^2}\right) dV = - T a \left(\sqrt{\frac{1}{\delta^{2} - 4 
 \epsilon}} \log{\left (V - \frac{\delta^{2}}{2} \sqrt{\frac{1}{
 \delta^{2} - 4 \epsilon}} + \frac{\delta}{2} + 2 \epsilon \sqrt{
@@ -505,10 +467,8 @@ T^2}\right) dV = - T a \left(\sqrt{\frac{1}{\delta^{2} - 4
 \delta^{2} - 4 \epsilon}} \log{\left (V + \frac{\delta^{2}}{2} 
 \sqrt{\frac{1}{\delta^{2} - 4 \epsilon}} + \frac{\delta}{2} 
 - 2 \epsilon \sqrt{\frac{1}{\delta^{2} - 4 \epsilon}} \right )}
-\right) \frac{d^{2} \alpha{\left (T \right )} }{d T^{2}}  
-
-C_{p, dep} = (C_p-C_v)_{\text{from EOS}} + C_{v, dep} - R"/></p>
-</div><p class="rubric">References</p>
+\right) \frac{d^{2} \alpha{\left (T \right )} }{d T^{2}}  \\C_{p, dep} = (C_p-C_v)_{\text{from EOS}} + C_{v, dep} - R\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r4006778e4168-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>)</span></dt>
 <dd><p>Thorade, Matthis, and Ali Saadat. “Partial Derivatives of 
@@ -641,10 +601,10 @@ finds all values explicitly. It takes several seconds.</p>
 <code class="sig-name descname">Psat</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em>, <em class="sig-param">polish=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.Psat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.Psat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic method to calculate vapor pressure for a specified <cite>T</cite>.</p>
 <p>From Tc to 0.32Tc, uses a 10th order polynomial of the following form:</p>
-<div class="math">
-<p><img src="../_images/math/d31349a98e33517db50ba7db9e495d75a106e964.png" alt="\ln\frac{P_r}{T_r} = \sum_{k=0}^{10} C_k\left(\frac{\alpha}{T_r}
--1\right)^{k}"/></p>
-</div><p>If <cite>polish</cite> is True, SciPy’s <cite>newton</cite> solver is launched with the 
+<div class="math notranslate nohighlight">
+\[\ln\frac{P_r}{T_r} = \sum_{k=0}^{10} C_k\left(\frac{\alpha}{T_r}
+-1\right)^{k}\]</div>
+<p>If <cite>polish</cite> is True, SciPy’s <cite>newton</cite> solver is launched with the 
 calculated vapor pressure as an initial guess in an attempt to get more
 accuracy. This may not converge however.</p>
 <p>Results above the critical temperature are meaningless. A first-order 
@@ -769,9 +729,9 @@ possible molar volumes. The highest value is returned.</p>
 <code class="sig-name descname">Hvap</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#GCEOS.Hvap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.GCEOS.Hvap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to calculate enthalpy of vaporization for a pure fluid from
 an equation of state, without iteration.</p>
-<div class="math">
-<p><img src="../_images/math/0d2e13e3dd898eace341e5c75dc43c396f69dd14.png" alt="\frac{dP^{sat}}{dT}=\frac{\Delta H_{vap}}{T(V_g - V_l)}"/></p>
-</div><p>Results above the critical temperature are meaningless. A first-order 
+<div class="math notranslate nohighlight">
+\[\frac{dP^{sat}}{dT}=\frac{\Delta H_{vap}}{T(V_g - V_l)}\]</div>
+<p>Results above the critical temperature are meaningless. A first-order 
 polynomial is used to extrapolate under 0.32 Tc; however, there is 
 normally not a volume solution to the EOS which can produce that
 low of a pressure.</p>
@@ -857,10 +817,10 @@ derivatives according to Soave (1972) <a class="reference internal" href="#r8520
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Same as <cite>SRK.a_alpha_and_derivatives</cite> but slower and
 requiring <cite>alpha_function_coeffs</cite> to be set. One coefficient needed.</p>
-<div class="math">
-<p><img src="../_images/math/4a2e7bb60654a840c14c24f75526bcc24b65792a.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
-+ 1\right)^{2}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
++ 1\right)^{2}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r8520c9196bfa-1"><span class="brackets"><a class="fn-backref" href="#id13">1</a></span></dt>
 <dd><p>Soave, Giorgio. “Equilibrium Constants from a Modified Redlich-
@@ -877,10 +837,10 @@ Kwong Equation of State.” Chemical Engineering Science 27, no. 6
 derivatives according to Heyen (1980) <a class="reference internal" href="#r87e1690eca02-1" id="id15">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>,  
 and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/ab869483409978f4ffd85ccd2b8635fdf932106c.png" alt="\alpha = e^{c_{1} \left(- \left(\frac{T}{Tc}\right)^{c_{2}}
-+ 1\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{c_{1} \left(- \left(\frac{T}{Tc}\right)^{c_{2}}
++ 1\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r87e1690eca02-1"><span class="brackets"><a class="fn-backref" href="#id15">1</a></span></dt>
 <dd><p>Heyen, G. Liquid and Vapor Properties from a Cubic Equation of 
@@ -898,10 +858,10 @@ Frankfurt, 1980; p 9-13.</p>
 derivatives according to Harmens and Knapp (1980) <a class="reference internal" href="#r76f15a7061b1-1" id="id17">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/a19c624870d87f1d081495d1ca1ca30cb20decf9.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
-- c_{2} \left(1 - \frac{Tc}{T}\right) + 1\right)^{2}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
+- c_{2} \left(1 - \frac{Tc}{T}\right) + 1\right)^{2}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r76f15a7061b1-1"><span class="brackets"><a class="fn-backref" href="#id17">1</a></span></dt>
 <dd><p>Harmens, A., and H. Knapp. “Three-Parameter Cubic Equation of 
@@ -919,11 +879,11 @@ doi:10.1021/i160075a010.</p>
 derivatives according to Mathias (1983) <a class="reference internal" href="#r70ca401e73a6-1" id="id19">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/774424563ff78cfb17fbfda3b49244e31254fc4d.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
+<div class="math notranslate nohighlight">
+\[\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
 - c_{2} \left(- \frac{T}{Tc} + 0.7\right) \left(- \frac{T}{Tc} 
-+ 1\right) + 1\right)^{2}"/></p>
-</div><p class="rubric">References</p>
++ 1\right) + 1\right)^{2}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r70ca401e73a6-1"><span class="brackets"><a class="fn-backref" href="#id19">1</a></span></dt>
 <dd><p>Mathias, Paul M. “A Versatile Phase Equilibrium Equation of 
@@ -941,11 +901,11 @@ doi:10.1021/i200022a008.</p>
 derivatives according to Mathias and Copeman (1983) <a class="reference internal" href="#rb0e2af5f4195-1" id="id21">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/90f3f149807821fa8b393955f1abb2694a6c3f38.png" alt="\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
+<div class="math notranslate nohighlight">
+\[\alpha = \left(c_{1} \left(- \sqrt{\frac{T}{Tc}} + 1\right)
 + c_{2} \left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + c_{3} \left(
-- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}"/></p>
-</div><p class="rubric">References</p>
+- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rb0e2af5f4195-1"><span class="brackets"><a class="fn-backref" href="#id21">1</a></span></dt>
 <dd><p>Mathias, Paul M., and Thomas W. Copeman. “Extension of the 
@@ -964,10 +924,10 @@ doi:10.1016/0378-3812(83)80084-3.</p>
 derivatives according to Gibbons and Laughton (1984) <a class="reference internal" href="#r86fccbccd893-1" id="id23">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/014e115cda4ef2e39a18d76c22fc1c052e25093a.png" alt="\alpha = c_{1} \left(\frac{T}{Tc} - 1\right) + c_{2} 
-\left(\sqrt{\frac{T}{Tc}} - 1\right) + 1"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = c_{1} \left(\frac{T}{Tc} - 1\right) + c_{2} 
+\left(\sqrt{\frac{T}{Tc}} - 1\right) + 1\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r86fccbccd893-1"><span class="brackets"><a class="fn-backref" href="#id23">1</a></span></dt>
 <dd><p>Gibbons, Richard M., and Andrew P. Laughton. “An Equation of 
@@ -984,10 +944,10 @@ State for Polar and Non-Polar Substances and Mixtures” 80, no. 9
 derivatives according to Soave (1984) <a class="reference internal" href="#ra469470c6542-1" id="id25">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/e8070d893da0dbea7a762ffb51f5885c761f3df6.png" alt="\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} \left(-1
-+ \frac{Tc}{T}\right) + 1"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} \left(-1
++ \frac{Tc}{T}\right) + 1\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="ra469470c6542-1"><span class="brackets"><a class="fn-backref" href="#id25">1</a></span></dt>
 <dd><p>Soave, G. “Improvement of the Van Der Waals Equation of State.” 
@@ -1004,10 +964,10 @@ doi:10.1016/0009-2509(84)80034-2.</p>
 derivatives according to Yu and Lu (1987) <a class="reference internal" href="#rb65360a7beee-1" id="id27">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Four coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/2aa9d8941597b96715187fe5ac2cc72d2bc90c94.png" alt="\alpha = 10^{c_{4} \left(- \frac{T}{Tc} + 1\right) \left(
-\frac{T^{2} c_{3}}{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = 10^{c_{4} \left(- \frac{T}{Tc} + 1\right) \left(
+\frac{T^{2} c_{3}}{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rb65360a7beee-1"><span class="brackets"><a class="fn-backref" href="#id27">1</a></span></dt>
 <dd><p>Yu, Jin-Min, and Benjamin C. -Y. Lu. “A Three-Parameter Cubic 
@@ -1025,9 +985,9 @@ doi:10.1016/0378-3812(87)85047-1.</p>
 derivatives according to Trebble and Bishnoi (1987) <a class="reference internal" href="#r9330d4785f52-1" id="id29">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. One coefficient needed.</p>
-<div class="math">
-<p><img src="../_images/math/1355a4eb7845b71ec0482e05f9f1bb7ba2c04f00.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r9330d4785f52-1"><span class="brackets"><a class="fn-backref" href="#id29">1</a></span></dt>
 <dd><p>Trebble, M. A., and P. R. Bishnoi. “Development of a New Four-
@@ -1044,10 +1004,10 @@ Parameter Cubic Equation of State.” Fluid Phase Equilibria 35, no. 1
 derivatives according to Melhem et al. (1989) <a class="reference internal" href="#r640d8c8b4219-1" id="id31">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Two coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/6ccc2aa2cb507c424f388c82d69ca96e0aafd6fb.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
-\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2}}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2}}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r640d8c8b4219-1"><span class="brackets"><a class="fn-backref" href="#id31">1</a></span></dt>
 <dd><p>Melhem, Georges A., Riju Saini, and Bernard M. Goodwin. “A 
@@ -1065,12 +1025,12 @@ doi:10.1016/0378-3812(89)80176-1.</p>
 derivatives according to Androulakis et al. (1989) <a class="reference internal" href="#rf6e729f900df-1" id="id33">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/0c43a7dd76ce19b73759e4563858721bb0c1dfb7.png" alt="\alpha = c_{1} \left(- \left(\frac{T}{Tc}\right)^{\frac{2}{3}}
+<div class="math notranslate nohighlight">
+\[\alpha = c_{1} \left(- \left(\frac{T}{Tc}\right)^{\frac{2}{3}}
 + 1\right) + c_{2} \left(- \left(\frac{T}{Tc}\right)^{\frac{2}{3}} 
 + 1\right)^{2} + c_{3} \left(- \left(\frac{T}{Tc}\right)^{
-\frac{2}{3}} + 1\right)^{3} + 1"/></p>
-</div><p class="rubric">References</p>
+\frac{2}{3}} + 1\right)^{3} + 1\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rf6e729f900df-1"><span class="brackets"><a class="fn-backref" href="#id33">1</a></span></dt>
 <dd><p>Androulakis, I. P., N. S. Kalospiros, and D. P. Tassios. 
@@ -1088,11 +1048,11 @@ no. 2 (April 1, 1989): 135-63. doi:10.1016/0378-3812(89)80254-7.</p>
 derivatives according to Schwartzentruber et al. (1990) <a class="reference internal" href="#r7f858797bb41-1" id="id35">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/8c9b8b7916cce08277ade6ecdd0278a15971b4d6.png" alt="\alpha = \left(c_{4} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
+<div class="math notranslate nohighlight">
+\[\alpha = \left(c_{4} \left(- \sqrt{\frac{T}{Tc}} + 1\right) 
 - \left(- \sqrt{\frac{T}{Tc}} + 1\right) \left(\frac{T^{2} c_{3}}
-{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right) + 1\right)^{2}"/></p>
-</div><p class="rubric">References</p>
+{Tc^{2}} + \frac{T c_{2}}{Tc} + c_{1}\right) + 1\right)^{2}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r7f858797bb41-1"><span class="brackets"><a class="fn-backref" href="#id35">1</a></span></dt>
 <dd><p>J. Schwartzentruber, H. Renon, and S. Watanasiri, “K-values for 
@@ -1108,11 +1068,11 @@ Non-Ideal Systems:An Easier Way,” Chem. Eng., March 1990, 118-124.</p>
 derivatives according to Almeida et al. (1991) <a class="reference internal" href="#r40352d92cc02-1" id="id37">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/a85f88cbf97ae826091ed1a2b709d45f823c1b66.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left|{
+<div class="math notranslate nohighlight">
+\[\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left|{
 \frac{T}{Tc} - 1}\right|^{c_{2} - 1} + c_{3} \left(-1 
-+ \frac{Tc}{T}\right)}"/></p>
-</div><p class="rubric">References</p>
++ \frac{Tc}{T}\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r40352d92cc02-1"><span class="brackets"><a class="fn-backref" href="#id37">1</a></span></dt>
 <dd><p>Almeida, G. S., M. Aznar, and A. S. Telles. “Uma Nova Forma de 
@@ -1129,11 +1089,11 @@ Estado Cúbicas.” RBE, Rev. Bras. Eng., Cad. Eng. Quim 8 (1991): 95.</p>
 derivatives according to Twu et al. (1991) <a class="reference internal" href="#r517116672465-1" id="id39">[1]</a>. Returns <cite>a_alpha</cite>, 
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>  
 for more documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/833b20e4d39e74da3a658d6bbf17275c5fe10bb3.png" alt="\alpha = \left(\frac{T}{Tc}\right)^{c_{3} \left(c_{2} 
+<div class="math notranslate nohighlight">
+\[\alpha = \left(\frac{T}{Tc}\right)^{c_{3} \left(c_{2} 
 - 1\right)} e^{c_{1} \left(- \left(\frac{T}{Tc}
-\right)^{c_{2} c_{3}} + 1\right)}"/></p>
-</div><p class="rubric">References</p>
+\right)^{c_{2} c_{3}} + 1\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r517116672465-1"><span class="brackets"><a class="fn-backref" href="#id39">1</a></span></dt>
 <dd><p>Twu, Chorng H., David Bluck, John R. Cunningham, and John E. 
@@ -1151,10 +1111,10 @@ New Mixing Rule.” Fluid Phase Equilibria 69 (December 10, 1991):
 derivatives according to Soave (1983) <a class="reference internal" href="#rf1e98af943bb-1" id="id41">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Two coefficient needed.</p>
-<div class="math">
-<p><img src="../_images/math/f412a24ce5d68104089be76f0fba01b96cc0aad7.png" alt="\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
-\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + 1"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = c_{1} \left(- \frac{T}{Tc} + 1\right) + c_{2} 
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + 1\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rf1e98af943bb-1"><span class="brackets"><a class="fn-backref" href="#id41">1</a></span></dt>
 <dd><p>Soave, G. “Improving the Treatment of Heavy Hydrocarbons by the 
@@ -1171,10 +1131,10 @@ doi:10.1016/0378-3812(93)85131-5.</p>
 derivatives according to Gasem (2001) <a class="reference internal" href="#rb0d84ddfa3df-1" id="id43">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/7026791ac40f8df601fef08e3ee3f79aa54c765c.png" alt="\alpha = e^{\left(- \left(\frac{T}{Tc}\right)^{c_{3}} + 1\right) 
-\left(\frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{\left(- \left(\frac{T}{Tc}\right)^{c_{3}} + 1\right) 
+\left(\frac{T c_{2}}{Tc} + c_{1}\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rb0d84ddfa3df-1"><span class="brackets"><a class="fn-backref" href="#id43">1</a></span></dt>
 <dd><p>Gasem, K. A. M, W Gao, Z Pan, and R. L Robinson Jr. “A Modified 
@@ -1192,11 +1152,11 @@ doi:10.1016/S0378-3812(01)00488-5.</p>
 derivatives according to Coquelet et al. (2004) <a class="reference internal" href="#ra9a5a60e2ddd-1" id="id45">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/e12fdc7f7df386d9e8256be633ee61b2178e5bf8.png" alt="\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left(c_{2} 
+<div class="math notranslate nohighlight">
+\[\alpha = e^{c_{1} \left(- \frac{T}{Tc} + 1\right) \left(c_{2} 
 \left(- \sqrt{\frac{T}{Tc}} + 1\right)^{2} + c_{3} 
-\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}}"/></p>
-</div><p class="rubric">References</p>
+\left(- \sqrt{\frac{T}{Tc}} + 1\right)^{3} + 1\right)^{2}}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="ra9a5a60e2ddd-1"><span class="brackets"><a class="fn-backref" href="#id45">1</a></span></dt>
 <dd><p>Coquelet, C., A. Chapoy, and D. Richon. “Development of a New 
@@ -1216,10 +1176,10 @@ doi:10.1023/B:IJOT.0000022331.46865.2f.</p>
 derivatives according to Haghtalab et al. (2010) <a class="reference internal" href="#r6d8e7f05d2e3-1" id="id47">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/d2a96b7b9f64a52d203f37cd28dca40ee8e9360a.png" alt="\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
-+ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
++ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r6d8e7f05d2e3-1"><span class="brackets"><a class="fn-backref" href="#id47">1</a></span></dt>
 <dd><p>Haghtalab, A., M. J. Kamali, S. H. Mazloumi, and P. Mahmoodi. 
@@ -1238,10 +1198,10 @@ doi:10.1016/j.fluid.2010.03.029.</p>
 derivatives according to Saffari and Zahedi (2013) <a class="reference internal" href="#r1dd862abaec5-1" id="id49">[1]</a>. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Three coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/f8d0b73495e87f091188f8f8c0f0316918a6a218.png" alt="\alpha = e^{\frac{T c_{1}}{Tc} + c_{2} \log{\left (\frac{T}{Tc} 
-\right )} + c_{3} \left(- \sqrt{\frac{T}{Tc}} + 1\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{\frac{T c_{1}}{Tc} + c_{2} \log{\left (\frac{T}{Tc} 
+\right )} + c_{3} \left(- \sqrt{\frac{T}{Tc}} + 1\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r1dd862abaec5-1"><span class="brackets"><a class="fn-backref" href="#id49">1</a></span></dt>
 <dd><p>Saffari, Hamid, and Alireza Zahedi. “A New Alpha-Function for 
@@ -1259,10 +1219,10 @@ Chinese Journal of Chemical Engineering 21, no. 10 (October 1,
 derivatives according to Hamid and Yang (2017) <a class="reference internal" href="#r4590409d6c8e-1" id="id51">[1]</a>. Returns <cite>a_alpha</cite>,
 <cite>da_alpha_dT</cite>, and <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite>
 for more documentation. Seven coefficients needed.</p>
-<div class="math">
-<p><img src="../_images/math/d2a96b7b9f64a52d203f37cd28dca40ee8e9360a.png" alt="\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
-+ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\alpha = e^{\left(- c_{3}^{\log{\left (\frac{T}{Tc} \right )}} 
++ 1\right) \left(- \frac{T c_{2}}{Tc} + c_{1}\right)}\]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r4590409d6c8e-1"><span class="brackets"><a class="fn-backref" href="#id51">1</a></span></dt>
 <dd><p>Chen, Zehua, and Daoyong Yang. “Optimization of the Reduced 
@@ -1287,17 +1247,9 @@ relevant thermodynamic properties. Solves the EOS on initialization.</p>
 a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
 specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/3112904dd41d98e3c905ba032edf2541c474b933.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
-
-a=0.45724\frac{R^2T_c^2}{P_c}
-
-  b=0.07780\frac{RT_c}{P_c}
-
-\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
-
-\kappa=0.37464+1.54226\omega-0.26992\omega^2"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}\\a=0.45724\frac{R^2T_c^2}{P_c}\\  b=0.07780\frac{RT_c}{P_c}\\\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2\\\kappa=0.37464+1.54226\omega-0.26992\omega^2\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1390,17 +1342,13 @@ derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Uses the set values of <cite>Tc</cite>, <cite>kappa</cite>, and <cite>a</cite>.</p>
 <p>For use in <cite>solve_T</cite>, returns only <cite>a_alpha</cite> if full is False.</p>
-<div class="math">
-<p><img src="../_images/math/ea3cf2c7bb3a707629d417cec69d6830a6c5193b.png" alt="a\alpha = a \left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} 
-+ 1\right) + 1\right)^{2}
-
-\frac{d a\alpha}{dT} = - \frac{1.0 a \kappa}{T^{0.5} Tc^{0.5}}
-\left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} + 1\right) + 1\right)
-
-\frac{d^2 a\alpha}{dT^2} = 0.5 a \kappa \left(- \frac{1}{T^{1.5} 
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a\alpha = a \left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} 
++ 1\right) + 1\right)^{2}\\\frac{d a\alpha}{dT} = - \frac{1.0 a \kappa}{T^{0.5} Tc^{0.5}}
+\left(\kappa \left(- \frac{T^{0.5}}{Tc^{0.5}} + 1\right) + 1\right)\\\frac{d^2 a\alpha}{dT^2} = 0.5 a \kappa \left(- \frac{1}{T^{1.5} 
 Tc^{0.5}} \left(\kappa \left(\frac{T^{0.5}}{Tc^{0.5}} - 1\right)
-- 1\right) + \frac{\kappa}{T^{1.0} Tc^{1.0}}\right)"/></p>
-</div></dd></dl>
+- 1\right) + \frac{\kappa}{T^{1.0} Tc^{1.0}}\right)\end{aligned}\end{align} \]</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.functors.eos.PR.solve_T">
@@ -1452,21 +1400,11 @@ breviety.</p>
 equation of state for a pure compound according to the 1978 variant.
 Subclasses <cite>PR</cite>, which provides everything except the variable <cite>kappa</cite>.
 Solves the EOS on initialization. See <cite>PR</cite> for further documentation.</p>
-<div class="math">
-<p><img src="../_images/math/b03c6060213743343742419e80b123264da21082.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
-
-a=0.45724\frac{R^2T_c^2}{P_c}
-
-  b=0.07780\frac{RT_c}{P_c}
-
-\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
-
-\kappa_i = 0.37464+1.54226\omega_i-0.26992\omega_i^2 \text{ if } \omega_i
-\le 0.491
-
-\kappa_i = 0.379642 + 1.48503 \omega_i - 0.164423\omega_i^2 + 0.016666
-\omega_i^3 \text{ if } \omega_i &gt; 0.491"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}\\a=0.45724\frac{R^2T_c^2}{P_c}\\  b=0.07780\frac{RT_c}{P_c}\\\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2\\\kappa_i = 0.37464+1.54226\omega_i-0.26992\omega_i^2 \text{ if } \omega_i
+\le 0.491\\\kappa_i = 0.379642 + 1.48503 \omega_i - 0.164423\omega_i^2 + 0.016666
+\omega_i^3 \text{ if } \omega_i &gt; 0.491\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1517,20 +1455,10 @@ a pure compound as given in <a class="reference internal" href="#rbb6067caa021-1
 except with a different <cite>kappa</cite> formula and with an optional fit parameter.
 Subclasses <cite>PR</cite>, which provides only several constants. See <cite>PR</cite> for 
 further documentation and examples.</p>
-<div class="math">
-<p><img src="../_images/math/57013628828424668e39e35214bbf47ba231ae5d.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
-
-a=0.45724\frac{R^2T_c^2}{P_c}
-
-  b=0.07780\frac{RT_c}{P_c}
-
-\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
-
-\kappa = \kappa_0 + \kappa_1(1 + T_r^{0.5})(0.7 - T_r)
-
-\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
-+ 0.0196554\omega^3"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}\\a=0.45724\frac{R^2T_c^2}{P_c}\\  b=0.07780\frac{RT_c}{P_c}\\\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2\\\kappa = \kappa_0 + \kappa_1(1 + T_r^{0.5})(0.7 - T_r)\\\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
++ 0.0196554\omega^3\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1638,11 +1566,11 @@ documentation. Uses the set values of <cite>Tc</cite>, <cite>kappa0</cite>, <cit
 <p>For use in root-finding, returns only <cite>a_alpha</cite> if full is False.</p>
 <p>The <cite>a_alpha</cite> function is shown below; its first and second derivatives
 are long available through the SymPy expression under it.</p>
-<div class="math">
-<p><img src="../_images/math/8a85d7de67fbf504d9ed759deab52c6d8b2f4c8a.png" alt="a\alpha = a \left(\left(\kappa_{0} + \kappa_{1} \left(\sqrt{\frac{
+<div class="math notranslate nohighlight">
+\[a\alpha = a \left(\left(\kappa_{0} + \kappa_{1} \left(\sqrt{\frac{
 T}{Tc}} + 1\right) \left(- \frac{T}{Tc} + \frac{7}{10}\right)
-\right) \left(- \sqrt{\frac{T}{Tc}} + 1\right) + 1\right)^{2}"/></p>
-</div><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
+\right) \left(- \sqrt{\frac{T}{Tc}} + 1\right) + 1\right)^{2}\]</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;P, T, V&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;Tc, Pc, omega&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">kappa0</span><span class="p">,</span> <span class="n">kappa1</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;R, a, b, kappa0, kappa1&#39;</span><span class="p">)</span>
@@ -1664,21 +1592,11 @@ for a pure compound as given in <a class="reference internal" href="#rbcc7388cc1
 except with a different <cite>kappa</cite> formula and with three fit parameters.
 Subclasses <cite>PR</cite>, which provides only several constants. See <cite>PR</cite> for 
 further documentation and examples. PRSV provides only one constant.</p>
-<div class="math">
-<p><img src="../_images/math/84cf27ac4430ffabce3f7ff0bc7c6a3dd86f0bd8.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
-
-a=0.45724\frac{R^2T_c^2}{P_c}
-
-  b=0.07780\frac{RT_c}{P_c}
-
-\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2
-
-\kappa = \kappa_0 + [\kappa_1 + \kappa_2(\kappa_3 - T_r)(1-T_r^{0.5})]
-(1 + T_r^{0.5})(0.7 - T_r)
-
-\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
-+ 0.0196554\omega^3"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}\\a=0.45724\frac{R^2T_c^2}{P_c}\\  b=0.07780\frac{RT_c}{P_c}\\\alpha(T)=[1+\kappa(1-\sqrt{T_r})]^2\\\kappa = \kappa_0 + [\kappa_1 + \kappa_2(\kappa_3 - T_r)(1-T_r^{0.5})]
+(1 + T_r^{0.5})(0.7 - T_r)\\\kappa_0 = 0.378893 + 1.4897153\omega - 0.17131848\omega^2 
++ 0.0196554\omega^3\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1797,13 +1715,9 @@ specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>. <cite>main_d
 a re-implementation with VDW specific methods, as the general solution
 has ZeroDivisionError errors.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/f4083e33293166b564d1314518c348d732703b56.png" alt="P=\frac{RT}{V-b}-\frac{a}{V^2}
-
-a=\frac{27}{64}\frac{(RT_c)^2}{P_c}
-
-b=\frac{RT_c}{8P_c}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P=\frac{RT}{V-b}-\frac{a}{V^2}\\a=\frac{27}{64}\frac{(RT_c)^2}{P_c}\\b=\frac{RT_c}{8P_c}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1846,23 +1760,19 @@ Butterworth-Heinemann, 1985.</p>
 derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Uses the set values of <cite>a</cite>.</p>
-<div class="math">
-<p><img src="../_images/math/5a5b10f037c969c199982417c626e4454997d95a.png" alt="a\alpha = a
-
-\frac{d a\alpha}{dT} = 0
-
-\frac{d^2 a\alpha}{dT^2} = 0"/></p>
-</div></dd></dl>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a\alpha = a\\\frac{d a\alpha}{dT} = 0\\\frac{d^2 a\alpha}{dT^2} = 0\end{aligned}\end{align} \]</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.functors.eos.VDW.solve_T">
 <code class="sig-name descname">solve_T</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">V</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/eos.html#VDW.solve_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.eos.VDW.solve_T" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to calculate <cite>T</cite> from a specified <cite>P</cite> and <cite>V</cite> for the VDW
 EOS. Uses <cite>a</cite>, and <cite>b</cite>, obtained from the class’s namespace.</p>
-<div class="math">
-<p><img src="../_images/math/a965a8b26cf21914ec3bbea62c658a0f3d86a868.png" alt="T =  \frac{1}{R V^{2}} \left(P V^{2} \left(V - b\right)
-+ V a - a b\right)"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[T =  \frac{1}{R V^{2}} \left(P V^{2} \left(V - b\right)
++ V a - a b\right)\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure, [Pa]</p>
@@ -1921,15 +1831,11 @@ relevant thermodynamic properties. Solves the EOS on initialization.</p>
 a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
 specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/91b95c982120dd73691b045cbc13cc4e73fec88f.png" alt="P =\frac{RT}{V-b}-\frac{a}{V\sqrt{T}(V+b)}
-
-a=\left(\frac{R^2(T_c)^{2.5}}{9(\sqrt[3]{2}-1)P_c} \right)
-=\frac{0.42748\cdot R^2(T_c)^{2.5}}{P_c}
-
-b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
-=\frac{0.08664\cdot R T_c}{P_c}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P =\frac{RT}{V-b}-\frac{a}{V\sqrt{T}(V+b)}\\a=\left(\frac{R^2(T_c)^{2.5}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2.5}}{P_c}\\b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -1978,13 +1884,9 @@ Butterworth-Heinemann, 1985.</p>
 derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Uses the set values of <cite>a</cite>.</p>
-<div class="math">
-<p><img src="../_images/math/06cbdbdbffd41d2d1f8d6a92581fea2c58fece3b.png" alt="a\alpha = \frac{a}{\sqrt{T}}
-
-\frac{d a\alpha}{dT} = - \frac{a}{2 T^{\frac{3}{2}}}
-
-\frac{d^2 a\alpha}{dT^2} = \frac{3 a}{4 T^{\frac{5}{2}}}"/></p>
-</div></dd></dl>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a\alpha = \frac{a}{\sqrt{T}}\\\frac{d a\alpha}{dT} = - \frac{a}{2 T^{\frac{3}{2}}}\\\frac{d^2 a\alpha}{dT^2} = \frac{3 a}{4 T^{\frac{5}{2}}}\end{aligned}\end{align} \]</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.functors.eos.RK.solve_T">
@@ -2038,19 +1940,11 @@ relevant thermodynamic properties. Solves the EOS on initialization.</p>
 a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
 specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/ea98ad5abe8ff62d76dbbdcda43a648cf526e334.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
-
-a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
-=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
-
-b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
-=\frac{0.08664\cdot R T_c}{P_c}
-
-\alpha(T) = \left[1 + m\left(1 - \sqrt{\frac{T}{T_c}}\right)\right]^2
-
-m = 0.480 + 1.574\omega - 0.176\omega^2"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}\\a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}\\b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}\\\alpha(T) = \left[1 + m\left(1 - \sqrt{\frac{T}{T_c}}\right)\right]^2\\m = 0.480 + 1.574\omega - 0.176\omega^2\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -2097,16 +1991,12 @@ Butterworth-Heinemann, 1985.</p>
 derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Uses the set values of <cite>Tc</cite>, <cite>m</cite>, and <cite>a</cite>.</p>
-<div class="math">
-<p><img src="../_images/math/fa85c67e77179486ba53c5f2ea661cc76c203687.png" alt="a\alpha = a \left(m \left(- \sqrt{\frac{T}{Tc}} + 1\right)
-+ 1\right)^{2}
-
-\frac{d a\alpha}{dT} = \frac{a m}{T} \sqrt{\frac{T}{Tc}} \left(m
-\left(\sqrt{\frac{T}{Tc}} - 1\right) - 1\right)
-
-\frac{d^2 a\alpha}{dT^2} = \frac{a m \sqrt{\frac{T}{Tc}}}{2 T^{2}}
-\left(m + 1\right)"/></p>
-</div></dd></dl>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a\alpha = a \left(m \left(- \sqrt{\frac{T}{Tc}} + 1\right)
++ 1\right)^{2}\\\frac{d a\alpha}{dT} = \frac{a m}{T} \sqrt{\frac{T}{Tc}} \left(m
+\left(\sqrt{\frac{T}{Tc}} - 1\right) - 1\right)\\\frac{d^2 a\alpha}{dT^2} = \frac{a m \sqrt{\frac{T}{Tc}}}{2 T^{2}}
+\left(m + 1\right)\end{aligned}\end{align} \]</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.functors.eos.SRK.solve_T">
@@ -2161,20 +2051,12 @@ specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>. Two fit cons
 expresion, with an estimation scheme for the first if unavailable and the
 second may be set to zero.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/15e7312fab7fcaff554535bc44e628373b34206b.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
-
-a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
-=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
-
-b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
-=\frac{0.08664\cdot R T_c}{P_c}
-
-\alpha(T) = \left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
-- \sqrt{T_r}}{\sqrt{T_r}}\right]^2
-
-S_1 = 0.48508 + 1.55171\omega - 0.15613\omega^2 \text{ if S1 is not tabulated }"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}\\a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}\\b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}\\\alpha(T) = \left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
+- \sqrt{T_r}}{\sqrt{T_r}}\right]^2\\S_1 = 0.48508 + 1.55171\omega - 0.15613\omega^2 \text{ if S1 is not tabulated }\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature, [K]</p>
@@ -2216,22 +2098,18 @@ American Petroleum Institute, 7E, 2005.</p>
 derivatives for this EOS. Returns <cite>a_alpha</cite>, <cite>da_alpha_dT</cite>, and 
 <cite>d2a_alpha_dT2</cite>. See <cite>GCEOS.a_alpha_and_derivatives</cite> for more 
 documentation. Uses the set values of <cite>Tc</cite>, <cite>a</cite>, <cite>S1</cite>, and <cite>S2</cite>.</p>
-<div class="math">
-<p><img src="../_images/math/c8ad980131c2d3d453cf46aacac703e94fd22fd7.png" alt="a\alpha(T) = a\left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
-- \sqrt{T_r}}{\sqrt{T_r}}\right]^2
-
-\frac{d a\alpha}{dT} = a\frac{Tc}{T^{2}} \left(- S_{2} \left(\sqrt{
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a\alpha(T) = a\left[1 + S_1\left(1-\sqrt{T_r}\right) + S_2\frac{1
+- \sqrt{T_r}}{\sqrt{T_r}}\right]^2\\\frac{d a\alpha}{dT} = a\frac{Tc}{T^{2}} \left(- S_{2} \left(\sqrt{
 \frac{T}{Tc}} - 1\right) + \sqrt{\frac{T}{Tc}} \left(S_{1} \sqrt{
 \frac{T}{Tc}} + S_{2}\right)\right) \left(S_{2} \left(\sqrt{\frac{
 T}{Tc}} - 1\right) + \sqrt{\frac{T}{Tc}} \left(S_{1} \left(\sqrt{
-\frac{T}{Tc}} - 1\right) - 1\right)\right)
-
-\frac{d^2 a\alpha}{dT^2} = a\frac{1}{2 T^{3}} \left(S_{1}^{2} T
+\frac{T}{Tc}} - 1\right) - 1\right)\right)\\\frac{d^2 a\alpha}{dT^2} = a\frac{1}{2 T^{3}} \left(S_{1}^{2} T
 \sqrt{\frac{T}{Tc}} - S_{1} S_{2} T \sqrt{\frac{T}{Tc}} + 3 S_{1}
 S_{2} Tc \sqrt{\frac{T}{Tc}} + S_{1} T \sqrt{\frac{T}{Tc}} 
 - 3 S_{2}^{2} Tc \sqrt{\frac{T}{Tc}} + 4 S_{2}^{2} Tc + 3 S_{2} 
-Tc \sqrt{\frac{T}{Tc}}\right)"/></p>
-</div></dd></dl>
+Tc \sqrt{\frac{T}{Tc}}\right)\end{aligned}\end{align} \]</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.functors.eos.APISRK.solve_T">
@@ -2277,17 +2155,9 @@ relevant thermodynamic properties. Solves the EOS on initialization.</p>
 a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
 specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/c7d6eda66222987dc18e5be2d9f7f5cc4606248d.png" alt="P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}
-
- a=0.45724\frac{R^2T_c^2}{P_c}
-
-   b=0.07780\frac{RT_c}{P_c}
-
-\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})
-
-\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]"/></p>
-</div><p>For sub-critical conditions:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{v-b}-\frac{a\alpha(T)}{v(v+b)+b(v-b)}\\ a=0.45724\frac{R^2T_c^2}{P_c}\\   b=0.07780\frac{RT_c}{P_c}\\\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})\\\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]\end{aligned}\end{align} \]</div>
+<p>For sub-critical conditions:</p>
 <p>L0, M0, N0 =  0.125283, 0.911807,  1.948150;</p>
 <p>L1, M1, N1 = 0.511614, 0.784054, 2.812520</p>
 <p>For supercritical conditions:</p>
@@ -2356,19 +2226,11 @@ relevant thermodynamic properties. Solves the EOS on initialization.</p>
 a_alpha and its first and second derivatives, and <cite>solve_T</cite>, which from a 
 specified <cite>P</cite> and <cite>V</cite> obtains <cite>T</cite>.</p>
 <p>Two of <cite>T</cite>, <cite>P</cite>, and <cite>V</cite> are needed to solve the EOS.</p>
-<div class="math">
-<p><img src="../_images/math/a965d733e60fbd07ff5fc2565c17832809041a41.png" alt="P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}
-
-a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
-=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}
-
-b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
-=\frac{0.08664\cdot R T_c}{P_c}
-
-\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})
-
-\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]"/></p>
-</div><p>For sub-critical conditions:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}P = \frac{RT}{V-b} - \frac{a\alpha(T)}{V(V+b)}\\a=\left(\frac{R^2(T_c)^{2}}{9(\sqrt[3]{2}-1)P_c} \right)
+=\frac{0.42748\cdot R^2(T_c)^{2}}{P_c}\\b=\left( \frac{(\sqrt[3]{2}-1)}{3}\right)\frac{RT_c}{P_c}
+=\frac{0.08664\cdot R T_c}{P_c}\\\alpha = \alpha^{(0)} + \omega(\alpha^{(1)}-\alpha^{(0)})\\\alpha^{(i)} = T_r^{N(M-1)}\exp[L(1-T_r^{NM})]\end{aligned}\end{align} \]</div>
+<p>For sub-critical conditions:</p>
 <p>L0, M0, N0 =  0.141599, 0.919422, 2.496441</p>
 <p>L1, M1, N1 = 0.500315, 0.799457, 3.291790</p>
 <p>For supercritical conditions:</p>

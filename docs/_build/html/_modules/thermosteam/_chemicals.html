@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -182,12 +183,13 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;CompiledChemicals&#39;</span><span class="p">)</span>
 <span class="nb">setattr</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
+<span class="n">key_thermo_props</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
+
 <span class="c1"># %% Utilities</span>
 
 <span class="k">def</span> <span class="nf">must_compile</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;method valid only for compiled chemicals; &quot;</span>
                     <span class="s2">&quot;run &lt;chemicals&gt;.compile() to compile&quot;</span><span class="p">)</span>
-
 
 <span class="c1"># %% Chemicals</span>
 
@@ -204,24 +206,30 @@
 <span class="sd">              * PubChem CID, prefixed by &#39;PubChem=&#39;</span>
 <span class="sd">              * SMILES (prefix with &#39;SMILES=&#39; to ensure smiles parsing)</span>
 <span class="sd">              * CAS number</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    Create a Chemicals object from chemical identifiers:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; from thermosteam import Chemicals</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; chemicals</span>
+<span class="sd">    Chemicals([Water, Ethanol])</span>
+<span class="sd">    </span>
+<span class="sd">    All chemicals are stored as attributes:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; chemicals.Water, chemicals.Ethanol</span>
+<span class="sd">    (Chemical(&#39;Water&#39;), Chemical(&#39;Ethanol&#39;))</span>
+<span class="sd">    </span>
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
-        <span class="n">cache</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span>
-        <span class="k">if</span> <span class="n">chemicals</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-            <span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
-            <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">):</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chem</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">(</span><span class="n">chem</span><span class="p">))</span>
-            <span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
-            <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
+        <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chem</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">(</span><span class="n">chem</span><span class="p">))</span>
     
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;can&#39;t set attribute; use &lt;Chemicals&gt;.append instead&quot;</span><span class="p">)</span>
@@ -229,28 +237,80 @@
     <span class="k">def</span> <span class="nf">__getnewargs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">),)</span>
     
-    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Chemicals.compile"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cast as a CompiledChemicals object.</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import Chemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.compile()</span>
+<span class="sd">        &gt;&gt;&gt; chemicals</span>
+<span class="sd">        CompiledChemicals([Water, Ethanol])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">CompiledChemicals</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span></div>
     
-    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)([</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">])</span>
+<div class="viewcode-block" id="Chemicals.subgroup"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.subgroup">[docs]</a>    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new subgroup of chemicals.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : Iterable[str]</span>
+<span class="sd">              Chemical identifiers.</span>
+<span class="sd">              </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals = Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Propane&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.subgroup([&#39;Propane&#39;, &#39;Water&#39;])</span>
+<span class="sd">        Chemicals([Propane, Water])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)([</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">])</span></div>
         
-    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+<div class="viewcode-block" id="Chemicals.retrieve"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of chemicals.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : Iterable[str]</span>
+<span class="sd">              Chemical identifiers.</span>
+<span class="sd">              </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals = Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Propane&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.retrieve([&#39;Propane&#39;, &#39;Water&#39;])</span>
+<span class="sd">        [Chemical(&#39;Propane&#39;), Chemical(&#39;Water&#39;)]</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Chemicals.append"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Append a Chemical.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;only &#39;Chemical&#39; objects are allowed, &quot;</span>
+                                               <span class="sa">f</span><span class="s2">&quot;not &#39;{type(chemical).__name__}&#39;&quot;</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Chemicals.extend"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Extend with more Chemical objects.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">Chemicals</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chemicals</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;only &#39;Chemical&#39; objects are allowed, &quot;</span>
+                                                        <span class="sa">f</span><span class="s2">&quot;not &#39;{type(chemical).__name__}&#39;&quot;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">)</span></div>
     
     <span class="n">kwarray</span> <span class="o">=</span> <span class="n">array</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">must_compile</span>
         
@@ -263,11 +323,8 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[{&#39;, &#39;.join(self.__dict__)}]&quot;</span>
-    
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;{type(self).__name__}(</span><span class="si">{self}</span><span class="s1">)&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(self.__dict__)}])&quot;</span></div>
 
 
 <span class="nd">@read_only</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;extend&#39;</span><span class="p">))</span>
@@ -285,43 +342,165 @@
 <span class="sd">              * SMILES (prefix with &#39;SMILES=&#39; to ensure smiles parsing)</span>
 <span class="sd">              * CAS number</span>
 <span class="sd">        </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tuple : tuple[Chemical]</span>
+<span class="sd">            All compiled chemicals.</span>
+<span class="sd">    size : int</span>
+<span class="sd">           Number of chemicals.</span>
+<span class="sd">    IDs : tuple[str]</span>
+<span class="sd">          IDs of all chemicals.</span>
+<span class="sd">    CASs : tuple[str]</span>
+<span class="sd">           CASs of all chemicals</span>
+<span class="sd">    MW : 1d ndarray</span>
+<span class="sd">         MWs of all chemicals.</span>
+<span class="sd">    Hf : 1d ndarray</span>
+<span class="sd">         Heats of formation of all chemicals.</span>
+<span class="sd">    Hc : 1d ndarray</span>
+<span class="sd">         Heats of combustion of all chemicals.</span>
+<span class="sd">    equilibrium_chemicals : tuple[str]</span>
+<span class="sd">                            IDs of chemicals that may have multiple phases.</span>
+<span class="sd">    heavy_chemicals : tuple[str]</span>
+<span class="sd">                      IDs of chemicals that are only present in liquid or solid phases.</span>
+<span class="sd">    light_chemicals : tuple[str]</span>
+<span class="sd">                      IDs of chemicals that are only present in gas phases.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    Create a CompiledChemicals object from chemical identifiers</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; from thermosteam import CompiledChemicals, Chemical</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; chemicals</span>
+<span class="sd">    CompiledChemicals([Water, Ethanol])</span>
+<span class="sd">    </span>
+<span class="sd">    All chemicals are stored as attributes:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; chemicals.Water, chemicals.Ethanol</span>
+<span class="sd">    (Chemical(&#39;Water&#39;), Chemical(&#39;Ethanol&#39;))</span>
+<span class="sd">    </span>
+<span class="sd">    Note that because they are compiled, the append and extend methods do not work:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; # Propane = Chemical(&#39;Propane&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # chemicals.append(Propane)</span>
+<span class="sd">    &gt;&gt;&gt; # TypeError: &#39;CompiledChemicals&#39; object is read-only</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+    <span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span>
+        <span class="n">isa</span> <span class="o">=</span> <span class="nb">isinstance</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">chem</span> <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">chem</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">)</span> <span class="k">else</span> <span class="n">Chemical</span><span class="p">(</span><span class="n">chem</span><span class="p">)</span>
+                           <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>        
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span>
+        <span class="k">if</span> <span class="n">chemicals</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="n">setfield</span> <span class="o">=</span> <span class="nb">setattr</span>
+            <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+                <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chem</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
     
     <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDs</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
     
-    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">CompiledChemicals</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple</span><span class="p">,)</span>
     
+    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Do nothing, CompiledChemicals objects are already compiled.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">refresh_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refresh constant arrays according to their chemical values,</span>
+<span class="sd">        including the molecular weight, heats of formation,</span>
+<span class="sd">        and heats of combustion.</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Some chemical constants may not be defined in thermosteam, </span>
+<span class="sd">        such as the heat of combustion.</span>
+<span class="sd">        We can update it and refresh the compiled constants::</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Glucose&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.Glucose.Hc = 2291836.024</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.refresh_constants()</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.Hc</span>
+<span class="sd">        array([2291836.024])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuple</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">MW</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hc</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+
     <span class="k">def</span> <span class="nf">_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
-        <span class="n">tup</span> <span class="o">=</span> <span class="nb">tuple</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">tup</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">IDs</span> <span class="o">=</span> <span class="n">tup</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">CAS</span> <span class="o">=</span> <span class="n">tup</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">tuple_</span> <span class="o">=</span> <span class="nb">tuple</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">get_missing_slots</span><span class="p">(</span><span class="n">key_thermo_props</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{i}</span><span class="s2"> is missing key thermodynamic properties&quot;</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">CAS</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="n">tup</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;tuple&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemicals</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;IDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IDs</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;CASs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">MW</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hc</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span> <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">index</span><span class="p">)))</span>
-        <span class="n">light_values</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-        <span class="n">heavy_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">nonfinite</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_islight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">in</span> <span class="n">light_values</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_isheavy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">in</span> <span class="n">heavy_values</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_equilibrium&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">Tb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nonfinite</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+                                      <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">index</span><span class="p">)))</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index_cache&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">equilibrium_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">heavy_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">light_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+            <span class="n">locked_phase</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">locked_state</span><span class="o">.</span><span class="n">phase</span>
+            <span class="k">if</span> <span class="n">locked_phase</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">locked_phase</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">):</span>
+                    <span class="n">heavy_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">locked_phase</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span>
+                    <span class="n">light_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;chemical locked state has an invalid phase&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">equilibrium_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;equilibrium_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">equilibrium_chemicals</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;heavy_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">heavy_chemicals</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;light_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">light_chemicals</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_equilibrium_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eq_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">equilibrium_chemicals</span><span class="p">]</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_equilibrium&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_equilibrium</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_heavy_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">heavy_chemicals</span><span class="p">]</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_light_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">light_chemicals</span><span class="p">]</span>
+        <span class="n">has_equilibrium</span><span class="p">[</span><span class="n">eq_index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        
     
     <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new subgroup of chemicals.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : Iterable[str]</span>
+<span class="sd">              Chemical identifiers.</span>
+<span class="sd">              </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Propane&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.subgroup([&#39;Propane&#39;, &#39;Water&#39;])</span>
+<span class="sd">        CompiledChemicals([Propane, Water])</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">Chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="n">new</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
@@ -332,10 +511,50 @@
         <span class="k">return</span> <span class="n">new</span>
     
     <span class="k">def</span> <span class="nf">get_synonyms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all synonyms of a chemical.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ID : str</span>
+<span class="sd">            Chemical identifier.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Get all synonyms of water:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_synonyms(&#39;Water&#39;)</span>
+<span class="sd">        [&#39;7732-18-5&#39;, &#39;Water&#39;]</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">j</span><span class="o">==</span><span class="n">k</span><span class="p">]</span> 
 
     <span class="k">def</span> <span class="nf">set_synonym</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">synonym</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a new synonym for a chemical.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ID : str</span>
+<span class="sd">            Chemical identifier.</span>
+<span class="sd">        synonym : str</span>
+<span class="sd">            New identifier for chemical.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Set new synonym for water:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.set_synonym(&#39;Water&#39;, &#39;H2O&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.H2O is chemicals.Water</span>
+<span class="sd">        True</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chemical</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">)</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="k">if</span> <span class="n">synonym</span> <span class="ow">in</span> <span class="n">dct</span> <span class="ow">and</span> <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">chemical</span><span class="p">:</span>
@@ -345,7 +564,8 @@
             <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical</span>
     
     <span class="k">def</span> <span class="nf">kwarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an array with entries that correspond to the orded chemical IDs.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an array with entries that correspond to the orded chemical IDs.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -354,7 +574,7 @@
 <span class="sd">            </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; chemicals.kwarray(dict(Water=2))</span>
 <span class="sd">        array([2., 0.])</span>
@@ -363,7 +583,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ID_data</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
     
     <span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an array with entries that correspond to the ordered chemical IDs.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an array with entries that correspond to the ordered chemical IDs.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -374,45 +595,104 @@
 <span class="sd">            </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; chemicals.array([&#39;Water&#39;], [2])</span>
 <span class="sd">        array([2., 0.])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="n">array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">IDs</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">IDs</span><span class="p">))]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">return</span> <span class="n">array</span>
 
     <span class="k">def</span> <span class="nf">iarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a chemical indexer.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        IDs : iterable</span>
+<span class="sd">              Chemical IDs.</span>
+<span class="sd">        data : array_like</span>
+<span class="sd">               Data corresponding to IDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Create a chemical indexer from chemical IDs and data:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Methanol&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer = chemicals.iarray([&#39;Water&#39;, &#39;Ethanol&#39;], [2., 1.])</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer.show()</span>
+<span class="sd">        ChemicalIndexer:</span>
+<span class="sd">         Water    2</span>
+<span class="sd">         Ethanol  1</span>
+<span class="sd">        </span>
+<span class="sd">        Note that indexers allow for computationally efficient indexing using identifiers:</span>
+<span class="sd">            </span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer[&#39;Ethanol&#39;, &#39;Water&#39;]</span>
+<span class="sd">        array([1., 2.])</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer[&#39;Ethanol&#39;]</span>
+<span class="sd">        1.0</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ikwarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a chemical indexer.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ID_data : Dict[str: float]</span>
+<span class="sd">              Chemical ID-value pairs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Create a chemical indexer from chemical IDs and data:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Methanol&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer.show()</span>
+<span class="sd">        ChemicalIndexer:</span>
+<span class="sd">         Water    2</span>
+<span class="sd">         Ethanol  1</span>
+<span class="sd">        </span>
+<span class="sd">        Note that indexers allow for computationally efficient indexing using identifiers:</span>
+<span class="sd">            </span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer[&#39;Ethanol&#39;, &#39;Water&#39;]</span>
+<span class="sd">        array([1., 2.])</span>
+<span class="sd">        &gt;&gt;&gt; chemical_indexer[&#39;Ethanol&#39;]</span>
+<span class="sd">        1.0</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="n">ID_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return index of specified chemical.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return index of specified chemical.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ID: str</span>
-<span class="sd">            Chemicl ID</span>
+<span class="sd">            Chemical ID</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Index by ID:</span>
 <span class="sd">        </span>
-<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; chemicals.index(&#39;Water&#39;)</span>
-<span class="sd">        1</span>
+<span class="sd">        0</span>
 
 <span class="sd">        Indices by CAS number:</span>
 <span class="sd">        </span>
-<span class="sd">        &gt;&gt;&gt; chemicals.index(&#39;7732-18-5&#39;):</span>
-<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.index(&#39;7732-18-5&#39;)</span>
+<span class="sd">        0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
@@ -420,7 +700,8 @@
             <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return indices of specified chemicals.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return indices of specified chemicals.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -431,15 +712,15 @@
 <span class="sd">        --------</span>
 <span class="sd">        Indices by ID:</span>
 <span class="sd">        </span>
-<span class="sd">        &gt;&gt;&gt; from ether import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; chemicals.indices([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        [1, 0]</span>
+<span class="sd">        [0, 1]</span>
 
 <span class="sd">        Indices by CAS number:</span>
 <span class="sd">        </span>
-<span class="sd">        &gt;&gt;&gt; chemicals.indices([&#39;7732-18-5&#39;, &#39;64-17-5&#39;]):</span>
-<span class="sd">        [1, 0]</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.indices([&#39;7732-18-5&#39;, &#39;64-17-5&#39;])</span>
+<span class="sd">        [0, 1]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -450,6 +731,33 @@
                 <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>     
     
     <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return index/indices of specified chemicals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : iterable[str] or str</span>
+<span class="sd">              A single chemical identifier or multiple.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        CAS numbers are also supported.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Get multiple indices:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_index([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        [0, 1]</span>
+<span class="sd">        </span>
+<span class="sd">        Get a single index:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_index(&#39;Ethanol&#39;)</span>
+<span class="sd">        1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
         <span class="k">try</span><span class="p">:</span> 
             <span class="n">index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -479,20 +787,25 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
         
-    <span class="k">def</span> <span class="nf">equilibrium_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return indices of species in equilibrium.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_equilibrium</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">heavy_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return indices of heavy species not in equilibrium.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_isheavy</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">light_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return indices of light species not in equilibrium.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_islight</span> <span class="o">&amp;</span> <span class="n">nonzero</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">get_equilibrium_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzeros</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return indices of species in equilibrium</span>
+<span class="sd">        given an array dictating whether or not</span>
+<span class="sd">        the chemicals are present.</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Methanol&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; data = chemicals.kwarray(dict(Water=2., Ethanol=1.))</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_equilibrium_indices(data!=0)</span>
+<span class="sd">        array([0, 2], dtype=int64)</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_equilibrium</span> <span class="o">&amp;</span> <span class="n">nonzeros</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[{&#39;, &#39;.join(self.IDs)}]&quot;</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(self.IDs)}])&quot;</span>
 </pre></div>
 
            </div>

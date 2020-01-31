@@ -1,0 +1,5 @@
+Chemicals
+=========
+
+.. autoclass:: thermosteam.Chemicals
+   :members:

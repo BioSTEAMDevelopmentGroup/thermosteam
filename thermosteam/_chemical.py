@@ -760,6 +760,11 @@ class Chemical:
         slots : Iterable[str], optional
             Names of chemical properties to default.
         
+        Returns
+        -------
+        missing_slots : list[str]
+            Names of chemical properties that are still missing.
+        
         Examples
         --------
         >>> from thermosteam import Chemical

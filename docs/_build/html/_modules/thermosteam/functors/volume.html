@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -200,10 +201,52 @@
 
 <span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
 <span class="k">def</span> <span class="nf">Yen_Woods</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The molar volume of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Vc/Vs = 1 + A(1-T_r)^{1/3} + B(1-T_r)^{2/3} + D(1-T_r)^{4/3}</span>
+
+<span class="sd">        D = 0.93-B</span>
+
+<span class="sd">        A = 17.4425 - 214.578Z_c + 989.625Z_c^2 - 1522.06Z_c^3</span>
+
+<span class="sd">        B = -3.28257 + 13.6377Z_c + 107.4844Z_c^2-384.211Z_c^3</span>
+<span class="sd">        \text{ if } Zc \le 0.26</span>
+
+<span class="sd">        B = 60.2091 - 402.063Z_c + 501.0 Z_c^2 + 641.0 Z_c^3</span>
+<span class="sd">        \text{ if } Zc \ge 0.26</span>
+
+<span class="sd">    </span>
+<span class="sd">    Original equation was in terms of density, but it is converted here.</span>
+
+<span class="sd">    No example has been found, nor are there points in the article. However,</span>
+<span class="sd">    it is believed correct. For compressed liquids with the Yen-Woods method,</span>
+<span class="sd">    see the `Yen_Woods_compressed` function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; f = Yen_Woods(Tc=647.14, Vc=5.6e-05, Zc=0.2294728175007233)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Yen_Woods(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Vc: 5.6e-05 m^3/mol</span>
+<span class="sd">     Zc: 0.22947</span>
+<span class="sd">    &gt;&gt;&gt; f(300)</span>
+<span class="sd">    1.7715316221999628e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Yen, Lewis C., and S. S. Woods. &quot;A Generalized Equation for Computer</span>
+<span class="sd">           Calculation of Liquid Densities.&quot; AIChE Journal 12, no. 1 (1966):</span>
+<span class="sd">           95-99. doi:10.1002/aic.690120119</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">return</span> <span class="n">Vc</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Yen_Woods"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yen_Woods">[docs]</a><span class="nd">@Yen_Woods</span><span class="o">.</span><span class="n">wrapper</span>
+<div class="viewcode-block" id="Yen_Woods"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yen_Woods">[docs]</a><span class="nd">@Yen_Woods</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Yen_Woods</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
     <span class="n">Zc2</span> <span class="o">=</span> <span class="n">Zc</span><span class="o">*</span><span class="n">Zc</span>
     <span class="n">Zc3</span> <span class="o">=</span> <span class="n">Zc2</span><span class="o">*</span><span class="n">Zc</span>
@@ -215,23 +258,116 @@
     <span class="n">D</span> <span class="o">=</span> <span class="mf">0.93</span> <span class="o">-</span> <span class="n">B</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">Vc</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="n">D</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="Rackett"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Rackett">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
-<span class="k">def</span> <span class="nf">Rackett</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="p">):</span>
+<div class="viewcode-block" id="Rackett"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Rackett">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Rackett</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The molar volume of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V_s = \frac{RT_c}{P_c}{Z_c}^{[1+(1-{T/T_c})^{2/7} ]}</span>
+
+<span class="sd">    According to Reid et. al, underpredicts volume for compounds with Zc &lt; 0.22</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Propane, example from the API Handbook</span>
+
+<span class="sd">    &gt;&gt;&gt; f = Rackett(Tc=369.83, Pc=4248000.0, Zc=0.2763)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Rackett(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 369.83 K</span>
+<span class="sd">     Pc: 4.248e+06 Pa</span>
+<span class="sd">     Zc: 0.2763</span>
+<span class="sd">    &gt;&gt;&gt; f(T=272.03889)</span>
+<span class="sd">    8.299222192473635e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Rackett, Harold G. &quot;Equation of State for Saturated Liquids.&quot;</span>
+<span class="sd">           Journal of Chemical &amp; Engineering Data 15, no. 4 (1970): 514-517.</span>
+<span class="sd">           doi:10.1021/je60047a012</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="n">Zc</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span></div>
 
 <span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
 <span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The molar volume of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V_s = \frac{RT_c}{P_c}{(0.29056-0.08775\omega)}^{[1+(1-{T/T_c})^{2/7}]}</span>
+
+<span class="sd">    This equation is an improvement on the Rackett equation.</span>
+<span class="sd">    This is often presented as the Rackett equation.</span>
+<span class="sd">    The acentric factor is used here, instead of the critical compressibility.</span>
+<span class="sd">    A variant using a reference fluid also exists.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; f = Yamada_Gunn(Tc=647.14, Pc=22048320.0, omega=0.344)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Yamada_Gunn(T, P) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Pc: 2.2048e+07 Pa</span>
+<span class="sd">     omega: 0.344</span>
+<span class="sd">    &gt;&gt;&gt; f(T=300, P=101325)</span>
+<span class="sd">    1.9511311612842117e-08</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Gunn, R. D., and Tomoyoshi Yamada. &quot;A Corresponding States</span>
+<span class="sd">        Correlation of Saturated Liquid Volumes.&quot; AIChE Journal 17, no. 6</span>
+<span class="sd">        (1971): 1341-45. doi:10.1002/aic.690170613</span>
+<span class="sd">    .. [2] Yamada, Tomoyoshi, and Robert D. Gunn. &quot;Saturated Liquid Molar</span>
+<span class="sd">        Volumes. Rackett Equation.&quot; Journal of Chemical &amp; Engineering Data 18,</span>
+<span class="sd">        no. 2 (1973): 234-36. doi:10.1021/je60057a006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">k</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Yamada_Gunn"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yamada_Gunn">[docs]</a><span class="nd">@Yamada_Gunn</span><span class="o">.</span><span class="n">wrapper</span>
+<div class="viewcode-block" id="Yamada_Gunn"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Yamada_Gunn">[docs]</a><span class="nd">@Yamada_Gunn</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="p">(</span><span class="mf">0.29056</span> <span class="o">-</span> <span class="mf">0.08775</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span><span class="s1">&#39;k&#39;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="n">k</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="Townsend_Hales"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Townsend_Hales">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
 <span class="k">def</span> <span class="nf">Townsend_Hales</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The density of a saturated liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Vs = V_c/\left(1+0.85(1-T_r)+(1.692+0.986\omega)(1-T_r)^{1/3}\right)</span>
+
+<span class="sd">    Calculates saturation liquid density, using the Townsend and Hales</span>
+<span class="sd">    CSP method as modified from the original Riedel equation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the molar volume of water at 300 K:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; f = Townsend_Hales(Tc=647.14, Vc=5.6e-05, omega=0.344)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Townsend_Hales(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Vc: 5.6e-05 m^3/mol</span>
+<span class="sd">     omega: 0.344</span>
+<span class="sd">    &gt;&gt;&gt; f(T=300)</span>
+<span class="sd">    1.8027637900666407e-05</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Hales, J. L, and R Townsend. &quot;Liquid Densities from 293 to 490 K of</span>
+<span class="sd">       Nine Aromatic Hydrocarbons.&quot; The Journal of Chemical Thermodynamics</span>
+<span class="sd">       4, no. 5 (1972): 763-72. doi:10.1016/0021-9614(72)90050-X</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
-    <span class="k">return</span> <span class="n">Vc</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.85</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.692</span> <span class="o">+</span> <span class="mf">0.986</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">Vc</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.85</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.692</span> <span class="o">+</span> <span class="mf">0.986</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span>
 
 <span class="n">Bhirud_normal_Trs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.98</span><span class="p">,</span> <span class="mf">0.982</span><span class="p">,</span> <span class="mf">0.984</span><span class="p">,</span> <span class="mf">0.986</span><span class="p">,</span>
                      <span class="mf">0.988</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.992</span><span class="p">,</span> <span class="mf">0.994</span><span class="p">,</span>
@@ -247,8 +383,46 @@
 <span class="n">Bhirud_normal_lnU1_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">Bhirud_normal_Trs</span><span class="p">,</span>
                                      <span class="n">Bhirud_normal_lnU1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Bhirud_Normal"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Bhirud_Normal">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<div class="viewcode-block" id="Bhirud_Normal"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Bhirud_Normal">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Bhirud_Normal</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The density of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        &amp;\ln \frac{P_c}{\rho RT} = \ln U^{(0)} + \omega\ln U^{(1)}</span>
+
+<span class="sd">        &amp;\ln U^{(0)} = 1.396 44 - 24.076T_r+ 102.615T_r^2</span>
+<span class="sd">        -255.719T_r^3+355.805T_r^4-256.671T_r^5 + 75.1088T_r^6</span>
+
+<span class="sd">        &amp;\ln U^{(1)} = 13.4412 - 135.7437 T_r + 533.380T_r^2-</span>
+<span class="sd">        1091.453T_r^3+1231.43T_r^4 - 728.227T_r^5 + 176.737T_r^6</span>
+
+<span class="sd">    Claimed inadequate by others.</span>
+
+<span class="sd">    An interpolation table for ln U values are used from Tr = 0.98 - 1.000.</span>
+<span class="sd">    Has terrible behavior at low reduced temperatures.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the molar volume of water at 300 K:</span>
+
+<span class="sd">    &gt;&gt;&gt; f = Bhirud_Normal(Tc=647.14, Pc=22048320.0, omega=0.344)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Bhirud_Normal(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Pc: 2.2048e+07 Pa</span>
+<span class="sd">     omega: 0.344</span>
+<span class="sd">    &gt;&gt;&gt; f(T=300)</span>
+<span class="sd">    2.069232443882547e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bhirud, Vasant L. &quot;Saturated Liquid Densities of Normal Fluids.&quot;</span>
+<span class="sd">       AIChE Journal 24, no. 6 (November 1, 1978): 1127-31.</span>
+<span class="sd">       doi:10.1002/aic.690240630</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">if</span> <span class="n">Tr</span> <span class="o">&lt;=</span> <span class="mf">0.98</span><span class="p">:</span>
         <span class="n">lnU0</span> <span class="o">=</span> <span class="mf">1.39644</span> <span class="o">-</span> <span class="mf">24.076</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">102.615</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">255.719</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span> \
@@ -264,8 +438,52 @@
     <span class="n">Unonpolar</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">lnU0</span> <span class="o">+</span> <span class="n">omega</span><span class="o">*</span><span class="n">lnU1</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">Unonpolar</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">Pc</span></div>
 
-<div class="viewcode-block" id="Costald"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<div class="viewcode-block" id="Costald"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Costald</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A popular and accurate estimation method. If possible, fit parameters are</span>
+<span class="sd">    used; alternatively critical properties work well.</span>
+
+<span class="sd">    The density of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V_s=V^*V^{(0)}[1-\omega_{SRK}V^{(\delta)}]</span>
+
+<span class="sd">        V^{(0)}=1-1.52816(1-T_r)^{1/3}+1.43907(1-T_r)^{2/3}</span>
+<span class="sd">        - 0.81446(1-T_r)+0.190454(1-T_r)^{4/3}</span>
+
+<span class="sd">        V^{(\delta)}=\frac{-0.296123+0.386914T_r-0.0427258T_r^2-0.0480645T_r^3}</span>
+<span class="sd">        {T_r-1.00001}</span>
+
+<span class="sd">    Units are that of critical or fit constant volume.</span>
+
+<span class="sd">    196 constants are fit to this function in [1]_.</span>
+<span class="sd">    Range: 0.25 &lt; Tr &lt; 0.95, often said to be to 1.0</span>
+
+<span class="sd">    This function has been checked with the API handbook example problem.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the volume of water at 300 K and 1 atm:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; f = Costald(Tc=647.14, Vc=5.6e-05, omega=0.344)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Costald(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Vc: 5.6e-05 m^3/mol</span>
+<span class="sd">     omega: 0.344</span>
+<span class="sd">    &gt;&gt;&gt; f(T=300, P=101325)</span>
+<span class="sd">    1.8188550933914777e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Hankinson, Risdon W., and George H. Thomson. &quot;A New Correlation for</span>
+<span class="sd">       Saturated Densities of Liquids and Their Mixtures.&quot; AIChE Journal</span>
+<span class="sd">       25, no. 4 (1979): 653-663. doi:10.1002/aic.690250412</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">V_delta</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.296123</span> <span class="o">+</span> <span class="mf">0.386914</span><span class="o">*</span><span class="n">Tr</span> <span class="o">-</span> <span class="mf">0.0427258</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span>
         <span class="o">-</span> <span class="mf">0.0480645</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Tr</span> <span class="o">-</span> <span class="mf">1.00001</span><span class="p">)</span>
@@ -273,28 +491,133 @@
         <span class="o">-</span> <span class="mf">0.81446</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.190454</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V_0</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">omega</span><span class="o">*</span><span class="n">V_delta</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Campbell_Thodos"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Campbell_Thodos">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
-<span class="k">def</span> <span class="nf">Campbell_Thodos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hydroxyl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Campbell_Thodos"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Campbell_Thodos">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">,</span> <span class="n">equation</span><span class="o">=</span><span class="s1">&#39;Campbell-Thodos CSP&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Campbell_Thodos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    An old and uncommon estimation method.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V_s = \frac{RT_c}{P_c}{Z_{RA}}^{[1+(1-T_r)^{2/7}]}</span>
+
+<span class="sd">        Z_{RA} = \alpha + \beta(1-T_r)</span>
+
+<span class="sd">        \alpha = 0.3883-0.0179s</span>
+
+<span class="sd">        s = T_{br} \frac{\ln P_c}{(1-T_{br})}</span>
+
+<span class="sd">        \beta = 0.00318s-0.0211+0.625\Lambda^{1.35}</span>
+
+<span class="sd">        \Lambda = \frac{P_c^{1/3}} { M^{1/2} T_c^{5/6}}</span>
+
+<span class="sd">    For polar compounds:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \theta = P_c \mu^2/T_c^2</span>
+
+<span class="sd">        \alpha = 0.3883 - 0.0179s - 130540\theta^{2.41}</span>
+
+<span class="sd">        \beta = 0.00318s - 0.0211 + 0.625\Lambda^{1.35} + 9.74\times</span>
+<span class="sd">        10^6 \theta^{3.38}</span>
+
+<span class="sd">    Polar Combounds with hydroxyl groups (water, alcohols)</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \alpha = \left[0.690T_{br} -0.3342 + \frac{5.79\times 10^{-10}}</span>
+<span class="sd">        {T_{br}^{32.75}}\right] P_c^{0.145}</span>
+
+<span class="sd">        \beta = 0.00318s - 0.0211 + 0.625 \Lambda^{1.35} + 5.90\Theta^{0.835}</span>
+
+
+<span class="sd">    If a dipole is provided, the polar chemical method is used.</span>
+<span class="sd">    The paper is an excellent read.</span>
+<span class="sd">    Pc is internally converted to atm.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the volume of water at 300 K:   </span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; f = Campbell_Thodos(Tb=373.124, Tc=647.14, Pc=22048320.0, MW=18.02, dipole=1.85, has_hydroxyl=True)</span>
+<span class="sd">    &gt;&gt;&gt; f</span>
+<span class="sd">    Functor: Campbell_Thodos(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="sd">     Tb: 373.12 K</span>
+<span class="sd">     Tc: 647.14 K</span>
+<span class="sd">     Pc: 2.2048e+07 Pa</span>
+<span class="sd">     MW: 18.02 g/mol</span>
+<span class="sd">     dipole: 1.85 Debye</span>
+<span class="sd">     has_hydroxyl: 1</span>
+<span class="sd">    &gt;&gt;&gt; f(T=300, P=101325)</span>
+<span class="sd">    1.8048013082120765e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Campbell, Scott W., and George Thodos. &quot;Prediction of Saturated</span>
+<span class="sd">       Liquid Densities and Critical Volumes for Polar and Nonpolar</span>
+<span class="sd">       Substances.&quot; Journal of Chemical &amp; Engineering Data 30, no. 1</span>
+<span class="sd">       (January 1, 1985): 102-11. doi:10.1021/je00039a032.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">Tbr</span> <span class="o">=</span> <span class="n">Tb</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">Tbr</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">Pc</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tbr</span><span class="p">)</span>
-    <span class="n">Lambda</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mf">6.</span><span class="p">))</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3883</span> <span class="o">-</span> <span class="mf">0.0179</span><span class="o">*</span><span class="n">s</span>
+    <span class="n">Lambda</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">MW</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mf">6.</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_hydroxyl</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3883</span> <span class="o">-</span> <span class="mf">0.0179</span><span class="o">*</span><span class="n">s</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.00318</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mf">0.0211</span> <span class="o">+</span> <span class="mf">0.625</span><span class="o">*</span><span class="n">Lambda</span><span class="o">**</span><span class="p">(</span><span class="mf">1.35</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dipole</span><span class="p">:</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">*</span><span class="n">dipole</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span>
-        <span class="n">alpha</span> <span class="o">-=</span> <span class="mi">130540</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">2.41</span>
-        <span class="n">beta</span> <span class="o">+=</span> <span class="mf">9.74E6</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">3.38</span>
-    <span class="k">if</span> <span class="n">hydroxyl</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.00318</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mf">0.0211</span> <span class="o">+</span> <span class="mf">0.625</span><span class="o">*</span><span class="n">Lambda</span><span class="o">**</span><span class="p">(</span><span class="mf">1.35</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.90</span><span class="o">*</span><span class="n">theta</span><span class="o">**</span><span class="mf">0.835</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.69</span><span class="o">*</span><span class="n">Tbr</span> <span class="o">-</span> <span class="mf">0.3342</span> <span class="o">+</span> <span class="mf">5.79E-10</span><span class="o">/</span><span class="n">Tbr</span><span class="o">**</span><span class="mf">32.75</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">**</span><span class="mf">0.145</span>
+        <span class="k">if</span> <span class="n">has_hydroxyl</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">+=</span> <span class="mf">5.90</span><span class="o">*</span><span class="n">theta</span><span class="o">**</span><span class="mf">0.835</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.69</span><span class="o">*</span><span class="n">Tbr</span> <span class="o">-</span> <span class="mf">0.3342</span> <span class="o">+</span> <span class="mf">5.79E-10</span><span class="o">/</span><span class="n">Tbr</span><span class="o">**</span><span class="mf">32.75</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">**</span><span class="mf">0.145</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alpha</span> <span class="o">-=</span> <span class="mi">130540</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">2.41</span>
+            <span class="n">beta</span> <span class="o">+=</span> <span class="mf">9.74E6</span> <span class="o">*</span> <span class="n">theta</span><span class="o">**</span><span class="mf">3.38</span>
     <span class="n">Zra</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span>
     <span class="n">Vs</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="n">Pc</span><span class="o">*</span><span class="mi">101325</span><span class="p">)</span><span class="o">*</span><span class="n">Zra</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">Vs</span></div>
 
 <span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
 <span class="k">def</span> <span class="nf">SNM0</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">delta_SRK</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        V = V_c/(1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3}</span>
+
+<span class="sd">        \tau = 1-\frac{(T/T_c)}{\alpha_{SRK}}</span>
+
+<span class="sd">        \alpha_{SRK} = [1 + m(1-\sqrt{T/T_C}]^2</span>
+
+<span class="sd">        m = 0.480+1.574\omega-0.176\omega^2</span>
+
+<span class="sd">    If the fit parameter `delta_SRK` is provided (73 provided in the article), the following is used:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V = V_C/(1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3})</span>
+<span class="sd">        /\left[1+\delta_{SRK}(\alpha_{SRK}-1)^{1/3}\right]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Argon, without the fit parameter and with it. Tabulated result in Perry&#39;s</span>
+<span class="sd">    is 3.4613e-05. The fit increases the error on this occasion.</span>
+
+<span class="sd">    &gt;&gt;&gt; f = SNM0(150.8, 7.49e-05, -0.004)</span>
+<span class="sd">    &gt;&gt;&gt; f(121)</span>
+<span class="sd">    3.4402256402733416e-05</span>
+<span class="sd">    &gt;&gt;&gt; f = SNM0(150.8, 7.49e-05, -0.004, -0.03259620)</span>
+<span class="sd">    &gt;&gt;&gt; f(121)</span>
+<span class="sd">    3.493288100008123e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Mchaweh, A., A. Alsaygh, Kh. Nasrifar, and M. Moshfeghian.</span>
+<span class="sd">       &quot;A Simplified Method for Calculating Saturated Liquid Densities.&quot;</span>
+<span class="sd">       Fluid Phase Equilibria 224, no. 2 (October 1, 2004): 157-67.</span>
+<span class="sd">       doi:10.1016/j.fluid.2004.06.054</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="n">alpha_SRK</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="o">**</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="o">/</span><span class="n">alpha_SRK</span>
@@ -302,13 +625,58 @@
     <span class="n">V0</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">rho0</span>
     <span class="k">return</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">delta_SRK</span><span class="o">*</span><span class="p">(</span><span class="n">alpha_SRK</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span> <span class="k">if</span> <span class="n">delta_SRK</span> <span class="k">else</span> <span class="n">Vc</span><span class="o">*</span><span class="n">V0</span>
 
-<div class="viewcode-block" id="SNM0"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.SNM0">[docs]</a><span class="nd">@SNM0</span><span class="o">.</span><span class="n">wrapper</span>
+<div class="viewcode-block" id="SNM0"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.SNM0">[docs]</a><span class="nd">@SNM0</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">equation</span><span class="o">=</span><span class="s1">&#39;Mchaweh-Moshfeghian&#39;</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">SNM0</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">delta_SRK</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="mf">0.480</span> <span class="o">+</span> <span class="mf">1.574</span><span class="o">*</span><span class="n">omega</span> <span class="o">-</span> <span class="mf">0.176</span><span class="o">*</span><span class="n">omega</span><span class="o">*</span><span class="n">omega</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">Vc</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="s1">&#39;delta_SRK&#39;</span><span class="p">:</span><span class="n">delta_SRK</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="CRC_Inorganic"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.CRC_Inorganic">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<div class="viewcode-block" id="CRC_Inorganic"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.CRC_Inorganic">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="s1">&#39;auto-header&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">CRC_Inorganic</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">rho0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of the liquid, [K]</span>
+<span class="sd">    rho0 : float</span>
+<span class="sd">        Mass density of the liquid at Tm, [kg/m^3]</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Linear temperature dependence of the mass density, [kg/m^3/K]</span>
+<span class="sd">    Tm : float</span>
+<span class="sd">        The normal melting point, used in the correlation [K]</span>
+<span class="sd">    MW : float</span>
+<span class="sd">        The molecular weight [g/mol]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Calculates liquid density of a molten element or salt at temperature</span>
+<span class="sd">    above the melting point. Some coefficients are given nearly up to the</span>
+<span class="sd">    boiling point.</span>
+
+<span class="sd">    The mass density of the inorganic liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \rho = \rho_{0} - k(T-T_m)</span>
+
+<span class="sd">    [1]_ has units of g/mL. While the individual densities could have been</span>
+<span class="sd">    converted to molar units, the temperature coefficient could only be</span>
+<span class="sd">    converted by refitting to calculated data. To maintain compatibility with</span>
+<span class="sd">    the form of the equations, this was not performed.</span>
+
+<span class="sd">    This linear form is useful only in small temperature ranges.</span>
+<span class="sd">    Coefficients for one compound could be used to predict the temperature</span>
+<span class="sd">    dependence of density of a similar compound.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; CRC_inorganic(300, 2370.0, 2.687, 239.08)</span>
+<span class="sd">    2206.30796</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">        Chemistry and Physics, 95E. [Boca Raton, FL]: CRC press, 2014.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">MW</span><span class="o">/</span><span class="mi">1000</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">rho0</span> <span class="o">-</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="n">Tm</span><span class="p">))</span><span class="o">*</span><span class="n">f</span></div>
 
@@ -317,13 +685,60 @@
     <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
     <span class="k">return</span> <span class="n">Vc</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="mf">0.35</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
 
-<div class="viewcode-block" id="VDI_PPDS"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.VDI_PPDS">[docs]</a><span class="nd">@VDI_PPDS</span><span class="o">.</span><span class="n">wrapper</span>
+<span class="nd">@VDI_PPDS</span><span class="o">.</span><span class="n">wrapper</span>
 <span class="k">def</span> <span class="nf">VDI_PPDS</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">MW</span> <span class="o">/</span> <span class="mf">1e9</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">rhoc</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">D</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">rhoc</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="n">k</span><span class="o">*</span><span class="n">D</span><span class="p">}</span>
    
-<div class="viewcode-block" id="Costald_Compressed"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald_Compressed">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
+<div class="viewcode-block" id="Costald_Compressed"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Costald_Compressed">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;auto-header&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Costald_Compressed</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Vs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Psat : function(T)</span>
+<span class="sd">        Should return saturation pressure of the fluid [Pa]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        (ideally SRK) Acentric factor for fluid, [-]</span>
+<span class="sd">        This parameter is alternatively a fit parameter.</span>
+<span class="sd">    Vs : function(T, P)</span>
+<span class="sd">        Should return saturation liquid volume, [m^3/mol]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The molar volume of a liquid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V = V_s\left( 1 - C \ln \frac{B + P}{B + P^{sat}}\right)</span>
+
+<span class="sd">        \frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}</span>
+
+<span class="sd">        e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)</span>
+
+<span class="sd">        C = j + k \omega_{SRK}</span>
+
+<span class="sd">    Original equation was in terms of density, but it is converted here.</span>
+
+<span class="sd">    The example is from DIPPR, and exactly correct.</span>
+<span class="sd">    This is DIPPR Procedure 4C: Method for Estimating the Density of Pure</span>
+<span class="sd">    Organic Liquids under Pressure.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; f = COSTALD_compressed(9.8E7, 85857.9, 466.7, 3640000.0, 0.281, 0.000105047)</span>
+<span class="sd">    &gt;&gt;&gt; f(303.)</span>
+<span class="sd">    9.287482879788506e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1]  Thomson, G. H., K. R. Brobst, and R. W. Hankinson. &quot;An Improved</span>
+<span class="sd">       Correlation for Densities of Compressed Liquids and Liquid Mixtures.&quot;</span>
+<span class="sd">       AIChE Journal 28, no. 4 (July 1, 1982): 671-76. doi:10.1002/aic.690280420</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.070217</span>
     <span class="n">b</span> <span class="o">=</span> <span class="mf">62.45326</span>
     <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">135.1102</span>
@@ -339,9 +754,10 @@
     <span class="k">return</span> <span class="n">Vs</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">log</span><span class="p">((</span><span class="n">B</span> <span class="o">+</span> <span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="p">))))</span></div>
 
 <span class="nd">@TPDependentHandleBuilder</span>
-<span class="k">def</span> <span class="nf">VolumeLiquid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">eos</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">VolumeLiquid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">eos</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="p">):</span>
     <span class="n">Tmin</span> <span class="o">=</span> <span class="mi">50</span>
     <span class="n">Tmax</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">all_</span> <span class="o">=</span> <span class="nb">all</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_l</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_CRC_inorg_l</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">MW</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Tm</span><span class="p">)</span>
@@ -350,17 +766,6 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">_Perry_l</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">C1</span><span class="p">,</span> <span class="n">C2</span><span class="p">,</span> <span class="n">C3</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">DIPPR_EQ105</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
-        <span class="n">Zc_</span> <span class="o">=</span> <span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Z_RA&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Zc_</span><span class="p">):</span> <span class="n">Zc_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Zc_</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc_</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
-        <span class="c1"># Roughly data at STP; not guaranteed however; not used for Trange</span>
-    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
-        <span class="n">Vc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vchar&#39;</span><span class="p">])</span>
-        <span class="n">omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;omega_SRK&#39;</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDI_PPDS_2</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tc_</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">_VDI_PPDS_2</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rhoc</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
@@ -368,21 +773,18 @@
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span><span class="p">:</span>
         <span class="n">Ts</span><span class="p">,</span> <span class="n">Vls</span> <span class="o">=</span> <span class="n">VDI_tabular_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Volume (l)&#39;</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">InterpolatedTDependentModel</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Vls</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Tmax</span><span class="o">=</span><span class="n">Ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald_Compressed</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Yen_Woods</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Yamada_Gunn</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Bhirud_Normal</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Townsend_Hales</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_SNM0</span><span class="p">:</span>
@@ -391,11 +793,25 @@
             <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">MW</span><span class="p">)):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Campbell_Thodos</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_l_const</span><span class="p">:</span>
         <span class="n">Vl</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRC_inorg_l_const</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vm&#39;</span><span class="p">])</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Vl</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CRC_inorganic_liquid_constant&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
+        <span class="n">Zc_</span> <span class="o">=</span> <span class="n">_COSTALD</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Z_RA&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Zc_</span><span class="p">):</span> <span class="n">Zc_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Zc_</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">Zc_</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+        <span class="c1"># Roughly data at STP; not guaranteed however; not used for Trange</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_COSTALD</span><span class="p">:</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Costald_Compressed</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         
 
 <span class="c1"># %% Gases</span>
@@ -407,26 +823,27 @@
                                    <span class="mi">0</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">,</span>
                                    <span class="mi">0</span><span class="p">,</span> <span class="mf">10e12</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tsonopoulos_extended"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Tsonopoulos_extended">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
-<span class="k">def</span> <span class="nf">Tsonopoulos_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="k">def</span> <span class="nf">Tsonopoulos_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">species_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Tsonopoulos_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span>
-                                                          <span class="n">species_type</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
-<div class="viewcode-block" id="Tsonopoulos"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Tsonopoulos">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span> 
+                                                          <span class="n">species_type</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">g</span> 
 <span class="k">def</span> <span class="nf">Tsonopoulos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Tsonopoulos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Tsonopoulos</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Abbott"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Abbott">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
 <span class="k">def</span> <span class="nf">Abbott</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Abbott</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Abbott</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Pitzer_Curl"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Pitzer_Curl">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
 <span class="k">def</span> <span class="nf">Pitzer_Curl</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Pitzer_Curl</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">BVirial_Pitzer_Curl</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
     
-<div class="viewcode-block" id="CRCVirial"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.CRCVirial">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
+<span class="nd">@V</span><span class="o">.</span><span class="n">g</span>
 <span class="k">def</span> <span class="nf">CRCVirial</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">):</span>
     <span class="n">t</span> <span class="o">=</span> <span class="mf">298.15</span><span class="o">/</span><span class="n">T</span> <span class="o">-</span> <span class="mf">1.</span>
-    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">a2</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">a3</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span></div>
+    <span class="k">return</span> <span class="n">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">a1</span> <span class="o">+</span> <span class="n">a2</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">a3</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span>
 
 <span class="nd">@TPDependentHandleBuilder</span>
 <span class="k">def</span> <span class="nf">VolumeGas</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">eos</span><span class="p">):</span>
@@ -445,9 +862,36 @@
 
 <span class="c1"># %% Solids</span>
 
-<div class="viewcode-block" id="Goodman"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Goodman">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">s</span>
-<span class="k">def</span> <span class="nf">Goodman</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tt</span><span class="p">,</span> <span class="n">Vl</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mf">1.28</span> <span class="o">-</span> <span class="mf">0.16</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tt</span><span class="p">))</span><span class="o">*</span><span class="n">Vl</span></div>
+<div class="viewcode-block" id="Goodman"><a class="viewcode-back" href="../../../functors/volume.html#thermosteam.functors.volume.Goodman">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[1]_&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Goodman</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tt</span><span class="p">,</span> <span class="n">V_l</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Calculates solid density at T using the simple relationship</span>
+<span class="sd">    by a member of the DIPPR.</span>
+
+<span class="sd">    The molar volume of a solid is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{1}{V_m} = \left( 1.28 - 0.16 \frac{T}{T_t}\right)</span>
+<span class="sd">        \frac{1}{{Vm}_L(T_t)}</span>
+
+<span class="sd">    Works to the next solid transition temperature or to approximately 0.3Tt.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; f = Goodman(353.43, 7.6326)</span>
+<span class="sd">    &gt;&gt;&gt; f(281.46)</span>
+<span class="sd">    8.797191839062899</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Goodman, Benjamin T., W. Vincent Wilding, John L. Oscarson, and</span>
+<span class="sd">       Richard L. Rowley. &quot;A Note on the Relationship between Organic Solid</span>
+<span class="sd">       Density and Liquid Density at the Triple Point.&quot; Journal of Chemical &amp;</span>
+<span class="sd">       Engineering Data 49, no. 6 (2004): 1512-14. doi:10.1021/je034220e.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">1.28</span> <span class="o">-</span> <span class="mf">0.16</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">Tt</span><span class="p">))</span><span class="o">*</span><span class="n">V_l</span></div>
 
 <span class="nd">@TPDependentHandleBuilder</span>
 <span class="k">def</span> <span class="nf">VolumeSolid</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CAS</span><span class="p">):</span>

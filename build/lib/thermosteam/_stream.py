@@ -100,7 +100,7 @@ class Stream:
     >>> # Mass flows are always up to date with molar flows
     >>> s1.mol[0] = 1
     >>> s1.mass[0]
-    <MassFlowProperty(Water): 18.015 kg/hr>
+    <Water: 18.015 kg/hr>
     >>> # Changing mass flows changes molar flows
     >>> s1.mass[0] *= 2
     >>> s1.mol[0]
@@ -129,7 +129,7 @@ class Stream:
     It is also possible to index using IDs through the
     `imol`, `imass`, and `ivol` indexers:
     
-    >>> s1.imol
+    >>> s1.imol.show()
     ChemicalMolarFlowIndexer (kmol/hr):
      (l) Water    1.11
          Ethanol  0.2171
@@ -144,8 +144,8 @@ class Stream:
     0.0
     
     Note that the reference enthalpy is 0.0 at the reference
-    temperature and pressure of 298.15 K, and 101325 Pa.
-    Retrive the enthalpy at a 1 C.
+    temperature of 298.15 K, and pressure of 101325 Pa.
+    Retrive the enthalpy at a 10 degC above the reference.
     
     >>> s1.T += 10
     >>> s1.H
@@ -192,10 +192,10 @@ class Stream:
     >>> s1.show()
     MultiStream: s1
      phases: ('g', 'l'), T: 364.8 K, P: 101325 Pa
-     flow (kmol/hr): (g) Water     0.4721
-                         Ethanol   0.1916
-                     (l) Water     0.6381
-                         Ethanol   0.02551
+     flow (kmol/hr): (g) Water    0.4721
+                         Ethanol  0.1916
+                     (l) Water    0.6381
+                         Ethanol  0.02551
     
     Note that the stream is a now a MultiStream to manage multiple phases.
     Each phase can be accessed separately too:
@@ -863,6 +863,7 @@ class Stream:
         
         >>> s2.empty()
         >>> s2.copy_flow(s1, 'Water')
+        >>> s2.show(flow='kg/hr')
         Stream: s2
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Water  20
@@ -871,6 +872,7 @@ class Stream:
         
         >>> s2.empty()
         >>> s2.copy_flow(s1, 'Water', exclude=True)
+        >>> s2.show(flow='kg/hr')
         Stream: s2
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Ethanol  10

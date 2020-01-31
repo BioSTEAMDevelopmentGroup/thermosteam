@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -247,9 +249,9 @@ SOFTWARE.</p>
 parameter. Calculation is a function of temperature, but is not always
 presented as such. No lookup values are available; either <cite>Hvapm</cite>, <cite>Vml</cite>,
 and <cite>T</cite> are provided or the calculation cannot be performed.</p>
-<div class="math">
-<p><img src="../_images/math/c4bffd7cc3b5b7a150a3a47f662ec61f4254e847.png" alt="\delta = \sqrt{\frac{\Delta H_{vap} - RT}{V_m}}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[\delta = \sqrt{\frac{\Delta H_{vap} - RT}{V_m}}\]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of the fluid [k]</p>
@@ -309,13 +311,11 @@ Cohesion Parameters, Second Edition. CRC Press, 1991.</p>
 <dt id="thermosteam.functors.solubility.solubility_eutectic">
 <code class="sig-prename descclassname">thermosteam.functors.solubility.</code><code class="sig-name descname">solubility_eutectic</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tm</em>, <em class="sig-param">Hm</em>, <em class="sig-param">Cpl=0</em>, <em class="sig-param">Cps=0</em>, <em class="sig-param">gamma=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/solubility.html#solubility_eutectic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.solubility.solubility_eutectic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the maximum solubility of a solute in a solvent.</p>
-<div class="math">
-<p><img src="../_images/math/8c43636be82691ac16ccb813cf58d6a0c0c77b2f.png" alt="\ln x_i^L \gamma_i^L = \frac{\Delta H_{m,i}}{RT}\left(
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\ln x_i^L \gamma_i^L = \frac{\Delta H_{m,i}}{RT}\left(
 1 - \frac{T}{T_{m,i}}\right) - \frac{\Delta C_{p,i}(T_{m,i}-T)}{RT}
-+ \frac{\Delta C_{p,i}}{R}\ln\frac{T_m}{T}
-
-\Delta C_{p,i} = C_{p,i}^L - C_{p,i}^S"/></p>
-</div><dl class="field-list simple">
++ \frac{\Delta C_{p,i}}{R}\ln\frac{T_m}{T}\\\Delta C_{p,i} = C_{p,i}^L - C_{p,i}^S\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of the system [K]</p>
@@ -362,11 +362,9 @@ Weinheim, Germany: Wiley-VCH, 2012.</p>
 <dd><p>Returns the freezing point depression caused by a solute in a solvent.
 Can use either the mole fraction of the solute or its molality and the
 molecular weight of the solvent. Assumes ideal system behavior.</p>
-<div class="math">
-<p><img src="../_images/math/d9cdcb663be407db35f8af0464897cdef3fccf64.png" alt="\Delta T_m = \frac{R T_m^2 x}{\Delta H_m}
-
-\Delta T_m = \frac{R T_m^2 (MW) M}{1000 \Delta H_m}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\Delta T_m = \frac{R T_m^2 x}{\Delta H_m}\\\Delta T_m = \frac{R T_m^2 (MW) M}{1000 \Delta H_m}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting temperature of the solute [K]</p>

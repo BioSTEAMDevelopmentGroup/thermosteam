@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -223,206 +225,6 @@
 </style>
 <div class="section" id="module-thermosteam.functors.interface">
 <span id="interface"></span><h1>interface<a class="headerlink" href="#module-thermosteam.functors.interface" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="thermosteam.functors.interface.REFPROP">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">REFPROP</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#REFPROP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.REFPROP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the REFPROP equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>sigma0, n0, sigma1, n1, sigma2, n2</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Somayajulu">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Somayajulu</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Somayajulu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Somayajulu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Somayajulu equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Helmholtz energy [J/mol].</p>
-</dd>
-<dt><strong>B, C</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Jasper">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Jasper</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Jasper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Jasper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Jasper equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a, b</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Brock_Bird">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Brock_Bird</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Brock_Bird"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Brock_Bird" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Brock Bird equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Pitzer">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Pitzer</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Pitzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Pitzer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Pitzer equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Sastri_Rao">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Sastri_Rao</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Sastri_Rao"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Sastri_Rao" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Sastri Rao equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>chemicaltype</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Zuo_Stenby">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Zuo_Stenby</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Zuo_Stenby"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Zuo_Stenby" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Zuo Stenby equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Hakim_Steinberg_Stiel">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Hakim_Steinberg_Stiel</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Hakim_Steinberg_Stiel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Hakim_Steinberg_Stiel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Hakim Steinberg Stiel equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-<dt><strong>StielPolar</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Miqueu">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Miqueu</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Miqueu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Miqueu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Miqueu equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Critical point volume [m^3/mol].</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Aleem">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Aleem</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Aleem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Aleem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Aleem equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight [g/mol].</p>
-</dd>
-<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
-</dd>
-<dt><strong>rhol, Hvap_Tb, Cpl</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="thermosteam.functors.interface.Mersmann_Kind_surface_tension">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.interface.</code><code class="sig-name descname">Mersmann_Kind_surface_tension</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/interface.html#Mersmann_Kind_surface_tension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.interface.Mersmann_Kind_surface_tension" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates surface tension (sigma; in N/m) using the Mersmann Kind surface tension equation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Melting point temperature [K].</p>
-</dd>
-<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling point temperature [K].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>n_associated</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 

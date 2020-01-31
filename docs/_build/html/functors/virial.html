@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -121,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
@@ -245,13 +247,9 @@ SOFTWARE.</p>
 <code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Pitzer_Curl</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Pitzer_Curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Pitzer_Curl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r28648f3847fa-1" id="id1">[1]</a>.
 Designed for simple calculations.</p>
-<div class="math">
-<p><img src="../_images/math/23be0dadc6f474147ddc4c97255018f1f184d67e.png" alt="B_r=B^{(0)}+\omega B^{(1)}
-
-B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3
-
-B^{(1)} = 0.073+0.46/T_r-0.5/T_r^2 -0.097/T_r^3 - 0.0073/T_r^8"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3\\B^{(1)} = 0.073+0.46/T_r-0.5/T_r^2 -0.097/T_r^3 - 0.0073/T_r^8\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
@@ -282,31 +280,21 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 <p>Analytical models for derivatives and integrals are available for orders
 -2, -1, 1, 2, and 3, all obtained with SymPy.</p>
 <p>For first temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/8bfa66372e85238dee434510d42960a3328b85c5.png" alt="\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}}
-
-\frac{d B^{(1)}}{dT} = - \frac{23 Tc}{50 T^{2}} + \frac{Tc^{2}}{T^{3}} + \frac{291 Tc^{3}}{1000 T^{4}} + \frac{73 Tc^{8}}{1250 T^{9}}"/></p>
-</div><p>For the second temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/39ec3d9ad3785df91ce1f8351c90056e24b29524.png" alt="\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{5000 T^{3}} \left(1100 + \frac{1385 Tc}{T} + \frac{242 Tc^{2}}{T^{2}}\right)
-
-\frac{d^2 B^{(1)}}{dT^2} = \frac{Tc}{T^{3}} \left(\frac{23}{25} - \frac{3 Tc}{T} - \frac{291 Tc^{2}}{250 T^{2}} - \frac{657 Tc^{7}}{1250 T^{7}}\right)"/></p>
-</div><p>For the third temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/3ed2e206a7f547af515b531ea135326635695e7a.png" alt="\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{500 T^{4}} \left(330 + \frac{554 Tc}{T} + \frac{121 Tc^{2}}{T^{2}}\right)
-
-\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc}{T^{4}} \left(- \frac{23}{25} + \frac{4 Tc}{T} + \frac{97 Tc^{2}}{50 T^{2}} + \frac{219 Tc^{7}}{125 T^{7}}\right)"/></p>
-</div><p>For the first indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/6b734f0dfbf16e21631bde8bba036dfd913b07ba.png" alt="\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{20000 T^{2}} \left(2770 T Tc^{2} + 121 Tc^{3}\right)
-
-\int{B^{(1)}} dT = \frac{73 T}{1000} + \frac{23 Tc}{50} \log{\left (T \right )} + \frac{1}{70000 T^{7}} \left(35000 T^{6} Tc^{2} + 3395 T^{5} Tc^{3} + 73 Tc^{8}\right)"/></p>
-</div><p>For the second indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/460e9d64e7555b44847478e268a86afc93ca7bce.png" alt="\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{121 Tc^{3}}{20000 T}
-
-\int\int B^{(1)} dT dT = \frac{73 T^{2}}{2000} + \frac{23 T}{50} Tc \log{\left (T \right )} - \frac{23 T}{50} Tc + \frac{Tc^{2}}{2} \log{\left (T \right )} - \frac{1}{420000 T^{6}} \left(20370 T^{5} Tc^{3} + 73 Tc^{8}\right)"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}}\\\frac{d B^{(1)}}{dT} = - \frac{23 Tc}{50 T^{2}} + \frac{Tc^{2}}{T^{3}} + \frac{291 Tc^{3}}{1000 T^{4}} + \frac{73 Tc^{8}}{1250 T^{9}}\end{aligned}\end{align} \]</div>
+<p>For the second temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{5000 T^{3}} \left(1100 + \frac{1385 Tc}{T} + \frac{242 Tc^{2}}{T^{2}}\right)\\\frac{d^2 B^{(1)}}{dT^2} = \frac{Tc}{T^{3}} \left(\frac{23}{25} - \frac{3 Tc}{T} - \frac{291 Tc^{2}}{250 T^{2}} - \frac{657 Tc^{7}}{1250 T^{7}}\right)\end{aligned}\end{align} \]</div>
+<p>For the third temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{500 T^{4}} \left(330 + \frac{554 Tc}{T} + \frac{121 Tc^{2}}{T^{2}}\right)\\\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc}{T^{4}} \left(- \frac{23}{25} + \frac{4 Tc}{T} + \frac{97 Tc^{2}}{50 T^{2}} + \frac{219 Tc^{7}}{125 T^{7}}\right)\end{aligned}\end{align} \]</div>
+<p>For the first indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{20000 T^{2}} \left(2770 T Tc^{2} + 121 Tc^{3}\right)\\\int{B^{(1)}} dT = \frac{73 T}{1000} + \frac{23 Tc}{50} \log{\left (T \right )} + \frac{1}{70000 T^{7}} \left(35000 T^{6} Tc^{2} + 3395 T^{5} Tc^{3} + 73 Tc^{8}\right)\end{aligned}\end{align} \]</div>
+<p>For the second indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{121 Tc^{3}}{20000 T}\\\int\int B^{(1)} dT dT = \frac{73 T^{2}}{2000} + \frac{23 T}{50} Tc \log{\left (T \right )} - \frac{23 T}{50} Tc + \frac{Tc^{2}}{2} \log{\left (T \right )} - \frac{1}{420000 T^{6}} \left(20370 T^{5} Tc^{3} + 73 Tc^{8}\right)\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r28648f3847fa-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Pitzer, Kenneth S., and R. F. Curl. “The Volumetric and
@@ -328,13 +316,9 @@ Second Virial Coefficient1.” Journal of the American Chemical Society
 <code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Abbott</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Abbott"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Abbott" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r47fd788b7ec4-1" id="id3">[1]</a>.
 Simple fit to the Lee-Kesler equation.</p>
-<div class="math">
-<p><img src="../_images/math/d51718c3fe09f00dce895b8daa03c6958e4740e7.png" alt="B_r=B^{(0)}+\omega B^{(1)}
-
-B^{(0)}=0.083+\frac{0.422}{T_r^{1.6}}
-
-B^{(1)}=0.139-\frac{0.172}{T_r^{4.2}}"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}=0.083+\frac{0.422}{T_r^{1.6}}\\B^{(1)}=0.139-\frac{0.172}{T_r^{4.2}}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
@@ -365,31 +349,21 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 <p>Analytical models for derivatives and integrals are available for orders
 -2, -1, 1, 2, and 3, all obtained with SymPy.</p>
 <p>For first temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/cd60a1a2606fb358e4159fe582a39b3771af124e.png" alt="\frac{d B^{(0)}}{dT} = \frac{0.6752}{T \left(\frac{T}{Tc}\right)^{1.6}}
-
-\frac{d B^{(1)}}{dT} = \frac{0.7224}{T \left(\frac{T}{Tc}\right)^{4.2}}"/></p>
-</div><p>For the second temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/91561cad159573b7f5c8f4531a5e7c99a62798f6.png" alt="\frac{d^2 B^{(0)}}{dT^2} = - \frac{1.75552}{T^{2} \left(\frac{T}{Tc}\right)^{1.6}}
-
-\frac{d^2 B^{(1)}}{dT^2} = - \frac{3.75648}{T^{2} \left(\frac{T}{Tc}\right)^{4.2}}"/></p>
-</div><p>For the third temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/eedd60210a1e7c3b1e624498efec76aad26c8799.png" alt="\frac{d^3 B^{(0)}}{dT^3} = \frac{6.319872}{T^{3} \left(\frac{T}{Tc}\right)^{1.6}}
-
-\frac{d^3 B^{(1)}}{dT^3} = \frac{23.290176}{T^{3} \left(\frac{T}{Tc}\right)^{4.2}}"/></p>
-</div><p>For the first indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/9dfb0255dfca8c05ddf652688e2a97baea10d276.png" alt="\int{B^{(0)}} dT = 0.083 T + \frac{\frac{211}{300} Tc}{\left(\frac{T}{Tc}\right)^{0.6}}
-
-\int{B^{(1)}} dT = 0.139 T + \frac{0.05375 Tc}{\left(\frac{T}{Tc}\right)^{3.2}}"/></p>
-</div><p>For the second indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/adbe62d5bb79b00ed76e5fa39e9099792b697a47.png" alt="\int\int B^{(0)} dT dT = 0.0415 T^{2} + \frac{211}{120} Tc^{2} \left(\frac{T}{Tc}\right)^{0.4}
-
-\int\int B^{(1)} dT dT = 0.0695 T^{2} - \frac{\frac{43}{1760} Tc^{2}}{\left(\frac{T}{Tc}\right)^{2.2}}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d B^{(0)}}{dT} = \frac{0.6752}{T \left(\frac{T}{Tc}\right)^{1.6}}\\\frac{d B^{(1)}}{dT} = \frac{0.7224}{T \left(\frac{T}{Tc}\right)^{4.2}}\end{aligned}\end{align} \]</div>
+<p>For the second temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^2 B^{(0)}}{dT^2} = - \frac{1.75552}{T^{2} \left(\frac{T}{Tc}\right)^{1.6}}\\\frac{d^2 B^{(1)}}{dT^2} = - \frac{3.75648}{T^{2} \left(\frac{T}{Tc}\right)^{4.2}}\end{aligned}\end{align} \]</div>
+<p>For the third temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^3 B^{(0)}}{dT^3} = \frac{6.319872}{T^{3} \left(\frac{T}{Tc}\right)^{1.6}}\\\frac{d^3 B^{(1)}}{dT^3} = \frac{23.290176}{T^{3} \left(\frac{T}{Tc}\right)^{4.2}}\end{aligned}\end{align} \]</div>
+<p>For the first indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int{B^{(0)}} dT = 0.083 T + \frac{\frac{211}{300} Tc}{\left(\frac{T}{Tc}\right)^{0.6}}\\\int{B^{(1)}} dT = 0.139 T + \frac{0.05375 Tc}{\left(\frac{T}{Tc}\right)^{3.2}}\end{aligned}\end{align} \]</div>
+<p>For the second indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = 0.0415 T^{2} + \frac{211}{120} Tc^{2} \left(\frac{T}{Tc}\right)^{0.4}\\\int\int B^{(1)} dT dT = 0.0695 T^{2} - \frac{\frac{43}{1760} Tc^{2}}{\left(\frac{T}{Tc}\right)^{2.2}}\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r47fd788b7ec4-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>)</span></dt>
 <dd><p>Smith, H. C. Van Ness Joseph M. Introduction to Chemical Engineering
@@ -408,13 +382,9 @@ Thermodynamics 4E 1987.</p>
 <dt id="thermosteam.functors.virial.BVirial_Tsonopoulos">
 <code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Tsonopoulos</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Tsonopoulos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Tsonopoulos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r6779ff2dd473-1" id="id6">[1]</a>.</p>
-<div class="math">
-<p><img src="../_images/math/01bed1e8ae28620de19942e83ff8068e5b44f53e.png" alt="B_r=B^{(0)}+\omega B^{(1)}
-
-B^{(0)}= 0.1445-0.330/T_r - 0.1385/T_r^2 - 0.0121/T_r^3 - 0.000607/T_r^8
-
-B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}= 0.1445-0.330/T_r - 0.1385/T_r^2 - 0.0121/T_r^3 - 0.000607/T_r^8\\B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
@@ -447,31 +417,21 @@ BVirial_Tsonopoulos_extended.</p>
 <p>Analytical models for derivatives and integrals are available for orders
 -2, -1, 1, 2, and 3, all obtained with SymPy.</p>
 <p>For first temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/3e447cbd19751ca8226fb5c004e0b114ff1b0625.png" alt="\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}} + \frac{607 Tc^{8}}{125000 T^{9}}
-
-\frac{d B^{(1)}}{dT} = - \frac{331 Tc^{2}}{500 T^{3}} + \frac{1269 Tc^{3}}{1000 T^{4}} + \frac{8 Tc^{8}}{125 T^{9}}"/></p>
-</div><p>For the second temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/2e258683b94abdca58e0107b792688bbcda5b689.png" alt="\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{125000 T^{3}} \left(27500 + \frac{34625 Tc}{T} + \frac{6050 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)
-
-\frac{d^2 B^{(1)}}{dT^2} = \frac{3 Tc^{2}}{500 T^{4}} \left(331 - \frac{846 Tc}{T} - \frac{96 Tc^{6}}{T^{6}}\right)"/></p>
-</div><p>For the third temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/6685a9c770ab0396e4025a8cebdca8666fcc2aa7.png" alt="\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{12500 T^{4}} \left(8250 + \frac{13850 Tc}{T} + \frac{3025 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)
-
-\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc^{2}}{250 T^{5}} \left(-662 + \frac{2115 Tc}{T} + \frac{480 Tc^{6}}{T^{6}}\right)"/></p>
-</div><p>For the first indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/38ac8dbc532eca795453170fe84c13afca4f7bf4.png" alt="\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{7000000 T^{7}} \left(969500 T^{6} Tc^{2} + 42350 T^{5} Tc^{3} + 607 Tc^{8}\right)
-
-\int{B^{(1)}} dT = \frac{637 T}{10000} - \frac{1}{70000 T^{7}} \left(23170 T^{6} Tc^{2} - 14805 T^{5} Tc^{3} - 80 Tc^{8}\right)"/></p>
-</div><p>For the second indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/2b55bf37f97f365272b89d12fabc233e40c69abd.png" alt="\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)
-
-\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}} + \frac{607 Tc^{8}}{125000 T^{9}}\\\frac{d B^{(1)}}{dT} = - \frac{331 Tc^{2}}{500 T^{3}} + \frac{1269 Tc^{3}}{1000 T^{4}} + \frac{8 Tc^{8}}{125 T^{9}}\end{aligned}\end{align} \]</div>
+<p>For the second temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{125000 T^{3}} \left(27500 + \frac{34625 Tc}{T} + \frac{6050 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)\\\frac{d^2 B^{(1)}}{dT^2} = \frac{3 Tc^{2}}{500 T^{4}} \left(331 - \frac{846 Tc}{T} - \frac{96 Tc^{6}}{T^{6}}\right)\end{aligned}\end{align} \]</div>
+<p>For the third temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{12500 T^{4}} \left(8250 + \frac{13850 Tc}{T} + \frac{3025 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)\\\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc^{2}}{250 T^{5}} \left(-662 + \frac{2115 Tc}{T} + \frac{480 Tc^{6}}{T^{6}}\right)\end{aligned}\end{align} \]</div>
+<p>For the first indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{7000000 T^{7}} \left(969500 T^{6} Tc^{2} + 42350 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int{B^{(1)}} dT = \frac{637 T}{10000} - \frac{1}{70000 T^{7}} \left(23170 T^{6} Tc^{2} - 14805 T^{5} Tc^{3} - 80 Tc^{8}\right)\end{aligned}\end{align} \]</div>
+<p>For the second indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="r6779ff2dd473-1"><span class="brackets"><a class="fn-backref" href="#id6">1</a></span></dt>
 <dd><p>Tsonopoulos, Constantine. “An Empirical Correlation of Second Virial
@@ -493,17 +453,9 @@ doi:10.1002/aic.690200209.</p>
 <dd><p>Calculates the second virial coefficient using the
 comprehensive model in <a class="reference internal" href="#rd208010bd1c0-1" id="id8">[1]</a>. See the notes for the calculation of <cite>a</cite> and
 <cite>b</cite>.</p>
-<div class="math">
-<p><img src="../_images/math/3f0d8a9f130dde2a619811da0f7cd1872840d5b8.png" alt="\frac{BP_c}{RT_c} = B^{(0)} + \omega B^{(1)} + a B^{(2)} + b B^{(3)}
-
-B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3
-
-B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8
-
-B^{(2)} = 1/T_r^6
-
-B^{(3)} = -1/T_r^8"/></p>
-</div><dl class="field-list simple">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{BP_c}{RT_c} = B^{(0)} + \omega B^{(1)} + a B^{(2)} + b B^{(3)}\\B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3\\B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8\\B^{(2)} = 1/T_r^6\\B^{(3)} = -1/T_r^8\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
@@ -545,87 +497,45 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 -2, -1, 1, 2, and 3, all obtained with SymPy.</p>
 <p>To calculate <cite>a</cite> or <cite>b</cite>, the following rules are used:</p>
 <p>For ‘simple’ or ‘normal’ fluids:</p>
-<div class="math">
-<p><img src="../_images/math/efa3d4315e25a846b97f44e17627faef326b45ea.png" alt="a = 0
-
-b = 0"/></p>
-</div><p>For ‘ketone’, ‘aldehyde’, ‘alkyl nitrile’, ‘ether’, ‘carboxylic acid’,
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = 0\\b = 0\end{aligned}\end{align} \]</div>
+<p>For ‘ketone’, ‘aldehyde’, ‘alkyl nitrile’, ‘ether’, ‘carboxylic acid’,
 or ‘ester’ types of chemicals:</p>
-<div class="math">
-<p><img src="../_images/math/2923649e7e243d0c7c97c0878f959a561a82dbee.png" alt="a = -2.14\times 10^{-4} \mu_r - 4.308 \times 10^{-21} (\mu_r)^8
-
-b = 0"/></p>
-</div><p>For ‘alkyl halide’, ‘mercaptan’, ‘sulfide’, or ‘disulfide’ types of 
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = -2.14\times 10^{-4} \mu_r - 4.308 \times 10^{-21} (\mu_r)^8\\b = 0\end{aligned}\end{align} \]</div>
+<p>For ‘alkyl halide’, ‘mercaptan’, ‘sulfide’, or ‘disulfide’ types of 
 chemicals:</p>
-<div class="math">
-<p><img src="../_images/math/e96bd1f410056f2a690dc92e38a8928ae71460ce.png" alt="a = -2.188\times 10^{-4} (\mu_r)^4 - 7.831 \times 10^{-21} (\mu_r)^8
-
-b = 0"/></p>
-</div><p>For ‘alkanol’ types of chemicals (except methanol):</p>
-<div class="math">
-<p><img src="../_images/math/dc15b170f6a21bd620261b05e9a93e11a7a07fc6.png" alt="a = 0.0878
-
-b = 0.00908 + 0.0006957 \mu_r"/></p>
-</div><p>For methanol:</p>
-<div class="math">
-<p><img src="../_images/math/bee4000cd3816f3d6716b94da31fe8e6a22d191f.png" alt="a = 0.0878
-
-b = 0.0525"/></p>
-</div><p>For water:</p>
-<div class="math">
-<p><img src="../_images/math/a4c369fd432ce07c249bd03dc324326612bc34ea.png" alt="a = -0.0109
-
-b = 0"/></p>
-</div><p>If required, the form of dipole moment used in the calculation of some
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = -2.188\times 10^{-4} (\mu_r)^4 - 7.831 \times 10^{-21} (\mu_r)^8\\b = 0\end{aligned}\end{align} \]</div>
+<p>For ‘alkanol’ types of chemicals (except methanol):</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = 0.0878\\b = 0.00908 + 0.0006957 \mu_r\end{aligned}\end{align} \]</div>
+<p>For methanol:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = 0.0878\\b = 0.0525\end{aligned}\end{align} \]</div>
+<p>For water:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a = -0.0109\\b = 0\end{aligned}\end{align} \]</div>
+<p>If required, the form of dipole moment used in the calculation of some
 types of <cite>a</cite> and <cite>b</cite> values is as follows:</p>
-<div class="math">
-<p><img src="../_images/math/441e4ea16c82a273f2d3378fc96124188c105865.png" alt="\mu_r = 100000\frac{\mu^2(Pc/101325.0)}{Tc^2}"/></p>
-</div><p>For first temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/2da3ac6beef210b5d968aa41774453563016c311.png" alt="\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}} + \frac{607 Tc^{8}}{125000 T^{9}}
-
-\frac{d B^{(1)}}{dT} = - \frac{331 Tc^{2}}{500 T^{3}} + \frac{1269 Tc^{3}}{1000 T^{4}} + \frac{8 Tc^{8}}{125 T^{9}}
-
-\frac{d B^{(2)}}{dT} = - \frac{6 Tc^{6}}{T^{7}}
-
-\frac{d B^{(3)}}{dT} = \frac{8 Tc^{8}}{T^{9}}"/></p>
-</div><p>For the second temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/19d94ce63d9d816f55b2883d9733ddda58325680.png" alt="\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{125000 T^{3}} \left(27500 + \frac{34625 Tc}{T} + \frac{6050 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)
-
-\frac{d^2 B^{(1)}}{dT^2} = \frac{3 Tc^{2}}{500 T^{4}} \left(331 - \frac{846 Tc}{T} - \frac{96 Tc^{6}}{T^{6}}\right)
-
-\frac{d^2 B^{(2)}}{dT^2} = \frac{42 Tc^{6}}{T^{8}}
-
-\frac{d^2 B^{(3)}}{dT^2} = - \frac{72 Tc^{8}}{T^{10}}"/></p>
-</div><p>For the third temperature derivative of B:</p>
-<div class="math">
-<p><img src="../_images/math/0991c56b3db0faa20eec01ec653683bd095c6e39.png" alt="\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{12500 T^{4}} \left(8250 + \frac{13850 Tc}{T} + \frac{3025 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)
-
-\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc^{2}}{250 T^{5}} \left(-662 + \frac{2115 Tc}{T} + \frac{480 Tc^{6}}{T^{6}}\right)
-
-\frac{d^3 B^{(2)}}{dT^3} = - \frac{336 Tc^{6}}{T^{9}}
-
-\frac{d^3 B^{(3)}}{dT^3} = \frac{720 Tc^{8}}{T^{11}}"/></p>
-</div><p>For the first indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/77a1a9ab356dbc8a8bebd4b0aab762a4ed0771ce.png" alt="\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{7000000 T^{7}} \left(969500 T^{6} Tc^{2} + 42350 T^{5} Tc^{3} + 607 Tc^{8}\right)
-
-\int{B^{(1)}} dT = \frac{637 T}{10000} - \frac{1}{70000 T^{7}} \left(23170 T^{6} Tc^{2} - 14805 T^{5} Tc^{3} - 80 Tc^{8}\right)
-
-\int{B^{(2)}} dT = - \frac{Tc^{6}}{5 T^{5}}
-
-\int{B^{(3)}} dT = \frac{Tc^{8}}{7 T^{7}}"/></p>
-</div><p>For the second indefinite integral of B:</p>
-<div class="math">
-<p><img src="../_images/math/ecbb5bc34f8c6d39cc4cdda4d499dae32e28e2be.png" alt="\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)
-
-\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)
-
-\int\int B^{(2)} dT dT = \frac{Tc^{6}}{20 T^{4}}
-
-\int\int B^{(3)} dT dT = - \frac{Tc^{8}}{42 T^{6}}"/></p>
-</div><p class="rubric">References</p>
+<div class="math notranslate nohighlight">
+\[\mu_r = 100000\frac{\mu^2(Pc/101325.0)}{Tc^2}\]</div>
+<p>For first temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d B^{(0)}}{dT} = \frac{33 Tc}{100 T^{2}} + \frac{277 Tc^{2}}{1000 T^{3}} + \frac{363 Tc^{3}}{10000 T^{4}} + \frac{607 Tc^{8}}{125000 T^{9}}\\\frac{d B^{(1)}}{dT} = - \frac{331 Tc^{2}}{500 T^{3}} + \frac{1269 Tc^{3}}{1000 T^{4}} + \frac{8 Tc^{8}}{125 T^{9}}\\\frac{d B^{(2)}}{dT} = - \frac{6 Tc^{6}}{T^{7}}\\\frac{d B^{(3)}}{dT} = \frac{8 Tc^{8}}{T^{9}}\end{aligned}\end{align} \]</div>
+<p>For the second temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^2 B^{(0)}}{dT^2} = - \frac{3 Tc}{125000 T^{3}} \left(27500 + \frac{34625 Tc}{T} + \frac{6050 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)\\\frac{d^2 B^{(1)}}{dT^2} = \frac{3 Tc^{2}}{500 T^{4}} \left(331 - \frac{846 Tc}{T} - \frac{96 Tc^{6}}{T^{6}}\right)\\\frac{d^2 B^{(2)}}{dT^2} = \frac{42 Tc^{6}}{T^{8}}\\\frac{d^2 B^{(3)}}{dT^2} = - \frac{72 Tc^{8}}{T^{10}}\end{aligned}\end{align} \]</div>
+<p>For the third temperature derivative of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{d^3 B^{(0)}}{dT^3} = \frac{3 Tc}{12500 T^{4}} \left(8250 + \frac{13850 Tc}{T} + \frac{3025 Tc^{2}}{T^{2}} + \frac{1821 Tc^{7}}{T^{7}}\right)\\\frac{d^3 B^{(1)}}{dT^3} = \frac{3 Tc^{2}}{250 T^{5}} \left(-662 + \frac{2115 Tc}{T} + \frac{480 Tc^{6}}{T^{6}}\right)\\\frac{d^3 B^{(2)}}{dT^3} = - \frac{336 Tc^{6}}{T^{9}}\\\frac{d^3 B^{(3)}}{dT^3} = \frac{720 Tc^{8}}{T^{11}}\end{aligned}\end{align} \]</div>
+<p>For the first indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int{B^{(0)}} dT = \frac{289 T}{2000} - \frac{33 Tc}{100} \log{\left (T \right )} + \frac{1}{7000000 T^{7}} \left(969500 T^{6} Tc^{2} + 42350 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int{B^{(1)}} dT = \frac{637 T}{10000} - \frac{1}{70000 T^{7}} \left(23170 T^{6} Tc^{2} - 14805 T^{5} Tc^{3} - 80 Tc^{8}\right)\\\int{B^{(2)}} dT = - \frac{Tc^{6}}{5 T^{5}}\\\int{B^{(3)}} dT = \frac{Tc^{8}}{7 T^{7}}\end{aligned}\end{align} \]</div>
+<p>For the second indefinite integral of B:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)\\\int\int B^{(2)} dT dT = \frac{Tc^{6}}{20 T^{4}}\\\int\int B^{(3)} dT dT = - \frac{Tc^{8}}{42 T^{6}}\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rd208010bd1c0-1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
 <dd><p>Tsonopoulos, C., and J. L. Heidman. “From the Virial to the Cubic

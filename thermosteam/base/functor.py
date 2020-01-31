@@ -9,9 +9,7 @@ from ..utils import var_with_units, get_obj_values, repr_kwargs
 from .documenter import autodoc_functor
 from inspect import signature
 
-__all__ = ("Functor", "MixtureFunctor", 
-           "TFunctor", "TPFunctor", "TIntegralFunctor",
-           "zTFunctor", "zTPFunctor",
+__all__ = ("Functor",  "TFunctor", "TPFunctor", "TIntegralFunctor",
            "functor", 'H', 'S', 'V', 'Cn', 'mu', 'kappa', 'sigma', 'delta', 'epsilon',
            'Psat', 'Hvap', 'display_asfunctor', 'functor_lookalike',
            'functor_matching_params', 'functor_base_and_params',)
@@ -111,7 +109,7 @@ H, S, Cn, V, kappa, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) f
 # %% Functors
 
 class Functor: 
-    __slots__ = ()
+    __slots__ = ('function_kwargs', '_data')
     units_of_measure = chemical_units_of_measure
     definitions = definitions
     types = types
@@ -129,16 +127,6 @@ class Functor:
             RegisteredFunctors.insert(index, cls)
             RegisteredArgs.add(args)
             cls._args = args
-    
-    def __str__(self):
-        return display_asfunctor(self)
-    
-    def __repr__(self):
-        return f"<{self}>"
-
-
-class PureComponentFunctor(Functor):
-    __slots__ = ('function_kwargs', '_data')
     
     def __init__(self, *args, **kwargs):
         for i, j in zip(self.params, args): kwargs[i] = j
@@ -217,6 +205,12 @@ class PureComponentFunctor(Functor):
                 if u: info += ' ' + str(u)
         return info
     
+    def __str__(self):
+        return display_asfunctor(self)
+    
+    def __repr__(self):
+        return f"<{self}>"
+    
     def _example_info(self, **kwargs):
         obj_info = self._object_info()
         f_info = self._functor_info()
@@ -244,82 +238,27 @@ class PureComponentFunctor(Functor):
     _ipython_display_ = show
 
 
-class TFunctor(PureComponentFunctor, args=('T',)):
+class TFunctor(Functor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
     def __call__(self, T, P=None):
         return self.function(T, **self.function_kwargs)
 
 
-class TIntegralFunctor(PureComponentFunctor, args=('Ta', 'Tb')):
+class TIntegralFunctor(Functor, args=('Ta', 'Tb')):
     __slots__ = ()
     kind = "temperature integral functor (Ta to Tb; in K)"
     def __call__(self, Ta, Tb, P=None):
         return self.function(Ta, Tb, **self.function_kwargs)
 
-# class PIntegralFunctor(PureComponentFunctor, args=('Pa', 'Pb', 'T')):
-#     __slots__ = ()
-    
-#     def __call__(self, Pa, Pb, T):
-#         return self.function(Pa, Pb, T, **self.kwargs)
 
-
-class TPFunctor(PureComponentFunctor, args=('T', 'P')):
+class TPFunctor(Functor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
     def __call__(self, T, P):
         return self.function(T, P, **self.function_kwargs)
 
 
-class MixtureFunctor(Functor):
-    __slots__ = ('function_kwargs', '_chemicals')
-    
-    def __init__(self, chemicals, function_kwargs=None):
-        chemicals = tuple(chemicals)
-        if function_kwargs:
-            self._chemicals = chemicals
-            self.function_kwargs = function_kwargs
-        else:
-            self.chemicals = chemicals
-    
-    @classmethod
-    def wrap(cls, kwargs):
-        cls.calculate_kwargs = staticmethod(kwargs)
-        return cls
-    
-    @property
-    def chemicals(self):
-        return self._chemicals
-    
-    @chemicals.setter
-    def chemicals(self, chemicals):
-        if chemicals == self._chemicals: return
-        self._chemicals = chemicals = tuple(chemicals)
-        if chemicals in self.cache:
-            self.function_kwargs = self.cache[chemicals]
-        else:
-            self.cache[chemicals] = self.function_kwargs = self.calculate_kwargs(self.chemicals)
-            
-    
-class zTFunctor(MixtureFunctor, args=('z', 'T')): 
-    __slots__ = ()
-    kind = "functor of composition (z) and temperature (T; in K)"
-    def __init_subclass__(self):
-        self.cache = {}
-    
-    def __call__(self, z, T, P=None):
-        return self.function(z, T, **self.function_kwargs)
-        
-
-class zTPFunctor(MixtureFunctor, args=('z', 'T', 'P')):
-    __slots__ = ()
-    kind = "functor of composition (z), temperature (T; in K) and pressure (P; in Pa)"
-    def __init_subclass__(self):
-        self.cache = {}
-    
-    def __call__(self, z, T, P):
-        return self.function(z, T, P, **self.function_kwargs)
-    
     
     
     
