@@ -1,8 +1,0 @@
-Overview
-========
-
-Thermosteam is an extensive object oriented package for the estimation of thermodynamic equilibrium and mixture properties, and mass and energy balances. The Stream object is the main interface for performing these calculations. Before creating streams, a thermodynamic property package must be defined through a Thermo object, which compiles the working chemicals and the equlibrium estimation methods. Each Chemical object contains model handles that manages the thermodynamic models and makes sure to use a valid model to estimate properties at the given temperature and pressure. The functional algorithms for estimating pure component properties are presented as functors which implicitly store and use fitted coefficients for the estimation of temperature and pressure dependent properties.
-
-.. figure:: ./images/UML.png
-
-   A simplified UML class diagram of the core classes of Thermosteam.

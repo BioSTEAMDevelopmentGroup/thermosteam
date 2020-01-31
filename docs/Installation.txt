@@ -1,2 +1,10 @@
 Installation
 ============
+
+Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`__. If you have an installation of Python with pip, simple install it with:
+
+    $ pip install thermosteam
+
+To get the git version, run:
+
+    $ git clone git://github.com/yoelcortes/thermosteam

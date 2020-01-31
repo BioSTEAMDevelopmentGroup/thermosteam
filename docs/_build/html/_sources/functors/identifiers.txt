@@ -1,5 +1,0 @@
-identifiers
-===========
-
-.. automodule:: thermosteam.functors.identifiers
-   :members:

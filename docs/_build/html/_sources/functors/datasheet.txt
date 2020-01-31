@@ -1,5 +1,0 @@
-datasheet
-=========
-
-.. automodule:: thermosteam.functors.datasheet
-   :members:

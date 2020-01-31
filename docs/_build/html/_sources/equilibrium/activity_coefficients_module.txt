@@ -1,5 +1,0 @@
-activity_coefficients
----------------------
-
-.. automodule:: thermosteam.equilibrium.activity_coefficients
-   :members:

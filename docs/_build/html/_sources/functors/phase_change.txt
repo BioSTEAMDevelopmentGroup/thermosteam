@@ -1,5 +1,0 @@
-phase_change
-============
-
-.. automodule:: thermosteam.functors.phase_change
-   :members:

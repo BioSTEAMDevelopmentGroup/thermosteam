@@ -1,5 +1,0 @@
-eos
-===
-
-.. automodule:: thermosteam.functors.eos
-   :members:

@@ -1,5 +1,0 @@
-triple
-======
-
-.. automodule:: thermosteam.functors.triple
-   :members:

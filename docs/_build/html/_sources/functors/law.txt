@@ -1,5 +1,0 @@
-law
-===
-
-.. automodule:: thermosteam.functors.law
-   :members:
