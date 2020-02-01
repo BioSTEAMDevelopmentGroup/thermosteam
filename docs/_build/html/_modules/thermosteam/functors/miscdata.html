@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.miscdata &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.miscdata</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.miscdata</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_CRC_inorganic&#39;</span><span class="p">,</span> <span class="s1">&#39;_CRC_organic&#39;</span><span class="p">,</span> <span class="s1">&#39;_VDISaturationDict&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;VDI_tabular_data&#39;</span><span class="p">]</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">to_nums</span><span class="p">,</span> <span class="n">CASDataReader</span>
+<span class="kn">from</span> <span class="nn">..functional</span> <span class="kn">import</span> <span class="n">rho_to_V</span>
+
+<span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;Misc&#39;</span><span class="p">)</span>
+
+<span class="c1">### CRC Handbook general tables</span>
+
+<span class="n">_CRC_inorganic</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Physical Constants of Inorganic Compounds.csv&#39;</span><span class="p">)</span>
+<span class="n">_CRC_organic</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Physical Constants of Organic Compounds.csv&#39;</span><span class="p">)</span>
+
+<span class="c1">### VDI Saturation</span>
+
+<span class="n">emptydict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;MW&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Tc&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="p">[],</span>
+             <span class="s2">&quot;Density (l)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Density (g)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Hvap&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Cp (l)&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Cp (g)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Mu (l)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Mu (g)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;K (l)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;K (g)&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Pr (l)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Pr (g)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Beta&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Volume (l)&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Volume (g)&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+<span class="c1"># After some consideration, it has been devided to keep this load method as is.</span>
+
+<span class="n">_VDISaturationDict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;VDI Saturation Compounds Data.csv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Read in a dict of assorted chemical properties at saturation for 58</span>
+<span class="sd">    industrially important chemicals, from:</span>
+<span class="sd">    Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2E. Berlin : Springer, 2010.</span>
+<span class="sd">    This listing is the successor to that in:</span>
+<span class="sd">    Schlunder, Ernst U, and International Center for Heat and Mass Transfer.</span>
+<span class="sd">    Heat Exchanger Design Handbook. Washington: Hemisphere Pub. Corp., 1983.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">_name</span><span class="p">,</span> <span class="n">_MW</span><span class="p">,</span> <span class="n">_Tc</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">rhol</span><span class="p">,</span> <span class="n">rhog</span><span class="p">,</span> <span class="n">Hvap</span><span class="p">,</span> <span class="n">cpl</span><span class="p">,</span> <span class="n">cpg</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">mug</span><span class="p">,</span> <span class="n">kl</span><span class="p">,</span> <span class="n">kg</span><span class="p">,</span> <span class="n">prl</span><span class="p">,</span> <span class="n">prg</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">newdict</span> <span class="o">=</span> <span class="p">(</span><span class="n">_VDISaturationDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_VDISaturationDict</span> <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">emptydict</span><span class="p">))</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_name</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;MW&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_MW</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Tc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Tc</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Density (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rhol</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Density (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rhog</span><span class="p">)</span>  <span class="c1"># Not actually used</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Hvap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Hvap</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Cp (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpl</span><span class="p">)</span>  <span class="c1"># Molar</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Cp (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpg</span><span class="p">)</span>  <span class="c1"># Molar</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Mu (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mul</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Mu (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mug</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;K (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kl</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;K (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kg</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Pr (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prl</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Pr (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prl</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Beta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Volume (l)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rhol</span><span class="p">,</span> <span class="n">_MW</span><span class="p">))</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;Volume (g)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rhog</span><span class="p">,</span> <span class="n">_MW</span><span class="p">))</span>
+        <span class="n">_VDISaturationDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="n">newdict</span>
+
+
+<div class="viewcode-block" id="VDI_tabular_data"><a class="viewcode-back" href="../../../functors/miscdata.html#thermosteam.functors.miscdata.VDI_tabular_data">[docs]</a><span class="k">def</span> <span class="nf">VDI_tabular_data</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function retrieves the tabular data available for a given chemical</span>
+<span class="sd">    and a given property. Lookup is based on CASRNs. Length of data returned</span>
+<span class="sd">    varies between chemicals. All data is at saturation condition from [1]_.</span>
+
+<span class="sd">    Function has data for 58 chemicals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+<span class="sd">    prop : string</span>
+<span class="sd">        Property [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ts : list</span>
+<span class="sd">        Temperatures where property data is available, [K]</span>
+<span class="sd">    props : list</span>
+<span class="sd">        Properties at each temperature, [various]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The available properties are &#39;P&#39;, &#39;Density (l)&#39;, &#39;Density (g)&#39;, &#39;Hvap&#39;,</span>
+<span class="sd">    &#39;Cp (l)&#39;, &#39;Cp (g)&#39;, &#39;Mu (l)&#39;, &#39;Mu (g)&#39;, &#39;K (l)&#39;, &#39;K (g)&#39;, &#39;Pr (l)&#39;,</span>
+<span class="sd">    &#39;Pr (g)&#39;, &#39;sigma&#39;, &#39;Beta&#39;, &#39;Volume (l)&#39;, and &#39;Volume (g)&#39;.</span>
+
+<span class="sd">    Data is available for all properties and all chemicals; surface tension</span>
+<span class="sd">    data was missing for mercury, but added as estimated from the a/b</span>
+<span class="sd">    coefficients listed in Jasper (1972) to simplify the function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; VDI_tabular_data(&#39;67-56-1&#39;, &#39;Mu (g)&#39;)</span>
+<span class="sd">    ([337.63, 360.0, 385.0, 410.0, 435.0, 460.0, 500.0], [1.11e-05, 1.18e-05, 1.27e-05, 1.36e-05, 1.46e-05, 1.59e-05, 2.04e-05])</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Gesellschaft, VDI, ed. VDI Heat Atlas. 2E. Berlin : Springer, 2010.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">_VDISaturationDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;CASRN not in VDI tabulation&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">props</span><span class="p">,</span> <span class="n">Ts</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">prop</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Property not specified correctly&#39;</span><span class="p">)</span>
+    <span class="n">Ts</span> <span class="o">=</span> <span class="p">[</span><span class="n">T</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="n">Ts</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="p">]</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">props</span> <span class="k">if</span> <span class="n">p</span><span class="p">]</span>
+
+    <span class="c1"># Not all data series convererge to correct values</span>
+    <span class="k">if</span> <span class="n">prop</span> <span class="o">==</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span>
+        <span class="n">Ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Tc&#39;</span><span class="p">])</span>
+        <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">props</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

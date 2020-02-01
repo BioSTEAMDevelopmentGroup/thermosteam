@@ -10,7 +10,7 @@ from .virial import BVirial_Pitzer_Curl, BVirial_Abbott, BVirial_Tsonopoulos, BV
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 from .dippr import DIPPR_EQ105
 # from .electrochem import _Laliberte_Density_ParametersDict, Laliberte_Density
-from ..base import V, InterpolatedTDependentModel, TPDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder
+from ..base import V, InterpolatedTDependentModel, TPDependentModel, TPDependentHandleBuilder, PhaseTPPropertyBuilder
 
 __all__ = ('Volume',
            'Yen_Woods', 'Rackett', 'Yamada_Gunn', 'Townsend_Hales', 'Bhirud_Normal', 'Costald',
@@ -730,5 +730,5 @@ def VolumeSolid(handle, CAS):
         handle.model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
 
 
-Volume = ChemicalPhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas, 'V')
+Volume = PhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas, 'V')
 

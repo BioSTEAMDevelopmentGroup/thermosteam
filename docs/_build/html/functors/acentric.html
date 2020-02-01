@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>acentric &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="combustion" href="combustion.html" />
+    <link rel="prev" title="functors" href="functors_module.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>acentric</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/acentric.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.acentric">
+<span id="acentric"></span><h1>acentric<a class="headerlink" href="#module-thermosteam.functors.acentric" title="Permalink to this headline">¶</a></h1>
+<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="thermosteam.functors.acentric.omega">
+<code class="sig-prename descclassname">thermosteam.functors.acentric.</code><code class="sig-name descname">omega</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['LK', 'DEFINITION'], *, P_at_Tr_seventenths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/acentric.html#omega"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.acentric.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of a chemical’s acentric factor,
+<cite>omega</cite>, or its calculation from correlations or directly through the
+definition of acentric factor if possible. Requires a known boiling point,
+critical temperature and pressure for use of the correlations. Requires
+accurate vapor pressure data for direct calculation.</p>
+<p>Will automatically select a method to use if no Method is provided;
+returns None if the data is not available and cannot be calculated.</p>
+<div class="math notranslate nohighlight">
+\[\omega \equiv -\log_{10}\left[\lim_{T/T_c=0.7}(P^{sat}/P_c)\right]-1.0\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of compound</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain omega with the given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>The method name to use. Accepted methods are ‘PSRK’, ‘PD’, ‘YAWS’, 
+‘LK’, and ‘DEFINITION’. All valid values are also held in the list
+omega_methods.</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+omega for the desired chemical, and will return methods instead of
+omega</p>
+</dd>
+<dt><strong>IgnoreMethods</strong><span class="classifier">list, optional</span></dt><dd><p>A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A total of five sources are available for this function. They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘PSRK’, a compillation of experimental and estimated data published 
+in the Appendix of <a class="reference internal" href="#r645944b61468-2" id="id1">[2]</a>, the fourth revision of the PSRK model.</p></li>
+<li><p>‘PD’, an older compillation of
+data published in (Passut &amp; Danner, 1973) <a class="reference internal" href="#r645944b61468-3" id="id2">[3]</a>.</p></li>
+<li><p>‘YAWS’, a large compillation of data from a
+variety of sources; no data points are sourced in the work of <a class="reference internal" href="#r645944b61468-4" id="id3">[4]</a>.</p></li>
+<li><p>‘LK’, a estimation method for hydrocarbons.</p></li>
+<li><p>‘DEFINITION’, based on the definition of omega as
+presented in <a class="reference internal" href="#r645944b61468-1" id="id4">[1]</a>, using vapor pressure data.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r645944b61468-1"><span class="brackets"><a class="fn-backref" href="#id4">1</a></span></dt>
+<dd><p>Pitzer, K. S., D. Z. Lippmann, R. F. Curl, C. M. Huggins, and
+D. E. Petersen: The Volumetric and Thermodynamic Properties of Fluids.
+II. Compressibility Factor, Vapor Pressure and Entropy of Vaporization.
+J. Am. Chem. Soc., 77: 3433 (1955).</p>
+</dd>
+<dt class="label" id="r645944b61468-2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
+Jürgen Gmehling. “PSRK Group Contribution Equation of State:
+Comprehensive Revision and Extension IV, Including Critical Constants
+and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
+227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
+</dd>
+<dt class="label" id="r645944b61468-3"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dd><p>Passut, Charles A., and Ronald P. Danner. “Acentric Factor. A
+Valuable Correlating Parameter for the Properties of Hydrocarbons.”
+Industrial &amp; Engineering Chemistry Process Design and Development 12,
+no. 3 (July 1, 1973): 365-68. doi:10.1021/i260047a026.</p>
+</dd>
+<dt class="label" id="r645944b61468-4"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
+<dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
+Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+Publishing, 2014.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">omega</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">0.635</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.acentric.LK_omega">
+<code class="sig-prename descclassname">thermosteam.functors.acentric.</code><code class="sig-name descname">LK_omega</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/acentric.html#LK_omega"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.acentric.LK_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the acentric factor of a fluid using a correlation in <a class="reference internal" href="#r43e80b2758ca-1" id="id9">[1]</a>.</p>
+<div class="math notranslate nohighlight">
+\[\omega = \frac{\ln P_{br}^{sat} - 5.92714 + 6.09648/T_{br} + 1.28862
+\ln T_{br} -0.169347T_{br}^6}
+{15.2518 - 15.6875/T_{br} - 13.4721 \ln T_{br} + 0.43577 T_{br}^6}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of the fluid [K]</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of the fluid [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of the fluid [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Internal units are atmosphere and Kelvin.
+Example value from Reid (1987). Using ASPEN V8.4, LK method gives 0.325595.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r43e80b2758ca-1"><span class="brackets"><a class="fn-backref" href="#id9">1</a></span></dt>
+<dd><p>Lee, Byung Ik, and Michael G. Kesler. “A Generalized Thermodynamic
+Correlation Based on Three-Parameter Corresponding States.” AIChE Journal
+21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Isopropylbenzene</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LK_omega</span><span class="p">(</span><span class="mf">425.6</span><span class="p">,</span> <span class="mf">631.1</span><span class="p">,</span> <span class="mf">32.1E5</span><span class="p">)</span>
+<span class="go">0.32544249926397856</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.acentric.StielPolar">
+<code class="sig-prename descclassname">thermosteam.functors.acentric.</code><code class="sig-name descname">StielPolar</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">omega=None</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">Method=None</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">*</em>, <em class="sig-param">P_at_Tr_sixtenths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/acentric.html#StielPolar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.acentric.StielPolar" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the calculation of a chemical’s Stiel Polar
+factor, directly through the definition of Stiel-polar factor if possible.
+Requires Tc, Pc, acentric factor, and a vapor pressure datum at Tr=0.6.</p>
+<p>Will automatically select a method to use if no Method is provided;
+returns None if the data is not available and cannot be calculated.</p>
+<div class="math notranslate nohighlight">
+\[x = \log P_r|_{T_r=0.6} + 1.70 \omega + 1.552\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of fluid [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of the fluid [-]</p>
+</dd>
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd></dd>
+<dt><strong>P_at_Tr_sixtenths</strong><span class="classifier">float</span></dt><dd><p>Pressure at Tr=0.6</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>factor</strong><span class="classifier">float</span></dt><dd><p>Stiel polar factor of compound</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Stiel polar factor with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>The method name to use. Only ‘DEFINITION’ is accepted so far.
+All valid values are also held in the list Stiel_polar_methods.</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+Stiel-polar factor for the desired chemical, and will return methods
+instead of stiel-polar factor</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Only one source is available for this function. It is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘DEFINITION’, based on the definition of
+Stiel Polar Factor presented in <a class="reference internal" href="#r35b57f6b7e1f-1" id="id11">[1]</a>, using vapor pressure data.</p></li>
+</ul>
+</div></blockquote>
+<p>A few points have also been published in <a class="reference internal" href="#r35b57f6b7e1f-2" id="id12">[2]</a>, which may be used for
+comparison. Currently this is only used for a surface tension correlation.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r35b57f6b7e1f-1"><span class="brackets"><a class="fn-backref" href="#id11">1</a></span></dt>
+<dd><p>Halm, Roland L., and Leonard I. Stiel. “A Fourth Parameter for the
+Vapor Pressure and Entropy of Vaporization of Polar Fluids.” AIChE
+Journal 13, no. 2 (1967): 351-355. doi:10.1002/aic.690130228.</p>
+</dd>
+<dt class="label" id="r35b57f6b7e1f-2"><span class="brackets"><a class="fn-backref" href="#id12">2</a></span></dt>
+<dd><p>D, Kukoljac Miloš, and Grozdanić Dušan K. “New Values of the
+Polarity Factor.” Journal of the Serbian Chemical Society 65, no. 12
+(January 1, 2000). <a class="reference external" href="http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf">http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StielPolar</span><span class="p">(</span><span class="mf">647.3</span><span class="p">,</span> <span class="mf">22048321.0</span><span class="p">,</span> <span class="mf">0.344</span><span class="p">,</span> <span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">0.024581140348734376</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="combustion.html" class="btn btn-neutral float-right" title="combustion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="functors_module.html" class="btn btn-neutral float-left" title="functors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

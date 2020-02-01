@@ -1,0 +1,5 @@
+VLE
+---
+
+.. autoclass:: thermosteam.equilibrium.VLE
+   :members:

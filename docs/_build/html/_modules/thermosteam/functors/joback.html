@@ -1,0 +1,1140 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.joback &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.joback</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.joback</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2017, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;smarts_fragment&#39;</span><span class="p">,</span> <span class="s1">&#39;Joback&#39;</span><span class="p">,</span> <span class="s1">&#39;J_BIGGS_JOBACK_SMARTS&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;J_BIGGS_JOBACK_SMARTS_id_dict&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">..functional</span> <span class="kn">import</span> <span class="n">horner_polynomial</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">to_nums</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+    <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Descriptors</span>
+    <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span>
+    <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdMolDescriptors</span>
+    <span class="n">hasRDKit</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># pragma: no cover</span>
+    <span class="n">hasRDKit</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">rdkit_missing</span> <span class="o">=</span> <span class="s1">&#39;RDKit is not installed; it is required to use this functionality&#39;</span>
+
+<span class="n">J_BIGGS_JOBACK_SMARTS</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;Methyl&quot;</span><span class="p">,</span><span class="s2">&quot;-CH3&quot;</span><span class="p">,</span> <span class="s2">&quot;[CX4H3]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-CH2-&quot;</span><span class="p">,</span> <span class="s2">&quot;[!R;CX4H2]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Tertiary acyclic&quot;</span><span class="p">,</span><span class="s2">&quot;&gt;CH-&quot;</span><span class="p">,</span> <span class="s2">&quot;[!R;CX4H]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Quaternary acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;C&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;[!R;CX4H0]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Primary alkene&quot;</span><span class="p">,</span> <span class="s2">&quot;=CH2&quot;</span><span class="p">,</span> <span class="s2">&quot;[CX3H2]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary alkene acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;=CH-&quot;</span><span class="p">,</span> <span class="s2">&quot;[!R;CX3H1;!$([CX3H1](=O))]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Tertiary alkene acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;=C&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([!R;#6X3H0]);!$([!R;#6X3H0]=[#8])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Cumulative alkene&quot;</span><span class="p">,</span> <span class="s2">&quot;=C=&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([CX2H0](=*)=*)]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Terminal alkyne&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;≡CH&quot;</span><span class="p">,</span><span class="s2">&quot;[$([CX2H1]#[!#7])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Internal alkyne&quot;</span><span class="p">,</span><span class="sa">u</span><span class="s2">&quot;≡C-&quot;</span><span class="p">,</span><span class="s2">&quot;[$([CX2H0]#[!#7])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-CH2- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[R;CX4H2]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Tertiary cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;CH- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[R;CX4H]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Quaternary cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;C&lt; (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[R;CX4H0]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary alkene cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;=CH- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[R;CX3H1,cX3H1]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Tertiary alkene cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;=C&lt; (ring)&quot;</span><span class="p">,</span><span class="s2">&quot;[$([R;#6X3H0]);!$([R;#6X3H0]=[#8])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Fluoro&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;[F]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Chloro&quot;</span><span class="p">,</span> <span class="s2">&quot;-Cl&quot;</span><span class="p">,</span> <span class="s2">&quot;[Cl]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Bromo&quot;</span><span class="p">,</span> <span class="s2">&quot;-Br&quot;</span><span class="p">,</span> <span class="s2">&quot;[Br]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Iodo&quot;</span><span class="p">,</span> <span class="s2">&quot;-I&quot;</span><span class="p">,</span> <span class="s2">&quot;[I]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Alcohol&quot;</span><span class="p">,</span><span class="s2">&quot;-OH (alcohol)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OX2H;!$([OX2H]-[#6]=[O]);!$([OX2H]-a)]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Phenol&quot;</span><span class="p">,</span><span class="s2">&quot;-OH (phenol)&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([OX2H]-a)]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Ether acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-O- (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OX2H0;!R;!$([OX2H0]-[#6]=[#8])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Ether cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-O- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[#8X2H0;R;!$([#8X2H0]~[#6]=[#8])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Carbonyl acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;C=O (nonring)&quot;</span><span class="p">,</span><span class="s2">&quot;[$([CX3H0](=[OX1]));!$([CX3](=[OX1])-[OX2]);!R]=O&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Carbonyl cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;C=O (ring)&quot;</span><span class="p">,</span><span class="s2">&quot;[$([#6X3H0](=[OX1]));!$([#6X3](=[#8X1])~[#8X2]);R]=O&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Aldehyde&quot;</span><span class="p">,</span><span class="s2">&quot;O=CH- (aldehyde)&quot;</span><span class="p">,</span><span class="s2">&quot;[CX3H1](=O)&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Carboxylic acid&quot;</span><span class="p">,</span> <span class="s2">&quot;-COOH (acid)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OX2H]-[C]=O&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Ester&quot;</span><span class="p">,</span> <span class="s2">&quot;-COO- (ester)&quot;</span><span class="p">,</span> <span class="s2">&quot;[#6X3H0;!$([#6X3H0](~O)(~O)(~O))](=[#8X1])[#8X2H0]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Oxygen double bond other&quot;</span><span class="p">,</span> <span class="s2">&quot;=O (other than above)&quot;</span><span class="p">,</span><span class="s2">&quot;[OX1H0;!$([OX1H0]~[#6X3]);!$([OX1H0]~[#7X3]~[#8])]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Primary amino&quot;</span><span class="p">,</span><span class="s2">&quot;-NH2&quot;</span><span class="p">,</span> <span class="s2">&quot;[NX3H2]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary amino acyclic&quot;</span><span class="p">,</span><span class="s2">&quot;&gt;NH (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NX3H1;!R]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Secondary amino cyclic&quot;</span><span class="p">,</span><span class="s2">&quot;&gt;NH (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[#7X3H1;R]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Tertiary amino&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;N- (nonring)&quot;</span><span class="p">,</span><span class="s2">&quot;[#7X3H0;!$([#7](~O)~O)]&quot;</span><span class="p">],</span> 
+<span class="p">[</span><span class="s2">&quot;Imine acyclic&quot;</span><span class="p">,</span><span class="s2">&quot;-N= (nonring)&quot;</span><span class="p">,</span><span class="s2">&quot;[#7X2H0;!R]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Imine cyclic&quot;</span><span class="p">,</span><span class="s2">&quot;-N= (ring)&quot;</span><span class="p">,</span><span class="s2">&quot;[#7X2H0;R]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Aldimine&quot;</span><span class="p">,</span> <span class="s2">&quot;=NH&quot;</span><span class="p">,</span> <span class="s2">&quot;[#7X2H1]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Cyano&quot;</span><span class="p">,</span> <span class="s2">&quot;-CN&quot;</span><span class="p">,</span><span class="s2">&quot;[#6X2]#[#7X1H0]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Nitro&quot;</span><span class="p">,</span> <span class="s2">&quot;-NO2&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([#7X3,#7X3+][!#8])](=[O])~[O-]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Thiol&quot;</span><span class="p">,</span> <span class="s2">&quot;-SH&quot;</span><span class="p">,</span> <span class="s2">&quot;[SX2H]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Thioether acyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-S- (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[#16X2H0;!R]&quot;</span><span class="p">],</span>
+<span class="p">[</span><span class="s2">&quot;Thioether cyclic&quot;</span><span class="p">,</span> <span class="s2">&quot;-S- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[#16X2H0;R]&quot;</span><span class="p">]]</span>
+
+<span class="n">J_BIGGS_JOBACK_SMARTS_id_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span> <span class="n">j</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">J_BIGGS_JOBACK_SMARTS</span><span class="p">)}</span>
+<span class="n">J_BIGGS_JOBACK_SMARTS_str_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">J_BIGGS_JOBACK_SMARTS</span><span class="p">}</span>
+
+<span class="c1"># Shi Chenyang&#39;s JRGUI code indicates he left the following list of smarts in</span>
+<span class="c1"># favor of those above by J Biggs</span>
+<span class="n">SHI_CHENYANG_JOBACK_SMARTS</span> <span class="o">=</span>  <span class="p">[</span>
+<span class="p">(</span><span class="s2">&quot;-CH3&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH3;A;X4;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-CH2-&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH2;A;X4;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;CH-&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH1;A;X4;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;C&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;A;X4;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=CH2&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH2;A;X3;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=CH-&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH1;A;X3;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=C&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;A;X3;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=C=&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([CH0;A;X2;!R](=*)=*)]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;≡CH&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([CH1;A;X2;!R]#*)]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;≡C-&quot;</span><span class="p">,</span> <span class="s2">&quot;[$([CH0;A;X2;!R]#*)]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-CH2- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH2;A;X4;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;CH- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH1;A;X4;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;C&lt; (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;A;X4;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=CH- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH1;X3;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=C&lt; (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;X3;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;[F]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-Cl&quot;</span><span class="p">,</span> <span class="s2">&quot;[Cl]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-Br&quot;</span><span class="p">,</span> <span class="s2">&quot;[Br]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-I&quot;</span><span class="p">,</span> <span class="s2">&quot;[I]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-OH (alcohol)&quot;</span><span class="p">,</span> <span class="s2">&quot;[O;H1;$(O-!@[C;!$(C=!@[O,N,S])])]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-OH (phenol)&quot;</span><span class="p">,</span> <span class="s2">&quot;[O;H1;$(O-!@c)]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-O- (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OH0;X2;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-O- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OH0;X2;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;C=O (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;A;X3;!R]=O&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;C=O (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH0;A;X3;R]=O&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;O=CH- (aldehyde)&quot;</span><span class="p">,</span> <span class="s2">&quot;[CH;D2;$(C-!@C)](=O)&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-COOH (acid)&quot;</span><span class="p">,</span> <span class="s2">&quot;[$(C-!@[A;!O])](=O)([O;H,-])&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-COO- (ester)&quot;</span><span class="p">,</span> <span class="s2">&quot;C(=O)[OH0]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=O (other than above)&quot;</span><span class="p">,</span> <span class="s2">&quot;[OX1]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-NH2&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH2;X3]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;NH (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH1;X3;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;NH (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH1;X3;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;&gt;N- (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH0;X3;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-N= (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH0;X2;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-N= (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH0;X2;R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;=NH&quot;</span><span class="p">,</span> <span class="s2">&quot;[NH1;X2]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-CN&quot;</span><span class="p">,</span> <span class="s2">&quot;C#N&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-NO2&quot;</span><span class="p">,</span> <span class="s2">&quot;N(=O)=O&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-SH&quot;</span><span class="p">,</span> <span class="s2">&quot;[SH1]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-S- (nonring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[SH0;!R]&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="s2">&quot;-S- (ring)&quot;</span><span class="p">,</span> <span class="s2">&quot;[SH0;R]&quot;</span><span class="p">)]</span>
+<span class="n">SHI_CHENYANG_JOBACK_SMARTS_id_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">SHI_CHENYANG_JOBACK_SMARTS</span><span class="p">)}</span>
+<span class="n">SHI_CHENYANG_JOBACK_SMARTS_str_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">SHI_CHENYANG_JOBACK_SMARTS</span><span class="p">}</span>
+
+<span class="n">joback_data_txt</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;&#39;&#39;-CH3 	0.0141 	-0.0012 	65 	23.58 	-5.10 	-76.45 	-43.96 	1.95E+1 	-8.08E-3 	1.53E-4 	-9.67E-8 	0.908 	2.373 	548.29 	-1.719</span>
+<span class="s1">-CH2- 	0.0189 	0.0000 	56 	22.88 	11.27 	-20.64 	8.42 	-9.09E-1 	9.50E-2 	-5.44E-5 	1.19E-8 	2.590 	2.226 	94.16 	-0.199</span>
+<span class="s1">&gt;CH- 	0.0164 	0.0020 	41 	21.74 	12.64 	29.89 	58.36 	-2.30E+1 	2.04E-1 	-2.65E-4 	1.20E-7 	0.749 	1.691 	-322.15 	1.187</span>
+<span class="s1">&gt;C&lt; 	0.0067 	0.0043 	27 	18.25 	46.43 	82.23 	116.02 	-6.62E+1 	4.27E-1 	-6.41E-4 	3.01E-7 	-1.460 	0.636 	-573.56 	2.307</span>
+<span class="s1">=CH2 	0.0113 	-0.0028 	56 	18.18 	-4.32 	-9.630 	3.77 	2.36E+1 	-3.81E-2 	1.72E-4 	-1.03E-7 	-0.473 	1.724 	495.01 	-1.539</span>
+<span class="s1">=CH- 	0.0129 	-0.0006 	46 	24.96 	8.73 	37.97 	48.53 	-8.00 	1.05E-1 	-9.63E-5 	3.56E-8 	2.691 	2.205 	82.28 	-0.242</span>
+<span class="s1">=C&lt; 	0.0117 	0.0011 	38 	24.14 	11.14 	83.99 	92.36 	-2.81E+1 	2.08E-1 	-3.06E-4 	1.46E-7 	3.063 	2.138 	n. a. 	n. a.</span>
+<span class="s1">=C= 	0.0026 	0.0028 	36 	26.15 	17.78 	142.14 	136.70 	2.74E+1 	-5.57E-2 	1.01E-4 	-5.02E-8 	4.720 	2.661 	n. a. 	n. a.</span>
+<span class="s1">≡CH 	0.0027 	-0.0008 	46 	9.20 	-11.18 	79.30 	77.71 	2.45E+1 	-2.71E-2 	1.11E-4 	-6.78E-8 	2.322 	1.155 	n. a. 	n. a.</span>
+<span class="s1">≡C- 	0.0020 	0.0016 	37 	27.38 	64.32 	115.51 	109.82 	7.87 	2.01E-2 	-8.33E-6 	1.39E-9 	4.151 	3.302 	n. a. 	n. a.</span>
+<span class="s1">-CH2- (ring)	0.0100 	0.0025 	48 	27.15 	7.75 	-26.80 	-3.68 	-6.03 	8.54E-2 	-8.00E-6 	-1.80E-8 	0.490 	2.398 	307.53 	-0.798</span>
+<span class="s1">&gt;CH- (ring)	0.0122 	0.0004 	38 	21.78 	19.88 	8.67 	40.99 	-2.05E+1 	1.62E-1 	-1.60E-4 	6.24E-8 	3.243 	1.942 	-394.29 	1.251</span>
+<span class="s1">&gt;C&lt; (ring)	0.0042 	0.0061 	27 	21.32 	60.15 	79.72 	87.88 	-9.09E+1 	5.57E-1 	-9.00E-4 	4.69E-7 	-1.373 	0.644 	n. a. 	n. a.</span>
+<span class="s1">=CH- (ring)	0.0082 	0.0011 	41 	26.73 	8.13 	2.09 	11.30 	-2.14 	5.74E-2 	-1.64E-6 	-1.59E-8 	1.101 	2.544 	259.65 	-0.702</span>
+<span class="s1">=C&lt; (ring)	0.0143 	0.0008 	32 	31.01 	37.02 	46.43 	54.05 	-8.25 	1.01E-1 	-1.42E-4 	6.78E-8 	2.394 	3.059 	-245.74 	0.912</span>
+<span class="s1">-F 	0.0111 	-0.0057 	27 	-0.03 	-15.78 	-251.92 	-247.19 	2.65E+1 	-9.13E-2 	1.91E-4 	-1.03E-7 	1.398 	-0.670 	n. a. 	n. a.</span>
+<span class="s1">-Cl 	0.0105 	-0.0049 	58 	38.13 	13.55 	-71.55 	-64.31 	3.33E+1 	-9.63E-2 	1.87E-4 	-9.96E-8 	2.515 	4.532 	625.45 	-1.814</span>
+<span class="s1">-Br 	0.0133 	0.0057 	71 	66.86 	43.43 	-29.48 	-38.06 	2.86E+1 	-6.49E-2 	1.36E-4 	-7.45E-8 	3.603 	6.582 	738.91 	-2.038</span>
+<span class="s1">-I 	0.0068 	-0.0034 	97 	93.84 	41.69 	21.06 	5.74 	3.21E+1 	-6.41E-2 	1.26E-4 	-6.87E-8 	2.724 	9.520 	809.55 	-2.224</span>
+<span class="s1">-OH (alcohol) 	0.0741 	0.0112 	28 	92.88 	44.45 	-208.04 	-189.20 	2.57E+1 	-6.91E-2 	1.77E-4 	-9.88E-8 	2.406 	16.826 	2173.72 	-5.057</span>
+<span class="s1">-OH (phenol) 	0.0240 	0.0184 	-25 	76.34 	82.83 	-221.65 	-197.37 	-2.81 	1.11E-1 	-1.16E-4 	4.94E-8 	4.490 	12.499 	3018.17 	-7.314</span>
+<span class="s1">-O- (nonring) 	0.0168 	0.0015 	18 	22.42 	22.23 	-132.22 	-105.00 	2.55E+1 	-6.32E-2 	1.11E-4 	-5.48E-8 	1.188 	2.410 	122.09 	-0.386</span>
+<span class="s1">-O- (ring) 	0.0098 	0.0048 	13 	31.22 	23.05 	-138.16 	-98.22 	1.22E+1 	-1.26E-2 	6.03E-5 	-3.86E-8 	5.879 	4.682 	440.24 	-0.953</span>
+<span class="s1">&gt;C=O (nonring) 	0.0380 	0.0031 	62 	76.75 	61.20 	-133.22 	-120.50 	6.45 	6.70E-2 	-3.57E-5 	2.86E-9 	4.189 	8.972 	340.35 	-0.350</span>
+<span class="s1">&gt;C=O (ring) 	0.0284 	0.0028 	55 	94.97 	75.97 	-164.50 	-126.27 	3.04E+1 	-8.29E-2 	2.36E-4 	-1.31E-7 	0. 	6.645 	n. a. 	n. a.</span>
+<span class="s1">O=CH- (aldehyde) 	0.0379 	0.0030 	82 	72.24 	36.90 	-162.03 	-143.48 	3.09E+1 	-3.36E-2 	1.60E-4 	-9.88E-8 	3.197 	9.093 	740.92 	-1.713</span>
+<span class="s1">-COOH (acid) 	0.0791 	0.0077 	89 	169.09 	155.50 	-426.72 	-387.87 	2.41E+1 	4.27E-2 	8.04E-5 	-6.87E-8 	11.051 	19.537 	1317.23 	-2.578</span>
+<span class="s1">-COO- (ester) 	0.0481 	0.0005 	82 	81.10 	53.60 	-337.92 	-301.95 	2.45E+1 	4.02E-2 	4.02E-5 	-4.52E-8 	6.959 	9.633 	483.88 	-0.966</span>
+<span class="s1">=O (other than above) 	0.0143 	0.0101 	36 	-10.50 	2.08 	-247.61 	-250.83 	6.82 	1.96E-2 	1.27E-5 	-1.78E-8 	3.624 	5.909 	675.24 	-1.340</span>
+<span class="s1">-NH2 	0.0243 	0.0109 	38 	73.23 	66.89 	-22.02 	14.07 	2.69E+1 	-4.12E-2 	1.64E-4 	-9.76E-8 	3.515 	10.788 	n. a. 	n. a.</span>
+<span class="s1">&gt;NH (nonring) 	0.0295 	0.0077 	35 	50.17 	52.66 	53.47 	89.39 	-1.21 	7.62E-2 	-4.86E-5 	1.05E-8 	5.099 	6.436 	n. a. 	n. a.</span>
+<span class="s1">&gt;NH (ring) 	0.0130 	0.0114 	29 	52.82 	101.51 	31.65 	75.61 	1.18E+1 	-2.30E-2 	1.07E-4 	-6.28E-8 	7.490 	6.930 	n. a. 	n. a.</span>
+<span class="s1">&gt;N- (nonring) 	0.0169 	0.0074 	9 	11.74 	48.84 	123.34 	163.16 	-3.11E+1 	2.27E-1 	-3.20E-4 	1.46E-7 	4.703 	1.896 	n. a. 	n. a.</span>
+<span class="s1">-N= (nonring) 	0.0255 	-0.0099 	n. a. 	74.60 	n. a. 	23.61 	n. a. 	n. a. 	n. a. 	n. a. 	n. a. 	n. a. 	3.335 	n. a. 	n. a.</span>
+<span class="s1">-N= (ring) 	0.0085 	0.0076 	34 	57.55 	68.40 	55.52 	79.93 	8.83 	-3.84E-3 	4.35E-5 	-2.60E-8 	3.649 	6.528 	n. a. 	n. a.</span>
+<span class="s1">=NH 	n. a. 	n. a. 	n. a. 	83.08 	68.91 	93.70 	119.66 	5.69 	-4.12E-3 	1.28E-4 	-8.88E-8 	n. a. 	12.169 	n. a. 	n. a.</span>
+<span class="s1">-CN 	0.0496 	-0.0101 	91 	125.66 	59.89 	88.43 	89.22 	3.65E+1 	-7.33E-2 	1.84E-4 	-1.03E-7 	2.414 	12.851 	n. a. 	n. a.</span>
+<span class="s1">-NO2 	0.0437 	0.0064 	91 	152.54 	127.24 	-66.57 	-16.83 	2.59E+1 	-3.74E-3 	1.29E-4 	-8.88E-8 	9.679 	16.738 	n. a. 	n. a.</span>
+<span class="s1">-SH 	0.0031 	0.0084 	63 	63.56 	20.09 	-17.33 	-22.99 	3.53E+1 	-7.58E-2 	1.85E-4 	-1.03E-7 	2.360 	6.884 	n. a. 	n. a.</span>
+<span class="s1">-S- (nonring) 	0.0119 	0.0049 	54 	68.78 	34.40 	41.87 	33.12 	1.96E+1 	-5.61E-3 	4.02E-5 	-2.76E-8 	4.130 	6.817 	n. a. 	n. a.</span>
+<span class="s1">-S- (ring) 	0.0019 	0.0051 	38 	52.10 	79.93 	39.10 	27.76 	1.67E+1 	4.81E-3 	2.77E-5 	-2.11E-8 	1.557 	5.984 	n. a. 	n. a.&#39;&#39;&#39;</span>
+
+<span class="n">joback_groups_str_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">joback_groups_id_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">JOBACK</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;JOBACK&#39;</span><span class="p">,</span> <span class="s1">&#39;i, name, Tc, Pc, Vc, Tb, Tm, Hform, Gform, Cpa, Cpb, Cpc, Cpd, Hfus, Hvap, mua, mub&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">joback_data_txt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)):</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">JOBACK</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">parsed</span><span class="p">)</span>
+    <span class="n">joback_groups_str_dict</span><span class="p">[</span><span class="n">parsed</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">j</span>
+    <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+
+
+<div class="viewcode-block" id="smarts_fragment"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.smarts_fragment">[docs]</a><span class="k">def</span> <span class="nf">smarts_fragment</span><span class="p">(</span><span class="n">catalog</span><span class="p">,</span> <span class="n">rdkitmol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Fragments a molecule into a set of unique groups and counts as</span>
+<span class="sd">    specified by the `catalog`. The molecule can either be an rdkit </span>
+<span class="sd">    molecule object, or a smiles string which will be parsed by rdkit.</span>
+<span class="sd">    Returns a dictionary of groups and their counts according to the</span>
+<span class="sd">    indexes of the catalog provided.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    catalog : dict</span>
+<span class="sd">        Dictionary indexed by keys pointing to smarts strings, [-] </span>
+<span class="sd">    rdkitmol : mol, optional</span>
+<span class="sd">        Molecule as rdkit object, [-]</span>
+<span class="sd">    smi : str, optional</span>
+<span class="sd">        Smiles string representing a chemical, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    counts : dict</span>
+<span class="sd">        Dictionaty of integer counts of the found groups only, indexed by</span>
+<span class="sd">        the same keys used by the catalog [-]</span>
+<span class="sd">    success : bool</span>
+<span class="sd">        Whether or not molecule was fully and uniquely fragmented, [-]</span>
+<span class="sd">    status : str</span>
+<span class="sd">        A string holding an explanation of why the molecule failed to be</span>
+<span class="sd">        fragmented, if it fails; &#39;OK&#39; if it suceeds.</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Raises an exception if rdkit is not installed, or `smi` or `rdkitmol` is</span>
+<span class="sd">    not defined.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Acetone:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; smarts_fragment(catalog=J_BIGGS_JOBACK_SMARTS_id_dict, smi=&#39;CC(=O)C&#39;)</span>
+<span class="sd">    ({24: 1, 1: 2}, True, &#39;OK&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Sodium sulfate, (Na2O4S):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; smarts_fragment(catalog=J_BIGGS_JOBACK_SMARTS_id_dict, smi=&#39;[O-]S(=O)(=O)[O-].[Na+].[Na+]&#39;)</span>
+<span class="sd">    ({29: 4}, False, &#39;Did not match all atoms present&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Propionic anhydride (C6H10O3):</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; smarts_fragment(catalog=J_BIGGS_JOBACK_SMARTS_id_dict, smi=&#39;CCC(=O)OC(=O)CC&#39;)</span>
+<span class="sd">    ({1: 2, 2: 2, 28: 2}, False, &#39;Matched some atoms repeatedly: [4]&#39;)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hasRDKit</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">rdkit_missing</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rdkitmol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">smi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either an rdkit mol or a smiles string is required&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">smi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rdkitmol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdkitmol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Failed to construct mol&#39;</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="p">{},</span> <span class="n">success</span><span class="p">,</span> <span class="n">status</span>
+
+    <span class="n">atom_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rdkitmol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">())</span>    
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;OK&#39;</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">all_matches</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">smart</span> <span class="ow">in</span> <span class="n">catalog</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">patt</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">smart</span><span class="p">)</span>
+        <span class="n">hits</span> <span class="o">=</span> <span class="n">rdkitmol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">patt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hits</span><span class="p">:</span>
+            <span class="n">all_matches</span><span class="p">[</span><span class="n">smart</span><span class="p">]</span> <span class="o">=</span> <span class="n">hits</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hits</span><span class="p">)</span>
+    
+    <span class="n">matched_atoms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">all_matches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+            <span class="n">matched_atoms</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched_atoms</span><span class="p">)</span> <span class="o">!=</span> <span class="n">atom_count</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Did not match all atoms present&#39;</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        
+    <span class="c1"># Check the atom aount again, this time looking for duplicate matches (only if have yet to fail)</span>
+    <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+        <span class="n">matched_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">all_matches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">matched_atoms</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched_atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">atom_count</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Matched </span><span class="si">%d</span><span class="s1"> of </span><span class="si">%d</span><span class="s1"> atoms only&#39;</span> <span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matched_atoms</span><span class="p">),</span> <span class="n">atom_count</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched_atoms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">atom_count</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Matched some atoms repeatedly: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Counter</span><span class="p">(</span><span class="n">matched_atoms</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        
+    <span class="k">return</span> <span class="n">counts</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="Joback"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback">[docs]</a><span class="k">class</span> <span class="nc">Joback</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Class for performing chemical property estimations with the Joback</span>
+<span class="sd">    group contribution method as described in [1]_ and [2]_. This is a very</span>
+<span class="sd">    common method with low accuracy but wide applicability. This routine can be</span>
+<span class="sd">    used with either its own automatic fragmentation routine, or user specified</span>
+<span class="sd">    groups. It is applicable to organic compounds only, and has only 41 groups</span>
+<span class="sd">    with no interactions between them. Each method&#39;s documentation describes  </span>
+<span class="sd">    its accuracy. The automatic fragmentation routine is possible only because</span>
+<span class="sd">    of the development of SMARTS expressions to match the Joback groups by </span>
+<span class="sd">    Dr. Jason Biggs. The list of SMARTS expressions</span>
+<span class="sd">    was posted publically on the </span>
+<span class="sd">    `RDKit mailing list &lt;https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07446.html&gt;`_. </span>
+<span class="sd">                    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mol : rdkitmol or smiles str</span>
+<span class="sd">        Input molecule for the analysis, [-]</span>
+<span class="sd">    atom_count : int, optional</span>
+<span class="sd">        The total number of atoms including hydrogen in the molecule; this will </span>
+<span class="sd">        be counted by rdkit if it not provided, [-]</span>
+<span class="sd">    MW : float, optional</span>
+<span class="sd">        Molecular weight of the molecule; this will be calculated by rdkit if  </span>
+<span class="sd">        not provided, [g/mol]</span>
+<span class="sd">    Tb : float, optional</span>
+<span class="sd">        An experimentally known boiling temperature for the chemical; this </span>
+<span class="sd">        increases the accuracy of the calculated critical point if provided.</span>
+<span class="sd">        [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Be sure to check the status of the automatic fragmentation; not all </span>
+<span class="sd">    chemicals with the Joback method are applicable.</span>
+<span class="sd">    </span>
+<span class="sd">    Approximately 68% of chemcials in the thermo database seem to be able to</span>
+<span class="sd">    be estimated with the Joback method.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Analysis of Acetone:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; J = Joback(&#39;CC(=O)C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; J.Hfus(J.counts)</span>
+<span class="sd">    5125.0</span>
+<span class="sd">    &gt;&gt;&gt; J.Cpig(350)</span>
+<span class="sd">    84.69109750000001</span>
+<span class="sd">    &gt;&gt;&gt; J.status</span>
+<span class="sd">    &#39;OK&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    All properties can be obtained in one go with the `estimate` method:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; pprint(J.estimate()) # doctest: +ELLIPSIS</span>
+<span class="sd">    {&#39;Cpig&#39;: &lt;bound method Joback.Cpig of &lt;thermo.joback.Joback object at 0x...&gt;&gt;,</span>
+<span class="sd">     &#39;Cpig_coeffs&#39;: [7.520000000000003,</span>
+<span class="sd">                     0.26084,</span>
+<span class="sd">                     -0.0001207,</span>
+<span class="sd">                     1.545999999999998e-08],</span>
+<span class="sd">     &#39;Gf&#39;: -154540.00000000003,</span>
+<span class="sd">     &#39;Hf&#39;: -217829.99999999997,</span>
+<span class="sd">     &#39;Hfus&#39;: 5125.0,</span>
+<span class="sd">     &#39;Hvap&#39;: 29018.0,</span>
+<span class="sd">     &#39;Pc&#39;: 4802499.604994407,</span>
+<span class="sd">     &#39;Tb&#39;: 322.11,</span>
+<span class="sd">     &#39;Tc&#39;: 500.5590049525365,</span>
+<span class="sd">     &#39;Tm&#39;: 173.5,</span>
+<span class="sd">     &#39;Vc&#39;: 0.0002095,</span>
+<span class="sd">     &#39;mul&#39;: &lt;bound method Joback.mul of &lt;thermo.joback.Joback object at 0x...&gt;&gt;,</span>
+<span class="sd">     &#39;mul_coeffs&#39;: [839.1099999999998, -14.99]}</span>
+
+
+<span class="sd">    The results for propionic anhydride (if the status is not OK) should not be</span>
+<span class="sd">    used.</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; J = Joback(&#39;CCC(=O)OC(=O)CC&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; J.status</span>
+<span class="sd">    &#39;Matched some atoms repeatedly: [4]&#39;</span>
+<span class="sd">    &gt;&gt;&gt; J.Cpig(300)</span>
+<span class="sd">    175.85999999999999</span>
+<span class="sd">    </span>
+<span class="sd">    None of the routines need to use the automatic routine; they can be used</span>
+<span class="sd">    manually too:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; Joback.Tb({1: 2, 24: 1})</span>
+<span class="sd">    322.11</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Joback, Kevin G. &quot;A Unified Approach to Physical Property Estimation</span>
+<span class="sd">       Using Multivariate Statistical Techniques.&quot; Thesis, Massachusetts </span>
+<span class="sd">       Institute of Technology, 1984.</span>
+<span class="sd">    .. [2] Joback, K.G., and R.C. Reid. &quot;Estimation of Pure-Component </span>
+<span class="sd">       Properties from Group-Contributions.&quot; Chemical Engineering </span>
+<span class="sd">       Communications 57, no. 1-6 (July 1, 1987): 233-43. </span>
+<span class="sd">       doi:10.1080/00986448708960487.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">calculated_Cpig_coeffs</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">calculated_mul_coeffs</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">atom_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tb</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span> <span class="o">==</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol</span> <span class="o">=</span> <span class="n">mol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">atom_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol_Hs</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atom_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol_Hs</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atom_count</span> <span class="o">=</span> <span class="n">atom_count</span>
+        <span class="k">if</span> <span class="n">MW</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MW</span> <span class="o">=</span> <span class="n">rdMolDescriptors</span><span class="o">.</span><span class="n">CalcExactMolWt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol_Hs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MW</span> <span class="o">=</span> <span class="n">MW</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">smarts_fragment</span><span class="p">(</span><span class="n">J_BIGGS_JOBACK_SMARTS_id_dict</span><span class="p">,</span> <span class="n">rdkitmol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkitmol</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">Tb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Tb_estimated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Tb_estimated</span> <span class="o">=</span> <span class="n">Tb</span>
+        
+<div class="viewcode-block" id="Joback.estimate"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.estimate">[docs]</a>    <span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Method to compute all available properties with the Joback method;</span>
+<span class="sd">        returns their results as a dict. For the tempearture dependent values</span>
+<span class="sd">        Cpig and mul, both the coefficients and objects to perform calculations</span>
+<span class="sd">        are returned.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Pre-generate the coefficients or they will not be returned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cpig</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> 
+        <span class="n">estimates</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Tb&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Tm&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tb_estimated</span><span class="p">),</span>
+                     <span class="s1">&#39;Pc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_count</span><span class="p">),</span>
+                     <span class="s1">&#39;Vc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Hf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Gf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Gf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Hfus&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hfus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;Hvap&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hvap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                     <span class="s1">&#39;mul&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span>
+                     <span class="s1">&#39;mul_coeffs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculated_mul_coeffs</span><span class="p">,</span>
+                     <span class="s1">&#39;Cpig&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cpig</span><span class="p">,</span>
+                     <span class="s1">&#39;Cpig_coeffs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculated_Cpig_coeffs</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">estimates</span></div>
+        
+<div class="viewcode-block" id="Joback.Tb"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Tb">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Tb</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the normal boiling temperature of an organic compound </span>
+<span class="sd">        using the Joback method as a function of chemical structure only.</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            T_b = 198.2 + \sum_i {T_{b,i}}</span>
+<span class="sd">            </span>
+<span class="sd">        For 438 compounds tested by Joback, the absolute average error was</span>
+<span class="sd">        12.91 K  and standard deviation was 17.85 K; the average relative error</span>
+<span class="sd">        was 3.6%. </span>
+<span class="sd">            </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tb : float</span>
+<span class="sd">            Estimated normal boiling temperature, [K]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Tb({1: 2, 24: 1})</span>
+<span class="sd">        322.11</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Tb</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Tb</span> <span class="o">=</span> <span class="mf">198.2</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Tb</span></div>
+    
+<div class="viewcode-block" id="Joback.Tm"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Tm">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Tm</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the melting temperature of an organic compound using the </span>
+<span class="sd">        Joback method as a function of chemical structure only.</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            T_m = 122.5 + \sum_i {T_{m,i}}</span>
+<span class="sd">            </span>
+<span class="sd">        For 388 compounds tested by Joback, the absolute average error was</span>
+<span class="sd">        22.6 K  and standard deviation was 24.68 K; the average relative error</span>
+<span class="sd">        was 11.2%. </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tm : float</span>
+<span class="sd">            Estimated melting temperature, [K]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Tm({1: 2, 24: 1})</span>
+<span class="sd">        173.5</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Tm</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Tm</span> <span class="o">=</span> <span class="mf">122.5</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Tm</span></div>
+    
+<div class="viewcode-block" id="Joback.Tc"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Tc">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Tc</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">Tb</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the critcal temperature of an organic compound using the </span>
+<span class="sd">        Joback method as a function of chemical structure only, or optionally</span>
+<span class="sd">        improved by using an experimental boiling point. If the experimental</span>
+<span class="sd">        boiling point is not provided it will be estimated with the Joback</span>
+<span class="sd">        method as well.</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            T_c = T_b \left[0.584 + 0.965 \sum_i {T_{c,i}}</span>
+<span class="sd">            - \left(\sum_i {T_{c,i}}\right)^2 \right]^{-1}</span>
+<span class="sd">            </span>
+<span class="sd">        For 409 compounds tested by Joback, the absolute average error was</span>
+<span class="sd">        4.76 K  and standard deviation was 6.94 K; the average relative error</span>
+<span class="sd">        was 0.81%. </span>
+<span class="sd">        </span>
+<span class="sd">        Appendix BI of Joback&#39;s work lists 409 estimated critical temperatures.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+<span class="sd">        Tb : float, optional</span>
+<span class="sd">            Experimental normal boiling temperature, [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tc : float</span>
+<span class="sd">            Estimated critical temperature, [K]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Tc({1: 2, 24: 1}, Tb=322.11)</span>
+<span class="sd">        500.5590049525365</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="k">if</span> <span class="n">Tb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Tb</span> <span class="o">=</span> <span class="n">Joback</span><span class="o">.</span><span class="n">Tb</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Tc</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Tc</span> <span class="o">=</span> <span class="n">Tb</span><span class="o">/</span><span class="p">(</span><span class="mf">0.584</span> <span class="o">+</span> <span class="mf">0.965</span><span class="o">*</span><span class="n">tot</span> <span class="o">-</span> <span class="n">tot</span><span class="o">*</span><span class="n">tot</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Tc</span></div>
+
+<div class="viewcode-block" id="Joback.Pc"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Pc">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Pc</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">atom_count</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the critcal pressure of an organic compound using the </span>
+<span class="sd">        Joback method as a function of chemical structure only. This </span>
+<span class="sd">        correlation was developed using the actual number of atoms forming </span>
+<span class="sd">        the molecule as well.</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            P_c = \left [0.113 + 0.0032N_A - \sum_i {P_{c,i}}\right ]^{-2}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, critical pressure is calculated in bar; it is</span>
+<span class="sd">        converted to Pa here.</span>
+<span class="sd">        </span>
+<span class="sd">        392 compounds were used by Joback in this determination, with an </span>
+<span class="sd">        absolute average error of 2.06 bar, standard devaition 3.2 bar, and</span>
+<span class="sd">        AARE of 5.2%.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+<span class="sd">        atom_count : int</span>
+<span class="sd">            Total number of atoms (including hydrogens) in the molecule, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Pc : float</span>
+<span class="sd">            Estimated critical pressure, [Pa]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Pc({1: 2, 24: 1}, 10)</span>
+<span class="sd">        4802499.604994407</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Pc</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Pc</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.113</span> <span class="o">+</span> <span class="mf">0.0032</span><span class="o">*</span><span class="n">atom_count</span> <span class="o">-</span> <span class="n">tot</span><span class="p">)</span><span class="o">**-</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">Pc</span><span class="o">*</span><span class="mf">1E5</span> <span class="c1"># bar to Pa</span></div>
+
+<div class="viewcode-block" id="Joback.Vc"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Vc">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Vc</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the critcal volume of an organic compound using the </span>
+<span class="sd">        Joback method as a function of chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            V_c = 17.5 + \sum_i {V_{c,i}}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, critical volume is calculated in cm^3/mol; it </span>
+<span class="sd">        is converted to m^3/mol here.</span>
+<span class="sd">        </span>
+<span class="sd">        310 compounds were used by Joback in this determination, with an </span>
+<span class="sd">        absolute average error of 7.54 cm^3/mol, standard devaition 13.16</span>
+<span class="sd">        cm^3/mol, and AARE of 2.27%.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Vc : float</span>
+<span class="sd">            Estimated critical volume, [m^3/mol]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Vc({1: 2, 24: 1})</span>
+<span class="sd">        0.0002095</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Vc</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Vc</span> <span class="o">=</span> <span class="mf">17.5</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E-6</span> <span class="c1"># cm^3/mol to m^3/mol</span></div>
+
+<div class="viewcode-block" id="Joback.Hf"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Hf">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Hf</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the ideal-gas enthalpy of formation at 298.15 K of an  </span>
+<span class="sd">        organic compound using the Joback method as a function of chemical </span>
+<span class="sd">        structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            H_{formation} = 68.29 + \sum_i {H_{f,i}}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, enthalpy of formation is calculated in kJ/mol;  </span>
+<span class="sd">        it is converted to J/mol here.</span>
+<span class="sd">        </span>
+<span class="sd">        370 compounds were used by Joback in this determination, with an </span>
+<span class="sd">        absolute average error of 2.2 kcal/mol, standard devaition 2.0 </span>
+<span class="sd">        kcal/mol, and AARE of 15.2%.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Hf : float</span>
+<span class="sd">            Estimated ideal-gas enthalpy of formation at 298.15 K, [J/mol]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Hf({1: 2, 24: 1})</span>
+<span class="sd">        -217829.99999999997</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Hform</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Hf</span> <span class="o">=</span> <span class="mf">68.29</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Hf</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># kJ/mol to J/mol</span></div>
+
+<div class="viewcode-block" id="Joback.Gf"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Gf">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Gf</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the ideal-gas Gibbs energy of formation at 298.15 K of an  </span>
+<span class="sd">        organic compound using the Joback method as a function of chemical </span>
+<span class="sd">        structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            G_{formation} = 53.88 + \sum {G_{f,i}}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, Gibbs energy of formation is calculated in </span>
+<span class="sd">        kJ/mol; it is converted to J/mol here.</span>
+<span class="sd">        </span>
+<span class="sd">        328 compounds were used by Joback in this determination, with an </span>
+<span class="sd">        absolute average error of 2.0 kcal/mol, standard devaition 4.37</span>
+<span class="sd">        kcal/mol, and AARE of 15.7%.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Gf : float</span>
+<span class="sd">            Estimated ideal-gas Gibbs energy of formation at 298.15 K, [J/mol]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Gf({1: 2, 24: 1})</span>
+<span class="sd">        -154540.00000000003</span>
+<span class="sd">        &#39;&#39;&#39;</span>        
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Gform</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Gf</span> <span class="o">=</span> <span class="mf">53.88</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Gf</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># kJ/mol to J/mol</span></div>
+
+<div class="viewcode-block" id="Joback.Hfus"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Hfus">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Hfus</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the enthalpy of fusion of an organic compound at its </span>
+<span class="sd">        melting point using the Joback method as a function of chemical </span>
+<span class="sd">        structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \Delta H_{fus} = -0.88 + \sum_i H_{fus,i}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, enthalpy of fusion is calculated in </span>
+<span class="sd">        kJ/mol; it is converted to J/mol here.</span>
+<span class="sd">        </span>
+<span class="sd">        For 155 compounds tested by Joback, the absolute average error was</span>
+<span class="sd">        485.2 cal/mol  and standard deviation was 661.4 cal/mol; the average </span>
+<span class="sd">        relative error was 38.7%. </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Hfus : float</span>
+<span class="sd">            Estimated enthalpy of fusion of the compound at its melting point,</span>
+<span class="sd">            [J/mol]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Hfus({1: 2, 24: 1})</span>
+<span class="sd">        5125.0</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Hfus</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Hfus</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.88</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Hfus</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># kJ/mol to J/mol</span></div>
+    
+<div class="viewcode-block" id="Joback.Hvap"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Hvap">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Hvap</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the enthalpy of vaporization of an organic compound at  </span>
+<span class="sd">        its normal boiling point using the Joback method as a function of  </span>
+<span class="sd">        chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \Delta H_{vap} = 15.30 + \sum_i H_{vap,i}</span>
+<span class="sd">            </span>
+<span class="sd">        In the above equation, enthalpy of fusion is calculated in </span>
+<span class="sd">        kJ/mol; it is converted to J/mol here.</span>
+<span class="sd">        </span>
+<span class="sd">        For 368 compounds tested by Joback, the absolute average error was</span>
+<span class="sd">        303.5 cal/mol  and standard deviation was 429 cal/mol; the average </span>
+<span class="sd">        relative error was 3.88%. </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Hvap : float</span>
+<span class="sd">            Estimated enthalpy of vaporization of the compound at its normal</span>
+<span class="sd">            boiling point, [J/mol]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Joback.Hvap({1: 2, 24: 1})</span>
+<span class="sd">        29018.0</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Hvap</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">Hvap</span> <span class="o">=</span> <span class="mf">15.3</span> <span class="o">+</span> <span class="n">tot</span>
+        <span class="k">return</span> <span class="n">Hvap</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># kJ/mol to J/mol</span></div>
+    
+<div class="viewcode-block" id="Joback.Cpig_coeffs"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Cpig_coeffs">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Cpig_coeffs</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Computes the ideal-gas polynomial heat capacity coefficients </span>
+<span class="sd">        of an organic compound using the Joback method as a function of  </span>
+<span class="sd">        chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T</span>
+<span class="sd">            + \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 </span>
+<span class="sd">            + \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3</span>
+<span class="sd">        </span>
+<span class="sd">        288 compounds were used by Joback in this determination. No overall </span>
+<span class="sd">        error was reported.</span>
+
+<span class="sd">        The ideal gas heat capacity values used in developing the heat </span>
+<span class="sd">        capacity polynomials used 9 data points between 298 K and 1000 K.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        coefficients : list[float]</span>
+<span class="sd">            Coefficients which will result in a calculated heat capacity in</span>
+<span class="sd">            in units of J/mol/K, [-]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; c = Joback.Cpig_coeffs({1: 2, 24: 1})</span>
+<span class="sd">        &gt;&gt;&gt; c</span>
+<span class="sd">        [7.520000000000003, 0.26084, -0.0001207, 1.545999999999998e-08]</span>
+<span class="sd">        &gt;&gt;&gt; Cp = lambda T : c[0] + c[1]*T + c[2]*T**2 + c[3]*T**3</span>
+<span class="sd">        &gt;&gt;&gt; Cp(300)</span>
+<span class="sd">        75.32642000000001</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">a</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Cpa</span><span class="o">*</span><span class="n">count</span>
+            <span class="n">b</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Cpb</span><span class="o">*</span><span class="n">count</span>
+            <span class="n">c</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Cpc</span><span class="o">*</span><span class="n">count</span>
+            <span class="n">d</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">Cpd</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">a</span> <span class="o">-=</span> <span class="mf">37.93</span>
+        <span class="n">b</span> <span class="o">+=</span> <span class="mf">0.210</span>
+        <span class="n">c</span> <span class="o">-=</span> <span class="mf">3.91E-4</span>
+        <span class="n">d</span> <span class="o">+=</span> <span class="mf">2.06E-7</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="Joback.mul_coeffs"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.mul_coeffs">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">mul_coeffs</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Computes the liquid phase viscosity Joback coefficients </span>
+<span class="sd">        of an organic compound using the Joback method as a function of  </span>
+<span class="sd">        chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T} </span>
+<span class="sd">            + \sum_i \mu_b - 11.202 \right)</span>
+<span class="sd">            </span>
+<span class="sd">        288 compounds were used by Joback in this determination. No overall </span>
+<span class="sd">        error was reported.</span>
+
+<span class="sd">        The liquid viscosity data used was specified to be at &quot;several </span>
+<span class="sd">        temperatures for each compound&quot; only. A small and unspecified number</span>
+<span class="sd">        of compounds were used in this estimation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        counts : dict</span>
+<span class="sd">            Dictionary of Joback groups present (numerically indexed) and their</span>
+<span class="sd">            counts, [-]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        coefficients : list[float]</span>
+<span class="sd">            Coefficients which will result in a liquid viscosity in</span>
+<span class="sd">            in units of Pa*s, [-]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; mu_ab = Joback.mul_coeffs({1: 2, 24: 1})</span>
+<span class="sd">        &gt;&gt;&gt; mu_ab</span>
+<span class="sd">        [839.1099999999998, -14.99]</span>
+<span class="sd">        &gt;&gt;&gt; MW = 58.041864812</span>
+<span class="sd">        &gt;&gt;&gt; mul = lambda T : MW*exp(mu_ab[0]/T + mu_ab[1])</span>
+<span class="sd">        &gt;&gt;&gt; mul(300)</span>
+<span class="sd">        0.0002940378347162687</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">a</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">mua</span><span class="o">*</span><span class="n">count</span>
+            <span class="n">b</span> <span class="o">+=</span> <span class="n">joback_groups_id_dict</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">mub</span><span class="o">*</span><span class="n">count</span>
+        <span class="n">a</span> <span class="o">-=</span> <span class="mf">597.82</span>
+        <span class="n">b</span> <span class="o">-=</span> <span class="mf">11.202</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="Joback.Cpig"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.Cpig">[docs]</a>    <span class="k">def</span> <span class="nf">Cpig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Computes ideal-gas heat capacity at a specified temperature </span>
+<span class="sd">        of an organic compound using the Joback method as a function of  </span>
+<span class="sd">        chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T</span>
+<span class="sd">            + \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 </span>
+<span class="sd">            + \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature, [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Cpig : float</span>
+<span class="sd">            Ideal-gas heat capacity, [J/mol/K]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; J = Joback(&#39;CC(=O)C&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; J.Cpig(300)</span>
+<span class="sd">        75.32642000000001</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculated_Cpig_coeffs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculated_Cpig_coeffs</span> <span class="o">=</span> <span class="n">Joback</span><span class="o">.</span><span class="n">Cpig_coeffs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">horner_polynomial</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculated_Cpig_coeffs</span><span class="p">),</span> <span class="n">T</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="Joback.mul"><a class="viewcode-back" href="../../../functors/joback.html#thermosteam.functors.joback.Joback.mul">[docs]</a>    <span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Computes liquid viscosity at a specified temperature </span>
+<span class="sd">        of an organic compound using the Joback method as a function of  </span>
+<span class="sd">        chemical structure only. </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T}</span>
+<span class="sd">            + \sum_i \mu_b - 11.202 \right)</span>
+<span class="sd">            </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature, [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mul : float</span>
+<span class="sd">            Liquid viscosity, [Pa*s]</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; J = Joback(&#39;CC(=O)C&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; J.mul(300)</span>
+<span class="sd">        0.0002940378347162687</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculated_mul_coeffs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculated_mul_coeffs</span> <span class="o">=</span> <span class="n">Joback</span><span class="o">.</span><span class="n">mul_coeffs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculated_mul_coeffs</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MW</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

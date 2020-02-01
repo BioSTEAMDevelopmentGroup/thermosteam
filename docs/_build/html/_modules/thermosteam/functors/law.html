@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.law &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.law</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.law</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DSL_data&#39;</span><span class="p">,</span> <span class="s1">&#39;CAN_DSL_flags&#39;</span><span class="p">,</span> <span class="s1">&#39;TSCA_flags&#39;</span><span class="p">,</span> <span class="s1">&#39;TSCA_data&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;EINECS_data&#39;</span><span class="p">,</span> <span class="s1">&#39;SPIN_data&#39;</span><span class="p">,</span> <span class="s1">&#39;NLP_data&#39;</span><span class="p">,</span> <span class="s1">&#39;legal_status_methods&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;legal_status&#39;</span><span class="p">,</span> <span class="s1">&#39;HPV_data&#39;</span><span class="p">,</span> <span class="s1">&#39;_ECHATonnageDict&#39;</span><span class="p">,</span> <span class="s1">&#39;_EPACDRDict&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;economic_status&#39;</span><span class="p">,</span> <span class="s1">&#39;economic_status_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;load_economic_data&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;load_law_data&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">to_num</span><span class="p">,</span> <span class="n">CAS2int</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+
+
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;Data/Law&#39;</span><span class="p">)</span>
+
+<span class="n">DSL</span> <span class="o">=</span> <span class="s1">&#39;DSL&#39;</span>
+<span class="n">TSCA</span> <span class="o">=</span> <span class="s1">&#39;TSCA&#39;</span>
+<span class="n">EINECS</span> <span class="o">=</span> <span class="s1">&#39;EINECS&#39;</span>
+<span class="n">NLP</span> <span class="o">=</span> <span class="s1">&#39;NLP&#39;</span>
+<span class="n">SPIN</span> <span class="o">=</span> <span class="s1">&#39;SPIN&#39;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+<span class="n">COMBINED</span> <span class="o">=</span> <span class="s1">&#39;COMBINED&#39;</span>
+<span class="n">UNLISTED</span> <span class="o">=</span> <span class="s1">&#39;UNLISTED&#39;</span>
+<span class="n">LISTED</span> <span class="o">=</span> <span class="s1">&#39;LISTED&#39;</span>
+
+
+
+
+<span class="n">CAN_DSL_flags</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">LISTED</span><span class="p">,</span>
+                 <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Non-Domestic Substances List (NDSL)&#39;</span><span class="p">,</span>
+                 <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Significant New Activity (SNAc)&#39;</span><span class="p">,</span>
+                 <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Ministerial Condition pertaining to this substance&#39;</span><span class="p">,</span>
+                 <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Domestic Substances List, removed (DSL_REM)&#39;</span><span class="p">,</span>
+                 <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Minister of the Environment has imposed a Ministerial &#39;</span> 
+                    <span class="s1">&#39;Prohibition pertaining to this substance&#39;</span><span class="p">}</span>
+
+
+<span class="n">TSCA_flags</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;UV&#39;</span><span class="p">:</span> <span class="s1">&#39;Class 2 substance within the UVCB group; unknown molecular formula/structural diagram&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;E&#39;</span><span class="p">:</span> <span class="s1">&#39;subject of a Section 5(e) Consent Order under TSCA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="s1">&#39;subject of a Section 5(f) Rule under TSCA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;polymeric substance containing no free-radical initiator in its Inventory name but is considered to cover the designated polymer made with any free-radical initiator regardless of the amount used&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="s1">&#39;commenced Premanufacture Notice (PMN) substance&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;subject of a Section 6 risk management rule under TSCA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;identified in a final Significant New Uses Rule&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SP&#39;</span><span class="p">:</span> <span class="s1">&#39;identified in a proposed Significant New Uses Rule&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="s1">&#39;subject of a final Section 4 test rule under TSCA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TP&#39;</span><span class="p">:</span> <span class="s1">&#39;subject of a proposed Section 4 test rule under TSCA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;XU&#39;</span><span class="p">:</span> <span class="s1">&#39;exempt from reporting under Chemical Date Reporting Rule (formerly the Inventory Update Reporting Rule), i.e., Partial Updating of the TSCA Inventory Data Base Production and Site Reports (40 CFR 711)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Y1&#39;</span><span class="p">:</span> <span class="s1">&#39;exempt polymer that has a number-average molecular weight of 1,000 or greater&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Y2&#39;</span><span class="p">:</span> <span class="s1">&#39;exempt polymer that is a polyester and is made only from reactants included in a specified list of low-concern reactants that comprises one of the eligibility criteria for the exemption rule&#39;</span>
+<span class="p">}</span>
+
+<span class="n">DSL_data</span><span class="p">,</span> <span class="n">TSCA_data</span><span class="p">,</span> <span class="n">EINECS_data</span><span class="p">,</span> <span class="n">SPIN_data</span><span class="p">,</span> <span class="n">NLP_data</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span>
+
+<span class="k">def</span> <span class="nf">load_law_data</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">DSL_data</span>
+    <span class="k">if</span> <span class="n">DSL_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">global</span> <span class="n">TSCA_data</span><span class="p">,</span> <span class="n">EINECS_data</span><span class="p">,</span> <span class="n">SPIN_data</span><span class="p">,</span> <span class="n">NLP_data</span>
+
+<span class="c1"># Data is stored as integers to reduce memory usage</span>
+    <span class="n">DSL_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Canada Feb 11 2015 - DSL.csv.gz&#39;</span><span class="p">),</span>
+                           <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span>
+    
+    <span class="n">TSCA_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;TSCA Inventory 2016-01.csv.gz&#39;</span><span class="p">),</span>
+                           <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">EINECS_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;EINECS 2015-03.csv.gz&#39;</span><span class="p">),</span>
+                              <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span>
+    
+    <span class="n">SPIN_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;SPIN Inventory 2015-03.csv.gz&#39;</span><span class="p">),</span>
+                           <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">NLP_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;EC Inventory No Longer Polymers (NLP).csv&#39;</span><span class="p">),</span>
+                           <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># 161162-67-6 is not a valid CAS number and was removed.</span>
+
+<span class="n">legal_status_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">COMBINED</span><span class="p">,</span> <span class="n">DSL</span><span class="p">,</span> <span class="n">TSCA</span><span class="p">,</span> <span class="n">EINECS</span><span class="p">,</span> <span class="n">SPIN</span><span class="p">,</span> <span class="n">NLP</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="legal_status"><a class="viewcode-back" href="../../../functors/law.html#thermosteam.functors.law.legal_status">[docs]</a><span class="k">def</span> <span class="nf">legal_status</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">CASi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Looks up the legal status of a chemical according to either a specifc</span>
+<span class="sd">    method or with all methods.</span>
+
+<span class="sd">    Returns either the status as a string for a specified method, or the</span>
+<span class="sd">    status of the chemical in all available data sources, in the format</span>
+<span class="sd">    {source: status}.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    status : str or dict</span>
+<span class="sd">        Legal status information [-]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain legal status with the</span>
+<span class="sd">        given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        legal_status_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        the legal status for the desired chemical, and will return methods</span>
+<span class="sd">        instead of the status</span>
+<span class="sd">    CASi : int, optional</span>
+<span class="sd">        CASRN as an integer, used internally [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Supported methods are:</span>
+
+<span class="sd">        * **DSL**: Canada Domestic Substance List, [1]_. As extracted on Feb 11, 2015</span>
+<span class="sd">          from a html list. This list is updated continuously, so this version</span>
+<span class="sd">          will always be somewhat old. Strictly speaking, there are multiple</span>
+<span class="sd">          lists but they are all bundled together here. A chemical may be</span>
+<span class="sd">          &#39;Listed&#39;, or be on the &#39;Non-Domestic Substances List (NDSL)&#39;,</span>
+<span class="sd">          or be on the list of substances with &#39;Significant New Activity (SNAc)&#39;,</span>
+<span class="sd">          or be on the DSL but with a &#39;Ministerial Condition pertaining to this</span>
+<span class="sd">          substance&#39;, or have been removed from the DSL, or have had a</span>
+<span class="sd">          Ministerial prohibition for the substance.</span>
+<span class="sd">        * **TSCA**: USA EPA Toxic Substances Control Act Chemical Inventory, [2]_.</span>
+<span class="sd">          This list is as extracted on 2016-01. It is believed this list is</span>
+<span class="sd">          updated on a periodic basis (&gt; 6 month). A chemical may simply be</span>
+<span class="sd">          &#39;Listed&#39;, or may have certain flags attached to it. All these flags</span>
+<span class="sd">          are described in the dict TSCA_flags.</span>
+<span class="sd">        * **EINECS**: European INventory of Existing Commercial chemical</span>
+<span class="sd">          Substances, [3]_. As extracted from a spreadsheet dynamically</span>
+<span class="sd">          generated at [1]_. This list was obtained March 2015; a more recent</span>
+<span class="sd">          revision already exists.</span>
+<span class="sd">        * **NLP**: No Longer Polymers, a list of chemicals with special</span>
+<span class="sd">          regulatory exemptions in EINECS. Also described at [3]_.</span>
+<span class="sd">        * **SPIN**: Substances Prepared in Nordic Countries. Also a boolean</span>
+<span class="sd">          data type. Retrieved 2015-03 from [4]_.</span>
+
+<span class="sd">    Other methods which could be added are:</span>
+
+<span class="sd">        * Australia: AICS Australian Inventory of Chemical Substances</span>
+<span class="sd">        * China: Inventory of Existing Chemical Substances Produced or Imported</span>
+<span class="sd">          in China (IECSC)</span>
+<span class="sd">        * Europe: REACH List of Registered Substances</span>
+<span class="sd">        * India: List of Hazardous Chemicals</span>
+<span class="sd">        * Japan: ENCS: Inventory of existing and new chemical substances</span>
+<span class="sd">        * Korea: Existing Chemicals Inventory (KECI)</span>
+<span class="sd">        * Mexico: INSQ National Inventory of Chemical Substances in Mexico</span>
+<span class="sd">        * New Zealand:  Inventory of Chemicals (NZIoC)</span>
+<span class="sd">        * Philippines: PICCS Philippines Inventory of Chemicals and Chemical</span>
+<span class="sd">          Substances</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; pprint(legal_status(&#39;64-17-5&#39;))</span>
+<span class="sd">    {&#39;DSL&#39;: &#39;LISTED&#39;,</span>
+<span class="sd">     &#39;EINECS&#39;: &#39;LISTED&#39;,</span>
+<span class="sd">     &#39;NLP&#39;: &#39;UNLISTED&#39;,</span>
+<span class="sd">     &#39;SPIN&#39;: &#39;LISTED&#39;,</span>
+<span class="sd">     &#39;TSCA&#39;: &#39;LISTED&#39;}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Government of Canada.. &quot;Substances Lists&quot; Feb 11, 2015.</span>
+<span class="sd">       https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1.</span>
+<span class="sd">    .. [2] US EPA. &quot;TSCA Chemical Substance Inventory.&quot; Accessed April 2016.</span>
+<span class="sd">       https://www.epa.gov/tsca-inventory.</span>
+<span class="sd">    .. [3] ECHA. &quot;EC Inventory&quot;. Accessed March 2015.</span>
+<span class="sd">       http://echa.europa.eu/information-on-chemicals/ec-inventory.</span>
+<span class="sd">    .. [4] SPIN. &quot;SPIN Substances in Products In Nordic Countries.&quot; Accessed</span>
+<span class="sd">       March 2015. http://195.215.202.233/DotNetNuke/default.aspx.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">load_law_data</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">CASi</span><span class="p">:</span>
+        <span class="n">CASi</span> <span class="o">=</span> <span class="n">CAS2int</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">COMBINED</span><span class="p">,</span> <span class="n">DSL</span><span class="p">,</span> <span class="n">TSCA</span><span class="p">,</span> <span class="n">EINECS</span><span class="p">,</span> <span class="n">NLP</span><span class="p">,</span> <span class="n">SPIN</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">methods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">DSL</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">DSL_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">CAN_DSL_flags</span><span class="p">[</span><span class="n">DSL_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASi</span><span class="p">,</span> <span class="s1">&#39;Registry&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">UNLISTED</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">TSCA</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">TSCA_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">TSCA_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CASi</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">TSCA_flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">LISTED</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">UNLISTED</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">EINECS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">EINECS_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">LISTED</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">UNLISTED</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NLP</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">NLP_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">LISTED</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">UNLISTED</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">SPIN</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">SPIN_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">LISTED</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">UNLISTED</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">COMBINED</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">status</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">legal_status</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">CASi</span><span class="o">=</span><span class="n">CASi</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+<span class="c1">#print  legal_status(CASRN=&#39;64-17-5&#39;)</span>
+<span class="c1">#for i in [DSL, TSCA, EINECS, SPIN, NLP]:</span>
+<span class="c1">#    print  legal_status(CASRN=&#39;64-17-5&#39;, Method=i)</span>
+<span class="c1">#print &#39;hi&#39;</span>
+
+<span class="c1">#print legal_status(CASRN=&#39;13775-50-3&#39;, Method=DSL)</span>
+<span class="c1">#print legal_status(CASRN=&#39;52-89-1&#39;)</span>
+<span class="c1"># _ECHATonnageDict, _EPACDRDict</span>
+<span class="c1"># 2.135340690612793, 3.499225616455078</span>
+<span class="c1">#print legal_status(CASRN=&#39;1648727-81-4&#39;)</span>
+
+
+
+<span class="n">HPV_data</span><span class="p">,</span> <span class="n">_EPACDRDict</span><span class="p">,</span> <span class="n">_ECHATonnageDict</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span>
+                                          
+<span class="k">def</span> <span class="nf">load_economic_data</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">HPV_data</span>
+    <span class="k">if</span> <span class="n">HPV_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">global</span> <span class="n">_EPACDRDict</span><span class="p">,</span> <span class="n">_ECHATonnageDict</span>
+    
+    <span class="sd">&#39;&#39;&#39;OECD are chemicals produced by and OECD members in &gt; 1000 tonnes/year.&#39;&#39;&#39;</span>
+    <span class="n">HPV_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;HPV 2015 March 3.csv&#39;</span><span class="p">),</span>
+                           <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># 13061-29-2 not valid and removed</span>
+    
+    <span class="n">_ECHATonnageDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;ECHA Tonnage Bands.csv.zip&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">z</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">z</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">namelist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="c1"># for some reason, the file must be decoded to UTF8 first</span>
+                <span class="n">CAS</span><span class="p">,</span> <span class="n">band</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_ECHATonnageDict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">_ECHATonnageDict</span><span class="p">[</span><span class="n">CAS</span><span class="p">]:</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_ECHATonnageDict</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_ECHATonnageDict</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">band</span><span class="p">]</span>
+    
+    
+    <span class="n">_EPACDRDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;EPA 2012 Chemical Data Reporting.csv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;EPA summed reported chemical usages. In metric tonnes/year after conversion.</span>
+<span class="sd">        Many producers keep their date confidential.</span>
+<span class="sd">        This was originally in terms of lb/year, but rounded to the nearest kg.</span>
+<span class="sd">    </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">CAS</span><span class="p">,</span> <span class="n">manufactured</span><span class="p">,</span> <span class="n">imported</span><span class="p">,</span> <span class="n">exported</span> <span class="o">=</span> <span class="n">to_num</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="n">_EPACDRDict</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Manufactured&quot;</span><span class="p">:</span> <span class="n">manufactured</span><span class="o">/</span><span class="mf">1000.</span><span class="p">,</span> <span class="s2">&quot;Imported&quot;</span><span class="p">:</span> <span class="n">imported</span><span class="o">/</span><span class="mf">1000.</span><span class="p">,</span>
+                                <span class="s2">&quot;Exported&quot;</span><span class="p">:</span> <span class="n">exported</span><span class="o">/</span><span class="mf">1000.</span><span class="p">}</span>
+
+
+<span class="n">EPACDR</span> <span class="o">=</span> <span class="s1">&#39;EPA Chemical Data Reporting (2012)&#39;</span>
+<span class="n">ECHA</span> <span class="o">=</span> <span class="s1">&#39;European Chemicals Agency Total Tonnage Bands&#39;</span>
+<span class="n">OECD</span> <span class="o">=</span> <span class="s1">&#39;OECD high production volume chemicals&#39;</span>
+
+<span class="n">economic_status_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">EPACDR</span><span class="p">,</span> <span class="n">ECHA</span><span class="p">,</span> <span class="n">OECD</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="economic_status"><a class="viewcode-back" href="../../../functors/law.html#thermosteam.functors.law.economic_status">[docs]</a><span class="k">def</span> <span class="nf">economic_status</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&#39;&#39;&#39;Look up the economic status of a chemical.</span>
+
+<span class="sd">    This API is considered experimental, and is expected to be removed in a</span>
+<span class="sd">    future release in favor of a more complete object-oriented interface.</span>
+
+<span class="sd">    &gt;&gt;&gt; pprint(economic_status(CASRN=&#39;98-00-0&#39;))</span>
+<span class="sd">    [&quot;US public: {&#39;Manufactured&#39;: 0.0, &#39;Imported&#39;: 10272.711, &#39;Exported&#39;: 184.127}&quot;,</span>
+<span class="sd">     u&#39;10,000 - 100,000 tonnes per annum&#39;,</span>
+<span class="sd">     &#39;OECD HPV Chemicals&#39;]</span>
+
+<span class="sd">    &gt;&gt;&gt; economic_status(CASRN=&#39;13775-50-3&#39;)  # SODIUM SESQUISULPHATE</span>
+<span class="sd">    []</span>
+<span class="sd">    &gt;&gt;&gt; economic_status(CASRN=&#39;98-00-0&#39;, Method=&#39;OECD high production volume chemicals&#39;)</span>
+<span class="sd">    &#39;OECD HPV Chemicals&#39;</span>
+<span class="sd">    &gt;&gt;&gt; economic_status(CASRN=&#39;98-01-1&#39;, Method=&#39;European Chemicals Agency Total Tonnage Bands&#39;)</span>
+<span class="sd">    [u&#39;10,000 - 100,000 tonnes per annum&#39;]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">load_economic_data</span><span class="p">()</span>
+    <span class="n">CASi</span> <span class="o">=</span> <span class="n">CAS2int</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Combined&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_EPACDRDict</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EPACDR</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_ECHATonnageDict</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ECHA</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">HPV_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OECD</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># This is the calculate, given the method section</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">EPACDR</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;US public: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">_EPACDRDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">ECHA</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">_ECHATonnageDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">OECD</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;OECD HPV Chemicals&#39;</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;Combined&#39;</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_EPACDRDict</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;US public: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">_EPACDRDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">])]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_ECHATonnageDict</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">+=</span> <span class="n">_ECHATonnageDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">CASi</span> <span class="ow">in</span> <span class="n">HPV_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;OECD HPV Chemicals&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

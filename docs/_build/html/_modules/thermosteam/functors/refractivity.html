@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.refractivity &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.refractivity</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.refractivity</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CRC_RI_organic&#39;</span><span class="p">,</span> <span class="s1">&#39;RI_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;refractive_index&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;polarizability_from_RI&#39;</span><span class="p">,</span> <span class="s1">&#39;molar_refractivity_from_RI&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;RI_from_molar_refractivity&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">N_A</span>
+
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;Data/Misc&#39;</span><span class="p">)</span>
+
+<span class="n">CRC_RI_organic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;CRC Handbook Organic RI.csv&#39;</span><span class="p">),</span>
+                             <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">CRC</span> <span class="o">=</span> <span class="s1">&#39;CRC&#39;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+<span class="n">RI_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">CRC</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="refractive_index"><a class="viewcode-back" href="../../../functors/refractivity.html#thermosteam.functors.refractivity.refractive_index">[docs]</a><span class="k">def</span> <span class="nf">refractive_index</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">full_info</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s refractive</span>
+<span class="sd">    index. Lookup is based on CASRNs. Will automatically select a data source</span>
+<span class="sd">    to use if no Method is provided; returns None if the data is not available.</span>
+
+<span class="sd">    Function has data for approximately 4500 chemicals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    RI : float</span>
+<span class="sd">        Refractive Index on the Na D line, [-]</span>
+<span class="sd">    T : float, only returned if full_info == True</span>
+<span class="sd">        Temperature at which refractive index reading was made</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain RI with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        RI_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        RI for the desired chemical, and will return methods instead of RI</span>
+<span class="sd">    full_info : bool, optional</span>
+<span class="sd">        If True, function will return the temperature at which the refractive</span>
+<span class="sd">        index reading was made</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Only one source is available in this function. It is:</span>
+
+<span class="sd">        * &#39;CRC&#39;, a compillation of Organic RI data in [1]_.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; refractive_index(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    (1.3611, 293.15)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">CRC_RI_organic</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CRC</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">CRC</span><span class="p">:</span>
+        <span class="n">_RI</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">CRC_RI_organic</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;RI&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">full_info</span><span class="p">:</span>
+            <span class="n">_T</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">CRC_RI_organic</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;RIT&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">_RI</span><span class="p">,</span> <span class="n">_T</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">full_info</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_RI</span><span class="p">,</span> <span class="n">_T</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_RI</span></div>
+
+
+<div class="viewcode-block" id="polarizability_from_RI"><a class="viewcode-back" href="../../../functors/refractivity.html#thermosteam.functors.refractivity.polarizability_from_RI">[docs]</a><span class="k">def</span> <span class="nf">polarizability_from_RI</span><span class="p">(</span><span class="n">RI</span><span class="p">,</span> <span class="n">Vm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Returns the polarizability of a fluid given its molar volume and</span>
+<span class="sd">    refractive index.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \alpha = \left(\frac{3}{4\pi N_A}\right)</span>
+<span class="sd">        \left(\frac{n^2-1}{n^2+2}\right)V_m</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    RI : float</span>
+<span class="sd">        Refractive Index on Na D line, [-]</span>
+<span class="sd">    Vm : float</span>
+<span class="sd">        Molar volume of fluid, [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Polarizability [m^3]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This Lorentz-Lorentz-expression is most correct when van der Waals</span>
+<span class="sd">    interactions dominate. Alternate conversions have been suggested.</span>
+<span class="sd">    This is often expressed in units of cm^3 or Angstrom^3. To convert to these</span>
+<span class="sd">    units, multiply by 1E9 or 1E30 respectively.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; polarizability_from_RI(1.3611, 5.8676E-5)</span>
+<span class="sd">    5.147658123614415e-30</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.</span>
+<span class="sd">       Vargas. &quot;A Simple Method for Estimation of Dielectric Constants and</span>
+<span class="sd">       Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.&quot;</span>
+<span class="sd">       International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.</span>
+<span class="sd">       doi:10.1007/s10765-016-2075-8.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">N_A</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">RI</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">RI</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">Vm</span></div>
+
+
+<div class="viewcode-block" id="molar_refractivity_from_RI"><a class="viewcode-back" href="../../../functors/refractivity.html#thermosteam.functors.refractivity.molar_refractivity_from_RI">[docs]</a><span class="k">def</span> <span class="nf">molar_refractivity_from_RI</span><span class="p">(</span><span class="n">RI</span><span class="p">,</span> <span class="n">Vm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Returns the molar refractivity of a fluid given its molar volume and</span>
+<span class="sd">    refractive index.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        R_m = \left(\frac{n^2-1}{n^2+2}\right)V_m</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    RI : float</span>
+<span class="sd">        Refractive Index on Na D line, [-]</span>
+<span class="sd">    Vm : float</span>
+<span class="sd">        Molar volume of fluid, [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Rm : float</span>
+<span class="sd">        Molar refractivity [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; molar_refractivity_from_RI(1.3611, 5.8676E-5)</span>
+<span class="sd">    1.2985217089649597e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.</span>
+<span class="sd">       Vargas. &quot;A Simple Method for Estimation of Dielectric Constants and</span>
+<span class="sd">       Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.&quot;</span>
+<span class="sd">       International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.</span>
+<span class="sd">       doi:10.1007/s10765-016-2075-8.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">RI</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">RI</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">2.</span><span class="p">)</span><span class="o">*</span><span class="n">Vm</span></div>
+
+
+<div class="viewcode-block" id="RI_from_molar_refractivity"><a class="viewcode-back" href="../../../functors/refractivity.html#thermosteam.functors.refractivity.RI_from_molar_refractivity">[docs]</a><span class="k">def</span> <span class="nf">RI_from_molar_refractivity</span><span class="p">(</span><span class="n">Rm</span><span class="p">,</span> <span class="n">Vm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Returns the refractive index of a fluid given its molar volume and</span>
+<span class="sd">    molar refractivity.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        RI = \sqrt{\frac{-2R_m - V_m}{R_m-V_m}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Rm : float</span>
+<span class="sd">        Molar refractivity [m^3/mol]</span>
+<span class="sd">    Vm : float</span>
+<span class="sd">        Molar volume of fluid, [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    RI : float</span>
+<span class="sd">        Refractive Index on Na D line, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; RI_from_molar_refractivity(1.2985e-5, 5.8676E-5)</span>
+<span class="sd">    1.3610932757685672</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.</span>
+<span class="sd">       Vargas. &quot;A Simple Method for Estimation of Dielectric Constants and</span>
+<span class="sd">       Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.&quot;</span>
+<span class="sd">       International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.</span>
+<span class="sd">       doi:10.1007/s10765-016-2075-8.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Rm</span> <span class="o">=</span> <span class="p">((</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">Rm</span> <span class="o">-</span> <span class="n">Vm</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Rm</span><span class="o">-</span><span class="n">Vm</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="k">return</span> <span class="n">Rm</span></div>
+
+
+<span class="c1">### Mixtures</span>
+
+<span class="c1">#def Lorentz_Lorenz(ws=None, RIs=None, rhos=None, rho=None):</span>
+<span class="c1">#    if not length_check([ws, RIs, rhos]):</span>
+<span class="c1">#        raise Exception(&#39;Input dimentions are inconsistent&#39;)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

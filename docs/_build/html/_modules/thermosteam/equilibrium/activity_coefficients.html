@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.equilibrium.activity_coefficients &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.equilibrium.activity_coefficients</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.equilibrium.activity_coefficients</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mon Apr 16 08:58:41 2018</span>
+
+<span class="sd">@author: Yoel Rene Cortes-Pena</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.unifac_data</span> <span class="kn">import</span> <span class="n">DOUFSG</span><span class="p">,</span> <span class="n">DOUFIP2016</span><span class="p">,</span> <span class="n">UFIP</span><span class="p">,</span> <span class="n">UFSG</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;ActivityCoefficients&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;GroupActivityCoefficients&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;DortmundActivityCoefficients&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;UNIFACActivityCoefficiencts&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Utilities</span>
+
+<span class="k">def</span> <span class="nf">chemgroup_array</span><span class="p">(</span><span class="n">chemgroups</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chemgroups</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">groups</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemgroups</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">index</span><span class="p">[</span><span class="n">group</span><span class="p">]]</span> <span class="o">=</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="n">array</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">group_activity_coefficients</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">chemgroups</span><span class="p">,</span> <span class="n">loggammacs</span><span class="p">,</span>
+                                <span class="n">Qs</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span> <span class="n">cQfs</span><span class="p">,</span> <span class="n">gpsis</span><span class="p">):</span>
+    <span class="n">weighted_counts</span> <span class="o">=</span> <span class="n">chemgroups</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">@</span> <span class="n">x</span>
+    <span class="n">Q_fractions</span> <span class="o">=</span> <span class="n">Qs</span> <span class="o">*</span> <span class="n">weighted_counts</span> 
+    <span class="n">Q_fractions</span> <span class="o">/=</span> <span class="n">Q_fractions</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">Q_psis</span> <span class="o">=</span> <span class="n">psis</span> <span class="o">*</span> <span class="n">Q_fractions</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="n">Q_psis</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">psis</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">/</span> <span class="n">sum1</span><span class="p">)</span> <span class="o">@</span> <span class="n">Q_fractions</span>
+    <span class="n">loggamma_groups</span> <span class="o">=</span> <span class="n">Qs</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sum1</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum2</span><span class="p">)</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="n">cQfs</span> <span class="o">@</span> <span class="n">gpsis</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sum1</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">sum1</span><span class="p">)</span>
+    <span class="n">fracs</span> <span class="o">=</span> <span class="o">-</span> <span class="n">cQfs</span> <span class="o">/</span> <span class="n">sum1</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="n">fracs</span> <span class="o">@</span> <span class="n">gpsis</span>
+    <span class="n">chem_loggamma_groups</span> <span class="o">=</span> <span class="n">Qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sum1</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum2</span><span class="p">)</span>
+    <span class="n">loggammars</span> <span class="o">=</span> <span class="p">((</span><span class="n">loggamma_groups</span> <span class="o">-</span> <span class="n">chem_loggamma_groups</span><span class="p">)</span> <span class="o">*</span> <span class="n">chemgroups</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loggammacs</span> <span class="o">+</span> <span class="n">loggammars</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_interaction</span><span class="p">(</span><span class="n">all_interactions</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">no_interaction</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">no_interaction</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">all_interactions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">no_interaction</span>
+
+<span class="c1"># %% Activity Coefficients</span>
+
+<div class="viewcode-block" id="ActivityCoefficients"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.ActivityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">ActivityCoefficients</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:</span>
+<span class="sd">        </span>
+<span class="sd">    __init__(self, chemicals: Iterable[Chemicals]):</span>
+<span class="sd">        Should use pure component data from chemicals to setup future calculations of activity coefficients.</span>
+<span class="sd">    </span>
+<span class="sd">    __call__(self, x: 1d array, T: float):</span>
+<span class="sd">        Should accept an array of liquid molar compositions `x`, and temperature `T` (in Kelvin), and return an array of activity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the ActivityCoefficients object.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_chemicals&#39;</span><span class="p">,)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tuple[Chemical] All chemicals involved in the calculation of activity coefficients.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">])</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([</span><span class="si">{chemicals}</span><span class="s2">])&quot;</span></div>
+
+    
+<span class="k">class</span> <span class="nc">IdealActivityCoefficients</span><span class="p">(</span><span class="n">ActivityCoefficients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an IdealActivityCoefficients object that estimates all activity coefficients to be 1 when called with a composition and a temperature (K).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chemicals : Iterable[Chemical]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.</span>
+    
+
+<div class="viewcode-block" id="GroupActivityCoefficients"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.GroupActivityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">GroupActivityCoefficients</span><span class="p">(</span><span class="n">ActivityCoefficients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract class for the estimation of activity coefficients using group contribution methods.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    chemicals : Iterable[Chemical]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_rs&#39;</span><span class="p">,</span> <span class="s1">&#39;_qs&#39;</span><span class="p">,</span> <span class="s1">&#39;_Qs&#39;</span><span class="p">,</span><span class="s1">&#39;_chemgroups&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_group_psis&#39;</span><span class="p">,</span>  <span class="s1">&#39;_chem_Qfractions&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_group_mask&#39;</span><span class="p">,</span> <span class="s1">&#39;_interactions&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_chemicals&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">chemicals</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cached</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cached</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">getfield</span> <span class="o">=</span> <span class="nb">getattr</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_name</span>
+        <span class="n">chemgroups</span> <span class="o">=</span> <span class="p">[</span><span class="n">getfield</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">]</span>
+        <span class="n">all_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">chemgroups</span><span class="p">:</span> <span class="n">all_groups</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">{</span><span class="n">group</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)}</span>
+        <span class="n">chemgroups</span> <span class="o">=</span> <span class="n">chemgroup_array</span><span class="p">(</span><span class="n">chemgroups</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="n">all_subgroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subgroups</span>
+        <span class="n">subgroups</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_subgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">all_groups</span><span class="p">]</span>
+        <span class="n">main_group_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">main_group_id</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subgroups</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Qs</span> <span class="o">=</span> <span class="n">Qs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Q</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subgroups</span><span class="p">])</span>
+        <span class="n">Rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">R</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subgroups</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rs</span> <span class="o">=</span> <span class="n">chemgroups</span> <span class="o">@</span> <span class="n">Rs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qs</span> <span class="o">=</span> <span class="n">chemgroups</span> <span class="o">@</span> <span class="n">Qs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chemgroups</span> <span class="o">=</span> <span class="n">chemgroups</span>
+        <span class="n">chem_Qs</span> <span class="o">=</span> <span class="n">Qs</span> <span class="o">*</span> <span class="n">chemgroups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chem_Qfractions</span> <span class="o">=</span> <span class="n">cQfs</span> <span class="o">=</span> <span class="n">chem_Qs</span><span class="o">/</span><span class="n">chem_Qs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">all_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span>
+        <span class="n">N_groups</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+        <span class="n">group_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N_groups</span><span class="p">,</span> <span class="n">N_groups</span><span class="p">)</span>
+        <span class="n">no_interaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_interaction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">get_interaction</span><span class="p">(</span><span class="n">all_interactions</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">no_interaction</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">]</span>
+             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">main_group_ids</span><span class="p">])</span>
+        <span class="c1"># Psis array with only symmetrically available groups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">group_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="c1"># Make mask for retrieving symmetrically available groups</span>
+        <span class="n">rowindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N_groups</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">rowindex</span><span class="p">[</span><span class="n">rowmask</span><span class="p">]</span> <span class="k">for</span> <span class="n">rowmask</span> <span class="ow">in</span> <span class="n">cQfs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_mask</span> <span class="o">=</span> <span class="n">group_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">group_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+                <span class="n">group_mask</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached</span><span class="p">[</span><span class="n">chemicals</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span> <span class="o">=</span> <span class="n">chemicals</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,)</span>
+    
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return UNIFAC coefficients.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array_like</span>
+<span class="sd">            Molar fractions</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature (K)</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">psis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interactions</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_mask</span><span class="p">]</span> <span class="o">=</span>  <span class="n">psis</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_mask</span><span class="p">]</span>
+        <span class="n">gamma</span> <span class="o">=</span>  <span class="n">group_activity_coefficients</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemgroups</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">loggammacs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rs</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_Qs</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_chem_Qfractions</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">)</span>
+        <span class="n">gamma</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">gamma</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">gamma</span></div>
+    
+    
+<div class="viewcode-block" id="UNIFACActivityCoefficiencts"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.UNIFACActivityCoefficiencts">[docs]</a><span class="k">class</span> <span class="nc">UNIFACActivityCoefficiencts</span><span class="p">(</span><span class="n">GroupActivityCoefficients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a UNIFACActivityCoefficiencts that estimates activity coefficients using the UNIFAC group contribution method when called with a composition and a temperature (K).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    chemicals : Iterable[Chemical]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_subgroups</span> <span class="o">=</span> <span class="n">UFSG</span>
+    <span class="n">all_interactions</span> <span class="o">=</span> <span class="n">UFIP</span>
+    <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;UNIFAC&#39;</span>
+    <span class="n">_no_interaction</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">_cached</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@njit</span>
+    <span class="k">def</span> <span class="nf">loggammacs</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  
+        <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
+        <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
+        <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@njit</span>
+    <span class="k">def</span> <span class="nf">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="o">/</span><span class="n">T</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DortmundActivityCoefficients"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.DortmundActivityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">DortmundActivityCoefficients</span><span class="p">(</span><span class="n">GroupActivityCoefficients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a DortmundActivityCoefficients that estimates activity coefficients using the Dortmund UNIFAC group contribution method when called with a composition and a temperature (K).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    chemicals : Iterable[Chemical]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">all_subgroups</span> <span class="o">=</span> <span class="n">DOUFSG</span>
+    <span class="n">all_interactions</span> <span class="o">=</span> <span class="n">DOUFIP2016</span>
+    <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;Dortmund&#39;</span>
+    <span class="n">_no_interaction</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="n">_cached</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@njit</span>
+    <span class="k">def</span> <span class="nf">loggammacs</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">rs_p</span> <span class="o">=</span> <span class="n">rs</span><span class="o">**</span><span class="mf">0.75</span>
+        <span class="n">r_pnet</span> <span class="o">=</span> <span class="p">(</span><span class="n">rs_p</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
+        <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
+        <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
+        <span class="n">Vs_p</span> <span class="o">=</span> <span class="n">rs_p</span><span class="o">/</span><span class="n">r_pnet</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_p</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_p</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@njit</span>
+    <span class="k">def</span> <span class="nf">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">abc</span><span class="p">):</span>
+        <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">T</span>
+        <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*=</span> <span class="n">T</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">abc</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> </div>
+    
+    
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

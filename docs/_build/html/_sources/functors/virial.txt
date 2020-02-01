@@ -1,0 +1,5 @@
+virial
+======
+
+.. automodule:: thermosteam.functors.virial
+   :members:

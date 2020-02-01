@@ -24,7 +24,7 @@ from .functors.free_energy import \
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas, \
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
     ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
-from .base import PhaseProperty, ChemicalPhaseTProperty, ChemicalPhaseTPProperty, \
+from .base import PhaseProperty, PhaseTProperty, PhaseTPProperty, \
                   display_asfunctor, TDependentModelHandle, TPDependentModelHandle
 from .base.units_of_measure import chemical_units_of_measure
 from .functors.dipole import dipole_moment as dipole
@@ -303,7 +303,7 @@ class Chemical:
     Phase dependent properties have attributes with model handles for each phase:
 
     >>> water.V
-    <ChemicalPhaseTPProperty(phase, T, P) -> V [m^3/mol]>
+    <PhaseTPProperty(phase, T, P) -> V [m^3/mol]>
     >>> (water.V.l, water.V.g)
     (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>, <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
 
@@ -560,7 +560,7 @@ class Chemical:
         self.V = V = Volume(sdata, ldata, gdata)
         
         # Heat capacity
-        Cn = ChemicalPhaseTProperty(var='Cn')
+        Cn = PhaseTProperty(var='Cn')
         sdata = (CAS, similarity_variable, MW)
         ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cn)
         gdata = (CAS, MW, similarity_variable, iscyclic_aliphatic)
@@ -950,8 +950,8 @@ class Chemical:
             self.Cn = TDependentModelHandle()
         else:
             for i in ('kappa', 'mu', 'V'):
-                setfield(self, i, ChemicalPhaseTPProperty())
-            self.Cn = ChemicalPhaseTProperty()
+                setfield(self, i, PhaseTPProperty())
+            self.Cn = PhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
         self._locked_state = LockedState(phase=phase)

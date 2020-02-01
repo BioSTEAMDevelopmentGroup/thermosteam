@@ -1,0 +1,5 @@
+dippr
+=====
+
+.. automodule:: thermosteam.functors.dippr
+   :members:

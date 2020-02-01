@@ -9,11 +9,12 @@ import thermosteam as tmo
 
 # %% Set thermo
 CO2 = tmo.Chemical('CO2')
-CO2 = CO2.at_state(phase='g')
+CO2.at_state(phase='g')
 chems = tmo.Chemicals(['Water', 'Ethanol',
                        'Methanol', 'Glycerol',
                        'Propanol', CO2])
-tmo.settings.thermo = thermo = tmo.Thermo(chems)
+thermo = tmo.Thermo(chems)
+tmo.settings.set_thermo(thermo)
 
 # %% Initialize stream
 

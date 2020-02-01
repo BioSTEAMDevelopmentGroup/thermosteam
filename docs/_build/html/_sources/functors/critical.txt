@@ -1,0 +1,5 @@
+critical
+========
+
+.. automodule:: thermosteam.functors.critical
+   :members:

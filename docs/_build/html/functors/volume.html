@@ -1,0 +1,755 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>volume &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="viscosity" href="viscosity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>volume</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/volume.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.volume">
+<span id="volume"></span><h1>volume<a class="headerlink" href="#module-thermosteam.functors.volume" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="thermosteam.functors.volume.Yen_Woods">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Yen_Woods</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Yen_Woods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Yen_Woods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Yen Woods equation, as described in <a class="reference internal" href="#rb88c73e07c62-1" id="id1">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">None</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">None</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The molar volume of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}Vc/Vs = 1 + A(1-T_r)^{1/3} + B(1-T_r)^{2/3} + D(1-T_r)^{4/3}\\D = 0.93-B\\A = 17.4425 - 214.578Z_c + 989.625Z_c^2 - 1522.06Z_c^3\\B = -3.28257 + 13.6377Z_c + 107.4844Z_c^2-384.211Z_c^3
+\text{ if } Zc \le 0.26\\B = 60.2091 - 402.063Z_c + 501.0 Z_c^2 + 641.0 Z_c^3
+\text{ if } Zc \ge 0.26\end{aligned}\end{align} \]</div>
+<p>Original equation was in terms of density, but it is converted here.</p>
+<p>No example has been found, nor are there points in the article. However,
+it is believed correct. For compressed liquids with the Yen-Woods method,
+see the <cite>Yen_Woods_compressed</cite> function.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rb88c73e07c62-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Yen, Lewis C., and S. S. Woods. “A Generalized Equation for Computer
+Calculation of Liquid Densities.” AIChE Journal 12, no. 1 (1966):
+95-99. doi:10.1002/aic.690120119</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Yen_Woods</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="mf">5.6e-05</span><span class="p">,</span> <span class="n">Zc</span><span class="o">=</span><span class="mf">0.2294728175007233</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Yen_Woods(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tc: 647.14 K</span>
+<span class="go"> Vc: 5.6e-05 m^3/mol</span>
+<span class="go"> Zc: 0.22947</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">1.7715316221999628e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Rackett">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Rackett</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Rackett"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Rackett" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Rackett equation, as described in <a class="reference internal" href="#r690289c08678-1" id="id3">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>Zc</strong><span class="classifier">None</span></dt><dd><p>Critical compressibility [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The molar volume of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[V_s = \frac{RT_c}{P_c}{Z_c}^{[1+(1-{T/T_c})^{2/7} ]}\]</div>
+<p>According to Reid et. al, underpredicts volume for compounds with Zc &lt; 0.22</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r690289c08678-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>Rackett, Harold G. “Equation of State for Saturated Liquids.”
+Journal of Chemical &amp; Engineering Data 15, no. 4 (1970): 514-517.
+doi:10.1021/je60047a012</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Propane, example from the API Handbook</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Rackett</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">369.83</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">4248000.0</span><span class="p">,</span> <span class="n">Zc</span><span class="o">=</span><span class="mf">0.2763</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Rackett(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tc: 369.83 K</span>
+<span class="go"> Pc: 4.248e+06 Pa</span>
+<span class="go"> Zc: 0.2763</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">272.03889</span><span class="p">)</span>
+<span class="go">8.299222192473635e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Yamada_Gunn">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Yamada_Gunn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Yamada_Gunn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Yamada_Gunn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid molar volume (V.l; in m^3/mol) using the Yamada Gunn equation, as described in <a class="reference internal" href="#r5819eed66904-1" id="id5">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The molar volume of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[V_s = \frac{RT_c}{P_c}{(0.29056-0.08775\omega)}^{[1+(1-{T/T_c})^{2/7}]}\]</div>
+<p>This equation is an improvement on the Rackett equation.
+This is often presented as the Rackett equation.
+The acentric factor is used here, instead of the critical compressibility.
+A variant using a reference fluid also exists.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r5819eed66904-1"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
+<dd><p>Gunn, R. D., and Tomoyoshi Yamada. “A Corresponding States
+Correlation of Saturated Liquid Volumes.” AIChE Journal 17, no. 6
+(1971): 1341-45. doi:10.1002/aic.690170613</p>
+</dd>
+<dt class="label" id="r5819eed66904-2"><span class="brackets">2</span></dt>
+<dd><p>Yamada, Tomoyoshi, and Robert D. Gunn. “Saturated Liquid Molar
+Volumes. Rackett Equation.” Journal of Chemical &amp; Engineering Data 18,
+no. 2 (1973): 234-36. doi:10.1021/je60057a006</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Yamada_Gunn</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">22048320.0</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.344</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Yamada_Gunn(T, P) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tc: 647.14 K</span>
+<span class="go"> Pc: 2.2048e+07 Pa</span>
+<span class="go"> omega: 0.344</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="go">1.9511311612842117e-08</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Bhirud_Normal">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Bhirud_Normal</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Bhirud_Normal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Bhirud_Normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Bhirud Normal equation, as described in <a class="reference internal" href="#r1bc92a74dfbf-1" id="id8">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The density of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}&amp;\ln \frac{P_c}{\rho RT} = \ln U^{(0)} + \omega\ln U^{(1)}\\&amp;\ln U^{(0)} = 1.396 44 - 24.076T_r+ 102.615T_r^2
+-255.719T_r^3+355.805T_r^4-256.671T_r^5 + 75.1088T_r^6\\&amp;\ln U^{(1)} = 13.4412 - 135.7437 T_r + 533.380T_r^2-
+1091.453T_r^3+1231.43T_r^4 - 728.227T_r^5 + 176.737T_r^6\end{aligned}\end{align} \]</div>
+<p>Claimed inadequate by others.</p>
+<p>An interpolation table for ln U values are used from Tr = 0.98 - 1.000.
+Has terrible behavior at low reduced temperatures.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1bc92a74dfbf-1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
+<dd><p>Bhirud, Vasant L. “Saturated Liquid Densities of Normal Fluids.”
+AIChE Journal 24, no. 6 (November 1, 1978): 1127-31.
+doi:10.1002/aic.690240630</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Calculate the molar volume of water at 300 K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Bhirud_Normal</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">22048320.0</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.344</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Bhirud_Normal(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tc: 647.14 K</span>
+<span class="go"> Pc: 2.2048e+07 Pa</span>
+<span class="go"> omega: 0.344</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">2.069232443882547e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Costald">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Costald</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Costald"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Costald" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Costald equation, as described in <a class="reference internal" href="#rc0f2ef14d0ad-1" id="id10">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">None</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A popular and accurate estimation method. If possible, fit parameters are
+used; alternatively critical properties work well.</p>
+<p>The density of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}V_s=V^*V^{(0)}[1-\omega_{SRK}V^{(\delta)}]\\V^{(0)}=1-1.52816(1-T_r)^{1/3}+1.43907(1-T_r)^{2/3}
+- 0.81446(1-T_r)+0.190454(1-T_r)^{4/3}\\V^{(\delta)}=\frac{-0.296123+0.386914T_r-0.0427258T_r^2-0.0480645T_r^3}
+{T_r-1.00001}\end{aligned}\end{align} \]</div>
+<p>Units are that of critical or fit constant volume.</p>
+<p>196 constants are fit to this function in <a class="reference internal" href="#rc0f2ef14d0ad-1" id="id11">[1]</a>.
+Range: 0.25 &lt; Tr &lt; 0.95, often said to be to 1.0</p>
+<p>This function has been checked with the API handbook example problem.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rc0f2ef14d0ad-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id10">1</a>,<a href="#id11">2</a>)</span></dt>
+<dd><p>Hankinson, Risdon W., and George H. Thomson. “A New Correlation for
+Saturated Densities of Liquids and Their Mixtures.” AIChE Journal
+25, no. 4 (1979): 653-663. doi:10.1002/aic.690250412</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Calculate the volume of water at 300 K and 1 atm:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Costald</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="mf">5.6e-05</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.344</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Costald(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tc: 647.14 K</span>
+<span class="go"> Vc: 5.6e-05 m^3/mol</span>
+<span class="go"> omega: 0.344</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="go">1.8188550933914777e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Campbell_Thodos">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Campbell_Thodos</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Campbell_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Campbell_Thodos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Campbell-Thodos CSP equation, as described in <a class="reference internal" href="#r3a6a9869c728-1" id="id13">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tb</strong><span class="classifier">None</span></dt><dd><p>Boiling point temperature [K].</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">None</span></dt><dd><p>Molecular weight [g/mol].</p>
+</dd>
+<dt><strong>dipole</strong><span class="classifier">None</span></dt><dd><p>Dipole momment [Debye].</p>
+</dd>
+<dt><strong>has_hydroxyl</strong><span class="classifier">None</span></dt><dd><p>Whether a polar chemical has hydroxyl groups [-].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>An old and uncommon estimation method.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}V_s = \frac{RT_c}{P_c}{Z_{RA}}^{[1+(1-T_r)^{2/7}]}\\Z_{RA} = \alpha + \beta(1-T_r)\\\alpha = 0.3883-0.0179s\\s = T_{br} \frac{\ln P_c}{(1-T_{br})}\\\beta = 0.00318s-0.0211+0.625\Lambda^{1.35}\\\Lambda = \frac{P_c^{1/3}} { M^{1/2} T_c^{5/6}}\end{aligned}\end{align} \]</div>
+<p>For polar compounds:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\theta = P_c \mu^2/T_c^2\\\alpha = 0.3883 - 0.0179s - 130540\theta^{2.41}\\\beta = 0.00318s - 0.0211 + 0.625\Lambda^{1.35} + 9.74\times
+10^6 \theta^{3.38}\end{aligned}\end{align} \]</div>
+<p>Polar Combounds with hydroxyl groups (water, alcohols)</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\alpha = \left[0.690T_{br} -0.3342 + \frac{5.79\times 10^{-10}}
+{T_{br}^{32.75}}\right] P_c^{0.145}\\\beta = 0.00318s - 0.0211 + 0.625 \Lambda^{1.35} + 5.90\Theta^{0.835}\end{aligned}\end{align} \]</div>
+<p>If a dipole is provided, the polar chemical method is used.
+The paper is an excellent read.
+Pc is internally converted to atm.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r3a6a9869c728-1"><span class="brackets"><a class="fn-backref" href="#id13">1</a></span></dt>
+<dd><p>Campbell, Scott W., and George Thodos. “Prediction of Saturated
+Liquid Densities and Critical Volumes for Polar and Nonpolar
+Substances.” Journal of Chemical &amp; Engineering Data 30, no. 1
+(January 1, 1985): 102-11. doi:10.1021/je00039a032.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Calculate the volume of water at 300 K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Campbell_Thodos</span><span class="p">(</span><span class="n">Tb</span><span class="o">=</span><span class="mf">373.124</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">22048320.0</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">18.02</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mf">1.85</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Functor: Campbell_Thodos(T, P=None) -&gt; V.l [m^3/mol]</span>
+<span class="go"> Tb: 373.12 K</span>
+<span class="go"> Tc: 647.14 K</span>
+<span class="go"> Pc: 2.2048e+07 Pa</span>
+<span class="go"> MW: 18.02 g/mol</span>
+<span class="go"> dipole: 1.85 Debye</span>
+<span class="go"> has_hydroxyl: 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="go">1.8048013082120765e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.SNM0">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">SNM0</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#SNM0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.SNM0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the Mchaweh-Moshfeghian equation, as described in <a class="reference internal" href="#r4fc1e1c3bf9f-1" id="id15">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
+</dd>
+<dt><strong>Vc</strong><span class="classifier">None</span></dt><dd><p>Critical point volume [m^3/mol].</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
+</dd>
+<dt><strong>delta_SRK</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}V = V_c/(1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3}\\\tau = 1-\frac{(T/T_c)}{\alpha_{SRK}}\\\alpha_{SRK} = [1 + m(1-\sqrt{T/T_C}]^2\\m = 0.480+1.574\omega-0.176\omega^2\end{aligned}\end{align} \]</div>
+<p>If the fit parameter <cite>delta_SRK</cite> is provided (73 provided in the article), the following is used:</p>
+<div class="math notranslate nohighlight">
+\[V = V_C/(1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3})
+/\left[1+\delta_{SRK}(\alpha_{SRK}-1)^{1/3}\right]\]</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r4fc1e1c3bf9f-1"><span class="brackets"><a class="fn-backref" href="#id15">1</a></span></dt>
+<dd><p>Mchaweh, A., A. Alsaygh, Kh. Nasrifar, and M. Moshfeghian.
+“A Simplified Method for Calculating Saturated Liquid Densities.”
+Fluid Phase Equilibria 224, no. 2 (October 1, 2004): 157-67.
+doi:10.1016/j.fluid.2004.06.054</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Argon, without the fit parameter and with it. Tabulated result in Perry’s
+is 3.4613e-05. The fit increases the error on this occasion.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">SNM0</span><span class="p">(</span><span class="mf">150.8</span><span class="p">,</span> <span class="mf">7.49e-05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="go">3.4402256402733416e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">SNM0</span><span class="p">(</span><span class="mf">150.8</span><span class="p">,</span> <span class="mf">7.49e-05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.03259620</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="go">3.493288100008123e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.CRC_Inorganic">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">CRC_Inorganic</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#CRC_Inorganic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.CRC_Inorganic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar volume (V.l; in m^3/mol) using the CRC Inorganic equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of the liquid, [K]</p>
+</dd>
+<dt><strong>rho0</strong><span class="classifier">float</span></dt><dd><p>Mass density of the liquid at Tm, [kg/m^3]</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">float</span></dt><dd><p>Linear temperature dependence of the mass density, [kg/m^3/K]</p>
+</dd>
+<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>The normal melting point, used in the correlation [K]</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>The molecular weight [g/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Calculates liquid density of a molten element or salt at temperature
+above the melting point. Some coefficients are given nearly up to the
+boiling point.</p>
+<p>The mass density of the inorganic liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[\rho = \rho_{0} - k(T-T_m)\]</div>
+<p><a class="reference internal" href="#r3e7bdc874ed0-1" id="id17">[1]</a> has units of g/mL. While the individual densities could have been
+converted to molar units, the temperature coefficient could only be
+converted by refitting to calculated data. To maintain compatibility with
+the form of the equations, this was not performed.</p>
+<p>This linear form is useful only in small temperature ranges.
+Coefficients for one compound could be used to predict the temperature
+dependence of density of a similar compound.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r3e7bdc874ed0-1"><span class="brackets"><a class="fn-backref" href="#id17">1</a></span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. [Boca Raton, FL]: CRC press, 2014.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CRC_inorganic</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">2370.0</span><span class="p">,</span> <span class="mf">2.687</span><span class="p">,</span> <span class="mf">239.08</span><span class="p">)</span>
+<span class="go">2206.30796</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Costald_Compressed">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Costald_Compressed</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Costald_Compressed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Costald_Compressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) and pressure (P; in Pa) that calcuates liquid molar volume (V.l; in m^3/mol) using the Costald Compressed equation, as described in <a class="reference internal" href="#r544594e57e65-1" id="id19">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Psat</strong><span class="classifier">function(T)</span></dt><dd><p>Should return saturation pressure of the fluid [Pa]</p>
+</dd>
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
+</dd>
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of fluid [Pa]</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>(ideally SRK) Acentric factor for fluid, [-]
+This parameter is alternatively a fit parameter.</p>
+</dd>
+<dt><strong>Vs</strong><span class="classifier">function(T, P)</span></dt><dd><p>Should return saturation liquid volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The molar volume of a liquid is given by:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}V = V_s\left( 1 - C \ln \frac{B + P}{B + P^{sat}}\right)\\\frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}\\e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)\\C = j + k \omega_{SRK}\end{aligned}\end{align} \]</div>
+<p>Original equation was in terms of density, but it is converted here.</p>
+<p>The example is from DIPPR, and exactly correct.
+This is DIPPR Procedure 4C: Method for Estimating the Density of Pure
+Organic Liquids under Pressure.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r544594e57e65-1"><span class="brackets"><a class="fn-backref" href="#id19">1</a></span></dt>
+<dd><p>Thomson, G. H., K. R. Brobst, and R. W. Hankinson. “An Improved
+Correlation for Densities of Compressed Liquids and Liquid Mixtures.”
+AIChE Journal 28, no. 4 (July 1, 1982): 671-76. doi:10.1002/aic.690280420</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">COSTALD_compressed</span><span class="p">(</span><span class="mf">9.8E7</span><span class="p">,</span> <span class="mf">85857.9</span><span class="p">,</span> <span class="mf">466.7</span><span class="p">,</span> <span class="mf">3640000.0</span><span class="p">,</span> <span class="mf">0.281</span><span class="p">,</span> <span class="mf">0.000105047</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mf">303.</span><span class="p">)</span>
+<span class="go">9.287482879788506e-05</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.volume.Goodman">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.volume.</code><code class="sig-name descname">Goodman</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/volume.html#Goodman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.volume.Goodman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar volume (V.s; in m^3/mol) using the Goodman equation, as described in <a class="reference internal" href="#rfab9c6b4e0c4-1" id="id21">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Tt</strong><span class="classifier">None</span></dt><dd><p>Triple point temperature [K].</p>
+</dd>
+<dt><strong>V_l</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Calculates solid density at T using the simple relationship
+by a member of the DIPPR.</p>
+<p>The molar volume of a solid is given by:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{V_m} = \left( 1.28 - 0.16 \frac{T}{T_t}\right)
+\frac{1}{{Vm}_L(T_t)}\]</div>
+<p>Works to the next solid transition temperature or to approximately 0.3Tt.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rfab9c6b4e0c4-1"><span class="brackets"><a class="fn-backref" href="#id21">1</a></span></dt>
+<dd><p>Goodman, Benjamin T., W. Vincent Wilding, John L. Oscarson, and
+Richard L. Rowley. “A Note on the Relationship between Organic Solid
+Density and Liquid Density at the Triple Point.” Journal of Chemical &amp;
+Engineering Data 49, no. 6 (2004): 1512-14. doi:10.1021/je034220e.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Goodman</span><span class="p">(</span><span class="mf">353.43</span><span class="p">,</span> <span class="mf">7.6326</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mf">281.46</span><span class="p">)</span>
+<span class="go">8.797191839062899</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="viscosity.html" class="btn btn-neutral float-left" title="viscosity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

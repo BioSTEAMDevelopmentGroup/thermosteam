@@ -36,6 +36,7 @@ class Chemicals:
               * PubChem CID, prefixed by 'PubChem='
               * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
               * CAS number
+    
     Examples
     --------
     

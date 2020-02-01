@@ -1,0 +1,920 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>joback &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="law" href="law.html" />
+    <link rel="prev" title="identifiers" href="identifiers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>joback</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/joback.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.joback">
+<span id="joback"></span><h1>joback<a class="headerlink" href="#module-thermosteam.functors.joback" title="Permalink to this headline">¶</a></h1>
+<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2017, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="thermosteam.functors.joback.smarts_fragment">
+<code class="sig-prename descclassname">thermosteam.functors.joback.</code><code class="sig-name descname">smarts_fragment</code><span class="sig-paren">(</span><em class="sig-param">catalog</em>, <em class="sig-param">rdkitmol=None</em>, <em class="sig-param">smi=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#smarts_fragment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.smarts_fragment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fragments a molecule into a set of unique groups and counts as
+specified by the <cite>catalog</cite>. The molecule can either be an rdkit 
+molecule object, or a smiles string which will be parsed by rdkit.
+Returns a dictionary of groups and their counts according to the
+indexes of the catalog provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>catalog</strong><span class="classifier">dict</span></dt><dd><p>Dictionary indexed by keys pointing to smarts strings, [-]</p>
+</dd>
+<dt><strong>rdkitmol</strong><span class="classifier">mol, optional</span></dt><dd><p>Molecule as rdkit object, [-]</p>
+</dd>
+<dt><strong>smi</strong><span class="classifier">str, optional</span></dt><dd><p>Smiles string representing a chemical, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionaty of integer counts of the found groups only, indexed by
+the same keys used by the catalog [-]</p>
+</dd>
+<dt><strong>success</strong><span class="classifier">bool</span></dt><dd><p>Whether or not molecule was fully and uniquely fragmented, [-]</p>
+</dd>
+<dt><strong>status</strong><span class="classifier">str</span></dt><dd><p>A string holding an explanation of why the molecule failed to be
+fragmented, if it fails; ‘OK’ if it suceeds.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Raises an exception if rdkit is not installed, or <cite>smi</cite> or <cite>rdkitmol</cite> is
+not defined.</p>
+<p class="rubric">Examples</p>
+<p>Acetone:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smarts_fragment</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="n">J_BIGGS_JOBACK_SMARTS_id_dict</span><span class="p">,</span> <span class="n">smi</span><span class="o">=</span><span class="s1">&#39;CC(=O)C&#39;</span><span class="p">)</span>
+<span class="go">({24: 1, 1: 2}, True, &#39;OK&#39;)</span>
+</pre></div>
+</div>
+<p>Sodium sulfate, (Na2O4S):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smarts_fragment</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="n">J_BIGGS_JOBACK_SMARTS_id_dict</span><span class="p">,</span> <span class="n">smi</span><span class="o">=</span><span class="s1">&#39;[O-]S(=O)(=O)[O-].[Na+].[Na+]&#39;</span><span class="p">)</span>
+<span class="go">({29: 4}, False, &#39;Did not match all atoms present&#39;)</span>
+</pre></div>
+</div>
+<p>Propionic anhydride (C6H10O3):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smarts_fragment</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="n">J_BIGGS_JOBACK_SMARTS_id_dict</span><span class="p">,</span> <span class="n">smi</span><span class="o">=</span><span class="s1">&#39;CCC(=O)OC(=O)CC&#39;</span><span class="p">)</span>
+<span class="go">({1: 2, 2: 2, 28: 2}, False, &#39;Matched some atoms repeatedly: [4]&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.functors.joback.Joback">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.joback.</code><code class="sig-name descname">Joback</code><span class="sig-paren">(</span><em class="sig-param">mol</em>, <em class="sig-param">atom_count=None</em>, <em class="sig-param">MW=None</em>, <em class="sig-param">Tb=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for performing chemical property estimations with the Joback
+group contribution method as described in <a class="reference internal" href="#r1677430660fd-1" id="id1"><span>[R1677430660fd-1]</span></a> and <a class="reference internal" href="#r1677430660fd-2" id="id2"><span>[R1677430660fd-2]</span></a>. This is a very
+common method with low accuracy but wide applicability. This routine can be
+used with either its own automatic fragmentation routine, or user specified
+groups. It is applicable to organic compounds only, and has only 41 groups
+with no interactions between them. Each method’s documentation describes  
+its accuracy. The automatic fragmentation routine is possible only because
+of the development of SMARTS expressions to match the Joback groups by 
+Dr. Jason Biggs. The list of SMARTS expressions
+was posted publically on the 
+<a class="reference external" href="https://www.mail-archive.com/rdkit-discuss&#64;lists.sourceforge.net/msg07446.html">RDKit mailing list</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mol</strong><span class="classifier">rdkitmol or smiles str</span></dt><dd><p>Input molecule for the analysis, [-]</p>
+</dd>
+<dt><strong>atom_count</strong><span class="classifier">int, optional</span></dt><dd><p>The total number of atoms including hydrogen in the molecule; this will 
+be counted by rdkit if it not provided, [-]</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float, optional</span></dt><dd><p>Molecular weight of the molecule; this will be calculated by rdkit if  
+not provided, [g/mol]</p>
+</dd>
+<dt><strong>Tb</strong><span class="classifier">float, optional</span></dt><dd><p>An experimentally known boiling temperature for the chemical; this 
+increases the accuracy of the calculated critical point if provided.
+[K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Be sure to check the status of the automatic fragmentation; not all 
+chemicals with the Joback method are applicable.</p>
+<p>Approximately 68% of chemcials in the thermo database seem to be able to
+be estimated with the Joback method.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1677430660fd-1"><span class="brackets"><a class="fn-backref" href="#id1">R1677430660fd-1</a></span></dt>
+<dd><p>Joback, Kevin G. “A Unified Approach to Physical Property Estimation
+Using Multivariate Statistical Techniques.” Thesis, Massachusetts 
+Institute of Technology, 1984.</p>
+</dd>
+<dt class="label" id="r1677430660fd-2"><span class="brackets"><a class="fn-backref" href="#id2">R1677430660fd-2</a></span></dt>
+<dd><p>Joback, K.G., and R.C. Reid. “Estimation of Pure-Component 
+Properties from Group-Contributions.” Chemical Engineering 
+Communications 57, no. 1-6 (July 1, 1987): 233-43. 
+doi:10.1080/00986448708960487.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Analysis of Acetone:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">J</span> <span class="o">=</span> <span class="n">Joback</span><span class="p">(</span><span class="s1">&#39;CC(=O)C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">Hfus</span><span class="p">(</span><span class="n">J</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+<span class="go">5125.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">Cpig</span><span class="p">(</span><span class="mi">350</span><span class="p">)</span>
+<span class="go">84.69109750000001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">status</span>
+<span class="go">&#39;OK&#39;</span>
+</pre></div>
+</div>
+<p>All properties can be obtained in one go with the <cite>estimate</cite> method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">J</span><span class="o">.</span><span class="n">estimate</span><span class="p">())</span> 
+<span class="go">{&#39;Cpig&#39;: &lt;bound method Joback.Cpig of &lt;thermo.joback.Joback object at 0x...&gt;&gt;,</span>
+<span class="go"> &#39;Cpig_coeffs&#39;: [7.520000000000003,</span>
+<span class="go">                 0.26084,</span>
+<span class="go">                 -0.0001207,</span>
+<span class="go">                 1.545999999999998e-08],</span>
+<span class="go"> &#39;Gf&#39;: -154540.00000000003,</span>
+<span class="go"> &#39;Hf&#39;: -217829.99999999997,</span>
+<span class="go"> &#39;Hfus&#39;: 5125.0,</span>
+<span class="go"> &#39;Hvap&#39;: 29018.0,</span>
+<span class="go"> &#39;Pc&#39;: 4802499.604994407,</span>
+<span class="go"> &#39;Tb&#39;: 322.11,</span>
+<span class="go"> &#39;Tc&#39;: 500.5590049525365,</span>
+<span class="go"> &#39;Tm&#39;: 173.5,</span>
+<span class="go"> &#39;Vc&#39;: 0.0002095,</span>
+<span class="go"> &#39;mul&#39;: &lt;bound method Joback.mul of &lt;thermo.joback.Joback object at 0x...&gt;&gt;,</span>
+<span class="go"> &#39;mul_coeffs&#39;: [839.1099999999998, -14.99]}</span>
+</pre></div>
+</div>
+<p>The results for propionic anhydride (if the status is not OK) should not be
+used.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">J</span> <span class="o">=</span> <span class="n">Joback</span><span class="p">(</span><span class="s1">&#39;CCC(=O)OC(=O)CC&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">status</span>
+<span class="go">&#39;Matched some atoms repeatedly: [4]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">Cpig</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">175.85999999999999</span>
+</pre></div>
+</div>
+<p>None of the routines need to use the automatic routine; they can be used
+manually too:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Tb</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">322.11</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.estimate">
+<code class="sig-name descname">estimate</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to compute all available properties with the Joback method;
+returns their results as a dict. For the tempearture dependent values
+Cpig and mul, both the coefficients and objects to perform calculations
+are returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Tb">
+<em class="property">static </em><code class="sig-name descname">Tb</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Tb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Tb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the normal boiling temperature of an organic compound 
+using the Joback method as a function of chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[T_b = 198.2 + \sum_i {T_{b,i}}\]</div>
+<p>For 438 compounds tested by Joback, the absolute average error was
+12.91 K  and standard deviation was 17.85 K; the average relative error
+was 3.6%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Estimated normal boiling temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Tb</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">322.11</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Tm">
+<em class="property">static </em><code class="sig-name descname">Tm</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Tm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Tm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the melting temperature of an organic compound using the 
+Joback method as a function of chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[T_m = 122.5 + \sum_i {T_{m,i}}\]</div>
+<p>For 388 compounds tested by Joback, the absolute average error was
+22.6 K  and standard deviation was 24.68 K; the average relative error
+was 11.2%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Tm</strong><span class="classifier">float</span></dt><dd><p>Estimated melting temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Tm</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">173.5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Tc">
+<em class="property">static </em><code class="sig-name descname">Tc</code><span class="sig-paren">(</span><em class="sig-param">counts</em>, <em class="sig-param">Tb=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Tc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Tc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the critcal temperature of an organic compound using the 
+Joback method as a function of chemical structure only, or optionally
+improved by using an experimental boiling point. If the experimental
+boiling point is not provided it will be estimated with the Joback
+method as well.</p>
+<div class="math notranslate nohighlight">
+\[T_c = T_b \left[0.584 + 0.965 \sum_i {T_{c,i}}
+- \left(\sum_i {T_{c,i}}\right)^2 \right]^{-1}\]</div>
+<p>For 409 compounds tested by Joback, the absolute average error was
+4.76 K  and standard deviation was 6.94 K; the average relative error
+was 0.81%.</p>
+<p>Appendix BI of Joback’s work lists 409 estimated critical temperatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+<dt><strong>Tb</strong><span class="classifier">float, optional</span></dt><dd><p>Experimental normal boiling temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Estimated critical temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Tc</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">Tb</span><span class="o">=</span><span class="mf">322.11</span><span class="p">)</span>
+<span class="go">500.5590049525365</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Pc">
+<em class="property">static </em><code class="sig-name descname">Pc</code><span class="sig-paren">(</span><em class="sig-param">counts</em>, <em class="sig-param">atom_count</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Pc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the critcal pressure of an organic compound using the 
+Joback method as a function of chemical structure only. This 
+correlation was developed using the actual number of atoms forming 
+the molecule as well.</p>
+<div class="math notranslate nohighlight">
+\[P_c = \left [0.113 + 0.0032N_A - \sum_i {P_{c,i}}\right ]^{-2}\]</div>
+<p>In the above equation, critical pressure is calculated in bar; it is
+converted to Pa here.</p>
+<p>392 compounds were used by Joback in this determination, with an 
+absolute average error of 2.06 bar, standard devaition 3.2 bar, and
+AARE of 5.2%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+<dt><strong>atom_count</strong><span class="classifier">int</span></dt><dd><p>Total number of atoms (including hydrogens) in the molecule, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Estimated critical pressure, [Pa]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Pc</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="mi">10</span><span class="p">)</span>
+<span class="go">4802499.604994407</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Vc">
+<em class="property">static </em><code class="sig-name descname">Vc</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Vc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the critcal volume of an organic compound using the 
+Joback method as a function of chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[V_c = 17.5 + \sum_i {V_{c,i}}\]</div>
+<p>In the above equation, critical volume is calculated in cm^3/mol; it 
+is converted to m^3/mol here.</p>
+<p>310 compounds were used by Joback in this determination, with an 
+absolute average error of 7.54 cm^3/mol, standard devaition 13.16
+cm^3/mol, and AARE of 2.27%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Vc</strong><span class="classifier">float</span></dt><dd><p>Estimated critical volume, [m^3/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Vc</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">0.0002095</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Hf">
+<em class="property">static </em><code class="sig-name descname">Hf</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Hf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Hf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the ideal-gas enthalpy of formation at 298.15 K of an  
+organic compound using the Joback method as a function of chemical 
+structure only.</p>
+<div class="math notranslate nohighlight">
+\[H_{formation} = 68.29 + \sum_i {H_{f,i}}\]</div>
+<p>In the above equation, enthalpy of formation is calculated in kJ/mol;  
+it is converted to J/mol here.</p>
+<p>370 compounds were used by Joback in this determination, with an 
+absolute average error of 2.2 kcal/mol, standard devaition 2.0 
+kcal/mol, and AARE of 15.2%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Hf</strong><span class="classifier">float</span></dt><dd><p>Estimated ideal-gas enthalpy of formation at 298.15 K, [J/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Hf</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">-217829.99999999997</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Gf">
+<em class="property">static </em><code class="sig-name descname">Gf</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Gf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Gf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the ideal-gas Gibbs energy of formation at 298.15 K of an  
+organic compound using the Joback method as a function of chemical 
+structure only.</p>
+<div class="math notranslate nohighlight">
+\[G_{formation} = 53.88 + \sum {G_{f,i}}\]</div>
+<p>In the above equation, Gibbs energy of formation is calculated in 
+kJ/mol; it is converted to J/mol here.</p>
+<p>328 compounds were used by Joback in this determination, with an 
+absolute average error of 2.0 kcal/mol, standard devaition 4.37
+kcal/mol, and AARE of 15.7%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Gf</strong><span class="classifier">float</span></dt><dd><p>Estimated ideal-gas Gibbs energy of formation at 298.15 K, [J/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Gf</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">-154540.00000000003</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Hfus">
+<em class="property">static </em><code class="sig-name descname">Hfus</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Hfus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Hfus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the enthalpy of fusion of an organic compound at its 
+melting point using the Joback method as a function of chemical 
+structure only.</p>
+<div class="math notranslate nohighlight">
+\[\Delta H_{fus} = -0.88 + \sum_i H_{fus,i}\]</div>
+<p>In the above equation, enthalpy of fusion is calculated in 
+kJ/mol; it is converted to J/mol here.</p>
+<p>For 155 compounds tested by Joback, the absolute average error was
+485.2 cal/mol  and standard deviation was 661.4 cal/mol; the average 
+relative error was 38.7%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Hfus</strong><span class="classifier">float</span></dt><dd><p>Estimated enthalpy of fusion of the compound at its melting point,
+[J/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Hfus</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">5125.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Hvap">
+<em class="property">static </em><code class="sig-name descname">Hvap</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Hvap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Hvap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the enthalpy of vaporization of an organic compound at  
+its normal boiling point using the Joback method as a function of  
+chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[\Delta H_{vap} = 15.30 + \sum_i H_{vap,i}\]</div>
+<p>In the above equation, enthalpy of fusion is calculated in 
+kJ/mol; it is converted to J/mol here.</p>
+<p>For 368 compounds tested by Joback, the absolute average error was
+303.5 cal/mol  and standard deviation was 429 cal/mol; the average 
+relative error was 3.88%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Hvap</strong><span class="classifier">float</span></dt><dd><p>Estimated enthalpy of vaporization of the compound at its normal
+boiling point, [J/mol]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joback</span><span class="o">.</span><span class="n">Hvap</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">29018.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Cpig_coeffs">
+<em class="property">static </em><code class="sig-name descname">Cpig_coeffs</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Cpig_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Cpig_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the ideal-gas polynomial heat capacity coefficients 
+of an organic compound using the Joback method as a function of  
+chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
++ \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 
++ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3\]</div>
+<p>288 compounds were used by Joback in this determination. No overall 
+error was reported.</p>
+<p>The ideal gas heat capacity values used in developing the heat 
+capacity polynomials used 9 data points between 298 K and 1000 K.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coefficients</strong><span class="classifier">list[float]</span></dt><dd><p>Coefficients which will result in a calculated heat capacity in
+in units of J/mol/K, [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Joback</span><span class="o">.</span><span class="n">Cpig_coeffs</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">[7.520000000000003, 0.26084, -0.0001207, 1.545999999999998e-08]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">T</span> <span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cp</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">75.32642000000001</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.mul_coeffs">
+<em class="property">static </em><code class="sig-name descname">mul_coeffs</code><span class="sig-paren">(</span><em class="sig-param">counts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.mul_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.mul_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the liquid phase viscosity Joback coefficients 
+of an organic compound using the Joback method as a function of  
+chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T} 
++ \sum_i \mu_b - 11.202 \right)\]</div>
+<p>288 compounds were used by Joback in this determination. No overall 
+error was reported.</p>
+<p>The liquid viscosity data used was specified to be at “several 
+temperatures for each compound” only. A small and unspecified number
+of compounds were used in this estimation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of Joback groups present (numerically indexed) and their
+counts, [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coefficients</strong><span class="classifier">list[float]</span></dt><dd><p>Coefficients which will result in a liquid viscosity in
+in units of Pa*s, [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mu_ab</span> <span class="o">=</span> <span class="n">Joback</span><span class="o">.</span><span class="n">mul_coeffs</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mu_ab</span>
+<span class="go">[839.1099999999998, -14.99]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MW</span> <span class="o">=</span> <span class="mf">58.041864812</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mul</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">T</span> <span class="p">:</span> <span class="n">MW</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">mu_ab</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">mu_ab</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mul</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">0.0002940378347162687</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.Cpig">
+<code class="sig-name descname">Cpig</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.Cpig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.Cpig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes ideal-gas heat capacity at a specified temperature 
+of an organic compound using the Joback method as a function of  
+chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[C_p^{ig} = \sum_i a_i - 37.93 + \left[ \sum_i b_i + 0.210 \right] T
++ \left[ \sum_i c_i - 3.91 \cdot 10^{-4} \right] T^2 
++ \left[\sum_i d_i + 2.06 \cdot 10^{-7}\right] T^3\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Cpig</strong><span class="classifier">float</span></dt><dd><p>Ideal-gas heat capacity, [J/mol/K]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">J</span> <span class="o">=</span> <span class="n">Joback</span><span class="p">(</span><span class="s1">&#39;CC(=O)C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">Cpig</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">75.32642000000001</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.functors.joback.Joback.mul">
+<code class="sig-name descname">mul</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/joback.html#Joback.mul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.joback.Joback.mul" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes liquid viscosity at a specified temperature 
+of an organic compound using the Joback method as a function of  
+chemical structure only.</p>
+<div class="math notranslate nohighlight">
+\[\mu_{liq} = \text{MW} \exp\left( \frac{ \sum_i \mu_a - 597.82}{T}
++ \sum_i \mu_b - 11.202 \right)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature, [K]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>mul</strong><span class="classifier">float</span></dt><dd><p>Liquid viscosity, [Pa*s]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">J</span> <span class="o">=</span> <span class="n">Joback</span><span class="p">(</span><span class="s1">&#39;CC(=O)C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="go">0.0002940378347162687</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="law.html" class="btn btn-neutral float-right" title="law" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="identifiers.html" class="btn btn-neutral float-left" title="identifiers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

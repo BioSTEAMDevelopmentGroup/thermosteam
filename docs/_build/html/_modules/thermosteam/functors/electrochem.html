@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.electrochem &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.electrochem</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.electrochem</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">HandleBuilder</span><span class="p">,</span> <span class="n">functor</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">e</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">log10</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">N_A</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">to_nums</span><span class="p">,</span> <span class="n">CASDataReader</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">F</span> <span class="o">=</span> <span class="n">e</span><span class="o">*</span><span class="n">N_A</span>
+
+<span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;Electrolytes&#39;</span><span class="p">)</span>
+<span class="n">Lange_cond_pure</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Lange Pure Species Conductivity.tsv&#39;</span><span class="p">)</span>
+<span class="n">Marcus_ion_conductivities</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Marcus Ion Conductivities.tsv&#39;</span><span class="p">)</span>
+<span class="n">CRC_ion_conductivities</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC conductivity infinite dilution.tsv&#39;</span><span class="p">)</span>
+<span class="n">Magomedovk_thermal_cond</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Magomedov Thermal Conductivity.tsv&#39;</span><span class="p">)</span>
+<span class="n">CRC_aqueous_thermodynamics</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;CRC Thermodynamic Properties of Aqueous Ions.csv&#39;</span><span class="p">)</span>
+<span class="n">electrolyte_dissociation_reactions</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;Electrolyte dissociations.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">_Laliberte_Density_ParametersDict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_Laliberte_Viscosity_ParametersDict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_Laliberte_Heat_Capacity_ParametersDict</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="c1"># Do not re-implement with Pandas, as current methodology uses these dicts in each function</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Laliberte2009.tsv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+
+        <span class="n">_name</span><span class="p">,</span> <span class="n">CASRN</span><span class="p">,</span> <span class="n">_formula</span><span class="p">,</span> <span class="n">_MW</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">wMax</span><span class="p">,</span> <span class="n">pts</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">13</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">c0</span><span class="p">:</span>
+            <span class="n">_Laliberte_Density_ParametersDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span><span class="n">_name</span><span class="p">,</span> <span class="s2">&quot;Formula&quot;</span><span class="p">:</span><span class="n">_formula</span><span class="p">,</span>
+            <span class="s2">&quot;MW&quot;</span><span class="p">:</span><span class="n">_MW</span><span class="p">,</span> <span class="s2">&quot;C0&quot;</span><span class="p">:</span><span class="n">c0</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">:</span><span class="n">c1</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">:</span><span class="n">c2</span><span class="p">,</span> <span class="s2">&quot;C3&quot;</span><span class="p">:</span><span class="n">c3</span><span class="p">,</span> <span class="s2">&quot;C4&quot;</span><span class="p">:</span><span class="n">c4</span><span class="p">,</span> <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span><span class="n">Tmin</span><span class="p">,</span> <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span><span class="n">Tmax</span><span class="p">,</span> <span class="s2">&quot;wMax&quot;</span><span class="p">:</span><span class="n">wMax</span><span class="p">}</span>
+
+        <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span><span class="p">,</span> <span class="n">v5</span><span class="p">,</span> <span class="n">v6</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">wMax</span><span class="p">,</span> <span class="n">pts</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">23</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">v1</span><span class="p">:</span>
+            <span class="n">_Laliberte_Viscosity_ParametersDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span><span class="n">_name</span><span class="p">,</span> <span class="s2">&quot;Formula&quot;</span><span class="p">:</span><span class="n">_formula</span><span class="p">,</span>
+            <span class="s2">&quot;MW&quot;</span><span class="p">:</span><span class="n">_MW</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">:</span><span class="n">v1</span><span class="p">,</span> <span class="s2">&quot;V2&quot;</span><span class="p">:</span><span class="n">v2</span><span class="p">,</span> <span class="s2">&quot;V3&quot;</span><span class="p">:</span><span class="n">v3</span><span class="p">,</span> <span class="s2">&quot;V4&quot;</span><span class="p">:</span><span class="n">v4</span><span class="p">,</span> <span class="s2">&quot;V5&quot;</span><span class="p">:</span><span class="n">v5</span><span class="p">,</span> <span class="s2">&quot;V6&quot;</span><span class="p">:</span><span class="n">v6</span><span class="p">,</span> <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span><span class="n">Tmin</span><span class="p">,</span> <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span><span class="n">Tmax</span><span class="p">,</span> <span class="s2">&quot;wMax&quot;</span><span class="p">:</span><span class="n">wMax</span><span class="p">}</span>
+
+        <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">wMax</span><span class="p">,</span> <span class="n">pts</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">34</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">a1</span><span class="p">:</span>
+            <span class="n">_Laliberte_Heat_Capacity_ParametersDict</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span><span class="n">_name</span><span class="p">,</span> <span class="s2">&quot;Formula&quot;</span><span class="p">:</span><span class="n">_formula</span><span class="p">,</span>
+            <span class="s2">&quot;MW&quot;</span><span class="p">:</span><span class="n">_MW</span><span class="p">,</span> <span class="s2">&quot;A1&quot;</span><span class="p">:</span><span class="n">a1</span><span class="p">,</span> <span class="s2">&quot;A2&quot;</span><span class="p">:</span><span class="n">a2</span><span class="p">,</span> <span class="s2">&quot;A3&quot;</span><span class="p">:</span><span class="n">a3</span><span class="p">,</span> <span class="s2">&quot;A4&quot;</span><span class="p">:</span><span class="n">a4</span><span class="p">,</span> <span class="s2">&quot;A5&quot;</span><span class="p">:</span><span class="n">a5</span><span class="p">,</span> <span class="s2">&quot;A6&quot;</span><span class="p">:</span><span class="n">a6</span><span class="p">,</span> <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span><span class="n">Tmin</span><span class="p">,</span> <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span><span class="n">Tmax</span><span class="p">,</span> <span class="s2">&quot;wMax&quot;</span><span class="p">:</span><span class="n">wMax</span><span class="p">}</span>
+<span class="n">Laliberte_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Laliberte2009.tsv&#39;</span><span class="p">),</span>
+                          <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="c1">### Laliberty Viscosity Functions</span>
+
+<div class="viewcode-block" id="Laliberte_water_viscosity"><a class="viewcode-back" href="../../../functors/electrochem.html#thermosteam.functors.electrochem.Laliberte_water_viscosity">[docs]</a><span class="k">def</span> <span class="nf">Laliberte_water_viscosity</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the viscosity of a water (Pa*s) at arbitrary temperatures (K) using the form proposed by [1]_. </span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mu_w = \frac{T - 27.15}{(0.05594T-25.27581)t + 2867.723}</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original source or pure water viscosity is not cited.</span>
+<span class="sd">    No temperature range is given for this equation.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Laliberte, Marc. &quot;A Model for Calculating the Heat Capacity of</span>
+<span class="sd">       Aqueous Solutions, with Updated Density and Viscosity Data.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 54, no. 6 (June 11, 2009): 1725-60.</span>
+<span class="sd">       doi:10.1021/je8008123</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mf">27.15</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="mf">55.94</span><span class="o">*</span><span class="n">T</span><span class="o">-</span><span class="mf">25275.81</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mi">2867723</span><span class="p">)</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">Laliberte_partial_viscosity</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">w_w</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span><span class="p">,</span> <span class="n">v5</span><span class="p">,</span> <span class="n">v6</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="o">-</span><span class="mf">273.15</span>
+    <span class="n">mu_i</span> <span class="o">=</span> <span class="n">exp</span><span class="p">((</span><span class="n">v1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w_w</span><span class="p">)</span><span class="o">**</span><span class="n">v2</span> <span class="o">+</span> <span class="n">v3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">v4</span><span class="o">*</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">v5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w_w</span><span class="p">)</span><span class="o">**</span><span class="n">v6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mu_i</span><span class="o">/</span><span class="mf">1000.</span>
+
+<span class="c1">### Laliberty Density Functions</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">Laliberte_water_density</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the density of water using the form proposed by [1]_.</span>
+<span class="sd">    No parameters are needed, just a temperature. Units are Kelvin and kg/m^3h.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \rho_w = \frac{\left\{\left([(-2.8054253\times 10^{-10}\cdot t +</span>
+<span class="sd">        1.0556302\times 10^{-7})t - 4.6170461\times 10^{-5}]t</span>
+<span class="sd">        -0.0079870401\right)t + 16.945176   \right\}t + 999.83952}</span>
+<span class="sd">        {1 + 0.01687985\cdot t}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of fluid [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rho_w : float</span>
+<span class="sd">        Water density, [kg/m^3]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original source not cited</span>
+<span class="sd">    No temperature range is used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Laliberte_density_w(298.15)</span>
+<span class="sd">    997.0448954179155</span>
+<span class="sd">    &gt;&gt;&gt; Laliberte_density_w(273.15 + 50)</span>
+<span class="sd">    988.0362916114763</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Laliberte, Marc. &quot;A Model for Calculating the Heat Capacity of</span>
+<span class="sd">       Aqueous Solutions, with Updated Density and Viscosity Data.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 54, no. 6 (June 11, 2009): 1725-60.</span>
+<span class="sd">       doi:10.1021/je8008123</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="o">-</span><span class="mf">273.15</span>
+    <span class="n">rho_w</span> <span class="o">=</span> <span class="p">(((((</span><span class="o">-</span><span class="mf">2.8054253E-10</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="mf">1.0556302E-7</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">-</span> <span class="mf">4.6170461E-5</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">-</span> <span class="mf">0.0079870401</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="mf">16.945176</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="mf">999.83952</span><span class="p">)</span> \
+        <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.01687985</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rho_w</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">Laliberte_density</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">w_w</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span> <span class="o">-</span> <span class="mf">273.15</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">c0</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w_w</span><span class="p">)</span><span class="o">+</span><span class="n">c1</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mf">1E-6</span><span class="o">*</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">c4</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w_w</span><span class="p">)</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">+</span> <span class="n">c3</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+
+
+<span class="c1">### Laliberty Heat Capacity Functions</span>
+
+<span class="n">_T_array</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">115</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">130</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">140</span><span class="p">]</span>
+<span class="n">_Cp_array</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4294.03</span><span class="p">,</span> <span class="mf">4256.88</span><span class="p">,</span> <span class="mf">4233.58</span><span class="p">,</span> <span class="mf">4219.44</span><span class="p">,</span> <span class="mf">4204.95</span><span class="p">,</span> <span class="mf">4195.45</span><span class="p">,</span> <span class="mf">4189.1</span><span class="p">,</span> <span class="mf">4184.8</span><span class="p">,</span> <span class="mf">4181.9</span><span class="p">,</span> <span class="mf">4180.02</span><span class="p">,</span> <span class="mf">4178.95</span><span class="p">,</span> <span class="mf">4178.86</span><span class="p">,</span> <span class="mf">4178.77</span><span class="p">,</span> <span class="mf">4179.56</span><span class="p">,</span> <span class="mf">4180.89</span><span class="p">,</span> <span class="mf">4182.77</span><span class="p">,</span> <span class="mf">4185.17</span><span class="p">,</span> <span class="mf">4188.1</span><span class="p">,</span> <span class="mf">4191.55</span><span class="p">,</span> <span class="mf">4195.52</span><span class="p">,</span> <span class="mf">4200.01</span><span class="p">,</span> <span class="mf">4205.02</span><span class="p">,</span> <span class="mf">4210.57</span><span class="p">,</span> <span class="mf">4216.64</span><span class="p">,</span> <span class="mf">4223.23</span><span class="p">,</span> <span class="mf">4230.36</span><span class="p">,</span> <span class="mf">4238.07</span><span class="p">,</span> <span class="mf">4246.37</span><span class="p">,</span> <span class="mf">4255.28</span><span class="p">,</span> <span class="mf">4264.84</span><span class="p">,</span> <span class="mf">4275.08</span><span class="p">,</span> <span class="mf">4286.04</span><span class="p">]</span>
+<span class="n">Laliberte_heat_capacity_w_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">_T_array</span><span class="p">,</span> <span class="n">_Cp_array</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">Laliberte_water_heat_capacity</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the heat capacity of water using the interpolation proposed by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Cp_w = Cp_1 + (Cp_2-Cp_1) \left( \frac{t-t_1}{t_2-t_1}\right)</span>
+<span class="sd">        + \frac{(Cp_3 - 2Cp_2 + Cp_1)}{2}\left( \frac{t-t_1}{t_2-t_1}\right)</span>
+<span class="sd">        \left( \frac{t-t_1}{t_2-t_1}-1\right)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of fluid [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Cp_w : float</span>
+<span class="sd">        Water heat capacity, [J/kg/K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Units are Kelvin and J/kg/K.</span>
+<span class="sd">    Original source not cited</span>
+<span class="sd">    No temperature range is used.</span>
+<span class="sd">    The original equation is not used, but rather a cubic scipy interpolation routine.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Laliberte_heat_capacity_w(273.15+3.56)</span>
+<span class="sd">    4208.878020261102</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Laliberte, Marc. &quot;A Model for Calculating the Heat Capacity of</span>
+<span class="sd">       Aqueous Solutions, with Updated Density and Viscosity Data.&quot; Journal of</span>
+<span class="sd">       Chemical &amp; Engineering Data 54, no. 6 (June 11, 2009): 1725-60.</span>
+<span class="sd">       doi:10.1021/je8008123</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">Laliberte_heat_capacity_w_interp</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mf">273.15</span><span class="p">))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">Laliberte_Heat_Capacity</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">w_w</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span> <span class="o">-</span> <span class="mf">273.15</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">a2</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">a3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.01</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">a4</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">w_w</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">1000.</span> <span class="o">*</span> <span class="p">(</span><span class="n">a1</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">a5</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">w_w</span><span class="p">)</span><span class="o">**</span><span class="n">a6</span><span class="p">)</span>
+
+
+<span class="c1">### Electrical Conductivity</span>
+
+
+<span class="n">McCleskey_parameters</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;McCleskey_parameters&quot;</span><span class="p">,</span>
+                                  <span class="p">[</span><span class="s2">&quot;Formula&quot;</span><span class="p">,</span> <span class="s1">&#39;lambda_coeffs&#39;</span><span class="p">,</span> <span class="s1">&#39;A_coeffs&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;multiplier&#39;</span><span class="p">])</span>
+
+<span class="n">McCleskey_conductivities</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;McCleskey Electrical Conductivity.csv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">formula</span><span class="p">,</span> <span class="n">CASRN</span><span class="p">,</span> <span class="n">lbt2</span><span class="p">,</span> <span class="n">lbt</span><span class="p">,</span> <span class="n">lbc</span><span class="p">,</span> <span class="n">At2</span><span class="p">,</span> <span class="n">At</span><span class="p">,</span> <span class="n">Ac</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">multiplier</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">McCleskey_conductivities</span><span class="p">[</span><span class="n">CASRN</span><span class="p">]</span> <span class="o">=</span> <span class="n">McCleskey_parameters</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> 
+            <span class="p">[</span><span class="n">lbt2</span><span class="p">,</span> <span class="n">lbt</span><span class="p">,</span> <span class="n">lbc</span><span class="p">],</span> <span class="p">[</span><span class="n">At2</span><span class="p">,</span> <span class="n">At</span><span class="p">,</span> <span class="n">Ac</span><span class="p">],</span> <span class="n">B</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">)</span>
+
+<span class="n">Lange_cond_pure</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Lange Pure Species Conductivity.tsv&#39;</span><span class="p">),</span>
+                          <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">LANGE_COND</span> <span class="o">=</span> <span class="s2">&quot;LANGE_COND&quot;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+
+<span class="n">conductivity_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">LANGE_COND</span><span class="p">]</span>
+
+<div class="viewcode-block" id="conductivity"><a class="viewcode-back" href="../../../functors/electrochem.html#thermosteam.functors.electrochem.conductivity">[docs]</a><span class="k">def</span> <span class="nf">conductivity</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s conductivity.</span>
+<span class="sd">    Lookup is based on CASRNs.</span>
+
+<span class="sd">    Function has data for approximately 100 chemicals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kappa : float</span>
+<span class="sd">        Electrical conductivity of the fluid, [S/m]</span>
+<span class="sd">    T : float, only returned if full_info == True</span>
+<span class="sd">        Temperature at which conductivity measurement was made</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Only one source is available in this function: &#39;LANGE_COND&#39; which is from Lange&#39;s Handbook, Table 8.34 Electrical Conductivity of Various Pure Liquids&#39;, a compillation of data in [1]_.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; conductivity(&#39;7732-18-5&#39;)</span>
+<span class="sd">    (4e-06, 291.15)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Speight, James. Lange&#39;s Handbook of Chemistry. 16 edition.</span>
+<span class="sd">       McGraw-Hill Professional, 2005.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">kappa</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Lange_cond_pure</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Conductivity&#39;</span><span class="p">])</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Lange_cond_pure</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">T</span></div>
+    
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

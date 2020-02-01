@@ -1,0 +1,945 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functors.identifiers &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functors.identifiers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functors.identifiers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2016, Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;checkCAS&#39;</span><span class="p">,</span> <span class="s1">&#39;CAS_from_any&#39;</span><span class="p">,</span> <span class="s1">&#39;PubChem&#39;</span><span class="p">,</span> <span class="s1">&#39;MW&#39;</span><span class="p">,</span> <span class="s1">&#39;formula&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;InChI&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI_Key&#39;</span><span class="p">,</span> <span class="s1">&#39;IUPAC_name&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;synonyms&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;_MixtureDict&#39;</span><span class="p">,</span> <span class="s1">&#39;mixture_from_any&#39;</span><span class="p">,</span> <span class="s1">&#39;cryogenics&#39;</span><span class="p">,</span> <span class="s1">&#39;dippr_compounds&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;pubchem_db&#39;</span><span class="p">]</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CAS2int</span><span class="p">,</span> <span class="n">int2CAS</span><span class="p">,</span> <span class="n">to_nums</span>
+<span class="kn">from</span> <span class="nn">.elements</span> <span class="kn">import</span> <span class="n">periodic_table</span><span class="p">,</span> <span class="n">homonuclear_elemental_gases</span><span class="p">,</span> <span class="n">charge_from_formula</span><span class="p">,</span> <span class="n">serialize_formula</span>
+
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;Identifiers&#39;</span><span class="p">)</span>
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">folder</span><span class="p">)</span>
+
+<div class="viewcode-block" id="checkCAS"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.checkCAS">[docs]</a><span class="k">def</span> <span class="nf">checkCAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Checks if a CAS number is valid. Returns False if the parser cannot </span>
+<span class="sd">    parse the given string..</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        A three-piece, dash-separated set of numbers</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : bool</span>
+<span class="sd">        Boolean value if CASRN was valid. If parsing fails, return False also.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Check method is according to Chemical Abstract Society. However, no lookup</span>
+<span class="sd">    to their service is performed; therefore, this function cannot detect</span>
+<span class="sd">    false positives.</span>
+
+<span class="sd">    Function also does not support additional separators, apart from &#39;-&#39;.</span>
+<span class="sd">    </span>
+<span class="sd">    CAS numbers up to the series 1 XXX XXX-XX-X are now being issued.</span>
+<span class="sd">    </span>
+<span class="sd">    A long can hold CAS numbers up to 2 147 483-64-7</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; checkCAS(&#39;7732-18-5&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; checkCAS(&#39;77332-18-5&#39;)</span>
+<span class="sd">    False</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="n">CASRN</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">CASRN</span> <span class="o">=</span> <span class="n">CASRN</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">productsum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">CASRN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">productsum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">productsum</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">check</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="k">class</span> <span class="nc">ChemicalMetadata</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pubchemid&#39;</span><span class="p">,</span> <span class="s1">&#39;formula&#39;</span><span class="p">,</span> <span class="s1">&#39;MW&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI_key&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;iupac_name&#39;</span><span class="p">,</span> <span class="s1">&#39;common_name&#39;</span><span class="p">,</span> <span class="s1">&#39;all_names&#39;</span><span class="p">,</span> <span class="s1">&#39;CAS&#39;</span><span class="p">,</span> <span class="s1">&#39;_charge&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&lt;ChemicalMetadata, name=</span><span class="si">%s</span><span class="s1">, formula=</span><span class="si">%s</span><span class="s1">, smiles=</span><span class="si">%s</span><span class="s1">, MW=</span><span class="si">%g</span><span class="s1">&gt;&#39;</span>
+                <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">common_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MW</span><span class="p">))</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Charge of the species as an integer. Computed as a property as most</span>
+<span class="sd">        species do not have a charge and so storing it would be a waste of </span>
+<span class="sd">        memory.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span> <span class="o">=</span> <span class="n">charge_from_formula</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">CASs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">int2CAS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CAS</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pubchemid</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">InChI</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">,</span>
+                 <span class="n">iupac_name</span><span class="p">,</span> <span class="n">common_name</span><span class="p">,</span> <span class="n">all_names</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pubchemid</span> <span class="o">=</span> <span class="n">pubchemid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CAS</span> <span class="o">=</span> <span class="n">CAS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formula</span> <span class="o">=</span> <span class="n">formula</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MW</span> <span class="o">=</span> <span class="n">MW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">smiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">InChI</span> <span class="o">=</span> <span class="n">InChI</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key</span> <span class="o">=</span> <span class="n">InChI_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iupac_name</span> <span class="o">=</span> <span class="n">iupac_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common_name</span> <span class="o">=</span> <span class="n">common_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_names</span> <span class="o">=</span> <span class="n">all_names</span>
+        
+        
+    
+
+<span class="k">class</span> <span class="nc">ChemicalMetadataDB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">exclusion_options</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;dippr_2014_int.csv&#39;</span><span class="p">),</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Chemicals with data.csv&#39;</span><span class="p">)]</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">create_pubchem_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">create_CAS_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">create_name_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">create_smiles_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                 <span class="n">create_InChI_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">create_InChI_key_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                 <span class="n">create_formula_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">restrict_identifiers_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">main_db</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;chemical identifiers.tsv&#39;</span><span class="p">),</span>
+                 <span class="n">user_dbs</span><span class="o">=</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;chemical identifiers example user db.tsv&#39;</span><span class="p">),</span>
+                           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Cation db.tsv&#39;</span><span class="p">),</span>
+                           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Anion db.tsv&#39;</span><span class="p">),</span>
+                           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Inorganic db.tsv&#39;</span><span class="p">)]):</span>
+        
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">pubchem_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smiles_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">InChI_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CAS_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_CAS_index</span> <span class="o">=</span> <span class="n">create_CAS_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_pubchem_index</span> <span class="o">=</span> <span class="n">create_pubchem_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_name_index</span> <span class="o">=</span> <span class="n">create_name_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_smiles_index</span> <span class="o">=</span> <span class="n">create_smiles_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_index</span> <span class="o">=</span> <span class="n">create_InChI_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_key_index</span> <span class="o">=</span> <span class="n">create_InChI_key_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_formula_index</span> <span class="o">=</span> <span class="n">create_formula_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="o">=</span> <span class="n">restrict_identifiers_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_db</span> <span class="o">=</span> <span class="n">main_db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_dbs</span> <span class="o">=</span> <span class="n">user_dbs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span>
+        
+        <span class="k">if</span> <span class="n">restrict_identifiers_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_included_indentifiers</span><span class="p">(</span><span class="n">restrict_identifiers_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers</span> <span class="o">=</span> <span class="kc">False</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_db</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_dbs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_elements</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">load_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">periodic_table</span><span class="p">:</span>
+            
+            <span class="n">CAS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ele</span><span class="o">.</span><span class="n">CAS</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="c1"># Store as int for easier lookup</span>
+            <span class="n">all_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+            
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">ChemicalMetadata</span><span class="p">(</span><span class="n">pubchemid</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">PubChem</span><span class="p">,</span> <span class="n">CAS</span><span class="o">=</span><span class="n">CAS</span><span class="p">,</span> 
+                                   <span class="n">formula</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">MW</span><span class="p">,</span> <span class="n">smiles</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">smiles</span><span class="p">,</span>
+                                   <span class="n">InChI</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">InChI</span><span class="p">,</span> <span class="n">InChI_key</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">InChI_key</span><span class="p">,</span>
+                                   <span class="n">iupac_name</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> 
+                                   <span class="n">common_name</span><span class="o">=</span><span class="n">ele</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> 
+                                   <span class="n">all_names</span><span class="o">=</span><span class="n">all_names</span><span class="p">)</span>
+            
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_key_index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ele</span><span class="o">.</span><span class="n">InChI_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ele</span><span class="o">.</span><span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">homonuclear_elemental_gases</span><span class="p">:</span>
+                        <span class="n">obj_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">InChI_key</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">obj_old</span><span class="o">.</span><span class="n">all_names</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>    
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">InChI_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            
+            
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_CAS_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CAS_index</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_pubchem_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pubchem_index</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">PubChem</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_smiles_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smiles_index</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">smiles</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">InChI_index</span><span class="p">[</span><span class="n">ele</span><span class="o">.</span><span class="n">InChI</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_name_index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ele</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="n">homonuclear_elemental_gases</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">[</span><span class="s1">&#39;monatomic &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>    
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_formula_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># This is effectively the documentation for the file format of the file</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">pubchemid</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">InChI</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">,</span> <span class="n">iupac_name</span><span class="p">,</span> <span class="n">common_name</span><span class="p">)</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span>
+            <span class="n">CAS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">CAS</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="c1"># Store as int for easier lookup</span>
+            <span class="c1"># Handle the case of the db having more compounds than a user wants</span>
+            <span class="c1"># to keep in memory</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers</span> <span class="ow">and</span> <span class="n">CAS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">included_identifiers</span> <span class="ow">and</span> <span class="n">file_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_dbs</span><span class="p">:</span>
+                <span class="k">continue</span>
+            
+            <span class="n">all_names</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span>
+            <span class="n">pubchemid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pubchemid</span><span class="p">)</span>
+
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">ChemicalMetadata</span><span class="p">(</span><span class="n">pubchemid</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">MW</span><span class="p">),</span> <span class="n">smiles</span><span class="p">,</span>
+                                    <span class="n">InChI</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">,</span> <span class="n">iupac_name</span><span class="p">,</span> <span class="n">common_name</span><span class="p">,</span> 
+                                    <span class="n">all_names</span><span class="p">)</span>
+            
+            <span class="c1"># Lookup indexes</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_CAS_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CAS_index</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_pubchem_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pubchem_index</span><span class="p">[</span><span class="n">pubchemid</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_smiles_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smiles_index</span><span class="p">[</span><span class="n">smiles</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">InChI_index</span><span class="p">[</span><span class="n">InChI</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_InChI_key_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span><span class="p">[</span><span class="n">InChI_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_name_index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>   
+                            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_formula_index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">formula</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">hit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hit</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">hit</span><span class="o">.</span><span class="n">CAS</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">CAS</span><span class="p">:</span>
+                                <span class="c1"># Replace repreated chemicals</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="n">hit</span>
+                            <span class="k">else</span><span class="p">:</span>
+    <span class="c1">#                            self.formula_index[obj.formula] = None</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">hit</span><span class="p">,</span> <span class="n">obj</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+    <span class="c1">#                        self.formula_index[obj.formula] = None</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                    
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">load_included_indentifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Loads a file with newline-separated integers representing which </span>
+<span class="sd">        chemical should be kept in memory; ones not included are ignored.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">included_identifiers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>       
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">included_identifiers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">included_identifiers</span> <span class="o">=</span> <span class="n">included_identifiers</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">can_autoload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclusion_options</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        
+        
+    <span class="k">def</span> <span class="nf">autoload_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclusion_options</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclusion_options</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_included_indentifiers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclusion_options</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers_file</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restrict_identifiers</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_db</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_dbs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_elements</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+        
+    <span class="k">def</span> <span class="nf">_search_autoload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">index</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">autoload</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_autoload</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">autoload_next</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    
+    <span class="k">def</span> <span class="nf">search_pubchem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pubchem</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pubchem</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">pubchem</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pubchem</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">pubchem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pubchem_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">search_CAS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">CAS</span> <span class="o">=</span> <span class="n">CAS2int</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CAS_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">search_smiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">search_InChI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InChI</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">InChI</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">InChI_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">search_InChI_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">InChI_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">InChI_key_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">search_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">search_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_autoload</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula_index</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="n">autoload</span><span class="p">)</span>
+
+<span class="c1">#pubchem_db = ChemicalMetadataDB(restrict_identifiers_file=os.path.join(folder, &#39;dippr_2014_int.csv&#39;),</span>
+<span class="c1">#                                create_pubchem_index=False, create_CAS_index=False,</span>
+<span class="c1">#                 create_name_index=False, create_smiles_index=False, </span>
+<span class="c1">#                 create_InChI_index=False, create_InChI_key_index=False, </span>
+<span class="c1">#                 create_formula_index=False)</span>
+<span class="n">pubchem_db</span> <span class="o">=</span> <span class="n">ChemicalMetadataDB</span><span class="p">(</span><span class="n">restrict_identifiers_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;dippr_2014_int.csv&#39;</span><span class="p">))</span>
+<span class="c1">#pubchem_db = ChemicalMetadataDB()</span>
+
+
+<div class="viewcode-block" id="CAS_from_any"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.CAS_from_any">[docs]</a><span class="k">def</span> <span class="nf">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Looks up the CAS number of a chemical by searching and testing for the</span>
+<span class="sd">    string being any of the following types of chemical identifiers:</span>
+<span class="sd">    </span>
+<span class="sd">    * Name, in IUPAC form or common form or a synonym registered in PubChem</span>
+<span class="sd">    * InChI name, prefixed by &#39;InChI=1S/&#39; or &#39;InChI=1/&#39;</span>
+<span class="sd">    * InChI key, prefixed by &#39;InChIKey=&#39;</span>
+<span class="sd">    * PubChem CID, prefixed by &#39;PubChem=&#39;</span>
+<span class="sd">    * SMILES (prefix with &#39;SMILES=&#39; to ensure smiles parsing; ex.</span>
+<span class="sd">      &#39;C&#39; will return Carbon as it is an element whereas the SMILES </span>
+<span class="sd">      interpretation for &#39;C&#39; is methane)</span>
+<span class="sd">    * CAS number (obsolete numbers may point to the current number)    </span>
+
+<span class="sd">    If the input is an ID representing an element, the following additional </span>
+<span class="sd">    inputs may be specified as </span>
+<span class="sd">    </span>
+<span class="sd">    * Atomic symbol (ex &#39;Na&#39;)</span>
+<span class="sd">    * Atomic number (as a string)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ID : str</span>
+<span class="sd">        One of the name formats described above</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        A three-piece, dash-separated set of numbers</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    An exception is raised if the name cannot be identified. The PubChem </span>
+<span class="sd">    database includes a wide variety of other synonyms, but these may not be</span>
+<span class="sd">    present for all chemcials.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;water&#39;)</span>
+<span class="sd">    &#39;7732-18-5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3&#39;)</span>
+<span class="sd">    &#39;64-17-5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;CCCCCCCCCC&#39;)</span>
+<span class="sd">    &#39;124-18-5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;InChIKey=LFQSCWFLJHTTHZ-UHFFFAOYSA-N&#39;)</span>
+<span class="sd">    &#39;64-17-5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;pubchem=702&#39;)</span>
+<span class="sd">    &#39;64-17-5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; CAS_from_any(&#39;O&#39;) # only elements can be specified by symbol</span>
+<span class="sd">    &#39;17778-80-2&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">ID_lower</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">periodic_table</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">periodic_table</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">homonuclear_elemental_gases</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">periodic_table</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span><span class="o">.</span><span class="n">CAS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">periodic_table</span><span class="o">.</span><span class="n">symbol_to_elements</span><span class="p">,</span> 
+                      <span class="n">periodic_table</span><span class="o">.</span><span class="n">number_to_elements</span><span class="p">,</span>
+                      <span class="n">periodic_table</span><span class="o">.</span><span class="n">CAS_to_elements</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">periodic_table</span><span class="o">.</span><span class="n">number_to_elements</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">ID</span> <span class="ow">in</span> <span class="n">i</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">periodic_table</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ID</span><span class="p">)]</span><span class="o">.</span><span class="n">CAS</span>
+                    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">periodic_table</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span><span class="o">.</span><span class="n">CAS</span>
+
+    <span class="k">if</span> <span class="n">checkCAS</span><span class="p">(</span><span class="n">ID</span><span class="p">):</span>
+        <span class="n">CAS_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS_lookup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CAS_lookup</span><span class="o">.</span><span class="n">CASs</span>
+        
+        <span class="c1"># handle the case of synonyms</span>
+        <span class="n">CAS_alternate_loopup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_name</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS_alternate_loopup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CAS_alternate_loopup</span><span class="o">.</span><span class="n">CASs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A valid CAS number was recognized, but is not in the database&#39;</span><span class="p">)</span>
+        
+        
+    
+    <span class="n">ID_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ID_len</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">:</span>
+        <span class="n">inchi_search</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># normal upper case is &#39;InChI=1S/&#39;</span>
+        <span class="k">if</span> <span class="n">ID_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;inchi=1s/&#39;</span><span class="p">:</span>
+            <span class="n">inchi_search</span> <span class="o">=</span> <span class="n">ID</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">ID_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;inchi=1/&#39;</span><span class="p">:</span>
+            <span class="n">inchi_search</span> <span class="o">=</span> <span class="n">ID</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">inchi_search</span><span class="p">:</span>
+            <span class="n">inchi_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_InChI</span><span class="p">(</span><span class="n">inchi_search</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">inchi_lookup</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">inchi_lookup</span><span class="o">.</span><span class="n">CASs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A valid InChI name was recognized, but it is not in the database&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ID_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;inchikey=&#39;</span><span class="p">:</span>
+            <span class="n">inchi_key_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_InChI_key</span><span class="p">(</span><span class="n">ID</span><span class="p">[</span><span class="mi">9</span><span class="p">:],</span> <span class="n">autoload</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">inchi_key_lookup</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">inchi_key_lookup</span><span class="o">.</span><span class="n">CASs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A valid InChI Key was recognized, but it is not in the database&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ID_len</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ID_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;pubchem=&#39;</span><span class="p">:</span>
+            <span class="n">pubchem_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_pubchem</span><span class="p">(</span><span class="n">ID</span><span class="p">[</span><span class="mi">8</span><span class="p">:],</span> <span class="n">autoload</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pubchem_lookup</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">pubchem_lookup</span><span class="o">.</span><span class="n">CASs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A PubChem integer identifier was recognized, but it is not in the database.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ID_len</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ID_lower</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;smiles=&#39;</span><span class="p">:</span>
+            <span class="n">smiles_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_smiles</span><span class="p">(</span><span class="n">ID</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="n">autoload</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">smiles_lookup</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">smiles_lookup</span><span class="o">.</span><span class="n">CASs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A SMILES identifier was recognized, but it is not in the database.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Try the smiles lookup anyway</span>
+    <span class="c1"># Parsing SMILES is an option, but this is faster</span>
+    <span class="c1"># Pybel API also prints messages to console on failure</span>
+    <span class="n">smiles_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_smiles</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">smiles_lookup</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">smiles_lookup</span><span class="o">.</span><span class="n">CASs</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">formula_query</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_formula</span><span class="p">(</span><span class="n">serialize_formula</span><span class="p">(</span><span class="n">ID</span><span class="p">),</span> <span class="n">autoload</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">formula_query</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">formula_query</span><span class="p">)</span> <span class="o">==</span> <span class="n">ChemicalMetadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">formula_query</span><span class="o">.</span><span class="n">CASs</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    
+    <span class="c1"># Try a direct lookup with the name - the fastest</span>
+    <span class="n">name_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_name</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name_lookup</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name_lookup</span><span class="o">.</span><span class="n">CASs</span>
+
+<span class="c1">#     Permutate through various name options</span>
+    <span class="n">ID_no_space</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">ID_no_space_dash</span> <span class="o">=</span> <span class="n">ID_no_space</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ID</span><span class="p">,</span> <span class="n">ID_no_space</span><span class="p">,</span> <span class="n">ID_no_space_dash</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">name2</span> <span class="ow">in</span> <span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]:</span>
+            <span class="n">name_lookup</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_name</span><span class="p">(</span><span class="n">name2</span><span class="p">,</span> <span class="n">autoload</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name_lookup</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">name_lookup</span><span class="o">.</span><span class="n">CASs</span>
+            
+    
+    <span class="k">if</span> <span class="n">ID</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;)&#39;</span> <span class="ow">and</span> <span class="s1">&#39;(&#39;</span> <span class="ow">in</span> <span class="n">ID</span><span class="p">:</span><span class="c1">#</span>
+        <span class="c1"># Try to matck in the form &#39;water (H2O)&#39;</span>
+        <span class="n">first_identifier</span><span class="p">,</span> <span class="n">second_identifier</span> <span class="o">=</span> <span class="n">ID</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">CAS1</span> <span class="o">=</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">first_identifier</span><span class="p">)</span>
+            <span class="n">CAS2</span> <span class="o">=</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">second_identifier</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">CAS1</span> <span class="o">==</span> <span class="n">CAS2</span>
+            <span class="k">return</span> <span class="n">CAS1</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">autoload</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CAS_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Chemical {repr(ID)} not recognized&#39;</span><span class="p">)</span></div>
+
+
+
+
+
+<div class="viewcode-block" id="PubChem"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.PubChem">[docs]</a><span class="k">def</span> <span class="nf">PubChem</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Given a CASRN in the database, obtain the PubChem database</span>
+<span class="sd">    number of the compound.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        Valid CAS number in PubChem database [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pubchem : int</span>
+<span class="sd">        PubChem database id, as an integer [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    CASRN must be an indexing key in the pubchem database.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; PubChem(&#39;7732-18-5&#39;)</span>
+<span class="sd">    962</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Pubchem.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">pubchemid</span></div>
+
+
+
+<div class="viewcode-block" id="MW"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.MW">[docs]</a><span class="k">def</span> <span class="nf">MW</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Given a CASRN in the database, obtain the Molecular weight of the</span>
+<span class="sd">    compound, if it is in the database.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        Valid CAS number in PubChem database</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    MolecularWeight : float</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    CASRN must be an indexing key in the pubchem database. No MW Calculation is</span>
+<span class="sd">    performed; nor are any historical isotopic corrections applied.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; MW(&#39;7732-18-5&#39;)</span>
+<span class="sd">    18.01528</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Pubchem.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">MW</span></div>
+
+
+<div class="viewcode-block" id="formula"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.formula">[docs]</a><span class="k">def</span> <span class="nf">formula</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; formula(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;H2O&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">formula</span></div>
+
+
+<div class="viewcode-block" id="smiles"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.smiles">[docs]</a><span class="k">def</span> <span class="nf">smiles</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; smiles(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;O&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">smiles</span></div>
+
+
+<div class="viewcode-block" id="InChI"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.InChI">[docs]</a><span class="k">def</span> <span class="nf">InChI</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; InChI(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;H2O/h1H2&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">InChI</span></div>
+
+
+<div class="viewcode-block" id="InChI_Key"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.InChI_Key">[docs]</a><span class="k">def</span> <span class="nf">InChI_Key</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; InChI_Key(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;XLYOFNOQVPJJNP-UHFFFAOYSA-N&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">InChI_key</span></div>
+
+
+<div class="viewcode-block" id="IUPAC_name"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.IUPAC_name">[docs]</a><span class="k">def</span> <span class="nf">IUPAC_name</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; IUPAC_name(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;oxidane&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">iupac_name</span></div>
+
+<div class="viewcode-block" id="name"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.name">[docs]</a><span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; name(&#39;7732-18-5&#39;)</span>
+<span class="sd">    &#39;water&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">common_name</span></div>
+
+
+<div class="viewcode-block" id="synonyms"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.synonyms">[docs]</a><span class="k">def</span> <span class="nf">synonyms</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; synonyms(&#39;98-00-0&#39;)</span>
+<span class="sd">    [&#39;furan-2-ylmethanol&#39;, &#39;furfuryl alcohol&#39;, &#39;2-furanmethanol&#39;, &#39;2-furancarbinol&#39;, &#39;2-furylmethanol&#39;, &#39;2-furylcarbinol&#39;, &#39;98-00-0&#39;, &#39;2-furanylmethanol&#39;, &#39;furfuranol&#39;, &#39;furan-2-ylmethanol&#39;, &#39;2-furfuryl alcohol&#39;, &#39;5-hydroxymethylfuran&#39;, &#39;furfural alcohol&#39;, &#39;alpha-furylcarbinol&#39;, &#39;2-hydroxymethylfuran&#39;, &#39;furfuralcohol&#39;, &#39;furylcarbinol&#39;, &#39;furyl alcohol&#39;, &#39;2-(hydroxymethyl)furan&#39;, &#39;furan-2-yl-methanol&#39;, &#39;furfurylalcohol&#39;, &#39;furfurylcarb&#39;, &#39;methanol, (2-furyl)-&#39;, &#39;2-furfurylalkohol&#39;, &#39;furan-2-methanol&#39;, &#39;2-furane-methanol&#39;, &#39;2-furanmethanol, homopolymer&#39;, &#39;(2-furyl)methanol&#39;, &#39;2-hydroxymethylfurane&#39;, &#39;furylcarbinol (van)&#39;, &#39;2-furylmethan-1-ol&#39;, &#39;25212-86-6&#39;, &#39;93793-62-5&#39;, &#39;furanmethanol&#39;, &#39;polyfurfuryl alcohol&#39;, &#39;pffa&#39;, &#39;poly(furfurylalcohol)&#39;, &#39;poly-furfuryl alcohol&#39;, &#39;(fur-2-yl)methanol&#39;, &#39;.alpha.-furylcarbinol&#39;, &#39;2-hydroxymethyl-furan&#39;, &#39;poly(furfuryl alcohol)&#39;, &#39;.alpha.-furfuryl alcohol&#39;, &#39;agn-pc-04y237&#39;, &#39;h159&#39;, &#39;omega-hydroxypoly(furan-2,5-diylmethylene)&#39;, &#39;(2-furyl)-methanol (furfurylalcohol)&#39;, &#39;40795-25-3&#39;, &#39;88161-36-8&#39;]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">all_names</span></div>
+
+
+<span class="c1">### DIPPR Database, chemical list only</span>
+<span class="c1"># Obtained via the command:</span>
+<span class="c1"># list(pd.read_excel(&#39;http://www.aiche.org/sites/default/files/docs/pages/sponsor_compound_list-2014.xlsx&#39;)[&#39;Unnamed: 2&#39;])[2:]</span>
+<span class="c1"># This is consistently faster than creating a list and then making the set.</span>
+<span class="n">dippr_compounds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;dippr_2014.csv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">dippr_compounds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+
+
+<span class="n">_MixtureDict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_MixtureDictLookup</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Mixtures Compositions.tsv&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Read in a dict of 90 or so mixutres, their components, and synonyms.</span>
+<span class="sd">    Small errors in mole fractions not adding to 1 are known.</span>
+<span class="sd">    Errors in adding mass fraction are less common, present at the 5th decimal.</span>
+<span class="sd">    TODO: Normalization</span>
+<span class="sd">    Mass basis is assumed for all mixtures.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">to_nums</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="n">_name</span><span class="p">,</span> <span class="n">_source</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">_CASs</span><span class="p">,</span> <span class="n">_names</span><span class="p">,</span> <span class="n">_ws</span><span class="p">,</span> <span class="n">_zs</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">3</span><span class="o">+</span><span class="n">N</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="o">+</span><span class="n">N</span><span class="p">:</span><span class="mi">3</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="p">:</span><span class="mi">3</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">N</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">N</span><span class="p">:</span><span class="mi">3</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">N</span><span class="p">]</span>
+        <span class="n">_syns</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">N</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">_syns</span><span class="p">:</span>
+            <span class="n">_syns</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_syns</span><span class="p">]</span>
+        <span class="n">_syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">_MixtureDict</span><span class="p">[</span><span class="n">_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CASs&quot;</span><span class="p">:</span> <span class="n">_CASs</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">:</span> <span class="n">_source</span><span class="p">,</span>
+                               <span class="s2">&quot;Names&quot;</span><span class="p">:</span> <span class="n">_names</span><span class="p">,</span> <span class="s2">&quot;ws&quot;</span><span class="p">:</span> <span class="n">_ws</span><span class="p">,</span> <span class="s2">&quot;zs&quot;</span><span class="p">:</span> <span class="n">_zs</span><span class="p">,</span>
+                               <span class="s2">&quot;Synonyms&quot;</span><span class="p">:</span> <span class="n">_syns</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">_syns</span><span class="p">:</span>
+            <span class="n">_MixtureDictLookup</span><span class="p">[</span><span class="n">syn</span><span class="p">]</span> <span class="o">=</span> <span class="n">_name</span>
+
+
+<div class="viewcode-block" id="mixture_from_any"><a class="viewcode-back" href="../../../functors/identifiers.html#thermosteam.functors.identifiers.mixture_from_any">[docs]</a><span class="k">def</span> <span class="nf">mixture_from_any</span><span class="p">(</span><span class="n">ID</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Looks up a string which may represent a mixture in the database of </span>
+<span class="sd">    thermo to determine the key by which the composition of that mixture can</span>
+<span class="sd">    be obtained in the dictionary `_MixtureDict`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ID : str</span>
+<span class="sd">        A string or 1-element list containing the name which may represent a</span>
+<span class="sd">        mixture.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    key : str</span>
+<span class="sd">        Key for access to the data on the mixture in `_MixtureDict`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    White space, &#39;-&#39;, and upper case letters are removed in the search.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mixture_from_any(&#39;R512A&#39;)</span>
+<span class="sd">    &#39;R512A&#39;</span>
+<span class="sd">    &gt;&gt;&gt; mixture_from_any([u&#39;air&#39;])</span>
+<span class="sd">    &#39;Air&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ID</span> <span class="o">=</span> <span class="n">ID</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;If the input is a list, the list must contain only one item.&#39;</span><span class="p">)</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">ID2</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">ID3</span> <span class="o">=</span> <span class="n">ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ID</span><span class="p">,</span> <span class="n">ID2</span><span class="p">,</span> <span class="n">ID3</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_MixtureDictLookup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_MixtureDictLookup</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Mixture name not recognized&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO LIST OF REFRIGERANTS FOR USE IN HEAT TRANSFER CORRELATIONS</span>
+
+<span class="n">cryogenics</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;132259-10-0&#39;</span><span class="p">:</span> <span class="s1">&#39;Air&#39;</span><span class="p">,</span> <span class="s1">&#39;7440-37-1&#39;</span><span class="p">:</span> <span class="s1">&#39;Argon&#39;</span><span class="p">,</span> <span class="s1">&#39;630-08-0&#39;</span><span class="p">:</span>
+<span class="s1">&#39;carbon monoxide&#39;</span><span class="p">,</span> <span class="s1">&#39;7782-39-0&#39;</span><span class="p">:</span> <span class="s1">&#39;deuterium&#39;</span><span class="p">,</span> <span class="s1">&#39;7782-41-4&#39;</span><span class="p">:</span> <span class="s1">&#39;fluorine&#39;</span><span class="p">,</span>
+<span class="s1">&#39;7440-59-7&#39;</span><span class="p">:</span> <span class="s1">&#39;helium&#39;</span><span class="p">,</span> <span class="s1">&#39;1333-74-0&#39;</span><span class="p">:</span> <span class="s1">&#39;hydrogen&#39;</span><span class="p">,</span> <span class="s1">&#39;7439-90-9&#39;</span><span class="p">:</span> <span class="s1">&#39;krypton&#39;</span><span class="p">,</span>
+<span class="s1">&#39;74-82-8&#39;</span><span class="p">:</span> <span class="s1">&#39;methane&#39;</span><span class="p">,</span> <span class="s1">&#39;7440-01-9&#39;</span><span class="p">:</span> <span class="s1">&#39;neon&#39;</span><span class="p">,</span> <span class="s1">&#39;7727-37-9&#39;</span><span class="p">:</span> <span class="s1">&#39;nitrogen&#39;</span><span class="p">,</span>
+<span class="s1">&#39;7782-44-7&#39;</span><span class="p">:</span> <span class="s1">&#39;oxygen&#39;</span><span class="p">,</span> <span class="s1">&#39;7440-63-3&#39;</span><span class="p">:</span> <span class="s1">&#39;xenon&#39;</span><span class="p">}</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

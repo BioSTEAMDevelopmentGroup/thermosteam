@@ -1,0 +1,989 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>safety &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="solubility" href="solubility.html" />
+    <link rel="prev" title="refractivity" href="refractivity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>safety</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/safety.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.safety">
+<span id="safety"></span><h1>safety<a class="headerlink" href="#module-thermosteam.functors.safety" title="Permalink to this headline">¶</a></h1>
+<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="thermosteam.functors.safety.ppmv_to_mgm3">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">ppmv_to_mgm3</code><span class="sig-paren">(</span><em class="sig-param">ppmv</em>, <em class="sig-param">MW</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#ppmv_to_mgm3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.ppmv_to_mgm3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a concentration in ppmv to units of mg/m^3. Used in
+industrial toxicology.</p>
+<div class="math notranslate nohighlight">
+\[\frac{mg}{m^3} = \frac{ppmv\cdot P}{RT}\cdot \frac{MW}{1000}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ppmv</strong><span class="classifier">float</span></dt><dd><p>Concentratoin of a component in a gas mixure [parts per million,
+volumetric]</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight of the trace gas [g/mol]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature of the gas at which the ppmv is reported</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure of the gas at which the ppmv is reported</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>mgm3</strong><span class="classifier">float</span></dt><dd><p>Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The term P/(RT)/1000 converts to 0.040874 at STP. Its inverse is reported
+as 24.45 in <a class="reference internal" href="#re87d315f6b10-1" id="id1">[1]</a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="re87d315f6b10-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
+23rd Edition. American Conference of Governmental and Industrial
+Hygenists, 2004.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ppmv_to_mgm3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="go">1.6349623351068687</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.mgm3_to_ppmv">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">mgm3_to_ppmv</code><span class="sig-paren">(</span><em class="sig-param">mgm3</em>, <em class="sig-param">MW</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#mgm3_to_ppmv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.mgm3_to_ppmv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a concentration in  mg/m^3 to units of ppmv. Used in
+industrial toxicology.</p>
+<div class="math notranslate nohighlight">
+\[ppmv = \frac{1000RT}{MW\cdot P} \cdot \frac{mg}{m^3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mgm3</strong><span class="classifier">float</span></dt><dd><p>Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight of the trace gas [g/mol]</p>
+</dd>
+<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature of the gas at which the ppmv is reported</p>
+</dd>
+<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure of the gas at which the ppmv is reported</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ppmv</strong><span class="classifier">float</span></dt><dd><p>Concentration of a component in a gas mixure [parts per million,
+volumetric]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The term P/(RT)/1000 converts to 0.040874 at STP. Its inverse is reported
+as 24.45 in <a class="reference internal" href="#r1e83dc81c5f3-1" id="id3">[1]</a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1e83dc81c5f3-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
+23rd Edition. American Conference of Governmental and Industrial
+Hygenists, 2004.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mgm3_to_ppmv</span><span class="p">(</span><span class="mf">1.635</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="go">1.0000230371625833</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.TWA">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">TWA</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#TWA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.TWA" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of Time-Weighted Average limits on worker
+exposure to dangerous chemicals.</p>
+<p>This API is considered experimental, and is expected to be removed in a
+future release in favor of a more complete object-oriented interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">TWA</span><span class="p">(</span><span class="s1">&#39;98-00-0&#39;</span><span class="p">)</span>
+<span class="go">(10.0, &#39;ppm&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">TWA</span><span class="p">(</span><span class="s1">&#39;1303-00-0&#39;</span><span class="p">)</span>
+<span class="go">(5.0742430905659505e-05, &#39;ppm&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">TWA</span><span class="p">(</span><span class="s1">&#39;7782-42-5&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;Ontario Limits&#39;, &#39;None&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.STEL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">STEL</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#STEL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.STEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of Short-term Exposure Limit on
+worker exposure to dangerous chemicals.</p>
+<p>This API is considered experimental, and is expected to be removed in a
+future release in favor of a more complete object-oriented interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">STEL</span><span class="p">(</span><span class="s1">&#39;67-64-1&#39;</span><span class="p">)</span>
+<span class="go">(750.0, &#39;ppm&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">STEL</span><span class="p">(</span><span class="s1">&#39;7664-38-2&#39;</span><span class="p">)</span>
+<span class="go">(0.7489774978301237, &#39;ppm&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">STEL</span><span class="p">(</span><span class="s1">&#39;55720-99-5&#39;</span><span class="p">)</span>
+<span class="go">(2.0, &#39;mg/m^3&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">STEL</span><span class="p">(</span><span class="s1">&#39;86290-81-5&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;Ontario Limits&#39;, &#39;None&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Ceiling">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Ceiling</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Ceiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Ceiling" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of Ceiling limits on worker
+exposure to dangerous chemicals.</p>
+<p>This API is considered experimental, and is expected to be removed in a
+future release in favor of a more complete object-oriented interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ceiling</span><span class="p">(</span><span class="s1">&#39;75-07-0&#39;</span><span class="p">)</span>
+<span class="go">(25.0, &#39;ppm&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ceiling</span><span class="p">(</span><span class="s1">&#39;1395-21-7&#39;</span><span class="p">)</span>
+<span class="go">(6e-05, &#39;mg/m^3&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ceiling</span><span class="p">(</span><span class="s1">&#39;7572-29-4&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;Ontario Limits&#39;, &#39;None&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Skin">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Skin</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Skin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Skin" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of whether or not a chemical can
+be absorbed through the skin, relevant to chemical safety calculations.</p>
+<p>This API is considered experimental, and is expected to be removed in a
+future release in favor of a more complete object-oriented interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Skin</span><span class="p">(</span><span class="s1">&#39;108-94-1&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Skin</span><span class="p">(</span><span class="s1">&#39;1395-21-7&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Skin</span><span class="p">(</span><span class="s1">&#39;7572-29-4&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;Ontario Limits&#39;, &#39;None&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Carcinogen">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Carcinogen</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Carcinogen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Carcinogen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up if a chemical is listed as a carcinogen or not according to
+either a specifc method or with all methods.</p>
+<p>Returns either the status as a string for a specified method, or the
+status of the chemical in all available data sources, in the format
+{source: status}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>status</strong><span class="classifier">str or dict</span></dt><dd><p>Carcinogen status information [-]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain carcinogen status with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+Carcinogen_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+if a chemical is listed as carcinogenic, and will return methods
+instead of the status</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Supported methods are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>IARC</strong>: International Agency for Research on Cancer, <a class="reference internal" href="#ra5daecb7daa1-1" id="id5">[1]</a>. As
+extracted with a last update of  February 22, 2016. Has listing
+information of 843 chemicals with CAS numbers. Chemicals without
+CAS numbers not included here. If two listings for the same CAS
+were available, that closest to the CAS number was used. If two
+listings were available published at different times, the latest
+value was used. All else equal, the most pessimistic value was used.</p></li>
+<li><p><strong>NTP</strong>: National Toxicology Program, <a class="reference internal" href="#ra5daecb7daa1-2" id="id6">[2]</a>. Has data on 226
+chemicals.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="ra5daecb7daa1-1"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
+<dd><p>International Agency for Research on Cancer. Agents Classified by
+the IARC Monographs, Volumes 1-115. Lyon, France: IARC; 2016 Available
+from: <a class="reference external" href="http://monographs.iarc.fr/ENG/Classification/">http://monographs.iarc.fr/ENG/Classification/</a></p>
+</dd>
+<dt class="label" id="ra5daecb7daa1-2"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
+<dd><p>NTP (National Toxicology Program). 2014. Report on Carcinogens,
+Thirteenth Edition. Research Triangle Park, NC: U.S. Department of
+Health and Human Services, Public Health Service.
+<a class="reference external" href="http://ntp.niehs.nih.gov/pubhealth/roc/roc13/">http://ntp.niehs.nih.gov/pubhealth/roc/roc13/</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Carcinogen</span><span class="p">(</span><span class="s1">&#39;61-82-5&#39;</span><span class="p">)</span>
+<span class="go">{&#39;National Toxicology Program 13th Report on Carcinogens&#39;: &#39;Reasonably Anticipated&#39;, &#39;International Agency for Research on Cancer&#39;: &#39;Not classifiable as to its carcinogenicity to humans (3)&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Tflash">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Tflash</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Tflash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Tflash" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation of a chemical’s
+flash point. Lookup is based on CASRNs. No predictive methods are currently
+implemented. Will automatically select a data source to use if no Method
+is provided; returns None if the data is not available.</p>
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#rf3b7253bd0f0-1" id="id9">[1]</a>, with the secondary source
+‘NFPA 497 (2008)’ <a class="reference internal" href="#rf3b7253bd0f0-2" id="id10">[2]</a> having very similar data. A third source 
+‘Serat DIPPR (2017)’ <a class="reference internal" href="#rf3b7253bd0f0-3" id="id11">[3]</a> provides third hand experimental but evaluated 
+data from the DIPPR database, version unspecified, for 870 compounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Tflash</strong><span class="classifier">float</span></dt><dd><p>Flash point of the chemical, [K]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Tflash with the given
+inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+Tflash_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+Tflash for the desired chemical, and will return methods instead of
+Tflash</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The predicted values from the DIPPR databank are also available in the
+supporting material in <a class="reference internal" href="#rf3b7253bd0f0-3" id="id12">[3]</a>, but are not included.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rf3b7253bd0f0-1"><span class="brackets"><a class="fn-backref" href="#id9">1</a></span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="rf3b7253bd0f0-2"><span class="brackets"><a class="fn-backref" href="#id10">2</a></span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+<dt class="label" id="rf3b7253bd0f0-3"><span class="brackets">3</span><span class="fn-backref">(<a href="#id11">1</a>,<a href="#id12">2</a>)</span></dt>
+<dd><p>Serat, Fatima Zohra, Ali Mustapha Benkouider, Ahmed Yahiaoui, and 
+Farid Bagui. “Nonlinear Group Contribution Model for the Prediction of 
+Flash Points Using Normal Boiling Points.” Fluid Phase Equilibria 449 
+(October 15, 2017): 52-59. doi:10.1016/j.fluid.2017.06.008.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tflash</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">285.15</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Tautoignition">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Tautoignition</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Tautoignition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Tautoignition" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation of a chemical’s
+autoifnition temperature. Lookup is based on CASRNs. No predictive methods
+are currently implemented. Will automatically select a data source to use
+if no Method is provided; returns None if the data is not available.</p>
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r63ba5bcaaf60-1" id="id16">[1]</a>, with the secondary source
+‘NFPA 497 (2008)’ <a class="reference internal" href="#r63ba5bcaaf60-2" id="id17">[2]</a> having very similar data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Tautoignition</strong><span class="classifier">float</span></dt><dd><p>Autoignition point of the chemical, [K]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Tautoignition with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+Tautoignition_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+Tautoignition for the desired chemical, and will return methods
+instead of Tautoignition</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r63ba5bcaaf60-1"><span class="brackets"><a class="fn-backref" href="#id16">1</a></span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="r63ba5bcaaf60-2"><span class="brackets"><a class="fn-backref" href="#id17">2</a></span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tautoignition</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
+<span class="go">771.15</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.LFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">LFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em>, <em class="sig-param">atoms={}</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#LFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.LFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation of a chemical’s
+Lower Flammability Limit. Lookup is based on CASRNs. Two predictive methods
+are currently implemented. Will automatically select a data source to use
+if no Method is provided; returns None if the data is not available.</p>
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r389e3d2e19f5-1" id="id20">[1]</a>, with the secondary source
+‘NFPA 497 (2008)’ <a class="reference internal" href="#r389e3d2e19f5-2" id="id21">[2]</a> having very similar data. If the heat of combustion
+is provided, the estimation method <cite>Suzuki_LFL</cite> can be used. If the atoms
+of the molecule are available, the method <cite>Crowl_Louvar_LFL</cite> can be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Hc</strong><span class="classifier">float, optional</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
+</dd>
+<dt><strong>atoms</strong><span class="classifier">dict, optional</span></dt><dd><p>Dictionary of atoms and atom counts</p>
+</dd>
+<dt><strong>CASRN</strong><span class="classifier">string, optional</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit of the gas in an atmosphere at STP, [mole fraction]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain LFL with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+LFL_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+the Lower Flammability Limit for the desired chemical, and will return
+methods instead of Lower Flammability Limit.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r389e3d2e19f5-1"><span class="brackets"><a class="fn-backref" href="#id20">1</a></span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="r389e3d2e19f5-2"><span class="brackets"><a class="fn-backref" href="#id21">2</a></span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LFL</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
+<span class="go">0.012</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.UFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">UFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em>, <em class="sig-param">atoms={}</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#UFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.UFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation of a chemical’s
+Upper Flammability Limit. Lookup is based on CASRNs. Two predictive methods
+are currently implemented. Will automatically select a data source to use
+if no Method is provided; returns None if the data is not available.</p>
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r15190f070f52-1" id="id24">[1]</a>, with the secondary source
+‘NFPA 497 (2008)’ <a class="reference internal" href="#r15190f070f52-2" id="id25">[2]</a> having very similar data. If the heat of combustion
+is provided, the estimation method <cite>Suzuki_UFL</cite> can be used. If the atoms
+of the molecule are available, the method <cite>Crowl_Louvar_UFL</cite> can be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Hc</strong><span class="classifier">float, optional</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
+</dd>
+<dt><strong>atoms</strong><span class="classifier">dict, optional</span></dt><dd><p>Dictionary of atoms and atom counts</p>
+</dd>
+<dt><strong>CASRN</strong><span class="classifier">string, optional</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit of the gas in an atmosphere at STP, [mole fraction]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain UFL with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+UFL_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+the Upper Flammability Limit for the desired chemical, and will return
+methods instead of Upper Flammability Limit.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r15190f070f52-1"><span class="brackets"><a class="fn-backref" href="#id24">1</a></span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="r15190f070f52-2"><span class="brackets"><a class="fn-backref" href="#id25">2</a></span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">UFL</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
+<span class="go">0.086</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.fire_mixing">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">fire_mixing</code><span class="sig-paren">(</span><em class="sig-param">ys=None</em>, <em class="sig-param">FLs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#fire_mixing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.fire_mixing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crowl, Daniel A., and Joseph F. Louvar. Chemical Process Safety:
+Fundamentals with Applications. 2E. Upper Saddle River, N.J:
+Prentice Hall, 2001.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fire_mixing</span><span class="p">(</span><span class="n">ys</span><span class="o">=</span><span class="n">normalize</span><span class="p">([</span><span class="mf">0.0024</span><span class="p">,</span> <span class="mf">0.0061</span><span class="p">,</span> <span class="mf">0.0015</span><span class="p">]),</span> <span class="n">FLs</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">012</span><span class="p">,</span> <span class="o">.</span><span class="mi">053</span><span class="p">,</span> <span class="o">.</span><span class="mi">031</span><span class="p">])</span>
+<span class="go">0.02751172136637643</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fire_mixing</span><span class="p">(</span><span class="n">ys</span><span class="o">=</span><span class="n">normalize</span><span class="p">([</span><span class="mf">0.0024</span><span class="p">,</span> <span class="mf">0.0061</span><span class="p">,</span> <span class="mf">0.0015</span><span class="p">]),</span> <span class="n">FLs</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">075</span><span class="p">,</span> <span class="o">.</span><span class="mi">15</span><span class="p">,</span> <span class="o">.</span><span class="mi">32</span><span class="p">])</span>
+<span class="go">0.12927551844869378</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Suzuki_LFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Suzuki_LFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Suzuki_LFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Suzuki_LFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates lower flammability limit, using the Suzuki <a class="reference internal" href="#r7577fec27c56-1" id="id28">[1]</a> correlation.
+Uses heat of combustion only.</p>
+<p>The lower flammability limit of a gas is air is:</p>
+<div class="math notranslate nohighlight">
+\[\text{LFL} = \frac{-3.42}{\Delta H_c^{\circ}} + 0.569
+\Delta H_c^{\circ} + 0.0538\Delta H_c^{\circ 2} + 1.80\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit, mole fraction [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Fit performed with 112 compounds, r^2 was 0.977.
+LFL in percent volume in air. Hc is at standard conditions, in MJ/mol.
+11 compounds left out as they were outliers.
+Equation does not apply for molecules with halogen atoms, only hydrocarbons
+with oxygen or nitrogen or sulfur.
+No sample calculation provided with the article. However, the equation is
+straightforward.</p>
+<p>Limits of equations’s validity are -6135596 J where it predicts a
+LFL of 0, and -48322129 J where it predicts a LFL of 1.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r7577fec27c56-1"><span class="brackets"><a class="fn-backref" href="#id28">1</a></span></dt>
+<dd><p>Suzuki, Takahiro. “Note: Empirical Relationship between Lower
+Flammability Limits and Standard Enthalpies of Combustion of Organic
+Compounds.” Fire and Materials 18, no. 5 (September 1, 1994): 333-36.
+doi:10.1002/fam.810180509.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Pentane, 1.5 % LFL in literature</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suzuki_LFL</span><span class="p">(</span><span class="o">-</span><span class="mi">3536600</span><span class="p">)</span>
+<span class="go">0.014276107095811815</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Suzuki_UFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Suzuki_UFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Suzuki_UFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Suzuki_UFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates upper flammability limit, using the Suzuki <a class="reference internal" href="#r99d928d6b280-1" id="id30">[1]</a> correlation.
+Uses heat of combustion only.</p>
+<p>The upper flammability limit of a gas is air is:</p>
+<div class="math notranslate nohighlight">
+\[\text{UFL} = 6.3\Delta H_c^\circ + 0.567\Delta H_c^{\circ 2} + 23.5\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit, mole fraction</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>UFL in percent volume in air according to original equation.
+Hc is at standard conditions in the equation, in units of MJ/mol.
+AAPD = 1.2% for 95 compounds used in fit.
+Somewhat better results than the High and Danner method.
+4.9% &lt; UFL &lt; 23.0%
+-890.3 kJ/mol &lt; dHc &lt; -6380 kJ/mol
+r^2 = 0.989
+Sample calculations provided for all chemicals, both this method and
+High and Danner. Examples are from the article.</p>
+<p>Predicts a UFL of 1 at 7320190 J and a UFL of 0 at -5554160 J.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r99d928d6b280-1"><span class="brackets"><a class="fn-backref" href="#id30">1</a></span></dt>
+<dd><p>Suzuki, Takahiro, and Kozo Koide. “Short Communication: Correlation
+between Upper Flammability Limits and Thermochemical Properties of
+Organic Compounds.” Fire and Materials 18, no. 6 (November 1, 1994):
+393-97. doi:10.1002/fam.810180608.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Pentane, literature 7.8% UFL</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suzuki_UFL</span><span class="p">(</span><span class="o">-</span><span class="mi">3536600</span><span class="p">)</span>
+<span class="go">0.0831119493052</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Crowl_Louvar_LFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Crowl_Louvar_LFL</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Crowl_Louvar_LFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Crowl_Louvar_LFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates lower flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r104a4ec74e2d-1" id="id32">[1]</a>
+correlation. Uses molecular formula only.</p>
+<p>The lower flammability limit of a gas is air is:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{LFL} = \frac{0.55}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit, mole fraction</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Coefficient of 0.55 taken from <a class="reference internal" href="#r104a4ec74e2d-2" id="id33">[2]</a></p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r104a4ec74e2d-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id32">1</a>,<a href="#id36">2</a>)</span></dt>
+<dd><p>Crowl, Daniel A., and Joseph F. Louvar. Chemical Process Safety:
+Fundamentals with Applications. 2E. Upper Saddle River, N.J:
+Prentice Hall, 2001.</p>
+</dd>
+<dt class="label" id="r104a4ec74e2d-2"><span class="brackets"><a class="fn-backref" href="#id33">2</a></span></dt>
+<dd><p>Jones, G. W. “Inflammation Limits and Their Practical Application
+in Hazardous Industrial Operations.” Chemical Reviews 22, no. 1
+(February 1, 1938): 1-26. doi:10.1021/cr60071a001</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Hexane, example from <a class="reference internal" href="#r104a4ec74e2d-1" id="id36">[1]</a>, lit. 1.2 %</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_LFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+<span class="go">0.011899610558199915</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.safety.Crowl_Louvar_UFL">
+<code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Crowl_Louvar_UFL</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Crowl_Louvar_UFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Crowl_Louvar_UFL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates upper flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r33696c8df0a1-1" id="id37">[1]</a>
+correlation. Uses molecular formula only.</p>
+<p>The upper flammability limit of a gas is air is:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{UFL} = \frac{3.5}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit, mole fraction</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Coefficient of 3.5 taken from <a class="reference internal" href="#r33696c8df0a1-2" id="id38">[2]</a></p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r33696c8df0a1-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id37">1</a>,<a href="#id41">2</a>)</span></dt>
+<dd><p>Crowl, Daniel A., and Joseph F. Louvar. Chemical Process Safety:
+Fundamentals with Applications. 2E. Upper Saddle River, N.J:
+Prentice Hall, 2001.</p>
+</dd>
+<dt class="label" id="r33696c8df0a1-2"><span class="brackets"><a class="fn-backref" href="#id38">2</a></span></dt>
+<dd><p>Jones, G. W. “Inflammation Limits and Their Practical Application
+in Hazardous Industrial Operations.” Chemical Reviews 22, no. 1
+(February 1, 1938): 1-26. doi:10.1021/cr60071a001</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Hexane, example from <a class="reference internal" href="#r33696c8df0a1-1" id="id41">[1]</a>, lit. 7.5 %</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_UFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+<span class="go">0.07572479446127219</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="solubility.html" class="btn btn-neutral float-right" title="solubility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="refractivity.html" class="btn btn-neutral float-left" title="refractivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

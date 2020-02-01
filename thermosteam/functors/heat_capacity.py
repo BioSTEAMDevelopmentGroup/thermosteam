@@ -7,7 +7,7 @@ from cmath import log as clog, exp as cexp
 import numpy as np
 from numba import njit
 from ..base import InterpolatedTDependentModel, thermo_model, TDependentHandleBuilder, \
-                   ChemicalPhaseTPropertyBuilder, S, H, Cn
+                   PhaseTPropertyBuilder, S, H, Cn
 from .utils import to_nums, CASDataReader
 from .._constants import R, calorie
 from ..functional import polylog2
@@ -949,5 +949,5 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
         handle.model(CnHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
-HeatCapacity = ChemicalPhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cn')
+HeatCapacity = PhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cn')
 

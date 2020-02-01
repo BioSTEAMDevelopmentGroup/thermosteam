@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>law &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="lennard_jones" href="lennard_jones.html" />
+    <link rel="prev" title="joback" href="joback.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="functors_module.html">functors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrochem.html">electrochem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="functors_module.html">functors</a> &raquo;</li>
+        
+      <li>law</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/functors/law.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="module-thermosteam.functors.law">
+<span id="law"></span><h1>law<a class="headerlink" href="#module-thermosteam.functors.law" title="Permalink to this headline">¶</a></h1>
+<p>Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2016, Caleb Bell &lt;<a class="reference external" href="mailto:Caleb&#46;Andrew&#46;Bell&#37;&#52;&#48;gmail&#46;com">Caleb<span>&#46;</span>Andrew<span>&#46;</span>Bell<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="thermosteam.functors.law.legal_status">
+<code class="sig-prename descclassname">thermosteam.functors.law.</code><code class="sig-name descname">legal_status</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">Method=None</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">CASi=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/law.html#legal_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.law.legal_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up the legal status of a chemical according to either a specifc
+method or with all methods.</p>
+<p>Returns either the status as a string for a specified method, or the
+status of the chemical in all available data sources, in the format
+{source: status}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>status</strong><span class="classifier">str or dict</span></dt><dd><p>Legal status information [-]</p>
+</dd>
+<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain legal status with the
+given inputs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
+legal_status_methods</p>
+</dd>
+<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+the legal status for the desired chemical, and will return methods
+instead of the status</p>
+</dd>
+<dt><strong>CASi</strong><span class="classifier">int, optional</span></dt><dd><p>CASRN as an integer, used internally [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Supported methods are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>DSL</strong>: Canada Domestic Substance List, <a class="reference internal" href="#r4b465c145a76-1" id="id1">[1]</a>. As extracted on Feb 11, 2015
+from a html list. This list is updated continuously, so this version
+will always be somewhat old. Strictly speaking, there are multiple
+lists but they are all bundled together here. A chemical may be
+‘Listed’, or be on the ‘Non-Domestic Substances List (NDSL)’,
+or be on the list of substances with ‘Significant New Activity (SNAc)’,
+or be on the DSL but with a ‘Ministerial Condition pertaining to this
+substance’, or have been removed from the DSL, or have had a
+Ministerial prohibition for the substance.</p></li>
+<li><p><strong>TSCA</strong>: USA EPA Toxic Substances Control Act Chemical Inventory, <a class="reference internal" href="#r4b465c145a76-2" id="id2">[2]</a>.
+This list is as extracted on 2016-01. It is believed this list is
+updated on a periodic basis (&gt; 6 month). A chemical may simply be
+‘Listed’, or may have certain flags attached to it. All these flags
+are described in the dict TSCA_flags.</p></li>
+<li><p><strong>EINECS</strong>: European INventory of Existing Commercial chemical
+Substances, <a class="reference internal" href="#r4b465c145a76-3" id="id3">[3]</a>. As extracted from a spreadsheet dynamically
+generated at <a class="reference internal" href="#r4b465c145a76-1" id="id4">[1]</a>. This list was obtained March 2015; a more recent
+revision already exists.</p></li>
+<li><p><strong>NLP</strong>: No Longer Polymers, a list of chemicals with special
+regulatory exemptions in EINECS. Also described at <a class="reference internal" href="#r4b465c145a76-3" id="id5">[3]</a>.</p></li>
+<li><p><strong>SPIN</strong>: Substances Prepared in Nordic Countries. Also a boolean
+data type. Retrieved 2015-03 from <a class="reference internal" href="#r4b465c145a76-4" id="id6">[4]</a>.</p></li>
+</ul>
+</div></blockquote>
+<p>Other methods which could be added are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Australia: AICS Australian Inventory of Chemical Substances</p></li>
+<li><p>China: Inventory of Existing Chemical Substances Produced or Imported
+in China (IECSC)</p></li>
+<li><p>Europe: REACH List of Registered Substances</p></li>
+<li><p>India: List of Hazardous Chemicals</p></li>
+<li><p>Japan: ENCS: Inventory of existing and new chemical substances</p></li>
+<li><p>Korea: Existing Chemicals Inventory (KECI)</p></li>
+<li><p>Mexico: INSQ National Inventory of Chemical Substances in Mexico</p></li>
+<li><p>New Zealand:  Inventory of Chemicals (NZIoC)</p></li>
+<li><p>Philippines: PICCS Philippines Inventory of Chemicals and Chemical
+Substances</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r4b465c145a76-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>Government of Canada.. “Substances Lists” Feb 11, 2015.
+<a class="reference external" href="https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1">https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1</a>.</p>
+</dd>
+<dt class="label" id="r4b465c145a76-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>US EPA. “TSCA Chemical Substance Inventory.” Accessed April 2016.
+<a class="reference external" href="https://www.epa.gov/tsca-inventory">https://www.epa.gov/tsca-inventory</a>.</p>
+</dd>
+<dt class="label" id="r4b465c145a76-3"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>)</span></dt>
+<dd><p>ECHA. “EC Inventory”. Accessed March 2015.
+<a class="reference external" href="http://echa.europa.eu/information-on-chemicals/ec-inventory">http://echa.europa.eu/information-on-chemicals/ec-inventory</a>.</p>
+</dd>
+<dt class="label" id="r4b465c145a76-4"><span class="brackets"><a class="fn-backref" href="#id6">4</a></span></dt>
+<dd><p>SPIN. “SPIN Substances in Products In Nordic Countries.” Accessed
+March 2015. <a class="reference external" href="http://195.215.202.233/DotNetNuke/default.aspx">http://195.215.202.233/DotNetNuke/default.aspx</a>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">legal_status</span><span class="p">(</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">))</span>
+<span class="go">{&#39;DSL&#39;: &#39;LISTED&#39;,</span>
+<span class="go"> &#39;EINECS&#39;: &#39;LISTED&#39;,</span>
+<span class="go"> &#39;NLP&#39;: &#39;UNLISTED&#39;,</span>
+<span class="go"> &#39;SPIN&#39;: &#39;LISTED&#39;,</span>
+<span class="go"> &#39;TSCA&#39;: &#39;LISTED&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.functors.law.economic_status">
+<code class="sig-prename descclassname">thermosteam.functors.law.</code><code class="sig-name descname">economic_status</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">Method=None</em>, <em class="sig-param">AvailableMethods=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/law.html#economic_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.law.economic_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up the economic status of a chemical.</p>
+<p>This API is considered experimental, and is expected to be removed in a
+future release in favor of a more complete object-oriented interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">economic_status</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;98-00-0&#39;</span><span class="p">))</span>
+<span class="go">[&quot;US public: {&#39;Manufactured&#39;: 0.0, &#39;Imported&#39;: 10272.711, &#39;Exported&#39;: 184.127}&quot;,</span>
+<span class="go"> u&#39;10,000 - 100,000 tonnes per annum&#39;,</span>
+<span class="go"> &#39;OECD HPV Chemicals&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">economic_status</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;13775-50-3&#39;</span><span class="p">)</span>  <span class="c1"># SODIUM SESQUISULPHATE</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">economic_status</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;98-00-0&#39;</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="s1">&#39;OECD high production volume chemicals&#39;</span><span class="p">)</span>
+<span class="go">&#39;OECD HPV Chemicals&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">economic_status</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;98-01-1&#39;</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="s1">&#39;European Chemicals Agency Total Tonnage Bands&#39;</span><span class="p">)</span>
+<span class="go">[u&#39;10,000 - 100,000 tonnes per annum&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lennard_jones.html" class="btn btn-neutral float-right" title="lennard_jones" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="joback.html" class="btn btn-neutral float-left" title="joback" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
