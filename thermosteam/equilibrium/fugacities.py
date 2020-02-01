@@ -18,7 +18,7 @@ class LiquidFugacities:
         self.gamma = thermo.Gamma(chemicals)
     
     def __call__(self, x, T):
-        return self.gamma(x, T) * np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+        return x * self.gamma(x, T) * np.array([i.Psat(T) for i in self.chemicals], dtype=float)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
