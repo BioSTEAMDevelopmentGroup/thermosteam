@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CompiledChemicals &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Thermo" href="Thermo.html" />
+    <link rel="prev" title="Chemicals" href="Chemicals.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>CompiledChemicals</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/CompiledChemicals.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="compiledchemicals">
+<h1>CompiledChemicals<a class="headerlink" href="#compiledchemicals" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="thermosteam.CompiledChemicals">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">CompiledChemicals</code><span class="sig-paren">(</span><em class="sig-param">chemicals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create CompiledChemicals object that contains Chemical objects as attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>chemicals</strong><span class="classifier">Iterable[str or Chemical]</span></dt><dd><dl class="simple">
+<dt>Strings should be one of the following [-]:</dt><dd><ul class="simple">
+<li><p>Name, in IUPAC form or common form or a synonym registered in PubChem</p></li>
+<li><p>InChI name, prefixed by ‘InChI=1S/’ or ‘InChI=1/’</p></li>
+<li><p>InChI key, prefixed by ‘InChIKey=’</p></li>
+<li><p>PubChem CID, prefixed by ‘PubChem=’</p></li>
+<li><p>SMILES (prefix with ‘SMILES=’ to ensure smiles parsing)</p></li>
+<li><p>CAS number</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a CompiledChemicals object from chemical identifiers</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span><span class="p">,</span> <span class="n">Chemical</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span>
+<span class="go">CompiledChemicals([Water, Ethanol])</span>
+</pre></div>
+</div>
+<p>All chemicals are stored as attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Water</span><span class="p">,</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">Ethanol</span>
+<span class="go">(Chemical(&#39;Water&#39;), Chemical(&#39;Ethanol&#39;))</span>
+</pre></div>
+</div>
+<p>Note that because they are compiled, the append and extend methods do not work:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Propane = Chemical(&#39;Propane&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># chemicals.append(Propane)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># TypeError: &#39;CompiledChemicals&#39; object is read-only</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>tuple</strong><span class="classifier">tuple[Chemical]</span></dt><dd><p>All compiled chemicals.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int</span></dt><dd><p>Number of chemicals.</p>
+</dd>
+<dt><strong>IDs</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of all chemicals.</p>
+</dd>
+<dt><strong>CASs</strong><span class="classifier">tuple[str]</span></dt><dd><p>CASs of all chemicals</p>
+</dd>
+<dt><strong>MW</strong><span class="classifier">1d ndarray</span></dt><dd><p>MWs of all chemicals.</p>
+</dd>
+<dt><strong>Hf</strong><span class="classifier">1d ndarray</span></dt><dd><p>Heats of formation of all chemicals.</p>
+</dd>
+<dt><strong>Hc</strong><span class="classifier">1d ndarray</span></dt><dd><p>Heats of combustion of all chemicals.</p>
+</dd>
+<dt><strong>equilibrium_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that may have multiple phases.</p>
+</dd>
+<dt><strong>heavy_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that are only present in liquid or solid phases.</p>
+</dd>
+<dt><strong>light_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that are only present in gas phases.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.compile">
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do nothing, CompiledChemicals objects are already compiled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.refresh_constants">
+<code class="sig-name descname">refresh_constants</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.refresh_constants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.refresh_constants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh constant arrays according to their chemical values,
+including the molecular weight, heats of formation,
+and heats of combustion.</p>
+<p class="rubric">Examples</p>
+<p>Some chemical constants may not be defined in thermosteam, 
+such as the heat of combustion.
+We can update it and refresh the compiled constants:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Glucose&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Glucose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">2291836.024</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">refresh_constants</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Hc</span>
+</pre></div>
+</div>
+<p>array([2291836.024])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.subgroup">
+<code class="sig-name descname">subgroup</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.subgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new subgroup of chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>IDs</strong><span class="classifier">Iterable[str]</span></dt><dd><p>Chemical identifiers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Propane&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">subgroup</span><span class="p">([</span><span class="s1">&#39;Propane&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">])</span>
+<span class="go">CompiledChemicals([Propane, Water])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.get_synonyms">
+<code class="sig-name descname">get_synonyms</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_synonyms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_synonyms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all synonyms of a chemical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>Chemical identifier.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Get all synonyms of water:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_synonyms</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="go">[&#39;7732-18-5&#39;, &#39;Water&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.set_synonym">
+<code class="sig-name descname">set_synonym</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em>, <em class="sig-param">synonym</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.set_synonym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.set_synonym" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new synonym for a chemical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>Chemical identifier.</p>
+</dd>
+<dt><strong>synonym</strong><span class="classifier">str</span></dt><dd><p>New identifier for chemical.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Set new synonym for water:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">set_synonym</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">H2O</span> <span class="ow">is</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">Water</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.kwarray">
+<code class="sig-name descname">kwarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.kwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.kwarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with entries that correspond to the orded chemical IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID_data</strong><span class="classifier">dict</span></dt><dd><p>ID-data pairs.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Water</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">array([2., 0.])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.array">
+<code class="sig-name descname">array</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with entries that correspond to the ordered chemical IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Compound IDs.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">array_like</span></dt><dd><p>Data corresponding to IDs.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="go">array([2., 0.])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.iarray">
+<code class="sig-name descname">iarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.iarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.iarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a chemical indexer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Chemical IDs.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">array_like</span></dt><dd><p>Data corresponding to IDs.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a chemical indexer from chemical IDs and data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">iarray</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">ChemicalIndexer:</span>
+<span class="go"> Water    2</span>
+<span class="go"> Ethanol  1</span>
+</pre></div>
+</div>
+<p>Note that indexers allow for computationally efficient indexing using identifiers:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="p">[</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">]</span>
+<span class="go">array([1., 2.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="p">[</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">]</span>
+<span class="go">1.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.ikwarray">
+<code class="sig-name descname">ikwarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.ikwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.ikwarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a chemical indexer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID_data</strong><span class="classifier">Dict[str: float]</span></dt><dd><p>Chemical ID-value pairs.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a chemical indexer from chemical IDs and data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">ikwarray</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Water</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mf">1.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">ChemicalIndexer:</span>
+<span class="go"> Water    2</span>
+<span class="go"> Ethanol  1</span>
+</pre></div>
+</div>
+<p>Note that indexers allow for computationally efficient indexing using identifiers:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="p">[</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">]</span>
+<span class="go">array([1., 2.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemical_indexer</span><span class="p">[</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">]</span>
+<span class="go">1.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.index">
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return index of specified chemical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ID: str</strong></dt><dd><p>Chemical ID</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Index by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Indices by CAS number:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.indices">
+<code class="sig-name descname">indices</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of specified chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Chemical IDs or CAS numbers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Indices by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">indices</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="go">[0, 1]</span>
+</pre></div>
+</div>
+<p>Indices by CAS number:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">indices</span><span class="p">([</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">,</span> <span class="s1">&#39;64-17-5&#39;</span><span class="p">])</span>
+<span class="go">[0, 1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.get_index">
+<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return index/indices of specified chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key</strong><span class="classifier">iterable[str] or str</span></dt><dd><p>A single chemical identifier or multiple.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>CAS numbers are also supported.</p>
+<p class="rubric">Examples</p>
+<p>Get multiple indices:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="go">[0, 1]</span>
+</pre></div>
+</div>
+<p>Get a single index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.get_equilibrium_indices">
+<code class="sig-name descname">get_equilibrium_indices</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_equilibrium_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_equilibrium_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of species in equilibrium
+given an array dictating whether or not
+the chemicals are present.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Water</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mf">1.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_equilibrium_indices</span><span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([0, 2], dtype=int64)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Thermo.html" class="btn btn-neutral float-right" title="Thermo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Chemicals.html" class="btn btn-neutral float-left" title="Chemicals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

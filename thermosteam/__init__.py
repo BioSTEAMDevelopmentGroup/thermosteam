@@ -11,6 +11,7 @@ from ._stream import Stream
 from ._multi_stream import MultiStream
 from ._settings import settings
 from ._thermal_condition import ThermalCondition
+from ._mixture import IdealMixture
 from .base import functor
 
 from . import base
@@ -22,6 +23,6 @@ from . import functional
 from . import reaction
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
-           'Stream', 'MultiStream', 'ThermalCondition', 
+           'Stream', 'MultiStream', 'ThermalCondition', 'IdealMixture',
            'settings', 'functor', 'functors', 'base', 'equilibrium',
            'exceptions', 'functional', 'reaction')

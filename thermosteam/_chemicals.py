@@ -254,7 +254,7 @@ class CompiledChemicals(Chemicals):
         --------
         Some chemical constants may not be defined in thermosteam, 
         such as the heat of combustion.
-        We can update it and refresh the compiled constants::
+        We can update it and refresh the compiled constants:
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Glucose'])

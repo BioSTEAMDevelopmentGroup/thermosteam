@@ -253,6 +253,11 @@ class VLE:
                 raise NotImplementedError('specification H and x not implemented')
             else: # V_spec
                 raise NotImplementedError('specification V and H not implemented')
+        elif V_spec:
+            if y_spec:
+                raise ValueError("specification V and y is invalid")
+            else: # x_spec
+                raise ValueError("specification V and x is invalid")
         else: # x_spec and y_spec
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
@@ -440,7 +445,7 @@ class VLE:
     def set_Tx(self, T, x):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
-        self._TP.P, y = self._bubble_point.solve_Px(x, T)
+        self._TP.P, y = self._bubble_point.solve_Py(x, T)
         self._lever_rule(x, y)
     
     def set_Px(self, P, x):
@@ -458,7 +463,7 @@ class VLE:
     def set_Py(self, P, y):
         self._setup()
         assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
-        self._TP.T, x = self._dew_point.solve_Ty(y, P) 
+        self._TP.T, x = self._dew_point.solve_Tx(y, P) 
         self._lever_rule(x, y)
         
     def set_TP(self, T, P):
@@ -763,7 +768,7 @@ class VLE:
         else:
             dlim = ", "
         return (f"VLE(imol={imol},{dlim}"
-                "thermal_condition={self.thermal_condition})")
+                f"thermal_condition={self.thermal_condition})")
     
     def __repr__(self):
         return self.__format__("1")

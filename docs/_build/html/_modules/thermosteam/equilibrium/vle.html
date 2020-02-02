@@ -94,6 +94,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
@@ -423,6 +424,11 @@
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;specification H and x not implemented&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span> <span class="c1"># V_spec</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;specification V and H not implemented&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">V_spec</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">y_spec</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;specification V and y is invalid&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># x_spec</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;specification V and x is invalid&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span> <span class="c1"># x_spec and y_spec</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can only pass either &#39;x&#39; or &#39;y&#39; arguments, not both&quot;</span><span class="p">)</span>
     
@@ -610,7 +616,7 @@
     <span class="k">def</span> <span class="nf">set_Tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;number of species in equilibrium must be 2 to specify x&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lever_rule</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">set_Px</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -628,7 +634,7 @@
     <span class="k">def</span> <span class="nf">set_Py</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;number of species in equilibrium must be 2 to specify y&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point</span><span class="o">.</span><span class="n">solve_Tx</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">_lever_rule</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">set_TP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
@@ -933,7 +939,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VLE(imol=</span><span class="si">{imol}</span><span class="s2">,</span><span class="si">{dlim}</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;thermal_condition=</span><span class="si">{self.thermal_condition}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;thermal_condition=</span><span class="si">{self.thermal_condition}</span><span class="s2">)&quot;</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span></div>

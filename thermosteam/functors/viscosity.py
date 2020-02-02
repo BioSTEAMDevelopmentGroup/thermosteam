@@ -79,40 +79,41 @@ def Lucas(T, P, Tc, Pc, omega, P_sat, mu):
 
 @TPDependentHandleBuilder
 def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
+    add_model = handle.add_model
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'Mu (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Ys, Ts[0], Ts[-1]))
+        add_model(InterpolatedTDependentModel(Ts, Ys, Ts[0], Ts[-1]))
     if CAS in _Dutt_Prasad:
         _, A, B, C, Tmin, Tmax = _Dutt_Prasad[CAS]
         data = (A, B, C)
-        handle.model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
+        add_model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN3:
         _, _, A, B, C, Tmin, Tmax = _VN3[CAS]
         data = (A, B, C)
-        handle.model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
+        add_model(Viswanath_Natarajan3.from_args(data), Tmin, Tmax)
     if CAS in _VN2:
         _, _, A, B, Tmin, Tmax = _VN2[CAS]
         data = (A, B)
-        handle.model(Viswanath_Natarajan2.from_args(data), Tmin ,Tmax)
+        add_model(Viswanath_Natarajan2.from_args(data), Tmin ,Tmax)
     if CAS in _Perrys2_313:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_313[CAS]
         data = (C1, C2, C3, C4, C5)
-        handle.model(DIPPR_EQ101.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ101.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_7:
         coef = _VDI_PPDS_7[CAS][2:]
-        handle.model(VDI.from_args(coef))
+        add_model(VDI.from_args(coef))
     data = (MW, Tc, Pc, omega)
     if all(data):
-        handle.model(Letsou_Stiel.from_args(data), Tc/4, Tc)
+        add_model(Letsou_Stiel.from_args(data), Tc/4, Tc)
     data = (MW, Tm, Tc, Pc, Vc, omega, Vl)
     if all(data):
-        handle.model(Przedziecki_Sridhar.from_args(data), Tm, Tc)
+        add_model(Przedziecki_Sridhar.from_args(data), Tm, Tc)
     data = (Tc, Pc, omega)
     if all(data):
         for mu_l in handle.models:
             if isinstance(mu_l, TDependentModel): break
         data = (Tc, Pc, omega, Psat, mu_l)
-        handle.model(Lucas.from_args(data), Tm, Tc)
+        add_model(Lucas.from_args(data), Tm, Tc)
 
 
 ### Viscosity of Gases - low pressure
@@ -180,24 +181,25 @@ LUCAS_GAS = 'LUCAS_GAS'
 
 @TPDependentHandleBuilder
 def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
+    add_model = handle.add_model
     if CAS in _Perrys2_312:
         _, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_312[CAS]
         data = (C1, C2, C3, C4)
-        handle.model(DIPPR_EQ102.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ102.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_8:
         data = _VDI_PPDS_8[CAS].tolist()[1:]
         data.reverse()
-        handle.model(horner_polynomial.from_kwargs({'coeffs':data}))
+        add_model(horner_polynomial.from_kwargs({'coeffs':data}))
     data = (Tc, Pc, Zc, MW)
     if all(data):
         Tmin = 0; Tmax = 1e3
-        handle.model(lucas_gas.from_args(data), Tmin, Tmax)
+        add_model(lucas_gas.from_args(data), Tmin, Tmax)
     data = (Tc, Pc, MW)
     if all(data):
         Tmin = 0; Tmax = 5e3
-        handle.model(Gharagheizi_gas_viscosity.from_args(data), Tmin, Tmax)
-        handle.model(Yoon_Thodos.from_args(data), Tmin, Tmax)
-        handle.model(Stiel_Thodos.from_args(data), Tmin, Tmax)
+        add_model(Gharagheizi_gas_viscosity.from_args(data), Tmin, Tmax)
+        add_model(Yoon_Thodos.from_args(data), Tmin, Tmax)
+        add_model(Stiel_Thodos.from_args(data), Tmin, Tmax)
         # Intelligently set limit
         # GHARAGHEIZI turns nonsensical at ~15 K, YOON_THODOS fine to 0 K,
         # same as STIEL_THODOS
@@ -205,7 +207,7 @@ def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
         Ts, Ys = VDI_tabular_data(CAS, 'Mu (g)')
         Tmin = Ts[0]
         Tmax = Ts[-1]
-        handle.model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
+        add_model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
 
 Viscosity = PhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas, 'mu')
 

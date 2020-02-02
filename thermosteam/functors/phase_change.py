@@ -740,43 +740,44 @@ def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Ps
     #     methods.append(COOLPROP)
     #     self.CP_f = coolprop_fluids[self.CASRN]
     #     Tmins.append(self.CP_f.Tt); Tmaxs.append(self.CP_f.Tc)
+    add_model = handle.add_model
     if CAS in _Perrys2_150:
         _, Tc, C1, C2, C3, C4, Tmin, Tmax = _Perrys2_150[CAS]
         data = (Tc, C1, C2, C3, C4)
-        handle.model(DIPPR_EQ106.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ106.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_4:
         _,  MW, Tc, A, B, C, D, E = _VDI_PPDS_4[CAS]
-        handle.model(VDI_PPDS.from_args(data=(Tc, A, B, C, D, E)), 0, Tc)
+        add_model(VDI_PPDS.from_args(data=(Tc, A, B, C, D, E)), 0, Tc)
     data = (Tb, Tc, Pc)
     if all(data):
         for f in (Riedel, Chen, Vetere, Liu):
-            handle.model(f(*data), 0, Tc)
+            add_model(f(*data), 0, Tc)
     if all((Tc, Pc)):
-        handle.model(Clapeyron.from_args(data=(Tc, Pc, V, Psat)), 0, Tc)
+        add_model(Clapeyron.from_args(data=(Tc, Pc, V, Psat)), 0, Tc)
     data = (Tc, omega)
     if all(data):
         for f in (MK, SMK, Velasco, Pitzer):
-            handle.model(f.from_args(data), 0, Tc)
+            add_model(f.from_args(data), 0, Tc)
     if CAS in _VDISaturationDict:
         Ts, Hvaps = VDI_tabular_data(CAS, 'Hvap')
-        handle.model(InterpolatedTDependentModel(Ts, Hvaps, Ts[0], Ts[-1]))
+        add_model(InterpolatedTDependentModel(Ts, Hvaps, Ts[0], Ts[-1]))
     if Tc:
         if CAS in _Alibakhshi_Cs:
             C = float(_Alibakhshi_Cs.at[CAS, 'C'])
-            handle.model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
+            add_model(Alibakhshi.from_args(data=(Tc, C)), 0, Tc)
         if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'HvapTb']):
             Tb = float(_CRCHvap.at[CAS, 'Tb'])
             Hvap = float(_CRCHvap.at[CAS, 'HvapTb'])
             data = dict(Hvap_ref=Hvap, T_ref=Tb, Tc=Tc, exponent=0.38)
-            handle.model(Watson.from_kwargs(data), 0, 10e6)
+            add_model(Watson.from_kwargs(data), 0, 10e6)
         if CAS in _CRCHvap and not np.isnan(_CRCHvap.at[CAS, 'Hvap298']):
             Hvap = float(_CRCHvap.at[CAS, 'Hvap298'])
             data = dict(Hvap_ref=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-            handle.model(Watson.from_kwargs(data), 0, 10e6)
+            add_model(Watson.from_kwargs(data), 0, 10e6)
         if CAS in _GharagheiziHvap.index:
             Hvap = float(_GharagheiziHvap.at[CAS, 'Hvap298'])
             data = dict(Hvap_ref=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
-            handle.model(Watson.from_kwargs(data), 0, 10e6)
+            add_model(Watson.from_kwargs(data), 0, 10e6)
 
 
 ### Heat of Fusion

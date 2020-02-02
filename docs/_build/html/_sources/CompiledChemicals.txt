@@ -1,0 +1,5 @@
+CompiledChemicals
+=================
+
+.. autoclass:: thermosteam.CompiledChemicals
+   :members:

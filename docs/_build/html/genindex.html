@@ -95,6 +95,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Chemical.html">Chemical</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CompiledChemicals.html">CompiledChemicals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Thermo.html">Thermo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Stream.html">Stream</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiStream.html">MultiStream</a></li>
@@ -226,10 +227,10 @@
       </ul></li>
       <li><a href="functors/electrochem.html#thermosteam.functors.electrochem.McCleskey_parameters.A_coeffs">A_coeffs() (thermosteam.functors.electrochem.McCleskey_parameters property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.ActivityCoefficients">ActivityCoefficients (class in thermosteam.equilibrium.activity_coefficients)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Almeida">Almeida() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.alpha">alpha() (thermosteam.Stream property)</a>
@@ -245,6 +246,8 @@
       <li><a href="functors/eos.html#thermosteam.functors.eos.APISRK">APISRK (class in thermosteam.functors.eos)</a>
 </li>
       <li><a href="Chemicals.html#thermosteam.Chemicals.append">append() (thermosteam.Chemicals method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.array">array() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.at_state">at_state() (thermosteam.Chemical method)</a>
 </li>
@@ -352,19 +355,25 @@
 </li>
       <li><a href="functors/phase_change.html#thermosteam.functors.phase_change.Clapeyron">Clapeyron (class in thermosteam.functors.phase_change)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MultiStream.html#thermosteam.MultiStream.Cn">Cn() (thermosteam.MultiStream property)</a>
 
       <ul>
         <li><a href="Stream.html#thermosteam.Stream.Cn">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.collision_integral_Kim_Monroe">collision_integral_Kim_Monroe() (in module thermosteam.functors.lennard_jones)</a>
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.collision_integral_Neufeld_Janzen_Aziz">collision_integral_Neufeld_Janzen_Aziz() (in module thermosteam.functors.lennard_jones)</a>
 </li>
       <li><a href="Chemicals.html#thermosteam.Chemicals.compile">compile() (thermosteam.Chemicals method)</a>
+
+      <ul>
+        <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.compile">(thermosteam.CompiledChemicals method)</a>
+</li>
+      </ul></li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals">CompiledChemicals (class in thermosteam)</a>
 </li>
       <li><a href="functors/electrochem.html#thermosteam.functors.electrochem.conductivity">conductivity() (in module thermosteam.functors.electrochem)</a>
 </li>
@@ -530,12 +539,16 @@
       </ul></li>
       <li><a href="Stream.html#thermosteam.Stream.get_dew_point">get_dew_point() (thermosteam.Stream method)</a>
 </li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_equilibrium_indices">get_equilibrium_indices() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_flow">get_flow() (thermosteam.MultiStream method)</a>
 
       <ul>
         <li><a href="Stream.html#thermosteam.Stream.get_flow">(thermosteam.Stream method)</a>
 </li>
       </ul></li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_index">get_index() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_mass_composition">get_mass_composition() (thermosteam.MultiStream method)</a>
 
       <ul>
@@ -573,6 +586,8 @@
       <li><a href="Chemical.html#thermosteam.Chemical.get_phase">get_phase() (thermosteam.Chemical method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.get_property">get_property() (thermosteam.Stream method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_synonyms">get_synonyms() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.get_total_flow">get_total_flow() (thermosteam.Stream method)</a>
 </li>
@@ -654,6 +669,8 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.iarray">iarray() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="Chemical.html#thermosteam.Chemical.ID">ID() (thermosteam.Chemical property)</a>
 
       <ul>
@@ -666,6 +683,8 @@
 </li>
       <li><a href="functors/critical.html#thermosteam.functors.critical.Ihmels">Ihmels() (in module thermosteam.functors.critical)</a>
 </li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.ikwarray">ikwarray() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="Stream.html#thermosteam.Stream.imass">imass() (thermosteam.Stream property)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.imol">imol() (thermosteam.Stream property)</a>
@@ -676,7 +695,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/identifiers.html#thermosteam.functors.identifiers.InChI_Key">InChI_Key() (in module thermosteam.functors.identifiers)</a>
 </li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.index">index() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="indexer/Indexer.html#thermosteam.indexer.Indexer">Indexer (class in thermosteam.indexer)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.indices">indices() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="functors/utils.html#thermosteam.functors.utils.int2CAS">int2CAS() (in module thermosteam.functors.utils)</a>
 </li>
@@ -710,6 +733,10 @@
         <li><a href="Stream.html#thermosteam.Stream.kappa">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.kwarray">kwarray() (thermosteam.CompiledChemicals method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -932,6 +959,8 @@
 </li>
       <li><a href="functors/refractivity.html#thermosteam.functors.refractivity.refractive_index">refractive_index() (in module thermosteam.functors.refractivity)</a>
 </li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.refresh_constants">refresh_constants() (thermosteam.CompiledChemicals method)</a>
+</li>
       <li><a href="Chemicals.html#thermosteam.Chemicals.retrieve">retrieve() (thermosteam.Chemicals method)</a>
 </li>
   </ul></td>
@@ -985,6 +1014,8 @@
       <li><a href="functors/eos.html#thermosteam.functors.eos.GCEOS.set_properties_from_solution">set_properties_from_solution() (thermosteam.functors.eos.GCEOS method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.set_property">set_property() (thermosteam.Stream method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.set_synonym">set_synonym() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.set_total_flow">set_total_flow() (thermosteam.Stream method)</a>
 </li>
@@ -1093,7 +1124,11 @@
       <li><a href="Stream.html#thermosteam.Stream">Stream (class in thermosteam)</a>
 </li>
       <li><a href="Chemicals.html#thermosteam.Chemicals.subgroup">subgroup() (thermosteam.Chemicals method)</a>
+
+      <ul>
+        <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.subgroup">(thermosteam.CompiledChemicals method)</a>
 </li>
+      </ul></li>
       <li><a href="functors/safety.html#thermosteam.functors.safety.Suzuki_LFL">Suzuki_LFL() (in module thermosteam.functors.safety)</a>
 </li>
       <li><a href="functors/safety.html#thermosteam.functors.safety.Suzuki_UFL">Suzuki_UFL() (in module thermosteam.functors.safety)</a>

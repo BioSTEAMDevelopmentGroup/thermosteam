@@ -86,42 +86,43 @@ def Mersmann_Kind_thermal_conductivity_liquid(T, MW, Tc, Vc, atoms):
 
 @TPDependentHandleBuilder
 def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
+    add_model = handle.add_model
     if CAS in _Perrys2_315:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_315[CAS]
         data = (C1, C2, C3, C4, C5)
-        handle.model(DIPPR_EQ100.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ100.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_9:
         _,  A, B, C, D, E = _VDI_PPDS_9[CAS]
-        handle.model(horner_polynomial.from_kwargs({'coeffs':(E, D, C, B, A)}))
+        add_model(horner_polynomial.from_kwargs({'coeffs':(E, D, C, B, A)}))
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'K (l)')
         Tmin = Ts[0]
         Tmax = Ts[-1]
-        handle.model(InterpolatedTDependentModel(Ts, Ys, Tmin=Tmin, Tmax=Tmax))
+        add_model(InterpolatedTDependentModel(Ts, Ys, Tmin=Tmin, Tmax=Tmax))
     data = (MW, Tm)
     if all(data):
         # Works down to 0, has a nice limit at T = Tm+793.65 from Sympy
-        handle.model(Sheffy_Johnson.from_args(data), 0, 793.65)
+        add_model(Sheffy_Johnson.from_args(data), 0, 793.65)
     data = (MW, Tb, Tc)
     if all(data):
-        handle.model(Sato_Riedel.from_args(data))
+        add_model(Sato_Riedel.from_args(data))
     data = (MW, Tb, Pc, omega)
     if all(data):
-        handle.model(Gharagheizi_liquid.from_args(data), Tb, Tc)
+        add_model(Gharagheizi_liquid.from_args(data), Tb, Tc)
     data = (MW, Tc, Pc, omega)
     if all(data):
-        handle.model(Nicola.from_args(data))
+        add_model(Nicola.from_args(data))
     data = (MW, Tc, omega, Hfus)
     if all(data):
-        handle.model(Nicola_original.from_args(data))
+        add_model(Nicola_original.from_args(data))
     if all((Tc, Pc)):
         data = (Tc, Pc, handle.models)
-        handle.model(DIPPR9G.from_args(data))
-        handle.model(Missenard.from_args(data))
+        add_model(DIPPR9G.from_args(data))
+        add_model(Missenard.from_args(data))
     data = (MW,)
     if MW:
-        handle.model(Lakshmi_Prasad.from_args(data))
-        handle.model(Bahadori_liquid.from_args(data))
+        add_model(Lakshmi_Prasad.from_args(data))
+        add_model(Bahadori_liquid.from_args(data))
 
 
 ### Thermal Conductivity of Dense Liquids
@@ -382,41 +383,42 @@ def Chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
 @TPDependentHandleBuilder
 def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, Vg, Cp, mug):
     data = (MW, Tb, Pc, omega)
+    add_model = handle.add_model
     if all(data):
-        handle.model(Gharagheizi_gas.from_args(data))
+        add_model(Gharagheizi_gas.from_args(data))
     data = (MW, Cp, mug, Tc)
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'K (g)')
-        handle.model(InterpolatedTDependentModel(Ts, Ys))
+        add_model(InterpolatedTDependentModel(Ts, Ys))
     if CAS in _VDI_PPDS_10:
         _,  *data = _VDI_PPDS_10[CAS].tolist()
         data.reverse()
-        handle.model(horner_polynomial.from_kwargs({'coeffs': data}))
+        add_model(horner_polynomial.from_kwargs({'coeffs': data}))
     if all(data):
-        handle.model(DIPPR9B_linear.from_args(data))
+        add_model(DIPPR9B_linear.from_args(data))
     data = (MW, Tc, omega, Cp, mug)
     if all(data):
-        handle.model(Chung.from_args(data))
+        add_model(Chung.from_args(data))
     data = (MW, Tc, Vc, Zc, omega, Cp)
     if all(data):
-        handle.model(Eli_Hanley.from_args(data))
+        add_model(Eli_Hanley.from_args(data))
     data = (MW, Cp, mug)
     if all(data):
-        handle.model(Eucken_modified.from_args(data))
-        handle.model(Eucken.from_args(data))
+        add_model(Eucken_modified.from_args(data))
+        add_model(Eucken.from_args(data))
     data = (MW, Tc, Vc, Zc, omega, Cp, Vg)
     if all((MW, Tc, Vc, Zc, omega, Cp, Vg)):
-        handle.model(Eli_Hanley_dense.from_args(data))
+        add_model(Eli_Hanley_dense.from_args(data))
     data = (MW, Tc, Vc, omega, Cp, Vg, mug, dipole)
     if all(data):
-        handle.model(Chung_dense.from_args(data))
+        add_model(Chung_dense.from_args(data))
     data = (MW, Tc, Pc, Vc, Zc, Vg, handle.models)
     if all(data):
-        handle.model(Stiel_Thodos_dense.from_args(data))
+        add_model(Stiel_Thodos_dense.from_args(data))
     # TODO: Fix propblem with values
     # if CAS in _Perrys2_314:
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]
-    #     handle.model(DIPPR9B_linear(data), Tmin, Tmax)
+    #     add_model(DIPPR9B_linear(data), Tmin, Tmax)
 
 ThermalConductivity = PhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'kappa')
 

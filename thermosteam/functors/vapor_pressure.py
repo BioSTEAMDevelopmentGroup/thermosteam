@@ -429,38 +429,39 @@ def Edalat(T, Tc, Pc, ω):
 
 @TDependentHandleBuilder
 def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
+    add_model = handle.add_model
     if CAS in _WagnerMcGarry:
         _, a, b, c, d, Pc, Tc, Tmin = _WagnerMcGarry[CAS]
         Tmax = Tc
         data = (a, b, c, d, Tc, Pc)
-        handle.model(Wagner_McGraw.from_args(data), Tmin, Tmax)
+        add_model(Wagner_McGraw.from_args(data), Tmin, Tmax)
     if CAS in _Wagner:
         _, a, b, c, d, Tc, Pc, Tmin, Tmax = _Wagner[CAS]
         # Some Tmin values are missing; Arbitrary choice of 0.1 lower limit
         if np.isnan(Tmin): Tmin = Tmax * 0.1
         data = (a, b, c, d, Tc, Pc)
-        handle.model(Wagner_McGraw.from_args(data), Tmin, Tmax)
+        add_model(Wagner_McGraw.from_args(data), Tmin, Tmax)
     if CAS in _AntoineExtended:
         _, a, b, c, Tc, to, n, E, F, Tmin, Tmax = _AntoineExtended[CAS]
         data = (a, b, c, Tc, to, n, E, F)
-        handle.model(TRC_Extended_Antoine.from_args(data), Tmin, Tmax)
+        add_model(TRC_Extended_Antoine.from_args(data), Tmin, Tmax)
     if CAS in _Antoine:
         _, a, b, c, Tmin, Tmax = _Antoine[CAS]
         data = (a, b, c)
-        handle.model(Antoine.from_args(data), Tmin, Tmax)
+        add_model(Antoine.from_args(data), Tmin, Tmax)
     if CAS in _Perrys2_8:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_8[CAS]
         data = (C1, C2, C3, C4, C5)
-        handle.model(DIPPR_EQ101.from_args(data), Tmin, Tmax,)
+        add_model(DIPPR_EQ101.from_args(data), Tmin, Tmax,)
     if CAS in _VDI_PPDS_3:
         _, Tm, Tc, Pc, a, b, c, d = _VDI_PPDS_3[CAS]
         data = (Tc, Pc, a, b, c, d)
-        handle.model(Wagner.from_args(data), 0., Tc,)
+        add_model(Wagner.from_args(data), 0., Tc,)
     data = (Tb, Tc, Pc)
     if all(data):
-        handle.model(Boiling_Critical_Relation.from_args(data), 0., Tc)
+        add_model(Boiling_Critical_Relation.from_args(data), 0., Tc)
     data = (Tc, Pc, omega)
     if all(data):
         for f in (Lee_Kesler, Ambrose_Walton, Sanjari, Edalat):
-            handle.model(f.from_args(data), 0., Tc)
+            add_model(f.from_args(data), 0., Tc)
     

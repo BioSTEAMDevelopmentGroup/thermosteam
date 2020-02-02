@@ -86,7 +86,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Thermodynamic equilibrium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Fugacities">4.1. Fugacities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Bubble-and-dew-points">4.2. Bubble and dew points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Vapor-liquid-equilibrium">4.3. Vapor liquid equilibrium</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Extending chemicals.html">6. Extending chemicals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Building new chemicals.html">7. Creating new chemicals</a></li>
@@ -96,6 +101,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
@@ -356,14 +362,446 @@ div.nboutput div.output_area.stderr {
 </style>
 <div class="section" id="Thermodynamic-equilibrium">
 <h1><span class="section-number">4. </span>Thermodynamic equilibrium<a class="headerlink" href="#Thermodynamic-equilibrium" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput nblast docutils container">
+<p>It is not necessary to use a Stream object to use thermodynamic
+equilibrium methods. In fact, thermosteam makes it just as easy to
+compute vapor-liquid equilibrium, bubble and dew points, and fugacities.</p>
+<div class="section" id="Fugacities">
+<h2><span class="section-number">4.1. </span>Fugacities<a class="headerlink" href="#Fugacities" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to calculate fugacities is through LiquidFugacities and
+GasFugacities objects:</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [ ]:
+<span></span>In [1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+
+<span class="c1"># Create a LiquidFugacities object</span>
+<span class="n">F_l</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">LiquidFugacities</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+
+<span class="c1"># Compute liquid fugacities</span>
+<span class="n">liquid_molar_composition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.72</span><span class="p">,</span> <span class="mf">0.28</span><span class="p">])</span>
+<span class="n">f_l</span> <span class="o">=</span> <span class="n">F_l</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">liquid_molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">)</span>
+<span class="n">f_l</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[1]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>array([43274.119, 58056.67 ])
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Create a GasFugacities object</span>
+<span class="n">F_g</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">GasFugacities</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+
+<span class="c1"># Compute gas fugacities</span>
+<span class="n">gas_molar_composition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.57</span><span class="p">])</span>
+<span class="n">f_g</span> <span class="o">=</span> <span class="n">F_g</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">gas_molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="n">f_g</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[2]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>array([43569.75, 57755.25])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Bubble-and-dew-points">
+<h2><span class="section-number">4.2. </span>Bubble and dew points<a class="headerlink" href="#Bubble-and-dew-points" title="Permalink to this headline">¶</a></h2>
+<p>Similarly bubble and dew point can be calculated through BubblePoint and
+DewPoint objects:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Create a BubblePoint object</span>
+<span class="n">BP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">BubblePoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="n">molar_composition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+
+<span class="c1"># Solve bubble point at constant temperature</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">)</span>
+<span class="n">bp</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[3]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>BubblePointValues(T=355, P=109755.45319868939, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Note that the result is a BubblePointValues object which contain all results as attibutes</span>
+<span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[4]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>(355,
+ 109755.45319868939,
+ (&#39;Water&#39;, &#39;Ethanol&#39;),
+ array([0.5, 0.5]),
+ array([0.343, 0.657]))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Solve bubble point at constant pressure</span>
+<span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="mi">101325</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[5]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>BubblePointValues(T=371.78188210405403, P=202650, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.35 0.65])
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Create a DewPoint object</span>
+<span class="n">DP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">DewPoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+
+<span class="c1"># Solve for dew point at constant temperautre</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">DP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">)</span>
+<span class="n">dp</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[6]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>DewPointValues(T=355, P=91970.14968399677, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.851 0.149])
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Note that the result is a DewPointValues object which contain all results as attibutes</span>
+<span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[7]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>(355,
+ 91970.14968399677,
+ (&#39;Water&#39;, &#39;Ethanol&#39;),
+ array([0.5, 0.5]),
+ array([0.851, 0.149]))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Solve for dew point at constant pressure</span>
+<span class="n">DP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="mi">101324</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[8]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>DewPointValues(T=376.261660024686, P=202648, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.832 0.168])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Vapor-liquid-equilibrium">
+<h2><span class="section-number">4.3. </span>Vapor liquid equilibrium<a class="headerlink" href="#Vapor-liquid-equilibrium" title="Permalink to this headline">¶</a></h2>
+<p>Vapor-liquid equilibrium can be calculated through a VLE object:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># First create a material indexer for the VLE object to manage material data</span>
+<span class="n">imol</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">indexer</span><span class="o">.</span><span class="n">MaterialIndexer</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>
+                                   <span class="n">g</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)])</span>
+
+<span class="c1"># Create a VLE object</span>
+<span class="n">vle</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">VLE</span><span class="p">(</span><span class="n">imol</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[9]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.5), (&#39;Ethanol&#39;, 0.5)],
+        l=[(&#39;Water&#39;, 0.5), (&#39;Ethanol&#39;, 0.5)]),
+    thermal_condition=ThermalCondition(T=298.15, P=101325))
+</pre></div>
+</div>
+</div>
+<p>You can call the VLE object by setting 2 degrees of freedom from the
+following:<code class="docutils literal notranslate"><span class="pre">T</span></code> (temperature; in K), <code class="docutils literal notranslate"><span class="pre">P</span></code> (pressure; in Pa), <code class="docutils literal notranslate"><span class="pre">V</span></code>
+(molar vapor fraction), and <code class="docutils literal notranslate"><span class="pre">H</span></code> (enthalpy; in kJ/hr), <code class="docutils literal notranslate"><span class="pre">y</span></code> (binary
+molar vapor composition), <code class="docutils literal notranslate"><span class="pre">x</span></code> (binary molar liquid composition).</p>
+<p>Here we are some examples of the possibilities:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[10]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.6417), (&#39;Ethanol&#39;, 0.8607)],
+        l=[(&#39;Water&#39;, 0.3583), (&#39;Ethanol&#39;, 0.1393)]),
+    thermal_condition=ThermalCondition(T=355.00, P=101325))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">mixture_enthalpy</span> <span class="o">=</span> <span class="n">vle</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xH_at_TP</span><span class="p">(</span><span class="n">imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">(),</span> <span class="n">vle</span><span class="o">.</span><span class="n">thermal_condition</span><span class="p">)</span>
+<span class="n">vle</span><span class="p">(</span><span class="n">H</span><span class="o">=</span><span class="n">mixture_enthalpy</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">202650</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[28]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.4379), (&#39;Ethanol&#39;, 0.657)],
+        l=[(&#39;Water&#39;, 0.5621), (&#39;Ethanol&#39;, 0.343)]),
+    thermal_condition=ThermalCondition(T=372.91, P=202650))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">V</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[29]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.3861), (&#39;Ethanol&#39;, 0.6138)],
+        l=[(&#39;Water&#39;, 0.6139), (&#39;Ethanol&#39;, 0.3862)]),
+    thermal_condition=ThermalCondition(T=353.88, P=101325))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">V</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">360</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[30]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.3886), (&#39;Ethanol&#39;, 0.6114)],
+        l=[(&#39;Water&#39;, 0.6114), (&#39;Ethanol&#39;, 0.3886)]),
+    thermal_condition=ThermalCondition(T=360.00, P=128136))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]),</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[31]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.8356), (&#39;Ethanol&#39;, 0.9589)],
+        l=[(&#39;Water&#39;, 0.1644), (&#39;Ethanol&#39;, 0.04109)]),
+    thermal_condition=ThermalCondition(T=356.25, P=128136))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]),</span> <span class="n">T</span><span class="o">=</span><span class="mi">360</span><span class="p">)</span>
+<span class="n">vle</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[32]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>VLE(imol=MaterialIndexer(
+        g=[(&#39;Water&#39;, 0.4691), (&#39;Ethanol&#39;, 0.7036)],
+        l=[(&#39;Water&#39;, 0.5309), (&#39;Ethanol&#39;, 0.2964)]),
+    thermal_condition=ThermalCondition(T=356.25, P=126727))
+</pre></div>
+</div>
+</div>
+<p>Note that some compositions are infeasible; so it is not advised to pass
+x or y unless you know what you’re doing:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]),</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-intense-fg ansi-bold">AssertionError</span>                            Traceback (most recent call last)
+<span class="ansi-green-intense-fg ansi-bold">&lt;ipython-input-33-3d0d3ab197da&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">----&gt; 1</span><span class="ansi-yellow-intense-fg ansi-bold"> </span>vle<span class="ansi-yellow-intense-fg ansi-bold">(</span>x<span class="ansi-yellow-intense-fg ansi-bold">=</span>np<span class="ansi-yellow-intense-fg ansi-bold">.</span>array<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-cyan-intense-fg ansi-bold">0.2</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-cyan-intense-fg ansi-bold">0.8</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> P<span class="ansi-yellow-intense-fg ansi-bold">=</span><span class="ansi-cyan-intense-fg ansi-bold">101325</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+
+<span class="ansi-green-intense-fg ansi-bold">~\OneDrive\Code\thermosteam\thermosteam\equilibrium\vle.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-intense-fg ansi-bold">(self, P, H, T, V, x, y)</span>
+<span class="ansi-green-fg">    244</span>                 <span class="ansi-green-intense-fg ansi-bold">return</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>set_PH<span class="ansi-yellow-intense-fg ansi-bold">(</span>P<span class="ansi-yellow-intense-fg ansi-bold">,</span> H<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-fg">    245</span>             <span class="ansi-green-intense-fg ansi-bold">elif</span> x_spec<span class="ansi-yellow-intense-fg ansi-bold">:</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 246</span><span class="ansi-yellow-intense-fg ansi-bold">                 </span><span class="ansi-green-intense-fg ansi-bold">return</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>set_Px<span class="ansi-yellow-intense-fg ansi-bold">(</span>P<span class="ansi-yellow-intense-fg ansi-bold">,</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>x<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-fg">    247</span>             <span class="ansi-green-intense-fg ansi-bold">else</span><span class="ansi-yellow-intense-fg ansi-bold">:</span> <span class="ansi-red-intense-fg ansi-bold"># y_spec</span>
+<span class="ansi-green-fg">    248</span>                 <span class="ansi-green-intense-fg ansi-bold">return</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>set_Py<span class="ansi-yellow-intense-fg ansi-bold">(</span>P<span class="ansi-yellow-intense-fg ansi-bold">,</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>y<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+
+<span class="ansi-green-intense-fg ansi-bold">~\OneDrive\Code\thermosteam\thermosteam\equilibrium\vle.py</span> in <span class="ansi-cyan-fg">set_Px</span><span class="ansi-blue-intense-fg ansi-bold">(self, P, x)</span>
+<span class="ansi-green-fg">    448</span>         <span class="ansi-green-intense-fg ansi-bold">assert</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_N <span class="ansi-yellow-intense-fg ansi-bold">==</span> <span class="ansi-cyan-intense-fg ansi-bold">2</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-blue-intense-fg ansi-bold">&#39;number of species in equilibrium must be 2 to specify x&#39;</span>
+<span class="ansi-green-fg">    449</span>         self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_TP<span class="ansi-yellow-intense-fg ansi-bold">.</span>T<span class="ansi-yellow-intense-fg ansi-bold">,</span> y <span class="ansi-yellow-intense-fg ansi-bold">=</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_bubble_point<span class="ansi-yellow-intense-fg ansi-bold">.</span>solve_Ty<span class="ansi-yellow-intense-fg ansi-bold">(</span>x<span class="ansi-yellow-intense-fg ansi-bold">,</span> P<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 450</span><span class="ansi-yellow-intense-fg ansi-bold">         </span>self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_lever_rule<span class="ansi-yellow-intense-fg ansi-bold">(</span>x<span class="ansi-yellow-intense-fg ansi-bold">,</span> y<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-fg">    451</span>
+<span class="ansi-green-fg">    452</span>     <span class="ansi-green-intense-fg ansi-bold">def</span> set_Ty<span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">,</span> T<span class="ansi-yellow-intense-fg ansi-bold">,</span> y<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
+
+<span class="ansi-green-intense-fg ansi-bold">~\OneDrive\Code\thermosteam\thermosteam\equilibrium\vle.py</span> in <span class="ansi-cyan-fg">_lever_rule</span><span class="ansi-blue-intense-fg ansi-bold">(self, x, y)</span>
+<span class="ansi-green-fg">    430</span>     <span class="ansi-green-intense-fg ansi-bold">def</span> _lever_rule<span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">,</span> x<span class="ansi-yellow-intense-fg ansi-bold">,</span> y<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
+<span class="ansi-green-fg">    431</span>         split_frac <span class="ansi-yellow-intense-fg ansi-bold">=</span> <span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_z<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-cyan-intense-fg ansi-bold">0</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">-</span>x<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-cyan-intense-fg ansi-bold">0</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">/</span><span class="ansi-yellow-intense-fg ansi-bold">(</span>y<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-cyan-intense-fg ansi-bold">0</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">-</span>x<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-cyan-intense-fg ansi-bold">0</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 432</span><span class="ansi-yellow-intense-fg ansi-bold">         </span><span class="ansi-green-intense-fg ansi-bold">assert</span> <span class="ansi-yellow-intense-fg ansi-bold">-</span><span class="ansi-cyan-intense-fg ansi-bold">0.00001</span> <span class="ansi-yellow-intense-fg ansi-bold">&lt;</span> split_frac <span class="ansi-yellow-intense-fg ansi-bold">&lt;</span> <span class="ansi-cyan-intense-fg ansi-bold">1.00001</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-blue-intense-fg ansi-bold">&#39;desired composition is infeasible&#39;</span>
+<span class="ansi-green-fg">    433</span>         <span class="ansi-green-intense-fg ansi-bold">if</span> split_frac <span class="ansi-yellow-intense-fg ansi-bold">&gt;</span> <span class="ansi-cyan-intense-fg ansi-bold">1</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
+<span class="ansi-green-fg">    434</span>             split_frac <span class="ansi-yellow-intense-fg ansi-bold">=</span> <span class="ansi-cyan-intense-fg ansi-bold">1</span>
+
+<span class="ansi-red-intense-fg ansi-bold">AssertionError</span>: desired composition is infeasible
+</pre></div></div>
 </div>
 </div>
 </div>

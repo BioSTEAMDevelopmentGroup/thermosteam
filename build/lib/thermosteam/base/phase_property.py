@@ -5,13 +5,13 @@ Created on Thu Oct 31 02:38:40 2019
 @author: yoelr
 """
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
-from .functor import functor_lookalike, Functor
+from .functor import functor_lookalike
 from ..utils import copy_maybe
 
 __all__ = ('PhaseProperty', #'PhasePropertyBuilder', 
-           'ChemicalPhaseTProperty', 'ChemicalPhaseTPProperty',
-           'ChemicalPhaseTPropertyBuilder', 'ChemicalPhaseTPPropertyBuilder',
-           'MixturePhaseTPProperty', 'MixturePhaseTProperty')
+           'PhaseTProperty', 'PhaseTPProperty',
+           'PhaseTPropertyBuilder', 'PhaseTPPropertyBuilder',
+           'PhaseZTPProperty', 'PhaseZTProperty')
 
 # %% Utilities
 
@@ -54,7 +54,7 @@ class PhaseProperty:
 
 # %% Pure component
 
-class ChemicalPhaseTProperty(PhaseProperty):
+class PhaseTProperty(PhaseProperty):
     __slots__ = ()
     
     def __init__(self, s=None, l=None, g=None, var=None):
@@ -67,7 +67,7 @@ class ChemicalPhaseTProperty(PhaseProperty):
         return getattr(self, phase)(T)
     
     
-class ChemicalPhaseTPProperty(PhaseProperty):
+class PhaseTPProperty(PhaseProperty):
     __slots__ = ()
     
     def __init__(self, s=None, l=None, g=None, var=None):
@@ -82,7 +82,7 @@ class ChemicalPhaseTPProperty(PhaseProperty):
 
 # %% Mixture
     
-class MixturePhaseTProperty(PhaseProperty):
+class PhaseZTProperty(PhaseProperty):
     __slots__ = ()
     
     def at_TP(self, phase, z, TP):
@@ -92,7 +92,7 @@ class MixturePhaseTProperty(PhaseProperty):
         return getattr(self, phase)(z, T)
 
         
-class MixturePhaseTPProperty(PhaseProperty):
+class PhaseZTPProperty(PhaseProperty):
     __slots__ = ()
     
     def at_TP(self, phase, z, TP):
@@ -122,14 +122,14 @@ class PhasePropertyBuilder:
             set_phase_property(phase_property, phase, builder, data)
         return phase_property
 
-class ChemicalPhaseTPropertyBuilder(PhasePropertyBuilder):
+class PhaseTPropertyBuilder(PhasePropertyBuilder):
     __slots__ = ()
-    PhaseProperty = ChemicalPhaseTProperty
+    PhaseProperty = PhaseTProperty
     
         
-class ChemicalPhaseTPPropertyBuilder(PhasePropertyBuilder):
+class PhaseTPPropertyBuilder(PhasePropertyBuilder):
     __slots__ = ()
-    PhaseProperty = ChemicalPhaseTPProperty
+    PhaseProperty = PhaseTPProperty
         
         
         

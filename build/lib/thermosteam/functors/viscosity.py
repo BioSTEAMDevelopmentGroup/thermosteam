@@ -8,7 +8,7 @@ from scipy.optimize import newton
 from math import log, exp
 from .utils import CASDataReader
 from ..functional import horner_polynomial
-from ..base import InterpolatedTDependentModel, mu, TPDependentHandleBuilder, TDependentModel, ChemicalPhaseTPPropertyBuilder
+from ..base import InterpolatedTDependentModel, mu, TPDependentHandleBuilder, TDependentModel, PhaseTPPropertyBuilder
 from .miscdata import _VDISaturationDict, VDI_tabular_data
 # from .electrochem import _Laliberte_Viscosity_ParametersDict, Laliberte_viscosity
 from .dippr import DIPPR_EQ101, DIPPR_EQ102
@@ -207,7 +207,7 @@ def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
         Tmax = Ts[-1]
         handle.model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
 
-Viscosity = ChemicalPhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas, 'mu')
+Viscosity = PhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas, 'mu')
 
 # %% Other
 

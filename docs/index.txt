@@ -28,10 +28,8 @@ Key Features & Capabilities
    Installation
    tutorial/Getting started
    tutorial/Thermodynamic equilibrium
+   tutorial/Creating a property package
    tutorial/Stoichiometric reactions
-   tutorial/Extending chemicals
-   tutorial/Building new chemicals
-   tutorial/Extending equilibrium coefficients
 
 
 .. toctree::
@@ -40,6 +38,7 @@ Key Features & Capabilities
    
    Chemical
    Chemicals
+   CompiledChemicals
    Thermo
    Stream
    MultiStream

@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.interpolate import interp2d
-from ..base import InterpolatedTDependentModel, TDependentModel, TPDependentHandleBuilder, ChemicalPhaseTPPropertyBuilder, kappa
+from ..base import InterpolatedTDependentModel, TDependentModel, TPDependentHandleBuilder, PhaseTPPropertyBuilder, kappa
 from .._constants import R, N_A, k
 from math import log, exp
 from .utils import CASDataReader
@@ -418,5 +418,5 @@ def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]
     #     handle.model(DIPPR9B_linear(data), Tmin, Tmax)
 
-ThermalConductivity = ChemicalPhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'kappa')
+ThermalConductivity = PhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'kappa')
 

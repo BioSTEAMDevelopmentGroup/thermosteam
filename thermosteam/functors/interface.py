@@ -119,49 +119,50 @@ def Mersmann_Kind_surface_tension(T, Tm, Tb, Tc, Pc, n_associated=1):
 
 @TDependentHandleBuilder
 def SurfaceTension(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, StielPolar, Hvap_Tb, rhol, Cpl_Tb):
+    add_model = handle.add_model
     if CAS in _Mulero_Cachadina:
         _, sigma0, n0, sigma1, n1, sigma2, n2, Tc, Tmin, Tmax = _Mulero_Cachadina[CAS]
         STREFPROP_coeffs = (Tc, sigma0, n0, sigma1, n1, sigma2, n2)
-        handle.model(REFPROP.from_args(STREFPROP_coeffs), Tmin, Tmax)
+        add_model(REFPROP.from_args(STREFPROP_coeffs), Tmin, Tmax)
     if CAS in _Somayajulu_2:
         _, Tt, Tc, A, B, C = _Somayajulu_2[CAS]
         SOMAYAJULU2_coeffs = (Tc, A, B, C)
         Tmin = Tt; Tmax = Tc
-        handle.model(Somayajulu.from_args(SOMAYAJULU2_coeffs), Tmin, Tmax)
+        add_model(Somayajulu.from_args(SOMAYAJULU2_coeffs), Tmin, Tmax)
     elif CAS in _Somayajulu:
         _, Tt, Tc, A, B, C = _Somayajulu[CAS]
         SOMAYAJULU_coeffs = (Tc, A, B, C)
         Tmin = Tt; Tmax = Tc
-        handle.model(Somayajulu.from_args(SOMAYAJULU_coeffs), Tmin, Tmax)
+        add_model(Somayajulu.from_args(SOMAYAJULU_coeffs), Tmin, Tmax)
     if CAS in _VDISaturationDict:
         Ts, Ys = VDI_tabular_data(CAS, 'sigma')
         Tmin = Ts[0]
         *Ts, Tmax = Ts
         Ys = Ys[:-1]
-        handle.model(InterpolatedTDependentModel(Ts, Ys), Tmin, Tmax)
+        add_model(InterpolatedTDependentModel(Ts, Ys), Tmin, Tmax)
     if CAS in _Jasper_Lange:
         _, a, b, Tmin, Tmax= _Jasper_Lange[CAS]
         JASPER_coeffs = (a, b)
-        handle.model(Jasper.from_args(JASPER_coeffs))
+        add_model(Jasper.from_args(JASPER_coeffs))
     data = (Tc, Vc, omega)
     if all(data):
-        handle.model(Miqueu.from_args(data), 0.0, Tc)
+        add_model(Miqueu.from_args(data), 0.0, Tc)
     data = (Tb, Tc, Pc)
     if all(data):
-        handle.model(Brock_Bird.from_args(data), 0.0, Tc)
-        handle.model(Sastri_Rao.from_args(data), 0.0, Tc)
+        add_model(Brock_Bird.from_args(data), 0.0, Tc)
+        add_model(Sastri_Rao.from_args(data), 0.0, Tc)
     data = (Tc, Pc, omega)
     if all(data):
-        handle.model(Pitzer.from_args(data), 0.0, Tc)
-        handle.model(Zuo_Stenby.from_args(data), 0.0, Tc)
+        add_model(Pitzer.from_args(data), 0.0, Tc)
+        add_model(Zuo_Stenby.from_args(data), 0.0, Tc)
     if CAS in _VDI_PPDS_11:
         _, Tm, Tc, A, B, C, D, E = _VDI_PPDS_11[CAS]
         VDI_PPDS_coeffs = (Tc, A, B, C, D, E)
-        handle.model(DIPPR_EQ106.from_args(VDI_PPDS_coeffs))
+        add_model(DIPPR_EQ106.from_args(VDI_PPDS_coeffs))
     data = (MW, Tb, rhol, Hvap_Tb, Cpl_Tb)
     if all(data):
         Tmax = Tb + Hvap_Tb/Cpl_Tb
         # This method will ruin solve_prop as it is typically valids
         # well above Tc. If Tc is available, limit it to that.
         if Tc: Tmax = min(Tc, Tmax)
-        handle.model(Aleem.from_args(data))
+        add_model(Aleem.from_args(data))

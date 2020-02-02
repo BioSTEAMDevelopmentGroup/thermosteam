@@ -4,16 +4,14 @@ Created on Thu Nov  7 07:37:35 2019
 
 @author: yoelr
 """
-from ..base import MixturePhaseTProperty, MixturePhaseTPProperty, display_asfunctor, PhaseProperty
+from ..base import PhaseZTProperty, PhaseZTPProperty, display_asfunctor, PhaseProperty
 from .mixture_method_names import mixture_methods, mixture_phaseT_methods, mixture_phaseTP_methods, mixture_T_methods, mixture_hidden_T_methods, mixture_hidden_phaseTP_methods
 from flexsolve import SolverError
 import numpy as np
 
 __all__ = ('IdealMixture',
-           'IdealMixturePhaseTProperty',
-           'IdealMixturePhaseTPProperty',
-           'IdealMixtureTProperty',
-           'IdealMixtureTPProperty')
+           'IdealZTProperty',
+           'IdealZTPProperty')
 
 # %% Cache
 
@@ -43,7 +41,7 @@ def set_properties_at_TP(data, properties, nonzero, T, P):
 
 # %% Mixture properties
 
-class IdealMixtureTPProperty:
+class IdealZTPProperty:
     __slots__ = ('var', '_properties', '_cache')
 
     def __init__(self, properties, var):
@@ -85,9 +83,9 @@ class IdealMixtureTPProperty:
         return f"<{display_asfunctor(self)}>"
 
 
-class IdealMixtureTProperty:
+class IdealZTProperty:
     __slots__ = ('var', '_properties', '_cache')
-    __repr__ = IdealMixtureTPProperty.__repr__
+    __repr__ = IdealZTPProperty.__repr__
 
     def __init__(self, properties, var):
         self._properties = tuple(properties)
@@ -143,30 +141,22 @@ def group_properties_by_phase(phase_properties):
             properties.append(prop)
     return properties_by_phase
     
-class IdealMixturePhaseTProperty(MixturePhaseTProperty):
-    __slots__ = ()
-    
-    @classmethod
-    def from_phase_properties(cls, phase_properties, var):
-        setfield = setattr
-        self = cls.__new__(cls)
-        for phase, properties in group_properties_by_phase(phase_properties).items():
-            setfield(self, phase, IdealMixtureTProperty(properties, var))
-        self.var = var
-        return self
+def build_ideal_PhaseZTProperty(phase_properties, var):
+    setfield = setattr
+    new = PhaseZTProperty.__new__(PhaseZTProperty)
+    for phase, properties in group_properties_by_phase(phase_properties).items():
+        setfield(new, phase, IdealZTProperty(properties, var))
+    new.var = var
+    return new
 
 
-class IdealMixturePhaseTPProperty(MixturePhaseTPProperty):
-    __slots__ = ()
-    
-    @classmethod
-    def from_phase_properties(cls, phase_properties, var):
-        setfield = setattr
-        self = cls.__new__(cls)
-        for phase, properties in group_properties_by_phase(phase_properties).items():
-            setfield(self, phase, IdealMixtureTPProperty(properties, var))
-        self.var = var
-        return self
+def build_ideal_PhaseZTPProperty(phase_properties, var):
+    setfield = setattr
+    new = PhaseZTPProperty.__new__(PhaseZTPProperty)
+    for phase, properties in group_properties_by_phase(phase_properties).items():
+        setfield(new, phase, IdealZTPProperty(properties, var))
+    new.var = var
+    return new
 
 
 # %% Ideal mixture
@@ -207,27 +197,27 @@ class IdealMixture:
             var = attr[1:]
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties, var)
+                phase_property = build_ideal_PhaseZTProperty(phase_properties, var)
                 setfield(self, attr, phase_property)
         for attr in mixture_hidden_phaseTP_methods:
             var = attr[1:]
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties, var)
+                phase_property = build_ideal_PhaseZTPProperty(phase_properties, var)
                 setfield(self, attr, phase_property)
         for var in mixture_phaseT_methods:
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTProperty.from_phase_properties(phase_properties, var)
+                phase_property = build_ideal_PhaseZTProperty(phase_properties, var)
                 setfield(self, var, phase_property)
         for var in mixture_phaseTP_methods:
             phase_properties = [getfield(i, var) for i in chemicals]
             if any_(phase_properties): 
-                phase_property = IdealMixturePhaseTPProperty.from_phase_properties(phase_properties, var)
+                phase_property = build_ideal_PhaseZTPProperty(phase_properties, var)
                 setfield(self, var, phase_property)
         for var in mixture_T_methods:
             properties = [getfield(i, var) for i in chemicals]
-            if any_(properties): setfield(self, var, IdealMixtureTProperty(properties, var))
+            if any_(properties): setfield(self, var, IdealZTProperty(properties, var))
     
     @property
     def Cn_at_TP(self):
