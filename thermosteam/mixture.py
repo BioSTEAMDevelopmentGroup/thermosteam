@@ -4,11 +4,10 @@ Created on Thu Nov  7 07:37:35 2019
 
 @author: yoelr
 """
-from ..base import PhaseZTProperty, PhaseZTPProperty, display_asfunctor, PhaseProperty
-from flexsolve import SolverError
+from .base import PhaseZTProperty, PhaseZTPProperty, display_asfunctor
 import numpy as np
 
-__all__ = ('IdealMixture',
+__all__ = ('Mixture',
            'IdealZTProperty',
            'IdealZTPProperty')
 
@@ -174,58 +173,101 @@ def build_ideal_PhaseZTPProperty(phase_properties, var):
 # %% Ideal mixture
 
 
-class IdealMixture:
+class Mixture:
     """
-    Create an IdealMixture object for estimating mixture properties.
+    Create an Mixture object for estimating mixture properties.
     
     Parameters
     ----------
-    chemicals : Chemicals
-        For retrieving pure component chemical data.
+    description : str
+        Description of mixing rules used.
+    Cn, H : PhaseZTProperty
+    S, H_excess, S_excess, mu, V, kappa : PhaseZTPProperty
+    Hvap, sigma, epsilon: ZTProperty
     rigorous_energy_balance=True : bool
         Whether to rigorously solve for temperature in energy balance or simply approximate.
     include_excess_energies=False : bool
         Whether to include excess energies in enthalpy and entropy calculations.
     
-    
     """
-    __slots__ = ('chemicals', 'rigorous_energy_balance', 
-                 'include_excess_energies', *mixture_methods)
+    __slots__ = ('description',
+                 'rigorous_energy_balance',
+                 'include_excess_energies',
+                 *mixture_methods)
     
-    def __init__(self, chemicals, rigorous_energy_balance=True, include_excess_energies=False):
+    def __init__(self, description, Cn, H, S, H_excess, S_excess,
+                 mu, V, kappa, Hvap, sigma, epsilon,
+                 rigorous_energy_balance=True, include_excess_energies=False):
+        self.description = description
         self.rigorous_energy_balance = rigorous_energy_balance
         self.include_excess_energies = include_excess_energies
-        getfield = getattr
-        setfield = setattr
-        any_ = any
-        chemicals.compile()
-        self.chemicals = chemicals
-        # TODO: Divide this up to functions
-        for attr in mixture_hidden_T_methods:
-            var = attr[1:]
-            phase_properties = [getfield(i, var) for i in chemicals]
-            if any_(phase_properties): 
-                phase_property = build_ideal_PhaseZTProperty(phase_properties, var)
-                setfield(self, attr, phase_property)
-        for attr in mixture_hidden_phaseTP_methods:
-            var = attr[1:]
-            phase_properties = [getfield(i, var) for i in chemicals]
-            if any_(phase_properties): 
-                phase_property = build_ideal_PhaseZTPProperty(phase_properties, var)
-                setfield(self, attr, phase_property)
-        for var in mixture_phaseT_methods:
-            phase_properties = [getfield(i, var) for i in chemicals]
-            if any_(phase_properties): 
-                phase_property = build_ideal_PhaseZTProperty(phase_properties, var)
-                setfield(self, var, phase_property)
-        for var in mixture_phaseTP_methods:
-            phase_properties = [getfield(i, var) for i in chemicals]
-            if any_(phase_properties): 
-                phase_property = build_ideal_PhaseZTPProperty(phase_properties, var)
-                setfield(self, var, phase_property)
-        for var in mixture_T_methods:
-            properties = [getfield(i, var) for i in chemicals]
-            if any_(properties): setfield(self, var, IdealZTProperty(properties, var))
+        self.Cn = Cn
+        self.mu = mu
+        self.V = V
+        self.kappa = kappa
+        self.Hvap = Hvap
+        self.sigma = sigma
+        self.epsilon = epsilon
+        self._H = H
+        self._S = S
+        self._H_excess = H_excess
+        self._S_excess = S_excess
+    
+    @classmethod
+    def new_ideal_mixture(cls, chemicals,
+                          rigorous_energy_balance=True,
+                          include_excess_energies=False):
+        """
+        Create a Mixture object that computes mixture properties using ideal mixing rules.
+        
+        Parameters
+        ----------
+        chemicals : Chemicals
+            For retrieving pure component chemical data.
+        rigorous_energy_balance=True : bool
+            Whether to rigorously solve for temperature in energy balance or simply approximate.
+        include_excess_energies=False : bool
+            Whether to include excess energies in enthalpy and entropy calculations.
+
+        """
+        chemicals = tuple(chemicals)
+        
+        properties = [i.Cn for i in chemicals]
+        Cn =  build_ideal_PhaseZTProperty(properties, 'Cn')
+        
+        properties = [i.H for i in chemicals]
+        H =  build_ideal_PhaseZTProperty(properties, 'H')
+        
+        properties = [i.S for i in chemicals]
+        S = build_ideal_PhaseZTPProperty(properties, 'S')
+        
+        properties = [i.H_excess for i in chemicals]
+        H_excess = build_ideal_PhaseZTPProperty(properties, 'H_excess')
+        
+        properties = [i.S_excess for i in chemicals]
+        S_excess = build_ideal_PhaseZTPProperty(properties, 'S_excess')
+        
+        properties = [i.mu for i in chemicals]
+        mu = build_ideal_PhaseZTPProperty(properties, 'mu')
+        
+        properties = [i.V for i in chemicals]
+        V = build_ideal_PhaseZTPProperty(properties, 'V')
+        
+        properties = [i.kappa for i in chemicals]
+        kappa = build_ideal_PhaseZTPProperty(properties, 'kappa')
+        
+        properties = [i.Hvap for i in chemicals]
+        Hvap = IdealZTProperty(properties, 'Hvap')
+        
+        properties = [i.sigma for i in chemicals]
+        sigma = IdealZTProperty(properties, 'sigma')
+        
+        properties = [i.epsilon for i in chemicals]
+        epsilon = IdealZTProperty(properties, 'epsilon')
+        
+        return cls('ideal mixing rules', Cn, H, S, H_excess, S_excess,
+                   mu, V, kappa, Hvap, sigma, epsilon,
+                   rigorous_energy_balance, include_excess_energies)
     
     @property
     def Cn_at_TP(self):
@@ -379,5 +421,5 @@ class IdealMixture:
         return sum([k(phase, z, TP) for phase, z in phase_data])
     
     def __repr__(self):
-        return f"{type(self).__name__}(chemicals={self.chemicals}, rigorous_energy_balance={self.rigorous_energy_balance}, include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}({repr(self.description)}, ...)"
     
