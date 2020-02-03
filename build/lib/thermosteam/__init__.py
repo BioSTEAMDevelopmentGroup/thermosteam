@@ -20,8 +20,9 @@ from . import equilibrium
 from . import exceptions
 from . import functional
 from . import reaction
+from . import mixture
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
-           'Stream', 'MultiStream', 'ThermalCondition', 
+           'Stream', 'MultiStream', 'ThermalCondition', 'mixture',
            'settings', 'functor', 'functors', 'base', 'equilibrium',
            'exceptions', 'functional', 'reaction')

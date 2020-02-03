@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Chemicals" href="Chemicals.html" />
-    <link rel="prev" title="8. Extending equilibrium coefficients" href="tutorial/Extending equilibrium coefficients.html" /> 
+    <link rel="prev" title="6. Stoichiometric reactions" href="tutorial/Stoichiometric reactions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,10 +87,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
@@ -357,9 +355,9 @@ and transport properties as a function of temperature and pressure.</p>
 <p class="admonition-title">Note</p>
 <p>All functor classes are available in the thermosteam.functors subpackage. You can also use help(&lt;functor&gt;) for further information on the math and equations used in the functor.</p>
 </div>
-<p>A new model can be added easily to a model handle through the <cite>model</cite> method, for example:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set top=True to place model in postion [0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nd">@water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="mf">273.20</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">473.20</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p>A new model can be added easily to a model handle through the <cite>add_model</cite> method, for example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set top_priority=True to place model in postion [0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="mf">273.20</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">473.20</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">User_antoine_model</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">10.116</span> <span class="o">-</span>  <span class="mf">1687.537</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mf">42.98</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -377,8 +375,8 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>The <cite>model</cite> method is a high level interface that even lets you create a constant model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">constant</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Model is appended at the end by default</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
+<span class="gp">... </span><span class="c1"># Model is appended at the end by default</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">ConstantThermoModel: Constant</span>
@@ -484,9 +482,9 @@ and transport properties as a function of temperature and pressure.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="thermosteam.Chemical.fill">
-<code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*sources</em>, <em class="sig-param">slots=None</em>, <em class="sig-param">default=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.fill" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fill the missing thermodynamic properties by copying from sources. Also return any thermodynamic properties that are still missing.</p>
+<dt id="thermosteam.Chemical.copy_missing_slots_from">
+<code class="sig-name descname">copy_missing_slots_from</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*sources</em>, <em class="sig-param">slots=None</em>, <em class="sig-param">default=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.copy_missing_slots_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.copy_missing_slots_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing.</p>
 </dd></dl>
 
 <dl class="method">
@@ -658,7 +656,7 @@ and transport properties as a function of temperature and pressure.</p>
         <a href="Chemicals.html" class="btn btn-neutral float-right" title="Chemicals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tutorial/Extending equilibrium coefficients.html" class="btn btn-neutral float-left" title="8. Extending equilibrium coefficients" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorial/Stoichiometric reactions.html" class="btn btn-neutral float-left" title="6. Stoichiometric reactions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -400,30 +400,31 @@ Poling_Functors = (Poling,
 
 @TDependentHandleBuilder
 def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
+    add_model = handle.add_model
     if CAS in _TRC_gas:
         _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, _, _, _ = _TRC_gas[CAS]
         funcs = CnHS(*TRCCn_Functors, (a0, a1, a2, a3, a4, a5, a6, a7))
-        handle.model(Tmin=Tmin, Tmax=Tmax, name=TRCIG, **funcs)
+        add_model(Tmin=Tmin, Tmax=Tmax, name=TRCIG, **funcs)
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, _ = _Poling[CAS]
         if not np.isnan(a):
             funcs = CnHS(*Poling_Functors, (a, b, c, d, e))
-            handle.model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
+            add_model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
         if not np.isnan(Cn_g):
-            handle.model(Cn_g, Tmin, Tmax, var='Cn.g', name=POLING_CONST)
+            add_model(Cn_g, Tmin, Tmax, var='Cn.g', name=POLING_CONST)
     if CAS in _CRC_standard:
         Cn_g = _CRC_standard[CAS][-1]
         if not np.isnan(Cn_g):
-            handle.model(Cn_g, name=CRCSTD)
+            add_model(Cn_g, name=CRCSTD)
     if MW and similarity_variable:
         data = (MW, similarity_variable, iscyclic_aliphatic)
-        handle.model(Lastovka_Shaw.from_args(data), name=LASTOVKA_SHAW)
+        add_model(Lastovka_Shaw.from_args(data), name=LASTOVKA_SHAW)
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
         Ts, Cn_gs = VDI_tabular_data(CAS, 'Cp (g)')
-        handle.model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
+        add_model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
     
     
 ### Heat capacities of liquids
@@ -757,28 +758,29 @@ zabransky_model_builders[4].many = True
 def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
     Cn_g = Cn.g
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
+    add_model = handle.add_model
     if CAS in _VDISaturationDict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
         Ts, Cn_ls = VDI_tabular_data(CAS, 'Cp (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
+        add_model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        handle.model(Rowlinson_Bondi.from_args(args), name=ROWLINSON_BONDI)
-        handle.model(Rowlinson_Poling.from_args(args), name=ROWLINSON_POLING)
+        add_model(Rowlinson_Bondi.from_args(args), name=ROWLINSON_BONDI)
+        add_model(Rowlinson_Poling.from_args(args), name=ROWLINSON_POLING)
     # Constant models
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
         if not np.isnan(Cn_g):
-            handle.model(Cn_l, Tmin, Tmax, name=POLING_CONST, var="Cn.l")
+            add_model(Cn_l, Tmin, Tmax, name=POLING_CONST, var="Cn.l")
     if CAS in _CRC_standard:
         Cn_l = _CRC_standard[CAS][-5]
         if not np.isnan(Cn_l):
-            handle.model(Cn_l, 0, Tc, name=CRCSTD, var="Cn.l")
+            add_model(Cn_l, 0, Tc, name=CRCSTD, var="Cn.l")
     # Other
     if MW and similarity_variable:
-        handle.model(CnHSModel(*Dadgostar_Shaw_Functors,
+        add_model(CnHSModel(*Dadgostar_Shaw_Functors,
                                data=(similarity_variable, MW),
                                name=DADGOSTAR_SHAW))
 
@@ -932,6 +934,7 @@ PERRY151 = '''Perry's Table 2-151'''
 def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
     Tmin = 0
     Tmax = 2000
+    add_model = handle.add_model
     if CAS in _PerryI:
         vals = _PerryI[CAS]
         if 'c' in vals:
@@ -939,14 +942,14 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
             Tmin = c['Tmin']
             Tmax = c['Tmax']
             data = (c['Const'], c['Lin'], c['Quad'], c['Quadinv'])
-            handle.model(CnHSModel(*Perry_151_Functors, data), Tmin, Tmax)
+            add_model(CnHSModel(*Perry_151_Functors, data), Tmin, Tmax)
     if CAS in _CRC_standard:
         Cnc = _CRC_standard[CAS][3]
         if not np.isnan(Cnc):
-            handle.model(float(Cnc), 200, 350)
+            add_model(float(Cnc), 200, 350)
     if similarity_variable and MW:
         data = (similarity_variable, MW)
-        handle.model(CnHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
+        add_model(CnHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
 HeatCapacity = PhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cn')

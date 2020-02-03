@@ -85,10 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -177,7 +175,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">equilibrium</span> <span class="k">as</span> <span class="n">eq</span>
 <span class="kn">from</span> <span class="nn">._chemicals</span> <span class="kn">import</span> <span class="n">Chemicals</span>
-<span class="kn">from</span> <span class="nn">.mixture</span> <span class="kn">import</span> <span class="n">IdealMixture</span>
+<span class="kn">from</span> <span class="nn">.mixture</span> <span class="kn">import</span> <span class="n">Mixture</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_only</span><span class="p">,</span> <span class="n">cucumber</span>
 <span class="kn">from</span> <span class="nn">._settings</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -219,7 +217,7 @@
                  <span class="n">Phi</span><span class="o">=</span><span class="n">eq</span><span class="o">.</span><span class="n">IdealFugacityCoefficients</span><span class="p">,</span>
                  <span class="n">PCF</span><span class="o">=</span><span class="n">eq</span><span class="o">.</span><span class="n">IdealPoyintingCorrectionFactors</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">Chemicals</span><span class="p">):</span> <span class="n">chemicals</span> <span class="o">=</span> <span class="n">Chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
-        <span class="n">mixture</span> <span class="o">=</span> <span class="n">mixture</span> <span class="ow">or</span> <span class="n">IdealMixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="n">mixture</span> <span class="o">=</span> <span class="n">mixture</span> <span class="ow">or</span> <span class="n">Mixture</span><span class="o">.</span><span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="n">chemicals</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
             <span class="n">issubtype</span> <span class="o">=</span> <span class="nb">issubclass</span>
@@ -237,7 +235,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PCF&#39;</span><span class="p">,</span> <span class="n">PCF</span><span class="p">)</span>    
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(chemicals=</span><span class="si">{self.chemicals}</span><span class="s2">, mixture={type(self.mixture).__name__}(...), Gamma=</span><span class="si">{self.Gamma.__name__}</span><span class="s2">, Phi=</span><span class="si">{self.Phi.__name__}</span><span class="s2">, PCF=</span><span class="si">{self.PCF.__name__}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(chemicals=</span><span class="si">{self.chemicals}</span><span class="s2">, mixture=</span><span class="si">{self.mixture}</span><span class="s2">, Gamma=</span><span class="si">{self.Gamma.__name__}</span><span class="s2">, Phi=</span><span class="si">{self.Phi.__name__}</span><span class="s2">, PCF=</span><span class="si">{self.PCF.__name__}</span><span class="s2">)&quot;</span></div>
     
 
     

@@ -336,11 +336,11 @@ class Chemical:
     .. Note::
        All functor classes are available in the thermosteam.functors subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
     
-    A new model can be added easily to a model handle through the `model` method, for example:
+    A new model can be added easily to a model handle through the `add_model` method, for example:
         
     
-    >>> # Set top=True to place model in postion [0]
-    >>> @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True)
+    >>> # Set top_priority=True to place model in postion [0]
+    >>> @water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)
     ... def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T + 42.98))
     >>> water.Psat.show()
@@ -358,8 +358,8 @@ class Chemical:
 
     The `model` method is a high level interface that even lets you create a constant model:
         
-    >>> constant = water.V.l.model(1.687e-05)
-    >>> # Model is appended at the end by default
+    >>> water.V.l.add_model(1.687e-05)
+    ... # Model is appended at the end by default
     >>> added_model = water.V.l[-1] 
     >>> added_model.show()
     ConstantThermoModel: Constant
@@ -785,32 +785,32 @@ class Chemical:
         else:
             MW = self.MW
         if 'sigma' in slots:
-            self.sigma.model(0.072055)
+            self.sigma.add_model(0.072055)
         if 'mu' in slots:
             mu = self.mu
             if hasfield(mu, 'l'):
-                mu.l.model(0.00091272)
+                mu.l.add_model(0.00091272)
             elif not mu:
-                mu.model(0.00091272)
+                mu.add_model(0.00091272)
         if 'V' in slots:
             V = self.V
             V_default = fn.rho_to_V(1050, MW)
             if hasfield(V, 'l'):
-                V.l.model(V_default)
+                V.l.add_model(V_default)
             elif not V:
-                V.model(V_default)
+                V.add_model(V_default)
         if 'kappa' in slots:
             kappa = self.kappa
             if hasfield(kappa, 'l'):
-                kappa.l.model(0.5942)
+                kappa.l.add_model(0.5942)
             if not kappa:
-                kappa.model(0.5942)
+                kappa.add_model(0.5942)
         if 'Hc' in slots:
             self.Hc = 0
         if 'Hf' in slots:
             self.Hf = 0
         if 'epsilon' in slots:
-            self.epsilon.model(0)
+            self.epsilon.add_model(0)
         if '_phase_ref' in slots:
             self._phase_ref = 'l'
         if 'eos' in slots:
@@ -823,11 +823,11 @@ class Chemical:
             getfield = getattr
             single_phase = isinstance(Cn, TDependentModelHandle)
             if single_phase:
-                Cn.model(4.18*MW, var='Cn')
+                Cn.add_model(4.18*MW, var='Cn')
                 Cn_phase = Cn
             else:
                 Cn_phase = getfield(Cn, phase_ref)
-                Cn_phase.model(4.18*MW, var='Cn')
+                Cn_phase.add_model(4.18*MW, var='Cn')
             self.load_free_energies()
         if not self.H:
             self.load_free_energies()
@@ -862,13 +862,15 @@ class Chemical:
         getfield = getattr
         return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
-    def fill(self, *sources, slots=None, default=True):
-        """Fill the missing thermodynamic properties by copying from sources. Also return any thermodynamic properties that are still missing."""
+    def copy_missing_slots_from(self, *sources, slots=None, default=True):
+        """Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing."""
         missing = slots if slots else self.get_missing_slots(slots)
         for source in sources:
             missing = fill(self, source, missing)
         if default:
             missing = self.default(missing)
+        phase = self.locked_state.phase
+        if phase: lock_phase(self, phase)
         return missing
     
     @classmethod
@@ -1113,8 +1115,9 @@ def lock_phase(chemical, phase):
     hasfield = hasattr
     for field in _phase_properties:
         phase_property = getfield(chemical, field)
-        model_handle = getfield(phase_property, phase)
-        setfield(chemical, field, model_handle)
+        if hasfield(phase_property, phase):
+            model_handle = getfield(phase_property, phase)
+            setfield(chemical, field, model_handle)
     for field in _free_energies:
         phase_property = getfield(chemical, field)
         if hasfield(phase_property, phase):

@@ -87,10 +87,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
@@ -276,14 +274,14 @@ and heats of combustion.</p>
 <p>Some chemical constants may not be defined in thermosteam, 
 such as the heat of combustion.
 We can update it and refresh the compiled constants:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Glucose&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Glucose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">2291836.024</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">refresh_constants</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Hc</span>
+<span class="go">array([2291836.024])</span>
 </pre></div>
 </div>
-<p>array([2291836.024])</p>
 </dd></dl>
 
 <dl class="method">

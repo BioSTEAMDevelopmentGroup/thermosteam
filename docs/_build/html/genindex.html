@@ -86,10 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -393,6 +391,8 @@
       </ul></li>
       <li><a href="Stream.html#thermosteam.Stream.copy_like">copy_like() (thermosteam.Stream method)</a>
 </li>
+      <li><a href="Chemical.html#thermosteam.Chemical.copy_missing_slots_from">copy_missing_slots_from() (thermosteam.Chemical method)</a>
+</li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Coquelet">Coquelet() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.cost">cost() (thermosteam.Stream property)</a>
@@ -475,7 +475,7 @@
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Tee_Gotoh_Steward_2">epsilon_Tee_Gotoh_Steward_2() (in module thermosteam.functors.lennard_jones)</a>
 </li>
-      <li><a href="Stream.html#thermosteam.Stream.equilibrim_chemicals">equilibrim_chemicals() (thermosteam.Stream property)</a>
+      <li><a href="Stream.html#thermosteam.Stream.equilibrium_chemicals">equilibrium_chemicals() (thermosteam.Stream property)</a>
 </li>
       <li><a href="functors/joback.html#thermosteam.functors.joback.Joback.estimate">estimate() (thermosteam.functors.joback.Joback method)</a>
 </li>
@@ -499,8 +499,6 @@
         <li><a href="Stream.html#thermosteam.Stream.F_vol">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
-      <li><a href="Chemical.html#thermosteam.Chemical.fill">fill() (thermosteam.Chemical method)</a>
-</li>
       <li><a href="functors/safety.html#thermosteam.functors.safety.fire_mixing">fire_mixing() (in module thermosteam.functors.safety)</a>
 </li>
   </ul></td>

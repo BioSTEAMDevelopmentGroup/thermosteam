@@ -28,10 +28,8 @@ Key Features & Capabilities
    Installation
    tutorial/Getting started
    tutorial/Thermodynamic equilibrium
+   tutorial/Thermo property packages
    tutorial/Stoichiometric reactions
-   tutorial/Extending chemicals
-   tutorial/Building new chemicals
-   tutorial/Extending equilibrium coefficients
 
 
 .. toctree::

@@ -588,60 +588,61 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
     Tmin = 50
     Tmax = 1000
     all_ = all
+    add_model = handle.add_model
     if CAS in _CRC_inorg_l:
         _, MW, rho, k, Tm, Tmax = _CRC_inorg_l[CAS]
         data = (MW, rho, k, Tm)
-        handle.model(CRC_Inorganic.from_args(data), Tm, Tmax)
+        add_model(CRC_Inorganic.from_args(data), Tm, Tmax)
     if CAS in _Perry_l:
         _, C1, C2, C3, C4, Tmin, Tmax = _Perry_l[CAS]
         data = (C1, C2, C3, C4, True)
-        handle.model(DIPPR_EQ105.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ105.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_2:
         _, MW, Tc_, rhoc, A, B, C, D = _VDI_PPDS_2[CAS]
         data = (Tc, A, B, C, D, rhoc, MW)
-        handle.model(VDI_PPDS.from_args(data), 0., Tc_)
+        add_model(VDI_PPDS.from_args(data), 0., Tc_)
     if CAS in _VDISaturationDict:
         Ts, Vls = VDI_tabular_data(CAS, 'Volume (l)')
-        handle.model(InterpolatedTDependentModel(Ts, Vls, Tmin=Ts[0], Tmax=Ts[-1]))
+        add_model(InterpolatedTDependentModel(Ts, Vls, Tmin=Ts[0], Tmax=Ts[-1]))
     data = (Tc, Vc, Zc)
     if all_(data):
-        handle.model(Yen_Woods.from_args(data))
+        add_model(Yen_Woods.from_args(data))
     data = (Tc, Pc, Zc)
     if all_(data):
-        handle.model(Rackett.from_args(data), 0, Tc)
+        add_model(Rackett.from_args(data), 0, Tc)
     data = (Tc, Pc, omega)
     if all_(data):
-        handle.model(Yamada_Gunn.from_args(data), 0, Tc)
-        handle.model(Bhirud_Normal.from_args(data), 0, Tc)
+        add_model(Yamada_Gunn.from_args(data), 0, Tc)
+        add_model(Bhirud_Normal.from_args(data), 0, Tc)
     data = (Tc, Vc, omega)
     if all_(data):
-        handle.model(Townsend_Hales.from_args(data), 0, Tc)
-        handle.model(Rackett.from_args(data), 0, Tc)
+        add_model(Townsend_Hales.from_args(data), 0, Tc)
+        add_model(Rackett.from_args(data), 0, Tc)
         if CAS in _SNM0:
             SNM0_delta_SRK = float(_SNM0.at[CAS, 'delta_SRK'])
             data = (Tc, Vc, omega, SNM0_delta_SRK)
-            handle.model(SNM0.from_args(data))
+            add_model(SNM0.from_args(data))
         else:
-            handle.model(SNM0.from_args(data), 0, Tc)
+            add_model(SNM0.from_args(data), 0, Tc)
     data = (Tb, Tc, Pc, MW, dipole, has_hydroxyl)
     if all_(data):
-        handle.model(Campbell_Thodos.from_args(data), 0, Tc)
+        add_model(Campbell_Thodos.from_args(data), 0, Tc)
     if CAS in _CRC_inorg_l_const:
         Vl = float(_CRC_inorg_l_const.at[CAS, 'Vm'])
-        handle.model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant")
+        add_model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant")
     if Tc and Pc and CAS in _COSTALD:
         Zc_ = _COSTALD.at[CAS, 'Z_RA']
         if not np.isnan(Zc_): Zc_ = float(Zc_)
         data = (Tc, Pc, Zc_)
-        handle.model(Rackett.from_args(data), Tmin, Tmax)
+        add_model(Rackett.from_args(data), Tmin, Tmax)
         # Roughly data at STP; not guaranteed however; not used for Trange
     data = (Tc, Vc, omega)
     if all_(data) and CAS in _COSTALD:
-        handle.model(Costald.from_args(data), 0, Tc)
+        add_model(Costald.from_args(data), 0, Tc)
     data = (Tc, Pc, omega)
     if all_(data):
         data = (Psat, Tc, Pc, omega, handle.copy())
-        handle.model(Costald_Compressed.from_args(data), 50, 500, top=True)
+        add_model(Costald_Compressed.from_args(data), 50, 500, top=True)
         
 
 # %% Gases
@@ -677,17 +678,18 @@ def CRCVirial(T, P, a1, a2, a3, a4, a5):
 
 @TPDependentHandleBuilder
 def VolumeGas(handle, CAS, Tc, Pc, omega, eos):
+    add_model = handle.add_model
     # no point in getting Tmin, Tmax
     if all((Tc, Pc, omega)):
         data = (Tc, Pc, omega)
-        handle.model(Tsonopoulos_extended.from_args(data))
-        handle.model(Tsonopoulos.from_args(data))
-        handle.model(Abbott.from_args(data))
-        handle.model(Pitzer_Curl.from_args(data))
+        add_model(Tsonopoulos_extended.from_args(data))
+        add_model(Tsonopoulos.from_args(data))
+        add_model(Abbott.from_args(data))
+        add_model(Pitzer_Curl.from_args(data))
     if CAS in _CRC_virial:
         _, *data = _CRC_virial[CAS]
-        handle.model(CRCVirial.from_args(data))
-    handle.model(ideal_gas_model)
+        add_model(CRCVirial.from_args(data))
+    add_model(ideal_gas_model)
 
 
 # %% Solids
@@ -727,7 +729,7 @@ def Goodman(T, Tt, V_l):
 def VolumeSolid(handle, CAS):
     if CAS in _CRC_inorg_s_const:
         CRC_INORG_S_Vm = float(_CRC_inorg_s_const.at[CAS, 'Vm'])
-        handle.model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
+        handle.add_model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
 
 
 Volume = PhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas, 'V')

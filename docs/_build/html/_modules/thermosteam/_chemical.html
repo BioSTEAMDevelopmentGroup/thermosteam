@@ -85,10 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -507,11 +505,11 @@
 <span class="sd">    .. Note::</span>
 <span class="sd">       All functor classes are available in the thermosteam.functors subpackage. You can also use help(&lt;functor&gt;) for further information on the math and equations used in the functor.</span>
 <span class="sd">    </span>
-<span class="sd">    A new model can be added easily to a model handle through the `model` method, for example:</span>
+<span class="sd">    A new model can be added easily to a model handle through the `add_model` method, for example:</span>
 <span class="sd">        </span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; # Set top=True to place model in postion [0]</span>
-<span class="sd">    &gt;&gt;&gt; @water.Psat.model(Tmin=273.20, Tmax=473.20, top=True)</span>
+<span class="sd">    &gt;&gt;&gt; # Set top_priority=True to place model in postion [0]</span>
+<span class="sd">    &gt;&gt;&gt; @water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)</span>
 <span class="sd">    ... def User_antoine_model(T):</span>
 <span class="sd">    ...     return 10.0**(10.116 -  1687.537 / (T + 42.98))</span>
 <span class="sd">    &gt;&gt;&gt; water.Psat.show()</span>
@@ -529,8 +527,8 @@
 
 <span class="sd">    The `model` method is a high level interface that even lets you create a constant model:</span>
 <span class="sd">        </span>
-<span class="sd">    &gt;&gt;&gt; constant = water.V.l.model(1.687e-05)</span>
-<span class="sd">    &gt;&gt;&gt; # Model is appended at the end by default</span>
+<span class="sd">    &gt;&gt;&gt; water.V.l.add_model(1.687e-05)</span>
+<span class="sd">    ... # Model is appended at the end by default</span>
 <span class="sd">    &gt;&gt;&gt; added_model = water.V.l[-1] </span>
 <span class="sd">    &gt;&gt;&gt; added_model.show()</span>
 <span class="sd">    ConstantThermoModel: Constant</span>
@@ -956,32 +954,32 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">MW</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MW</span>
         <span class="k">if</span> <span class="s1">&#39;sigma&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">0.072055</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.072055</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;mu&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span>
             <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">):</span>
-                <span class="n">mu</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">0.00091272</span><span class="p">)</span>
+                <span class="n">mu</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.00091272</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">mu</span><span class="p">:</span>
-                <span class="n">mu</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">0.00091272</span><span class="p">)</span>
+                <span class="n">mu</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.00091272</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;V&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span>
             <span class="n">V_default</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rho_to_V</span><span class="p">(</span><span class="mi">1050</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">):</span>
-                <span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">V_default</span><span class="p">)</span>
+                <span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">V_default</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">V</span><span class="p">:</span>
-                <span class="n">V</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">V_default</span><span class="p">)</span>
+                <span class="n">V</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">V_default</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;kappa&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="n">kappa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kappa</span>
             <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">kappa</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">):</span>
-                <span class="n">kappa</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
+                <span class="n">kappa</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">kappa</span><span class="p">:</span>
-                <span class="n">kappa</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
+                <span class="n">kappa</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;Hc&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="s1">&#39;Hf&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="s1">&#39;epsilon&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;_phase_ref&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_phase_ref</span> <span class="o">=</span> <span class="s1">&#39;l&#39;</span>
         <span class="k">if</span> <span class="s1">&#39;eos&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
@@ -994,11 +992,11 @@
             <span class="n">getfield</span> <span class="o">=</span> <span class="nb">getattr</span>
             <span class="n">single_phase</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Cn</span><span class="p">,</span> <span class="n">TDependentModelHandle</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">single_phase</span><span class="p">:</span>
-                <span class="n">Cn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">4.18</span><span class="o">*</span><span class="n">MW</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
+                <span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">4.18</span><span class="o">*</span><span class="n">MW</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
                 <span class="n">Cn_phase</span> <span class="o">=</span> <span class="n">Cn</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">Cn_phase</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">Cn</span><span class="p">,</span> <span class="n">phase_ref</span><span class="p">)</span>
-                <span class="n">Cn_phase</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mf">4.18</span><span class="o">*</span><span class="n">MW</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
+                <span class="n">Cn_phase</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">4.18</span><span class="o">*</span><span class="n">MW</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_free_energies</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_free_energies</span><span class="p">()</span>
@@ -1033,13 +1031,15 @@
         <span class="n">getfield</span> <span class="o">=</span> <span class="nb">getattr</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="n">slots</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__slots__</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">getfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span></div>
     
-<div class="viewcode-block" id="Chemical.fill"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.fill">[docs]</a>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sources</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fill the missing thermodynamic properties by copying from sources. Also return any thermodynamic properties that are still missing.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Chemical.copy_missing_slots_from"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.copy_missing_slots_from">[docs]</a>    <span class="k">def</span> <span class="nf">copy_missing_slots_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sources</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing.&quot;&quot;&quot;</span>
         <span class="n">missing</span> <span class="o">=</span> <span class="n">slots</span> <span class="k">if</span> <span class="n">slots</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_missing_slots</span><span class="p">(</span><span class="n">slots</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
             <span class="n">missing</span> <span class="o">=</span> <span class="n">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">missing</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
             <span class="n">missing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked_state</span><span class="o">.</span><span class="n">phase</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span> <span class="n">lock_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">missing</span></div>
     
 <div class="viewcode-block" id="Chemical.blank"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.blank">[docs]</a>    <span class="nd">@classmethod</span>
@@ -1284,8 +1284,9 @@
     <span class="n">hasfield</span> <span class="o">=</span> <span class="nb">hasattr</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">_phase_properties</span><span class="p">:</span>
         <span class="n">phase_property</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
-        <span class="n">model_handle</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
-        <span class="n">setfield</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">model_handle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+            <span class="n">model_handle</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
+            <span class="n">setfield</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">model_handle</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">_free_energies</span><span class="p">:</span>
         <span class="n">phase_property</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>

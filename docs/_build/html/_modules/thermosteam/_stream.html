@@ -85,10 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">5. Stoichiometric reactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending chemicals.html">6. Extending chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Building new chemicals.html">7. Creating new chemicals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Extending equilibrium coefficients.html">8. Extending equilibrium coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -1156,7 +1154,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vle</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">equilibrim_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">equilibrium_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;list[Chemical] Chemicals cabable of vapor-liquid equilibrium.&quot;&quot;&quot;</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
         <span class="n">chemicals_tuple</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">tuple</span>
@@ -1182,7 +1180,7 @@
 <span class="sd">        BubblePoint([Water, Ethanol])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrim_chemicals</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
         <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bp</span></div>
     
@@ -1205,7 +1203,7 @@
 <span class="sd">        DewPoint([Water, Ethanol])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrim_chemicals</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dp</span></div>
     
@@ -1477,12 +1475,18 @@
 <span class="sd">                         Ethanol  0.0616</span>
 <span class="sd">                         N2       0.369</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">bubble_point_at_T</span><span class="p">()</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span>
-        <span class="n">mol_old</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_mol</span> <span class="o">*</span> <span class="n">bp</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">bp</span><span class="o">.</span><span class="n">P</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span>
-        <span class="n">other</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mol_old</span> <span class="o">-</span> <span class="n">mol_new</span> </div>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
+        <span class="n">F_l</span> <span class="o">=</span> <span class="n">eq</span><span class="o">.</span><span class="n">LiquidFugacities</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">thermo</span><span class="p">)</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span>
+        <span class="n">f_l</span> <span class="o">=</span> <span class="n">F_l</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">f_l</span> <span class="o">/</span> <span class="n">P</span>
+        <span class="n">imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span>
+        <span class="n">mol_old</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span>
+        <span class="n">imol</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">mol_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_mol</span> <span class="o">*</span> <span class="n">y</span>
+        <span class="n">other</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mol_old</span> <span class="o">-</span> <span class="n">mol_new</span> </div>
     
     <span class="c1">### Casting ###</span>
     

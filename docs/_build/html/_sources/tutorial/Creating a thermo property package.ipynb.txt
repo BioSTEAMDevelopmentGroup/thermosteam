@@ -1,0 +1,360 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Creating a thermo property package"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A Thermo object defines a thermodynamic property package. To build a Thermo object, we must first define all the chemicals involed. The following example will show how this can be done through the creation of a property package for the co-production of biodiesel and ethanol from lipid-cane [[1]](#References):"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can first start by defining the common chemicals already in the data base:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import thermosteam as tmo\n",
+    "Biodiesel = tmo.Chemical('Biodiesel', search_ID='Methyl oleate')\n",
+    "chemicals = tmo.Chemicals(['Water', 'Methanol', 'Ethanol', 'Glycerol', 'Glucose',\n",
+    "                           'Sucrose', 'H3PO4', 'CO2', 'Octane', Biodiesel])\n",
+    "(Water, Methanol, Ethanol,\n",
+    " Glycerol, Glucose, Sucrose,\n",
+    " H3PO4, CO2, Octane, Biodiesel) = chemicals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can assume that CO2 gas will always remain a gas in the process by setting the state:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "CO2.at_state(phase='g')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Similarly, we can assume glucose, sucrose, and phosphoric acid all remain as solids:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Glucose.at_state(phase='s')\n",
+    "Sucrose.at_state(phase='s')\n",
+    "H3PO4.at_state(phase='s')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now we can define the solids in the process (both soluble and insoluble). We can use the `Chemical.blank` method to create a blank Chemical object and add the thermo models ourselves:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def create_new_chemical(ID, phase='s', **constants):\n",
+    "    # Create a new solid chemical without any data\n",
+    "    solid = tmo.Chemical.blank(ID, phase=phase, **constants)\n",
+    "    \n",
+    "    # Add chemical to the Chemicals object\n",
+    "    chemicals.append(solid)\n",
+    "    \n",
+    "    return solid\n",
+    "\n",
+    "Ash = create_new_chemical('Ash')\n",
+    "Cellulose = create_new_chemical('Cellulose')\n",
+    "Hemicellulose = create_new_chemical('Hemicellulose')\n",
+    "Flocculant = create_new_chemical('Flocculant')\n",
+    "Lignin = create_new_chemical('Lignin')\n",
+    "Solids = create_new_chemical('Solids')\n",
+    "DryYeast = create_new_chemical('DryYeast', CAS='Yeast')\n",
+    "CaO = create_new_chemical('CaO', MW=56.0774)\n",
+    "HCl = create_new_chemical('HCl', MW=36.46094)\n",
+    "NaOH = create_new_chemical('NaOH', MW=39.997109)\n",
+    "NaOCH3 = create_new_chemical('NaOCH3', MW=54.023689)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note that we are still missing the lipid, modeled as Triolein. However, Triolein is not in the data bank, so let's start making it from scratch:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Lipid = create_new_chemical(\n",
+    "    'Lipid',\n",
+    "    phase='l',\n",
+    "    Hc=35099.6e3, # https://webbook.nist.gov/cgi/cbook.cgi?ID=C122327&Mask=2\n",
+    "    Hf=-2193.7e3, \n",
+    "    MW=885.432,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Instead of creating new models based on external sources, here we will approximate Triolein with the properties of Tripalmitin (which does exist in the data bank):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'Hfus',\n",
+       " 'Hsub',\n",
+       " 'Hvap',\n",
+       " 'Pc',\n",
+       " 'Psat',\n",
+       " 'Pt',\n",
+       " 'StielPolar',\n",
+       " 'Tc',\n",
+       " 'Vc',\n",
+       " 'Zc',\n",
+       " 'dipole',\n",
+       " 'iscyclic_aliphatic',\n",
+       " 'omega'}"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Tripalmitin = tmo.Chemical('Tripalmitin')\n",
+    "remaining_missing_slots = Lipid.copy_missing_slots_from(Tripalmitin)\n",
+    "# Note that Tripalmitin does not have the following missing data, \n",
+    "# but this is fine as we don't need it for the process\n",
+    "remaining_missing_slots"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "All what is left is to fill the chemical properties. This done through the `add_model` method of the chemical model handles. Let's begin with the solids using data from [[1-4]](#References):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from thermosteam import functional as fn\n",
+    "insoluble_solid_molar_volume = fn.rho_to_V(rho=1540, MW=1.)\n",
+    "\n",
+    "# Insolubles occupy a significant volume\n",
+    "insoluble_solids = (Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast)\n",
+    "\n",
+    "# Solubles don't occupy much volume\n",
+    "soluble_solids = (CaO, HCl, NaOH, Glucose, Sucrose) \n",
+    "\n",
+    "for chemical in insoluble_solids:\n",
+    "    chemical.V.add_model(insoluble_solid_molar_volume)\n",
+    "\n",
+    "for chemical in soluble_solids:\n",
+    "    V = fn.rho_to_V(rho=1e5, MW=chemical.MW)\n",
+    "    chemical.V.add_model(V, top_priority=True)\n",
+    "\n",
+    "# Assume sodium methoxide has same properities as methanol\n",
+    "# except for molecular weight\n",
+    "NaOCH3.copy_missing_slots_from(chemicals.Methanol)\n",
+    "\n",
+    "# Add constant models for molar heat capacity of solids\n",
+    "Ash.Cn.add_model(0.09 * 4.184) \n",
+    "CaO.Cn.add_model(1.02388 * 56.0774) \n",
+    "Cellulose.Cn.add_model(1.364) \n",
+    "Hemicellulose.Cn.add_model(1.364)\n",
+    "Flocculant.Cn.add_model(4.184)\n",
+    "Lignin.Cn.add_model(1.364)\n",
+    "Solids.Cn.add_model(1.100)\n",
+    "\n",
+    "# Set heats of formation and combustion (for those that need it)\n",
+    "Hemicellulose.Hc = 17e3\n",
+    "Cellulose.Hc = 17e3\n",
+    "Lignin.Hc = 21e3\n",
+    "Glucose.Hc = 2.8e6\n",
+    "Sucrose.Hc = 5.7e6\n",
+    "Lipid.Hc = 36e6\n",
+    "\n",
+    "Ethanol.Hf = -277.690e3\n",
+    "Water.Hf = -241.820e3\n",
+    "CO2.Hf = -393.520e3 # in gas\n",
+    "Glucose.Hf = -1274e3\n",
+    "Sucrose.Hf = -2221.2e3\n",
+    "Octane.Hf = -250e3\n",
+    "H3PO4.Hf = -1271.66e3\n",
+    "Lipid.Hf = -2.1937e3\n",
+    "Biodiesel.Hf = -0.72764e3\n",
+    "Glycerol.Hf = -0.6696e3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We don't care much about the rest of the properties (e.g. thermal conductivity), so we can default them to the values of water:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for chemical in chemicals:\n",
+    "    chemical.default()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Once the chemicals are finalized, we can compile them into a Thermo object:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Thermo(chemicals=CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, CO2, Octane, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid]), mixture=Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "thermo = tmo.Thermo(chemicals)\n",
+    "thermo"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note that the Thermo object, by default, chooses ideal mixing rules for estimating mixture properties, and neglects excess properties in the calculation of enthalpy and entropy:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False)"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "thermo.mixture"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It is possible to implement a your own Mixture object, but this is out the scope of ordinary users. You can request help on this process through https://github.com/yoelcortes/thermosteam.\n",
+    "\n",
+    "Note that a Thermo object contains ActivityCoefficients, FugacityCoefficients, and PoyintingCorrectionFactors subclasses to define fugacity estimation methods. By default, the Dortmund modified UNIFAC method for estimating activities is selected, while ideal values for (vapor phase) fugacity coefficients and poyinting correction factos are selected.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### References"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<a id='References'></a>\n",
+    "\n",
+    "1. Huang, H., Long, S., & Singh, V. (2016) “Techno-economic analysis of biodiesel and ethanol co-production from lipid-producing sugarcane” Biofuels, Bioproducts and Biorefining, 10(3), 299–315. https://doi.org/10.1002/bbb.1640\n",
+    "\n",
+    "2. Hatakeyama, T., Nakamura, K., & Hatakeyama, H. (1982). Studies on heat capacity of cellulose and lignin by differential scanning calorimetry. Polymer, 23(12), 1801–1804. https://doi.org/10.1016/0032-3861(82)90125-2\n",
+    "\n",
+    "3. Thybring, E. E. (2014). Explaining the heat capacity of wood constituents by molecular vibrations. Journal of Materials Science, 49(3), 1317–1327. https://doi.org/10.1007/s10853-013-7815-6\n",
+    "\n",
+    "4. Murphy W. K., and K. R. Masters. (1978). Gross heat of combustion of northern red oak (Quercus rubra) chemical components. Wood Sci. 10:139-141."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

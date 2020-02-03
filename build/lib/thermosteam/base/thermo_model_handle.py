@@ -61,23 +61,24 @@ class ThermoModelHandle:
         return self.__class__(self.models.copy())
     __copy__ = copy
     
-    def model(self, evaluate=None,
-              Tmin=None, Tmax=None,
-              Pmin=None, Pmax=None,
-              name=None, var=None,
-              *, top=False, **funcs):
+    def add_model(self, evaluate=None,
+                  Tmin=None, Tmax=None,
+                  Pmin=None, Pmax=None,
+                  name=None, var=None,
+                  *, top_priority=False, **funcs):
         if evaluate is None:
             return lambda evaluate: self.model(evaluate,
                                                Tmin, Tmax,
                                                Pmin, Pmax,
                                                name, var,
-                                               top=top, **funcs)
+                                               top_priority=top_priority,
+                                               **funcs)
         if isinstance(evaluate, ThermoModel):
             model = evaluate
         else:
             model = thermo_model(evaluate, Tmin, Tmax, Pmin,
                                  Pmax, name, var, **funcs)
-        if top:
+        if top_priority:
             self.models.appendleft(model)
         else:
             self.models.append(model)    

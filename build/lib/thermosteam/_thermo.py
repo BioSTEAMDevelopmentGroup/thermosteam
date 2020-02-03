@@ -6,7 +6,7 @@ Created on Sat Nov 30 20:18:27 2019
 """
 from . import equilibrium as eq
 from ._chemicals import Chemicals
-from .mixture import IdealMixture
+from .mixture import Mixture
 from .utils import read_only, cucumber
 from ._settings import settings
 
@@ -48,7 +48,7 @@ class Thermo:
                  Phi=eq.IdealFugacityCoefficients,
                  PCF=eq.IdealPoyintingCorrectionFactors):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
-        mixture = mixture or IdealMixture(chemicals)
+        mixture = mixture or Mixture.new_ideal_mixture(chemicals)
         chemicals.compile()
         if settings._debug:
             issubtype = issubclass
@@ -66,7 +66,7 @@ class Thermo:
         setattr(self, 'PCF', PCF)    
     
     def __repr__(self):
-        return f"{type(self).__name__}(chemicals={self.chemicals}, mixture={type(self.mixture).__name__}(...), Gamma={self.Gamma.__name__}, Phi={self.Phi.__name__}, PCF={self.PCF.__name__})"
+        return f"{type(self).__name__}(chemicals={self.chemicals}, mixture={self.mixture}, Gamma={self.Gamma.__name__}, Phi={self.Phi.__name__}, PCF={self.PCF.__name__})"
     
 
     
