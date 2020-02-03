@@ -862,13 +862,15 @@ class Chemical:
         getfield = getattr
         return [i for i in (slots or self.__slots__) if not getfield(self, i)]
     
-    def fill(self, *sources, slots=None, default=True):
-        """Fill the missing thermodynamic properties by copying from sources. Also return any thermodynamic properties that are still missing."""
+    def copy_missing_slots_from(self, *sources, slots=None, default=True):
+        """Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing."""
         missing = slots if slots else self.get_missing_slots(slots)
         for source in sources:
             missing = fill(self, source, missing)
         if default:
             missing = self.default(missing)
+        phase = self.locked_state.phase
+        if phase: lock_phase(self, phase)
         return missing
     
     @classmethod
@@ -1113,8 +1115,9 @@ def lock_phase(chemical, phase):
     hasfield = hasattr
     for field in _phase_properties:
         phase_property = getfield(chemical, field)
-        model_handle = getfield(phase_property, phase)
-        setfield(chemical, field, model_handle)
+        if hasfield(phase_property, phase):
+            model_handle = getfield(phase_property, phase)
+            setfield(chemical, field, model_handle)
     for field in _free_energies:
         phase_property = getfield(chemical, field)
         if hasfield(phase_property, phase):

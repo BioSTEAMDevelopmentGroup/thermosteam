@@ -421,5 +421,5 @@ class Mixture:
         return sum([k(phase, z, TP) for phase, z in phase_data])
     
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self.description)}, ...)"
+        return f"{type(self).__name__}({repr(self.description)}, ..., rigorous_energy_balance={self.rigorous_energy_balance}, include_excess_energies={self.include_excess_energies})"
     

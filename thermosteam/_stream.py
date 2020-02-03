@@ -985,7 +985,7 @@ class Stream:
         return self.vle
 
     @property
-    def equilibrim_chemicals(self):
+    def equilibrium_chemicals(self):
         """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
@@ -1011,7 +1011,7 @@ class Stream:
         BubblePoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
+        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrium_chemicals
         bp = self._bubble_point_cache.reload(chemicals, self._thermo)
         return bp
     
@@ -1034,7 +1034,7 @@ class Stream:
         DewPoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrim_chemicals
+        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrium_chemicals
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
         return dp
     
@@ -1306,12 +1306,18 @@ class Stream:
                          Ethanol  0.0616
                          N2       0.369
         """
-        bp = other.bubble_point_at_T()
-        index = self.chemicals.get_index(bp.IDs)
-        mol = self.mol
-        mol_old = mol[index]
-        mol[index] = mol_new = self.F_mol * bp.y * bp.P / self.P
-        other.mol[index] += mol_old - mol_new 
+        chemicals = other.equilibrium_chemicals
+        F_l = eq.LiquidFugacities(chemicals, other.thermo)
+        IDs = tuple([i.ID for i in chemicals])
+        x = other.get_molar_composition(IDs)
+        T = self.T
+        P = self.P
+        f_l = F_l(x, T)
+        y = f_l / P
+        imol = self.imol
+        mol_old = imol[IDs]
+        imol[IDs] = mol_new = self.F_mol * y
+        other.imol[IDs] += mol_old - mol_new 
     
     ### Casting ###
     
