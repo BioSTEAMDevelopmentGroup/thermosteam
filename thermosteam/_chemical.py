@@ -73,6 +73,11 @@ class LockedState:
         yield self._T
         yield self._P
     
+    def copy(self):
+        return self.__class__(self.phase, self.T, self.P)
+    
+    __copy__ = copy
+    
     def __repr__(self):
         return f"{type(self).__name__}(phase={self.phase}, T={self.T}, P={self.P})"
 
@@ -267,7 +272,7 @@ class Chemical:
     0.07205503890847455
     >>> # Molar volume (m^3/mol)
     >>> water.V(phase='l', T=298.15, P=101325)
-    1.7970632558091718e-05
+    1.7970929501497658e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
@@ -358,7 +363,7 @@ class Chemical:
 
     The `model` method is a high level interface that even lets you create a constant model:
         
-    >>> water.V.l.add_model(1.687e-05)
+    >>> value = water.V.l.add_model(1.687e-05)
     ... # Model is appended at the end by default
     >>> added_model = water.V.l[-1] 
     >>> added_model.show()
@@ -373,7 +378,7 @@ class Chemical:
        Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
     
     """
-    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', '_phase_ref',
+    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', 'phase_ref',
                  *_names, *_groups, *_thermo, *_data)
     T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
     _cache = {}
@@ -480,6 +485,7 @@ class Chemical:
             setfield(new, field, copy_maybe(value))
         new._ID = ID
         new._CAS = CAS
+        new._locked_state = new._locked_state.copy()
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
                            new._locked_state.phase)
@@ -625,14 +631,14 @@ class Chemical:
         
         if any((has_Cns, has_Cnl, has_Cng)):
             if phase_ref:
-                self._phase_ref = phase_ref
+                self.phase_ref = phase_ref
             else:
                 if Tm and T_ref <= Tm:
-                    self._phase_ref = phase_ref = 's'
+                    self.phase_ref = phase_ref = 's'
                 elif Tb and T_ref >= Tb:
-                    self._phase_ref = phase_ref = 'g'
+                    self.phase_ref = phase_ref = 'g'
                 else:
-                    self._phase_ref = phase_ref = 'l'
+                    self.phase_ref = phase_ref = 'l'
 
             if Hvap:
                 Hvap_Tb = Hvap(Tb) if Tb else None
@@ -811,8 +817,8 @@ class Chemical:
             self.Hf = 0
         if 'epsilon' in slots:
             self.epsilon.add_model(0)
-        if '_phase_ref' in slots:
-            self._phase_ref = 'l'
+        if 'phase_ref' in slots:
+            self.phase_ref = 'l'
         if 'eos' in slots:
             self.eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self.eos_1atm = self.eos.to_TP(298.15, 101325)
@@ -834,7 +840,7 @@ class Chemical:
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
                                    'mu', 'kappa', 'Hc', 'epsilon', 'H',
-                                   'S', 'H_excess', 'S_excess', '_phase_ref'})
+                                   'S', 'H_excess', 'S_excess', 'phase_ref'})
         return missing
     
     def load_free_energies(self):
@@ -958,7 +964,7 @@ class Chemical:
             setfield(self, i, TDependentModelHandle())
         self._locked_state = LockedState(phase=phase)
         self._ID = ID
-        self._phase_ref = phase_ref or phase
+        self.phase_ref = phase_ref or phase
         self._CAS = CAS or ID
         for i,j in data.items(): setfield(self, i , j)
         return self
@@ -979,16 +985,11 @@ class Chemical:
         else: return 'l'
     
     @property
-    def phase_ref(self):
-        """[str] Phase at reference state."""
-        return self._phase_ref
-    
-    @property
     def locked_state(self):
         """[LockedState] State settings."""
         return self._locked_state
     
-    def at_state(self, phase=None, T=None, P=None):
+    def at_state(self, phase=None, T=None, P=None, copy=False):
         """Set the state of chemical.
         
         Examples
@@ -1040,6 +1041,10 @@ class Chemical:
                  iscyclic_aliphatic: 0
         
         """
+        if copy:
+            new = self.copy(self.ID, self.CAS)
+            new.at_state(phase, T, P)
+            return new
         locked_state = self.locked_state
         if locked_state.islocked:
             if locked_state.phase != phase or locked_state.T != T or locked_state.P != P:

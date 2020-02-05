@@ -93,7 +93,7 @@ class Stream:
     >>> s1.mass
     property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
     >>> s1.vol
-    property_array([<Water: 0.01995 m^3/hr>, <Ethanol: 0.012724 m^3/hr>])
+    property_array([<Water: 0.019951 m^3/hr>, <Ethanol: 0.012725 m^3/hr>])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
@@ -120,7 +120,7 @@ class Stream:
     >>> # Set flow
     >>> s1.set_flow(1, 'gpm', 'Water')
     >>> s1.get_flow('gpm', 'Water')
-    1.0
+    0.9999999999999999
     >>> # Set multiple flows
     >>> s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
     >>> s1.get_flow('kg/hr', ('Ethanol', 'Water'))
@@ -154,12 +154,12 @@ class Stream:
     Other thermodynamic properties are temperature and pressure dependent as well:
     
     >>> s1.rho # Density [kg/m3]
-    916.3494714517071
+    916.3256776513755
     
     It may be more convinient to get properties with different units:
         
     >>> s1.get_property('rho', 'g/cm3')
-    0.9163494714517073
+    0.9163256776513757
     
     It is also possible to set some of the properties in different units:
         

@@ -855,11 +855,11 @@ def Lastovka_Solid_Indefinite_Integral(T, similarity_variable, MW):
     D1 = 0.000025
     D2 = -0.000123
     sim2 = similarity_variable*similarity_variable
-    return MW * (T**3*(1000.*D1*similarity_variable/3. 
-        + 1000.*D2*sim2/3.) + T*T*(500.*C1*similarity_variable 
-        + 500.*C2*sim2)
-        + (3000.*A1*R*similarity_variable*theta
-        + 3000.*A2*R*sim2*theta)/(exp(theta/T) - 1.))
+    return MW * (T**3*(D1*similarity_variable/3. 
+        + D2*sim2/3.) + T*T*(C1*similarity_variable 
+        + C2*sim2)/2.
+        + 3. * (A1*R*similarity_variable*theta
+        + A2*R*sim2*theta)/(exp(theta/T) - 1.))
 
 @H.s
 def Lastovka_Solid_Integral(Ta, Tb, similarity_variable, MW):
@@ -877,13 +877,13 @@ def Lastovka_Solid_Over_T_Indefinite_Integral(T, similarity_variable, MW):
     D2 = -0.000123
     sim2 = similarity_variable*similarity_variable
     exp_theta_T = exp(theta/T)
-    return MW * (-3000.*R*similarity_variable*(A1 + A2*similarity_variable)*log(exp_theta_T - 1.) 
-                 + T**2*(500.*D1*similarity_variable + 500.*D2*sim2)
-                 + T*(1000.*C1*similarity_variable + 1000.*C2*sim2)
-                 + (3000.*A1*R*similarity_variable*theta 
-                    + 3000.*A2*R*sim2*theta)/(T*exp_theta_T - T) 
-                 + (3000.*A1*R*similarity_variable*theta 
-                    + 3000.*A2*R*sim2*theta)/T)
+    return MW * (-3.*R*similarity_variable*(A1 + A2*similarity_variable)*log(exp_theta_T - 1.) 
+                 + T**2*(D1*similarity_variable + D2*sim2) / 2.
+                 + T*(C1*similarity_variable + C2*sim2)
+                 + (3.*A1*R*similarity_variable*theta 
+                    + 3.*A2*R*sim2*theta)/(T*exp_theta_T - T) 
+                 + (3.*A1*R*similarity_variable*theta 
+                    + 3.*A2*R*sim2*theta)/T)
  
 @S.s
 def Lastovka_Solid_Over_T_Integral(Ta, Tb, similarity_variable, MW):

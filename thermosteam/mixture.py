@@ -8,6 +8,7 @@ from .base import PhaseZTProperty, PhaseZTPProperty, display_asfunctor
 import numpy as np
 
 __all__ = ('Mixture',
+           'new_ideal_mixture',
            'IdealZTProperty',
            'IdealZTPProperty')
 
@@ -56,9 +57,14 @@ class IdealZTPProperty:
     __slots__ = ('var', '_properties', '_cache')
 
     def __init__(self, properties, var):
-        self._properties = properties
+        self._properties = tuple(properties)
         self._cache = {}
         self.var = var
+
+    @classmethod
+    def from_chemicals(cls, chemicals, var):
+        getfield = getattr
+        return cls([getfield(i, var) for i in chemicals], var)
 
     def at_TP(self, z, TP):
         cache = self._cache
@@ -98,10 +104,8 @@ class IdealZTProperty:
     __slots__ = ('var', '_properties', '_cache')
     __repr__ = IdealZTPProperty.__repr__
 
-    def __init__(self, properties, var):
-        self._properties = tuple(properties)
-        self._cache = {}
-        self.var = var
+    __init__ = IdealZTPProperty.__init__
+    from_chemicals = IdealZTPProperty.from_chemicals
 
     def at_TP(self, z, TP):
         cache = self._cache
@@ -152,8 +156,10 @@ def group_properties_by_phase(phase_properties):
             properties.append(prop)
     return properties_by_phase
     
-def build_ideal_PhaseZTProperty(phase_properties, var):
+def build_ideal_PhaseZTProperty(chemicals, var):
     setfield = setattr
+    getfield = getattr
+    phase_properties = [getfield(i, var) for i in chemicals]
     new = PhaseZTProperty.__new__(PhaseZTProperty)
     for phase, properties in group_properties_by_phase(phase_properties).items():
         setfield(new, phase, IdealZTProperty(properties, var))
@@ -161,8 +167,10 @@ def build_ideal_PhaseZTProperty(phase_properties, var):
     return new
 
 
-def build_ideal_PhaseZTPProperty(phase_properties, var):
+def build_ideal_PhaseZTPProperty(chemicals, var):
     setfield = setattr
+    getfield = getattr
+    phase_properties = [getfield(i, var) for i in chemicals]
     new = PhaseZTPProperty.__new__(PhaseZTPProperty)
     for phase, properties in group_properties_by_phase(phase_properties).items():
         setfield(new, phase, IdealZTPProperty(properties, var))
@@ -212,62 +220,6 @@ class Mixture:
         self._S = S
         self._H_excess = H_excess
         self._S_excess = S_excess
-    
-    @classmethod
-    def new_ideal_mixture(cls, chemicals,
-                          rigorous_energy_balance=True,
-                          include_excess_energies=False):
-        """
-        Create a Mixture object that computes mixture properties using ideal mixing rules.
-        
-        Parameters
-        ----------
-        chemicals : Chemicals
-            For retrieving pure component chemical data.
-        rigorous_energy_balance=True : bool
-            Whether to rigorously solve for temperature in energy balance or simply approximate.
-        include_excess_energies=False : bool
-            Whether to include excess energies in enthalpy and entropy calculations.
-
-        """
-        chemicals = tuple(chemicals)
-        
-        properties = [i.Cn for i in chemicals]
-        Cn =  build_ideal_PhaseZTProperty(properties, 'Cn')
-        
-        properties = [i.H for i in chemicals]
-        H =  build_ideal_PhaseZTProperty(properties, 'H')
-        
-        properties = [i.S for i in chemicals]
-        S = build_ideal_PhaseZTPProperty(properties, 'S')
-        
-        properties = [i.H_excess for i in chemicals]
-        H_excess = build_ideal_PhaseZTPProperty(properties, 'H_excess')
-        
-        properties = [i.S_excess for i in chemicals]
-        S_excess = build_ideal_PhaseZTPProperty(properties, 'S_excess')
-        
-        properties = [i.mu for i in chemicals]
-        mu = build_ideal_PhaseZTPProperty(properties, 'mu')
-        
-        properties = [i.V for i in chemicals]
-        V = build_ideal_PhaseZTPProperty(properties, 'V')
-        
-        properties = [i.kappa for i in chemicals]
-        kappa = build_ideal_PhaseZTPProperty(properties, 'kappa')
-        
-        properties = [i.Hvap for i in chemicals]
-        Hvap = IdealZTProperty(properties, 'Hvap')
-        
-        properties = [i.sigma for i in chemicals]
-        sigma = IdealZTProperty(properties, 'sigma')
-        
-        properties = [i.epsilon for i in chemicals]
-        epsilon = IdealZTProperty(properties, 'epsilon')
-        
-        return cls('ideal mixing rules', Cn, H, S, H_excess, S_excess,
-                   mu, V, kappa, Hvap, sigma, epsilon,
-                   rigorous_energy_balance, include_excess_energies)
     
     @property
     def Cn_at_TP(self):
@@ -330,7 +282,7 @@ class Mixture:
                     it = 0
                     it2 += 1
                     if it2 > 5: break # Its good enough, no need to find exact solution
-                    Cn = self.Cn(phase, z, T_guess)
+                    Cn = self.Cn(phase, z, T)
                 else:
                     it += 1
                 T += (H - self.H(phase, z, T, P))/Cn
@@ -423,3 +375,35 @@ class Mixture:
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.description)}, ..., rigorous_energy_balance={self.rigorous_energy_balance}, include_excess_energies={self.include_excess_energies})"
     
+    
+def new_ideal_mixture(chemicals,
+                      rigorous_energy_balance=True,
+                      include_excess_energies=False):
+    """
+    Create a Mixture object that computes mixture properties using ideal mixing rules.
+    
+    Parameters
+    ----------
+    chemicals : Chemicals
+        For retrieving pure component chemical data.
+    rigorous_energy_balance=True : bool
+        Whether to rigorously solve for temperature in energy balance or simply approximate.
+    include_excess_energies=False : bool
+        Whether to include excess energies in enthalpy and entropy calculations.
+
+    """
+    chemicals = tuple(chemicals)
+    Cn =  build_ideal_PhaseZTProperty(chemicals, 'Cn')
+    H =  build_ideal_PhaseZTProperty(chemicals, 'H')
+    S = build_ideal_PhaseZTPProperty(chemicals, 'S')
+    H_excess = build_ideal_PhaseZTPProperty(chemicals, 'H_excess')
+    S_excess = build_ideal_PhaseZTPProperty(chemicals, 'S_excess')
+    mu = build_ideal_PhaseZTPProperty(chemicals, 'mu')
+    V = build_ideal_PhaseZTPProperty(chemicals, 'V')
+    kappa = build_ideal_PhaseZTPProperty(chemicals, 'kappa')
+    Hvap = IdealZTProperty.from_chemicals(chemicals, 'Hvap')
+    sigma = IdealZTProperty.from_chemicals(chemicals, 'sigma')
+    epsilon = IdealZTProperty.from_chemicals(chemicals, 'epsilon')
+    return Mixture('ideal mixing rules', Cn, H, S, H_excess, S_excess,
+                   mu, V, kappa, Hvap, sigma, epsilon,
+                   rigorous_energy_balance, include_excess_energies)
