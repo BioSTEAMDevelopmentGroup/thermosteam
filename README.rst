@@ -1,6 +1,6 @@
-==============================================================
-Thermosteam: BioSTEAM's Premier Thermodynamic Property Package 
-==============================================================
+====================================================
+Thermosteam: BioSTEAM's Premier Thermodynamic Engine 
+====================================================
 
 .. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
    :target: https://pypi.python.org/pypi/thermosteam
@@ -65,5 +65,5 @@ Citation
 
 To cite Thermosteam in publications use::
 
-    Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Property Package.
+    Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Engine.
     https://github.com/yoelcortes/thermosteam
