@@ -4,7 +4,7 @@ Created on Wed Mar 20 18:40:05 2019
 
 @author: yoelr
 """
-from flexsolve import wegstein, IQ_interpolation
+from flexsolve import wegstein, IQ_interpolation, fixed_point
 from ..utils.decorator_utils import thermo_user
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
@@ -305,7 +305,6 @@ class VLE:
             self._index = index
             if N == 1:
                 self._chemical, = eq_chems
-                return 
             elif N == 2:
                 self._solve_V = self._solve_V_2
             elif N == 3:
@@ -313,13 +312,14 @@ class VLE:
             else:
                 self._solve_V = self._solve_V_N
             
-            # Set equilibrium objects
-            thermo = self._thermo
-            self._bubble_point = bp = self._bubble_point_cache.reload(eq_chems, thermo)
-            self._dew_point = self._dew_point_cache.reload(eq_chems, thermo)
-            self._pcf = bp.pcf
-            self._gamma = bp.gamma
-            self._phi = bp.phi
+            if N != 1:
+                # Set equilibrium objects
+                thermo = self._thermo
+                self._bubble_point = bp = self._bubble_point_cache.reload(eq_chems, thermo)
+                self._dew_point = self._dew_point_cache.reload(eq_chems, thermo)
+                self._pcf = bp.pcf
+                self._gamma = bp.gamma
+                self._phi = bp.phi
         
         # Get overall composition
         data = self._imol._data
@@ -673,7 +673,7 @@ class VLE:
                                            self.T_tol, self.H_hat_tol)
     
     def _estimate_v(self, V, y_bubble):
-        return (V*self._z + (1-V)*y_bubble) * self._F_mol_equilibrium
+        return (V*self._z + (1-V)*y_bubble) * V * self._F_mol_equilibrium
     
     def _refresh_v(self, V, y_bubble):
         y = self._y
@@ -700,6 +700,7 @@ class VLE:
         return V
     
     def _x_iter(self, x, Psat_over_P_phi):
+        x[x < 0.] = 0.
         x = x/x.sum()
         self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
         return self._z/(1. + self._solve_V() * (self._Ks - 1.))
@@ -707,7 +708,12 @@ class VLE:
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
         Psat_over_P_phi = Psats_over_P / phi
-        self._x = x = self.itersolver(self._x_iter,
+        try:
+            self._x = x = self.itersolver(self._x_iter,
+                                          self._x, 1e-4,
+                                          args=(Psat_over_P_phi,))
+        except:
+            self._x = x = fixed_point(self._x_iter,
                                       self._x, 1e-4,
                                       args=(Psat_over_P_phi,))
         self._v = v = self._F_mol_equilibrium * self._V * x * self._Ks     

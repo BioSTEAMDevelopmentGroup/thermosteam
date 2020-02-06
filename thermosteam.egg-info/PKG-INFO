@@ -1,15 +1,15 @@
 Metadata-Version: 1.2
 Name: thermosteam
-Version: 0.1.23
-Summary: BioSTEAM's Premier Thermodynamic Property Package
+Version: 0.2.1
+Summary: BioSTEAM's Premier Thermodynamic Engine
 Home-page: https://github.com/yoelcortes/thermosteam
 Author: Yoel Cortes-Pena
 Author-email: yoelcortes@gmail.com
 License: MIT
 Download-URL: https://github.com/yoelcortes/thermosteam.git
-Description: ==============================================================
-        Thermosteam: BioSTEAM's Premier Thermodynamic Property Package 
-        ==============================================================
+Description: ====================================================
+        Thermosteam: BioSTEAM's Premier Thermodynamic Engine 
+        ====================================================
         
         .. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
            :target: https://pypi.python.org/pypi/thermosteam
@@ -74,14 +74,14 @@ Description: ==============================================================
         
         To cite Thermosteam in publications use::
         
-            Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Property Package.
+            Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Engine.
             https://github.com/yoelcortes/thermosteam
         
 Keywords: thermodynamics chemical engineering mass energy balance material properties phase equilibrium
 Platform: Windows
 Platform: Mac
 Platform: Linux
-Classifier: Development Status :: 4 - Beta
+Classifier: Development Status :: 3 - Alpha
 Classifier: Environment :: Console
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3.6

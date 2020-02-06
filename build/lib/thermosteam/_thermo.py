@@ -6,7 +6,7 @@ Created on Sat Nov 30 20:18:27 2019
 """
 from . import equilibrium as eq
 from ._chemicals import Chemicals
-from .mixture import Mixture
+from .mixture import Mixture, new_ideal_mixture
 from .utils import read_only, cucumber
 from ._settings import settings
 
@@ -22,13 +22,13 @@ class Thermo:
     ----------
     chemicals : Chemicals or Iterable[str]
         Pure component chemical data.
-    mixture : Mixture
+    mixture : Mixture, optional
         Calculator for mixture properties.
-    Gamma : ActivityCoefficients subclass
+    Gamma : ActivityCoefficients subclass, optional
         Class for computing activity coefficiente.
-    Phi : FugacityCoefficients subclass
+    Phi : FugacityCoefficients subclass, optional
         Class for computing fugacity coefficiente.
-    PCF : PoyntingCorrectionFactor subclass.
+    PCF : PoyntingCorrectionFactor subclass, optional
         Class for computing poynting correction factors.
     
     Examples
@@ -48,7 +48,11 @@ class Thermo:
                  Phi=eq.IdealFugacityCoefficients,
                  PCF=eq.IdealPoyintingCorrectionFactors):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
-        mixture = mixture or Mixture.new_ideal_mixture(chemicals)
+        if mixture:
+            assert isinstance(mixture, Mixture), (
+                f"mixture must be a '{Mixture.__name__}' object")
+        else:
+            mixture = new_ideal_mixture(chemicals)
         chemicals.compile()
         if settings._debug:
             issubtype = issubclass

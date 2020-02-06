@@ -67,12 +67,12 @@ class ThermoModelHandle:
                   name=None, var=None,
                   *, top_priority=False, **funcs):
         if evaluate is None:
-            return lambda evaluate: self.model(evaluate,
-                                               Tmin, Tmax,
-                                               Pmin, Pmax,
-                                               name, var,
-                                               top_priority=top_priority,
-                                               **funcs)
+            return lambda evaluate: self.add_model(evaluate,
+                                                   Tmin, Tmax,
+                                                   Pmin, Pmax,
+                                                   name, var,
+                                                   top_priority=top_priority,
+                                                   **funcs)
         if isinstance(evaluate, ThermoModel):
             model = evaluate
         else:

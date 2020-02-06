@@ -12,7 +12,7 @@ coolprop==6.3.0
 numpy==1.17.3
 xlrd==1.2.0
 openpyxl==3.0.0
-free_properties==0.2.2
-flexsolve
+free_properties>=0.2.3
+flexsolve>=0.1.2
 pyglet
 sympy

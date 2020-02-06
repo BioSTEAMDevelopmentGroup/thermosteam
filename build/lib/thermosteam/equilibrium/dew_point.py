@@ -65,7 +65,9 @@ class DewPoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
-        x_gamma_pcf = zP/array([i(T) for i in self.Psats]) * self.phi(z_norm, T, P)
+        Psats = array([i(T) for i in self.Psats])
+        phi = self.phi(z_norm, T, P)
+        x_gamma_pcf = phi * zP / Psats
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     

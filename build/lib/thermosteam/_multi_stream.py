@@ -104,7 +104,7 @@ class MultiStream(Stream):
     >>> # Set flow
     >>> s1.set_flow(1, 'gpm', 'l', 'Water')
     >>> s1.get_flow('gpm', 'l', 'Water')
-    1.0
+    0.9999999999999999
     >>> # Set multiple flows
     >>> s1.set_flow([10, 20], 'kg/hr', 'l', ('Ethanol', 'Water'))
     >>> s1.get_flow('kg/hr', 'l', ('Ethanol', 'Water'))
