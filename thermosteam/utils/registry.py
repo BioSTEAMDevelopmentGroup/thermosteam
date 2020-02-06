@@ -15,6 +15,9 @@ class Registry:
     def __setattr__(self, ID, obj):
         self[ID] = obj
     
+    def __iter__(self):
+        return iter(self.__dict__.values())
+    
     def __getitem__(self, ID):
         return self.__dict__[ID]
     
@@ -31,7 +34,7 @@ class Registry:
         obj._ID = ID
     
     def __repr__(self):
-        if self:
+        if self.__dict__:
             return f'Register:\n ' + '\n '.join([repr(i) for i in self.__dict__.values()])
         else:
             return f'Register: (Empty)'
