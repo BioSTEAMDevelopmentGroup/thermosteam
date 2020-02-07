@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.2.1',
+    version='0.2.2',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),\
     author='Yoel Cortes-Pena',
@@ -19,7 +19,7 @@ setup(
                       'numba==0.46.0', 'scipy==1.3.1', 'IPython==7.9.0', 
                       'colorpalette>=0.3.0',
                       'pandas==0.25.2', 'graphviz==0.8.3', 'matplotlib==3.1.1',
-				      'coolprop==6.3.0', 'numpy==1.17.3', 'xlrd==1.2.0',
+				      'coolprop==6.3.0', 'numpy', 'xlrd==1.2.0',
                       'openpyxl==3.0.0',
                       'free_properties>=0.2.3', 'flexsolve>=0.1.2', 'pyglet', 'sympy'],
     python_requires=">=3.6",

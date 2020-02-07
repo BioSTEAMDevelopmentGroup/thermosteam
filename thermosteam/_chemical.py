@@ -48,25 +48,17 @@ def to_searchable_format(ID):
 # %% Locked chemical state settings
                                       
 class LockedState:
-    __slots__ = ('_phase', '_T', '_P')
-    def __init__(self, phase=None, T=None, P=None):
+    __slots__ = ('_phase',)
+    def __init__(self, phase=None):
         self._phase = phase
-        self._T = T
-        self._P = P
     
     @property
     def phase(self):
         return self._phase    
-    @property
-    def T(self):
-        return self._T
-    @property
-    def P(self):
-        return self._P
     
     @property
     def islocked(self):
-        return any((self._phase, self._T, self._P))
+        return bool(self._phase)
     
     def __iter__(self):
         yield self._phase
@@ -74,12 +66,12 @@ class LockedState:
         yield self._P
     
     def copy(self):
-        return self.__class__(self.phase, self.T, self.P)
+        return self.__class__(self._phase)
     
     __copy__ = copy
     
     def __repr__(self):
-        return f"{type(self).__name__}(phase={self.phase}, T={self.T}, P={self.P})"
+        return f"{type(self).__name__}(phase={self.phase})"
 
 
 # %% Filling missing properties
@@ -377,10 +369,109 @@ class Chemical:
     .. Note::
        Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
     
+    Attributes
+    ----------
+    InChI : str
+        IUPAC International Chemical Identifier.
+    InChI_key : str
+        IUPAC International Chemical Identifier shorthand.
+    common_name : str
+        Common name identifier.
+    iupac_name : str
+        Standard name as defined by IUPAC.
+    pubchemid : str
+        Chemical identifier as defined by PubMed.
+    smiles : str
+        Chemical SMILES formula.
+    Dortmund : DortmundGroupCounts
+        Dictionary-like object with functional group numerical
+        identifiers as keys and the number of groups as values.
+    UNIFAC : UNIFACGroupCounts
+        Dictionary-like object with functional group numerical
+        identifiers as keys and the number of groups as values.
+    PSRK : PSRKGroupCounts
+        Dictionary-like object with functional group numerical
+        identifiers as keys and the number of groups as values.
+    mu(phase, T, P) : Callable
+        Dynamic viscosity functor [Pa*s].
+    kappa(phase, T, P): Callable
+        Thermal conductivity functor [W/m/K].
+    V(phase, T, P): Callable
+        Molar volume functor [m^3/mol].
+    Cn(phase, T) : Callable
+        Molar heat capacity functor [J/mol/K].
+    Psat(T) : Callable
+        Vapor pressure functor [Pa].
+    Hvap(T) : Callable
+        Heat of vaporization functor [J/mol]
+    sigma(T) : Callable
+        Surface tension functor [N/m].
+    epsilon : Callable
+        Relative permitivity functor [-]
+    S(phase, T, P) : Callable
+        Entropy functor [J/mol].
+    H(phase, T) : Callable
+        Enthalpy functor [J/mol].
+    S_excess(T, P) : Callable
+        Excess entropy functor [J/mol].
+    H_excess(T, P) : Callable
+        Excess enthalpy functor [J/mol].
+    phase_ref : {'s', 'l', 'g'}
+        Phase at 298 K and 101325 Pa.
+    MW : float
+        Molecular weight [g/mol].
+    Tm : float
+        Normal melting temperature [K].
+    Tb : float
+        Normal boiling temperature [K].
+    Tt : float
+        Triple point temperature [K].
+    Tc : float
+        Critical point temperature [K].
+    Pt : float
+        Triple point pressure [Pa].
+    Pc : float
+        Critical point pressure [Pa].
+    Vc : float
+        Critical point molar volume [m^3/mol].
+    Zc : float
+        Critical point molar volume [m^3/mol].
+    Hf : float
+        Heat of formation [J/mol].
+    Hc : float
+        Heat of combustion [J/mol].
+    Hfus : float
+        Heat of fusion [J/mol].
+    Hsub : float
+        Heat of sublimation [J/mol].
+    omega :
+        Accentric factor [-].
+    dipole : float
+        Dipole moment [Debye].
+    StielPolar : float
+        Stiel Polar factor [-].
+    similarity_variable : float
+        Similarity variable [-].
+    iscyclic_aliphatic : bool
+        Whether the chemical is cyclic-aliphatic.
+    eos : object
+        Instance for solving equations of state.
+    eos_1atm : object
+        Instance for solving equations of state at 1 atm.
+    
     """
     __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', 'phase_ref',
                  *_names, *_groups, *_thermo, *_data)
-    T_ref = 298.15; P_ref = 101325.; H_ref = 0.; S_ref = 0.
+    
+    #: [float] Reference temperature in Kelvin
+    T_ref = 298.15
+    #: [float] Reference pressure in Pascal
+    P_ref = 101325.
+    #: [float] Reference enthalpy in J/mol
+    H_ref = 0.
+    #: [float] Reference entropy in J/mol
+    S_ref = 0.
+    
     _cache = {}
     
     def __new__(cls, ID, *, search_ID=None, eos=PR, phase_ref=None):
@@ -963,7 +1054,7 @@ class Chemical:
             self.Cn = PhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
-        self._locked_state = LockedState(phase=phase)
+        self._locked_state = LockedState(phase)
         self._ID = ID
         self.phase_ref = phase_ref or phase
         self._CAS = CAS or ID
@@ -990,7 +1081,7 @@ class Chemical:
         """[LockedState] State settings."""
         return self._locked_state
     
-    def at_state(self, phase=None, T=None, P=None, copy=False):
+    def at_state(self, phase=None, copy=False):
         """Set the state of chemical.
         
         Examples
@@ -1044,24 +1135,19 @@ class Chemical:
         """
         if copy:
             new = self.copy(self.ID, self.CAS)
-            new.at_state(phase, T, P)
+            new.at_state(phase)
             return new
         locked_state = self.locked_state
         if locked_state.islocked:
-            if locked_state.phase != phase or locked_state.T != T or locked_state.P != P:
+            if locked_state.phase != phase:
                 raise TypeError(f"{self}'s state is already locked")   
             else:
-                return
-        elif T and P:
-            if phase:
-                lock_TPphase(self, phase, T, P)
-            else:
-                lock_TP(self, T, P)                
+                return         
         elif phase:
             lock_phase(self, phase)
         else:
-            raise ValueError("must pass a either a phase, T and P, or both to lock state")
-        locked_state.__init__(phase, T, P)
+            raise ValueError(f"invalid phase {repr(phase)}")
+        locked_state.__init__(phase)
     
     def show(self):
         """Print all specifications"""
@@ -1099,22 +1185,6 @@ class Chemical:
     def __repr__(self):
         return f"Chemical('{self}')"
     
-    
-def lock_TP(chemical, T, P):
-    getfield = getattr
-    setfield = setattr
-    phases = ('s', 'l', 'g')
-    for field in _phase_properties:
-        phase_property = getfield(chemical, field)
-        for phase in phases:
-            model_handle = getfield(phase_property, phase)
-            try: model_handle.lock_TP(T, P)
-            except: pass
-    for field in _liquid_only_properties:
-        model_handle = getfield(chemical, field) 
-        value = model_handle.lock_TP(T, P)
-        setfield(chemical, field, value)
-
 def lock_phase(chemical, phase):
     getfield = getattr
     setfield = setattr
@@ -1129,24 +1199,6 @@ def lock_phase(chemical, phase):
         if hasfield(phase_property, phase):
             functor = getfield(phase_property, phase)
             setfield(chemical, field, functor)
-
-def lock_TPphase(chemical, phase, T, P):
-    getfield = getattr
-    setfield = setattr
-    for field in _phase_properties:
-        phase_property = getfield(chemical, field)
-        model_handle = getfield(phase_property, phase)
-        try: model_handle.lock_TP(T, P)
-        except: pass
-        setfield(chemical, field, model_handle)
-    for field in _liquid_only_properties:
-        model_handle = getfield(chemical, field) 
-        try: model_handle.lock_TP(T, P)
-        except: pass
-    for field in _free_energies:
-        phase_property = getfield(chemical, field)
-        functor = getfield(phase_property, phase)
-        setfield(chemical, field, functor)
 
 # # Fire Safety Limits
 # self.Tflash = Tflash(CAS)
