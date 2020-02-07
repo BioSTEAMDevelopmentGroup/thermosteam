@@ -45,34 +45,6 @@ from .equilibrium.unifac_data import \
 def to_searchable_format(ID):    
     return re.sub(r"\B([A-Z])", r" \1", ID).capitalize().replace('_', ' ')
 
-# %% Locked chemical state settings
-                                      
-class LockedState:
-    __slots__ = ('_phase',)
-    def __init__(self, phase=None):
-        self._phase = phase
-    
-    @property
-    def phase(self):
-        return self._phase    
-    
-    @property
-    def islocked(self):
-        return bool(self._phase)
-    
-    def __iter__(self):
-        yield self._phase
-        yield self._T
-        yield self._P
-    
-    def copy(self):
-        return self.__class__(self._phase)
-    
-    __copy__ = copy
-    
-    def __repr__(self):
-        return f"{type(self).__name__}(phase={self.phase})"
-
 
 # %% Filling missing properties
 
@@ -125,17 +97,8 @@ def unpickle_chemical(chemical_data):
 def chemical_identity(chemical, pretty=False):
     typeheader = f"{type(chemical).__name__}:"
     full_ID = f"{typeheader} {chemical.ID} (phase_ref={repr(chemical.phase_ref)})"
-    phase, T, P = chemical._locked_state
-    state = []
-    if phase:
-        state.append(f"phase={repr(phase)}")
-    if T:
-        state.append(f"T={T} K")
-    if P:
-        state.append(f"P={P} Pa")
-    state = ' at ' + ', '.join(state) if state else ""
-    if pretty and (T and P):
-        full_ID += "\n" + len(typeheader) * " " 
+    phase = chemical.locked_state
+    state = ' at ' + f"phase={repr(phase)}" if phase else ""
     return full_ID + state
 
 
@@ -168,6 +131,8 @@ _equilibrium_properties = ('Psat', 'Hvap')
 _data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
          'Hf', 'Hc', 'Hfus', 'Hsub', 'omega', 'dipole',
          'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
+
+important_slots = ('phase_ref', 'eos', 'eos_1atm', *_names, *_groups, *_thermo, *_data)
 
 _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
@@ -460,8 +425,7 @@ class Chemical:
         Instance for solving equations of state at 1 atm.
     
     """
-    __slots__ = ('_ID', 'eos', 'eos_1atm', '_locked_state', 'phase_ref',
-                 *_names, *_groups, *_thermo, *_data)
+    __slots__ = ('_ID', '_locked_state', *important_slots)
     
     #: [float] Reference temperature in Kelvin
     T_ref = 298.15
@@ -513,7 +477,7 @@ class Chemical:
 
         """
         info = pubchem_db.search_CAS(CAS)
-        self._locked_state = LockedState()
+        self._locked_state = None
         self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
                          info.pubchemid, info.iupac_name, info.common_name)
         self._init_groups(info.InChI_key)
@@ -577,10 +541,10 @@ class Chemical:
             setfield(new, field, copy_maybe(value))
         new._ID = ID
         new._CAS = CAS
-        new._locked_state = new._locked_state.copy()
+        new._locked_state = new._locked_state
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref,
-                           new._locked_state.phase)
+                           new._locked_state)
         cache[CAS] = new
         return new
     __copy__ = copy
@@ -958,7 +922,7 @@ class Chemical:
         
         """
         getfield = getattr
-        return [i for i in (slots or self.__slots__) if not getfield(self, i)]
+        return [i for i in (slots or important_slots) if not getfield(self, i)]
     
     def copy_missing_slots_from(self, *sources, slots=None, default=True):
         """Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing."""
@@ -967,7 +931,7 @@ class Chemical:
             missing = fill(self, source, missing)
         if default:
             missing = self.default(missing)
-        phase = self.locked_state.phase
+        phase = self.locked_state
         if phase: lock_phase(self, phase)
         return missing
     
@@ -1054,7 +1018,7 @@ class Chemical:
             self.Cn = PhaseTProperty()
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, i, TDependentModelHandle())
-        self._locked_state = LockedState(phase)
+        self._locked_state = phase
         self._ID = ID
         self.phase_ref = phase_ref or phase
         self._CAS = CAS or ID
@@ -1071,14 +1035,14 @@ class Chemical:
         >>> Water.get_phase(T=400, P=101325)
         'g'
         """
-        if self._locked_state.phase: return self._locked_state.phase
+        if self._locked_state: return self._locked_state
         if self.Tm and T <= self.Tm: return 's'
         if self.Psat and P <= self.Psat(T): return 'g'
         else: return 'l'
     
     @property
     def locked_state(self):
-        """[LockedState] State settings."""
+        """[str] Constant phase of chemical."""
         return self._locked_state
     
     def at_state(self, phase=None, copy=False):
@@ -1138,8 +1102,8 @@ class Chemical:
             new.at_state(phase)
             return new
         locked_state = self.locked_state
-        if locked_state.islocked:
-            if locked_state.phase != phase:
+        if locked_state:
+            if locked_state != phase:
                 raise TypeError(f"{self}'s state is already locked")   
             else:
                 return         
@@ -1147,7 +1111,7 @@ class Chemical:
             lock_phase(self, phase)
         else:
             raise ValueError(f"invalid phase {repr(phase)}")
-        locked_state.__init__(phase)
+        self._locked_state = phase
     
     def show(self):
         """Print all specifications"""

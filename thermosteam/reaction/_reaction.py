@@ -46,7 +46,7 @@ class Reaction:
      H2O -> H2 + 0.5 O2  H2O        70.00
     >>> feed = tmo.Stream('feed', H2O=200)
     >>> srn(feed.mol) # Call to run reaction on molar flow
-    >>> feed # Notice how 70% of water was converted to product
+    >>> feed.show() # Notice how 70% of water was converted to product
     Stream: feed
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): H2O  60
