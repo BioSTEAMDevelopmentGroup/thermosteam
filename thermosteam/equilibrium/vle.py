@@ -297,7 +297,7 @@ class VLE:
         else:
             # Set up indices for both equilibrium and non-equilibrium species
             index = chemicals.get_equilibrium_indices(notzero)
-            
+            self._y = None            
             self._N = N = len(index)
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
@@ -726,7 +726,11 @@ class VLE:
         self._T = T
         v = self._v
         y = v / v.sum()
-        l = self._mol - v
+        try:
+            l = self._mol - v
+        except:
+            import pdb 
+            pdb.set_trace()
         self._x = l / l.sum()
         if isinstance(self._phi, IdealFugacityCoefficients):
             self._y = self._y_iter(y, Psats_over_P, T, P)

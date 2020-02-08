@@ -21,19 +21,22 @@ class ThermalCondition:
     __slots__ = ('T', 'P')
     
     def __init__(self, T, P):
-        self.T = T
-        self.P = P
+        self.T = T #: [float] Temperature in Kelvin
+        self.P = P #: [float] Pressure in Pascal
     
     def copy(self):
+        """Return a copy."""
         return self.__class__(self.T, self.P)
     
     def copy_like(self, other):
+        """Copy the specifications of another ThermalCondition object."""
         self.T = other.T
         self.P = other.P
     
     @property
     def tuple(self):
-        return self.T, self.P
+        """tuple[float, float] Temperature and pressure"""
+        return (self.T, self.P)
     
     def __iter__(self):
         yield self.T

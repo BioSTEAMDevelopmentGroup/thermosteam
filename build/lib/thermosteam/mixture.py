@@ -189,13 +189,60 @@ class Mixture:
     ----------
     description : str
         Description of mixing rules used.
-    Cn, H : PhaseZTProperty
-    S, H_excess, S_excess, mu, V, kappa : PhaseZTPProperty
-    Hvap, sigma, epsilon: ZTProperty
+    Cn : PhaseZTProperty
+        Molar heat capacity functor [J/mol/K].
+    H : PhaseZTProperty
+        Enthalpy functor [J/mol].
+    S : PhaseZTPProperty
+        Entropy functor [J/mol].
+    H_excess : PhaseZTPProperty
+        Excess enthalpy functor [J/mol].
+    S_excess : PhaseZTPProperty
+        Excess entropy functor [J/mol].
+    mu : PhaseZTPProperty
+        Dynamic viscosity functor [Pa*s].
+    V : PhaseZTPProperty
+        Molar volume functor [m^3/mol].
+    kappa : PhaseZTPProperty
+        Thermal conductivity functor [W/m/K].
+    Hvap : ZTProperty
+        Heat of vaporization functor [J/mol]
+    sigma : ZTProperty
+        Surface tension functor [N/m].
+    epsilon : ZTProperty
+        Relative permitivity functor [-]
     rigorous_energy_balance=True : bool
-        Whether to rigorously solve for temperature in energy balance or simply approximate.
+        Whether to rigorously solve for temperature
+        in energy balance or simply approximate.
     include_excess_energies=False : bool
-        Whether to include excess energies in enthalpy and entropy calculations.
+        Whether to include excess energies
+        in enthalpy and entropy calculations.
+    
+    Attributes
+    ----------
+    description : str
+        Description of mixing rules used.
+    rigorous_energy_balance : bool
+        Whether to rigorously solve for temperature
+        in energy balance or simply approximate.
+    include_excess_energies : bool
+        Whether to include excess energies
+        in enthalpy and entropy calculations.
+    Cn(phase, z, T) : PhaseZTProperty
+        Molar heat capacity functor [J/mol/K].
+    mu(phase, T, P) : PhaseZTPProperty
+        Dynamic viscosity functor [Pa*s].
+    V(phase, T, P) : PhaseZTPProperty
+        Molar volume functor [m^3/mol].
+    kappa(phase, T, P) : PhaseZTPProperty
+        Thermal conductivity functor [W/m/K].
+    Hvap(phase, T, P) : ZTProperty
+        Heat of vaporization functor [J/mol]
+    sigma(phase, T, P) : ZTProperty
+        Surface tension functor [N/m].
+    epsilon(phase, T, P) : ZTProperty
+        Relative permitivity [-]
+    
     
     """
     __slots__ = ('description',
@@ -244,12 +291,14 @@ class Mixture:
         return self.Hvap.at_TP
     
     def H(self, phase, z, T, P):
+        """Return enthalpy in J/mol"""
         if self.include_excess_energies:
             return self._H(phase, z, T) + self._H_excess(phase, z, T, P)
         else:
             return self._H(phase, z, T)
     
     def S(self, phase, z, T, P):
+        """Return entropy in J/mol"""
         if self.include_excess_energies:
             return self._S(phase, z, T, P) + self._S_excess(phase, z, T, P)
         else:
@@ -268,6 +317,7 @@ class Mixture:
         return S
     
     def solve_T(self, phase, z, H, T_guess, P):
+        """Solve for temperature in Kelvin"""
         # First approximation
         Cn = self.Cn(phase, z, T_guess)
         T = T_guess + (H - self.H(phase, z, T_guess, P))/Cn
@@ -289,6 +339,7 @@ class Mixture:
         return T
                 
     def xsolve_T(self, phase_data, H, T_guess, P):
+        """Solve for temperature in Kelvin"""
         # First approximation
         Cn = self.xCn(phase_data, T_guess)
         T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cn

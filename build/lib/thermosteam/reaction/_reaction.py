@@ -36,14 +36,17 @@ class Reaction:
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> import thermosteam.reaction as rn
-    >>> tmo.settings.thermo = tmo.Thermo(['H2O', 'H2', 'O2'])
-    >>> srn = rn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
-    >>> srn
-    Reaction('H2O -> H2 + 0.5 O2', reactant='H2O', X=0.7)
+    >>> import thermosteam.reaction as rxn
+    >>> chemicals = tmo.Chemicals(['H2O', 'H2', 'O2'])
+    >>> tmo.settings.set_thermo(chemicals)
+    >>> srn = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
+    >>> srn.show()
+    Reaction:
+     stoichiometry       reactant    X[%]
+     H2O -> H2 + 0.5 O2  H2O        70.00
     >>> feed = tmo.Stream('feed', H2O=200)
     >>> srn(feed.mol) # Call to run reaction on molar flow
-    >>> feed # Notice how 70% of water was converted to product
+    >>> feed.show() # Notice how 70% of water was converted to product
     Stream: feed
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): H2O  60

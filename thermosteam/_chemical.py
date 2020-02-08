@@ -64,10 +64,10 @@ def fill_from_obj(chemical, obj, slots=None):
     missing = []
     setfield = setattr
     getfield = getattr
-    for i in slots :
-        attr = getfield(obj, i)
-        if attr:
-            setfield(chemical, i, attr)
+    for i in slots:
+        field = getfield(obj, i)
+        if field:
+            setfield(chemical, i, field)
         else:
             missing.append(i)
     return missing
@@ -357,29 +357,29 @@ class Chemical:
     PSRK : PSRKGroupCounts
         Dictionary-like object with functional group numerical
         identifiers as keys and the number of groups as values.
-    mu(phase, T, P) : Callable
+    mu(phase, T, P) : 
         Dynamic viscosity functor [Pa*s].
-    kappa(phase, T, P): Callable
+    kappa(phase, T, P): 
         Thermal conductivity functor [W/m/K].
-    V(phase, T, P): Callable
+    V(phase, T, P): 
         Molar volume functor [m^3/mol].
-    Cn(phase, T) : Callable
+    Cn(phase, T) : 
         Molar heat capacity functor [J/mol/K].
-    Psat(T) : Callable
+    Psat(T) : 
         Vapor pressure functor [Pa].
-    Hvap(T) : Callable
+    Hvap(T) : 
         Heat of vaporization functor [J/mol]
-    sigma(T) : Callable
+    sigma(T) : 
         Surface tension functor [N/m].
-    epsilon : Callable
+    epsilon : 
         Relative permitivity functor [-]
-    S(phase, T, P) : Callable
+    S(phase, T, P) : 
         Entropy functor [J/mol].
-    H(phase, T) : Callable
+    H(phase, T) : 
         Enthalpy functor [J/mol].
-    S_excess(T, P) : Callable
+    S_excess(T, P) : 
         Excess entropy functor [J/mol].
-    H_excess(T, P) : Callable
+    H_excess(T, P) : 
         Excess enthalpy functor [J/mol].
     phase_ref : {'s', 'l', 'g'}
         Phase at 298 K and 101325 Pa.

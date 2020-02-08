@@ -295,7 +295,7 @@ class CompiledChemicals(Chemicals):
         heavy_chemicals = []
         light_chemicals = []
         for i in chemicals:
-            locked_phase = i.locked_state.phase
+            locked_phase = i.locked_state
             if locked_phase:
                 if locked_phase in ('s', 'l'):
                     heavy_chemicals.append(i)
