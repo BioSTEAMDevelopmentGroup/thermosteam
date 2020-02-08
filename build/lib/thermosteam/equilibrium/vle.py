@@ -297,7 +297,7 @@ class VLE:
         else:
             # Set up indices for both equilibrium and non-equilibrium species
             index = chemicals.get_equilibrium_indices(notzero)
-            
+            self._y = None            
             self._N = N = len(index)
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]

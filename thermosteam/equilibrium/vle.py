@@ -726,11 +726,7 @@ class VLE:
         self._T = T
         v = self._v
         y = v / v.sum()
-        try:
-            l = self._mol - v
-        except:
-            import pdb 
-            pdb.set_trace()
+        l = self._mol - v
         self._x = l / l.sum()
         if isinstance(self._phi, IdealFugacityCoefficients):
             self._y = self._y_iter(y, Psats_over_P, T, P)
