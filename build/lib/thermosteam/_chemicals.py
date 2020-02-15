@@ -29,13 +29,13 @@ class Chemicals:
     Parameters
     ----------
     chemicals : Iterable[str or Chemical]
-           Strings should be one of the following [-]:
-              * Name, in IUPAC form or common form or a synonym registered in PubChem
-              * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
-              * InChI key, prefixed by 'InChIKey='
-              * PubChem CID, prefixed by 'PubChem='
-              * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
-              * CAS number
+        Strings should be one of the following [-]:
+           * Name, in IUPAC form or common form or a synonym registered in PubChem
+           * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
+           * InChI key, prefixed by 'InChIKey='
+           * PubChem CID, prefixed by 'PubChem='
+           * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
+           * CAS number
     
     Examples
     --------

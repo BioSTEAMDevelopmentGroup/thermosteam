@@ -35,34 +35,26 @@ class Stream:
 
     Parameters
     ----------
-    ID='' : str, defaults to a unique ID
-        A unique identification. If ID is None, stream will not be
-        registered.
-
-    flow=() : tuple, optional
+    ID='' : str
+        A unique identification. If ID is None, stream will not be registered.
+        If no ID is given, stream will be registered with a unique ID.
+    flow=() : tuple
         All flow rates corresponding to chemical `IDs`.
-
-    phase='l' : {'l', 'g', 's'}, optional
+    phase='l' : 'l', 'g', or 's'
         Either gas ("g"), liquid ("l"), or solid ("s").
-
-    T=298.15 : float, optional
-        Temperature (K).
-
-    P=101325 : float, optional
-        Pressure (Pa).
-
-    units='kmol/hr' : str, optional
+    T=298.15 : float
+        Temperature [K].
+    P=101325 : float
+        Pressure [Pa].
+    units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
-        volumetric flow rates are valid)
-
-    price=0 : float, optional
+        volumetric flow rates are valid).
+    price=0 : float
         Price in USD/kg.
-    
-    thermo=() : Thermo, defaults to settings.thermo
-        Thermodynamic equilibrium package.
-    
+    thermo=None : Thermo
+        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.
     **chemical_flows : float
-                   ID - flow pairs
+        ID - flow pairs.
     
     Examples
     --------

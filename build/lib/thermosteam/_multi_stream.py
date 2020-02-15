@@ -20,34 +20,26 @@ class MultiStream(Stream):
 
     Parameters
     ----------
-    ID='' : str, defaults to a unique ID
-        A unique identification. If ID is None, stream will not be
-        registered.
-
-    flow=() : 2d array, optional
+    ID='' : str
+        A unique identification. If ID is None, stream will not be registered.
+        If no ID is given, stream will be registered with a unique ID.
+    flow=() : 2d array
         All flow rates corresponding to `phases` by row and chemical IDs by column.
-
-    thermo=() : Thermo, defaults to settings.Thermo
-        Thermodynamic equilibrium package.
-
-    units='kmol/hr' : str, optional
+    thermo=None : Thermo
+        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.
+    units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
-        volumetric flow rates are valid)
-
-    phases=('g, l') : tuple['g', 'l', 's', 'G', 'L', 'S'], optional
+        volumetric flow rates are valid).
+    phases=('g, l') : tuple['g', 'l', 's', 'G', 'L', 'S']
         Tuple denoting the phases present.
-
-    T=298.15 : float, optional
-        Temperature (K).
-
-    P=101325 : float, optional
-        Pressure (Pa).
-
-    price=0 : float, optional
-        Price in USD/kg.
-    
+    T=298.15 : float
+        Temperature [K].
+    P=101325 : float
+        Pressure [Pa].
+    price=0 : float
+        Price per unit mass [USD/kg].
     **phase_flow : tuple[str, float]
-        phase-(ID, flow) pairs
+        phase-(ID, flow) pairs.
     
     Examples
     --------
@@ -450,6 +442,7 @@ class MultiStream(Stream):
     
     @property
     def vle(self):
+        """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
         return self._vle_cache.retrieve()
     
     ### Casting ###

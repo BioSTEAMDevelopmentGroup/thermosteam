@@ -3,3 +3,4 @@ BubblePoint
 
 .. autoclass:: thermosteam.equilibrium.BubblePoint
    :members:
+   :special-members:

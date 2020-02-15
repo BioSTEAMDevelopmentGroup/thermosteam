@@ -3,3 +3,4 @@ DewPoint
 
 .. autoclass:: thermosteam.equilibrium.DewPoint
    :members:
+   :special-members:
