@@ -50,9 +50,9 @@ class Stream:
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid).
     price=0 : float
-        Price in USD/kg.
+        Price per unit mass [USD/kg].
     thermo=None : Thermo
-        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.
+        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
     **chemical_flows : float
         ID - flow pairs.
     

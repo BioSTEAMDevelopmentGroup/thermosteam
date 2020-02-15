@@ -26,12 +26,12 @@ class MultiStream(Stream):
     flow=() : 2d array
         All flow rates corresponding to `phases` by row and chemical IDs by column.
     thermo=None : Thermo
-        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.
+        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
     units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid).
     phases : tuple['g', 'l', 's', 'G', 'L', 'S']
-        Tuple denoting the phases present. Defaults to ('g, l').
+        Tuple denoting the phases present. Defaults to ('g', 'l').
     T=298.15 : float
         Temperature [K].
     P=101325 : float
