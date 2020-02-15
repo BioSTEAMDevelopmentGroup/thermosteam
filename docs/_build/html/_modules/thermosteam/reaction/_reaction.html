@@ -205,14 +205,17 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">    &gt;&gt;&gt; import thermosteam.reaction as rn</span>
-<span class="sd">    &gt;&gt;&gt; tmo.settings.thermo = tmo.Thermo([&#39;H2O&#39;, &#39;H2&#39;, &#39;O2&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; srn = rn.Reaction(&#39;2H2O -&gt; 2H2 + O2&#39;, reactant=&#39;H2O&#39;, X=0.7)</span>
-<span class="sd">    &gt;&gt;&gt; srn</span>
-<span class="sd">    Reaction(&#39;H2O -&gt; H2 + 0.5 O2&#39;, reactant=&#39;H2O&#39;, X=0.7)</span>
+<span class="sd">    &gt;&gt;&gt; import thermosteam.reaction as rxn</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;H2O&#39;, &#39;H2&#39;, &#39;O2&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">    &gt;&gt;&gt; srn = rxn.Reaction(&#39;2H2O -&gt; 2H2 + O2&#39;, reactant=&#39;H2O&#39;, X=0.7)</span>
+<span class="sd">    &gt;&gt;&gt; srn.show()</span>
+<span class="sd">    Reaction:</span>
+<span class="sd">     stoichiometry       reactant    X[%]</span>
+<span class="sd">     H2O -&gt; H2 + 0.5 O2  H2O        70.00</span>
 <span class="sd">    &gt;&gt;&gt; feed = tmo.Stream(&#39;feed&#39;, H2O=200)</span>
 <span class="sd">    &gt;&gt;&gt; srn(feed.mol) # Call to run reaction on molar flow</span>
-<span class="sd">    &gt;&gt;&gt; feed # Notice how 70% of water was converted to product</span>
+<span class="sd">    &gt;&gt;&gt; feed.show() # Notice how 70% of water was converted to product</span>
 <span class="sd">    Stream: feed</span>
 <span class="sd">     phase: &#39;l&#39;, T: 298.15 K, P: 101325 Pa</span>
 <span class="sd">     flow (kmol/hr): H2O  60</span>

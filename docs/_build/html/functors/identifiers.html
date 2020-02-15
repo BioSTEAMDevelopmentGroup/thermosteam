@@ -244,20 +244,17 @@ SOFTWARE.</p>
 <dl class="function">
 <dt id="thermosteam.functors.identifiers.checkCAS">
 <code class="sig-prename descclassname">thermosteam.functors.identifiers.</code><code class="sig-name descname">checkCAS</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/identifiers.html#checkCAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.identifiers.checkCAS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if a CAS number is valid. Returns False if the parser cannot 
+<dd><p>Checks if a CAS number is valid. Returns False if the parser cannot
 parse the given string..</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>A three-piece, dash-separated set of numbers</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – A three-piece, dash-separated set of numbers</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>result</strong><span class="classifier">bool</span></dt><dd><p>Boolean value if CASRN was valid. If parsing fails, return False also.</p>
+<dd class="field-even"><p><strong>result</strong> – Boolean value if CASRN was valid. If parsing fails, return False also.</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -287,11 +284,11 @@ string being any of the following types of chemical identifiers:</p>
 <li><p>InChI key, prefixed by ‘InChIKey=’</p></li>
 <li><p>PubChem CID, prefixed by ‘PubChem=’</p></li>
 <li><p>SMILES (prefix with ‘SMILES=’ to ensure smiles parsing; ex.
-‘C’ will return Carbon as it is an element whereas the SMILES 
+‘C’ will return Carbon as it is an element whereas the SMILES
 interpretation for ‘C’ is methane)</p></li>
 <li><p>CAS number (obsolete numbers may point to the current number)</p></li>
 </ul>
-<p>If the input is an ID representing an element, the following additional 
+<p>If the input is an ID representing an element, the following additional
 inputs may be specified as</p>
 <ul class="simple">
 <li><p>Atomic symbol (ex ‘Na’)</p></li>
@@ -299,20 +296,17 @@ inputs may be specified as</p>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>One of the name formats described above</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – One of the name formats described above</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>A three-piece, dash-separated set of numbers</p>
+<dd class="field-even"><p><strong>CASRN</strong> – A three-piece, dash-separated set of numbers</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>An exception is raised if the name cannot be identified. The PubChem 
+<p>An exception is raised if the name cannot be identified. The PubChem
 database includes a wide variety of other synonyms, but these may not be
 present for all chemcials.</p>
 <p class="rubric">Examples</p>
@@ -339,31 +333,28 @@ present for all chemcials.</p>
 number of the compound.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>Valid CAS number in PubChem database [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – Valid CAS number in PubChem database [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>pubchem</strong><span class="classifier">int</span></dt><dd><p>PubChem database id, as an integer [-]</p>
+<dd class="field-even"><p><strong>pubchem</strong> – PubChem database id, as an integer [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>CASRN must be an indexing key in the pubchem database.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r107228e09527-1"><span class="brackets">1</span></dt>
-<dd><p>Pubchem.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">PubChem</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
 <span class="go">962</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Pubchem.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -373,31 +364,29 @@ number of the compound.</p>
 compound, if it is in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>Valid CAS number in PubChem database</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – Valid CAS number in PubChem database</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>MolecularWeight</strong><span class="classifier">float</span></dt><dd></dd>
-</dl>
+<dd class="field-even"><p><strong>MolecularWeight</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>CASRN must be an indexing key in the pubchem database. No MW Calculation is
 performed; nor are any historical isotopic corrections applied.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rc83a83e394e8-1"><span class="brackets">1</span></dt>
-<dd><p>Pubchem.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">MW</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
 <span class="go">18.01528</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Pubchem.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -466,22 +455,19 @@ performed; nor are any historical isotopic corrections applied.</p>
 <dl class="function">
 <dt id="thermosteam.functors.identifiers.mixture_from_any">
 <code class="sig-prename descclassname">thermosteam.functors.identifiers.</code><code class="sig-name descname">mixture_from_any</code><span class="sig-paren">(</span><em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/identifiers.html#mixture_from_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.identifiers.mixture_from_any" title="Permalink to this definition">¶</a></dt>
-<dd><p>Looks up a string which may represent a mixture in the database of 
+<dd><p>Looks up a string which may represent a mixture in the database of
 thermo to determine the key by which the composition of that mixture can
 be obtained in the dictionary <cite>_MixtureDict</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>A string or 1-element list containing the name which may represent a
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – A string or 1-element list containing the name which may represent a
 mixture.</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>key</strong><span class="classifier">str</span></dt><dd><p>Key for access to the data on the mixture in <cite>_MixtureDict</cite>.</p>
+<dd class="field-even"><p><strong>key</strong> – Key for access to the data on the mixture in <cite>_MixtureDict</cite>.</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

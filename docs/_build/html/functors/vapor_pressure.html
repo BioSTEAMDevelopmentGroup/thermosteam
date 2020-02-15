@@ -229,36 +229,18 @@
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Antoine">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Antoine</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Antoine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Antoine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Antoine equation, as described in <a class="reference internal" href="#r69b72d6e54de-1" id="id1">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Antoine equation, as described in <a href="#id38"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a, b, c</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>b</strong><strong>, </strong><strong>c</strong> (<em>a</em><em>,</em>) – Regressed coefficients.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The vapor pressure (Psat; in Pa) is given by:</p>
 <div class="math notranslate nohighlight">
 \[\log_{\text{10}} P^{\text{sat}} = A - \frac{B}{T+C}\]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r69b72d6e54de-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les 
-Tensions et les Tempé. Compt.Rend. 107:681-684.</p>
-</dd>
-<dt class="label" id="r69b72d6e54de-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id5">1</a>,<a href="#id6">2</a>)</span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-<dt class="label" id="r69b72d6e54de-3"><span class="brackets"><a class="fn-backref" href="#id7">3</a></span></dt>
-<dd><p>Yaws, Carl L. The Yaws Handbook of Vapor Pressure: Antoine 
-Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Methane, coefficients from <a class="reference internal" href="#r69b72d6e54de-2" id="id5">[2]</a>, at 100 K:</p>
+<p>Methane, coefficients from <a href="#id39"><span class="problematic" id="id2">[2]_</span></a>, at 100 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span> <span class="o">=</span> <span class="n">Antoine</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">8.7687</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">395.744</span><span class="p">,</span> <span class="n">c</span><span class="o">=-</span><span class="mf">6.469</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Functor: Antoine(T, P=None) -&gt; Psat [Pa]</span>
@@ -269,7 +251,7 @@ Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</p>
 <span class="go">34478.367349639906</span>
 </pre></div>
 </div>
-<p>Tetrafluoromethane, coefficients from <a class="reference internal" href="#r69b72d6e54de-2" id="id6">[2]</a>, at 180 K</p>
+<p>Tetrafluoromethane, coefficients from <a href="#id40"><span class="problematic" id="id3">[2]_</span></a>, at 180 K</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span> <span class="o">=</span> <span class="n">Antoine</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">8.95894</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">510.595</span><span class="p">,</span> <span class="n">c</span><span class="o">=-</span><span class="mf">15.95</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Functor: Antoine(T, P=None) -&gt; Psat [Pa]</span>
@@ -280,7 +262,7 @@ Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</p>
 <span class="go">702271.0518579542</span>
 </pre></div>
 </div>
-<p>Oxygen at 94.91 K, with coefficients from <a class="reference internal" href="#r69b72d6e54de-3" id="id7">[3]</a> in units of °C, mmHg, 
+<p>Oxygen at 94.91 K, with coefficients from <a class="footnote-reference brackets" href="#id7" id="id4">3</a> in units of °C, mmHg,
 showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span> <span class="o">=</span> <span class="n">Antoine</span><span class="p">(</span><span class="mf">6.83706</span><span class="o">+</span><span class="mf">2.1249</span><span class="p">,</span> <span class="mf">339.2095</span><span class="p">,</span> <span class="mf">268.70</span><span class="o">-</span><span class="mf">273.15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_antoine</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -292,38 +274,44 @@ showing the conversion of coefficients A (mmHg to Pa) and C (°C to K)</p>
 <span class="go">162978.88655572367</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
+<dd><p>Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
+Tensions et les Tempé. Compt.Rend. 107:681-684.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">2</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id4">3</a></span></dt>
+<dd><p>Yaws, Carl L. The Yaws Handbook of Vapor Pressure: Antoine
+Coefficients. 1 edition. Houston, Tex: Gulf Publishing Company, 2007.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.TRC_Extended_Antoine">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">TRC_Extended_Antoine</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#TRC_Extended_Antoine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.TRC_Extended_Antoine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the TRC Extended Antoine equation, as described in <a class="reference internal" href="#r5646311becf4-1" id="id8">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the TRC Extended Antoine equation, as described in <a href="#id41"><span class="problematic" id="id8">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>to, a, b, c, n, E, F</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>a</strong><strong>, </strong><strong>b</strong><strong>, </strong><strong>c</strong><strong>, </strong><strong>n</strong><strong>, </strong><strong>E</strong><strong>, </strong><strong>F</strong> (<em>to</em><em>,</em>) – Regressed coefficients.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The vapor pressure (Psat; in Pa) is given by:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}\\x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)\end{aligned}\end{align} \]</div>
-<p>Parameters are chemical dependent, and said to be from the 
+<p>Parameters are chemical dependent, and said to be from the
 Thermodynamics Research Center (TRC) at Texas A&amp;M.
-Coefficients for various chemicals can be found in <a class="reference internal" href="#r5646311becf4-1" id="id9">[1]</a>.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r5646311becf4-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id8">1</a>,<a href="#id9">2</a>,<a href="#id11">3</a>)</span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids.
-5th edition. New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-</dl>
+Coefficients for various chemicals can be found in <a href="#id42"><span class="problematic" id="id9">[1]_</span></a>.</p>
 <p class="rubric">Examples</p>
-<p>Tetrafluoromethane, coefficients from <a class="reference internal" href="#r5646311becf4-1" id="id11">[1]</a>, at 180 K:</p>
+<p>Tetrafluoromethane, coefficients from <a href="#id43"><span class="problematic" id="id10">[1]_</span></a>, at 180 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_extended_antoine</span> <span class="o">=</span> <span class="n">TRC_Extended_Antoine</span><span class="p">(</span><span class="mf">227.51</span><span class="p">,</span> <span class="o">-</span><span class="mf">120.</span><span class="p">,</span> <span class="mf">8.95894</span><span class="p">,</span> <span class="mf">510.595</span><span class="p">,</span>
 <span class="gp">... </span>                                          <span class="o">-</span><span class="mf">15.95</span><span class="p">,</span> <span class="mf">2.41377</span><span class="p">,</span> <span class="o">-</span><span class="mf">93.74</span><span class="p">,</span> <span class="mf">7425.9</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_extended_antoine</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -342,47 +330,38 @@ Coefficients for various chemicals can be found in <a class="reference internal"
 <span class="go">706317.0898414153</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id11"><span class="brackets">1</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids.
+5th edition. New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Wagner_McGraw">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Wagner_McGraw</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Wagner_McGraw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Wagner_McGraw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Wagner McGraw equation, as described in <a class="reference internal" href="#r9cbfe804e6f1-1" id="id12">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Wagner McGraw equation, as described in <a href="#id44"><span class="problematic" id="id12">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>a, b, c, d</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>b</strong><strong>, </strong><strong>c</strong><strong>, </strong><strong>d</strong> (<em>a</em><em>,</em>) – Regressed coefficients.</p></li>
+</ul>
 </dd>
 </dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Pc is often treated as adjustable constant.</p>
-</div>
 <p class="rubric">Notes</p>
 <p>The vapor pressure (Psat; in Pa) is given by:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^3 + d\tau^6} {T_r}\\\tau = 1 - \frac{T}{T_c}\end{aligned}\end{align} \]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r9cbfe804e6f1-1"><span class="brackets"><a class="fn-backref" href="#id12">1</a></span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-<dt class="label" id="r9cbfe804e6f1-2"><span class="brackets"><a class="fn-backref" href="#id15">2</a></span></dt>
-<dd><p>McGarry, Jack. “Correlation and Prediction of the Vapor Pressures of
-Pure Liquids over Large Pressure Ranges.” Industrial &amp; Engineering
-Chemistry Process Design and Development 22, no. 2 (April 1, 1983):
-313-22. doi:10.1021/i200021a023.</p>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Pc is often treated as adjustable constant.</p>
+</div>
 <p class="rubric">Examples</p>
-<p>Methane, coefficients from <a class="reference internal" href="#r9cbfe804e6f1-2" id="id15">[2]</a>, at 100 K.</p>
+<p>Methane, coefficients from <a href="#id45"><span class="problematic" id="id13">[2]_</span></a>, at 100 K.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_wagner_mcgraw</span> <span class="o">=</span> <span class="n">Wagner_McGraw</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mf">6.00435</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">1.1885</span><span class="p">,</span> <span class="n">c</span><span class="o">=-</span><span class="mf">0.834082</span><span class="p">,</span>
 <span class="gp">... </span>                                <span class="n">d</span><span class="o">=-</span><span class="mf">1.22833</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="mf">190.53</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">4596420.</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_wagner_mcgraw</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -397,46 +376,44 @@ Chemistry Process Design and Development 22, no. 2 (April 1, 1983):
 <span class="go">34520.44601450496</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id14"><span class="brackets">1</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+<dt class="label" id="id15"><span class="brackets">2</span></dt>
+<dd><p>McGarry, Jack. “Correlation and Prediction of the Vapor Pressures of
+Pure Liquids over Large Pressure Ranges.” Industrial &amp; Engineering
+Chemistry Process Design and Development 22, no. 2 (April 1, 1983):
+313-22. doi:10.1021/i200021a023.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Wagner">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Wagner</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Wagner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Wagner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Wagner equation, as described in <a class="reference internal" href="#rdf2ca0f658e0-1" id="id16">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Wagner equation, as described in <a href="#id46"><span class="problematic" id="id16">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>a, b, c, d</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>b</strong><strong>, </strong><strong>c</strong><strong>, </strong><strong>d</strong> (<em>a</em><em>,</em>) – Regressed coefficients.</p></li>
+</ul>
 </dd>
 </dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Pc is often treated as adjustable constant.</p>
-</div>
 <p class="rubric">Notes</p>
 <p>The vapor pressure (Psat; in Pa) is given by:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\ln P^{sat}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5} + d\tau^5} {T_r}\\\tau = 1 - \frac{T}{T_c}\end{aligned}\end{align} \]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rdf2ca0f658e0-1"><span class="brackets"><a class="fn-backref" href="#id16">1</a></span></dt>
-<dd><p>Wagner, W. “New Vapour Pressure Measurements for Argon and Nitrogen and
-a New Method for Establishing Rational Vapour Pressure Equations.”
-Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9</p>
-</dd>
-<dt class="label" id="rdf2ca0f658e0-2"><span class="brackets"><a class="fn-backref" href="#id19">2</a></span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Pc is often treated as adjustable constant.</p>
+</div>
 <p class="rubric">Examples</p>
-<p>Methane, coefficients from <a class="reference internal" href="#rdf2ca0f658e0-2" id="id19">[2]</a>, at 100 K.</p>
+<p>Methane, coefficients from <a href="#id47"><span class="problematic" id="id17">[2]_</span></a>, at 100 K.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_wagner</span> <span class="o">=</span> <span class="n">Wagner</span><span class="p">(</span><span class="mf">190.551</span><span class="p">,</span> <span class="mi">4599200</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.02242</span><span class="p">,</span> <span class="mf">1.26652</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5707</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.366</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_wagner</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Functor: Wagner(T, P=None) -&gt; Psat [Pa]</span>
@@ -450,22 +427,31 @@ New York: McGraw-Hill Professional, 2000.</p>
 <span class="go">34415.00476263708</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id18"><span class="brackets">1</span></dt>
+<dd><p>Wagner, W. “New Vapour Pressure Measurements for Argon and Nitrogen and
+a New Method for Establishing Rational Vapour Pressure Equations.”
+Cryogenics 13, no. 8 (August 1973): 470-82. doi:10.1016/0011-2275(73)90003-9</p>
+</dd>
+<dt class="label" id="id19"><span class="brackets">2</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Boiling_Critical_Relation">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Boiling_Critical_Relation</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Boiling_Critical_Relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Boiling_Critical_Relation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Boiling Critical Relation equation, as described in <a class="reference internal" href="#rbc7c9af23ca2-1" id="id20">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Boiling Critical Relation equation, as described in <a href="#id48"><span class="problematic" id="id20">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tb</strong><span class="classifier">None</span></dt><dd><p>Boiling point temperature [K].</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tb</strong> (<em>None</em>) – Boiling point temperature [K].</p></li>
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -474,78 +460,72 @@ New York: McGraw-Hill Professional, 2000.</p>
 \[ \begin{align}\begin{aligned}\ln P^{sat}_r = h\left( 1 - \frac{1}{T_r} \right)\\h = T_{br} \frac{\ln(P_c/101325)}{1-T_{br}}\end{aligned}\end{align} \]</div>
 <p>Formulation makes intuitive sense; a logarithmic form of
 interpolation.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rbc7c9af23ca2-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id20">1</a>,<a href="#id22">2</a>)</span></dt>
-<dd><p>Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
-The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Example as in <a class="reference internal" href="#rbc7c9af23ca2-1" id="id22">[1]</a> for ethylbenzene</p>
+<p>Example as in <a href="#id49"><span class="problematic" id="id21">[1]_</span></a> for ethylbenzene</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Boiling_Critical_Relation</span><span class="p">(</span><span class="mf">347.2</span><span class="p">,</span> <span class="mf">409.3</span><span class="p">,</span> <span class="mf">617.1</span><span class="p">,</span> <span class="mf">36E5</span><span class="p">)</span>
 <span class="go">15209.467273093938</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id22"><span class="brackets">1</span></dt>
+<dd><p>Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
+The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Lee_Kesler">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Lee_Kesler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Lee_Kesler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Lee_Kesler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Lee Kesler equation, as described in <a class="reference internal" href="#r88baac4d19ad-1" id="id23">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Lee Kesler equation, as described in <a href="#id50"><span class="problematic" id="id23">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>ω</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>ω</strong> (<em>None</em>) – Acentric factor [-].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The vapor pressure (Psat; in Pa) is given by:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\ln P^{sat}_r = f^{(0)} + \omega f^{(1)}\\f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6\\f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6\end{aligned}\end{align} \]</div>
-<p>This equation appears in <a class="reference internal" href="#r88baac4d19ad-1" id="id24">[1]</a> in expanded form.
-The reduced pressure form of the equation ensures predicted vapor pressure 
+<p>This equation appears in <a href="#id51"><span class="problematic" id="id24">[1]_</span></a> in expanded form.
+The reduced pressure form of the equation ensures predicted vapor pressure
 cannot surpass the critical pressure.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r88baac4d19ad-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id23">1</a>,<a href="#id24">2</a>)</span></dt>
-<dd><p>Lee, Byung Ik, and Michael G. Kesler. “A Generalized Thermodynamic
-Correlation Based on Three-Parameter Corresponding States.” AIChE Journal
-21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</p>
-</dd>
-<dt class="label" id="r88baac4d19ad-2"><span class="brackets"><a class="fn-backref" href="#id27">2</a></span></dt>
-<dd><p>Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
-The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Example from <a class="reference internal" href="#r88baac4d19ad-2" id="id27">[2]</a>; ethylbenzene at 347.2 K.</p>
+<p>Example from <a href="#id52"><span class="problematic" id="id25">[2]_</span></a>; ethylbenzene at 347.2 K.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Lee_Kesler</span><span class="p">(</span><span class="mf">347.2</span><span class="p">,</span> <span class="mf">617.1</span><span class="p">,</span> <span class="mf">36E5</span><span class="p">,</span> <span class="mf">0.299</span><span class="p">)</span>
 <span class="go">13078.694162949312</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id26"><span class="brackets">1</span></dt>
+<dd><p>Lee, Byung Ik, and Michael G. Kesler. “A Generalized Thermodynamic
+Correlation Based on Three-Parameter Corresponding States.” AIChE Journal
+21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</p>
+</dd>
+<dt class="label" id="id27"><span class="brackets">2</span></dt>
+<dd><p>Reid, Robert C..; Prausnitz, John M.;; Poling, Bruce E.
+The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Ambrose_Walton">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Ambrose_Walton</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Ambrose_Walton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Ambrose_Walton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Ambrose Walton equation, as described in <a class="reference internal" href="#rb91bf1cccdaf-1" id="id28">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Ambrose Walton equation, as described in <a href="#id53"><span class="problematic" id="id28">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>ω</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>ω</strong> (<em>None</em>) – Acentric factor [-].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -553,40 +533,37 @@ The Properties of Gases and Liquids. McGraw-Hill Companies, 1987.</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}\\f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}-1.06841\tau^5}{T_r}\\f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}-7.46628\tau^5}{T_r}\\f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}+3.25259\tau^5}{T_r}\\\tau = 1-T_{r}\end{aligned}\end{align} \]</div>
 <p>Somewhat more accurate than the <a class="reference internal" href="#thermosteam.functors.vapor_pressure.Lee_Kesler" title="thermosteam.functors.vapor_pressure.Lee_Kesler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lee_Kesler</span></code></a> formulation.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rb91bf1cccdaf-1"><span class="brackets"><a class="fn-backref" href="#id28">1</a></span></dt>
-<dd><p>Ambrose, D., and J. Walton. “Vapour Pressures up to Their Critical
-Temperatures of Normal Alkanes and 1-Alkanols.” Pure and Applied
-Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.</p>
-</dd>
-<dt class="label" id="rb91bf1cccdaf-2"><span class="brackets"><a class="fn-backref" href="#id31">2</a></span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Example from <a class="reference internal" href="#rb91bf1cccdaf-2" id="id31">[2]</a>; ethylbenzene at 347.25 K.</p>
+<p>Example from <a href="#id54"><span class="problematic" id="id29">[2]_</span></a>; ethylbenzene at 347.25 K.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ambrose_Walton</span><span class="p">(</span><span class="mf">347.25</span><span class="p">,</span> <span class="mf">617.15</span><span class="p">,</span> <span class="mf">36.09E5</span><span class="p">,</span> <span class="mf">0.304</span><span class="p">)</span>
 <span class="go">13278.878504306222</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id30"><span class="brackets">1</span></dt>
+<dd><p>Ambrose, D., and J. Walton. “Vapour Pressures up to Their Critical
+Temperatures of Normal Alkanes and 1-Alkanols.” Pure and Applied
+Chemistry 61, no. 8 (1989): 1395-1403. doi:10.1351/pac198961081395.</p>
+</dd>
+<dt class="label" id="id31"><span class="brackets">2</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Sanjari">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Sanjari</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Sanjari"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Sanjari" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Sanjari equation, as described in <a class="reference internal" href="#rbd411eb5dcee-1" id="id32">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Sanjari equation, as described in <a href="#id55"><span class="problematic" id="id32">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>ω</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>ω</strong> (<em>None</em>) – Acentric factor [-].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -603,39 +580,36 @@ was 0.428%. A re-calculation using 200 data points from 125.45 K to
 343.90225 K evenly spaced by 1.09775 K as generated by NIST Webbook April
 2016 produced an AARD of 0.644%. It is likely that the author’s regression
 used more precision in its coefficients than was shown here. Nevertheless,
-the function is reproduced as shown in <a class="reference internal" href="#rbd411eb5dcee-1" id="id33">[1]</a>.</p>
+the function is reproduced as shown in <a href="#id56"><span class="problematic" id="id33">[1]_</span></a>.</p>
 <p>For Tc=808 K, Pc=1100000 Pa, omega=1.1571, this function actually declines
 after 770 K.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Sanjari</span><span class="p">(</span><span class="mf">347.2</span><span class="p">,</span> <span class="mf">617.1</span><span class="p">,</span> <span class="mf">36E5</span><span class="p">,</span> <span class="mf">0.299</span><span class="p">)</span>
+<span class="go">13651.916109552498</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rbd411eb5dcee-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id32">1</a>,<a href="#id33">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id34"><span class="brackets">1</span></dt>
 <dd><p>Sanjari, Ehsan, Mehrdad Honarmand, Hamidreza Badihi, and Ali
 Ghaheri. “An Accurate Generalized Model for Predict Vapor Pressure of
 Refrigerants.” International Journal of Refrigeration 36, no. 4
 (June 2013): 1327-32. doi:10.1016/j.ijrefrig.2013.01.007.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Sanjari</span><span class="p">(</span><span class="mf">347.2</span><span class="p">,</span> <span class="mf">617.1</span><span class="p">,</span> <span class="mf">36E5</span><span class="p">,</span> <span class="mf">0.299</span><span class="p">)</span>
-<span class="go">13651.916109552498</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.vapor_pressure.Edalat">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.vapor_pressure.</code><code class="sig-name descname">Edalat</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/vapor_pressure.html#Edalat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.vapor_pressure.Edalat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Edalat equation, as described in <a class="reference internal" href="#r171d06c702b0-1" id="id35">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates saturated vapor pressure (Psat; in Pa) using the Edalat equation, as described in <a href="#id57"><span class="problematic" id="id35">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">None</span></dt><dd><p>Critical point pressure [Pa].</p>
-</dd>
-<dt><strong>ω</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>Pc</strong> (<em>None</em>) – Critical point pressure [Pa].</p></li>
+<li><p><strong>ω</strong> (<em>None</em>) – Acentric factor [-].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -643,20 +617,20 @@ Refrigerants.” International Journal of Refrigeration 36, no. 4
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\ln(P^{sat}/P_c) = \frac{a\tau + b\tau^{1.5} + c\tau^3 + d\tau^6}{1-\tau}\\a = -6.1559 - 4.0855\omega\\b = 1.5737 - 1.0540\omega - 4.4365\times 10^{-3} d\\c = -0.8747 - 7.8874\omega\\d = \frac{1}{-0.4893 - 0.9912\omega + 3.1551\omega^2}\\\tau = 1 - \frac{T}{T_c})\end{aligned}\end{align} \]</div>
 <p>Claimed to have a higher accuracy than the Lee-Kesler CSP relationship.
-<a class="reference internal" href="#r171d06c702b0-1" id="id36">[1]</a> found an average error of 6.06% on 94 compounds and 1106 data points.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r171d06c702b0-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id35">1</a>,<a href="#id36">2</a>)</span></dt>
-<dd><p>Edalat, M., R. B. Bozar-Jomehri, and G. A. Mansoori. “Generalized 
-Equation Predicts Vapor Pressure of Hydrocarbons.” Oil and Gas Journal; 
-91:5 (February 1, 1993).</p>
-</dd>
-</dl>
+<a href="#id58"><span class="problematic" id="id36">[1]_</span></a> found an average error of 6.06% on 94 compounds and 1106 data points.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Edalat</span><span class="p">(</span><span class="mf">347.2</span><span class="p">,</span> <span class="mf">617.1</span><span class="p">,</span> <span class="mf">36E5</span><span class="p">,</span> <span class="mf">0.299</span><span class="p">)</span>
 <span class="go">13461.273080743307</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id37"><span class="brackets">1</span></dt>
+<dd><p>Edalat, M., R. B. Bozar-Jomehri, and G. A. Mansoori. “Generalized
+Equation Predicts Vapor Pressure of Hydrocarbons.” Oil and Gas Journal;
+91:5 (February 1, 1993).</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

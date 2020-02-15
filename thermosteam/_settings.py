@@ -23,7 +23,6 @@ class Settings:
                              'S': 'SOLID',
                              'L': 'LIQUID',
                              'G': 'GAS'}
-    
     @property
     def debug(self):
         """[bool] If True, preventive assertions are run at runtime."""
@@ -81,13 +80,13 @@ class Settings:
         return thermo
     
     def set_thermo(self, thermo):
-        """Set the default Thermo object."""
-        if isinstance(thermo, tmo.Chemicals):
-            thermo = tmo.Thermo(thermo)
-        elif not isinstance(thermo, tmo.Thermo):
-            raise ValueError("thermo must be either a 'Thermo' "
-                             "or a 'Chemicals' object, not a "
-                            f"'{type(thermo).__name__}'")
+        """Set the default Thermo object. If `thermo` is not a Thermo object,
+        an attempt is made to convert it to one."""
+        if not isinstance(thermo, tmo.Thermo):
+            try:
+                thermo = tmo.Thermo(thermo)
+            except:    
+                raise ValueError(f"could not convert {thermo} to a Thermo object")
         self._thermo = thermo
     
     def __repr__(self):

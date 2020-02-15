@@ -207,10 +207,10 @@
 <dd><p>Create a DewPoint object that returns dew point values when called with a composition and either a temperture (T) or pressure (P).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>chemicals=None</strong><span class="classifier">Iterable[Chemical], optional</span></dt><dd></dd>
-<dt><strong>thermo=None</strong><span class="classifier">Thermo, optional</span></dt><dd></dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chemicals=None</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="../Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="../Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 <dl class="method">
@@ -221,24 +221,21 @@
 
 <dl class="method">
 <dt id="thermosteam.equilibrium.DewPoint.solve_Tx">
-<code class="sig-name descname">solve_Tx</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">z</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/dew_point.html#DewPoint.solve_Tx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.DewPoint.solve_Tx" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">solve_Tx</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/dew_point.html#DewPoint.solve_Tx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.DewPoint.solve_Tx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dew point given composition and pressure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">array_like</span></dt><dd><p>Molar composition.</p>
-</dd>
-<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure (Pa).</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Molar composition.</p></li>
+<li><p><strong>P</strong> (<em>float</em>) – Pressure (Pa).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Dew point temperature (K).</p>
-</dd>
-<dt><strong>x</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Liquid phase composition.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Dew point temperature (K).</p></li>
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Liquid phase composition.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -252,24 +249,21 @@
 
 <dl class="method">
 <dt id="thermosteam.equilibrium.DewPoint.solve_Px">
-<code class="sig-name descname">solve_Px</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">z</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/dew_point.html#DewPoint.solve_Px"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.DewPoint.solve_Px" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">solve_Px</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/dew_point.html#DewPoint.solve_Px"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.DewPoint.solve_Px" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dew point given composition and temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">array_like</span></dt><dd><p>Molar composition.</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature (K).</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Molar composition.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature (K).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Dew point pressure (Pa).</p>
-</dd>
-<dt><strong>x</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Liquid phase composition.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>P</strong> (<em>float</em>) – Dew point pressure (Pa).</p></li>
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Liquid phase composition.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

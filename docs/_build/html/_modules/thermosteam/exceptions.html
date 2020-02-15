@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.exceptions &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.exceptions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.exceptions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mon Nov 25 20:55:06 2019</span>
+
+<span class="sd">@author: yoelr</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;UndefinedChemical&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;UndefinedPhase&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;UndefinedPhaseOrChemical&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;DimensionError&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;AutodocError&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;DeprecatedAttribute&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UndefinedChemical"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedChemical">[docs]</a><span class="k">class</span> <span class="nc">UndefinedChemical</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined chemicals.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{ID}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="UndefinedPhase"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedPhase">[docs]</a><span class="k">class</span> <span class="nc">UndefinedPhase</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined phases.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{phase}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UndefinedPhaseOrChemical"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedPhaseOrChemical">[docs]</a><span class="k">class</span> <span class="nc">UndefinedPhaseOrChemical</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined phases or chemicals.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_or_ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{phase_or_ID}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DimensionError"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.DimensionError">[docs]</a><span class="k">class</span> <span class="nc">DimensionError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ValueError regarding wrong dimensions.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AutodocError"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.AutodocError">[docs]</a><span class="k">class</span> <span class="nc">AutodocError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;RuntimeError regarding automatic documentation.&quot;&quot;&quot;</span></div>
+    
+<div class="viewcode-block" id="DeprecatedAttribute"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.DeprecatedAttribute">[docs]</a><span class="k">class</span> <span class="nc">DeprecatedAttribute</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{old}</span><span class="s2">&#39; is deprecated; please use &#39;</span><span class="si">{new}</span><span class="s2">&#39; instead&quot;</span><span class="p">)</span></div>
+        
+        
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

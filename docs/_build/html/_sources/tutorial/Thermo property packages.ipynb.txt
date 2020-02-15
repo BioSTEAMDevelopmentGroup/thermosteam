@@ -72,9 +72,16 @@
    "metadata": {},
    "outputs": [],
    "source": [
+    "H3PO4.at_state(phase='s')\n",
     "Glucose.at_state(phase='s')\n",
     "Sucrose.at_state(phase='s')\n",
-    "H3PO4.at_state(phase='s')"
+    "\n",
+    "# The reference phase of glucose is originally liquid,\n",
+    "# so we change it to solid to not have to include \n",
+    "# the heat of fusion in the calculation of free energies.\n",
+    "# Note that we load the free energies to update this change.\n",
+    "Glucose.phase_ref = 's'\n",
+    "Glucose.load_free_energies()"
    ]
   },
   {
@@ -149,19 +156,7 @@
     {
      "data": {
       "text/plain": [
-       "{'Hfus',\n",
-       " 'Hsub',\n",
-       " 'Hvap',\n",
-       " 'Pc',\n",
-       " 'Psat',\n",
-       " 'Pt',\n",
-       " 'StielPolar',\n",
-       " 'Tc',\n",
-       " 'Vc',\n",
-       " 'Zc',\n",
-       " 'dipole',\n",
-       " 'iscyclic_aliphatic',\n",
-       " 'omega'}"
+       "{'V'}"
       ]
      },
      "execution_count": 6,
@@ -170,10 +165,12 @@
     }
    ],
    "source": [
-    "Tripalmitin = tmo.Chemical('Tripalmitin')\n",
-    "remaining_missing_slots = Lipid.copy_missing_slots_from(Tripalmitin)\n",
-    "# Note that Tripalmitin does not have the following missing data, \n",
-    "# but this is fine as we don't need it for the process\n",
+    "Tripalmitin = tmo.Chemical('Tripalmitin').at_state(phase='l', copy=True)\n",
+    "remaining_missing_slots = Lipid.copy_missing_slots_from(Tripalmitin,\n",
+    "                                                       slots=['V', 'sigma',\n",
+    "                                                              'kappa', 'Cn'])\n",
+    "# Note that the Lipid does not have the following missing data, \n",
+    "# so we will need to add it later\n",
     "remaining_missing_slots"
    ]
   },
@@ -193,6 +190,10 @@
     "from thermosteam import functional as fn\n",
     "insoluble_solid_molar_volume = fn.rho_to_V(rho=1540, MW=1.)\n",
     "\n",
+    "# Assume a constant volume for lipid\n",
+    "lipid_molar_volume = fn.rho_to_V(rho=900, MW=Lipid.MW)\n",
+    "Lipid.V.add_model(lipid_molar_volume)\n",
+    "\n",
     "# Insolubles occupy a significant volume\n",
     "insoluble_solids = (Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast)\n",
     "\n",
@@ -206,9 +207,11 @@
     "    V = fn.rho_to_V(rho=1e5, MW=chemical.MW)\n",
     "    chemical.V.add_model(V, top_priority=True)\n",
     "\n",
-    "# Assume sodium methoxide has same properities as methanol\n",
-    "# except for molecular weight\n",
-    "NaOCH3.copy_missing_slots_from(chemicals.Methanol)\n",
+    "# Assume sodium methoxide has some of the same properities as methanol\n",
+    "LiquidMethanol = Methanol.at_state(phase='l', copy=True)\n",
+    "NaOCH3.copy_missing_slots_from(LiquidMethanol, slots=['V', 'sigma',\n",
+    "                                                      'kappa', 'Cn',\n",
+    "                                                      'H', 'S'])\n",
     "\n",
     "# Add constant models for molar heat capacity of solids\n",
     "Ash.Cn.add_model(0.09 * 4.184) \n",
@@ -260,42 +263,23 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Thermo objects"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Once the chemicals are finalized, we can compile them into a Thermo object:"
+    "Finalize the chemicals by compiling:"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 9,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "Thermo(chemicals=CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, CO2, Octane, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid]), mixture=Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)"
-      ]
-     },
-     "execution_count": 9,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
-    "thermo = tmo.Thermo(chemicals)\n",
-    "thermo"
+    "chemicals.compile()"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Note that a Thermo object contains `ActivityCoefficients`, `FugacityCoefficients`, and `PoyintingCorrectionFactors` subclasses to define fugacity estimation methods. By default, the Dortmund modified UNIFAC method for estimating activities is selected, while ideal values for (vapor phase) fugacity coefficients and poyinting correction factos are selected. Additionally, by default, a `Thermo` object chooses ideal mixing rules for estimating mixture properties, and neglects excess properties in the calculation of enthalpy and entropy:"
+    "This enables methods such as `<CompiledChemicals>.array` to create chemical data ordered according to the IDs, as well as `<CompiledChemicals>.get_index` to get the index of a chemical:"
    ]
   },
   {
@@ -306,7 +290,8 @@
     {
      "data": {
       "text/plain": [
-       "Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False)"
+       "array([2., 0., 2., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,\n",
+       "       0., 0., 0., 0., 0.])"
       ]
      },
      "execution_count": 10,
@@ -315,14 +300,211 @@
     }
    ],
    "source": [
-    "thermo.mixture"
+    "chemicals.array(['Water', 'Ethanol'], [2, 2])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[0, 2]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "chemicals.get_index(('Water', 'Ethanol'))"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "It is possible to implement a your own Mixture object, but this is out the scope of ordinary users. You can request help on this process through https://github.com/yoelcortes/thermosteam."
+    "### Mixture objects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Before creating a `Thermo` object, we must define the mixing rules to calculate mixture properties. A `Mixture` object is able to calculate mixture properties through functors. In this example we will use a function to create a `Mixture` object with ideal mixing rules:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False)"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mixture = tmo.mixture.new_ideal_mixture(chemicals,\n",
+    "                                        rigorous_energy_balance=True,\n",
+    "                                        include_excess_energies=False)\n",
+    "mixture"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can use the mixture for estimating mixture properties:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "694.8275427425033"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mixture.H(phase='l', z=chemicals.array(['Water', 'Ethanol'], [2, 2]), T=300, P=101325)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "376.3036205916924"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mixture.Cn(phase='l', z=chemicals.array(['Water', 'Ethanol'], [2, 2]), T=300)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can also estimate multi-phase mixture properties through methods that start with \"x\" (e.g. `xCn`):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "574.6439104469846"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "z_liquid = chemicals.array(['Water', 'Ethanol'], [2, 2])\n",
+    "z_vapor = chemicals.array(['Water', 'Ethanol'], [2, 2])\n",
+    "phase_data = [('l', z_liquid), ('g', z_vapor)]\n",
+    "mixture.xCn(phase_data, T=300)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note: To implement a your own Mixture object, you can request help on this process through https://github.com/yoelcortes/thermosteam."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Thermo objects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Once the chemicals and mixture objects are finalized, we can compile them into a Thermo object:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Thermo(chemicals=CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, CO2, Octane, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid]), mixture=Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "thermo = tmo.Thermo(chemicals, mixture)\n",
+    "thermo"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Note that a Thermo object contains `ActivityCoefficients`, `FugacityCoefficients`, and `PoyintingCorrectionFactors` subclasses to define fugacity estimation methods. By default, the Dortmund modified UNIFAC method for estimating activities is selected, while ideal values for (vapor phase) fugacity coefficients and poyinting correction factos are selected. Additionally, a `Thermo` object defaults to ideal mixing rules for estimating mixture properties, and neglects excess properties in the calculation of enthalpy and entropy:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Mixture('ideal mixing rules', ..., rigorous_energy_balance=True, include_excess_energies=False)"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "thermo = tmo.Thermo(chemicals)\n",
+    "thermo.mixture"
    ]
   },
   {

@@ -197,8 +197,7 @@
 <dd><p>Create Chemicals object that contains Chemical objects as attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>chemicals</strong><span class="classifier">Iterable[str or Chemical]</span></dt><dd><dl class="simple">
+<dd class="field-odd"><p><strong>chemicals</strong> (<em>Iterable</em><em>[</em><em>str</em><em> or </em><a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em>) – <dl class="simple">
 <dt>Strings should be one of the following [-]:</dt><dd><ul class="simple">
 <li><p>Name, in IUPAC form or common form or a synonym registered in PubChem</p></li>
 <li><p>InChI name, prefixed by ‘InChI=1S/’ or ‘InChI=1/’</p></li>
@@ -209,8 +208,7 @@
 </ul>
 </dd>
 </dl>
-</dd>
-</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -228,7 +226,7 @@
 </div>
 <dl class="method">
 <dt id="thermosteam.Chemicals.compile">
-<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.compile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.compile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast as a CompiledChemicals object.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemicals</span>
@@ -242,14 +240,11 @@
 
 <dl class="method">
 <dt id="thermosteam.Chemicals.subgroup">
-<code class="sig-name descname">subgroup</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.subgroup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">subgroup</code><span class="sig-paren">(</span><em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.subgroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new subgroup of chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">Iterable[str]</span></dt><dd><p>Chemical identifiers.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>Iterable</em><em>[</em><em>str</em><em>]</em>) – Chemical identifiers.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -262,14 +257,11 @@
 
 <dl class="method">
 <dt id="thermosteam.Chemicals.retrieve">
-<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.retrieve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.retrieve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">Iterable[str]</span></dt><dd><p>Chemical identifiers.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>Iterable</em><em>[</em><em>str</em><em>]</em>) – Chemical identifiers.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -282,13 +274,13 @@
 
 <dl class="method">
 <dt id="thermosteam.Chemicals.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">chemical</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">chemical</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append a Chemical.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.Chemicals.extend">
-<code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">chemicals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.extend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param">chemicals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#Chemicals.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemicals.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend with more Chemical objects.</p>
 </dd></dl>
 

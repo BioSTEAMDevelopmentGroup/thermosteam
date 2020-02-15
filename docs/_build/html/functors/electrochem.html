@@ -227,15 +227,15 @@
 <dl class="function">
 <dt id="thermosteam.functors.electrochem.Laliberte_water_viscosity">
 <code class="sig-prename descclassname">thermosteam.functors.electrochem.</code><code class="sig-name descname">Laliberte_water_viscosity</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/electrochem.html#Laliberte_water_viscosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.electrochem.Laliberte_water_viscosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the viscosity of a water (Pa*s) at arbitrary temperatures (K) using the form proposed by <a class="reference internal" href="#re9e28c17b948-1" id="id1">[1]</a>.</p>
+<dd><p>Return the viscosity of a water (Pa*s) at arbitrary temperatures (K) using the form proposed by <a href="#id5"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <div class="math notranslate nohighlight">
 \[\mu_w = \frac{T - 27.15}{(0.05594T-25.27581)t + 2867.723}\]</div>
 <p class="rubric">Notes</p>
 <p>Original source or pure water viscosity is not cited.
 No temperature range is given for this equation.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="re9e28c17b948-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
 <dd><p>Laliberte, Marc. “A Model for Calculating the Heat Capacity of
 Aqueous Solutions, with Updated Density and Viscosity Data.” Journal of
 Chemical &amp; Engineering Data 54, no. 6 (June 11, 2009): 1725-60.
@@ -287,34 +287,30 @@ Lookup is based on CASRNs.</p>
 <p>Function has data for approximately 100 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>kappa</strong><span class="classifier">float</span></dt><dd><p>Electrical conductivity of the fluid, [S/m]</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float, only returned if full_info == True</span></dt><dd><p>Temperature at which conductivity measurement was made</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>kappa</strong> (<em>float</em>) – Electrical conductivity of the fluid, [S/m]</p></li>
+<li><p><strong>T</strong> (<em>float, only returned if full_info == True</em>) – Temperature at which conductivity measurement was made</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Only one source is available in this function: ‘LANGE_COND’ which is from Lange’s Handbook, Table 8.34 Electrical Conductivity of Various Pure Liquids’, a compillation of data in <a class="reference internal" href="#re1eee48db202-1" id="id3">[1]</a>.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="re1eee48db202-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p>Speight, James. Lange’s Handbook of Chemistry. 16 edition.
-McGraw-Hill Professional, 2005.</p>
-</dd>
-</dl>
+<p>Only one source is available in this function: ‘LANGE_COND’ which is from Lange’s Handbook, Table 8.34 Electrical Conductivity of Various Pure Liquids’, a compillation of data in <a href="#id6"><span class="problematic" id="id3">[1]_</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">conductivity</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
 <span class="go">(4e-06, 291.15)</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>Speight, James. Lange’s Handbook of Chemistry. 16 edition.
+McGraw-Hill Professional, 2005.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

@@ -189,34 +189,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ID=&#39;&#39; : str, defaults to a unique ID</span>
-<span class="sd">        A unique identification. If ID is None, stream will not be</span>
-<span class="sd">        registered.</span>
-
-<span class="sd">    flow=() : 2d array, optional</span>
+<span class="sd">    ID=&#39;&#39; : str</span>
+<span class="sd">        A unique identification. If ID is None, stream will not be registered.</span>
+<span class="sd">        If no ID is given, stream will be registered with a unique ID.</span>
+<span class="sd">    flow=() : 2d array</span>
 <span class="sd">        All flow rates corresponding to `phases` by row and chemical IDs by column.</span>
-
-<span class="sd">    thermo=() : Thermo, defaults to settings.Thermo</span>
-<span class="sd">        Thermodynamic equilibrium package.</span>
-
-<span class="sd">    units=&#39;kmol/hr&#39; : str, optional</span>
+<span class="sd">    thermo=None : Thermo</span>
+<span class="sd">        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.</span>
+<span class="sd">    units=&#39;kmol/hr&#39; : str</span>
 <span class="sd">        Flow rate units of measure (only mass, molar, and</span>
-<span class="sd">        volumetric flow rates are valid)</span>
-
-<span class="sd">    phases=(&#39;g, l&#39;) : tuple[&#39;g&#39;, &#39;l&#39;, &#39;s&#39;, &#39;G&#39;, &#39;L&#39;, &#39;S&#39;], optional</span>
+<span class="sd">        volumetric flow rates are valid).</span>
+<span class="sd">    phases=(&#39;g, l&#39;) : tuple[&#39;g&#39;, &#39;l&#39;, &#39;s&#39;, &#39;G&#39;, &#39;L&#39;, &#39;S&#39;]</span>
 <span class="sd">        Tuple denoting the phases present.</span>
-
-<span class="sd">    T=298.15 : float, optional</span>
-<span class="sd">        Temperature (K).</span>
-
-<span class="sd">    P=101325 : float, optional</span>
-<span class="sd">        Pressure (Pa).</span>
-
-<span class="sd">    price=0 : float, optional</span>
-<span class="sd">        Price in USD/kg.</span>
-<span class="sd">    </span>
+<span class="sd">    T=298.15 : float</span>
+<span class="sd">        Temperature [K].</span>
+<span class="sd">    P=101325 : float</span>
+<span class="sd">        Pressure [Pa].</span>
+<span class="sd">    price=0 : float</span>
+<span class="sd">        Price per unit mass [USD/kg].</span>
 <span class="sd">    **phase_flow : tuple[str, float]</span>
-<span class="sd">        phase-(ID, flow) pairs</span>
+<span class="sd">        phase-(ID, flow) pairs.</span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -273,7 +265,7 @@
 <span class="sd">    &gt;&gt;&gt; # Set flow</span>
 <span class="sd">    &gt;&gt;&gt; s1.set_flow(1, &#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
-<span class="sd">    1.0</span>
+<span class="sd">    0.9999999999999999</span>
 <span class="sd">    &gt;&gt;&gt; # Set multiple flows</span>
 <span class="sd">    &gt;&gt;&gt; s1.set_flow([10, 20], &#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
 <span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
@@ -619,6 +611,7 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[VLE] An object that can perform vapor-liquid equilibrium on the stream.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
     
     <span class="c1">### Casting ###</span>

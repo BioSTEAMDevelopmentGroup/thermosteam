@@ -251,39 +251,32 @@ status of the chemical in all available data sources, in the format
 {source: status}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>status</strong><span class="classifier">str or dict</span></dt><dd><p>Legal status information [-]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain legal status with the
-given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>status</strong> (<em>str or dict</em>) – Legal status information [-]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain legal status with the
+given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-legal_status_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+legal_status_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 the legal status for the desired chemical, and will return methods
-instead of the status</p>
-</dd>
-<dt><strong>CASi</strong><span class="classifier">int, optional</span></dt><dd><p>CASRN as an integer, used internally [-]</p>
-</dd>
-</dl>
+instead of the status</p></li>
+<li><p><strong>CASi</strong> (<em>int, optional</em>) – CASRN as an integer, used internally [-]</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Supported methods are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>DSL</strong>: Canada Domestic Substance List, <a class="reference internal" href="#r4b465c145a76-1" id="id1">[1]</a>. As extracted on Feb 11, 2015
+<li><p><strong>DSL</strong>: Canada Domestic Substance List, <a class="footnote-reference brackets" href="#id7" id="id1">1</a>. As extracted on Feb 11, 2015
 from a html list. This list is updated continuously, so this version
 will always be somewhat old. Strictly speaking, there are multiple
 lists but they are all bundled together here. A chemical may be
@@ -292,19 +285,19 @@ or be on the list of substances with ‘Significant New Activity (SNAc)’,
 or be on the DSL but with a ‘Ministerial Condition pertaining to this
 substance’, or have been removed from the DSL, or have had a
 Ministerial prohibition for the substance.</p></li>
-<li><p><strong>TSCA</strong>: USA EPA Toxic Substances Control Act Chemical Inventory, <a class="reference internal" href="#r4b465c145a76-2" id="id2">[2]</a>.
+<li><p><strong>TSCA</strong>: USA EPA Toxic Substances Control Act Chemical Inventory, <a class="footnote-reference brackets" href="#id8" id="id2">2</a>.
 This list is as extracted on 2016-01. It is believed this list is
 updated on a periodic basis (&gt; 6 month). A chemical may simply be
 ‘Listed’, or may have certain flags attached to it. All these flags
 are described in the dict TSCA_flags.</p></li>
 <li><p><strong>EINECS</strong>: European INventory of Existing Commercial chemical
-Substances, <a class="reference internal" href="#r4b465c145a76-3" id="id3">[3]</a>. As extracted from a spreadsheet dynamically
-generated at <a class="reference internal" href="#r4b465c145a76-1" id="id4">[1]</a>. This list was obtained March 2015; a more recent
+Substances, <a class="footnote-reference brackets" href="#id9" id="id3">3</a>. As extracted from a spreadsheet dynamically
+generated at <a class="footnote-reference brackets" href="#id7" id="id4">1</a>. This list was obtained March 2015; a more recent
 revision already exists.</p></li>
 <li><p><strong>NLP</strong>: No Longer Polymers, a list of chemicals with special
-regulatory exemptions in EINECS. Also described at <a class="reference internal" href="#r4b465c145a76-3" id="id5">[3]</a>.</p></li>
+regulatory exemptions in EINECS. Also described at <a class="footnote-reference brackets" href="#id9" id="id5">3</a>.</p></li>
 <li><p><strong>SPIN</strong>: Substances Prepared in Nordic Countries. Also a boolean
-data type. Retrieved 2015-03 from <a class="reference internal" href="#r4b465c145a76-4" id="id6">[4]</a>.</p></li>
+data type. Retrieved 2015-03 from <a class="footnote-reference brackets" href="#id10" id="id6">4</a>.</p></li>
 </ul>
 </div></blockquote>
 <p>Other methods which could be added are:</p>
@@ -323,25 +316,6 @@ in China (IECSC)</p></li>
 Substances</p></li>
 </ul>
 </div></blockquote>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r4b465c145a76-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id4">2</a>)</span></dt>
-<dd><p>Government of Canada.. “Substances Lists” Feb 11, 2015.
-<a class="reference external" href="https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1">https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1</a>.</p>
-</dd>
-<dt class="label" id="r4b465c145a76-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>US EPA. “TSCA Chemical Substance Inventory.” Accessed April 2016.
-<a class="reference external" href="https://www.epa.gov/tsca-inventory">https://www.epa.gov/tsca-inventory</a>.</p>
-</dd>
-<dt class="label" id="r4b465c145a76-3"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>)</span></dt>
-<dd><p>ECHA. “EC Inventory”. Accessed March 2015.
-<a class="reference external" href="http://echa.europa.eu/information-on-chemicals/ec-inventory">http://echa.europa.eu/information-on-chemicals/ec-inventory</a>.</p>
-</dd>
-<dt class="label" id="r4b465c145a76-4"><span class="brackets"><a class="fn-backref" href="#id6">4</a></span></dt>
-<dd><p>SPIN. “SPIN Substances in Products In Nordic Countries.” Accessed
-March 2015. <a class="reference external" href="http://195.215.202.233/DotNetNuke/default.aspx">http://195.215.202.233/DotNetNuke/default.aspx</a>.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">legal_status</span><span class="p">(</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">))</span>
 <span class="go">{&#39;DSL&#39;: &#39;LISTED&#39;,</span>
@@ -351,6 +325,25 @@ March 2015. <a class="reference external" href="http://195.215.202.233/DotNetNuk
 <span class="go"> &#39;TSCA&#39;: &#39;LISTED&#39;}</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id7"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>Government of Canada.. “Substances Lists” Feb 11, 2015.
+<a class="reference external" href="https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1">https://www.ec.gc.ca/subsnouvelles-newsubs/default.asp?n=47F768FE-1</a>.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>US EPA. “TSCA Chemical Substance Inventory.” Accessed April 2016.
+<a class="reference external" href="https://www.epa.gov/tsca-inventory">https://www.epa.gov/tsca-inventory</a>.</p>
+</dd>
+<dt class="label" id="id9"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>)</span></dt>
+<dd><p>ECHA. “EC Inventory”. Accessed March 2015.
+<a class="reference external" href="http://echa.europa.eu/information-on-chemicals/ec-inventory">http://echa.europa.eu/information-on-chemicals/ec-inventory</a>.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id6">4</a></span></dt>
+<dd><p>SPIN. “SPIN Substances in Products In Nordic Countries.” Accessed
+March 2015. <a class="reference external" href="http://195.215.202.233/DotNetNuke/default.aspx">http://195.215.202.233/DotNetNuke/default.aspx</a>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">

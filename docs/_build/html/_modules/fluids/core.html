@@ -1,0 +1,3123 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fluids.core &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>fluids.core</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fluids.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;Chemical Engineering Design Library (ChEDL). Utilities for process modeling.</span>
+<span class="sd">Copyright (C) 2016, 2017, 2018 Caleb Bell &lt;Caleb.Andrew.Bell@gmail.com&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">fabs</span><span class="p">,</span> <span class="n">copysign</span>
+<span class="kn">from</span> <span class="nn">fluids.constants</span> <span class="kn">import</span> <span class="n">g</span><span class="p">,</span> <span class="n">R</span>
+<span class="kn">from</span> <span class="nn">fluids.numerics</span> <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Reynolds&#39;</span><span class="p">,</span> <span class="s1">&#39;Prandtl&#39;</span><span class="p">,</span> <span class="s1">&#39;Grashof&#39;</span><span class="p">,</span> <span class="s1">&#39;Nusselt&#39;</span><span class="p">,</span> <span class="s1">&#39;Sherwood&#39;</span><span class="p">,</span> <span class="s1">&#39;Rayleigh&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Schmidt&#39;</span><span class="p">,</span> <span class="s1">&#39;Peclet_heat&#39;</span><span class="p">,</span> <span class="s1">&#39;Peclet_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;Fourier_heat&#39;</span><span class="p">,</span> <span class="s1">&#39;Fourier_mass&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Graetz_heat&#39;</span><span class="p">,</span> <span class="s1">&#39;Lewis&#39;</span><span class="p">,</span> <span class="s1">&#39;Weber&#39;</span><span class="p">,</span> <span class="s1">&#39;Mach&#39;</span><span class="p">,</span> <span class="s1">&#39;Knudsen&#39;</span><span class="p">,</span> <span class="s1">&#39;Bond&#39;</span><span class="p">,</span> <span class="s1">&#39;Dean&#39;</span><span class="p">,</span> <span class="s1">&#39;Morton&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Froude&#39;</span><span class="p">,</span> <span class="s1">&#39;Froude_densimetric&#39;</span><span class="p">,</span> <span class="s1">&#39;Strouhal&#39;</span><span class="p">,</span> <span class="s1">&#39;Biot&#39;</span><span class="p">,</span> <span class="s1">&#39;Stanton&#39;</span><span class="p">,</span> <span class="s1">&#39;Euler&#39;</span><span class="p">,</span> <span class="s1">&#39;Cavitation&#39;</span><span class="p">,</span> <span class="s1">&#39;Eckert&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Jakob&#39;</span><span class="p">,</span> <span class="s1">&#39;Power_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Stokes_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Drag&#39;</span><span class="p">,</span> <span class="s1">&#39;Capillary&#39;</span><span class="p">,</span> <span class="s1">&#39;Bejan_L&#39;</span><span class="p">,</span> <span class="s1">&#39;Bejan_p&#39;</span><span class="p">,</span> <span class="s1">&#39;Boiling&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Confinement&#39;</span><span class="p">,</span> <span class="s1">&#39;Archimedes&#39;</span><span class="p">,</span> <span class="s1">&#39;Ohnesorge&#39;</span><span class="p">,</span> <span class="s1">&#39;Suratman&#39;</span><span class="p">,</span> <span class="s1">&#39;Hagen&#39;</span><span class="p">,</span> <span class="s1">&#39;thermal_diffusivity&#39;</span><span class="p">,</span> <span class="s1">&#39;c_ideal_gas&#39;</span><span class="p">,</span>
+<span class="s1">&#39;relative_roughness&#39;</span><span class="p">,</span> <span class="s1">&#39;nu_mu_converter&#39;</span><span class="p">,</span> <span class="s1">&#39;gravity&#39;</span><span class="p">,</span>
+<span class="s1">&#39;K_from_f&#39;</span><span class="p">,</span> <span class="s1">&#39;K_from_L_equiv&#39;</span><span class="p">,</span> <span class="s1">&#39;L_equiv_from_K&#39;</span><span class="p">,</span> <span class="s1">&#39;L_from_K&#39;</span><span class="p">,</span> <span class="s1">&#39;dP_from_K&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;head_from_K&#39;</span><span class="p">,</span> <span class="s1">&#39;head_from_P&#39;</span><span class="p">,</span>
+<span class="s1">&#39;P_from_head&#39;</span><span class="p">,</span> <span class="s1">&#39;Eotvos&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1">### Not quite dimensionless groups</span>
+<div class="viewcode-block" id="thermal_diffusivity"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.thermal_diffusivity">[docs]</a><span class="k">def</span> <span class="nf">thermal_diffusivity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">Cp</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates thermal diffusivity or `alpha` for a fluid with the given</span>
+<span class="sd">    parameters.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \alpha = \frac{k}{\rho Cp}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; thermal_diffusivity(k=0.02, rho=1., Cp=1000.)</span>
+<span class="sd">    2e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:</span>
+<span class="sd">       Van Nostrand Reinhold Co., 1984.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span></div>
+
+
+<span class="c1">### Ideal gas fluid properties</span>
+
+
+<div class="viewcode-block" id="c_ideal_gas"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.c_ideal_gas">[docs]</a><span class="k">def</span> <span class="nf">c_ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates speed of sound `c` in an ideal gas at temperature T.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        c = \sqrt{kR_{specific}T}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of fluid, [K]</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Isentropic exponent of fluid, [-]</span>
+<span class="sd">    MW : float</span>
+<span class="sd">        Molecular weight of fluid, [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Speed of sound in fluid, [m/s]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in compressible flow calculations.</span>
+<span class="sd">    Note that the gas constant used is the specific gas constant:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        R_{specific} = R\frac{1000}{MW}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; c_ideal_gas(T=303, k=1.4, MW=28.96)</span>
+<span class="sd">    348.9820953185441</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Rspecific</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="mf">1000.</span><span class="o">/</span><span class="n">MW</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">Rspecific</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div>
+
+
+<span class="c1">### Dimensionless groups with documentation</span>
+
+<div class="viewcode-block" id="Reynolds"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Reynolds">[docs]</a><span class="k">def</span> <span class="nf">Reynolds</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Reynolds number or `Re` for a fluid with the given</span>
+<span class="sd">    properties for the specified velocity and diameter.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Re = \frac{D \cdot V}{\nu} = \frac{\rho V D}{\mu}</span>
+
+<span class="sd">    Inputs either of any of the following sets:</span>
+
+<span class="sd">    * V, D, density `rho` and kinematic viscosity `mu`</span>
+<span class="sd">    * V, D, and dynamic viscosity `nu`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity [m/s]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diameter [m]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    nu : float, optional</span>
+<span class="sd">        Kinematic viscosity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Re : float</span>
+<span class="sd">        Reynolds number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Re = \frac{\text{Momentum}}{\text{Viscosity}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Reynolds(2.5, 0.25, 1.1613, 1.9E-5)</span>
+<span class="sd">    38200.65789473684</span>
+<span class="sd">    &gt;&gt;&gt; Reynolds(2.5, 0.25, nu=1.636e-05)</span>
+<span class="sd">    38202.93398533008</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">mu</span><span class="p">:</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">nu</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either density and viscosity, or dynamic viscosity, </span><span class="se">\</span>
+<span class="s1">        is needed&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="n">nu</span></div>
+
+
+<div class="viewcode-block" id="Peclet_heat"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Peclet_heat">[docs]</a><span class="k">def</span> <span class="nf">Peclet_heat</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates heat transfer Peclet number or `Pe` for a specified velocity</span>
+<span class="sd">    `V`, characteristic length `L`, and specified properties for the given</span>
+<span class="sd">    fluid.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Pe = \frac{VL\rho C_p}{k} = \frac{LV}{\alpha}</span>
+
+<span class="sd">    Inputs either of any of the following sets:</span>
+
+<span class="sd">    * V, L, density `rho`, heat capacity `Cp`, and thermal conductivity `k`</span>
+<span class="sd">    * V, L, and thermal diffusivity `alpha`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    Cp : float, optional</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+<span class="sd">    k : float, optional</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Pe : float</span>
+<span class="sd">        Peclet number (heat) []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Pe = \frac{\text{Bulk heat transfer}}{\text{Conduction heat transfer}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Peclet_heat(1.5, 2, 1000., 4000., 0.6)</span>
+<span class="sd">    20000000.0</span>
+<span class="sd">    &gt;&gt;&gt; Peclet_heat(1.5, 2, alpha=1E-7)</span>
+<span class="sd">    30000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">k</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span>  <span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either heat capacity and thermal conductivity and</span><span class="se">\</span>
+<span class="s1">        density, or thermal diffusivity is needed&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">alpha</span></div>
+
+
+<div class="viewcode-block" id="Peclet_mass"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Peclet_mass">[docs]</a><span class="k">def</span> <span class="nf">Peclet_mass</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates mass transfer Peclet number or `Pe` for a specified velocity</span>
+<span class="sd">    `V`, characteristic length `L`, and diffusion coefficient `D`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Pe = \frac{L V}{D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diffusivity of a species, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Pe : float</span>
+<span class="sd">        Peclet number (mass) []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Pe = \frac{\text{Advective transport rate}}{\text{Diffusive transport rate}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Peclet_mass(1.5, 2, 1E-9)</span>
+<span class="sd">    3000000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="Fourier_heat"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Fourier_heat">[docs]</a><span class="k">def</span> <span class="nf">Fourier_heat</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates heat transfer Fourier number or `Fo` for a specified time</span>
+<span class="sd">    `t`, characteristic length `L`, and specified properties for the given</span>
+<span class="sd">    fluid.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fo = \frac{k t}{C_p \rho L^2} = \frac{\alpha t}{L^2}</span>
+
+<span class="sd">    Inputs either of any of the following sets:</span>
+
+<span class="sd">    * t, L, density `rho`, heat capacity `Cp`, and thermal conductivity `k`</span>
+<span class="sd">    * t, L, and thermal diffusivity `alpha`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        time [s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    Cp : float, optional</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+<span class="sd">    k : float, optional</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Fo : float</span>
+<span class="sd">        Fourier number (heat) []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Fo = \frac{\text{Heat conduction rate}}</span>
+<span class="sd">        {\text{Rate of thermal energy storage in a solid}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Fourier_heat(t=1.5, L=2, rho=1000., Cp=4000., k=0.6)</span>
+<span class="sd">    5.625e-08</span>
+<span class="sd">    &gt;&gt;&gt; Fourier_heat(1.5, 2, alpha=1E-7)</span>
+<span class="sd">    3.75e-08</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">k</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span>  <span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either heat capacity and thermal conductivity and </span><span class="se">\</span>
+<span class="s1">density, or thermal diffusivity is needed&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">*</span><span class="n">alpha</span><span class="o">/</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Fourier_mass"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Fourier_mass">[docs]</a><span class="k">def</span> <span class="nf">Fourier_mass</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates mass transfer Fourier number or `Fo` for a specified time</span>
+<span class="sd">    `t`, characteristic length `L`, and diffusion coefficient `D`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fo = \frac{D t}{L^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        time [s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diffusivity of a species, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Fo : float</span>
+<span class="sd">        Fourier number (mass) []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Fo = \frac{\text{Diffusive transport rate}}{\text{Storage rate}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Fourier_mass(t=1.5, L=2, D=1E-9)</span>
+<span class="sd">    3.7500000000000005e-10</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Graetz_heat"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Graetz_heat">[docs]</a><span class="k">def</span> <span class="nf">Graetz_heat</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Graetz number or `Gz` for a specified velocity</span>
+<span class="sd">    `V`, diameter `D`, axial distance `x`, and specified properties for the</span>
+<span class="sd">    given fluid.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Gz = \frac{VD^2\cdot C_p \rho}{x\cdot k} = \frac{VD^2}{x \alpha}</span>
+
+<span class="sd">    Inputs either of any of the following sets:</span>
+
+<span class="sd">    * V, D, x, density `rho`, heat capacity `Cp`, and thermal conductivity `k`</span>
+<span class="sd">    * V, D, x, and thermal diffusivity `alpha`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity, [m/s]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diameter [m]</span>
+<span class="sd">    x : float</span>
+<span class="sd">        Axial distance [m]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    Cp : float, optional</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+<span class="sd">    k : float, optional</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Gz : float</span>
+<span class="sd">        Graetz number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Gz = \frac{\text{Time for radial heat diffusion in a fluid by conduction}}</span>
+<span class="sd">        {\text{Time taken by fluid to reach distance x}}</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Gz = \frac{D}{x}RePr</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Graetz_heat(1.5, 0.25, 5, 800., 2200., 0.6)</span>
+<span class="sd">    55000.0</span>
+<span class="sd">    &gt;&gt;&gt; Graetz_heat(1.5, 0.25, 5, alpha=1E-7)</span>
+<span class="sd">    187500.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and</span>
+<span class="sd">       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:</span>
+<span class="sd">       Wiley, 2011.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">k</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span>  <span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either heat capacity and thermal conductivity and</span><span class="se">\</span>
+<span class="s1">        density, or thermal diffusivity is needed&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">alpha</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Schmidt"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Schmidt">[docs]</a><span class="k">def</span> <span class="nf">Schmidt</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Schmidt number or `Sc` for a fluid with the given</span>
+<span class="sd">    parameters.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Sc = \frac{\mu}{D\rho} = \frac{\nu}{D}</span>
+
+<span class="sd">    Inputs can be any of the following sets:</span>
+
+<span class="sd">    * Diffusivity, dynamic viscosity, and density</span>
+<span class="sd">    * Diffusivity and kinematic viscosity</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diffusivity of a species, [m^2/s]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    nu : float, optional</span>
+<span class="sd">        Kinematic viscosity, [m^2/s]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Sc : float</span>
+<span class="sd">        Schmidt number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Sc =\frac{\text{kinematic viscosity}}{\text{molecular diffusivity}}</span>
+<span class="sd">        = \frac{\text{viscous diffusivity}}{\text{species diffusivity}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Schmidt(D=2E-6, mu=4.61E-6, rho=800)</span>
+<span class="sd">    0.00288125</span>
+<span class="sd">    &gt;&gt;&gt; Schmidt(D=1E-9, nu=6E-7)</span>
+<span class="sd">    599.9999999999999</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">mu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">D</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nu</span><span class="o">/</span><span class="n">D</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Insufficient information provided for Schmidt number calculation&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lewis"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Lewis">[docs]</a><span class="k">def</span> <span class="nf">Lewis</span><span class="p">(</span><span class="n">D</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lewis number or `Le` for a fluid with the given parameters.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Le = \frac{k}{\rho C_p D} = \frac{\alpha}{D}</span>
+
+<span class="sd">    Inputs can be either of the following sets:</span>
+
+<span class="sd">    * Diffusivity and Thermal diffusivity</span>
+<span class="sd">    * Diffusivity, heat capacity, thermal conductivity, and density</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diffusivity of a species, [m^2/s]</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+<span class="sd">    Cp : float, optional</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+<span class="sd">    k : float, optional</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Le : float</span>
+<span class="sd">        Lewis number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Le=\frac{\text{Thermal diffusivity}}{\text{Mass diffusivity}} =</span>
+<span class="sd">        \frac{Sc}{Pr}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Lewis(D=22.6E-6, alpha=19.1E-6)</span>
+<span class="sd">    0.8451327433628318</span>
+<span class="sd">    &gt;&gt;&gt; Lewis(D=22.6E-6, rho=800., k=.2, Cp=2200)</span>
+<span class="sd">    0.00502815768302494</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.</span>
+<span class="sd">       Berlin; New York:: Springer, 2010.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">rho</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Insufficient information provided for Le calculation&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">alpha</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="Weber"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Weber">[docs]</a><span class="k">def</span> <span class="nf">Weber</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Weber number, `We`, for a fluid with the given density,</span>
+<span class="sd">    surface tension, velocity, and geometric parameter (usually diameter</span>
+<span class="sd">    of bubble).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        We = \frac{V^2 L\rho}{\sigma}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid, [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, typically bubble diameter [m]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    We : float</span>
+<span class="sd">        Weber number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in bubble calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        We = \frac{\text{inertial force}}{\text{surface tension force}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Weber(V=0.18, L=0.001, rho=900., sigma=0.01)</span>
+<span class="sd">    2.916</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.</span>
+<span class="sd">       Berlin; New York:: Springer, 2010.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">*</span><span class="n">rho</span><span class="o">/</span><span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="Mach"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Mach">[docs]</a><span class="k">def</span> <span class="nf">Mach</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Mach number or `Ma` for a fluid of velocity `V` with speed</span>
+<span class="sd">    of sound `c`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ma = \frac{V}{c}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid, [m/s]</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Speed of sound in fluid, [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ma : float</span>
+<span class="sd">        Mach number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in compressible flow calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ma = \frac{\text{fluid velocity}}{\text{sonic velocity}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Mach(33., 330)</span>
+<span class="sd">    0.1</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">/</span><span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="Confinement"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Confinement">[docs]</a><span class="k">def</span> <span class="nf">Confinement</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">rhol</span><span class="p">,</span> <span class="n">rhog</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Confinement number or `Co` for a fluid in a channel of </span>
+<span class="sd">    diameter `D` with liquid and gas densities `rhol` and `rhog` and surface</span>
+<span class="sd">    tension `sigma`, under the influence of gravitational force `g`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Co}=\frac{\left[\frac{\sigma}{g(\rho_l-\rho_g)}\right]^{0.5}}{D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diameter of channel, [m]</span>
+<span class="sd">    rhol : float</span>
+<span class="sd">        Density of liquid phase, [kg/m^3]</span>
+<span class="sd">    rhog : float</span>
+<span class="sd">        Density of gas phase, [kg/m^3]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension between liquid-gas phase, [N/m]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Co : float</span>
+<span class="sd">        Confinement number [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in two-phase pressure drop and heat transfer correlations. First used</span>
+<span class="sd">    in [1]_ according to [3]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Co} = \frac{\frac{\text{surface tension force}}</span>
+<span class="sd">        {\text{buoyancy force}}}{\text{Channel area}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Confinement(0.001, 1077, 76.5, 4.27E-3)</span>
+<span class="sd">    0.6596978265315191</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Cornwell, Keith, and Peter A. Kew. &quot;Boiling in Small Parallel </span>
+<span class="sd">       Channels.&quot; In Energy Efficiency in Process Technology, edited by Dr P. </span>
+<span class="sd">       A. Pilavachi, 624-638. Springer Netherlands, 1993. </span>
+<span class="sd">       doi:10.1007/978-94-011-1454-7_56.</span>
+<span class="sd">    .. [2] Kandlikar, Satish G. Heat Transfer and Fluid Flow in Minichannels </span>
+<span class="sd">       and Microchannels. Elsevier, 2006.</span>
+<span class="sd">    .. [3] Tran, T. N, M. -C Chyu, M. W Wambsganss, and D. M France. Two-Phase </span>
+<span class="sd">       Pressure Drop of Refrigerants during Flow Boiling in Small Channels: An </span>
+<span class="sd">       Experimental Investigation and Correlation Development.&quot; International </span>
+<span class="sd">       Journal of Multiphase Flow 26, no. 11 (November 1, 2000): 1739-54. </span>
+<span class="sd">       doi:10.1016/S0301-9322(99)00119-6.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">sigma</span><span class="o">/</span><span class="p">(</span><span class="n">g</span><span class="o">*</span><span class="p">(</span><span class="n">rhol</span><span class="o">-</span><span class="n">rhog</span><span class="p">)))</span><span class="o">**</span><span class="mf">0.5</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="Morton"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Morton">[docs]</a><span class="k">def</span> <span class="nf">Morton</span><span class="p">(</span><span class="n">rhol</span><span class="p">,</span> <span class="n">rhog</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Morton number or `Mo` for a liquid and vapor with the</span>
+<span class="sd">    specified properties, under the influence of gravitational force `g`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Mo = \frac{g \mu_l^4(\rho_l - \rho_g)}{\rho_l^2 \sigma^3}</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rhol : float</span>
+<span class="sd">        Density of liquid phase, [kg/m^3]</span>
+<span class="sd">    rhog : float</span>
+<span class="sd">        Density of gas phase, [kg/m^3]</span>
+<span class="sd">    mul : float</span>
+<span class="sd">        Viscosity of liquid phase, [Pa*s]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension between liquid-gas phase, [N/m]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Mo : float</span>
+<span class="sd">        Morton number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in modeling bubbles in liquid.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Morton(1077.0, 76.5, 4.27E-3, 0.023)</span>
+<span class="sd">    2.311183104430743e-07</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Kunes, Josef. Dimensionless Physical Quantities in Science and </span>
+<span class="sd">       Engineering. Elsevier, 2012.</span>
+<span class="sd">    .. [2] Yan, Xiaokang, Kaixin Zheng, Yan Jia, Zhenyong Miao, Lijun Wang,</span>
+<span class="sd">       Yijun Cao, and Jiongtian Liu. “Drag Coefficient Prediction of a Single </span>
+<span class="sd">       Bubble Rising in Liquids.” Industrial &amp; Engineering Chemistry Research, </span>
+<span class="sd">       April 2, 2018. https://doi.org/10.1021/acs.iecr.7b04743.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mul2</span> <span class="o">=</span> <span class="n">mul</span><span class="o">*</span><span class="n">mul</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">*</span><span class="n">mul2</span><span class="o">*</span><span class="n">mul2</span><span class="o">*</span><span class="p">(</span><span class="n">rhol</span> <span class="o">-</span> <span class="n">rhog</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">rhol</span><span class="o">*</span><span class="n">rhol</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">sigma</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Knudsen"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Knudsen">[docs]</a><span class="k">def</span> <span class="nf">Knudsen</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Knudsen number or `Kn` for a fluid with mean free path</span>
+<span class="sd">    `path` and for a characteristic length `L`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Kn = \frac{\lambda}{L}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : float</span>
+<span class="sd">        Mean free path between molecular collisions, [m]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Kn : float</span>
+<span class="sd">        Knudsen number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in mass transfer calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Kn = \frac{\text{Mean free path length}}{\text{Characteristic length}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Knudsen(1e-10, .001)</span>
+<span class="sd">    1e-07</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">path</span><span class="o">/</span><span class="n">L</span></div>
+
+
+<div class="viewcode-block" id="Prandtl"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Prandtl">[docs]</a><span class="k">def</span> <span class="nf">Prandtl</span><span class="p">(</span><span class="n">Cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Prandtl number or `Pr` for a fluid with the given</span>
+<span class="sd">    parameters.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Pr = \frac{C_p \mu}{k} = \frac{\nu}{\alpha} = \frac{C_p \rho \nu}{k}</span>
+
+<span class="sd">    Inputs can be any of the following sets:</span>
+
+<span class="sd">    * Heat capacity, dynamic viscosity, and thermal conductivity</span>
+<span class="sd">    * Thermal diffusivity and kinematic viscosity</span>
+<span class="sd">    * Heat capacity, kinematic viscosity, thermal conductivity, and density</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Thermal conductivity, [W/m/K]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    nu : float, optional</span>
+<span class="sd">        Kinematic viscosity, [m^2/s]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Pr : float</span>
+<span class="sd">        Prandtl number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Pr=\frac{\text{kinematic viscosity}}{\text{thermal diffusivity}} = \frac{\text{momentum diffusivity}}{\text{thermal diffusivity}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Prandtl(Cp=1637., k=0.010, mu=4.61E-6)</span>
+<span class="sd">    0.754657</span>
+<span class="sd">    &gt;&gt;&gt; Prandtl(Cp=1637., k=0.010, nu=6.4E-7, rho=7.1)</span>
+<span class="sd">    0.7438528</span>
+<span class="sd">    &gt;&gt;&gt; Prandtl(nu=6.3E-7, alpha=9E-7)</span>
+<span class="sd">    0.7000000000000001</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.</span>
+<span class="sd">       Berlin; New York:: Springer, 2010.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">mu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Cp</span><span class="o">*</span><span class="n">mu</span><span class="o">/</span><span class="n">k</span>
+    <span class="k">elif</span> <span class="n">nu</span> <span class="ow">and</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">Cp</span> <span class="ow">and</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nu</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="o">/</span><span class="n">k</span>
+    <span class="k">elif</span> <span class="n">nu</span> <span class="ow">and</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nu</span><span class="o">/</span><span class="n">alpha</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Insufficient information provided for Pr calculation&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Grashof"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Grashof">[docs]</a><span class="k">def</span> <span class="nf">Grashof</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Grashof number or `Gr` for a fluid with the given</span>
+<span class="sd">    properties, temperature difference, and characteristic length.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Gr = \frac{g\beta (T_s-T_\infty)L^3}{\nu^2}</span>
+<span class="sd">        = \frac{g\beta (T_s-T_\infty)L^3\rho^2}{\mu^2}</span>
+
+<span class="sd">    Inputs either of any of the following sets:</span>
+
+<span class="sd">    * L, beta, T1 and T2, and density `rho` and kinematic viscosity `mu`</span>
+<span class="sd">    * L, beta, T1 and T2, and dynamic viscosity `nu`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Volumetric thermal expansion coefficient [1/K]</span>
+<span class="sd">    T1 : float</span>
+<span class="sd">        Temperature 1, usually a film temperature [K]</span>
+<span class="sd">    T2 : float, optional</span>
+<span class="sd">        Temperature 2, usually a bulk temperature (or 0 if only a difference</span>
+<span class="sd">        is provided to the function) [K]</span>
+<span class="sd">    rho : float, optional</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    nu : float, optional</span>
+<span class="sd">        Kinematic viscosity, [m^2/s]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Gr : float</span>
+<span class="sd">        Grashof number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Gr = \frac{\text{Buoyancy forces}}{\text{Viscous forces}}</span>
+
+<span class="sd">    An error is raised if none of the required input sets are provided.</span>
+<span class="sd">    Used in free convection problems only.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Example 4 of [1]_, p. 1-21 (matches):</span>
+
+<span class="sd">    &gt;&gt;&gt; Grashof(L=0.9144, beta=0.000933, T1=178.2, rho=1.1613, mu=1.9E-5)</span>
+<span class="sd">    4656936556.178915</span>
+<span class="sd">    &gt;&gt;&gt; Grashof(L=0.9144, beta=0.000933, T1=378.2, T2=200, nu=1.636e-05)</span>
+<span class="sd">    4657491516.530312</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">rho</span> <span class="ow">and</span> <span class="n">mu</span><span class="p">:</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">nu</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either density and viscosity, or dynamic viscosity, </span><span class="se">\</span>
+<span class="s1">        is needed&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">*</span><span class="n">beta</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">T2</span><span class="o">-</span><span class="n">T1</span><span class="p">)</span><span class="o">*</span><span class="n">L</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">nu</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Bond"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Bond">[docs]</a><span class="k">def</span> <span class="nf">Bond</span><span class="p">(</span><span class="n">rhol</span><span class="p">,</span> <span class="n">rhog</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Bond number, `Bo` also known as Eotvos number,</span>
+<span class="sd">    for a fluid with the given liquid and gas densities, surface tension,</span>
+<span class="sd">    and geometric parameter (usually length).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Bo = \frac{g(\rho_l-\rho_g)L^2}{\sigma}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rhol : float</span>
+<span class="sd">        Density of liquid, [kg/m^3]</span>
+<span class="sd">    rhog : float</span>
+<span class="sd">        Density of gas, [kg/m^3]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Bo : float</span>
+<span class="sd">        Bond number []</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Bond(1000., 1.2, .0589, 2)</span>
+<span class="sd">    665187.2339558573</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">g</span><span class="o">*</span><span class="p">(</span><span class="n">rhol</span><span class="o">-</span><span class="n">rhog</span><span class="p">)</span><span class="o">*</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span></div>
+
+<span class="n">Eotvos</span> <span class="o">=</span> <span class="n">Bond</span>
+
+
+<div class="viewcode-block" id="Rayleigh"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Rayleigh">[docs]</a><span class="k">def</span> <span class="nf">Rayleigh</span><span class="p">(</span><span class="n">Pr</span><span class="p">,</span> <span class="n">Gr</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Rayleigh number or `Ra` using Prandtl number `Pr` and</span>
+<span class="sd">    Grashof number `Gr` for a fluid with the given</span>
+<span class="sd">    properties, temperature difference, and characteristic length used</span>
+<span class="sd">    to calculate `Gr` and `Pr`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ra = PrGr</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Pr : float</span>
+<span class="sd">        Prandtl number []</span>
+<span class="sd">    Gr : float</span>
+<span class="sd">        Grashof number []</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ra : float</span>
+<span class="sd">        Rayleigh number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in free convection problems only.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Rayleigh(1.2, 4.6E9)</span>
+<span class="sd">    5520000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">Pr</span><span class="o">*</span><span class="n">Gr</span></div>
+
+
+<div class="viewcode-block" id="Froude"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Froude">[docs]</a><span class="k">def</span> <span class="nf">Froude</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Froude number `Fr` for velocity `V` and geometric length</span>
+<span class="sd">    `L`. If desired, gravity can be specified as well. Normally the function</span>
+<span class="sd">    returns the result of the equation below; Froude number is also often</span>
+<span class="sd">    said to be defined as the square of the equation below.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fr = \frac{V}{\sqrt{gL}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of the particle or fluid, [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, no typical definition [m]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+<span class="sd">    squared : bool, optional</span>
+<span class="sd">        Whether to return the squared form of Froude number</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Fr : float</span>
+<span class="sd">        Froude number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Many alternate definitions including density ratios have been used.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fr = \frac{\text{Inertial Force}}{\text{Gravity Force}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Froude(1.83, L=2., g=1.63)</span>
+<span class="sd">    1.0135432593877318</span>
+<span class="sd">    &gt;&gt;&gt; Froude(1.83, L=2., squared=True)</span>
+<span class="sd">    0.17074638128208924</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Fr</span> <span class="o">=</span> <span class="n">V</span><span class="o">/</span><span class="p">(</span><span class="n">L</span><span class="o">*</span><span class="n">g</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="k">if</span> <span class="n">squared</span><span class="p">:</span>
+        <span class="n">Fr</span> <span class="o">*=</span> <span class="n">Fr</span>
+    <span class="k">return</span> <span class="n">Fr</span></div>
+
+
+<div class="viewcode-block" id="Froude_densimetric"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Froude_densimetric">[docs]</a><span class="k">def</span> <span class="nf">Froude_densimetric</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">rho1</span><span class="p">,</span> <span class="n">rho2</span><span class="p">,</span> <span class="n">heavy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates the densimetric Froude number :math:`Fr_{den}` for velocity</span>
+<span class="sd">    `V` geometric length `L`, heavier fluid density `rho1`, and lighter fluid </span>
+<span class="sd">    density `rho2`. If desired, gravity can be specified as well. Depending on</span>
+<span class="sd">    the application, this dimensionless number may be defined with the heavy</span>
+<span class="sd">    phase or the light phase density in the numerator of the square root.</span>
+<span class="sd">    For some applications, both need to be calculated. The default is to </span>
+<span class="sd">    calculate with the heavy liquid ensity on top; set `heavy` to False</span>
+<span class="sd">    to reverse this.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fr = \frac{V}{\sqrt{gL}} \sqrt{\frac{\rho_\text{(1 or 2)}} </span>
+<span class="sd">        {\rho_1 - \rho_2}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of the specified phase, [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, no typical definition [m]</span>
+<span class="sd">    rho1 : float</span>
+<span class="sd">        Density of the heavier phase, [kg/m^3]</span>
+<span class="sd">    rho2 : float</span>
+<span class="sd">        Density of the lighter phase, [kg/m^3]</span>
+<span class="sd">    heavy : bool, optional</span>
+<span class="sd">        Whether or not the density used in the numerator is the heavy phase or</span>
+<span class="sd">        the light phase, [-]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Fr_den : float</span>
+<span class="sd">        Densimetric Froude number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Many alternate definitions including density ratios have been used.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Fr = \frac{\text{Inertial Force}}{\text{Gravity Force}}</span>
+<span class="sd">        </span>
+<span class="sd">    Where the gravity force is reduced by the relative densities of one fluid</span>
+<span class="sd">    in another.</span>
+<span class="sd">    </span>
+<span class="sd">    Note that an Exception will be raised if rho1 &gt; rho2, as the square root</span>
+<span class="sd">    becomes negative.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Froude_densimetric(1.83, L=2., rho1=800, rho2=1.2, g=9.81)</span>
+<span class="sd">    0.4134543386272418</span>
+<span class="sd">    &gt;&gt;&gt; Froude_densimetric(1.83, L=2., rho1=800, rho2=1.2, g=9.81, heavy=False)</span>
+<span class="sd">    0.016013017679205096</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Hall, A, G Stobie, and R Steven. &quot;Further Evaluation of the </span>
+<span class="sd">       Performance of Horizontally Installed Orifice Plate and Cone </span>
+<span class="sd">       Differential Pressure Meters with Wet Gas Flows.&quot; In International </span>
+<span class="sd">       SouthEast Asia Hydrocarbon Flow Measurement Workshop, KualaLumpur,</span>
+<span class="sd">       Malaysia, 2008.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">heavy</span><span class="p">:</span>
+        <span class="n">rho3</span> <span class="o">=</span> <span class="n">rho1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rho3</span> <span class="o">=</span> <span class="n">rho2</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">/</span><span class="p">((</span><span class="n">g</span><span class="o">*</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">rho3</span><span class="o">/</span><span class="p">(</span><span class="n">rho1</span> <span class="o">-</span> <span class="n">rho2</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span></div>
+
+
+<div class="viewcode-block" id="Strouhal"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Strouhal">[docs]</a><span class="k">def</span> <span class="nf">Strouhal</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Strouhal number `St` for a characteristic frequency `f`,</span>
+<span class="sd">    characteristic length `L`, and velocity `V`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        St = \frac{fL}{V}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f : float</span>
+<span class="sd">        Characteristic frequency, usually that of vortex shedding, [Hz]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, [m]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of the fluid, [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    St : float</span>
+<span class="sd">        Strouhal number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Sometimes abbreviated to S or Sr.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        St = \frac{\text{Characteristic flow time}}</span>
+<span class="sd">        {\text{Period of oscillation}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Strouhal(8, 2., 4.)</span>
+<span class="sd">    4.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">V</span></div>
+
+
+<div class="viewcode-block" id="Nusselt"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Nusselt">[docs]</a><span class="k">def</span> <span class="nf">Nusselt</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Nusselt number `Nu` for a heat transfer coefficient `h`,</span>
+<span class="sd">    characteristic length `L`, and thermal conductivity `k`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Nu = \frac{hL}{k}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Heat transfer coefficient, [W/m^2/K]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, no typical definition [m]</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Thermal conductivity of fluid [W/m/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Nu : float</span>
+<span class="sd">        Nusselt number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Do not confuse k, the thermal conductivity of the fluid, with that</span>
+<span class="sd">    of within a solid object associated with!</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Nu = \frac{\text{Convective heat transfer}}</span>
+<span class="sd">        {\text{Conductive heat transfer}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Nusselt(1000., 1.2, 300.)</span>
+<span class="sd">    4.0</span>
+<span class="sd">    &gt;&gt;&gt; Nusselt(10000., .01, 4000.)</span>
+<span class="sd">    0.025</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and</span>
+<span class="sd">       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:</span>
+<span class="sd">       Wiley, 2011.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="Sherwood"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Sherwood">[docs]</a><span class="k">def</span> <span class="nf">Sherwood</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Sherwood number `Sh` for a mass transfer coefficient `K`,</span>
+<span class="sd">    characteristic length `L`, and diffusivity `D`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Sh = \frac{KL}{D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Mass transfer coefficient, [m/s]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, no typical definition [m]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diffusivity of a species [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Sh : float</span>
+<span class="sd">        Sherwood number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Sh = \frac{\text{Mass transfer by convection}}</span>
+<span class="sd">        {\text{Mass transfer by diffusion}} = \frac{K}{D/L}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Sherwood(1000., 1.2, 300.)</span>
+<span class="sd">    4.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="Biot"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Biot">[docs]</a><span class="k">def</span> <span class="nf">Biot</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Biot number `Br` for heat transfer coefficient `h`,</span>
+<span class="sd">    geometric length `L`, and thermal conductivity `k`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Bi=\frac{hL}{k}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Heat transfer coefficient, [W/m^2/K]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, no typical definition [m]</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Thermal conductivity, within the object [W/m/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Bi : float</span>
+<span class="sd">        Biot number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Do not confuse k, the thermal conductivity within the object, with that</span>
+<span class="sd">    of the medium h is calculated with!</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Bi = \frac{\text{Surface thermal resistance}}</span>
+<span class="sd">        {\text{Internal thermal resistance}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Biot(1000., 1.2, 300.)</span>
+<span class="sd">    4.0</span>
+<span class="sd">    &gt;&gt;&gt; Biot(10000., .01, 4000.)</span>
+<span class="sd">    0.025</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="Stanton"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Stanton">[docs]</a><span class="k">def</span> <span class="nf">Stanton</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">Cp</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Stanton number or `St` for a specified heat transfer</span>
+<span class="sd">    coefficient `h`, velocity `V`, density `rho`, and heat capacity `Cp`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        St = \frac{h}{V\rho Cp}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Heat transfer coefficient, [W/m^2/K]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity, [m/s]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Heat capacity, [J/kg/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    St : float</span>
+<span class="sd">        Stanton number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        St = \frac{\text{Heat transfer coefficient}}{\text{Thermal capacity}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Stanton(5000, 5, 800, 2000.)</span>
+<span class="sd">    0.000625</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and</span>
+<span class="sd">       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:</span>
+<span class="sd">       Wiley, 2011.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">Cp</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Euler"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Euler">[docs]</a><span class="k">def</span> <span class="nf">Euler</span><span class="p">(</span><span class="n">dP</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Euler number or `Eu` for a fluid of velocity `V` and</span>
+<span class="sd">    density `rho` experiencing a pressure drop `dP`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Eu = \frac{\Delta P}{\rho V^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dP : float</span>
+<span class="sd">        Pressure drop experience by the fluid, [Pa]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of the fluid, [kg/m^3]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid, [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Eu : float</span>
+<span class="sd">        Euler number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in pressure drop calculations.</span>
+<span class="sd">    Rarely, this number is divided by two.</span>
+<span class="sd">    Named after Leonhard Euler applied calculus to fluid dynamics.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Eu = \frac{\text{Pressure drop}}{2\cdot \text{velocity head}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Euler(1E5, 1000., 4)</span>
+<span class="sd">    6.25</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">dP</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cavitation"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Cavitation">[docs]</a><span class="k">def</span> <span class="nf">Cavitation</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Cavitation number or `Ca` for a fluid of velocity `V` with</span>
+<span class="sd">    a pressure `P`, vapor pressure `Psat`, and density `rho`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ca = \sigma_c = \sigma = \frac{P-P_{sat}}{\frac{1}{2}\rho V^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Internal pressure of the fluid, [Pa]</span>
+<span class="sd">    Psat : float</span>
+<span class="sd">        Vapor pressure of the fluid, [Pa]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of the fluid, [kg/m^3]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid, [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ca : float</span>
+<span class="sd">        Cavitation number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in determining if a flow through a restriction will cavitate.</span>
+<span class="sd">    Sometimes, the multiplication by 2 will be omitted;</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ca = \frac{\text{Pressure - Vapor pressure}}</span>
+<span class="sd">        {\text{Inertial pressure}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Cavitation(2E5, 1E4, 1000, 10)</span>
+<span class="sd">    3.8</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">P</span><span class="o">-</span><span class="n">Psat</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Eckert"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Eckert">[docs]</a><span class="k">def</span> <span class="nf">Eckert</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">Cp</span><span class="p">,</span> <span class="n">dT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Eckert number or `Ec` for a fluid of velocity `V` with</span>
+<span class="sd">    a heat capacity `Cp`, between two temperature given as `dT`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ec = \frac{V^2}{C_p \Delta T}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid, [m/s]</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Heat capacity of the fluid, [J/kg/K]</span>
+<span class="sd">    dT : float</span>
+<span class="sd">        Temperature difference, [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ec : float</span>
+<span class="sd">        Eckert number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in certain heat transfer calculations. Fairly rare.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ec = \frac{\text{Kinetic energy} }{ \text{Enthalpy difference}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Eckert(10, 2000., 25.)</span>
+<span class="sd">    0.002</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Goldstein, Richard J. ECKERT NUMBER. Thermopedia. Hemisphere, 2011.</span>
+<span class="sd">       10.1615/AtoZ.e.eckert_number</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">Cp</span><span class="o">*</span><span class="n">dT</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Jakob"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Jakob">[docs]</a><span class="k">def</span> <span class="nf">Jakob</span><span class="p">(</span><span class="n">Cp</span><span class="p">,</span> <span class="n">Hvap</span><span class="p">,</span> <span class="n">Te</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Jakob number or `Ja` for a boiling fluid with sensible heat</span>
+<span class="sd">    capacity `Cp`, enthalpy of vaporization `Hvap`, and boiling at `Te` degrees</span>
+<span class="sd">    above its saturation boiling point.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ja = \frac{C_{P}\Delta T_e}{\Delta H_{vap}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Heat capacity of the fluid, [J/kg/K]</span>
+<span class="sd">    Hvap : float</span>
+<span class="sd">        Enthalpy of vaporization of the fluid at its saturation temperature [J/kg]</span>
+<span class="sd">    Te : float</span>
+<span class="sd">        Temperature difference above the fluid&#39;s saturation boiling temperature, [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ja : float</span>
+<span class="sd">        Jakob number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in boiling heat transfer analysis. Fairly rare.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ja = \frac{\Delta \text{Sensible heat}}{\Delta \text{Latent heat}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Jakob(4000., 2E6, 10.)</span>
+<span class="sd">    0.02</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and</span>
+<span class="sd">       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:</span>
+<span class="sd">       Wiley, 2011.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">Cp</span><span class="o">*</span><span class="n">Te</span><span class="o">/</span><span class="n">Hvap</span></div>
+
+
+<div class="viewcode-block" id="Power_number"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Power_number">[docs]</a><span class="k">def</span> <span class="nf">Power_number</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates power number, `Po`, for an agitator applying a specified</span>
+<span class="sd">    power `P` with a characteristic length `L`, rotational speed `N`, to</span>
+<span class="sd">    a fluid with a specified density `rho`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Po = \frac{P}{\rho N^3 D^5}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Power applied, [W]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, typically agitator diameter [m]</span>
+<span class="sd">    N : float</span>
+<span class="sd">        Speed [revolutions/second]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Po : float</span>
+<span class="sd">        Power number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in mixing calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Po = \frac{\text{Power}}{\text{Rotational inertia}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Power_number(P=180, L=0.01, N=2.5, rho=800.)</span>
+<span class="sd">    144000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">P</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">L</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Drag"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Drag">[docs]</a><span class="k">def</span> <span class="nf">Drag</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates drag coefficient `Cd` for a given drag force `F`,</span>
+<span class="sd">    projected area `A`, characteristic velocity `V`, and density `rho`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_D = \frac{F_d}{A\cdot\frac{1}{2}\rho V^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F : float</span>
+<span class="sd">        Drag force, [N]</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Projected area, [m^2]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Characteristic velocity, [m/s]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Cd : float</span>
+<span class="sd">        Drag coefficient, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in flow around objects, or objects flowing within a fluid.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_D = \frac{\text{Drag forces}}{\text{Projected area}\cdot</span>
+<span class="sd">        \text{Velocity head}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Drag(1000, 0.0001, 5, 2000)</span>
+<span class="sd">    400.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">/</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Stokes_number"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Stokes_number">[docs]</a><span class="k">def</span> <span class="nf">Stokes_number</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">Dp</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rhop</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Stokes Number for a given characteristic velocity `V`, </span>
+<span class="sd">    particle diameter `Dp`, characteristic diameter `D`, particle density </span>
+<span class="sd">    `rhop`, and fluid viscosity `mu`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Stk} = \frac{\rho_p V D_p^2}{18\mu_f D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Characteristic velocity (often superficial), [m/s]</span>
+<span class="sd">    Dp : float</span>
+<span class="sd">        Particle diameter, [m]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Characteristic diameter (ex demister wire diameter or cyclone </span>
+<span class="sd">        diameter), [m]</span>
+<span class="sd">    rhop : float</span>
+<span class="sd">        Particle density, [kg/m^3]</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Fluid viscosity, [Pa*s]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Stk : float</span>
+<span class="sd">        Stokes numer, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in droplet impaction or collection studies.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Stokes_number(V=0.9, Dp=1E-5, D=1E-3, rhop=1000, mu=1E-5)</span>
+<span class="sd">    0.5</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Rhodes, Martin J. Introduction to Particle Technology. Wiley, 2013.</span>
+<span class="sd">    .. [2] Al-Dughaither, Abdullah S., Ahmed A. Ibrahim, and Waheed A. </span>
+<span class="sd">       Al-Masry. &quot;Investigating Droplet Separation Efficiency in Wire-Mesh Mist</span>
+<span class="sd">       Eliminators in Bubble Column.&quot; Journal of Saudi Chemical Society 14, no.</span>
+<span class="sd">       4 (October 1, 2010): 331-39. https://doi.org/10.1016/j.jscs.2010.04.001.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">rhop</span><span class="o">*</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">Dp</span><span class="o">*</span><span class="n">Dp</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">18.0</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">D</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Capillary"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Capillary">[docs]</a><span class="k">def</span> <span class="nf">Capillary</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Capillary number `Ca` for a characteristic velocity `V`,</span>
+<span class="sd">    viscosity `mu`, and surface tension `sigma`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ca = \frac{V \mu}{\sigma}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Characteristic velocity, [m/s]</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ca : float</span>
+<span class="sd">        Capillary number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in porous media calculations and film flow calculations.</span>
+<span class="sd">    Surface tension may gas-liquid, or liquid-liquid.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ca = \frac{\text{Viscous forces}}</span>
+<span class="sd">        {\text{Surface forces}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Capillary(1.2, 0.01, .1)</span>
+<span class="sd">    0.12</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Kundu, Pijush K., Ira M. Cohen, and David R. Dowling. Fluid</span>
+<span class="sd">       Mechanics. Academic Press, 2012.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">mu</span><span class="o">/</span><span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="Archimedes"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Archimedes">[docs]</a><span class="k">def</span> <span class="nf">Archimedes</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">rhof</span><span class="p">,</span> <span class="n">rhop</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Archimedes number, `Ar`, for a fluid and particle with the</span>
+<span class="sd">    given densities, characteristic length, viscosity, and gravity</span>
+<span class="sd">    (usually diameter of particle).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ar = \frac{L^3 \rho_f(\rho_p-\rho_f)g}{\mu^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, typically particle diameter [m]</span>
+<span class="sd">    rhof : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    rhop : float</span>
+<span class="sd">        Density of particle, [kg/m^3]</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Viscosity of fluid, [N/m]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ar : float</span>
+<span class="sd">        Archimedes number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in fluid-particle interaction calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Ar = \frac{\text{Gravitational force}}{\text{Viscous force}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Archimedes(0.002, 2., 3000, 1E-3)</span>
+<span class="sd">    470.4053872</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">L</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">rhof</span><span class="o">*</span><span class="p">(</span><span class="n">rhop</span><span class="o">-</span><span class="n">rhof</span><span class="p">)</span><span class="o">*</span><span class="n">g</span><span class="o">/</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Ohnesorge"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Ohnesorge">[docs]</a><span class="k">def</span> <span class="nf">Ohnesorge</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Ohnesorge number, `Oh`, for a fluid with the given</span>
+<span class="sd">    characteristic length, density, viscosity, and surface tension.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">         \text{Oh} = \frac{\mu}{\sqrt{\rho \sigma L }}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Viscosity of fluid, [Pa*s]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Oh : float</span>
+<span class="sd">        Ohnesorge number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Often used in spray calculations. Sometimes given the symbol Z.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Oh = \frac{\sqrt{\text{We}}}{\text{Re}}= \frac{\text{viscous forces}}</span>
+<span class="sd">        {\sqrt{\text{Inertia}\cdot\text{Surface tension}} }</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Ohnesorge(1E-4, 1000., 1E-3, 1E-1)</span>
+<span class="sd">    0.01</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="p">(</span><span class="n">L</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div>
+
+    
+<div class="viewcode-block" id="Suratman"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Suratman">[docs]</a><span class="k">def</span> <span class="nf">Suratman</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Suratman number, `Su`, for a fluid with the given</span>
+<span class="sd">    characteristic length, density, viscosity, and surface tension.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Su} = \frac{\rho\sigma L}{\mu^2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length [m]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Viscosity of fluid, [Pa*s]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Su : float</span>
+<span class="sd">        Suratman number []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Also known as Laplace number. Used in two-phase flow, especially the </span>
+<span class="sd">    bubbly-slug regime. No confusion regarding the definition of this group </span>
+<span class="sd">    has been observed.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Su} = \frac{\text{Re}^2}{\text{We}} =\frac{\text{Inertia}\cdot</span>
+<span class="sd">        \text{Surface tension} }{\text{(viscous forces)}^2}</span>
+
+<span class="sd">    The oldest reference to this group found by the author is in 1963, from </span>
+<span class="sd">    [2]_.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Suratman(1E-4, 1000., 1E-3, 1E-1)</span>
+<span class="sd">    10000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Sen, Nilava. &quot;Suratman Number in Bubble-to-Slug Flow Pattern </span>
+<span class="sd">       Transition under Microgravity.&quot; Acta Astronautica 65, no. 3-4 (August </span>
+<span class="sd">       2009): 423-28. doi:10.1016/j.actaastro.2009.02.013.</span>
+<span class="sd">    .. [2] Catchpole, John P., and George. Fulford. &quot;DIMENSIONLESS GROUPS.&quot; </span>
+<span class="sd">       Industrial &amp; Engineering Chemistry 58, no. 3 (March 1, 1966): 46-60. </span>
+<span class="sd">       doi:10.1021/ie50675a012.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">rho</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Hagen"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Hagen">[docs]</a><span class="k">def</span> <span class="nf">Hagen</span><span class="p">(</span><span class="n">Re</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Hagen number, `Hg`, for a fluid with the given</span>
+<span class="sd">    Reynolds number and friction factor.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Hg} = \frac{f_d}{2} Re^2 = \frac{1}{\rho} </span>
+<span class="sd">        \frac{\Delta P}{\Delta z} \frac{D^3}{\nu^2} </span>
+<span class="sd">        = \frac{\rho\Delta P D^3}{\mu^2 \Delta z}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Re : float</span>
+<span class="sd">        Reynolds number [-]</span>
+<span class="sd">    fd : float, optional</span>
+<span class="sd">        Darcy friction factor, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Hg : float</span>
+<span class="sd">        Hagen number, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Introduced in [1]_; further use of it is mostly of the correlations</span>
+<span class="sd">    introduced in [1]_.</span>
+<span class="sd">    </span>
+<span class="sd">    Notable for use use in correlations, because it does not have any </span>
+<span class="sd">    dependence on velocity.</span>
+<span class="sd">    </span>
+<span class="sd">    This expression is useful when designing backwards with a pressure drop</span>
+<span class="sd">    spec already known.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Example from [3]_:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; Hagen(Re=2610, fd=1.935235)</span>
+<span class="sd">    6591507.17175</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Martin, Holger. &quot;The Generalized Lévêque Equation and Its Practical </span>
+<span class="sd">       Use for the Prediction of Heat and Mass Transfer Rates from Pressure </span>
+<span class="sd">       Drop.&quot; Chemical Engineering Science, Jean-Claude Charpentier </span>
+<span class="sd">       Festschrift Issue, 57, no. 16 (August 1, 2002): 3217-23. </span>
+<span class="sd">       https://doi.org/10.1016/S0009-2509(02)00194-X.</span>
+<span class="sd">    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat </span>
+<span class="sd">       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.</span>
+<span class="sd">    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.</span>
+<span class="sd">       Berlin; New York:: Springer, 2010.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">fd</span><span class="o">*</span><span class="n">Re</span><span class="o">*</span><span class="n">Re</span></div>
+
+
+<div class="viewcode-block" id="Bejan_L"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Bejan_L">[docs]</a><span class="k">def</span> <span class="nf">Bejan_L</span><span class="p">(</span><span class="n">dP</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Bejan number of a length or `Be_L` for a fluid with the</span>
+<span class="sd">    given parameters flowing over a characteristic length `L` and experiencing</span>
+<span class="sd">    a pressure drop `dP`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Be_L = \frac{\Delta P L^2}{\mu \alpha}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dP : float</span>
+<span class="sd">        Pressure drop, [Pa]</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Characteristic length, [m]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Be_L : float</span>
+<span class="sd">        Bejan number with respect to length []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Termed a dimensionless number by someone in 1988.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Bejan_L(1E4, 1, 1E-3, 1E-6)</span>
+<span class="sd">    10000000000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Awad, M. M. &quot;The Science and the History of the Two Bejan Numbers.&quot;</span>
+<span class="sd">       International Journal of Heat and Mass Transfer 94 (March 2016): 101-3.</span>
+<span class="sd">       doi:10.1016/j.ijheatmasstransfer.2015.11.073.</span>
+<span class="sd">    .. [2] Bejan, Adrian. Convection Heat Transfer. 4E. Hoboken, New Jersey:</span>
+<span class="sd">       Wiley, 2013.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">dP</span><span class="o">*</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bejan_p"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Bejan_p">[docs]</a><span class="k">def</span> <span class="nf">Bejan_p</span><span class="p">(</span><span class="n">dP</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Bejan number of a permeability or `Be_p` for a fluid with</span>
+<span class="sd">    the given parameters and a permeability `K` experiencing a pressure drop</span>
+<span class="sd">    `dP`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Be_p = \frac{\Delta P K}{\mu \alpha}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dP : float</span>
+<span class="sd">        Pressure drop, [Pa]</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Permeability, [m^2]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Thermal diffusivity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Be_p : float</span>
+<span class="sd">        Bejan number with respect to pore characteristics []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Termed a dimensionless number by someone in 1988.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Bejan_p(1E4, 1, 1E-3, 1E-6)</span>
+<span class="sd">    10000000000000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Awad, M. M. &quot;The Science and the History of the Two Bejan Numbers.&quot;</span>
+<span class="sd">       International Journal of Heat and Mass Transfer 94 (March 2016): 101-3.</span>
+<span class="sd">       doi:10.1016/j.ijheatmasstransfer.2015.11.073.</span>
+<span class="sd">    .. [2] Bejan, Adrian. Convection Heat Transfer. 4E. Hoboken, New Jersey:</span>
+<span class="sd">       Wiley, 2013.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">dP</span><span class="o">*</span><span class="n">K</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Boiling"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Boiling">[docs]</a><span class="k">def</span> <span class="nf">Boiling</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">Hvap</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Boiling number or `Bg` using heat flux, two-phase mass flux,</span>
+<span class="sd">    and heat of vaporization of the fluid flowing. Used in two-phase heat </span>
+<span class="sd">    transfer calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Bg} = \frac{q}{G_{tp} \Delta H_{vap}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : float</span>
+<span class="sd">        Two-phase mass flux in a channel (combined liquid and vapor) [kg/m^2/s]</span>
+<span class="sd">    q : float</span>
+<span class="sd">        Heat flux [W/m^2]</span>
+<span class="sd">    Hvap : float</span>
+<span class="sd">        Heat of vaporization of the fluid [J/kg]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Bg : float</span>
+<span class="sd">        Boiling number [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Most often uses the symbol `Bo` instead of `Bg`, but this conflicts with</span>
+<span class="sd">    Bond number.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Bg} = \frac{\text{mass liquid evaporated / area heat transfer </span>
+<span class="sd">        surface}}{\text{mass flow rate fluid / flow cross sectional area}}</span>
+<span class="sd">    </span>
+<span class="sd">    First defined in [4]_, though not named.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Boiling(300, 3000, 800000)</span>
+<span class="sd">    1.25e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Winterton, Richard H.S. BOILING NUMBER. Thermopedia. Hemisphere, </span>
+<span class="sd">       2011. 10.1615/AtoZ.b.boiling_number</span>
+<span class="sd">    .. [2] Collier, John G., and John R. Thome. Convective Boiling and </span>
+<span class="sd">       Condensation. 3rd edition. Clarendon Press, 1996.</span>
+<span class="sd">    .. [3] Stephan, Karl. Heat Transfer in Condensation and Boiling. Translated</span>
+<span class="sd">       by C. V. Green.. 1992 edition. Berlin; New York: Springer, 2013.</span>
+<span class="sd">    .. [4] W. F. Davidson, P. H. Hardie, C. G. R. Humphreys, A. A. Markson, </span>
+<span class="sd">       A. R. Mumford and T. Ravese &quot;Studies of heat transmission through boiler</span>
+<span class="sd">       tubing at pressures from 500 to 3300 pounds&quot; Trans. ASME, Vol. 65, 9, </span>
+<span class="sd">       February 1943, pp. 553-591. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">q</span><span class="o">/</span><span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">Hvap</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Dean"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Dean">[docs]</a><span class="k">def</span> <span class="nf">Dean</span><span class="p">(</span><span class="n">Re</span><span class="p">,</span> <span class="n">Di</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Dean number, `De`, for a fluid with the Reynolds number `Re`,</span>
+<span class="sd">    inner diameter `Di`, and a secondary diameter `D`. `D` may be the </span>
+<span class="sd">    diameter of curvature, the diameter of a spiral, or some other dimension.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{De} = \sqrt{\frac{D_i}{D}} \text{Re} = \sqrt{\frac{D_i}{D}} </span>
+<span class="sd">        \frac{\rho v D}{\mu}</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Re : float</span>
+<span class="sd">        Reynolds number []</span>
+<span class="sd">    Di : float</span>
+<span class="sd">        Inner diameter []</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diameter of curvature or outer spiral or other dimension []</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    De : float</span>
+<span class="sd">        Dean number [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used in flow in curved geometry.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{De} = \frac{\sqrt{\text{centripetal forces}\cdot </span>
+<span class="sd">        \text{inertial forces}}}{\text{viscous forces}}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Dean(10000, 0.1, 0.4)</span>
+<span class="sd">    5000.0</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Catchpole, John P., and George. Fulford. &quot;DIMENSIONLESS GROUPS.&quot; </span>
+<span class="sd">       Industrial &amp; Engineering Chemistry 58, no. 3 (March 1, 1966): 46-60. </span>
+<span class="sd">       doi:10.1021/ie50675a012.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Di</span><span class="o">/</span><span class="n">D</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Re</span></div>
+
+
+<div class="viewcode-block" id="relative_roughness"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.relative_roughness">[docs]</a><span class="k">def</span> <span class="nf">relative_roughness</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="mf">1.52e-06</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates relative roughness `eD` using a diameter and the roughness</span>
+<span class="sd">    of the material of the wall. Default roughness is that of steel.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        eD=\frac{\epsilon}{D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Diameter of pipe, [m]</span>
+<span class="sd">    roughness : float, optional</span>
+<span class="sd">        Roughness of pipe wall [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    eD : float</span>
+<span class="sd">        Relative Roughness, [-]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; relative_roughness(0.5, 1E-4)</span>
+<span class="sd">    0.0002</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       Eighth Edition. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">roughness</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<span class="c1">### Misc utilities</span>
+
+<div class="viewcode-block" id="nu_mu_converter"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.nu_mu_converter">[docs]</a><span class="k">def</span> <span class="nf">nu_mu_converter</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates either kinematic or dynamic viscosity, depending on inputs.</span>
+<span class="sd">    Used when one type of viscosity is known as well as density, to obtain</span>
+<span class="sd">    the other type. Raises an error if both types of viscosity or neither type</span>
+<span class="sd">    of viscosity is provided.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \nu = \frac{\mu}{\rho}</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mu = \nu\rho</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    mu : float, optional</span>
+<span class="sd">        Dynamic viscosity, [Pa*s]</span>
+<span class="sd">    nu : float, optional</span>
+<span class="sd">        Kinematic viscosity, [m^2/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu or nu : float</span>
+<span class="sd">        Dynamic viscosity, Pa*s or Kinematic viscosity, m^2/s</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; nu_mu_converter(998., nu=1.0E-6)</span>
+<span class="sd">    0.000998</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nu</span> <span class="ow">and</span> <span class="n">mu</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rho</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">nu</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mu</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Inputs must be rho and one of mu and nu.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span>
+    <span class="k">elif</span> <span class="n">nu</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nu</span><span class="o">*</span><span class="n">rho</span></div>
+
+
+<div class="viewcode-block" id="gravity"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.gravity">[docs]</a><span class="k">def</span> <span class="nf">gravity</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates local acceleration due to gravity `g` according to [1]_.</span>
+<span class="sd">    Uses latitude and height to calculate `g`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        g = 9.780356(1 + 0.0052885\sin^2\phi - 0.0000059^22\phi)</span>
+<span class="sd">        - 3.086\times 10^{-6} H</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    latitude : float</span>
+<span class="sd">        Degrees, [degrees]</span>
+<span class="sd">    H : float</span>
+<span class="sd">        Height above earth&#39;s surface [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : float</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Better models, such as EGM2008 exist.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; gravity(55, 1E4)</span>
+<span class="sd">    9.784151976863571</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of</span>
+<span class="sd">       Chemistry and Physics. [Boca Raton, FL]: CRC press, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">latitude</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="mf">9.780356</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.0052885</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span><span class="mf">0.0000059</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">lat</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mf">3.086E-6</span><span class="o">*</span><span class="n">H</span>
+    <span class="k">return</span> <span class="n">g</span></div>
+
+<span class="c1">### Friction loss conversion functions</span>
+
+<div class="viewcode-block" id="K_from_f"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.K_from_f">[docs]</a><span class="k">def</span> <span class="nf">K_from_f</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates loss coefficient, K, for a given section of pipe</span>
+<span class="sd">    at a specified friction factor.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        K = f_dL/D</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fd : float</span>
+<span class="sd">        friction factor of pipe, []</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Length of pipe, [m]</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Inner diameter of pipe, [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For fittings with a specified L/D ratio, use D = 1 and set L to</span>
+<span class="sd">    specified L/D ratio.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; K_from_f(fd=0.018, L=100., D=.3)</span>
+<span class="sd">    6.0</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">fd</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="K_from_L_equiv"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.K_from_L_equiv">[docs]</a><span class="k">def</span> <span class="nf">K_from_L_equiv</span><span class="p">(</span><span class="n">L_D</span><span class="p">,</span> <span class="n">fd</span><span class="o">=</span><span class="mf">0.015</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates loss coefficient, for a given equivalent length (L/D).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        K = f_d \frac{L}{D}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L_D : float</span>
+<span class="sd">        Length over diameter, []</span>
+<span class="sd">    fd : float, optional</span>
+<span class="sd">        Darcy friction factor, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, []</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Almost identical to `K_from_f`, but with a default friction factor for</span>
+<span class="sd">    fully turbulent flow in steel pipes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; K_from_L_equiv(240)</span>
+<span class="sd">    3.5999999999999996</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">fd</span><span class="o">*</span><span class="n">L_D</span></div>
+
+
+<div class="viewcode-block" id="L_equiv_from_K"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.L_equiv_from_K">[docs]</a><span class="k">def</span> <span class="nf">L_equiv_from_K</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">fd</span><span class="o">=</span><span class="mf">0.015</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates equivalent length of pipe (L/D), for a given loss </span>
+<span class="sd">    coefficient.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{L}{D} = \frac{K}{f_d}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, [-]</span>
+<span class="sd">    fd : float, optional</span>
+<span class="sd">        Darcy friction factor, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    L_D : float</span>
+<span class="sd">        Length over diameter, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Assumes a default friction factor for fully turbulent flow in steel pipes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; L_equiv_from_K(3.6)</span>
+<span class="sd">    240.00000000000003</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">/</span><span class="n">fd</span></div>
+
+
+<div class="viewcode-block" id="L_from_K"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.L_from_K">[docs]</a><span class="k">def</span> <span class="nf">L_from_K</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">fd</span><span class="o">=</span><span class="mf">0.015</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates the length of straight pipe at a specified friction factor</span>
+<span class="sd">    required to produce a given loss coefficient `K`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        L = \frac{K D}{f_d}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, []</span>
+<span class="sd">    D : float</span>
+<span class="sd">        Inner diameter of pipe, [m]</span>
+<span class="sd">    fd : float</span>
+<span class="sd">        friction factor of pipe, []</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Length of pipe, [m]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; L_from_K(K=6, D=.3, fd=0.018)</span>
+<span class="sd">    100.0</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="n">fd</span></div>
+
+
+<div class="viewcode-block" id="dP_from_K"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.dP_from_K">[docs]</a><span class="k">def</span> <span class="nf">dP_from_K</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates pressure drop, for a given loss coefficient,</span>
+<span class="sd">    at a specified density and velocity.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        dP = 0.5K\rho V^2</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, []</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid in pipe, [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dP : float</span>
+<span class="sd">        Pressure drop, [Pa]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Loss coefficient `K` is usually the sum of several factors, including</span>
+<span class="sd">    the friction factor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; dP_from_K(K=10, rho=1000, V=3)</span>
+<span class="sd">    45000.0</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">V</span><span class="o">*</span><span class="n">V</span></div>
+
+
+<div class="viewcode-block" id="head_from_K"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.head_from_K">[docs]</a><span class="k">def</span> <span class="nf">head_from_K</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates head loss, for a given loss coefficient,</span>
+<span class="sd">    at a specified velocity.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{head} = \frac{K V^2}{2g}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : float</span>
+<span class="sd">        Loss coefficient, []</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Velocity of fluid in pipe, [m/s]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    head : float</span>
+<span class="sd">        Head loss, [m]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Loss coefficient `K` is usually the sum of several factors, including</span>
+<span class="sd">    the friction factor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; head_from_K(K=10, V=1.5)</span>
+<span class="sd">    1.1471807396001694</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">V</span><span class="o">*</span><span class="n">V</span><span class="o">/</span><span class="n">g</span></div>
+
+
+<div class="viewcode-block" id="head_from_P"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.head_from_P">[docs]</a><span class="k">def</span> <span class="nf">head_from_P</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates head for a fluid of specified density at specified</span>
+<span class="sd">    pressure.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{head} = {P\over{\rho g}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure fluid in pipe, [Pa]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    head : float</span>
+<span class="sd">        Head, [m]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By definition. Head varies with location, inversely proportional to the</span>
+<span class="sd">    increase in gravitational constant.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; head_from_P(P=98066.5, rho=1000)</span>
+<span class="sd">    10.000000000000002</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">P</span><span class="o">/</span><span class="n">rho</span><span class="o">/</span><span class="n">g</span></div>
+
+
+<div class="viewcode-block" id="P_from_head"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.P_from_head">[docs]</a><span class="k">def</span> <span class="nf">P_from_head</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates head for a fluid of specified density at specified</span>
+<span class="sd">    pressure.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P = \rho g \cdot \text{head}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    head : float</span>
+<span class="sd">        Head, [m]</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of fluid, [kg/m^3]</span>
+<span class="sd">    g : float, optional</span>
+<span class="sd">        Acceleration due to gravity, [m/s^2]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure fluid in pipe, [Pa]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; P_from_head(head=5., rho=800.)</span>
+<span class="sd">    39226.6</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">head</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">g</span></div>
+
+
+
+<span class="c1">### Synonyms</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="c1"># synonym for thermal diffusivity</span>
+<span class="n">Pr</span> <span class="o">=</span> <span class="n">Prandtl</span> <span class="c1"># Synonym</span>
+
+
+<span class="c1"># The following are functions which were deprecated from scipy</span>
+<span class="c1"># but are still desired to be here</span>
+<span class="c1"># Taken from scipy/constants/constants.py as in commit </span>
+<span class="c1"># https://github.com/scipy/scipy/commit/4b7d325cd50e8828b06d628e69426a18283dc5b5</span>
+<span class="c1"># Also from https://github.com/scipy/scipy/pull/5292</span>
+<span class="c1"># by Gillu13  (Gilles Aouizerate)</span>
+<span class="c1"># Copyright individual contributors to SciPy</span>
+
+<span class="c1"># temperature in kelvin</span>
+<span class="n">zero_Celsius</span> <span class="o">=</span> <span class="mf">273.15</span>
+<span class="n">degree_Fahrenheit</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">1.8</span> <span class="c1"># only for differences</span>
+
+<span class="k">def</span> <span class="nf">C2K</span><span class="p">(</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Celsius to Kelvin</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : array_like</span>
+<span class="sd">        Celsius temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float or array of floats</span>
+<span class="sd">        Equivalent Kelvin temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``K = C + zero_Celsius`` where `zero_Celsius` = 273.15, i.e.,</span>
+<span class="sd">    (the absolute value of) temperature &quot;absolute zero&quot; as measured in Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import C2K</span>
+<span class="sd">    &gt;&gt;&gt; C2K(np.array([-40, 40.0]))</span>
+<span class="sd">    array([233.15, 313.15])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="o">+</span> <span class="n">zero_Celsius</span>
+
+
+<span class="k">def</span> <span class="nf">K2C</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Kelvin to Celsius</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : array_like</span>
+<span class="sd">        Kelvin temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    C : float or array of floats</span>
+<span class="sd">        Equivalent Celsius temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``C = K - zero_Celsius`` where `zero_Celsius` = 273.15, i.e.,</span>
+<span class="sd">    (the absolute value of) temperature &quot;absolute zero&quot; as measured in Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import K2C</span>
+<span class="sd">    &gt;&gt;&gt; K2C(np.array([233.15, 313.15]))</span>
+<span class="sd">    array([-40.,  40.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">-</span> <span class="n">zero_Celsius</span>
+
+
+<span class="k">def</span> <span class="nf">F2C</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Fahrenheit to Celsius</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F : array_like</span>
+<span class="sd">        Fahrenheit temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    C : float or array of floats</span>
+<span class="sd">        Equivalent Celsius temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``C = (F - 32) / 1.8``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import F2C</span>
+<span class="sd">    &gt;&gt;&gt; F2C(np.array([-40, 40.0]))</span>
+<span class="sd">    array([-40.        ,   4.44444444])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">-</span> <span class="mf">32.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.8</span>
+
+
+<span class="k">def</span> <span class="nf">C2F</span><span class="p">(</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Celsius to Fahrenheit</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : array_like</span>
+<span class="sd">        Celsius temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F : float or array of floats</span>
+<span class="sd">        Equivalent Fahrenheit temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``F = 1.8 * C + 32``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import C2F</span>
+<span class="sd">    &gt;&gt;&gt; C2F(np.array([-40, 40.0]))</span>
+<span class="sd">    array([-40., 104.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">1.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="o">+</span> <span class="mf">32.0</span>
+
+
+<span class="k">def</span> <span class="nf">F2K</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Fahrenheit to Kelvin</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F : array_like</span>
+<span class="sd">        Fahrenheit temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float or array of floats</span>
+<span class="sd">        Equivalent Kelvin temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``K = (F - 32)/1.8 + zero_Celsius`` where `zero_Celsius` =</span>
+<span class="sd">    273.15, i.e., (the absolute value of) temperature &quot;absolute zero&quot; as</span>
+<span class="sd">    measured in Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import F2K</span>
+<span class="sd">    &gt;&gt;&gt; F2K(np.array([-40, 104]))</span>
+<span class="sd">    array([233.15, 313.15])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">-</span> <span class="mf">32.0</span><span class="p">)</span><span class="o">/</span><span class="mf">1.8</span> <span class="o">+</span> <span class="n">zero_Celsius</span>
+
+
+<span class="k">def</span> <span class="nf">K2F</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Kelvin to Fahrenheit</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : array_like</span>
+<span class="sd">        Kelvin temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F : float or array of floats</span>
+<span class="sd">        Equivalent Fahrenheit temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``F = 1.8 * (K - zero_Celsius) + 32`` where `zero_Celsius` =</span>
+<span class="sd">    273.15, i.e., (the absolute value of) temperature &quot;absolute zero&quot; as</span>
+<span class="sd">    measured in Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import K2F</span>
+<span class="sd">    &gt;&gt;&gt; K2F(np.array([233.15,  313.15]))</span>
+<span class="sd">    array([-40., 104.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">1.8</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">-</span> <span class="n">zero_Celsius</span><span class="p">)</span> <span class="o">+</span> <span class="mf">32.0</span>
+
+
+<span class="k">def</span> <span class="nf">C2R</span><span class="p">(</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Celsius to Rankine</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : array_like</span>
+<span class="sd">        Celsius temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ra : float or array of floats</span>
+<span class="sd">        Equivalent Rankine temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``Ra = 1.8 * (C + zero_Celsius)`` where `zero_Celsius` = 273.15,</span>
+<span class="sd">    i.e., (the absolute value of) temperature &quot;absolute zero&quot; as measured in</span>
+<span class="sd">    Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import C2R</span>
+<span class="sd">    &gt;&gt;&gt; C2R(np.array([-40, 40.0]))</span>
+<span class="sd">    array([419.67, 563.67])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">1.8</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="o">+</span> <span class="n">zero_Celsius</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">K2R</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Kelvin to Rankine</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    K : array_like</span>
+<span class="sd">        Kelvin temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ra : float or array of floats</span>
+<span class="sd">        Equivalent Rankine temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``Ra = 1.8 * K``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import K2R</span>
+<span class="sd">    &gt;&gt;&gt; K2R(np.array([273.15, 0.0]))</span>
+<span class="sd">    array([491.67,   0.  ])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">1.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">F2R</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Fahrenheit to Rankine</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F : array_like</span>
+<span class="sd">        Fahrenheit temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ra : float or array of floats</span>
+<span class="sd">        Equivalent Rankine temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``Ra = F - 32 + 1.8 * zero_Celsius`` where `zero_Celsius` = 273.15, </span>
+<span class="sd">    i.e., (the absolute value of) temperature &quot;absolute zero&quot; as measured in </span>
+<span class="sd">    Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import F2R</span>
+<span class="sd">    &gt;&gt;&gt; F2R(np.array([100, 0.0]))</span>
+<span class="sd">    array([559.67, 459.67])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">-</span> <span class="mf">32.0</span> <span class="o">+</span> <span class="mf">1.8</span> <span class="o">*</span> <span class="n">zero_Celsius</span>
+
+
+<span class="k">def</span> <span class="nf">R2C</span><span class="p">(</span><span class="n">Ra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Rankine to Celsius</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ra : array_like</span>
+<span class="sd">        Rankine temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    C : float or array of floats</span>
+<span class="sd">        Equivalent Celsius temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``C = Ra / 1.8 - zero_Celsius`` where `zero_Celsius` = 273.15, </span>
+<span class="sd">    i.e., (the absolute value of) temperature &quot;absolute zero&quot; as measured in </span>
+<span class="sd">    Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import R2C</span>
+<span class="sd">    &gt;&gt;&gt; R2C(np.array([459.67, 0.0]))</span>
+<span class="sd">    array([ -17.77777778, -273.15      ])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">Ra</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.8</span> <span class="o">-</span> <span class="n">zero_Celsius</span>
+
+
+<span class="k">def</span> <span class="nf">R2K</span><span class="p">(</span><span class="n">Ra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Rankine to Kelvin</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ra : array_like</span>
+<span class="sd">        Rankine temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    K : float or array of floats</span>
+<span class="sd">        Equivalent Kelvin temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``K = Ra / 1.8``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import R2K</span>
+<span class="sd">    &gt;&gt;&gt; R2K(np.array([491.67, 0.0]))</span>
+<span class="sd">    array([273.15,   0.  ])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">Ra</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.8</span>
+    
+
+<span class="k">def</span> <span class="nf">R2F</span><span class="p">(</span><span class="n">Ra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Rankine to Fahrenheit</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ra : array_like</span>
+<span class="sd">        Rankine temperature(s) to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F : float or array of floats</span>
+<span class="sd">        Equivalent Fahrenheit temperature(s).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes ``F = Ra + 32 - 1.8 * zero_Celsius`` where `zero_Celsius` = 273.15, </span>
+<span class="sd">    i.e., (the absolute value of) temperature &quot;absolute zero&quot; as measured in </span>
+<span class="sd">    Celsius.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from fluids.core import R2F</span>
+<span class="sd">    &gt;&gt;&gt; R2F(np.array([491.67, 559.67]))</span>
+<span class="sd">    array([ 32., 100.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">Ra</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.8</span> <span class="o">*</span> <span class="n">zero_Celsius</span> <span class="o">+</span> <span class="mf">32.0</span>
+
+
+<span class="k">def</span> <span class="nf">Engauge_2d_parser</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Not exposed function to read a 2D file generated by engauge-digitizer;</span>
+<span class="sd">    for curve fitting.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">z_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x_lists</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y_lists</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">working_xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">working_ys</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">new_curve</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">new_curve</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">new_curve</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">z_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">working_xs</span> <span class="ow">and</span> <span class="n">working_ys</span><span class="p">:</span>
+                <span class="n">x_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">working_xs</span><span class="p">)</span>
+                <span class="n">y_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">working_ys</span><span class="p">)</span>
+            <span class="n">working_xs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">working_ys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">new_curve</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+            <span class="n">working_xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">working_ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">x_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">working_xs</span><span class="p">)</span>
+    <span class="n">y_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">working_ys</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">flat</span><span class="p">:</span>
+        <span class="n">all_zs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">z</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">z_values</span><span class="p">,</span> <span class="n">x_lists</span><span class="p">,</span> <span class="n">y_lists</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
+                <span class="n">all_zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="n">all_xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">all_ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_zs</span><span class="p">,</span> <span class="n">all_xs</span><span class="p">,</span> <span class="n">all_ys</span>
+
+    <span class="k">return</span> <span class="n">z_values</span><span class="p">,</span> <span class="n">x_lists</span><span class="p">,</span> <span class="n">y_lists</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -197,18 +197,13 @@
 <dd><p>Create a Thermo object that defines a thermodynamic property package</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>chemicals</strong><span class="classifier">Chemicals or Iterable[str]</span></dt><dd><p>Pure component chemical data.</p>
-</dd>
-<dt><strong>mixture</strong><span class="classifier">Mixture</span></dt><dd><p>Calculator for mixture properties.</p>
-</dd>
-<dt><strong>Gamma</strong><span class="classifier">ActivityCoefficients subclass</span></dt><dd><p>Class for computing activity coefficiente.</p>
-</dd>
-<dt><strong>Phi</strong><span class="classifier">FugacityCoefficients subclass</span></dt><dd><p>Class for computing fugacity coefficiente.</p>
-</dd>
-<dt><strong>PCF</strong><span class="classifier">PoyntingCorrectionFactor subclass.</span></dt><dd><p>Class for computing poynting correction factors.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chemicals</strong> (<a class="reference internal" href="Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals"><em>Chemicals</em></a><em> or </em><em>Iterable</em><em>[</em><em>str</em><em>]</em>) – Pure component chemical data.</p></li>
+<li><p><strong>mixture</strong> (<em>Mixture</em><em>, </em><em>optional</em>) – Calculates mixture properties.</p></li>
+<li><p><strong>Gamma</strong> (<em>ActivityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing activity coefficiente.</p></li>
+<li><p><strong>Phi</strong> (<em>FugacityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing fugacity coefficiente.</p></li>
+<li><p><strong>PCF</strong> (<em>PoyntingCorrectionFactor subclass</em><em>, </em><em>optional</em>) – Class for computing poynting correction factors.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -219,6 +214,61 @@
 </pre></div>
 </div>
 <p>Note how chemicals are compiled when it becomes part of a Thermo object.</p>
+<dl class="attribute">
+<dt id="thermosteam.Thermo.chemicals">
+<code class="sig-name descname">chemicals</code><a class="headerlink" href="#thermosteam.Thermo.chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pure component chemical data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals">Chemicals</a> or Iterable[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Thermo.mixture">
+<code class="sig-name descname">mixture</code><a class="headerlink" href="#thermosteam.Thermo.mixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates mixture properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Mixture, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Thermo.Gamma">
+<code class="sig-name descname">Gamma</code><a class="headerlink" href="#thermosteam.Thermo.Gamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for computing activity coefficiente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ActivityCoefficients subclass, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Thermo.Phi">
+<code class="sig-name descname">Phi</code><a class="headerlink" href="#thermosteam.Thermo.Phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for computing fugacity coefficiente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>FugacityCoefficients subclass, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Thermo.PCF">
+<code class="sig-name descname">PCF</code><a class="headerlink" href="#thermosteam.Thermo.PCF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for computing poynting correction factors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>PoyntingCorrectionFactor subclass, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>

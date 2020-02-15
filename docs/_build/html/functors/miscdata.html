@@ -246,24 +246,21 @@ SOFTWARE.</p>
 <code class="sig-prename descclassname">thermosteam.functors.miscdata.</code><code class="sig-name descname">VDI_tabular_data</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em>, <em class="sig-param">prop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/miscdata.html#VDI_tabular_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.miscdata.VDI_tabular_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function retrieves the tabular data available for a given chemical
 and a given property. Lookup is based on CASRNs. Length of data returned
-varies between chemicals. All data is at saturation condition from <a class="reference internal" href="#r45ec4e25d596-1" id="id1">[1]</a>.</p>
+varies between chemicals. All data is at saturation condition from <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.</p>
 <p>Function has data for 58 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-<dt><strong>prop</strong><span class="classifier">string</span></dt><dd><p>Property [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p></li>
+<li><p><strong>prop</strong> (<em>string</em>) – Property [-]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Ts</strong><span class="classifier">list</span></dt><dd><p>Temperatures where property data is available, [K]</p>
-</dd>
-<dt><strong>props</strong><span class="classifier">list</span></dt><dd><p>Properties at each temperature, [various]</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Ts</strong> (<em>list</em>) – Temperatures where property data is available, [K]</p></li>
+<li><p><strong>props</strong> (<em>list</em>) – Properties at each temperature, [various]</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -273,17 +270,17 @@ varies between chemicals. All data is at saturation condition from <a class="ref
 <p>Data is available for all properties and all chemicals; surface tension
 data was missing for mercury, but added as estimated from the a/b
 coefficients listed in Jasper (1972) to simplify the function.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r45ec4e25d596-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Gesellschaft, VDI, ed. VDI Heat Atlas. 2E. Berlin : Springer, 2010.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">VDI_tabular_data</span><span class="p">(</span><span class="s1">&#39;67-56-1&#39;</span><span class="p">,</span> <span class="s1">&#39;Mu (g)&#39;</span><span class="p">)</span>
 <span class="go">([337.63, 360.0, 385.0, 410.0, 435.0, 460.0, 500.0], [1.11e-05, 1.18e-05, 1.27e-05, 1.36e-05, 1.46e-05, 1.59e-05, 2.04e-05])</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Gesellschaft, VDI, ed. VDI Heat Atlas. 2E. Berlin : Springer, 2010.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

@@ -210,43 +210,36 @@
 <dd><p>Create a MaterialIndexer that can index a multi-phase, 2d-array given the phase and chemical IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>phases</strong><span class="classifier">tuple[‘s’, ‘l’, ‘g’, ‘S’, ‘L’, ‘G’]</span></dt><dd><p>Phases of data rows.</p>
-</dd>
-<dt><strong>units</strong><span class="classifier">str</span></dt><dd><p>Units of measure of input data.</p>
-</dd>
-<dt><strong>chemicals</strong><span class="classifier">Chemicals</span></dt><dd><p>Required to define the chemicals that are present.</p>
-</dd>
-<dt><strong>**phase_data</strong><span class="classifier">tuple[str, float]</span></dt><dd><p>phase-(ID, value) pairs</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phases</strong> (<em>tuple</em><em>[</em><em>'s'</em><em>, </em><em>'l'</em><em>, </em><em>'g'</em><em>, </em><em>'S'</em><em>, </em><em>'L'</em><em>, </em><em>'G'</em><em>]</em>) – Phases of data rows.</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – Units of measure of input data.</p></li>
+<li><p><strong>chemicals</strong> (<a class="reference internal" href="../Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals"><em>Chemicals</em></a>) – Required to define the chemicals that are present.</p></li>
+<li><p><strong>**phase_data</strong> (<em>tuple</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – phase-(ID, value) pairs</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>A MaterialIndexer does not have any units defined. To use units of measure, use the 
+<p>A MaterialIndexer does not have any units defined. To use units of measure, use the
 <cite>MolarIndexer</cite>, <cite>MassIndexer</cite>, or <cite>VolumetricIndexer</cite>.</p>
 <dl class="method">
 <dt id="thermosteam.indexer.MaterialIndexer.iter_data">
-<code class="sig-name descname">iter_data</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/indexer.html#MaterialIndexer.iter_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.iter_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iter_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/indexer.html#MaterialIndexer.iter_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.iter_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over phase-data pairs.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.indexer.MaterialIndexer.iter_composition">
-<code class="sig-name descname">iter_composition</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/indexer.html#MaterialIndexer.iter_composition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.iter_composition" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iter_composition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/indexer.html#MaterialIndexer.iter_composition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.iter_composition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over phase-composition pairs.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.indexer.MaterialIndexer.show">
-<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">N=5</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">N=5</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.indexer.MaterialIndexer.show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print all specifications.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>N: int, optional</strong></dt><dd><p>Number of compounds to display.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>N</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of compounds to display.</p>
 </dd>
 </dl>
 </dd></dl>

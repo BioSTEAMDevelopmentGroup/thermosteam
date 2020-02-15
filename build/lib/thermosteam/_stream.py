@@ -479,10 +479,10 @@ class Stream:
     @property
     def phase(self):
         """Phase of stream."""
-        return self._imol._phase.phase
+        return self._imol.phase
     @phase.setter
     def phase(self, phase):
-        self._imol._phase.phase = phase
+        self._imol.phase = phase
     
     @property
     def mol(self):

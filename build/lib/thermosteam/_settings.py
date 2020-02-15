@@ -16,7 +16,7 @@ class Settings:
     
     def __init__(self):
         self._thermo = None
-        self._debug = __debug__
+        self._debug = False
         self._phase_names = {'s': 'Solid',
                              'l': 'Liquid',
                              'g': 'Gas',

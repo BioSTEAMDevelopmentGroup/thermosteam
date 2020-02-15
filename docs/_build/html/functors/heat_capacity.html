@@ -227,17 +227,14 @@
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Lastovka_Shaw">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Lastovka_Shaw</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Lastovka_Shaw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Lastovka_Shaw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the Lastovka Shaw equation, as described in <a class="reference internal" href="#r7bc4c9bc8ad7-1" id="id1">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the Lastovka Shaw equation, as described in <a href="#id17"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>MW</strong><span class="classifier">None</span></dt><dd><p>Molecular weight [g/mol].</p>
-</dd>
-<dt><strong>similarity_variable</strong><span class="classifier">None</span></dt><dd><p>Heat capacity similarity variable [-].</p>
-</dd>
-<dt><strong>iscyclic_aliphatic</strong><span class="classifier">bool</span></dt><dd><p>Whether a chemical is cyclic aliphatic [-].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>MW</strong> (<em>None</em>) – Molecular weight [g/mol].</p></li>
+<li><p><strong>similarity_variable</strong> (<em>None</em>) – Heat capacity similarity variable [-].</p></li>
+<li><p><strong>iscyclic_aliphatic</strong> (<em>bool</em>) – Whether a chemical is cyclic aliphatic [-].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -252,15 +249,6 @@
 <p>A1 = 0.58, A2 = 1.25, A3 = 0.17338003, A4 = 0.014, B11 = 0.73917383,
 B12 = 8.88308889, C11 = 1188.28051, C12 = 1813.04613, B21 = 0.0483019,
 B22 = 4.35656721, C21 = 2897.01927, C22 = 5987.80407.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r7bc4c9bc8ad7-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Lastovka, Vaclav, and John M. Shaw. “Predictive Correlations for
-Ideal Gas Heat Capacities of Pure Hydrocarbons and Petroleum Fractions.”
-Fluid Phase Equilibria 356 (October 25, 2013): 338-370.
-doi:10.1016/j.fluid.2013.07.023.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Compute the heat capacity of Methane at 300 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_Cng</span> <span class="o">=</span> <span class="n">Lastovka_Shaw</span><span class="p">(</span><span class="n">MW</span><span class="o">=</span><span class="mf">16.043</span><span class="p">,</span>
@@ -275,18 +263,24 @@ doi:10.1016/j.fluid.2013.07.023.</p>
 <span class="go">33.91574477458602</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Lastovka, Vaclav, and John M. Shaw. “Predictive Correlations for
+Ideal Gas Heat Capacities of Pure Hydrocarbons and Petroleum Fractions.”
+Fluid Phase Equilibria 356 (October 25, 2013): 338-370.
+doi:10.1016/j.fluid.2013.07.023.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.TRCCn">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">TRCCn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#TRCCn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.TRCCn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the TRCCn equation, as described in <a class="reference internal" href="#ra81a84cc857a-1" id="id3">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the TRCCn equation, as described in <a href="#id18"><span class="problematic" id="id3">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a0, a1, a2, a3, a4, a5, a6, a7</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>a1</strong><strong>, </strong><strong>a2</strong><strong>, </strong><strong>a3</strong><strong>, </strong><strong>a4</strong><strong>, </strong><strong>a5</strong><strong>, </strong><strong>a6</strong><strong>, </strong><strong>a7</strong> (<em>a0</em><em>,</em>) – Regressed coefficients.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -295,13 +289,6 @@ doi:10.1016/j.fluid.2013.07.023.</p>
 \[ \begin{align}\begin{aligned}C_n = R\left(a_0 + (a_1/T^2) \exp(-a_2/T) + a_3 y^2
 + (a_4 - a_5/(T-a_7)^2 )y^j \right)\\y = \frac{T-a_7}{T+a_6} \text{ for } T &gt; a_7 \text{ otherwise } 0\end{aligned}\end{align} \]</div>
 <p>j is set to 8. Analytical integrals are available for this expression.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="ra81a84cc857a-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p>Kabo, G. J., and G. N. Roganov. Thermodynamics of Organic Compounds
-in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Calculate the heat capacity of Methane at 300 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f_Cng</span> <span class="o">=</span> <span class="n">TRCCn</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mi">22350000</span><span class="p">,</span> <span class="mi">2018</span><span class="p">,</span> <span class="mf">32.767</span><span class="p">,</span> <span class="o">-</span><span class="mf">31.098</span><span class="p">,</span> <span class="mi">1346090000</span><span class="p">,</span> <span class="mi">1229</span><span class="p">,</span> <span class="mi">473</span><span class="p">)</span>
@@ -319,6 +306,13 @@ in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
 <span class="go">35.73249522521754</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>Kabo, G. J., and G. N. Roganov. Thermodynamics of Organic Compounds
+in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -327,10 +321,7 @@ in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
 <dd><p>Create a functor of temperature (T; in K) that calcuates gas molar heat capacity (Cn.g; in J/mol/K) using the Poling equation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a, b, c, d, e</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>b</strong><strong>, </strong><strong>c</strong><strong>, </strong><strong>d</strong><strong>, </strong><strong>e</strong> (<em>a</em><em>,</em>) – Regressed coefficients.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -357,17 +348,14 @@ in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Rowlinson_Poling">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Rowlinson_Poling</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Rowlinson_Poling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Rowlinson_Poling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Rowlinson Poling equation, as described in <a class="reference internal" href="#r0f3efcef6d5e-1" id="id5">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Rowlinson Poling equation, as described in <a href="#id19"><span class="problematic" id="id5">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>ω</strong><span class="classifier">None</span></dt><dd><p>Acentric factor [-].</p>
-</dd>
-<dt><strong>Cn_g</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>ω</strong> (<em>None</em>) – Acentric factor [-].</p></li>
+<li><p><strong>Cn_g</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -378,13 +366,6 @@ in the Gas State, Volume II: V. 2. College Station, Tex: CRC Press, 1994.</p>
 <p>This equation is not too accurate.
 Poling compared 212 substances, and found error at 298K larger than 10%
 for 18 of them, mostly associating. Of the other 194 compounds, AARD is 2.5%.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r0f3efcef6d5e-1"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
-<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-New York: McGraw-Hill Professional, 2000.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Compute the liquid heat capacity of methane at 100 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Cn_g</span> <span class="o">=</span> <span class="n">Poling</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">4.568</span><span class="p">,</span> <span class="n">b</span><span class="o">=-</span><span class="mf">0.008975</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">3.631e-05</span><span class="p">,</span>
@@ -398,20 +379,25 @@ New York: McGraw-Hill Professional, 2000.</p>
 <span class="go">55.99104104081243</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets">1</span></dt>
+<dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+New York: McGraw-Hill Professional, 2000.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Dadgostar_Shaw">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Dadgostar_Shaw</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Dadgostar_Shaw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Dadgostar_Shaw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Dadgostar Shaw equation, as described in <a class="reference internal" href="#r2bc162d0379b-1" id="id7">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Dadgostar Shaw equation, as described in <a href="#id20"><span class="problematic" id="id7">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>similarity_variable</strong><span class="classifier">None</span></dt><dd><p>Heat capacity similarity variable [-].</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">None</span></dt><dd><p>Molecular weight [g/mol].</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>similarity_variable</strong> (<em>None</em>) – Heat capacity similarity variable [-].</p></li>
+<li><p><strong>MW</strong> (<em>None</em>) – Molecular weight [g/mol].</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -424,34 +410,32 @@ C_n = MW \cdot Cp\]</div>
 <p>Original model is in terms of J/g/K, but it has been modified to give molar heat capacity in J/mol/K.</p>
 <p>a11 = -0.3416; a12 = 2.2671; a21 = 0.1064; a22 = -0.3874l;
 a31 = -9.8231E-05; a32 = 4.182E-04</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dadgostar_Shaw</span><span class="p">(</span><span class="mf">355.6</span><span class="p">,</span> <span class="mf">0.139</span><span class="p">)</span>
+<span class="go">1802.5291501191516</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r2bc162d0379b-1"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id8"><span class="brackets">1</span></dt>
 <dd><p>Dadgostar, Nafiseh, and John M. Shaw. “A Predictive Correlation for
 the Constant-Pressure Specific Heat Capacity of Pure and Ill-Defined
 Liquid Hydrocarbons.” Fluid Phase Equilibria 313 (January 15, 2012):
 211-226. doi:10.1016/j.fluid.2011.09.015.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dadgostar_Shaw</span><span class="p">(</span><span class="mf">355.6</span><span class="p">,</span> <span class="mf">0.139</span><span class="p">)</span>
-<span class="go">1802.5291501191516</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Quasi_Polynomial</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Quasi_Polynomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Quasi_Polynomial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Quasi Polynomial equation, as described in <a class="reference internal" href="#reb9018f9fc05-1" id="id9">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Quasi Polynomial equation, as described in <a href="#id21"><span class="problematic" id="id9">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">None</span></dt><dd><p>Critical point temperature [K].</p>
-</dd>
-<dt><strong>a1, a2, a3, a4, a5, a6</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>None</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>a2</strong><strong>, </strong><strong>a3</strong><strong>, </strong><strong>a4</strong><strong>, </strong><strong>a5</strong><strong>, </strong><strong>a6</strong> (<em>a1</em><em>,</em>) – Regressed coefficients.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -461,11 +445,11 @@ Liquid Hydrocarbons.” Fluid Phase Equilibria 313 (January 15, 2012):
 + \sum_{j=0}^m A_{j+3} T_r^j\]</div>
 <p>Used only for isobaric heat capacities, not saturation heat capacities.
 Designed for reasonable extrapolation behavior caused by using the reduced
-critical temperature. Used by the authors of <a class="reference internal" href="#reb9018f9fc05-1" id="id10">[1]</a> when critical temperature
+critical temperature. Used by the authors of <a href="#id22"><span class="problematic" id="id10">[1]_</span></a> when critical temperature
 was available for the fluid.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="reb9018f9fc05-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id9">1</a>,<a href="#id10">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id11"><span class="brackets">1</span></dt>
 <dd><p>Zabransky, M., V. Ruzicka Jr, V. Majer, and Eugene S. Domalski.
 Heat Capacity of Liquids: Critical Review and Recommended Values.
 2 Volume Set. Washington, D.C.: Amer Inst of Physics, 1996.</p>
@@ -476,13 +460,10 @@ Heat Capacity of Liquids: Critical Review and Recommended Values.
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Zabransky_Cubic">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Zabransky_Cubic</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Zabransky_Cubic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Zabransky_Cubic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Cubic equation, as described in <a class="reference internal" href="#ra47d0b594f61-1" id="id12">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates liquid molar heat capacity (Cn.l; in J/mol/K) using the Zabransky Cubic equation, as described in <a href="#id23"><span class="problematic" id="id12">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a1, a2, a3, a4</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>a2</strong><strong>, </strong><strong>a3</strong><strong>, </strong><strong>a4</strong> (<em>a1</em><em>,</em>) – Regressed coefficients.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -490,8 +471,8 @@ Heat Capacity of Liquids: Critical Review and Recommended Values.
 <div class="math notranslate nohighlight">
 \[\frac{C}{R}=\sum_{j=0}^3 A_{j+1} \left(\frac{T}{100}\right)^j\]</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="ra47d0b594f61-1"><span class="brackets"><a class="fn-backref" href="#id12">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id13"><span class="brackets">1</span></dt>
 <dd><p>Zabransky, M., V. Ruzicka Jr, V. Majer, and Eugene S. Domalski.
 Heat Capacity of Liquids: Critical Review and Recommended Values.
 2 Volume Set. Washington, D.C.: Amer Inst of Physics, 1996.</p>
@@ -502,23 +483,20 @@ Heat Capacity of Liquids: Critical Review and Recommended Values.
 <dl class="class">
 <dt id="thermosteam.functors.heat_capacity.Perry_151">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.functors.heat_capacity.</code><code class="sig-name descname">Perry_151</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/heat_capacity.html#Perry_151"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.heat_capacity.Perry_151" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar heat capacity (Cn.s; in J/mol/K) using the Perry 151 equation, as described in <a class="reference internal" href="#rb13deddbca88-1" id="id14">[1]</a>.</p>
+<dd><p>Create a functor of temperature (T; in K) that calcuates solid molar heat capacity (Cn.s; in J/mol/K) using the Perry 151 equation, as described in <a href="#id24"><span class="problematic" id="id14">[1]_</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>a, b, c, d</strong><span class="classifier">float</span></dt><dd><p>Regressed coefficients.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>b</strong><strong>, </strong><strong>c</strong><strong>, </strong><strong>d</strong> (<em>a</em><em>,</em>) – Regressed coefficients.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The solid heat capacity is given by:</p>
 <div class="math notranslate nohighlight">
 \[C_n = 4.184 (a + bT + \frac{c}{T^2} + dT^2)\]</div>
-<p>Coefficients are listed in section 2, table 151 of <a class="reference internal" href="#rb13deddbca88-1" id="id15">[1]</a>. Note that the original model was in a Calorie basis, but has been translated to Joules.</p>
+<p>Coefficients are listed in section 2, table 151 of <a href="#id25"><span class="problematic" id="id15">[1]_</span></a>. Note that the original model was in a Calorie basis, but has been translated to Joules.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rb13deddbca88-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id14">1</a>,<a href="#id15">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id16"><span class="brackets">1</span></dt>
 <dd><p>Green, Don, and Robert Perry.
 Perry’s Chemical Engineers’ Handbook,
 Eighth Edition. McGraw-Hill Professional, 2007.</p>

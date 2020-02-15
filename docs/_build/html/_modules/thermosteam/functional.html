@@ -1,0 +1,1575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.functional &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.functional</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.functional</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Wed Nov 27 19:11:28 2019</span>
+
+<span class="sd">@author: yoelr</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">fluids</span> <span class="kn">import</span> <span class="n">core</span> <span class="k">as</span> <span class="n">fluids_core</span>
+<span class="kn">from</span> <span class="nn">fluids.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">cmath</span> <span class="kn">import</span> <span class="n">sqrt</span> <span class="k">as</span> <span class="n">csqrt</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">functor</span>
+<span class="kn">from</span> <span class="nn">._constants</span> <span class="kn">import</span> <span class="n">R</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;isobaric_expansion&#39;</span><span class="p">,</span> <span class="s1">&#39;isothermal_compressibility&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Cp_minus_Cv&#39;</span><span class="p">,</span> <span class="s1">&#39;speed_of_sound&#39;</span><span class="p">,</span> <span class="s1">&#39;Joule_Thomson&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;phase_identification_parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;phase_identification_parameter_phase&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;isentropic_exponent&#39;</span><span class="p">,</span> <span class="s1">&#39;rho_to_V&#39;</span><span class="p">,</span> <span class="s1">&#39;rho&#39;</span><span class="p">,</span> <span class="s1">&#39;V_to_rho&#39;</span><span class="p">,</span> <span class="s1">&#39;mu_to_nu&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;nu&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;B_to_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_to_B&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_from_virial_density_form&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Z_from_virial_pressure_form&#39;</span><span class="p">,</span> <span class="s1">&#39;zs_to_ws&#39;</span><span class="p">,</span> <span class="s1">&#39;ws_to_zs&#39;</span><span class="p">,</span> <span class="s1">&#39;zs_to_Vfs&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Vfs_to_zs&#39;</span><span class="p">,</span> <span class="s1">&#39;none_and_length_check&#39;</span><span class="p">,</span> <span class="s1">&#39;normalize&#39;</span><span class="p">,</span> <span class="s1">&#39;mixing_simple&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;mixing_logarithmic&#39;</span><span class="p">,</span> <span class="s1">&#39;Parachor&#39;</span><span class="p">,</span> <span class="s1">&#39;SG_to_API&#39;</span><span class="p">,</span> <span class="s1">&#39;API_to_SG&#39;</span><span class="p">,</span> <span class="s1">&#39;SG&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;horner&#39;</span><span class="p">,</span> <span class="s1">&#39;allclose_variable&#39;</span><span class="p">,</span> <span class="s1">&#39;polylog2&#39;</span><span class="p">,</span> <span class="s1">&#39;horner&#39;</span><span class="p">,</span>
+           <span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fluids_core</span><span class="o">.</span><span class="n">__all__</span><span class="p">)</span>
+            
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">horner_polynomial</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+    <span class="n">tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coeffs</span><span class="p">:</span> <span class="n">tot</span> <span class="o">=</span> <span class="n">tot</span> <span class="o">*</span> <span class="n">T</span> <span class="o">+</span> <span class="n">c</span>
+    <span class="k">return</span> <span class="n">tot</span> 
+
+<span class="n">horner</span> <span class="o">=</span> <span class="n">horner_polynomial</span><span class="o">.</span><span class="n">function</span>  
+
+<span class="k">def</span> <span class="nf">Pr</span><span class="p">(</span><span class="n">Cp</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Cp</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">/</span> <span class="n">k</span>
+
+<div class="viewcode-block" id="mu_to_nu"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.mu_to_nu">[docs]</a><span class="k">def</span> <span class="nf">mu_to_nu</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and </span>
+<span class="sd">    density (rho).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \nu = \frac{\mu}{\rho}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; nu(0.000998, 998.)</span>
+<span class="sd">    1.0e-06</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and</span>
+<span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span></div>
+<span class="n">nu</span> <span class="o">=</span> <span class="n">mu_to_nu</span>
+
+<div class="viewcode-block" id="V_to_rho"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.V_to_rho">[docs]</a><span class="k">def</span> <span class="nf">V_to_rho</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the density (rho) in kg/m^3 given the molar volume (V) in</span>
+<span class="sd">    m^3/mol and molecular weight (MW) in g/mol.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \rho = \frac{MW}{1000\cdot VM}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume, [m^3/mol]</span>
+<span class="sd">    MW : float</span>
+<span class="sd">        Molecular weight, [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; rho(0.000132, 86.18)</span>
+<span class="sd">    652.8787878787879</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">MW</span><span class="o">/</span><span class="n">V</span><span class="o">/</span><span class="mf">1000.</span></div>
+<span class="n">rho</span> <span class="o">=</span> <span class="n">V_to_rho</span>
+
+<div class="viewcode-block" id="rho_to_V"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.rho_to_V">[docs]</a><span class="k">def</span> <span class="nf">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the molar volume (V) in m^3/mol given the density (rho) in</span>
+<span class="sd">    kg/m^3 and molecular weight (MW) in g/mol.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V = \left(\frac{1000 \rho}{MW}\right)^{-1}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density, [kg/m^3]</span>
+<span class="sd">    MW : float</span>
+<span class="sd">        Molecular weight, [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume, [m^3/mol]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; V(652.9, 86.18)</span>
+<span class="sd">    0.00013199571144126206</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">MW</span><span class="o">/</span><span class="n">rho</span><span class="o">/</span><span class="mf">1000.</span></div>
+
+<div class="viewcode-block" id="SG_to_API"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.SG_to_API">[docs]</a><span class="k">def</span> <span class="nf">SG_to_API</span><span class="p">(</span><span class="n">SG</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates specific gravity of a liquid given its API, as shown in</span>
+<span class="sd">    [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{API gravity} = \frac{141.5}{\text{SG}} - 131.5</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SG : float</span>
+<span class="sd">        Specific gravity of the fluid at 60 degrees Farenheight [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    API : float</span>
+<span class="sd">        API of the fluid [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Defined only at 60 degrees Fahrenheit.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; SG_to_API(0.7365)</span>
+<span class="sd">    60.62491513917175</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] API Technical Data Book: General Properties &amp; Characterization.</span>
+<span class="sd">    American Petroleum Institute, 7E, 2005.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mf">141.5</span><span class="o">/</span><span class="n">SG</span> <span class="o">-</span> <span class="mf">131.5</span></div>
+
+<div class="viewcode-block" id="API_to_SG"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.API_to_SG">[docs]</a><span class="k">def</span> <span class="nf">API_to_SG</span><span class="p">(</span><span class="n">API</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates API of a liquid given its specific gravity, as shown in</span>
+<span class="sd">    [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{SG at}~60^\circ\text{F} = \frac{141.5}{\text{API gravity} +131.5}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    API : float</span>
+<span class="sd">        API of the fluid [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    SG : float</span>
+<span class="sd">        Specific gravity of the fluid at 60 degrees Farenheight [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Defined only at 60 degrees Fahrenheit.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; API_to_SG(60.62)</span>
+<span class="sd">    0.7365188423901728</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] API Technical Data Book: General Properties &amp; Characterization.</span>
+<span class="sd">    American Petroleum Institute, 7E, 2005.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mf">141.5</span><span class="o">/</span><span class="p">(</span><span class="n">API</span> <span class="o">+</span> <span class="mf">131.5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SG"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.SG">[docs]</a><span class="k">def</span> <span class="nf">SG</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">rho_ref</span><span class="o">=</span><span class="mf">999.0170824078306</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the specific gravity of a substance with respect to another</span>
+<span class="sd">    substance; by default, this is water at 15.6 °C (60 °F). For gases, </span>
+<span class="sd">    normally the reference density is 1.2 kg/m^3, that of dry air. However, in </span>
+<span class="sd">    general specific gravity should always be specified with respect to the</span>
+<span class="sd">    temperature and pressure of its reference fluid. This can vary widely.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        SG = \frac{\rho}{\rho_{ref}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        Density of the substance, [kg/m^3]</span>
+<span class="sd">    rho_ref : float, optional</span>
+<span class="sd">        Density of the reference substance, [kg/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    SG : float</span>
+<span class="sd">        Specific gravity of the substance with respect to the reference </span>
+<span class="sd">        density, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Another common reference point is water at 4°C (rho_ref=999.9748691393087).</span>
+<span class="sd">    Specific gravity is often used by consumers instead of density.</span>
+<span class="sd">    The reference for solids is normally the same as for liquids - water.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; SG(860)</span>
+<span class="sd">    0.8608461408159591</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">rho</span><span class="o">/</span><span class="n">rho_ref</span></div>
+
+<div class="viewcode-block" id="Parachor"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Parachor">[docs]</a><span class="k">def</span> <span class="nf">Parachor</span><span class="p">(</span><span class="n">V_l</span><span class="p">,</span> <span class="n">V_g</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate Parachor for a pure species, using its density in the</span>
+<span class="sd">    liquid and gas phases, surface tension, and molecular weight.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P = \frac{\sigma^{0.25}}{V_l^{-1} - V_g^{-1}}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    MW : float</span>
+<span class="sd">        Molecular weight, [g/mol]</span>
+<span class="sd">    V_l : float</span>
+<span class="sd">        Liquid density [mol/m^3]</span>
+<span class="sd">    V_g : float</span>
+<span class="sd">        Gas density [mol/m^3]</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Surface tension, [N/m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Parachor, [N^0.25*m^2.75/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To convert the output of this function to units of [mN^0.25*m^2.75/kmol], </span>
+<span class="sd">    multiply by 5623.4132519.</span>
+<span class="sd">    </span>
+<span class="sd">    Values in group contribution tables for Parachor are often listed as </span>
+<span class="sd">    dimensionless, in which they are multiplied by 5623413 and the appropriate</span>
+<span class="sd">    units to make them dimensionless.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculating Parachor from a known surface tension for methyl isobutyl </span>
+<span class="sd">    ketone at 293.15 K</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Parachor(100.15888, 800.8088185536124, 4.97865317223119, 0.02672166960656005)</span>
+<span class="sd">    5.088443542210164e-05</span>
+<span class="sd">    </span>
+<span class="sd">    Converting to the `dimensionless` form:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; 5623413*5.088443542210164e-05</span>
+<span class="sd">    286.14419565030687</span>
+<span class="sd">    </span>
+<span class="sd">    Compared to 274.9 according to a group contribution method described in</span>
+<span class="sd">    [3]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    .. [2] Green, Don, and Robert Perry. Perry&#39;s Chemical Engineers&#39; Handbook,</span>
+<span class="sd">       8E. McGraw-Hill Professional, 2007.</span>
+<span class="sd">    .. [3] Danner, Ronald P, and Design Institute for Physical Property Data.</span>
+<span class="sd">       Manual for Predicting Chemical Process Design Data. New York, N.Y, 1982.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">sigma</span><span class="o">**</span><span class="mf">0.25</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">V_l</span> <span class="o">-</span> <span class="mf">1.</span><span class="o">/</span><span class="n">V_g</span><span class="p">)</span> <span class="c1"># (N/m)**0.25*g/mol/(g/m^3)</span></div>
+
+<div class="viewcode-block" id="isobaric_expansion"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.isobaric_expansion">[docs]</a><span class="k">def</span> <span class="nf">isobaric_expansion</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dV_dT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the isobaric coefficient of a thermal expansion, given its </span>
+<span class="sd">    molar volume at a certain `T` and `P`, and its derivative of molar volume</span>
+<span class="sd">    with respect to `T`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \beta = \frac{1}{V}\left(\frac{\partial V}{\partial T} \right)_P</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume at `T` and `P`, [m^3/mol]</span>
+<span class="sd">    dV_dT : float</span>
+<span class="sd">        Derivative of molar volume with respect to `T`, [m^3/mol/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Isobaric coefficient of a thermal expansion, [1/K]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For an ideal gas, this expression simplified to:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \beta = \frac{1}{T}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated for hexane from the PR EOS at 299 K and 1 MPa (liquid):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; isobaric_expansion(0.000130229900873546, 1.58875261849113e-7)</span>
+<span class="sd">    0.0012199599384121608</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">dV_dT</span><span class="o">/</span><span class="n">V</span></div>
+
+<div class="viewcode-block" id="isothermal_compressibility"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.isothermal_compressibility">[docs]</a><span class="k">def</span> <span class="nf">isothermal_compressibility</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dV_dP</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculate the isothermal coefficient of a compressibility, given its </span>
+<span class="sd">    molar volume at a certain `T` and `P`, and its derivative of molar volume</span>
+<span class="sd">    with respect to `P`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \kappa = -\frac{1}{V}\left(\frac{\partial V}{\partial P} \right)_T</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume at `T` and `P`, [m^3/mol]</span>
+<span class="sd">    dV_dP : float</span>
+<span class="sd">        Derivative of molar volume with respect to `P`, [m^3/mol/Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kappa : float</span>
+<span class="sd">        Isothermal coefficient of a compressibility, [1/Pa]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For an ideal gas, this expression simplified to:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \kappa = \frac{1}{P}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated for hexane from the PR EOS at 299 K and 1 MPa (liquid):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; isothermal_compressibility(0.000130229900873546, -2.72902118209903e-13)</span>
+<span class="sd">    2.095541165119158e-09</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">dV_dP</span><span class="o">/</span><span class="n">V</span></div>
+
+<div class="viewcode-block" id="phase_identification_parameter"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.phase_identification_parameter">[docs]</a><span class="k">def</span> <span class="nf">phase_identification_parameter</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dP_dT</span><span class="p">,</span> <span class="n">dP_dV</span><span class="p">,</span> <span class="n">d2P_dV2</span><span class="p">,</span> <span class="n">d2P_dVdT</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the Phase Identification Parameter developed in [1]_ for</span>
+<span class="sd">    the accurate and efficient determination of whether a fluid is a liquid or</span>
+<span class="sd">    a gas based on the results of an equation of state. For supercritical </span>
+<span class="sd">    conditions, this provides a good method for choosing which property </span>
+<span class="sd">    correlations to use.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \Pi = V \left[\frac{\frac{\partial^2 P}{\partial V \partial T}}</span>
+<span class="sd">        {\frac{\partial P }{\partial T}}- \frac{\frac{\partial^2 P}{\partial </span>
+<span class="sd">        V^2}}{\frac{\partial P}{\partial V}} \right]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume at `T` and `P`, [m^3/mol]</span>
+<span class="sd">    dP_dT : float</span>
+<span class="sd">        Derivative of `P` with respect to `T`, [Pa/K]</span>
+<span class="sd">    dP_dV : float</span>
+<span class="sd">        Derivative of `P` with respect to `V`, [Pa*mol/m^3]</span>
+<span class="sd">    d2P_dV2 : float</span>
+<span class="sd">        Second derivative of `P` with respect to `V`, [Pa*mol^2/m^6]</span>
+<span class="sd">    d2P_dVdT : float</span>
+<span class="sd">        Second derivative of `P` with respect to both `V` and `T`, [Pa*mol/m^3/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    PIP : float</span>
+<span class="sd">        Phase Identification Parameter, [-]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Heuristics were used by process simulators before the invent of this </span>
+<span class="sd">    parameter. </span>
+<span class="sd">    </span>
+<span class="sd">    The criteria for liquid is Pi &gt; 1; for vapor, Pi &lt;= 1.</span>
+<span class="sd">    </span>
+<span class="sd">    There is also a solid phase mechanism available. For solids, the Solid  </span>
+<span class="sd">    Phase Identification Parameter is greater than 1, like liquids; however,  </span>
+<span class="sd">    unlike liquids, d2P_dVdT is always &gt;0; it is &lt; 0 for liquids and gases.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated for hexane from the PR EOS at 299 K and 1 MPa (liquid):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; phase_identification_parameter(0.000130229900874, 582169.397484, </span>
+<span class="sd">    ... -3.66431747236e+12, 4.48067893805e+17, -20518995218.2)</span>
+<span class="sd">    11.33428990564796</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Venkatarathnam, G., and L. R. Oellrich. &quot;Identification of the Phase</span>
+<span class="sd">       of a Fluid Using Partial Derivatives of Pressure, Volume, and </span>
+<span class="sd">       Temperature without Reference to Saturation Properties: Applications in </span>
+<span class="sd">       Phase Equilibria Calculations.&quot; Fluid Phase Equilibria 301, no. 2 </span>
+<span class="sd">       (February 25, 2011): 225-33. doi:10.1016/j.fluid.2010.12.001.</span>
+<span class="sd">    .. [2] Jayanti, Pranava Chaitanya, and G. Venkatarathnam. &quot;Identification</span>
+<span class="sd">       of the Phase of a Substance from the Derivatives of Pressure, Volume and</span>
+<span class="sd">       Temperature, without Prior Knowledge of Saturation Properties: Extension</span>
+<span class="sd">       to Solid Phase.&quot; Fluid Phase Equilibria 425 (October 15, 2016): 269-277.</span>
+<span class="sd">       doi:10.1016/j.fluid.2016.06.001.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">d2P_dVdT</span><span class="o">/</span><span class="n">dP_dT</span> <span class="o">-</span> <span class="n">d2P_dV2</span><span class="o">/</span><span class="n">dP_dV</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="phase_identification_parameter_phase"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.phase_identification_parameter_phase">[docs]</a><span class="k">def</span> <span class="nf">phase_identification_parameter_phase</span><span class="p">(</span><span class="n">d2P_dVdT</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dP_dT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dP_dV</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d2P_dV2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Uses the Phase Identification Parameter concept developed in [1]_ and </span>
+<span class="sd">    [2]_ to determine if a chemical is a solid, liquid, or vapor given the </span>
+<span class="sd">    appropriate thermodynamic conditions.</span>
+
+<span class="sd">    The criteria for liquid is PIP &gt; 1; for vapor, PIP &lt;= 1.</span>
+
+<span class="sd">    For solids, PIP(solid) is defined to be d2P_dVdT. If it is larger than 0, </span>
+<span class="sd">    the species is a solid. It is less than 0 for all liquids and gases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d2P_dVdT : float</span>
+<span class="sd">        Second derivative of `P` with respect to both `V` and `T`, [Pa*mol/m^3/K]</span>
+<span class="sd">    V : float, optional</span>
+<span class="sd">        Molar volume at `T` and `P`, [m^3/mol]</span>
+<span class="sd">    dP_dT : float, optional</span>
+<span class="sd">        Derivative of `P` with respect to `T`, [Pa/K]</span>
+<span class="sd">    dP_dV : float, optional</span>
+<span class="sd">        Derivative of `P` with respect to `V`, [Pa*mol/m^3]</span>
+<span class="sd">    d2P_dV2 : float, optionsl</span>
+<span class="sd">        Second derivative of `P` with respect to `V`, [Pa*mol^2/m^6]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    phase : str</span>
+<span class="sd">        Either &#39;s&#39;, &#39;l&#39; or &#39;g&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The criteria for being a solid phase is checked first, which only</span>
+<span class="sd">    requires d2P_dVdT. All other inputs are optional for this reason.</span>
+<span class="sd">    However, an exception will be raised if the other inputs become </span>
+<span class="sd">    needed to determine if a species is a liquid or a gas.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated for hexane from the PR EOS at 299 K and 1 MPa (liquid):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; phase_identification_parameter_phase(-20518995218.2, 0.000130229900874, </span>
+<span class="sd">    ... 582169.397484, -3.66431747236e+12, 4.48067893805e+17)</span>
+<span class="sd">    &#39;l&#39;</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Venkatarathnam, G., and L. R. Oellrich. &quot;Identification of the Phase</span>
+<span class="sd">       of a Fluid Using Partial Derivatives of Pressure, Volume, and </span>
+<span class="sd">       Temperature without Reference to Saturation Properties: Applications in </span>
+<span class="sd">       Phase Equilibria Calculations.&quot; Fluid Phase Equilibria 301, no. 2 </span>
+<span class="sd">       (February 25, 2011): 225-33. doi:10.1016/j.fluid.2010.12.001.</span>
+<span class="sd">    .. [2] Jayanti, Pranava Chaitanya, and G. Venkatarathnam. &quot;Identification</span>
+<span class="sd">       of the Phase of a Substance from the Derivatives of Pressure, Volume and</span>
+<span class="sd">       Temperature, without Prior Knowledge of Saturation Properties: Extension</span>
+<span class="sd">       to Solid Phase.&quot; Fluid Phase Equilibria 425 (October 15, 2016): 269-277.</span>
+<span class="sd">       doi:10.1016/j.fluid.2016.06.001.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">d2P_dVdT</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;s&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">PIP</span> <span class="o">=</span> <span class="n">phase_identification_parameter</span><span class="p">(</span><span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span> <span class="n">dP_dT</span><span class="o">=</span><span class="n">dP_dT</span><span class="p">,</span> <span class="n">dP_dV</span><span class="o">=</span><span class="n">dP_dV</span><span class="p">,</span> 
+                                             <span class="n">d2P_dV2</span><span class="o">=</span><span class="n">d2P_dV2</span><span class="p">,</span> <span class="n">d2P_dVdT</span><span class="o">=</span><span class="n">d2P_dVdT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;l&#39;</span> <span class="k">if</span> <span class="n">PIP</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;g&#39;</span></div>
+
+<div class="viewcode-block" id="Cp_minus_Cv"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Cp_minus_Cv">[docs]</a><span class="k">def</span> <span class="nf">Cp_minus_Cv</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">dP_dT</span><span class="p">,</span> <span class="n">dP_dV</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the difference between a real gas&#39;s constant-pressure heat</span>
+<span class="sd">    capacity and constant-volume heat capacity, as given in [1]_, [2]_, and</span>
+<span class="sd">    [3]_. The required derivatives should be calculated with an equation of</span>
+<span class="sd">    state.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_p - C_v = -T\left(\frac{\partial P}{\partial T}\right)_V^2/</span>
+<span class="sd">        \left(\frac{\partial P}{\partial V}\right)_T</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of fluid [K]</span>
+<span class="sd">    dP_dT : float</span>
+<span class="sd">        Derivative of `P` with respect to `T`, [Pa/K]</span>
+<span class="sd">    dP_dV : float</span>
+<span class="sd">        Derivative of `P` with respect to `V`, [Pa*mol/m^3]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Cp_minus_Cv : float</span>
+<span class="sd">        Cp - Cv for a real gas, [J/mol/K]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent expressions are:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        C_p - C_v= -T\left(\frac{\partial V}{\partial T}\right)_P^2/\left(</span>
+<span class="sd">        \frac{\partial V}{\partial P}\right)_T</span>
+<span class="sd">        </span>
+<span class="sd">        C_p - C_v = T\left(\frac{\partial P}{\partial T}\right)</span>
+<span class="sd">        \left(\frac{\partial V}{\partial T}\right)</span>
+
+<span class="sd">    Note that these are not second derivatives, only first derivatives, some</span>
+<span class="sd">    of which are squared.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated for hexane from the PR EOS at 299 K and 1 MPa (liquid):</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Cp_minus_Cv(299, 582232.475794113, -3665180614672.253)</span>
+<span class="sd">    27.654681381642394</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    .. [2] Walas, Stanley M. Phase Equilibria in Chemical Engineering. </span>
+<span class="sd">       Butterworth-Heinemann, 1985.</span>
+<span class="sd">    .. [3] Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.</span>
+<span class="sd">       Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim: </span>
+<span class="sd">       Wiley-VCH, 2012.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">T</span><span class="o">*</span><span class="n">dP_dT</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dP_dV</span></div>
+    
+    
+<div class="viewcode-block" id="speed_of_sound"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.speed_of_sound">[docs]</a><span class="k">def</span> <span class="nf">speed_of_sound</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dP_dV</span><span class="p">,</span> <span class="n">Cp</span><span class="p">,</span> <span class="n">Cv</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate a real fluid&#39;s speed of sound. The required derivatives should </span>
+<span class="sd">    be calculated with an equation of state, and `Cp` and `Cv` are both the</span>
+<span class="sd">    real fluid versions. Expression is given in [1]_ and [2]_; a unit conversion</span>
+<span class="sd">    is further performed to obtain a result in m/s. If MW is not provided the </span>
+<span class="sd">    result is returned in units of m*kg^0.5/s/mol^0.5.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        w = \left[-V^2 \left(\frac{\partial P}{\partial V}\right)_T \frac{C_p}</span>
+<span class="sd">        {C_v}\right]^{1/2}</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume of fluid, [m^3/mol]</span>
+<span class="sd">    dP_dV : float</span>
+<span class="sd">        Derivative of `P` with respect to `V`, [Pa*mol/m^3]</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Real fluid heat capacity at constant pressure, [J/mol/K]</span>
+<span class="sd">    Cv : float</span>
+<span class="sd">        Real fluid heat capacity at constant volume, [J/mol/K]</span>
+<span class="sd">    MW : float, optional</span>
+<span class="sd">        Molecular weight, [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Speed of sound for a real gas, [m/s or m*kg^0.5/s/mol^0.5 or MW missing]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    An alternate expression based on molar density is as follows:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">       w = \left[\left(\frac{\partial P}{\partial \rho}\right)_T \frac{C_p}</span>
+<span class="sd">       {C_v}\right]^{1/2}</span>
+
+<span class="sd">    The form with the unit conversion performed inside it is as follows:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        w = \left[-V^2 \frac{1000}{MW}\left(\frac{\partial P}{\partial V}</span>
+<span class="sd">        \right)_T \frac{C_p}{C_v}\right]^{1/2}</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Example from [2]_:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; speed_of_sound(V=0.00229754, dP_dV=-3.5459e+08, Cp=153.235, Cv=132.435, MW=67.152)</span>
+<span class="sd">    179.5868138460819</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.</span>
+<span class="sd">       Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim: </span>
+<span class="sd">       Wiley-VCH, 2012.</span>
+<span class="sd">    .. [2] Pratt, R. M. &quot;Thermodynamic Properties Involving Derivatives: Using </span>
+<span class="sd">       the Peng-Robinson Equation of State.&quot; Chemical Engineering Education 35,</span>
+<span class="sd">       no. 2 (March 1, 2001): 112-115. </span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">MW</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">dP_dV</span><span class="o">*</span><span class="n">Cp</span><span class="o">/</span><span class="n">Cv</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="mf">1000.</span><span class="o">/</span><span class="n">MW</span><span class="o">*</span><span class="n">dP_dV</span><span class="o">*</span><span class="n">Cp</span><span class="o">/</span><span class="n">Cv</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span></div>
+
+<div class="viewcode-block" id="Joule_Thomson"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Joule_Thomson">[docs]</a><span class="k">def</span> <span class="nf">Joule_Thomson</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">Cp</span><span class="p">,</span> <span class="n">dV_dT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate a real fluid&#39;s Joule Thomson coefficient. The required </span>
+<span class="sd">    derivative should be calculated with an equation of state, and `Cp` is the</span>
+<span class="sd">    real fluid versions. This can either be calculated with `dV_dT` directly, </span>
+<span class="sd">    or with `beta` if it is already known.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mu_{JT} = \left(\frac{\partial T}{\partial P}\right)_H = \frac{1}{C_p}</span>
+<span class="sd">        \left[T \left(\frac{\partial V}{\partial T}\right)_P - V\right]</span>
+<span class="sd">        = \frac{V}{C_p}\left(\beta T-1\right)</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature of fluid, [K]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume of fluid, [m^3/mol]</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Real fluid heat capacity at constant pressure, [J/mol/K]</span>
+<span class="sd">    dV_dT : float, optional</span>
+<span class="sd">        Derivative of `V` with respect to `T`, [m^3/mol/K]</span>
+<span class="sd">    beta : float, optional</span>
+<span class="sd">        Isobaric coefficient of a thermal expansion, [1/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu_JT : float</span>
+<span class="sd">        Joule-Thomson coefficient [K/Pa]</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Example from [2]_:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Joule_Thomson(T=390, V=0.00229754, Cp=153.235, dV_dT=1.226396e-05)</span>
+<span class="sd">    1.621956080529905e-05</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Walas, Stanley M. Phase Equilibria in Chemical Engineering. </span>
+<span class="sd">       Butterworth-Heinemann, 1985.</span>
+<span class="sd">    .. [2] Pratt, R. M. &quot;Thermodynamic Properties Involving Derivatives: Using </span>
+<span class="sd">       the Peng-Robinson Equation of State.&quot; Chemical Engineering Education 35,</span>
+<span class="sd">       no. 2 (March 1, 2001): 112-115. </span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dV_dT</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">dV_dT</span> <span class="o">-</span> <span class="n">V</span><span class="p">)</span><span class="o">/</span><span class="n">Cp</span>
+    <span class="k">elif</span> <span class="n">beta</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">V</span><span class="o">/</span><span class="n">Cp</span><span class="o">*</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">T</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either dV_dT or beta is needed&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="isentropic_exponent"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.isentropic_exponent">[docs]</a><span class="k">def</span> <span class="nf">isentropic_exponent</span><span class="p">(</span><span class="n">Cp</span><span class="p">,</span> <span class="n">Cv</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the isentropic coefficient of a gas, given its constant-</span>
+<span class="sd">    pressure and constant-volume heat capacity.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        k = \frac{C_p}{C_v}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Cp : float</span>
+<span class="sd">        Gas heat capacity at constant pressure, [J/mol/K]</span>
+<span class="sd">    Cv : float</span>
+<span class="sd">        Gas heat capacity at constant volume, [J/mol/K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Isentropic exponent, [-]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; isentropic_exponent(33.6, 25.27)</span>
+<span class="sd">    1.329639889196676</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">Cp</span><span class="o">/</span><span class="n">Cv</span></div>
+
+<div class="viewcode-block" id="Z"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Z">[docs]</a><span class="k">def</span> <span class="nf">Z</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the compressibility factor of a gas, given its</span>
+<span class="sd">    temperature, pressure, and molar volume.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Z = \frac{PV}{RT}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure [Pa]</span>
+<span class="sd">    V : float</span>
+<span class="sd">        Molar volume, [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Z : float</span>
+<span class="sd">        Compressibility factor, [-]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Z(600, P=1E6, V=0.00463)</span>
+<span class="sd">    0.9281019876560912</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">V</span><span class="o">*</span><span class="n">P</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">R</span></div>
+
+<div class="viewcode-block" id="B_to_Z"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.B_to_Z">[docs]</a><span class="k">def</span> <span class="nf">B_to_Z</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the compressibility factor of a gas, given its</span>
+<span class="sd">    second virial coefficient.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Z = 1 + \frac{BP}{RT}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    B : float</span>
+<span class="sd">        Second virial coefficient, [m^3/mol]</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Z : float</span>
+<span class="sd">        Compressibility factor, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Other forms of the virial coefficient exist.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; B_to_Z(-0.0015, 300, 1E5)</span>
+<span class="sd">    0.9398638020957176</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">P</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="Z_to_B"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Z_to_B">[docs]</a><span class="k">def</span> <span class="nf">Z_to_B</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the second virial coefficient of a pure species, given the</span>
+<span class="sd">    compressibility factor of the gas.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        B = \frac{RT(Z-1)}{P}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Z : float</span>
+<span class="sd">        Compressibility factor, [-]</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    B : float</span>
+<span class="sd">        Second virial coefficient, [m^3/mol]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Other forms of the virial coefficient exist.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; B_from_Z(0.94, 300, 1E5)</span>
+<span class="sd">    -0.0014966027640000014</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.</span>
+<span class="sd">       New York: McGraw-Hill Professional, 2000.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span></div>
+
+<div class="viewcode-block" id="Z_from_virial_density_form"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Z_from_virial_density_form">[docs]</a><span class="k">def</span> <span class="nf">Z_from_virial_density_form</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the compressibility factor of a gas given its temperature,</span>
+<span class="sd">    pressure, and molar density-form virial coefficients. Any number of</span>
+<span class="sd">    coefficients is supported.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Z = \frac{PV}{RT} = 1 + \frac{B}{V} + \frac{C}{V^2} + \frac{D}{V^3}</span>
+<span class="sd">        + \frac{E}{V^4} \dots</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure, [Pa]</span>
+<span class="sd">    B to Z : float, optional</span>
+<span class="sd">        Virial coefficients, [various]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Z : float</span>
+<span class="sd">        Compressibility factor at T, P, and with given virial coefficients, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For use with B or with B and C or with B and C and D, optimized equations </span>
+<span class="sd">    are used to obtain the compressibility factor directly.</span>
+<span class="sd">    If more coefficients are provided, uses numpy&#39;s roots function to solve </span>
+<span class="sd">    this equation. This takes substantially longer as the solution is </span>
+<span class="sd">    numerical.</span>
+<span class="sd">    </span>
+<span class="sd">    If no virial coefficients are given, returns 1, as per the ideal gas law.</span>
+<span class="sd">    </span>
+<span class="sd">    The units of each virial coefficient are as follows, where for B, n=1, and</span>
+<span class="sd">    C, n=2, and so on.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \left(\frac{\text{m}^3}{\text{mol}}\right)^n</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Z_from_virial_density_form(300, 122057.233762653, 1E-4, 1E-5, 1E-6, 1E-7)</span>
+<span class="sd">    1.2843496002100001</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Prausnitz, John M., Rudiger N. Lichtenthaler, and Edmundo Gomes de </span>
+<span class="sd">       Azevedo. Molecular Thermodynamics of Fluid-Phase Equilibria. 3rd </span>
+<span class="sd">       edition. Upper Saddle River, N.J: Prentice Hall, 1998.</span>
+<span class="sd">    .. [2] Walas, Stanley M. Phase Equilibria in Chemical Engineering. </span>
+<span class="sd">       Butterworth-Heinemann, 1985.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="mf">2.</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="c1">#       return ((R*T*(4*args[0]*P + R*T))**0.5 + R*T)/(2*P)</span>
+    <span class="k">elif</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="c1"># A small imaginary part is ignored</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">27</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">27</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">R</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">27</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">27</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">R</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">P</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">P</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">elif</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># Huge mess. Ideally sympy could optimize a function for quick python </span>
+        <span class="c1"># execution. Derived with kate&#39;s text highlighting</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">P2</span> <span class="o">=</span> <span class="n">P</span><span class="o">**</span><span class="mi">2</span> 
+        <span class="n">RT</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span>
+        <span class="n">BRT</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">RT</span>
+        <span class="n">T2</span> <span class="o">=</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">R2</span> <span class="o">=</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">RT23</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">R2</span><span class="o">*</span><span class="n">T2</span>
+        <span class="n">mCRT</span> <span class="o">=</span> <span class="o">-</span><span class="n">C</span><span class="o">*</span><span class="n">RT</span>
+        <span class="n">P2256</span> <span class="o">=</span> <span class="mi">256</span><span class="o">*</span><span class="n">P2</span>
+        
+        <span class="n">RT23P2256</span> <span class="o">=</span> <span class="n">RT23</span><span class="o">/</span><span class="p">(</span><span class="n">P2256</span><span class="p">)</span>
+        <span class="n">big1</span> <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">RT</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="n">BRT</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="n">RT23</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">P2</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">12</span> <span class="o">-</span> <span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">mCRT</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">-</span> <span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">RT23P2256</span><span class="p">)</span><span class="o">/</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">big3</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">BRT</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="n">RT23</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">P2</span><span class="p">))</span>
+        <span class="n">big4</span> <span class="o">=</span> <span class="p">(</span><span class="n">mCRT</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">R2</span><span class="o">*</span><span class="n">T2</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">P2</span><span class="p">))</span><span class="o">/</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">big5</span> <span class="o">=</span> <span class="n">big3</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">D</span><span class="o">*</span><span class="n">RT</span><span class="o">/</span><span class="n">P</span> <span class="o">+</span> <span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">mCRT</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">-</span> <span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">RT23P2256</span><span class="p">)</span><span class="o">/</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">big2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">big1</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">216</span> <span class="o">-</span> <span class="n">big5</span><span class="o">/</span><span class="mi">6</span> <span class="o">+</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">16</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">big1</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">27</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">108</span> <span class="o">+</span> <span class="n">big5</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">big7</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">-</span> <span class="n">big2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">216</span> <span class="o">-</span> <span class="n">big5</span><span class="o">/</span><span class="mi">6</span> <span class="o">+</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">16</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">big1</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">27</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">108</span> <span class="o">+</span> <span class="n">big5</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">R2</span><span class="o">*</span><span class="n">T2</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">P2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="p">(((</span><span class="n">csqrt</span><span class="p">(</span><span class="n">big7</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">RT</span><span class="o">/</span><span class="n">P</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">RT</span><span class="o">*</span><span class="p">(</span><span class="n">BRT</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P</span><span class="p">)</span> <span class="o">+</span> <span class="n">R2</span><span class="o">*</span><span class="n">T2</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">P2</span><span class="p">))</span><span class="o">/</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="n">csqrt</span><span class="p">(</span><span class="n">big7</span><span class="p">)</span> <span class="o">+</span> <span class="n">big2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">216</span> <span class="o">-</span> <span class="n">big5</span><span class="o">/</span><span class="mi">6</span> <span class="o">+</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">16</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">big1</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">27</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">big3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">108</span> <span class="o">+</span> <span class="n">big5</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="n">big4</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">R2</span><span class="o">*</span><span class="n">T2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">P2</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">RT</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">P</span><span class="p">))))</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">P</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">T</span><span class="p">])</span>
+    <span class="n">solns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">solns</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">imag</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">real</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="c1"># Quicker than indexing where imag ==0</span>
+    <span class="k">return</span> <span class="n">P</span><span class="o">/</span><span class="n">rho</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="Z_from_virial_pressure_form"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Z_from_virial_pressure_form">[docs]</a><span class="k">def</span> <span class="nf">Z_from_virial_pressure_form</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the compressibility factor of a gas given its pressure, and </span>
+<span class="sd">    pressure-form virial coefficients. Any number of coefficients is supported.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        Z = \frac{Pv}{RT} = 1 + B&#39;P + C&#39;P^2 + D&#39;P^3 + E&#39;P^4 \dots</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Pressure, [Pa]</span>
+<span class="sd">    B to Z : float, optional</span>
+<span class="sd">        Pressure form Virial coefficients, [various]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Z : float</span>
+<span class="sd">        Compressibility factor at P, and with given virial coefficients, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that although this function does not require a temperature input, it  </span>
+<span class="sd">    is still dependent on it because the coefficients themselves normally are</span>
+<span class="sd">    regressed in terms of temperature.</span>
+<span class="sd">    </span>
+<span class="sd">    The use of this form is less common than the density form. Its coefficients</span>
+<span class="sd">    are normally indicated with the &quot;&#39;&quot; suffix.</span>
+<span class="sd">    </span>
+<span class="sd">    If no virial coefficients are given, returns 1, as per the ideal gas law.</span>
+<span class="sd">    </span>
+<span class="sd">    The units of each virial coefficient are as follows, where for B, n=1, and</span>
+<span class="sd">    C, n=2, and so on.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \left(\frac{1}{\text{Pa}}\right)^n</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Z_from_virial_pressure_form(102919.99946855308, 4.032286555169439e-09, 1.6197059494442215e-13, 6.483855042486911e-19)</span>
+<span class="sd">    1.00283753944</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Prausnitz, John M., Rudiger N. Lichtenthaler, and Edmundo Gomes de </span>
+<span class="sd">       Azevedo. Molecular Thermodynamics of Fluid-Phase Equilibria. 3rd </span>
+<span class="sd">       edition. Upper Saddle River, N.J: Prentice Hall, 1998.</span>
+<span class="sd">    .. [2] Walas, Stanley M. Phase Equilibria in Chemical Engineering. </span>
+<span class="sd">       Butterworth-Heinemann, 1985.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">P</span><span class="o">*</span><span class="nb">sum</span><span class="p">([</span><span class="n">coeff</span><span class="o">*</span><span class="n">P</span><span class="o">**</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="zs_to_ws"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.zs_to_ws">[docs]</a><span class="k">def</span> <span class="nf">zs_to_ws</span><span class="p">(</span><span class="n">zs</span><span class="p">,</span> <span class="n">MWs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Converts a list of mole fractions to mass fractions. Requires molecular</span>
+<span class="sd">    weights for all species.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        w_i = \frac{z_i MW_i}{MW_{avg}}</span>
+
+<span class="sd">        MW_{avg} = \sum_i z_i MW_i</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    zs : iterable</span>
+<span class="sd">        Mole fractions [-]</span>
+<span class="sd">    MWs : iterable</span>
+<span class="sd">        Molecular weights [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ws : iterable</span>
+<span class="sd">        Mass fractions [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not check that the sums add to one. Does not check that inputs are of</span>
+<span class="sd">    the same length.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; zs_to_ws([0.5, 0.5], [10, 20])</span>
+<span class="sd">    [0.3333333333333333, 0.6666666666666666]</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
+    <span class="n">MWs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">zs</span> <span class="o">*</span> <span class="n">MWs</span>
+    <span class="n">ws</span> <span class="o">/=</span> <span class="n">ws</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ws</span></div>
+
+<div class="viewcode-block" id="ws_to_zs"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.ws_to_zs">[docs]</a><span class="k">def</span> <span class="nf">ws_to_zs</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">MWs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Converts a list of mass fractions to mole fractions. Requires molecular</span>
+<span class="sd">    weights for all species.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        z_i = \frac{\frac{w_i}{MW_i}}{\sum_i \frac{w_i}{MW_i}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ws : iterable</span>
+<span class="sd">        Mass fractions [-]</span>
+<span class="sd">    MWs : iterable</span>
+<span class="sd">        Molecular weights [g/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zs : iterable</span>
+<span class="sd">        Mole fractions [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not check that the sums add to one. Does not check that inputs are of</span>
+<span class="sd">    the same length.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ws_to_zs([0.3333333333333333, 0.6666666666666666], [10, 20])</span>
+<span class="sd">    [0.5, 0.5]</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="n">MWs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">ws</span><span class="o">/</span><span class="n">MWs</span>
+    <span class="n">zs</span> <span class="o">/=</span> <span class="n">zs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">zs</span></div>
+
+<div class="viewcode-block" id="zs_to_Vfs"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.zs_to_Vfs">[docs]</a><span class="k">def</span> <span class="nf">zs_to_Vfs</span><span class="p">(</span><span class="n">zs</span><span class="p">,</span> <span class="n">Vs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Converts a list of mole fractions to volume fractions. Requires molar</span>
+<span class="sd">    volumes for all species.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \text{Vf}_i = \frac{z_i V_{i}}{\sum_i z_i V_{i}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    zs : iterable</span>
+<span class="sd">        Mole fractions [-]</span>
+<span class="sd">    Vs : iterable</span>
+<span class="sd">        Molar volumes of species [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Vfs : list</span>
+<span class="sd">        Molar volume fractions [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not check that the sums add to one. Does not check that inputs are of</span>
+<span class="sd">    the same length.</span>
+
+<span class="sd">    Molar volumes are specified in terms of pure components only. Function</span>
+<span class="sd">    works with any phase.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Acetone and benzene example</span>
+
+<span class="sd">    &gt;&gt;&gt; zs_to_Vfs([0.637, 0.363], [8.0234e-05, 9.543e-05])</span>
+<span class="sd">    [0.5960229712956298, 0.4039770287043703]</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span>
+    <span class="n">Vfs</span> <span class="o">=</span> <span class="n">zs</span> <span class="o">*</span> <span class="n">Vs</span>
+    <span class="n">Vfs</span> <span class="o">/=</span> <span class="n">Vfs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">Vfs</span></div>
+
+<div class="viewcode-block" id="Vfs_to_zs"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.Vfs_to_zs">[docs]</a><span class="k">def</span> <span class="nf">Vfs_to_zs</span><span class="p">(</span><span class="n">Vfs</span><span class="p">,</span> <span class="n">Vs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Converts a list of mass fractions to mole fractions. Requires molecular</span>
+<span class="sd">    weights for all species.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        z_i = \frac{\frac{\text{Vf}_i}{V_{m,i}}}{\sum_i</span>
+<span class="sd">        \frac{\text{Vf}_i}{V_{m,i}}}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vfs : iterable</span>
+<span class="sd">        Molar volume fractions [-]</span>
+<span class="sd">    VMs : iterable</span>
+<span class="sd">        Molar volumes of species [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zs : list</span>
+<span class="sd">        Mole fractions [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not check that the sums add to one. Does not check that inputs are of</span>
+<span class="sd">    the same length.</span>
+
+<span class="sd">    Molar volumes are specified in terms of pure components only. Function</span>
+<span class="sd">    works with any phase.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Acetone and benzene example</span>
+
+<span class="sd">    &gt;&gt;&gt; Vfs_to_zs([0.596, 0.404], [8.0234e-05, 9.543e-05])</span>
+<span class="sd">    [0.6369779395901142, 0.3630220604098858]</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span>
+    <span class="n">Vfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Vfs</span><span class="p">)</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">Vfs</span><span class="o">/</span><span class="n">Vs</span>
+    <span class="n">zs</span> <span class="o">/=</span> <span class="n">zs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">zs</span></div>
+
+<div class="viewcode-block" id="none_and_length_check"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.none_and_length_check">[docs]</a><span class="k">def</span> <span class="nf">none_and_length_check</span><span class="p">(</span><span class="n">all_inputs</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Checks inputs for suitability of use by a mixing rule which requires</span>
+<span class="sd">    all inputs to be of the same length and non-None. A number of variations</span>
+<span class="sd">    were attempted for this function; this was found to be the quickest.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    all_inputs : array-like of array-like</span>
+<span class="sd">        list of all the lists of inputs, [-]</span>
+<span class="sd">    length : int, optional</span>
+<span class="sd">        Length of the desired inputs, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    False/True : bool</span>
+<span class="sd">        Returns True only if all inputs are the same length (or length `length`)</span>
+<span class="sd">        and none of the inputs contain None [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not check for nan values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; none_and_length_check(([1, 1], [1, 1], [1, 30], [10,0]), length=2)</span>
+<span class="sd">    True</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">length</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">things</span> <span class="ow">in</span> <span class="n">all_inputs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">things</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">things</span><span class="p">)</span> <span class="o">!=</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="allclose_variable"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.allclose_variable">[docs]</a><span class="k">def</span> <span class="nf">allclose_variable</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">rtols</span><span class="p">,</span> <span class="n">atols</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns True if two arrays are element-wise equal within several </span>
+<span class="sd">    different tolerances. Tolerance values are always positive, usually</span>
+<span class="sd">    very small. Based on numpy&#39;s allclose function.</span>
+<span class="sd">    </span>
+<span class="sd">    Only atols or rtols needs to be specified; both are used if given.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a, b : array_like</span>
+<span class="sd">        Input arrays to compare.</span>
+<span class="sd">    limits : array_like</span>
+<span class="sd">        Fractions of elements allowed to not match to within each tolerance.</span>
+<span class="sd">    rtols : array_like</span>
+<span class="sd">        The relative tolerance parameters.</span>
+<span class="sd">    atols : float</span>
+<span class="sd">        The absolute tolerance parameters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    allclose : bool</span>
+<span class="sd">        Returns True if the two arrays are equal within the given</span>
+<span class="sd">        tolerances; False otherwise.</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    10 random similar variables, all of them matching to within 1E-5, allowing </span>
+<span class="sd">    up to half to match up to 1E-6.</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; x = [2.7244322249597719e-08, 3.0105683900110473e-10, 2.7244124924802327e-08, 3.0105259397637556e-10, 2.7243929226310193e-08, 3.0104990272770901e-10, 2.7243666849384451e-08, 3.0104101821236015e-10, 2.7243433745917367e-08, 3.0103707421519949e-10]</span>
+<span class="sd">    &gt;&gt;&gt; y = [2.7244328304561904e-08, 3.0105753470546008e-10, 2.724412872417824e-08,  3.0105303055834564e-10, 2.7243914341030203e-08, 3.0104819238021998e-10, 2.7243684057561379e-08, 3.0104299541023674e-10, 2.7243436694839306e-08, 3.010374130526363e-10]</span>
+<span class="sd">    &gt;&gt;&gt; allclose_variable(x, y, limits=[.0, .5], rtols=[1E-5, 1E-6], atols=[0, 0])</span>
+<span class="sd">    True</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">lim</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">atols</span><span class="p">,</span> <span class="n">rtols</span><span class="p">,</span> <span class="n">limits</span><span class="p">):</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">))</span>
+        <span class="k">if</span> <span class="mi">1</span><span class="o">-</span><span class="n">matches</span><span class="o">/</span><span class="n">l</span> <span class="o">&gt;</span> <span class="n">lim</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="polylog2"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.polylog2">[docs]</a><span class="k">def</span> <span class="nf">polylog2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Simple function to calculate PolyLog(2, x) from ranges 0 &lt;= x &lt;= 1,</span>
+<span class="sd">    with relative error guaranteed to be &lt; 1E-7 from 0 to 0.99999. This</span>
+<span class="sd">    is a Pade approximation, with three coefficient sets with splits at 0.7 </span>
+<span class="sd">    and 0.99. An exception is raised if x is under 0 or above 1. </span>
+<span class="sd">    </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        Value to evaluate PolyLog(2, x) T</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : float</span>
+<span class="sd">        Evaluated result</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Efficient (2-4 microseconds). No implementation of this function exists in </span>
+<span class="sd">    SciPy. Derived with mpmath&#39;s pade approximation.</span>
+<span class="sd">    Required for the entropy integral of </span>
+<span class="sd">    :obj:`thermo.heat_capacity.Zabransky_quasi_polynomial`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; polylog2(0.5)</span>
+<span class="sd">    0.5822405264516294</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">0.7</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset0</span>
+    <span class="k">elif</span> <span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">0.99</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset1</span>
+    <span class="k">elif</span> <span class="mf">0.99</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;approximation is valid between 0 and 1 only&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">offset</span>
+    <span class="k">return</span> <span class="n">horner</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="n">horner</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span></div>
+<span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset0</span> <span class="o">=</span> <span class="p">((</span><span class="mf">0.06184590404457956</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7460693871557973</span><span class="p">,</span>
+                        <span class="mf">2.2435704485433376</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.1944070385048526</span><span class="p">,</span>
+                        <span class="mf">0.3382265629285811</span><span class="p">,</span> <span class="mf">0.2791966558569478</span><span class="p">),</span>
+                       <span class="p">(</span><span class="o">-</span><span class="mf">0.005308735283483908</span><span class="p">,</span> <span class="mf">0.1823421262956287</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.2364596896290079</span><span class="p">,</span> <span class="mf">2.9897802200092296</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">2.9365321202088004</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                        <span class="mf">0.26</span><span class="p">)</span>
+<span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset1</span> <span class="o">=</span> <span class="p">((</span><span class="mf">8.548256176424551e+34</span><span class="p">,</span> <span class="mf">1.8485781239087334e+35</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">2.1706889553798647e+34</span><span class="p">,</span> <span class="mf">8.318563643438321e+32</span><span class="p">,</span> 
+                        <span class="o">-</span><span class="mf">1.559802348661511e+31</span><span class="p">,</span> <span class="mf">1.698939241177209e+29</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.180285031647229e+27</span><span class="p">,</span> <span class="mf">5.531049937687143e+24</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.8085903366375877e+22</span><span class="p">,</span> <span class="mf">4.203276811951035e+19</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">6.98211620300421e+16</span><span class="p">,</span> <span class="mf">82281997048841.92</span><span class="p">,</span> 
+                        <span class="o">-</span><span class="mf">67157299796.61345</span><span class="p">,</span> <span class="mf">36084814.54808544</span><span class="p">,</span> 
+                        <span class="o">-</span><span class="mf">11478.108105137717</span><span class="p">,</span> <span class="mf">1.6370226052761176</span><span class="p">),</span>
+                       <span class="p">(</span><span class="o">-</span><span class="mf">1.9763570499484274e+35</span><span class="p">,</span> <span class="mf">1.4813997374958851e+35</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.4773854824041134e+34</span><span class="p">,</span> <span class="mf">5.38853721252814e+32</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">9.882387315028929e+30</span><span class="p">,</span> <span class="mf">1.0635231532999732e+29</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">7.334629044071992e+26</span><span class="p">,</span> <span class="mf">3.420655574477631e+24</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.1147787784365177e+22</span><span class="p">,</span> <span class="mf">2.584530363912858e+19</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">4.285376337404043e+16</span><span class="p">,</span> <span class="mf">50430830490687.56</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">41115254924.43107</span><span class="p">,</span> <span class="mf">22072284.971253656</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">7015.799744041691</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="mf">0.999</span><span class="p">)</span>
+<span class="n">polylog2</span><span class="o">.</span><span class="n">_pqoffset2</span> <span class="o">=</span> <span class="p">((</span><span class="mf">8.548256176424551e+34</span><span class="p">,</span> <span class="mf">1.8485781239087334e+35</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">2.1706889553798647e+34</span><span class="p">,</span> <span class="mf">8.318563643438321e+32</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.559802348661511e+31</span><span class="p">,</span> <span class="mf">1.698939241177209e+29</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.180285031647229e+27</span><span class="p">,</span> <span class="mf">5.531049937687143e+24</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.8085903366375877e+22</span><span class="p">,</span> <span class="mf">4.203276811951035e+19</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">6.98211620300421e+16</span><span class="p">,</span> <span class="mf">82281997048841.92</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">67157299796.61345</span><span class="p">,</span> <span class="mf">36084814.54808544</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">11478.108105137717</span><span class="p">,</span> <span class="mf">1.6370226052761176</span><span class="p">),</span>
+                       <span class="p">(</span><span class="o">-</span><span class="mf">1.9763570499484274e+35</span><span class="p">,</span> <span class="mf">1.4813997374958851e+35</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">1.4773854824041134e+34</span><span class="p">,</span> <span class="mf">5.38853721252814e+32</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">9.882387315028929e+30</span><span class="p">,</span> <span class="mf">1.0635231532999732e+29</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">7.334629044071992e+26</span><span class="p">,</span> <span class="mf">3.420655574477631e+24</span><span class="p">,</span> 
+                        <span class="o">-</span><span class="mf">1.1147787784365177e+22</span><span class="p">,</span> <span class="mf">2.584530363912858e+19</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">4.285376337404043e+16</span><span class="p">,</span> <span class="mf">50430830490687.56</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">41115254924.43107</span><span class="p">,</span> <span class="mf">22072284.971253656</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">7015.799744041691</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="mf">0.999</span><span class="p">)</span>
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.normalize">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a normalized array to a magnitude of 1.</span>
+<span class="sd">    If magnitude is zero, all fractions will have equal value.&quot;&quot;&quot;</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">sum_array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">sum_array</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">/</span><span class="n">l</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">array</span><span class="o">/</span><span class="n">sum_array</span></div>
+
+<div class="viewcode-block" id="mixing_simple"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.mixing_simple">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">mixing_simple</span><span class="p">(</span><span class="n">fracs</span><span class="p">,</span> <span class="n">props</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Simple function calculates a property based on weighted averages of</span>
+<span class="sd">    properties. Weights could be mole fractions, volume fractions, mass</span>
+<span class="sd">    fractions, or anything else.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        y = \sum_i \text{frac}_i \cdot \text{prop}_i</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fracs : array-like</span>
+<span class="sd">        Fractions of a mixture</span>
+<span class="sd">    props: array-like</span>
+<span class="sd">        Properties</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    prop : value</span>
+<span class="sd">        Calculated property</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mixing_simple([0.1, 0.9], [0.01, 0.02])</span>
+<span class="sd">    0.019000000000000003</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fracs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fracs</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">fracs</span> <span class="o">*</span> <span class="n">props</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="mixing_logarithmic"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.mixing_logarithmic">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">mixing_logarithmic</span><span class="p">(</span><span class="n">fracs</span><span class="p">,</span> <span class="n">props</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Simple function calculates a property based on weighted averages of</span>
+<span class="sd">    logarithmic properties.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        y = \sum_i \text{frac}_i \cdot \log(\text{prop}_i)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fracs : array-like</span>
+<span class="sd">        Fractions of a mixture</span>
+<span class="sd">    props: array-like</span>
+<span class="sd">        Properties</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    prop : value</span>
+<span class="sd">        Calculated property</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not work on negative values.</span>
+<span class="sd">    Returns None if any fractions or properties are missing or are not of the</span>
+<span class="sd">    same length.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mixing_logarithmic([0.1, 0.9], [0.01, 0.02])</span>
+<span class="sd">    0.01866065983073615</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">fracs</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">props</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

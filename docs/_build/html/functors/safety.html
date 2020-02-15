@@ -250,41 +250,37 @@ industrial toxicology.</p>
 \[\frac{mg}{m^3} = \frac{ppmv\cdot P}{RT}\cdot \frac{MW}{1000}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ppmv</strong><span class="classifier">float</span></dt><dd><p>Concentratoin of a component in a gas mixure [parts per million,
-volumetric]</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight of the trace gas [g/mol]</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature of the gas at which the ppmv is reported</p>
-</dd>
-<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure of the gas at which the ppmv is reported</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ppmv</strong> (<em>float</em>) – Concentratoin of a component in a gas mixure [parts per million,
+volumetric]</p></li>
+<li><p><strong>MW</strong> (<em>float</em>) – Molecular weight of the trace gas [g/mol]</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature of the gas at which the ppmv is reported</p></li>
+<li><p><strong>P</strong> (<em>float</em><em>, </em><em>optional</em>) – Pressure of the gas at which the ppmv is reported</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>mgm3</strong><span class="classifier">float</span></dt><dd><p>Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
+<dd class="field-even"><p><strong>mgm3</strong> – Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The term P/(RT)/1000 converts to 0.040874 at STP. Its inverse is reported
-as 24.45 in <a class="reference internal" href="#re87d315f6b10-1" id="id1">[1]</a>.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="re87d315f6b10-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
-23rd Edition. American Conference of Governmental and Industrial
-Hygenists, 2004.</p>
-</dd>
-</dl>
+as 24.45 in <a href="#id42"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ppmv_to_mgm3</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
 <span class="go">1.6349623351068687</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
+23rd Edition. American Conference of Governmental and Industrial
+Hygenists, 2004.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -296,41 +292,37 @@ industrial toxicology.</p>
 \[ppmv = \frac{1000RT}{MW\cdot P} \cdot \frac{mg}{m^3}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>mgm3</strong><span class="classifier">float</span></dt><dd><p>Concentration of a substance in an ideal gas mixture [mg/m^3]</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Molecular weight of the trace gas [g/mol]</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float, optional</span></dt><dd><p>Temperature of the gas at which the ppmv is reported</p>
-</dd>
-<dt><strong>P</strong><span class="classifier">float, optional</span></dt><dd><p>Pressure of the gas at which the ppmv is reported</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mgm3</strong> (<em>float</em>) – Concentration of a substance in an ideal gas mixture [mg/m^3]</p></li>
+<li><p><strong>MW</strong> (<em>float</em>) – Molecular weight of the trace gas [g/mol]</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature of the gas at which the ppmv is reported</p></li>
+<li><p><strong>P</strong> (<em>float</em><em>, </em><em>optional</em>) – Pressure of the gas at which the ppmv is reported</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>ppmv</strong><span class="classifier">float</span></dt><dd><p>Concentration of a component in a gas mixure [parts per million,
+<dd class="field-even"><p><strong>ppmv</strong> – Concentration of a component in a gas mixure [parts per million,
 volumetric]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The term P/(RT)/1000 converts to 0.040874 at STP. Its inverse is reported
-as 24.45 in <a class="reference internal" href="#r1e83dc81c5f3-1" id="id3">[1]</a>.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r1e83dc81c5f3-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
-23rd Edition. American Conference of Governmental and Industrial
-Hygenists, 2004.</p>
-</dd>
-</dl>
+as 24.45 in <a href="#id43"><span class="problematic" id="id3">[1]_</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mgm3_to_ppmv</span><span class="p">(</span><span class="mf">1.635</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
 <span class="go">1.0000230371625833</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>ACGIH. Industrial Ventilation: A Manual of Recommended Practice,
+23rd Edition. American Conference of Governmental and Industrial
+Hygenists, 2004.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -413,66 +405,60 @@ status of the chemical in all available data sources, in the format
 {source: status}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>status</strong><span class="classifier">str or dict</span></dt><dd><p>Carcinogen status information [-]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain carcinogen status with the
-given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>status</strong> (<em>str or dict</em>) – Carcinogen status information [-]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain carcinogen status with the
+given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Carcinogen_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Carcinogen_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 if a chemical is listed as carcinogenic, and will return methods
-instead of the status</p>
-</dd>
-</dl>
+instead of the status</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Supported methods are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>IARC</strong>: International Agency for Research on Cancer, <a class="reference internal" href="#ra5daecb7daa1-1" id="id5">[1]</a>. As
+<li><p><strong>IARC</strong>: International Agency for Research on Cancer, <a href="#id44"><span class="problematic" id="id5">[1]_</span></a>. As
 extracted with a last update of  February 22, 2016. Has listing
 information of 843 chemicals with CAS numbers. Chemicals without
 CAS numbers not included here. If two listings for the same CAS
 were available, that closest to the CAS number was used. If two
 listings were available published at different times, the latest
 value was used. All else equal, the most pessimistic value was used.</p></li>
-<li><p><strong>NTP</strong>: National Toxicology Program, <a class="reference internal" href="#ra5daecb7daa1-2" id="id6">[2]</a>. Has data on 226
+<li><p><strong>NTP</strong>: National Toxicology Program, <a href="#id45"><span class="problematic" id="id6">[2]_</span></a>. Has data on 226
 chemicals.</p></li>
 </ul>
 </div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Carcinogen</span><span class="p">(</span><span class="s1">&#39;61-82-5&#39;</span><span class="p">)</span>
+<span class="go">{&#39;National Toxicology Program 13th Report on Carcinogens&#39;: &#39;Reasonably Anticipated&#39;, &#39;International Agency for Research on Cancer&#39;: &#39;Not classifiable as to its carcinogenicity to humans (3)&#39;}</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="ra5daecb7daa1-1"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id7"><span class="brackets">1</span></dt>
 <dd><p>International Agency for Research on Cancer. Agents Classified by
 the IARC Monographs, Volumes 1-115. Lyon, France: IARC; 2016 Available
 from: <a class="reference external" href="http://monographs.iarc.fr/ENG/Classification/">http://monographs.iarc.fr/ENG/Classification/</a></p>
 </dd>
-<dt class="label" id="ra5daecb7daa1-2"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
+<dt class="label" id="id8"><span class="brackets">2</span></dt>
 <dd><p>NTP (National Toxicology Program). 2014. Report on Carcinogens,
 Thirteenth Edition. Research Triangle Park, NC: U.S. Department of
 Health and Human Services, Public Health Service.
 <a class="reference external" href="http://ntp.niehs.nih.gov/pubhealth/roc/roc13/">http://ntp.niehs.nih.gov/pubhealth/roc/roc13/</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Carcinogen</span><span class="p">(</span><span class="s1">&#39;61-82-5&#39;</span><span class="p">)</span>
-<span class="go">{&#39;National Toxicology Program 13th Report on Carcinogens&#39;: &#39;Reasonably Anticipated&#39;, &#39;International Agency for Research on Cancer&#39;: &#39;Not classifiable as to its carcinogenicity to humans (3)&#39;}</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -482,66 +468,60 @@ Health and Human Services, Public Health Service.
 flash point. Lookup is based on CASRNs. No predictive methods are currently
 implemented. Will automatically select a data source to use if no Method
 is provided; returns None if the data is not available.</p>
-<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#rf3b7253bd0f0-1" id="id9">[1]</a>, with the secondary source
-‘NFPA 497 (2008)’ <a class="reference internal" href="#rf3b7253bd0f0-2" id="id10">[2]</a> having very similar data. A third source 
-‘Serat DIPPR (2017)’ <a class="reference internal" href="#rf3b7253bd0f0-3" id="id11">[3]</a> provides third hand experimental but evaluated 
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a href="#id46"><span class="problematic" id="id9">[1]_</span></a>, with the secondary source
+‘NFPA 497 (2008)’ <a href="#id47"><span class="problematic" id="id10">[2]_</span></a> having very similar data. A third source
+‘Serat DIPPR (2017)’ <a class="footnote-reference brackets" href="#id15" id="id11">3</a> provides third hand experimental but evaluated
 data from the DIPPR database, version unspecified, for 870 compounds.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Tflash</strong><span class="classifier">float</span></dt><dd><p>Flash point of the chemical, [K]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Tflash with the given
-inputs</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Tflash_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-Tflash for the desired chemical, and will return methods instead of
-Tflash</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The predicted values from the DIPPR databank are also available in the
-supporting material in <a class="reference internal" href="#rf3b7253bd0f0-3" id="id12">[3]</a>, but are not included.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rf3b7253bd0f0-1"><span class="brackets"><a class="fn-backref" href="#id9">1</a></span></dt>
-<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
-Material characteristics for gas and vapour classification - Test
-methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
-<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
-</dd>
-<dt class="label" id="rf3b7253bd0f0-2"><span class="brackets"><a class="fn-backref" href="#id10">2</a></span></dt>
-<dd><p>National Fire Protection Association. NFPA 497: Recommended
-Practice for the Classification of Flammable Liquids, Gases, or Vapors
-and of Hazardous. NFPA, 2008.</p>
-</dd>
-<dt class="label" id="rf3b7253bd0f0-3"><span class="brackets">3</span><span class="fn-backref">(<a href="#id11">1</a>,<a href="#id12">2</a>)</span></dt>
-<dd><p>Serat, Fatima Zohra, Ali Mustapha Benkouider, Ahmed Yahiaoui, and 
-Farid Bagui. “Nonlinear Group Contribution Model for the Prediction of 
-Flash Points Using Normal Boiling Points.” Fluid Phase Equilibria 449 
-(October 15, 2017): 52-59. doi:10.1016/j.fluid.2017.06.008.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tflash</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
 <span class="go">285.15</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Tflash</strong> (<em>float</em>) – Flash point of the chemical, [K]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Tflash with the given
+inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Tflash_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Tflash for the desired chemical, and will return methods instead of
+Tflash</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The predicted values from the DIPPR databank are also available in the
+supporting material in <a class="footnote-reference brackets" href="#id15" id="id12">3</a>, but are not included.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id13"><span class="brackets">1</span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="id14"><span class="brackets">2</span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+<dt class="label" id="id15"><span class="brackets">3</span><span class="fn-backref">(<a href="#id11">1</a>,<a href="#id12">2</a>)</span></dt>
+<dd><p>Serat, Fatima Zohra, Ali Mustapha Benkouider, Ahmed Yahiaoui, and
+Farid Bagui. “Nonlinear Group Contribution Model for the Prediction of
+Flash Points Using Normal Boiling Points.” Fluid Phase Equilibria 449
+(October 15, 2017): 52-59. doi:10.1016/j.fluid.2017.06.008.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -551,55 +531,50 @@ Flash Points Using Normal Boiling Points.” Fluid Phase Equilibria 449
 autoifnition temperature. Lookup is based on CASRNs. No predictive methods
 are currently implemented. Will automatically select a data source to use
 if no Method is provided; returns None if the data is not available.</p>
-<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r63ba5bcaaf60-1" id="id16">[1]</a>, with the secondary source
-‘NFPA 497 (2008)’ <a class="reference internal" href="#r63ba5bcaaf60-2" id="id17">[2]</a> having very similar data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Tautoignition</strong><span class="classifier">float</span></dt><dd><p>Autoignition point of the chemical, [K]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Tautoignition with the
-given inputs</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Tautoignition_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-Tautoignition for the desired chemical, and will return methods
-instead of Tautoignition</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r63ba5bcaaf60-1"><span class="brackets"><a class="fn-backref" href="#id16">1</a></span></dt>
-<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
-Material characteristics for gas and vapour classification - Test
-methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
-<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
-</dd>
-<dt class="label" id="r63ba5bcaaf60-2"><span class="brackets"><a class="fn-backref" href="#id17">2</a></span></dt>
-<dd><p>National Fire Protection Association. NFPA 497: Recommended
-Practice for the Classification of Flammable Liquids, Gases, or Vapors
-and of Hazardous. NFPA, 2008.</p>
-</dd>
-</dl>
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a href="#id48"><span class="problematic" id="id16">[1]_</span></a>, with the secondary source
+‘NFPA 497 (2008)’ <a href="#id49"><span class="problematic" id="id17">[2]_</span></a> having very similar data.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tautoignition</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
 <span class="go">771.15</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Tautoignition</strong> (<em>float</em>) – Autoignition point of the chemical, [K]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Tautoignition with the
+given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Tautoignition_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Tautoignition for the desired chemical, and will return methods
+instead of Tautoignition</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id18"><span class="brackets">1</span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="id19"><span class="brackets">2</span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -609,61 +584,56 @@ and of Hazardous. NFPA, 2008.</p>
 Lower Flammability Limit. Lookup is based on CASRNs. Two predictive methods
 are currently implemented. Will automatically select a data source to use
 if no Method is provided; returns None if the data is not available.</p>
-<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r389e3d2e19f5-1" id="id20">[1]</a>, with the secondary source
-‘NFPA 497 (2008)’ <a class="reference internal" href="#r389e3d2e19f5-2" id="id21">[2]</a> having very similar data. If the heat of combustion
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a href="#id50"><span class="problematic" id="id20">[1]_</span></a>, with the secondary source
+‘NFPA 497 (2008)’ <a href="#id51"><span class="problematic" id="id21">[2]_</span></a> having very similar data. If the heat of combustion
 is provided, the estimation method <cite>Suzuki_LFL</cite> can be used. If the atoms
 of the molecule are available, the method <cite>Crowl_Louvar_LFL</cite> can be used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Hc</strong><span class="classifier">float, optional</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
-</dd>
-<dt><strong>atoms</strong><span class="classifier">dict, optional</span></dt><dd><p>Dictionary of atoms and atom counts</p>
-</dd>
-<dt><strong>CASRN</strong><span class="classifier">string, optional</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit of the gas in an atmosphere at STP, [mole fraction]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain LFL with the
-given inputs</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-LFL_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-the Lower Flammability Limit for the desired chemical, and will return
-methods instead of Lower Flammability Limit.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r389e3d2e19f5-1"><span class="brackets"><a class="fn-backref" href="#id20">1</a></span></dt>
-<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
-Material characteristics for gas and vapour classification - Test
-methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
-<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
-</dd>
-<dt class="label" id="r389e3d2e19f5-2"><span class="brackets"><a class="fn-backref" href="#id21">2</a></span></dt>
-<dd><p>National Fire Protection Association. NFPA 497: Recommended
-Practice for the Classification of Flammable Liquids, Gases, or Vapors
-and of Hazardous. NFPA, 2008.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LFL</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
 <span class="go">0.012</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Hc</strong> (<em>float</em><em>, </em><em>optional</em>) – Heat of combustion of gas [J/mol]</p></li>
+<li><p><strong>atoms</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of atoms and atom counts</p></li>
+<li><p><strong>CASRN</strong> (<em>string</em><em>, </em><em>optional</em>) – CASRN [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>LFL</strong> (<em>float</em>) – Lower flammability limit of the gas in an atmosphere at STP, [mole fraction]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain LFL with the
+given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+LFL_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+the Lower Flammability Limit for the desired chemical, and will return
+methods instead of Lower Flammability Limit.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id22"><span class="brackets">1</span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="id23"><span class="brackets">2</span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -673,61 +643,56 @@ and of Hazardous. NFPA, 2008.</p>
 Upper Flammability Limit. Lookup is based on CASRNs. Two predictive methods
 are currently implemented. Will automatically select a data source to use
 if no Method is provided; returns None if the data is not available.</p>
-<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a class="reference internal" href="#r15190f070f52-1" id="id24">[1]</a>, with the secondary source
-‘NFPA 497 (2008)’ <a class="reference internal" href="#r15190f070f52-2" id="id25">[2]</a> having very similar data. If the heat of combustion
+<p>Prefered source is ‘IEC 60079-20-1 (2010)’ <a href="#id52"><span class="problematic" id="id24">[1]_</span></a>, with the secondary source
+‘NFPA 497 (2008)’ <a href="#id53"><span class="problematic" id="id25">[2]_</span></a> having very similar data. If the heat of combustion
 is provided, the estimation method <cite>Suzuki_UFL</cite> can be used. If the atoms
 of the molecule are available, the method <cite>Crowl_Louvar_UFL</cite> can be used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Hc</strong><span class="classifier">float, optional</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
-</dd>
-<dt><strong>atoms</strong><span class="classifier">dict, optional</span></dt><dd><p>Dictionary of atoms and atom counts</p>
-</dd>
-<dt><strong>CASRN</strong><span class="classifier">string, optional</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit of the gas in an atmosphere at STP, [mole fraction]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain UFL with the
-given inputs</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-UFL_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-the Upper Flammability Limit for the desired chemical, and will return
-methods instead of Upper Flammability Limit.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r15190f070f52-1"><span class="brackets"><a class="fn-backref" href="#id24">1</a></span></dt>
-<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
-Material characteristics for gas and vapour classification - Test
-methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
-<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
-</dd>
-<dt class="label" id="r15190f070f52-2"><span class="brackets"><a class="fn-backref" href="#id25">2</a></span></dt>
-<dd><p>National Fire Protection Association. NFPA 497: Recommended
-Practice for the Classification of Flammable Liquids, Gases, or Vapors
-and of Hazardous. NFPA, 2008.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">UFL</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;71-43-2&#39;</span><span class="p">)</span>
 <span class="go">0.086</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Hc</strong> (<em>float</em><em>, </em><em>optional</em>) – Heat of combustion of gas [J/mol]</p></li>
+<li><p><strong>atoms</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of atoms and atom counts</p></li>
+<li><p><strong>CASRN</strong> (<em>string</em><em>, </em><em>optional</em>) – CASRN [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>UFL</strong> (<em>float</em>) – Upper flammability limit of the gas in an atmosphere at STP, [mole fraction]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain UFL with the
+given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+UFL_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+the Upper Flammability Limit for the desired chemical, and will return
+methods instead of Upper Flammability Limit.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id26"><span class="brackets">1</span></dt>
+<dd><p>IEC. “IEC 60079-20-1:2010 Explosive atmospheres - Part 20-1:
+Material characteristics for gas and vapour classification - Test
+methods and data.” <a class="reference external" href="https://webstore.iec.ch/publication/635">https://webstore.iec.ch/publication/635</a>. See also
+<a class="reference external" href="https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf">https://law.resource.org/pub/in/bis/S05/is.iec.60079.20.1.2010.pdf</a></p>
+</dd>
+<dt class="label" id="id27"><span class="brackets">2</span></dt>
+<dd><p>National Fire Protection Association. NFPA 497: Recommended
+Practice for the Classification of Flammable Liquids, Gases, or Vapors
+and of Hazardous. NFPA, 2008.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -747,7 +712,7 @@ Prentice Hall, 2001.</p>
 <dl class="function">
 <dt id="thermosteam.functors.safety.Suzuki_LFL">
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Suzuki_LFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Suzuki_LFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Suzuki_LFL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates lower flammability limit, using the Suzuki <a class="reference internal" href="#r7577fec27c56-1" id="id28">[1]</a> correlation.
+<dd><p>Calculates lower flammability limit, using the Suzuki <a href="#id54"><span class="problematic" id="id28">[1]_</span></a> correlation.
 Uses heat of combustion only.</p>
 <p>The lower flammability limit of a gas is air is:</p>
 <div class="math notranslate nohighlight">
@@ -755,16 +720,13 @@ Uses heat of combustion only.</p>
 \Delta H_c^{\circ} + 0.0538\Delta H_c^{\circ 2} + 1.80\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>Hc</strong> (<em>float</em>) – Heat of combustion of gas [J/mol]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit, mole fraction [-]</p>
+<dd class="field-even"><p><strong>LFL</strong> – Lower flammability limit, mole fraction [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -777,43 +739,40 @@ No sample calculation provided with the article. However, the equation is
 straightforward.</p>
 <p>Limits of equations’s validity are -6135596 J where it predicts a
 LFL of 0, and -48322129 J where it predicts a LFL of 1.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r7577fec27c56-1"><span class="brackets"><a class="fn-backref" href="#id28">1</a></span></dt>
-<dd><p>Suzuki, Takahiro. “Note: Empirical Relationship between Lower
-Flammability Limits and Standard Enthalpies of Combustion of Organic
-Compounds.” Fire and Materials 18, no. 5 (September 1, 1994): 333-36.
-doi:10.1002/fam.810180509.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Pentane, 1.5 % LFL in literature</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suzuki_LFL</span><span class="p">(</span><span class="o">-</span><span class="mi">3536600</span><span class="p">)</span>
 <span class="go">0.014276107095811815</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id29"><span class="brackets">1</span></dt>
+<dd><p>Suzuki, Takahiro. “Note: Empirical Relationship between Lower
+Flammability Limits and Standard Enthalpies of Combustion of Organic
+Compounds.” Fire and Materials 18, no. 5 (September 1, 1994): 333-36.
+doi:10.1002/fam.810180509.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.safety.Suzuki_UFL">
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Suzuki_UFL</code><span class="sig-paren">(</span><em class="sig-param">Hc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Suzuki_UFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Suzuki_UFL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates upper flammability limit, using the Suzuki <a class="reference internal" href="#r99d928d6b280-1" id="id30">[1]</a> correlation.
+<dd><p>Calculates upper flammability limit, using the Suzuki <a href="#id55"><span class="problematic" id="id30">[1]_</span></a> correlation.
 Uses heat of combustion only.</p>
 <p>The upper flammability limit of a gas is air is:</p>
 <div class="math notranslate nohighlight">
 \[\text{UFL} = 6.3\Delta H_c^\circ + 0.567\Delta H_c^{\circ 2} + 23.5\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Hc</strong><span class="classifier">float</span></dt><dd><p>Heat of combustion of gas [J/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>Hc</strong> (<em>float</em>) – Heat of combustion of gas [J/mol]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit, mole fraction</p>
+<dd class="field-even"><p><strong>UFL</strong> – Upper flammability limit, mole fraction</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -827,111 +786,105 @@ r^2 = 0.989
 Sample calculations provided for all chemicals, both this method and
 High and Danner. Examples are from the article.</p>
 <p>Predicts a UFL of 1 at 7320190 J and a UFL of 0 at -5554160 J.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r99d928d6b280-1"><span class="brackets"><a class="fn-backref" href="#id30">1</a></span></dt>
-<dd><p>Suzuki, Takahiro, and Kozo Koide. “Short Communication: Correlation
-between Upper Flammability Limits and Thermochemical Properties of
-Organic Compounds.” Fire and Materials 18, no. 6 (November 1, 1994):
-393-97. doi:10.1002/fam.810180608.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Pentane, literature 7.8% UFL</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suzuki_UFL</span><span class="p">(</span><span class="o">-</span><span class="mi">3536600</span><span class="p">)</span>
 <span class="go">0.0831119493052</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id31"><span class="brackets">1</span></dt>
+<dd><p>Suzuki, Takahiro, and Kozo Koide. “Short Communication: Correlation
+between Upper Flammability Limits and Thermochemical Properties of
+Organic Compounds.” Fire and Materials 18, no. 6 (November 1, 1994):
+393-97. doi:10.1002/fam.810180608.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.safety.Crowl_Louvar_LFL">
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Crowl_Louvar_LFL</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Crowl_Louvar_LFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Crowl_Louvar_LFL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates lower flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r104a4ec74e2d-1" id="id32">[1]</a>
+<dd><p>Calculates lower flammability limit, using the Crowl-Louvar <a href="#id56"><span class="problematic" id="id32">[1]_</span></a>
 correlation. Uses molecular formula only.</p>
 <p>The lower flammability limit of a gas is air is:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{LFL} = \frac{0.55}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>atoms</strong> (<em>dict</em>) – Dictionary of atoms and atom counts</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>LFL</strong><span class="classifier">float</span></dt><dd><p>Lower flammability limit, mole fraction</p>
+<dd class="field-even"><p><strong>LFL</strong> – Lower flammability limit, mole fraction</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Coefficient of 0.55 taken from <a class="reference internal" href="#r104a4ec74e2d-2" id="id33">[2]</a></p>
+<p>Coefficient of 0.55 taken from <a href="#id57"><span class="problematic" id="id33">[2]_</span></a></p>
+<p class="rubric">Examples</p>
+<p>Hexane, example from <a href="#id58"><span class="problematic" id="id34">[1]_</span></a>, lit. 1.2 %</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_LFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+<span class="go">0.011899610558199915</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r104a4ec74e2d-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id32">1</a>,<a href="#id36">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id35"><span class="brackets">1</span></dt>
 <dd><p>Crowl, Daniel A., and Joseph F. Louvar. Chemical Process Safety:
 Fundamentals with Applications. 2E. Upper Saddle River, N.J:
 Prentice Hall, 2001.</p>
 </dd>
-<dt class="label" id="r104a4ec74e2d-2"><span class="brackets"><a class="fn-backref" href="#id33">2</a></span></dt>
+<dt class="label" id="id36"><span class="brackets">2</span></dt>
 <dd><p>Jones, G. W. “Inflammation Limits and Their Practical Application
 in Hazardous Industrial Operations.” Chemical Reviews 22, no. 1
 (February 1, 1938): 1-26. doi:10.1021/cr60071a001</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>Hexane, example from <a class="reference internal" href="#r104a4ec74e2d-1" id="id36">[1]</a>, lit. 1.2 %</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_LFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
-<span class="go">0.011899610558199915</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.safety.Crowl_Louvar_UFL">
 <code class="sig-prename descclassname">thermosteam.functors.safety.</code><code class="sig-name descname">Crowl_Louvar_UFL</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/safety.html#Crowl_Louvar_UFL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.safety.Crowl_Louvar_UFL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates upper flammability limit, using the Crowl-Louvar <a class="reference internal" href="#r33696c8df0a1-1" id="id37">[1]</a>
+<dd><p>Calculates upper flammability limit, using the Crowl-Louvar <a href="#id59"><span class="problematic" id="id37">[1]_</span></a>
 correlation. Uses molecular formula only.</p>
 <p>The upper flammability limit of a gas is air is:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}C_mH_xO_y + zO_2 \to mCO_2 + \frac{x}{2}H_2O\\\text{UFL} = \frac{3.5}{4.76m + 1.19x - 2.38y + 1}\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of atoms and atom counts</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>atoms</strong> (<em>dict</em>) – Dictionary of atoms and atom counts</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>UFL</strong><span class="classifier">float</span></dt><dd><p>Upper flammability limit, mole fraction</p>
+<dd class="field-even"><p><strong>UFL</strong> – Upper flammability limit, mole fraction</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Coefficient of 3.5 taken from <a class="reference internal" href="#r33696c8df0a1-2" id="id38">[2]</a></p>
+<p>Coefficient of 3.5 taken from <a href="#id60"><span class="problematic" id="id38">[2]_</span></a></p>
+<p class="rubric">Examples</p>
+<p>Hexane, example from <a href="#id61"><span class="problematic" id="id39">[1]_</span></a>, lit. 7.5 %</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_UFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+<span class="go">0.07572479446127219</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r33696c8df0a1-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id37">1</a>,<a href="#id41">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id40"><span class="brackets">1</span></dt>
 <dd><p>Crowl, Daniel A., and Joseph F. Louvar. Chemical Process Safety:
 Fundamentals with Applications. 2E. Upper Saddle River, N.J:
 Prentice Hall, 2001.</p>
 </dd>
-<dt class="label" id="r33696c8df0a1-2"><span class="brackets"><a class="fn-backref" href="#id38">2</a></span></dt>
+<dt class="label" id="id41"><span class="brackets">2</span></dt>
 <dd><p>Jones, G. W. “Inflammation Limits and Their Practical Application
 in Hazardous Industrial Operations.” Chemical Reviews 22, no. 1
 (February 1, 1938): 1-26. doi:10.1021/cr60071a001</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>Hexane, example from <a class="reference internal" href="#r33696c8df0a1-1" id="id41">[1]</a>, lit. 7.5 %</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Crowl_Louvar_UFL</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
-<span class="go">0.07572479446127219</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

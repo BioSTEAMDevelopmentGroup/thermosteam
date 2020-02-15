@@ -176,8 +176,18 @@
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">SolverError</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;wegstein&#39;</span><span class="p">,</span> <span class="s1">&#39;conditional_wegstein&#39;</span><span class="p">,</span> 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;fixed_point&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;wegstein&#39;</span><span class="p">,</span> <span class="s1">&#39;conditional_wegstein&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;aitken&#39;</span><span class="p">,</span> <span class="s1">&#39;conditional_aitken&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">fixed_point</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterative fixed-point solver.&quot;&quot;&quot;</span>
+    <span class="n">np_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span>
+    <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np_abs</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">xtol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> <span class="k">return</span> <span class="n">x1</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">x1</span>
+    <span class="k">raise</span> <span class="n">SolverError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;failed to converge after </span><span class="si">{maxiter}</span><span class="s1"> iterations&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">wegstein</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Iterative Wegstein solver.&quot;&quot;&quot;</span>

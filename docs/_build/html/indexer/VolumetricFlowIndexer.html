@@ -210,16 +210,12 @@
 <dd><p>Create a VolumetricFlowIndexer that can index a multi-phase, 2d-array given the phase and chemical IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>phases</strong><span class="classifier">tuple[‘s’, ‘l’, ‘g’, ‘S’, ‘L’, ‘G’]</span></dt><dd><p>Phases of data rows.</p>
-</dd>
-<dt><strong>units</strong><span class="classifier">str</span></dt><dd><p>Units of measure of input data.</p>
-</dd>
-<dt><strong>chemicals</strong><span class="classifier">Chemicals</span></dt><dd><p>Required to define the chemicals that are present.</p>
-</dd>
-<dt><strong>**phase_data</strong><span class="classifier">tuple[str, float]</span></dt><dd><p>phase-(ID, value) pairs</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phases</strong> (<em>tuple</em><em>[</em><em>'s'</em><em>, </em><em>'l'</em><em>, </em><em>'g'</em><em>, </em><em>'S'</em><em>, </em><em>'L'</em><em>, </em><em>'G'</em><em>]</em>) – Phases of data rows.</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – Units of measure of input data.</p></li>
+<li><p><strong>chemicals</strong> (<a class="reference internal" href="../Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals"><em>Chemicals</em></a>) – Required to define the chemicals that are present.</p></li>
+<li><p><strong>**phase_data</strong> (<em>tuple</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – phase-(ID, value) pairs</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

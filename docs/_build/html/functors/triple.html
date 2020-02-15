@@ -230,33 +230,27 @@
 <dd><p>This function handles the retrieval of a chemical’s triple temperature.
 Lookup is based on CASRNs. Will automatically select a data source to use
 if no Method is provided; returns None if the data is not available.</p>
-<p>Returns data from <a class="reference internal" href="#r62ce3a8ba7e2-1" id="id1">[1]</a>, or a chemical’s melting point if available.</p>
+<p>Returns data from <a href="#id5"><span class="problematic" id="id1">[1]_</span></a>, or a chemical’s melting point if available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Tt</strong><span class="classifier">float</span></dt><dd><p>Triple point temperature, [K]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Tt with the
-given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Tt</strong> (<em>float</em>) – Triple point temperature, [K]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Tt with the
+given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Tt_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Tt_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 the Tt for the desired chemical, and will return methods
-instead of the Tt</p>
-</dd>
-</dl>
+instead of the Tt</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -264,20 +258,20 @@ instead of the Tt</p>
 Accordingly, this should be more than good enough for engineering
 applications.</p>
 <p>Temperatures are on the ITS-68 scale.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r62ce3a8ba7e2-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. “Triple-Points
-of Low Melting Substances and Their Use in Cryogenic Work.” Cryogenics
-21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Ammonia</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tt</span><span class="p">(</span><span class="s1">&#39;7664-41-7&#39;</span><span class="p">)</span>
 <span class="go">195.47999999999999</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. “Triple-Points
+of Low Melting Substances and Their Use in Cryogenic Work.” Cryogenics
+21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -286,50 +280,45 @@ of Low Melting Substances and Their Use in Cryogenic Work.” Cryogenics
 <dd><p>This function handles the retrieval of a chemical’s triple pressure.
 Lookup is based on CASRNs. Will automatically select a data source to use
 if no Method is provided; returns None if the data is not available.</p>
-<p>Returns data from <a class="reference internal" href="#rb4272565f0a3-1" id="id3">[1]</a>, or attempts to calculate the vapor pressure at the
+<p>Returns data from <a href="#id6"><span class="problematic" id="id3">[1]_</span></a>, or attempts to calculate the vapor pressure at the
 triple temperature, if data is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Pt</strong><span class="classifier">float</span></dt><dd><p>Triple point pressure, [Pa]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Pt with the
-given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Pt</strong> (<em>float</em>) – Triple point pressure, [Pa]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Pt with the
+given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Pt_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Pt_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 the Pt for the desired chemical, and will return methods
-instead of the Pt</p>
+instead of the Pt</p></li>
+</ul>
 </dd>
 </dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rb4272565f0a3-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p>Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. “Triple-Points
-of Low Melting Substances and Their Use in Cryogenic Work.” Cryogenics
-21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <p class="rubric">Examples</p>
 <p>Ammonia</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pt</span><span class="p">(</span><span class="s1">&#39;7664-41-7&#39;</span><span class="p">)</span>
 <span class="go">6079.5</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. “Triple-Points
+of Low Melting Substances and Their Use in Cryogenic Work.” Cryogenics
+21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

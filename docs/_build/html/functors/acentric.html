@@ -253,129 +253,119 @@ accurate vapor pressure data for direct calculation.</p>
 returns None if the data is not available and cannot be calculated.</p>
 <div class="math notranslate nohighlight">
 \[\omega \equiv -\log_{10}\left[\lim_{T/T_c=0.7}(P^{sat}/P_c)\right]-1.0\]</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">omega</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">0.635</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of compound</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain omega with the given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor of compound</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain omega with the given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>The method name to use. Accepted methods are ‘PSRK’, ‘PD’, ‘YAWS’, 
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Accepted methods are ‘PSRK’, ‘PD’, ‘YAWS’,
 ‘LK’, and ‘DEFINITION’. All valid values are also held in the list
-omega_methods.</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+omega_methods.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 omega for the desired chemical, and will return methods instead of
-omega</p>
-</dd>
-<dt><strong>IgnoreMethods</strong><span class="classifier">list, optional</span></dt><dd><p>A list of methods to ignore in obtaining the full list of methods,
-useful for for performance reasons and ignoring inaccurate methods</p>
-</dd>
-</dl>
+omega</p></li>
+<li><p><strong>IgnoreMethods</strong> (<em>list, optional</em>) – A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>A total of five sources are available for this function. They are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>‘PSRK’, a compillation of experimental and estimated data published 
-in the Appendix of <a class="reference internal" href="#r645944b61468-2" id="id1">[2]</a>, the fourth revision of the PSRK model.</p></li>
+<li><p>‘PSRK’, a compillation of experimental and estimated data published
+in the Appendix of <a href="#id15"><span class="problematic" id="id1">[2]_</span></a>, the fourth revision of the PSRK model.</p></li>
 <li><p>‘PD’, an older compillation of
-data published in (Passut &amp; Danner, 1973) <a class="reference internal" href="#r645944b61468-3" id="id2">[3]</a>.</p></li>
+data published in (Passut &amp; Danner, 1973) <a class="footnote-reference brackets" href="#id7" id="id2">3</a>.</p></li>
 <li><p>‘YAWS’, a large compillation of data from a
-variety of sources; no data points are sourced in the work of <a class="reference internal" href="#r645944b61468-4" id="id3">[4]</a>.</p></li>
+variety of sources; no data points are sourced in the work of <a class="footnote-reference brackets" href="#id8" id="id3">4</a>.</p></li>
 <li><p>‘LK’, a estimation method for hydrocarbons.</p></li>
 <li><p>‘DEFINITION’, based on the definition of omega as
-presented in <a class="reference internal" href="#r645944b61468-1" id="id4">[1]</a>, using vapor pressure data.</p></li>
+presented in <a href="#id16"><span class="problematic" id="id4">[1]_</span></a>, using vapor pressure data.</p></li>
 </ul>
 </div></blockquote>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r645944b61468-1"><span class="brackets"><a class="fn-backref" href="#id4">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
 <dd><p>Pitzer, K. S., D. Z. Lippmann, R. F. Curl, C. M. Huggins, and
 D. E. Petersen: The Volumetric and Thermodynamic Properties of Fluids.
 II. Compressibility Factor, Vapor Pressure and Entropy of Vaporization.
 J. Am. Chem. Soc., 77: 3433 (1955).</p>
 </dd>
-<dt class="label" id="r645944b61468-2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dt class="label" id="id6"><span class="brackets">2</span></dt>
 <dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
 Jürgen Gmehling. “PSRK Group Contribution Equation of State:
 Comprehensive Revision and Extension IV, Including Critical Constants
 and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
 227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
 </dd>
-<dt class="label" id="r645944b61468-3"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
 <dd><p>Passut, Charles A., and Ronald P. Danner. “Acentric Factor. A
 Valuable Correlating Parameter for the Properties of Hydrocarbons.”
 Industrial &amp; Engineering Chemistry Process Design and Development 12,
 no. 3 (July 1, 1973): 365-68. doi:10.1021/i260047a026.</p>
 </dd>
-<dt class="label" id="r645944b61468-4"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
 <dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
 Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
 Publishing, 2014.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">omega</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
-<span class="go">0.635</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.acentric.LK_omega">
 <code class="sig-prename descclassname">thermosteam.functors.acentric.</code><code class="sig-name descname">LK_omega</code><span class="sig-paren">(</span><em class="sig-param">Tb</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/acentric.html#LK_omega"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.acentric.LK_omega" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimates the acentric factor of a fluid using a correlation in <a class="reference internal" href="#r43e80b2758ca-1" id="id9">[1]</a>.</p>
+<dd><p>Estimates the acentric factor of a fluid using a correlation in <a href="#id17"><span class="problematic" id="id9">[1]_</span></a>.</p>
 <div class="math notranslate nohighlight">
 \[\omega = \frac{\ln P_{br}^{sat} - 5.92714 + 6.09648/T_{br} + 1.28862
 \ln T_{br} -0.169347T_{br}^6}
 {15.2518 - 15.6875/T_{br} - 13.4721 \ln T_{br} + 0.43577 T_{br}^6}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tb</strong><span class="classifier">float</span></dt><dd><p>Boiling temperature of the fluid [K]</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of the fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tb</strong> (<em>float</em>) – Boiling temperature of the fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of the fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of the fluid [Pa]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of the fluid [-]</p>
+<dd class="field-even"><p><strong>omega</strong> – Acentric factor of the fluid [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Internal units are atmosphere and Kelvin.
 Example value from Reid (1987). Using ASPEN V8.4, LK method gives 0.325595.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r43e80b2758ca-1"><span class="brackets"><a class="fn-backref" href="#id9">1</a></span></dt>
-<dd><p>Lee, Byung Ik, and Michael G. Kesler. “A Generalized Thermodynamic
-Correlation Based on Three-Parameter Corresponding States.” AIChE Journal
-21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Isopropylbenzene</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LK_omega</span><span class="p">(</span><span class="mf">425.6</span><span class="p">,</span> <span class="mf">631.1</span><span class="p">,</span> <span class="mf">32.1E5</span><span class="p">)</span>
 <span class="go">0.32544249926397856</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id10"><span class="brackets">1</span></dt>
+<dd><p>Lee, Byung Ik, and Michael G. Kesler. “A Generalized Thermodynamic
+Correlation Based on Three-Parameter Corresponding States.” AIChE Journal
+21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -390,37 +380,30 @@ returns None if the data is not available and cannot be calculated.</p>
 \[x = \log P_r|_{T_r=0.6} + 1.70 \omega + 1.552\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of fluid [Pa]</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor of the fluid [-]</p>
-</dd>
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd></dd>
-<dt><strong>P_at_Tr_sixtenths</strong><span class="classifier">float</span></dt><dd><p>Pressure at Tr=0.6</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor of the fluid [-]</p></li>
+<li><p><strong>CASRN</strong> (<em>string</em>) – </p></li>
+<li><p><strong>P_at_Tr_sixtenths</strong> (<em>float</em>) – Pressure at Tr=0.6</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>factor</strong><span class="classifier">float</span></dt><dd><p>Stiel polar factor of compound</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Stiel polar factor with the
-given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>factor</strong> (<em>float</em>) – Stiel polar factor of compound</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Stiel polar factor with the
+given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>The method name to use. Only ‘DEFINITION’ is accepted so far.
-All valid values are also held in the list Stiel_polar_methods.</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Only ‘DEFINITION’ is accepted so far.
+All valid values are also held in the list Stiel_polar_methods.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
 Stiel-polar factor for the desired chemical, and will return methods
-instead of stiel-polar factor</p>
-</dd>
-</dl>
+instead of stiel-polar factor</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -428,29 +411,29 @@ instead of stiel-polar factor</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>‘DEFINITION’, based on the definition of
-Stiel Polar Factor presented in <a class="reference internal" href="#r35b57f6b7e1f-1" id="id11">[1]</a>, using vapor pressure data.</p></li>
+Stiel Polar Factor presented in <a href="#id18"><span class="problematic" id="id11">[1]_</span></a>, using vapor pressure data.</p></li>
 </ul>
 </div></blockquote>
-<p>A few points have also been published in <a class="reference internal" href="#r35b57f6b7e1f-2" id="id12">[2]</a>, which may be used for
+<p>A few points have also been published in <a href="#id19"><span class="problematic" id="id12">[2]_</span></a>, which may be used for
 comparison. Currently this is only used for a surface tension correlation.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r35b57f6b7e1f-1"><span class="brackets"><a class="fn-backref" href="#id11">1</a></span></dt>
-<dd><p>Halm, Roland L., and Leonard I. Stiel. “A Fourth Parameter for the
-Vapor Pressure and Entropy of Vaporization of Polar Fluids.” AIChE
-Journal 13, no. 2 (1967): 351-355. doi:10.1002/aic.690130228.</p>
-</dd>
-<dt class="label" id="r35b57f6b7e1f-2"><span class="brackets"><a class="fn-backref" href="#id12">2</a></span></dt>
-<dd><p>D, Kukoljac Miloš, and Grozdanić Dušan K. “New Values of the
-Polarity Factor.” Journal of the Serbian Chemical Society 65, no. 12
-(January 1, 2000). <a class="reference external" href="http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf">http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf</a></p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StielPolar</span><span class="p">(</span><span class="mf">647.3</span><span class="p">,</span> <span class="mf">22048321.0</span><span class="p">,</span> <span class="mf">0.344</span><span class="p">,</span> <span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
 <span class="go">0.024581140348734376</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id13"><span class="brackets">1</span></dt>
+<dd><p>Halm, Roland L., and Leonard I. Stiel. “A Fourth Parameter for the
+Vapor Pressure and Entropy of Vaporization of Polar Fluids.” AIChE
+Journal 13, no. 2 (1967): 351-355. doi:10.1002/aic.690130228.</p>
+</dd>
+<dt class="label" id="id14"><span class="brackets">2</span></dt>
+<dd><p>D, Kukoljac Miloš, and Grozdanić Dušan K. “New Values of the
+Polarity Factor.” Journal of the Serbian Chemical Society 65, no. 12
+(January 1, 2000). <a class="reference external" href="http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf">http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

@@ -200,18 +200,29 @@ class VLE:
     V_tol = 0.00001
     
     def __call__(self, P=None, H=None, T=None, V=None, x=None, y=None):
-        """Perform vapor-liquid equilibrium.
+        """
+        Perform vapor-liquid equilibrium.
 
         Parameters
         ----------
+        P : float, optional
+            Operating pressure [Pa].
+        H : float, optional
+            Enthalpy [kJ/hr].
+        T : float, optional
+            Operating temperature [K].
+        V : float, optional
+            Molar vapor fraction.
+        x : float, optional
+            Molar composition of liquid (for binary mixtures).
+        y : float, optional
+            Molar composition of vapor (for binary mixtures).
         
-        Specify two:
-            * **P:** Operating pressure (Pa)
-            * **H:** Energy input (kJ/hr)
-            * **T:** Operating temperature (K)
-            * **V:** Molar vapor fraction
-            * **x:** Molar composition of liquid (for binary mixture)
-            * **y:** Molar composition of vapor (for binary mixture)
+        Notes
+        -----
+        You may only specify two of the following parameters: P, H, T, V, x, and y.
+        Additionally, If x or y is specified, the other parameter must be either
+        P or T (e.g., x and V is invalid).
         
         """
         ### Decide what kind of equilibrium to run ###

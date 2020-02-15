@@ -251,28 +251,22 @@ Returns None if the data is not available.</p>
 <p>Function has data for 571 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Hf</strong><span class="classifier">float</span></dt><dd><p>Standard-state heat of formation, [J/mol]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Hf with the given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Hf</strong> (<em>float</em>) – Standard-state heat of formation, [J/mol]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Hf with the given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Hf_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-Hf for the desired chemical, and will return methods instead of Hf</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Hf_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Hf for the desired chemical, and will return methods instead of Hf</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -280,24 +274,24 @@ Hf for the desired chemical, and will return methods instead of Hf</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>‘API_TDB’, a compilation of heats of formation of unspecified phase.
-Not the original data, but as reproduced in <a class="reference internal" href="#r3cfbd7a58ffb-1" id="id1">[1]</a>. Some chemicals with
+Not the original data, but as reproduced in <a href="#id6"><span class="problematic" id="id1">[1]_</span></a>. Some chemicals with
 duplicated CAS numbers were removed.</p></li>
 </ul>
 </div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">-241820.0</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r3cfbd7a58ffb-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
 <dd><p>Albahri, Tareq A., and Abdulla F. Aljasmi. “SGC Method for
 Predicting the Standard Enthalpy of Formation of Pure Compounds from
 Their Molecular Structures.” Thermochimica Acta 568
 (September 20, 2013): 46-60. doi:10.1016/j.tca.2013.06.020.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
-<span class="go">-241820.0</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -310,28 +304,22 @@ in it. Returns None if the data is not available.</p>
 <p>Function has data for 34 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Hfl</strong><span class="classifier">float</span></dt><dd><p>Liquid standard-state heat of formation, [J/mol]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Hf(l) with the given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Hfl</strong> (<em>float</em>) – Liquid standard-state heat of formation, [J/mol]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Hf(l) with the given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Hf_l_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-Hf(l) for the desired chemical, and will return methods instead of Hf(l)</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Hf_l_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Hf(l) for the desired chemical, and will return methods instead of Hf(l)</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -341,9 +329,14 @@ Hf(l) for the desired chemical, and will return methods instead of Hf(l)</p>
 <li><p>‘ATCT_L’, the Active Thermochemical Tables version 1.112.</p></li>
 </ul>
 </div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf_l</span><span class="p">(</span><span class="s1">&#39;67-56-1&#39;</span><span class="p">)</span>
+<span class="go">-238400.0</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r84c778c3dce2-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
 <dd><p>Ruscic, Branko, Reinhardt E. Pinzon, Gregor von Laszewski, Deepti
 Kodeboyina, Alexander Burcat, David Leahy, David Montoy, and Albert F.
 Wagner. “Active Thermochemical Tables: Thermochemistry for the 21st
@@ -351,11 +344,6 @@ Century.” Journal of Physics: Conference Series 16, no. 1
 (January 1, 2005): 561. doi:10.1088/1742-6596/16/1/078.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf_l</span><span class="p">(</span><span class="s1">&#39;67-56-1&#39;</span><span class="p">)</span>
-<span class="go">-238400.0</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -370,28 +358,22 @@ and ‘TRC’ for less accuracy but more chemicals.
 Function has data for approximately 2000 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>_Hfg</strong><span class="classifier">float</span></dt><dd><p>Gas phase heat of formation, [J/mol]</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain Hf(g) with the given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>_Hfg</strong> (<em>float</em>) – Gas phase heat of formation, [J/mol]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Hf(g) with the given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-Hf_g_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-Hf(g) for the desired chemical, and will return methods instead of Hf(g)</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Hf_g_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Hf(g) for the desired chemical, and will return methods instead of Hf(g)</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -402,27 +384,27 @@ Hf(g) for the desired chemical, and will return methods instead of Hf(g)</p>
 <li><p>‘TRC’, from a 1994 compilation.</p></li>
 </ul>
 </div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf_g</span><span class="p">(</span><span class="s1">&#39;67-56-1&#39;</span><span class="p">)</span>
+<span class="go">-200700.0</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r436f4475848b-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
 <dd><p>Ruscic, Branko, Reinhardt E. Pinzon, Gregor von Laszewski, Deepti
 Kodeboyina, Alexander Burcat, David Leahy, David Montoy, and Albert F.
 Wagner. “Active Thermochemical Tables: Thermochemistry for the 21st
 Century.” Journal of Physics: Conference Series 16, no. 1
 (January 1, 2005): 561. doi:10.1088/1742-6596/16/1/078.</p>
 </dd>
-<dt class="label" id="r436f4475848b-2"><span class="brackets">2</span></dt>
+<dt class="label" id="id5"><span class="brackets">2</span></dt>
 <dd><p>Frenkelʹ, M. L, Texas Engineering Experiment Station, and
 Thermodynamics Research Center. Thermodynamics of Organic Compounds in
 the Gas State. College Station, Tex.: Thermodynamics Research Center,
 1994.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Hf_g</span><span class="p">(</span><span class="s1">&#39;67-56-1&#39;</span><span class="p">)</span>
-<span class="go">-200700.0</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

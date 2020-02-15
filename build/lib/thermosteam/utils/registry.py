@@ -23,15 +23,13 @@ class Registry:
     
     def __setitem__(self, ID, obj):
         """Register object."""
-        if ID:
-            assert isinstance(ID, str), f"ID must be a string, not a '{type(ID).__name__}' object"
-            assert ID[0].isalpha(), "ID must start with a letter"
-            ID_words = ID.split('_')
-            assert all(word.isalnum() for word in ID_words), (
-                    'ID may only contain letters, numbers, and/or underscores; '
-                    'no special characters or spaces')
-            self.__dict__[ID] = obj
-        obj._ID = ID
+        assert isinstance(ID, str), f"ID must be a string, not a '{type(ID).__name__}' object"
+        assert ID[0].isalpha(), "ID must start with a letter"
+        ID_words = ID.split('_')
+        assert all(word.isalnum() for word in ID_words), (
+                'ID may only contain letters, numbers, and/or underscores; '
+                'no special characters or spaces')
+        self.__dict__[ID] = obj
     
     def __repr__(self):
         if self.__dict__:

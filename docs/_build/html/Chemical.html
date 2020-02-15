@@ -194,13 +194,12 @@
 <dl class="class">
 <dt id="thermosteam.Chemical">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">Chemical</code><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a Chemical object which contains basic information such as 
+<dd><p>Creates a Chemical object which contains basic information such as
 molecular weight and the structure of the species, as well as thermodynamic
 and transport properties as a function of temperature and pressure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><dl class="simple">
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – <dl class="simple">
 <dt>One of the following [-]:</dt><dd><ul class="simple">
 <li><p>Name, in IUPAC form or common form or a synonym registered in PubChem</p></li>
 <li><p>InChI name, prefixed by ‘InChI=1S/’ or ‘InChI=1/’</p></li>
@@ -211,8 +210,7 @@ and transport properties as a function of temperature and pressure.</p>
 </ul>
 </dd>
 </dl>
-</dd>
-</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -220,7 +218,7 @@ and transport properties as a function of temperature and pressure.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize with an identifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># (e.g. by name, CAS, InChI...)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Chemical: Water (phase_ref=&#39;l&#39;)</span>
 <span class="go">[Names]  CAS: 7732-18-5</span>
@@ -284,7 +282,7 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">0.07205503890847455</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Molar volume (m^3/mol)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
-<span class="go">1.7970632558091718e-05</span>
+<span class="go">1.7970929501497658e-05</span>
 </pre></div>
 </div>
 <p>Note that the reference state of all chemicals is 25 degC and 1 atm:</p>
@@ -374,10 +372,26 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">[9] Edalat</span>
 </pre></div>
 </div>
+<p>The <cite>models</cite> object is a <cite>deque</cite> for easier management of model order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="go">[0] Wagner_McGraw</span>
+<span class="go">[1] Antoine</span>
+<span class="go">[2] DIPPR_EQ101</span>
+<span class="go">[3] Wagner</span>
+<span class="go">[4] Boiling_Critical_Relation</span>
+<span class="go">[5] Lee_Kesler</span>
+<span class="go">[6] Ambrose_Walton</span>
+<span class="go">[7] Sanjari</span>
+<span class="go">[8] Edalat</span>
+<span class="go">[9] User_antoine_model</span>
+</pre></div>
+</div>
 <p>The <cite>model</cite> method is a high level interface that even lets you create a constant model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
 <span class="gp">... </span><span class="c1"># Model is appended at the end by default</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">ConstantThermoModel: Constant</span>
 <span class="go"> value: 1.687e-05</span>
@@ -391,20 +405,441 @@ and transport properties as a function of temperature and pressure.</p>
 <p class="admonition-title">Note</p>
 <p>Because no bounds were given, the model assumes it is valid across all temperatures and pressures.</p>
 </div>
+<dl class="attribute">
+<dt id="thermosteam.Chemical.InChI">
+<code class="sig-name descname">InChI</code><a class="headerlink" href="#thermosteam.Chemical.InChI" title="Permalink to this definition">¶</a></dt>
+<dd><p>IUPAC International Chemical Identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.InChI_key">
+<code class="sig-name descname">InChI_key</code><a class="headerlink" href="#thermosteam.Chemical.InChI_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>IUPAC International Chemical Identifier shorthand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.common_name">
+<code class="sig-name descname">common_name</code><a class="headerlink" href="#thermosteam.Chemical.common_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Common name identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.iupac_name">
+<code class="sig-name descname">iupac_name</code><a class="headerlink" href="#thermosteam.Chemical.iupac_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard name as defined by IUPAC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.pubchemid">
+<code class="sig-name descname">pubchemid</code><a class="headerlink" href="#thermosteam.Chemical.pubchemid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chemical identifier as defined by PubMed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.smiles">
+<code class="sig-name descname">smiles</code><a class="headerlink" href="#thermosteam.Chemical.smiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chemical SMILES formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Dortmund">
+<code class="sig-name descname">Dortmund</code><a class="headerlink" href="#thermosteam.Chemical.Dortmund" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary-like object with functional group numerical
+identifiers as keys and the number of groups as values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>DortmundGroupCounts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.UNIFAC">
+<code class="sig-name descname">UNIFAC</code><a class="headerlink" href="#thermosteam.Chemical.UNIFAC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary-like object with functional group numerical
+identifiers as keys and the number of groups as values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>UNIFACGroupCounts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.PSRK">
+<code class="sig-name descname">PSRK</code><a class="headerlink" href="#thermosteam.Chemical.PSRK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary-like object with functional group numerical
+identifiers as keys and the number of groups as values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>PSRKGroupCounts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.mu">
+<code class="sig-name descname">mu</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynamic viscosity functor [Pa*s].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.kappa">
+<code class="sig-name descname">kappa</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.kappa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Thermal conductivity functor [W/m/K].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.V">
+<code class="sig-name descname">V</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.V" title="Permalink to this definition">¶</a></dt>
+<dd><p>Molar volume functor [m^3/mol].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Cn">
+<code class="sig-name descname">Cn</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.Cn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Molar heat capacity functor [J/mol/K].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Psat">
+<code class="sig-name descname">Psat</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.Psat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vapor pressure functor [Pa].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Hvap">
+<code class="sig-name descname">Hvap</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.Hvap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of vaporization functor [J/mol]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.sigma">
+<code class="sig-name descname">sigma</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.sigma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surface tension functor [N/m].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.epsilon">
+<code class="sig-name descname">epsilon</code><a class="headerlink" href="#thermosteam.Chemical.epsilon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative permitivity functor [-]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.S">
+<code class="sig-name descname">S</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.S" title="Permalink to this definition">¶</a></dt>
+<dd><p>Entropy functor [J/mol].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.H">
+<code class="sig-name descname">H</code><span class="sig-paren">(</span><em class="sig-param">phase</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy functor [J/mol].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.S_excess">
+<code class="sig-name descname">S_excess</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.S_excess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Excess entropy functor [J/mol].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.H_excess">
+<code class="sig-name descname">H_excess</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.Chemical.H_excess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Excess enthalpy functor [J/mol].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.phase_ref">
+<code class="sig-name descname">phase_ref</code><a class="headerlink" href="#thermosteam.Chemical.phase_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phase at 298 K and 101325 Pa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>{‘s’, ‘l’, ‘g’}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.MW">
+<code class="sig-name descname">MW</code><a class="headerlink" href="#thermosteam.Chemical.MW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Molecular weight [g/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Tm">
+<code class="sig-name descname">Tm</code><a class="headerlink" href="#thermosteam.Chemical.Tm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal melting temperature [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Tb">
+<code class="sig-name descname">Tb</code><a class="headerlink" href="#thermosteam.Chemical.Tb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal boiling temperature [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Tt">
+<code class="sig-name descname">Tt</code><a class="headerlink" href="#thermosteam.Chemical.Tt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triple point temperature [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Tc">
+<code class="sig-name descname">Tc</code><a class="headerlink" href="#thermosteam.Chemical.Tc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Critical point temperature [K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Pt">
+<code class="sig-name descname">Pt</code><a class="headerlink" href="#thermosteam.Chemical.Pt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triple point pressure [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Pc">
+<code class="sig-name descname">Pc</code><a class="headerlink" href="#thermosteam.Chemical.Pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Critical point pressure [Pa].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Vc">
+<code class="sig-name descname">Vc</code><a class="headerlink" href="#thermosteam.Chemical.Vc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Critical point molar volume [m^3/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Zc">
+<code class="sig-name descname">Zc</code><a class="headerlink" href="#thermosteam.Chemical.Zc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Critical point molar volume [m^3/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Hf">
+<code class="sig-name descname">Hf</code><a class="headerlink" href="#thermosteam.Chemical.Hf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of formation [J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Hc">
+<code class="sig-name descname">Hc</code><a class="headerlink" href="#thermosteam.Chemical.Hc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of combustion [J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Hfus">
+<code class="sig-name descname">Hfus</code><a class="headerlink" href="#thermosteam.Chemical.Hfus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of fusion [J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.Hsub">
+<code class="sig-name descname">Hsub</code><a class="headerlink" href="#thermosteam.Chemical.Hsub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of sublimation [J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#thermosteam.Chemical.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accentric factor [-].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.dipole">
+<code class="sig-name descname">dipole</code><a class="headerlink" href="#thermosteam.Chemical.dipole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dipole moment [Debye].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.StielPolar">
+<code class="sig-name descname">StielPolar</code><a class="headerlink" href="#thermosteam.Chemical.StielPolar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stiel Polar factor [-].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.similarity_variable">
+<code class="sig-name descname">similarity_variable</code><a class="headerlink" href="#thermosteam.Chemical.similarity_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similarity variable [-].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.iscyclic_aliphatic">
+<code class="sig-name descname">iscyclic_aliphatic</code><a class="headerlink" href="#thermosteam.Chemical.iscyclic_aliphatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the chemical is cyclic-aliphatic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.eos">
+<code class="sig-name descname">eos</code><a class="headerlink" href="#thermosteam.Chemical.eos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance for solving equations of state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.eos_1atm">
+<code class="sig-name descname">eos_1atm</code><a class="headerlink" href="#thermosteam.Chemical.eos_1atm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance for solving equations of state at 1 atm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.T_ref">
+<code class="sig-name descname">T_ref</code><em class="property"> = 298.15</em><a class="headerlink" href="#thermosteam.Chemical.T_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Reference temperature in Kelvin</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.P_ref">
+<code class="sig-name descname">P_ref</code><em class="property"> = 101325.0</em><a class="headerlink" href="#thermosteam.Chemical.P_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Reference pressure in Pascal</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.H_ref">
+<code class="sig-name descname">H_ref</code><em class="property"> = 0.0</em><a class="headerlink" href="#thermosteam.Chemical.H_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Reference enthalpy in J/mol</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.S_ref">
+<code class="sig-name descname">S_ref</code><em class="property"> = 0.0</em><a class="headerlink" href="#thermosteam.Chemical.S_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Reference entropy in J/mol</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="thermosteam.Chemical.load_chemical">
-<code class="sig-name descname">load_chemical</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">CAS</em>, <em class="sig-param">eos=&lt;class 'thermosteam.functors.eos.PR'&gt;</em>, <em class="sig-param">phase_ref=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.load_chemical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.load_chemical" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_chemical</code><span class="sig-paren">(</span><em class="sig-param">CAS</em>, <em class="sig-param">eos=&lt;class 'thermosteam.functors.eos.PR'&gt;</em>, <em class="sig-param">phase_ref=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.load_chemical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.load_chemical" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load all chemical properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CAS</strong><span class="classifier">str</span></dt><dd><p>CAS number of chemical to load.</p>
-</dd>
-<dt><strong>eos</strong><span class="classifier">optional</span></dt><dd><p>Equation of state. The default is Peng Robinson.</p>
-</dd>
-<dt><strong>phase_ref</strong><span class="classifier">str, optional</span></dt><dd><p>Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CAS</strong> (<em>str</em>) – CAS number of chemical to load.</p></li>
+<li><p><strong>eos</strong> (<em>optional</em>) – Equation of state. The default is Peng Robinson.</p></li>
+<li><p><strong>phase_ref</strong> (<em>str</em><em>, </em><em>optional</em>) – Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -423,32 +858,29 @@ and transport properties as a function of temperature and pressure.</p>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.Tsat">
-<code class="sig-name descname">Tsat</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">P</em>, <em class="sig-param">Tguess=None</em>, <em class="sig-param">Tmin=None</em>, <em class="sig-param">Tmax=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.Tsat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.Tsat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">Tsat</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">Tguess=None</em>, <em class="sig-param">Tmin=None</em>, <em class="sig-param">Tmax=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.Tsat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.Tsat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the saturated temperature (in Kelvin) given the pressure (in Pascal).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em>, <em class="sig-param">CAS=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">ID</em>, <em class="sig-param">CAS=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the chemical with a new ID.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.default">
-<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">slots=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">slots=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default all <cite>slots</cite> with the chemical properties of water. If no <cite>slots</cite> given, all essential chemical properties that are missing are defaulted. <cite>slots</cite> which are still missing are returned as set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>slots</strong><span class="classifier">Iterable[str], optional</span></dt><dd><p>Names of chemical properties to default.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>slots</strong> (<em>Iterable</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Names of chemical properties to default.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>missing_slots</strong><span class="classifier">list[str]</span></dt><dd><p>Names of chemical properties that are still missing.</p>
+<dd class="field-even"><p><strong>missing_slots</strong> – Names of chemical properties that are still missing.</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[str]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -464,13 +896,13 @@ and transport properties as a function of temperature and pressure.</p>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.load_free_energies">
-<code class="sig-name descname">load_free_energies</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.load_free_energies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.load_free_energies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_free_energies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.load_free_energies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.load_free_energies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load the <cite>H</cite>, <cite>S</cite>, <cite>H_excess</cite>, and <cite>S_excess</cite> functors.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.get_missing_slots">
-<code class="sig-name descname">get_missing_slots</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">slots=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_missing_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_missing_slots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_missing_slots</code><span class="sig-paren">(</span><em class="sig-param">slots=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_missing_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_missing_slots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list all missing thermodynamic properties.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemical</span>
@@ -483,7 +915,7 @@ and transport properties as a function of temperature and pressure.</p>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.copy_missing_slots_from">
-<code class="sig-name descname">copy_missing_slots_from</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*sources</em>, <em class="sig-param">slots=None</em>, <em class="sig-param">default=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.copy_missing_slots_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.copy_missing_slots_from" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy_missing_slots_from</code><span class="sig-paren">(</span><em class="sig-param">*sources</em>, <em class="sig-param">slots=None</em>, <em class="sig-param">default=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.copy_missing_slots_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.copy_missing_slots_from" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing.</p>
 </dd></dl>
 
@@ -493,18 +925,13 @@ and transport properties as a function of temperature and pressure.</p>
 <dd><p>Return a new Chemical object without any thermodynamic models or data (unless provided).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>Chemical identifier.</p>
-</dd>
-<dt><strong>CAS</strong><span class="classifier">str, optional</span></dt><dd><p>CAS number. If none provide, it defaults to the <cite>ID</cite>.</p>
-</dd>
-<dt><strong>phase_ref</strong><span class="classifier">str, optional</span></dt><dd><p>Phase at the reference state (T=298.15, P=101325).</p>
-</dd>
-<dt><strong>phase</strong><span class="classifier">str, optional</span></dt><dd><p>Phase to set state as a single phase chemical.</p>
-</dd>
-<dt><strong>**data :</strong></dt><dd><p>Any data to fill chemical with.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ID</strong> (<em>str</em>) – Chemical identifier.</p></li>
+<li><p><strong>CAS</strong> (<em>str</em><em>, </em><em>optional</em>) – CAS number. If none provide, it defaults to the <cite>ID</cite>.</p></li>
+<li><p><strong>phase_ref</strong> (<em>str</em><em>, </em><em>optional</em>) – Phase at the reference state (T=298.15, P=101325).</p></li>
+<li><p><strong>phase</strong> (<em>str</em><em>, </em><em>optional</em>) – Phase to set state as a single phase chemical.</p></li>
+<li><p><strong>**data</strong> – Any data to fill chemical with.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -558,7 +985,7 @@ and transport properties as a function of temperature and pressure.</p>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.get_phase">
-<code class="sig-name descname">get_phase</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_phase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_phase</code><span class="sig-paren">(</span><em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return phase of chemical at given state.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemical</span>
@@ -570,20 +997,14 @@ and transport properties as a function of temperature and pressure.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="thermosteam.Chemical.phase_ref">
-<em class="property">property </em><code class="sig-name descname">phase_ref</code><a class="headerlink" href="#thermosteam.Chemical.phase_ref" title="Permalink to this definition">¶</a></dt>
-<dd><p>[str] Phase at reference state.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="thermosteam.Chemical.locked_state">
 <em class="property">property </em><code class="sig-name descname">locked_state</code><a class="headerlink" href="#thermosteam.Chemical.locked_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>[LockedState] State settings.</p>
+<dd><p>[str] Constant phase of chemical.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.at_state">
-<code class="sig-name descname">at_state</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">phase=None</em>, <em class="sig-param">T=None</em>, <em class="sig-param">P=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.at_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.at_state" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_state</code><span class="sig-paren">(</span><em class="sig-param">phase=None</em>, <em class="sig-param">copy=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.at_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.at_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the state of chemical.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemical</span>
@@ -637,7 +1058,7 @@ and transport properties as a function of temperature and pressure.</p>
 
 <dl class="method">
 <dt id="thermosteam.Chemical.show">
-<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print all specifications</p>
 </dd></dl>
 

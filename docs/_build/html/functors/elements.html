@@ -273,25 +273,19 @@ Indexed by atomic numbers off-by-one up to 118.</p>
 <dd><p>Periodic Table object for use in dealing with elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>elements</strong><span class="classifier">list[Element]</span></dt><dd><p>List of Element objects</p>
+<dd class="field-odd"><p><strong>elements</strong> (<em>list</em><em>[</em><em>Element</em><em>]</em>) – List of Element objects</p>
 </dd>
 </dl>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">periodic_table</span></code></dt><dd></dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Element</span></code></dt><dd></dd>
-</dl>
-</div>
 <p class="rubric">Notes</p>
 <p>Can be checked to sese if an element in in this, can be iterated over,
 and as a current length of 118 elements.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">periodic_table</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></p>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rbf0a0657f057-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
 <dd><p>N M O’Boyle, M Banck, C A James, C Morley, T Vandermeersch, and
 G R Hutchison. “Open Babel: An open chemical toolbox.” J. Cheminf.
 (2011), 3, 33. DOI:10.1186/1758-2946-3-33</p>
@@ -308,34 +302,31 @@ atoms and their counts, in the format {symbol: count}.</p>
 \[MW = \sum_i n_i MW_i\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
+<dd class="field-odd"><p><strong>atoms</strong> (<em>dict</em>) – dictionary of counts of individual atoms, indexed by symbol with
 proper capitalization, [-]</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>MW</strong><span class="classifier">float</span></dt><dd><p>Calculated molecular weight [g/mol]</p>
+<dd class="field-even"><p><strong>MW</strong> – Calculated molecular weight [g/mol]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Elemental data is from rdkit, with CAS numbers added. An exception is
 raised if an incorrect element symbol is given. Elements up to 118 are
 supported, as are deutreium and tritium.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r9ede50f16a25-1"><span class="brackets">1</span></dt>
-<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecular_weight</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span> <span class="c1"># DNA</span>
 <span class="go">332.30628</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -348,20 +339,18 @@ given a dictionary of its atoms and their counts, in the format
 \[w_i =  \frac{n_i MW_i}{\sum_i n_i MW_i}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
-proper capitalization, [-]</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">float, optional</span></dt><dd><p>Molecular weight, [g/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>dict</em>) – dictionary of counts of individual atoms, indexed by symbol with
+proper capitalization, [-]</p></li>
+<li><p><strong>MW</strong> (<em>float</em><em>, </em><em>optional</em>) – Molecular weight, [g/mol]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>mfracs</strong><span class="classifier">dict</span></dt><dd><p>dictionary of mass fractions of individual atoms, indexed by symbol
+<dd class="field-even"><p><strong>mfracs</strong> – dictionary of mass fractions of individual atoms, indexed by symbol
 with proper capitalization, [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -370,17 +359,17 @@ is calculated using the function <cite>molecular_weight</cite> if not specified.
 <p>Elemental data is from rdkit, with CAS numbers added. An exception is
 raised if an incorrect element symbol is given. Elements up to 118 are
 supported.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rb6c31ed53718-1"><span class="brackets">1</span></dt>
-<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mass_fractions</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
 <span class="go">{&#39;H&#39;: 0.03639798802478244, &#39;C&#39;: 0.7228692758981262, &#39;O&#39;: 0.24073273607709128}</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
+<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -393,77 +382,72 @@ given a dictionary of its atoms and their counts, in the format
 \[a_i =  \frac{n_i}{\sum_i n_i}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
+<dd class="field-odd"><p><strong>atoms</strong> (<em>dict</em>) – dictionary of counts of individual atoms, indexed by symbol with
 proper capitalization, [-]</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>afracs</strong><span class="classifier">dict</span></dt><dd><p>dictionary of atomic fractions of individual atoms, indexed by symbol
+<dd class="field-even"><p><strong>afracs</strong> – dictionary of atomic fractions of individual atoms, indexed by symbol
 with proper capitalization, [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>No actual data on the elements is used, so incorrect or custom compounds
 would not raise an error.</p>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r646de1358c6c-1"><span class="brackets">1</span></dt>
-<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom_fractions</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
 <span class="go">{&#39;H&#39;: 0.32432432432432434, &#39;C&#39;: 0.5405405405405406, &#39;O&#39;: 0.13513513513513514}</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>RDKit: Open-source cheminformatics; <a class="reference external" href="http://www.rdkit.org">http://www.rdkit.org</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.elements.similarity_variable">
 <code class="sig-prename descclassname">thermosteam.functors.elements.</code><code class="sig-name descname">similarity_variable</code><span class="sig-paren">(</span><em class="sig-param">atoms</em>, <em class="sig-param">MW=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/elements.html#similarity_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.elements.similarity_variable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the similarity variable of an compound, as defined in <a class="reference internal" href="#r3b9b1a1bac8b-1" id="id5">[1]</a>.
+<dd><p>Calculates the similarity variable of an compound, as defined in <a href="#id9"><span class="problematic" id="id5">[1]_</span></a>.
 Currently only applied for certain heat capacity estimation routines.</p>
 <div class="math notranslate nohighlight">
 \[\alpha = \frac{N}{MW} = \frac{\sum_i n_i}{\sum_i n_i MW_i}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
-proper capitalization, [-]</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">float, optional</span></dt><dd><p>Molecular weight, [g/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>dict</em>) – dictionary of counts of individual atoms, indexed by symbol with
+proper capitalization, [-]</p></li>
+<li><p><strong>MW</strong> (<em>float</em><em>, </em><em>optional</em>) – Molecular weight, [g/mol]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>similarity_variable</strong><span class="classifier">float</span></dt><dd><p>Similarity variable as defined in <a class="reference internal" href="#r3b9b1a1bac8b-1" id="id6">[1]</a>, [mol/g]</p>
+<dd class="field-even"><p><strong>similarity_variable</strong> – Similarity variable as defined in <a href="#id10"><span class="problematic" id="id6">[1]_</span></a>, [mol/g]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Molecular weight is optional, but speeds up the calculation slightly. It
 is calculated using the function <cite>molecular_weight</cite> if not specified.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">similarity_variable</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">})</span>
+<span class="go">0.2212654140784498</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r3b9b1a1bac8b-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id5">1</a>,<a href="#id6">2</a>)</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id7"><span class="brackets">1</span></dt>
 <dd><p>Laštovka, Václav, Nasser Sallamie, and John M. Shaw. “A Similarity
 Variable for Estimating the Heat Capacity of Solid Organic Compounds:
 Part I. Fundamentals.” Fluid Phase Equilibria 268, no. 1-2
 (June 25, 2008): 51-60. doi:10.1016/j.fluid.2008.03.019.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">similarity_variable</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">})</span>
-<span class="go">0.2212654140784498</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -473,17 +457,14 @@ Part I. Fundamentals.” Fluid Phase Equilibria 268, no. 1-2
 atoms and their counts, in the format {symbol: count}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
+<dd class="field-odd"><p><strong>atoms</strong> (<em>dict</em>) – dictionary of counts of individual atoms, indexed by symbol with
 proper capitalization, [-]</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Hill_formula</strong><span class="classifier">str</span></dt><dd><p>Hill formula, [-]</p>
+<dd class="field-even"><p><strong>Hill_formula</strong> – Hill formula, [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -492,27 +473,27 @@ proper capitalization, [-]</p>
 ‘H’ in it as well as ‘C’, then that goes next. All elements are sorted
 alphabetically afterwards, including ‘H’ if ‘C’ is not present.
 All elements are followed by their count, unless it is 1.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms_to_Hill</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">&#39;C2H5Br&#39;</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r752651a6621f-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id8"><span class="brackets">1</span></dt>
 <dd><p>Hill, Edwin A.”“ON A SYSTEM OF INDEXING CHEMICAL LITERATURE;
 ADOPTED BY THE CLASSIFICATION DIVISION OF THE U. S. PATENT OFFICE.1.”
 Journal of the American Chemical Society 22, no. 8 (August 1, 1900):
 478-94. doi:10.1021/ja02046a005.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms_to_Hill</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-<span class="go">&#39;C2H5Br&#39;</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="thermosteam.functors.elements.simple_formula_parser">
 <code class="sig-prename descclassname">thermosteam.functors.elements.</code><code class="sig-name descname">simple_formula_parser</code><span class="sig-paren">(</span><em class="sig-param">formula</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/elements.html#simple_formula_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.elements.simple_formula_parser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic formula parser, primarily for obtaining element counts from 
-formulas as formated in PubChem. Handles formulas with integer counts, 
+<dd><p>Basic formula parser, primarily for obtaining element counts from
+formulas as formated in PubChem. Handles formulas with integer counts,
 but no brackets, no hydrates, no charges, no isotopes, and no group
 multipliers.</p>
 <p>Strips charges from the end of a formula first. Accepts repeated chemical
@@ -520,17 +501,14 @@ units. Performs no sanity checking that elements are actually elements.
 As it uses regular expressions for matching, errors are mostly just ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>formula</strong><span class="classifier">str</span></dt><dd><p>Formula string, very simply formats only.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>formula</strong> (<em>str</em>) – Formula string, very simply formats only.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
+<dd class="field-even"><p><strong>atoms</strong> – dictionary of counts of individual atoms, indexed by symbol with
 proper capitalization, [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -546,28 +524,26 @@ proper capitalization, [-]</p>
 <dl class="function">
 <dt id="thermosteam.functors.elements.nested_formula_parser">
 <code class="sig-prename descclassname">thermosteam.functors.elements.</code><code class="sig-name descname">nested_formula_parser</code><span class="sig-paren">(</span><em class="sig-param">formula</em>, <em class="sig-param">check=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/elements.html#nested_formula_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.elements.nested_formula_parser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Improved formula parser which handles braces and their multipliers, 
+<dd><p>Improved formula parser which handles braces and their multipliers,
 as well as rational element counts.</p>
 <p>Strips charges from the end of a formula first. Accepts repeated chemical
 units. Performs no sanity checking that elements are actually elements.
 As it uses regular expressions for matching, errors are mostly just ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>formula</strong><span class="classifier">str</span></dt><dd><p>Formula string, very simply formats only.</p>
-</dd>
-<dt><strong>check</strong><span class="classifier">bool</span></dt><dd><p>If <cite>check</cite> is True, a simple check will be performed to determine if
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formula</strong> (<em>str</em>) – Formula string, very simply formats only.</p></li>
+<li><p><strong>check</strong> (<em>bool</em>) – If <cite>check</cite> is True, a simple check will be performed to determine if
 a formula is not a formula and an exception will be raised if it is
-not, [-]</p>
-</dd>
-</dl>
+not, [-]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>atoms</strong><span class="classifier">dict</span></dt><dd><p>dictionary of counts of individual atoms, indexed by symbol with
+<dd class="field-even"><p><strong>atoms</strong> – dictionary of counts of individual atoms, indexed by symbol with
 proper capitalization, [-]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -588,20 +564,18 @@ that the charge is already specified as one element of the formula.</p>
 <p>Performs no sanity checking that elements are actually elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>formula</strong><span class="classifier">str</span></dt><dd><p>Formula string, very simply formats only, ending in one of ‘+x’,
+<dd class="field-odd"><p><strong>formula</strong> (<em>str</em>) – Formula string, very simply formats only, ending in one of ‘+x’,
 ‘-x’, n*’+’, or n*’-‘ or any of them surrounded by brackets but always
 at the end of a formula.</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>charge</strong><span class="classifier">int</span></dt><dd><p>Charge of the molecule, [faraday]</p>
+<dd class="field-even"><p><strong>charge</strong> – Charge of the molecule, [faraday]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">charge_from_formula</span><span class="p">(</span><span class="s1">&#39;Br3-&#39;</span><span class="p">)</span>
 <span class="go">-1</span>
@@ -620,18 +594,16 @@ well formatted.</p>
 <p>Performs no sanity checking that elements are actually elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>formula</strong><span class="classifier">str</span></dt><dd><p>Formula string as parseable by the method nested_formula_parser, [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>formula</strong> (<em>str</em>) – Formula string as parseable by the method nested_formula_parser, [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>formula</strong><span class="classifier">str</span></dt><dd><p>A consistently formatted formula to describe a molecular formula, [-]</p>
+<dd class="field-even"><p><strong>formula</strong> – A consistently formatted formula to describe a molecular formula, [-]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">serialize_formula</span><span class="p">(</span><span class="s1">&#39;Pd(NH3)4+3&#39;</span><span class="p">)</span>
 <span class="go">&#39;H12N4Pd+3&#39;</span>

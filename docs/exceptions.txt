@@ -1,5 +1,5 @@
 exceptions
 ==========
 
-.. autoclass:: thermosteam.exceptions
+.. automodule:: thermosteam.exceptions
    :members:

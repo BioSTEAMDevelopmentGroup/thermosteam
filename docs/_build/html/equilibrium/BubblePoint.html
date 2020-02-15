@@ -207,10 +207,10 @@
 <dd><p>Create a BubblePoint object that returns bubble point values when called with a composition and either a temperture (T) or pressure (P).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>chemicals=None</strong><span class="classifier">Iterable[Chemical], optional</span></dt><dd></dd>
-<dt><strong>thermo=None</strong><span class="classifier">Thermo, optional</span></dt><dd></dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chemicals=None</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="../Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="../Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 <dl class="method">
@@ -221,24 +221,21 @@
 
 <dl class="method">
 <dt id="thermosteam.equilibrium.BubblePoint.solve_Ty">
-<code class="sig-name descname">solve_Ty</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">z</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/bubble_point.html#BubblePoint.solve_Ty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint.solve_Ty" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">solve_Ty</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">P</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/bubble_point.html#BubblePoint.solve_Ty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint.solve_Ty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bubble point at given composition and pressure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">array_like</span></dt><dd><p>Molar composotion.</p>
-</dd>
-<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Pressure (Pa).</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Molar composotion.</p></li>
+<li><p><strong>P</strong> (<em>float</em>) – Pressure (Pa).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Bubble point temperature (K)</p>
-</dd>
-<dt><strong>y</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Composition of the vapor phase.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Bubble point temperature (K)</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Composition of the vapor phase.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -252,24 +249,21 @@
 
 <dl class="method">
 <dt id="thermosteam.equilibrium.BubblePoint.solve_Py">
-<code class="sig-name descname">solve_Py</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">z</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/bubble_point.html#BubblePoint.solve_Py"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint.solve_Py" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">solve_Py</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/bubble_point.html#BubblePoint.solve_Py"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint.solve_Py" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bubble point at given composition and temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">array_like</span></dt><dd><p>Molar composotion.</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature (K).</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Molar composotion.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature (K).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Bubble point pressure (Pa).</p>
-</dd>
-<dt><strong>y</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Vapor phase composition.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>P</strong> (<em>float</em>) – Bubble point pressure (Pa).</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Vapor phase composition.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

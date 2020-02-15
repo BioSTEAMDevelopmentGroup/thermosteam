@@ -204,29 +204,28 @@
 <dd><p>Create a Reaction object which defines a stoichiometric reaction and conversion. When called, it returns the change in material due to the reaction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>reaction</strong><span class="classifier">str</span></dt><dd><p>Stoichiometric equation written as:
-‘i1 R1 + … + in Rn -&gt; j1 P1 + … + jm Pm’</p>
-</dd>
-<dt><strong>reactant</strong><span class="classifier">str</span></dt><dd><p>ID of reactant compound.</p>
-</dd>
-<dt><strong>X</strong><span class="classifier">float</span></dt><dd><p>Reactant conversion (fraction).</p>
-</dd>
-<dt><strong>chemicals=None</strong><span class="classifier">Chemicals, defaults to settings.chemicals.</span></dt><dd><p>Chemicals corresponing to each entry in the stoichiometry array.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reaction</strong> (<em>str</em>) – Stoichiometric equation written as:
+‘i1 R1 + … + in Rn -&gt; j1 P1 + … + jm Pm’</p></li>
+<li><p><strong>reactant</strong> (<em>str</em>) – ID of reactant compound.</p></li>
+<li><p><strong>X</strong> (<em>float</em>) – Reactant conversion (fraction).</p></li>
+<li><p><strong>chemicals=None</strong> (<a class="reference internal" href="../Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals"><em>Chemicals</em></a><em>, </em><em>defaults to settings.chemicals.</em>) – Chemicals corresponing to each entry in the stoichiometry array.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam.reaction</span> <span class="k">as</span> <span class="nn">rn</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">thermo</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Thermo</span><span class="p">([</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="s1">&#39;H2&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">srn</span> <span class="o">=</span> <span class="n">rn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;2H2O -&gt; 2H2 + O2&#39;</span><span class="p">,</span> <span class="n">reactant</span><span class="o">=</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">srn</span>
-<span class="go">Reaction(&#39;H2O -&gt; H2 + 0.5 O2&#39;, reactant=&#39;H2O&#39;, X=0.7)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam.reaction</span> <span class="k">as</span> <span class="nn">rxn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="s1">&#39;H2&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srn</span> <span class="o">=</span> <span class="n">rxn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;2H2O -&gt; 2H2 + O2&#39;</span><span class="p">,</span> <span class="n">reactant</span><span class="o">=</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srn</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Reaction:</span>
+<span class="go"> stoichiometry       reactant    X[%]</span>
+<span class="go"> H2O -&gt; H2 + 0.5 O2  H2O        70.00</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;feed&#39;</span><span class="p">,</span> <span class="n">H2O</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srn</span><span class="p">(</span><span class="n">feed</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span> <span class="c1"># Call to run reaction on molar flow</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="c1"># Notice how 70% of water was converted to product</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1"># Notice how 70% of water was converted to product</span>
 <span class="go">Stream: feed</span>
 <span class="go"> phase: &#39;l&#39;, T: 298.15 K, P: 101325 Pa</span>
 <span class="go"> flow (kmol/hr): H2O  60</span>
@@ -236,7 +235,7 @@
 </div>
 <dl class="method">
 <dt id="thermosteam.reaction.Reaction.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/reaction/_reaction.html#Reaction.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.reaction.Reaction.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/reaction/_reaction.html#Reaction.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.reaction.Reaction.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return copy of Reaction object.</p>
 </dd></dl>
 

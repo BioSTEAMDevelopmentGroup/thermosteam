@@ -243,36 +243,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
 <dl class="attribute">
 <dt id="thermosteam.functors.virial.BVirial_Pitzer_Curl">
-<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Pitzer_Curl</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Pitzer_Curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Pitzer_Curl" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r28648f3847fa-1" id="id1">[1]</a>.
+<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Pitzer_Curl</code><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Pitzer_Curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Pitzer_Curl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the second virial coefficient using the model in <a href="#id11"><span class="problematic" id="id1">[1]_</span></a>.
 Designed for simple calculations.</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3\\B^{(1)} = 0.073+0.46/T_r-0.5/T_r^2 -0.097/T_r^3 - 0.0073/T_r^8\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor for fluid, [-]</p>
-</dd>
-<dt><strong>order</strong><span class="classifier">int, optional</span></dt><dd><p>Order of the calculation. 0 for the calculation of B itself; for 1/2/3, 
-the first/second/third derivative of B with respect to temperature; and  
-for -1/-2, the first/second indefinite integral of B with respect to 
-temperature. No other integrals or derivatives are implemented, and an 
-exception will be raised if any other order is given.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of the fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+<li><p><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – Order of the calculation. 0 for the calculation of B itself; for 1/2/3,
+the first/second/third derivative of B with respect to temperature; and
+for -1/-2, the first/second indefinite integral of B with respect to
+temperature. No other integrals or derivatives are implemented, and an
+exception will be raised if any other order is given.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>B</strong><span class="classifier">float</span></dt><dd><p>Second virial coefficient in density form or its integral/derivative if
+<dd class="field-even"><p><strong>B</strong> – Second virial coefficient in density form or its integral/derivative if
 specified, [m^3/mol or m^3/mol/K^order]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -293,55 +288,50 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 <p>For the second indefinite integral of B:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{121 Tc^{3}}{20000 T}\\\int\int B^{(1)} dT dT = \frac{73 T^{2}}{2000} + \frac{23 T}{50} Tc \log{\left (T \right )} - \frac{23 T}{50} Tc + \frac{Tc^{2}}{2} \log{\left (T \right )} - \frac{1}{420000 T^{6}} \left(20370 T^{5} Tc^{3} + 73 Tc^{8}\right)\end{aligned}\end{align} \]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r28648f3847fa-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Pitzer, Kenneth S., and R. F. Curl. “The Volumetric and
-Thermodynamic Properties of Fluids. III. Empirical Equation for the
-Second Virial Coefficient1.” Journal of the American Chemical Society
-79, no. 10 (May 1, 1957): 2369-70. doi:10.1021/ja01567a007.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Example matching that in BVirial_Abbott, for isobutane.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BVirial_Pitzer_Curl</span><span class="p">(</span><span class="mf">510.</span><span class="p">,</span> <span class="mf">425.2</span><span class="p">,</span> <span class="mf">38E5</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">)</span>
 <span class="go">-0.0002084535541385102</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Pitzer, Kenneth S., and R. F. Curl. “The Volumetric and
+Thermodynamic Properties of Fluids. III. Empirical Equation for the
+Second Virial Coefficient1.” Journal of the American Chemical Society
+79, no. 10 (May 1, 1957): 2369-70. doi:10.1021/ja01567a007.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="thermosteam.functors.virial.BVirial_Abbott">
-<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Abbott</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Abbott"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Abbott" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r47fd788b7ec4-1" id="id3">[1]</a>.
+<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Abbott</code><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Abbott"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Abbott" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the second virial coefficient using the model in <a href="#id12"><span class="problematic" id="id3">[1]_</span></a>.
 Simple fit to the Lee-Kesler equation.</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}=0.083+\frac{0.422}{T_r^{1.6}}\\B^{(1)}=0.139-\frac{0.172}{T_r^{4.2}}\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor for fluid, [-]</p>
-</dd>
-<dt><strong>order</strong><span class="classifier">int, optional</span></dt><dd><p>Order of the calculation. 0 for the calculation of B itself; for 1/2/3, 
-the first/second/third derivative of B with respect to temperature; and  
-for -1/-2, the first/second indefinite integral of B with respect to 
-temperature. No other integrals or derivatives are implemented, and an 
-exception will be raised if any other order is given.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of the fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+<li><p><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – Order of the calculation. 0 for the calculation of B itself; for 1/2/3,
+the first/second/third derivative of B with respect to temperature; and
+for -1/-2, the first/second indefinite integral of B with respect to
+temperature. No other integrals or derivatives are implemented, and an
+exception will be raised if any other order is given.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>B</strong><span class="classifier">float</span></dt><dd><p>Second virial coefficient in density form or its integral/derivative if
+<dd class="field-even"><p><strong>B</strong> – Second virial coefficient in density form or its integral/derivative if
 specified, [m^3/mol or m^3/mol/K^order]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -362,52 +352,47 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 <p>For the second indefinite integral of B:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = 0.0415 T^{2} + \frac{211}{120} Tc^{2} \left(\frac{T}{Tc}\right)^{0.4}\\\int\int B^{(1)} dT dT = 0.0695 T^{2} - \frac{\frac{43}{1760} Tc^{2}}{\left(\frac{T}{Tc}\right)^{2.2}}\end{aligned}\end{align} \]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r47fd788b7ec4-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>)</span></dt>
-<dd><p>Smith, H. C. Van Ness Joseph M. Introduction to Chemical Engineering
-Thermodynamics 4E 1987.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Example is from <a class="reference internal" href="#r47fd788b7ec4-1" id="id5">[1]</a>, p. 93, and matches the result exactly, for isobutane.</p>
+<p>Example is from <a href="#id13"><span class="problematic" id="id4">[1]_</span></a>, p. 93, and matches the result exactly, for isobutane.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BVirial_Abbott</span><span class="p">(</span><span class="mf">510.</span><span class="p">,</span> <span class="mf">425.2</span><span class="p">,</span> <span class="mf">38E5</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">)</span>
 <span class="go">-0.00020570178037383633</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
+<dd><p>Smith, H. C. Van Ness Joseph M. Introduction to Chemical Engineering
+Thermodynamics 4E 1987.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="thermosteam.functors.virial.BVirial_Tsonopoulos">
-<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Tsonopoulos</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Tsonopoulos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Tsonopoulos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the second virial coefficient using the model in <a class="reference internal" href="#r6779ff2dd473-1" id="id6">[1]</a>.</p>
+<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Tsonopoulos</code><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Tsonopoulos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Tsonopoulos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the second virial coefficient using the model in <a href="#id14"><span class="problematic" id="id6">[1]_</span></a>.</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}B_r=B^{(0)}+\omega B^{(1)}\\B^{(0)}= 0.1445-0.330/T_r - 0.1385/T_r^2 - 0.0121/T_r^3 - 0.000607/T_r^8\\B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor for fluid, [-]</p>
-</dd>
-<dt><strong>order</strong><span class="classifier">int, optional</span></dt><dd><p>Order of the calculation. 0 for the calculation of B itself; for 1/2/3, 
-the first/second/third derivative of B with respect to temperature; and  
-for -1/-2, the first/second indefinite integral of B with respect to 
-temperature. No other integrals or derivatives are implemented, and an 
-exception will be raised if any other order is given.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of the fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+<li><p><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – Order of the calculation. 0 for the calculation of B itself; for 1/2/3,
+the first/second/third derivative of B with respect to temperature; and
+for -1/-2, the first/second indefinite integral of B with respect to
+temperature. No other integrals or derivatives are implemented, and an
+exception will be raised if any other order is given.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>B</strong><span class="classifier">float</span></dt><dd><p>Second virial coefficient in density form or its integral/derivative if
+<dd class="field-even"><p><strong>B</strong> – Second virial coefficient in density form or its integral/derivative if
 specified, [m^3/mol or m^3/mol/K^order]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -430,65 +415,56 @@ BVirial_Tsonopoulos_extended.</p>
 <p>For the second indefinite integral of B:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)\end{aligned}\end{align} \]</div>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r6779ff2dd473-1"><span class="brackets"><a class="fn-backref" href="#id6">1</a></span></dt>
-<dd><p>Tsonopoulos, Constantine. “An Empirical Correlation of Second Virial
-Coefficients.” AIChE Journal 20, no. 2 (March 1, 1974): 263-72.
-doi:10.1002/aic.690200209.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <p>Example matching that in BVirial_Abbott, for isobutane.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BVirial_Tsonopoulos</span><span class="p">(</span><span class="mf">510.</span><span class="p">,</span> <span class="mf">425.2</span><span class="p">,</span> <span class="mf">38E5</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">)</span>
 <span class="go">-0.00020935288308483694</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id7"><span class="brackets">1</span></dt>
+<dd><p>Tsonopoulos, Constantine. “An Empirical Correlation of Second Virial
+Coefficients.” AIChE Journal 20, no. 2 (March 1, 1974): 263-72.
+doi:10.1002/aic.690200209.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="thermosteam.functors.virial.BVirial_Tsonopoulos_extended">
-<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Tsonopoulos_extended</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">species_type</em>, <em class="sig-param">dipole</em>, <em class="sig-param">order</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Tsonopoulos_extended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Tsonopoulos_extended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">thermosteam.functors.virial.</code><code class="sig-name descname">BVirial_Tsonopoulos_extended</code><a class="reference internal" href="../_modules/thermosteam/functors/virial.html#BVirial_Tsonopoulos_extended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functors.virial.BVirial_Tsonopoulos_extended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the second virial coefficient using the
-comprehensive model in <a class="reference internal" href="#rd208010bd1c0-1" id="id8">[1]</a>. See the notes for the calculation of <cite>a</cite> and
+comprehensive model in <a href="#id15"><span class="problematic" id="id8">[1]_</span></a>. See the notes for the calculation of <cite>a</cite> and
 <cite>b</cite>.</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\frac{BP_c}{RT_c} = B^{(0)} + \omega B^{(1)} + a B^{(2)} + b B^{(3)}\\B^{(0)}=0.1445-0.33/T_r-0.1385/T_r^2-0.0121/T_r^3\\B^{(1)} = 0.0637+0.331/T_r^2-0.423/T_r^3 -0.423/T_r^3 - 0.008/T_r^8\\B^{(2)} = 1/T_r^6\\B^{(3)} = -1/T_r^8\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>T</strong><span class="classifier">float</span></dt><dd><p>Temperature of fluid [K]</p>
-</dd>
-<dt><strong>Tc</strong><span class="classifier">float</span></dt><dd><p>Critical temperature of fluid [K]</p>
-</dd>
-<dt><strong>Pc</strong><span class="classifier">float</span></dt><dd><p>Critical pressure of the fluid [Pa]</p>
-</dd>
-<dt><strong>omega</strong><span class="classifier">float</span></dt><dd><p>Acentric factor for fluid, [-]</p>
-</dd>
-<dt><strong>a</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter, calculated based on species_type if a is not given and
-species_type matches on of the supported chemical classes.</p>
-</dd>
-<dt><strong>b</strong><span class="classifier">float, optional</span></dt><dd><p>Fit parameter, calculated based on species_type if a is not given and
-species_type matches on of the supported chemical classes.</p>
-</dd>
-<dt><strong>species_type</strong><span class="classifier">str, optional</span></dt><dd><p>One of .</p>
-</dd>
-<dt><strong>dipole</strong><span class="classifier">float</span></dt><dd><p>dipole moment, optional, [Debye]</p>
-</dd>
-<dt><strong>order</strong><span class="classifier">int, optional</span></dt><dd><p>Order of the calculation. 0 for the calculation of B itself; for 1/2/3, 
-the first/second/third derivative of B with respect to temperature; and  
-for -1/-2, the first/second indefinite integral of B with respect to 
-temperature. No other integrals or derivatives are implemented, and an 
-exception will be raised if any other order is given.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of the fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+<li><p><strong>a</strong> (<em>float</em><em>, </em><em>optional</em>) – Fit parameter, calculated based on species_type if a is not given and
+species_type matches on of the supported chemical classes.</p></li>
+<li><p><strong>b</strong> (<em>float</em><em>, </em><em>optional</em>) – Fit parameter, calculated based on species_type if a is not given and
+species_type matches on of the supported chemical classes.</p></li>
+<li><p><strong>species_type</strong> (<em>str</em><em>, </em><em>optional</em>) – One of .</p></li>
+<li><p><strong>dipole</strong> (<em>float</em>) – dipole moment, optional, [Debye]</p></li>
+<li><p><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – Order of the calculation. 0 for the calculation of B itself; for 1/2/3,
+the first/second/third derivative of B with respect to temperature; and
+for -1/-2, the first/second indefinite integral of B with respect to
+temperature. No other integrals or derivatives are implemented, and an
+exception will be raised if any other order is given.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>B</strong><span class="classifier">float</span></dt><dd><p>Second virial coefficient in density form or its integral/derivative if
+<dd class="field-even"><p><strong>B</strong> – Second virial coefficient in density form or its integral/derivative if
 specified, [m^3/mol or m^3/mol/K^order]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -502,7 +478,7 @@ specified, [m^3/mol or m^3/mol/K^order]</p>
 or ‘ester’ types of chemicals:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}a = -2.14\times 10^{-4} \mu_r - 4.308 \times 10^{-21} (\mu_r)^8\\b = 0\end{aligned}\end{align} \]</div>
-<p>For ‘alkyl halide’, ‘mercaptan’, ‘sulfide’, or ‘disulfide’ types of 
+<p>For ‘alkyl halide’, ‘mercaptan’, ‘sulfide’, or ‘disulfide’ types of
 chemicals:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}a = -2.188\times 10^{-4} (\mu_r)^4 - 7.831 \times 10^{-21} (\mu_r)^8\\b = 0\end{aligned}\end{align} \]</div>
@@ -534,14 +510,20 @@ types of <cite>a</cite> and <cite>b</cite> values is as follows:</p>
 <p>For the second indefinite integral of B:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\int\int B^{(0)} dT dT = \frac{289 T^{2}}{4000} - \frac{33 T}{100} Tc \log{\left (T \right )} + \frac{33 T}{100} Tc + \frac{277 Tc^{2}}{2000} \log{\left (T \right )} - \frac{1}{42000000 T^{6}} \left(254100 T^{5} Tc^{3} + 607 Tc^{8}\right)\\\int\int B^{(1)} dT dT = \frac{637 T^{2}}{20000} - \frac{331 Tc^{2}}{1000} \log{\left (T \right )} - \frac{1}{210000 T^{6}} \left(44415 T^{5} Tc^{3} + 40 Tc^{8}\right)\\\int\int B^{(2)} dT dT = \frac{Tc^{6}}{20 T^{4}}\\\int\int B^{(3)} dT dT = - \frac{Tc^{8}}{42 T^{6}}\end{aligned}\end{align} \]</div>
+<p class="rubric">Examples</p>
+<p>Example from Perry’s Handbook, 8E, p2-499. Matches to a decimal place.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BVirial_Tsonopoulos_extended</span><span class="p">(</span><span class="mf">430.</span><span class="p">,</span> <span class="mf">405.65</span><span class="p">,</span> <span class="mf">11.28E6</span><span class="p">,</span> <span class="mf">0.252608</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species_type</span><span class="o">=</span><span class="s1">&#39;ketone&#39;</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mf">1.469</span><span class="p">)</span>
+<span class="go">-9.679715056695323e-05</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rd208010bd1c0-1"><span class="brackets"><a class="fn-backref" href="#id8">1</a></span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id9"><span class="brackets">1</span></dt>
 <dd><p>Tsonopoulos, C., and J. L. Heidman. “From the Virial to the Cubic
 Equation of State.” Fluid Phase Equilibria 57, no. 3 (1990): 261-76.
 doi:10.1016/0378-3812(90)85126-U</p>
 </dd>
-<dt class="label" id="rd208010bd1c0-2"><span class="brackets">2</span></dt>
+<dt class="label" id="id10"><span class="brackets">2</span></dt>
 <dd><p>Tsonopoulos, Constantine, and John H. Dymond. “Second Virial
 Coefficients of Normal Alkanes, Linear 1-Alkanols (and Water), Alkyl
 Ethers, and Their Mixtures.” Fluid Phase Equilibria, International
@@ -550,12 +532,6 @@ and Ternary Mixtures of Ethers, Alkanes and Alkanols, 133, no. 1-2
 (June 1997): 11-34. doi:10.1016/S0378-3812(97)00058-7.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>Example from Perry’s Handbook, 8E, p2-499. Matches to a decimal place.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">BVirial_Tsonopoulos_extended</span><span class="p">(</span><span class="mf">430.</span><span class="p">,</span> <span class="mf">405.65</span><span class="p">,</span> <span class="mf">11.28E6</span><span class="p">,</span> <span class="mf">0.252608</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species_type</span><span class="o">=</span><span class="s1">&#39;ketone&#39;</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mf">1.469</span><span class="p">)</span>
-<span class="go">-9.679715056695323e-05</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

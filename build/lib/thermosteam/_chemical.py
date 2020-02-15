@@ -318,6 +318,22 @@ class Chemical:
     [8] Sanjari
     [9] Edalat
 
+    The `models` object is a `deque` for easier management of model order:
+    
+    >>> water.Psat.models.rotate(-1)
+    >>> water.Psat.show()
+    TDependentModelHandle(T, P=None) -> Psat [Pa]
+    [0] Wagner_McGraw
+    [1] Antoine
+    [2] DIPPR_EQ101
+    [3] Wagner
+    [4] Boiling_Critical_Relation
+    [5] Lee_Kesler
+    [6] Ambrose_Walton
+    [7] Sanjari
+    [8] Edalat
+    [9] User_antoine_model
+
     The `model` method is a high level interface that even lets you create a constant model:
         
     >>> value = water.V.l.add_model(1.687e-05)

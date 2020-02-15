@@ -1,5 +1,5 @@
 functional
 ==========
 
-.. autoclass:: thermosteam.functional
+.. automodule:: thermosteam.functional
    :members:

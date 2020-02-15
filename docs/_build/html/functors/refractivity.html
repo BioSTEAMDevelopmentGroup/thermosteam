@@ -233,54 +233,46 @@ to use if no Method is provided; returns None if the data is not available.</p>
 <p>Function has data for approximately 4500 chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>CASRN</strong><span class="classifier">string</span></dt><dd><p>CASRN [-]</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on the Na D line, [-]</p>
-</dd>
-<dt><strong>T</strong><span class="classifier">float, only returned if full_info == True</span></dt><dd><p>Temperature at which refractive index reading was made</p>
-</dd>
-<dt><strong>methods</strong><span class="classifier">list, only returned if AvailableMethods == True</span></dt><dd><p>List of methods which can be used to obtain RI with the given inputs</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>RI</strong> (<em>float</em>) – Refractive Index on the Na D line, [-]</p></li>
+<li><p><strong>T</strong> (<em>float, only returned if full_info == True</em>) – Temperature at which refractive index reading was made</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain RI with the given inputs</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Other Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Method</strong><span class="classifier">string, optional</span></dt><dd><p>A string for the method name to use, as defined by constants in
-RI_methods</p>
-</dd>
-<dt><strong>AvailableMethods</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will determine which methods can be used to obtain
-RI for the desired chemical, and will return methods instead of RI</p>
-</dd>
-<dt><strong>full_info</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, function will return the temperature at which the refractive
-index reading was made</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+RI_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+RI for the desired chemical, and will return methods instead of RI</p></li>
+<li><p><strong>full_info</strong> (<em>bool, optional</em>) – If True, function will return the temperature at which the refractive
+index reading was made</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Only one source is available in this function. It is:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>‘CRC’, a compillation of Organic RI data in <a class="reference internal" href="#rf3508a461aab-1" id="id1">[1]</a>.</p></li>
+<li><p>‘CRC’, a compillation of Organic RI data in <a href="#id6"><span class="problematic" id="id1">[1]_</span></a>.</p></li>
 </ul>
 </div></blockquote>
-<p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rf3508a461aab-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
-Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">refractive_index</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
 <span class="go">(1.3611, 293.15)</span>
 </pre></div>
 </div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -293,18 +285,16 @@ refractive index.</p>
 \left(\frac{n^2-1}{n^2+2}\right)V_m\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on Na D line, [-]</p>
-</dd>
-<dt><strong>Vm</strong><span class="classifier">float</span></dt><dd><p>Molar volume of fluid, [m^3/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RI</strong> (<em>float</em>) – Refractive Index on Na D line, [-]</p></li>
+<li><p><strong>Vm</strong> (<em>float</em>) – Molar volume of fluid, [m^3/mol]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Polarizability [m^3]</p>
+<dd class="field-even"><p><strong>alpha</strong> – Polarizability [m^3]</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -312,9 +302,14 @@ refractive index.</p>
 interactions dominate. Alternate conversions have been suggested.
 This is often expressed in units of cm^3 or Angstrom^3. To convert to these
 units, multiply by 1E9 or 1E30 respectively.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">polarizability_from_RI</span><span class="p">(</span><span class="mf">1.3611</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
+<span class="go">5.147658123614415e-30</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r3b830743edca-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
 <dd><p>Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.
 Vargas. “A Simple Method for Estimation of Dielectric Constants and
 Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.”
@@ -322,11 +317,6 @@ International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.
 doi:10.1007/s10765-016-2075-8.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">polarizability_from_RI</span><span class="p">(</span><span class="mf">1.3611</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
-<span class="go">5.147658123614415e-30</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -338,23 +328,27 @@ refractive index.</p>
 \[R_m = \left(\frac{n^2-1}{n^2+2}\right)V_m\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on Na D line, [-]</p>
-</dd>
-<dt><strong>Vm</strong><span class="classifier">float</span></dt><dd><p>Molar volume of fluid, [m^3/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RI</strong> (<em>float</em>) – Refractive Index on Na D line, [-]</p></li>
+<li><p><strong>Vm</strong> (<em>float</em>) – Molar volume of fluid, [m^3/mol]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>Rm</strong><span class="classifier">float</span></dt><dd><p>Molar refractivity [m^3/mol]</p>
+<dd class="field-even"><p><strong>Rm</strong> – Molar refractivity [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molar_refractivity_from_RI</span><span class="p">(</span><span class="mf">1.3611</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
+<span class="go">1.2985217089649597e-05</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r46c12ee7a50a-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
 <dd><p>Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.
 Vargas. “A Simple Method for Estimation of Dielectric Constants and
 Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.”
@@ -362,11 +356,6 @@ International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.
 doi:10.1007/s10765-016-2075-8.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molar_refractivity_from_RI</span><span class="p">(</span><span class="mf">1.3611</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
-<span class="go">1.2985217089649597e-05</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
@@ -378,23 +367,27 @@ molar refractivity.</p>
 \[RI = \sqrt{\frac{-2R_m - V_m}{R_m-V_m}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>Rm</strong><span class="classifier">float</span></dt><dd><p>Molar refractivity [m^3/mol]</p>
-</dd>
-<dt><strong>Vm</strong><span class="classifier">float</span></dt><dd><p>Molar volume of fluid, [m^3/mol]</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Rm</strong> (<em>float</em>) – Molar refractivity [m^3/mol]</p></li>
+<li><p><strong>Vm</strong> (<em>float</em>) – Molar volume of fluid, [m^3/mol]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>RI</strong><span class="classifier">float</span></dt><dd><p>Refractive Index on Na D line, [-]</p>
+<dd class="field-even"><p><strong>RI</strong> – Refractive Index on Na D line, [-]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">RI_from_molar_refractivity</span><span class="p">(</span><span class="mf">1.2985e-5</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
+<span class="go">1.3610932757685672</span>
+</pre></div>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r4955ee714db7-1"><span class="brackets">1</span></dt>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
 <dd><p>Panuganti, Sai R., Fei Wang, Walter G. Chapman, and Francisco M.
 Vargas. “A Simple Method for Estimation of Dielectric Constants and
 Polarizabilities of Nonpolar and Slightly Polar Hydrocarbons.”
@@ -402,11 +395,6 @@ International Journal of Thermophysics 37, no. 7 (June 6, 2016): 1-24.
 doi:10.1007/s10765-016-2075-8.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">RI_from_molar_refractivity</span><span class="p">(</span><span class="mf">1.2985e-5</span><span class="p">,</span> <span class="mf">5.8676E-5</span><span class="p">)</span>
-<span class="go">1.3610932757685672</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

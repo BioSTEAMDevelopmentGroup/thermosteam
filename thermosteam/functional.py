@@ -79,10 +79,6 @@ def V_to_rho(V, MW):
     >>> rho(0.000132, 86.18)
     652.8787878787879
 
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     '''
     return MW/V/1000.
 rho = V_to_rho
@@ -111,10 +107,6 @@ def rho_to_V(rho, MW):
     >>> V(652.9, 86.18)
     0.00013199571144126206
 
-    References
-    ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     '''
     return MW/rho/1000.
 
@@ -148,11 +140,13 @@ def SG_to_API(SG):
     ----------
     .. [1] API Technical Data Book: General Properties & Characterization.
     American Petroleum Institute, 7E, 2005.
+    
     '''
     return 141.5/SG - 131.5
 
 def API_to_SG(API):
-    r'''Calculates API of a liquid given its specific gravity, as shown in
+    r'''
+    Calculates API of a liquid given its specific gravity, as shown in
     [1]_.
 
     .. math::
@@ -181,11 +175,13 @@ def API_to_SG(API):
     ----------
     .. [1] API Technical Data Book: General Properties & Characterization.
     American Petroleum Institute, 7E, 2005.
+    
     '''
     return 141.5/(API + 131.5)
 
 def SG(rho, rho_ref=999.0170824078306):
-    r'''Calculates the specific gravity of a substance with respect to another
+    r'''
+    Calculates the specific gravity of a substance with respect to another
     substance; by default, this is water at 15.6 °C (60 °F). For gases, 
     normally the reference density is 1.2 kg/m^3, that of dry air. However, in 
     general specific gravity should always be specified with respect to the
@@ -217,11 +213,13 @@ def SG(rho, rho_ref=999.0170824078306):
     --------
     >>> SG(860)
     0.8608461408159591
+    
     '''
     return rho/rho_ref
 
 def Parachor(V_l, V_g, sigma):
-    r'''Calculate Parachor for a pure species, using its density in the
+    r'''
+    Calculate Parachor for a pure species, using its density in the
     liquid and gas phases, surface tension, and molecular weight.
 
     .. math::
@@ -280,7 +278,8 @@ def Parachor(V_l, V_g, sigma):
     return sigma**0.25 / (1./V_l - 1./V_g) # (N/m)**0.25*g/mol/(g/m^3)
 
 def isobaric_expansion(V, dV_dT):
-    r'''Calculate the isobaric coefficient of a thermal expansion, given its 
+    r'''
+    Calculate the isobaric coefficient of a thermal expansion, given its 
     molar volume at a certain `T` and `P`, and its derivative of molar volume
     with respect to `T`.
 
@@ -358,11 +357,13 @@ def isothermal_compressibility(V, dV_dP):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    
     '''
     return -dV_dP/V
 
 def phase_identification_parameter(V, dP_dT, dP_dV, d2P_dV2, d2P_dVdT):
-    r'''Calculate the Phase Identification Parameter developed in [1]_ for
+    r'''
+    Calculate the Phase Identification Parameter developed in [1]_ for
     the accurate and efficient determination of whether a fluid is a liquid or
     a gas based on the results of an equation of state. For supercritical 
     conditions, this provides a good method for choosing which property 
@@ -422,11 +423,13 @@ def phase_identification_parameter(V, dP_dT, dP_dV, d2P_dV2, d2P_dVdT):
        Temperature, without Prior Knowledge of Saturation Properties: Extension
        to Solid Phase." Fluid Phase Equilibria 425 (October 15, 2016): 269-277.
        doi:10.1016/j.fluid.2016.06.001.
+    
     '''
     return V*(d2P_dVdT/dP_dT - d2P_dV2/dP_dV)
 
 def phase_identification_parameter_phase(d2P_dVdT, V=None, dP_dT=None, dP_dV=None, d2P_dV2=None):
-    r'''Uses the Phase Identification Parameter concept developed in [1]_ and 
+    r'''
+    Uses the Phase Identification Parameter concept developed in [1]_ and 
     [2]_ to determine if a chemical is a solid, liquid, or vapor given the 
     appropriate thermodynamic conditions.
 
@@ -480,6 +483,7 @@ def phase_identification_parameter_phase(d2P_dVdT, V=None, dP_dT=None, dP_dV=Non
        Temperature, without Prior Knowledge of Saturation Properties: Extension
        to Solid Phase." Fluid Phase Equilibria 425 (October 15, 2016): 269-277.
        doi:10.1016/j.fluid.2016.06.001.
+    
     '''
     if d2P_dVdT > 0:
         return 's'
@@ -489,7 +493,8 @@ def phase_identification_parameter_phase(d2P_dVdT, V=None, dP_dT=None, dP_dV=Non
         return 'l' if PIP > 1 else 'g'
 
 def Cp_minus_Cv(T, dP_dT, dP_dV):
-    r'''Calculate the difference between a real gas's constant-pressure heat
+    r'''
+    Calculate the difference between a real gas's constant-pressure heat
     capacity and constant-volume heat capacity, as given in [1]_, [2]_, and
     [3]_. The required derivatives should be calculated with an equation of
     state.
@@ -542,12 +547,14 @@ def Cp_minus_Cv(T, dP_dT, dP_dV):
     .. [3] Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.
        Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim: 
        Wiley-VCH, 2012.
+    
     '''
     return -T*dP_dT**2/dP_dV
     
     
 def speed_of_sound(V, dP_dV, Cp, Cv, MW=None):
-    r'''Calculate a real fluid's speed of sound. The required derivatives should 
+    r'''
+    Calculate a real fluid's speed of sound. The required derivatives should 
     be calculated with an equation of state, and `Cp` and `Cv` are both the
     real fluid versions. Expression is given in [1]_ and [2]_; a unit conversion
     is further performed to obtain a result in m/s. If MW is not provided the 
@@ -604,6 +611,7 @@ def speed_of_sound(V, dP_dV, Cp, Cv, MW=None):
     .. [2] Pratt, R. M. "Thermodynamic Properties Involving Derivatives: Using 
        the Peng-Robinson Equation of State." Chemical Engineering Education 35,
        no. 2 (March 1, 2001): 112-115. 
+    
     '''
     if not MW:
         return (-V**2*dP_dV*Cp/Cv)**0.5
@@ -611,7 +619,8 @@ def speed_of_sound(V, dP_dV, Cp, Cv, MW=None):
         return (-V**2*1000./MW*dP_dV*Cp/Cv)**0.5
 
 def Joule_Thomson(T, V, Cp, dV_dT=None, beta=None):
-    r'''Calculate a real fluid's Joule Thomson coefficient. The required 
+    r'''
+    Calculate a real fluid's Joule Thomson coefficient. The required 
     derivative should be calculated with an equation of state, and `Cp` is the
     real fluid versions. This can either be calculated with `dV_dT` directly, 
     or with `beta` if it is already known.
@@ -653,6 +662,7 @@ def Joule_Thomson(T, V, Cp, dV_dT=None, beta=None):
     .. [2] Pratt, R. M. "Thermodynamic Properties Involving Derivatives: Using 
        the Peng-Robinson Equation of State." Chemical Engineering Education 35,
        no. 2 (March 1, 2001): 112-115. 
+    
     '''
     if dV_dT:
         return (T*dV_dT - V)/Cp
@@ -662,7 +672,8 @@ def Joule_Thomson(T, V, Cp, dV_dT=None, beta=None):
         raise Exception('Either dV_dT or beta is needed')
 
 def isentropic_exponent(Cp, Cv):
-    r'''Calculate the isentropic coefficient of a gas, given its constant-
+    r'''
+    Calculate the isentropic coefficient of a gas, given its constant-
     pressure and constant-volume heat capacity.
 
     .. math::
@@ -689,11 +700,13 @@ def isentropic_exponent(Cp, Cv):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    
     '''
     return Cp/Cv
 
 def Z(T, P, V):
-    r'''Calculates the compressibility factor of a gas, given its
+    r'''
+    Calculates the compressibility factor of a gas, given its
     temperature, pressure, and molar volume.
 
     .. math::
@@ -722,11 +735,13 @@ def Z(T, P, V):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    
     '''
     return V*P/T/R
 
 def B_to_Z(B, T, P):
-    r'''Calculates the compressibility factor of a gas, given its
+    r'''
+    Calculates the compressibility factor of a gas, given its
     second virial coefficient.
 
     .. math::
@@ -763,7 +778,8 @@ def B_to_Z(B, T, P):
     return 1. + B*P/R/T
 
 def Z_to_B(Z, T, P):
-    r'''Calculates the second virial coefficient of a pure species, given the
+    r'''
+    Calculates the second virial coefficient of a pure species, given the
     compressibility factor of the gas.
 
     .. math::
@@ -796,11 +812,13 @@ def Z_to_B(Z, T, P):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    
     '''
     return (Z - 1)*R*T/P
 
 def Z_from_virial_density_form(T, P, *args):
-    r'''Calculates the compressibility factor of a gas given its temperature,
+    r'''
+    Calculates the compressibility factor of a gas given its temperature,
     pressure, and molar density-form virial coefficients. Any number of
     coefficients is supported.
 
@@ -850,6 +868,7 @@ def Z_from_virial_density_form(T, P, *args):
        edition. Upper Saddle River, N.J: Prentice Hall, 1998.
     .. [2] Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
        Butterworth-Heinemann, 1985.
+    
     '''
     l = len(args)
     if l == 1:
@@ -889,7 +908,8 @@ def Z_from_virial_density_form(T, P, *args):
     return P/rho/R/T
 
 def Z_from_virial_pressure_form(P, *args):
-    r'''Calculates the compressibility factor of a gas given its pressure, and 
+    r'''
+    Calculates the compressibility factor of a gas given its pressure, and 
     pressure-form virial coefficients. Any number of coefficients is supported.
 
     .. math::
@@ -936,11 +956,13 @@ def Z_from_virial_pressure_form(P, *args):
        edition. Upper Saddle River, N.J: Prentice Hall, 1998.
     .. [2] Walas, Stanley M. Phase Equilibria in Chemical Engineering. 
        Butterworth-Heinemann, 1985.
+    
     '''
     return 1 + P*sum([coeff*P**i for i, coeff in enumerate(args)])
 
 def zs_to_ws(zs, MWs):
-    r'''Converts a list of mole fractions to mass fractions. Requires molecular
+    r'''
+    Converts a list of mole fractions to mass fractions. Requires molecular
     weights for all species.
 
     .. math::
@@ -969,6 +991,7 @@ def zs_to_ws(zs, MWs):
     --------
     >>> zs_to_ws([0.5, 0.5], [10, 20])
     [0.3333333333333333, 0.6666666666666666]
+    
     '''
     zs = np.asarray(zs)
     MWs = np.asarray(MWs)
@@ -977,7 +1000,8 @@ def zs_to_ws(zs, MWs):
     return ws
 
 def ws_to_zs(ws, MWs):
-    r'''Converts a list of mass fractions to mole fractions. Requires molecular
+    r'''
+    Converts a list of mass fractions to mole fractions. Requires molecular
     weights for all species.
 
     .. math::
@@ -1004,6 +1028,7 @@ def ws_to_zs(ws, MWs):
     --------
     >>> ws_to_zs([0.3333333333333333, 0.6666666666666666], [10, 20])
     [0.5, 0.5]
+    
     '''
     ws = np.asarray(ws)
     MWs = np.asarray(MWs)
@@ -1012,7 +1037,8 @@ def ws_to_zs(ws, MWs):
     return zs
 
 def zs_to_Vfs(zs, Vs):
-    r'''Converts a list of mole fractions to volume fractions. Requires molar
+    r'''
+    Converts a list of mole fractions to volume fractions. Requires molar
     volumes for all species.
 
     .. math::
@@ -1044,6 +1070,7 @@ def zs_to_Vfs(zs, Vs):
 
     >>> zs_to_Vfs([0.637, 0.363], [8.0234e-05, 9.543e-05])
     [0.5960229712956298, 0.4039770287043703]
+    
     '''
     zs = np.asarray(zs)
     Vs = np.asarray(Vs)
@@ -1052,7 +1079,8 @@ def zs_to_Vfs(zs, Vs):
     return Vfs
 
 def Vfs_to_zs(Vfs, Vs):
-    r'''Converts a list of mass fractions to mole fractions. Requires molecular
+    r'''
+    Converts a list of mass fractions to mole fractions. Requires molecular
     weights for all species.
 
     .. math::
@@ -1085,6 +1113,7 @@ def Vfs_to_zs(Vfs, Vs):
 
     >>> Vfs_to_zs([0.596, 0.404], [8.0234e-05, 9.543e-05])
     [0.6369779395901142, 0.3630220604098858]
+    
     '''
     Vs = np.asarray(Vs)
     Vfs = np.asarray(Vfs)
@@ -1093,7 +1122,8 @@ def Vfs_to_zs(Vfs, Vs):
     return zs
 
 def none_and_length_check(all_inputs, length=None):
-    r'''Checks inputs for suitability of use by a mixing rule which requires
+    r'''
+    Checks inputs for suitability of use by a mixing rule which requires
     all inputs to be of the same length and non-None. A number of variations
     were attempted for this function; this was found to be the quickest.
 
@@ -1118,6 +1148,7 @@ def none_and_length_check(all_inputs, length=None):
     --------
     >>> none_and_length_check(([1, 1], [1, 1], [1, 30], [10,0]), length=2)
     True
+    
     '''
     if not length:
         length = len(all_inputs[0])
@@ -1127,7 +1158,8 @@ def none_and_length_check(all_inputs, length=None):
     return True
 
 def allclose_variable(a, b, limits, rtols, atols):
-    '''Returns True if two arrays are element-wise equal within several 
+    '''
+    Returns True if two arrays are element-wise equal within several 
     different tolerances. Tolerance values are always positive, usually
     very small. Based on numpy's allclose function.
     
@@ -1159,6 +1191,7 @@ def allclose_variable(a, b, limits, rtols, atols):
     >>> y = [2.7244328304561904e-08, 3.0105753470546008e-10, 2.724412872417824e-08,  3.0105303055834564e-10, 2.7243914341030203e-08, 3.0104819238021998e-10, 2.7243684057561379e-08, 3.0104299541023674e-10, 2.7243436694839306e-08, 3.010374130526363e-10]
     >>> allclose_variable(x, y, limits=[.0, .5], rtols=[1E-5, 1E-6], atols=[0, 0])
     True
+    
     '''
     l = float(len(a))
     for atol, rtol, lim in zip(atols, rtols, limits):
@@ -1168,7 +1201,8 @@ def allclose_variable(a, b, limits, rtols, atols):
     return True
 
 def polylog2(x):
-    r'''Simple function to calculate PolyLog(2, x) from ranges 0 <= x <= 1,
+    r'''
+    Simple function to calculate PolyLog(2, x) from ranges 0 <= x <= 1,
     with relative error guaranteed to be < 1E-7 from 0 to 0.99999. This
     is a Pade approximation, with three coefficient sets with splits at 0.7 
     and 0.99. An exception is raised if x is under 0 or above 1. 
@@ -1195,6 +1229,7 @@ def polylog2(x):
     --------
     >>> polylog2(0.5)
     0.5822405264516294
+    
     '''
     if 0. <= x <= 0.7:
         p, q, offset = polylog2._pqoffset0
@@ -1262,7 +1297,8 @@ def normalize(array):
 
 @njit
 def mixing_simple(fracs, props):
-    r'''Simple function calculates a property based on weighted averages of
+    r'''
+    Simple function calculates a property based on weighted averages of
     properties. Weights could be mole fractions, volume fractions, mass
     fractions, or anything else.
 
@@ -1285,6 +1321,7 @@ def mixing_simple(fracs, props):
     --------
     >>> mixing_simple([0.1, 0.9], [0.01, 0.02])
     0.019000000000000003
+    
     '''
     fracs = np.asarray(fracs)
     props = np.asarray(props)
@@ -1292,7 +1329,8 @@ def mixing_simple(fracs, props):
 
 @njit
 def mixing_logarithmic(fracs, props):
-    r'''Simple function calculates a property based on weighted averages of
+    r'''
+    Simple function calculates a property based on weighted averages of
     logarithmic properties.
 
     .. math::
@@ -1320,6 +1358,7 @@ def mixing_logarithmic(fracs, props):
     --------
     >>> mixing_logarithmic([0.1, 0.9], [0.01, 0.02])
     0.01866065983073615
+    
     '''
     return np.exp((fracs*np.log(props)).sum())
 

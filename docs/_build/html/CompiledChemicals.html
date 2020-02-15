@@ -197,8 +197,7 @@
 <dd><p>Create CompiledChemicals object that contains Chemical objects as attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>chemicals</strong><span class="classifier">Iterable[str or Chemical]</span></dt><dd><dl class="simple">
+<dd class="field-odd"><p><strong>chemicals</strong> (<em>Iterable</em><em>[</em><em>str</em><em> or </em><a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em>) – <dl class="simple">
 <dt>Strings should be one of the following [-]:</dt><dd><ul class="simple">
 <li><p>Name, in IUPAC form or common form or a synonym registered in PubChem</p></li>
 <li><p>InChI name, prefixed by ‘InChI=1S/’ or ‘InChI=1/’</p></li>
@@ -209,10 +208,119 @@
 </ul>
 </dd>
 </dl>
+</p>
 </dd>
 </dl>
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.tuple">
+<code class="sig-name descname">tuple</code><a class="headerlink" href="#thermosteam.CompiledChemicals.tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>All compiled chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical">Chemical</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.size">
+<code class="sig-name descname">size</code><a class="headerlink" href="#thermosteam.CompiledChemicals.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.IDs">
+<code class="sig-name descname">IDs</code><a class="headerlink" href="#thermosteam.CompiledChemicals.IDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>IDs of all chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.CASs">
+<code class="sig-name descname">CASs</code><a class="headerlink" href="#thermosteam.CompiledChemicals.CASs" title="Permalink to this definition">¶</a></dt>
+<dd><p>CASs of all chemicals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.MW">
+<code class="sig-name descname">MW</code><a class="headerlink" href="#thermosteam.CompiledChemicals.MW" title="Permalink to this definition">¶</a></dt>
+<dd><p>MWs of all chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>1d ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.Hf">
+<code class="sig-name descname">Hf</code><a class="headerlink" href="#thermosteam.CompiledChemicals.Hf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heats of formation of all chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>1d ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.Hc">
+<code class="sig-name descname">Hc</code><a class="headerlink" href="#thermosteam.CompiledChemicals.Hc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heats of combustion of all chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>1d ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.equilibrium_chemicals">
+<code class="sig-name descname">equilibrium_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.equilibrium_chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>IDs of chemicals that may have multiple phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.heavy_chemicals">
+<code class="sig-name descname">heavy_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.heavy_chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>IDs of chemicals that are only present in liquid or solid phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.light_chemicals">
+<code class="sig-name descname">light_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.light_chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>IDs of chemicals that are only present in gas phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <p class="rubric">Examples</p>
 <p>Create a CompiledChemicals object from chemical identifiers</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span><span class="p">,</span> <span class="n">Chemical</span>
@@ -232,46 +340,20 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># TypeError: &#39;CompiledChemicals&#39; object is read-only</span>
 </pre></div>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>tuple</strong><span class="classifier">tuple[Chemical]</span></dt><dd><p>All compiled chemicals.</p>
-</dd>
-<dt><strong>size</strong><span class="classifier">int</span></dt><dd><p>Number of chemicals.</p>
-</dd>
-<dt><strong>IDs</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of all chemicals.</p>
-</dd>
-<dt><strong>CASs</strong><span class="classifier">tuple[str]</span></dt><dd><p>CASs of all chemicals</p>
-</dd>
-<dt><strong>MW</strong><span class="classifier">1d ndarray</span></dt><dd><p>MWs of all chemicals.</p>
-</dd>
-<dt><strong>Hf</strong><span class="classifier">1d ndarray</span></dt><dd><p>Heats of formation of all chemicals.</p>
-</dd>
-<dt><strong>Hc</strong><span class="classifier">1d ndarray</span></dt><dd><p>Heats of combustion of all chemicals.</p>
-</dd>
-<dt><strong>equilibrium_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that may have multiple phases.</p>
-</dd>
-<dt><strong>heavy_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that are only present in liquid or solid phases.</p>
-</dd>
-<dt><strong>light_chemicals</strong><span class="classifier">tuple[str]</span></dt><dd><p>IDs of chemicals that are only present in gas phases.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.compile">
-<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.compile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.compile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do nothing, CompiledChemicals objects are already compiled.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.refresh_constants">
-<code class="sig-name descname">refresh_constants</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.refresh_constants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.refresh_constants" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">refresh_constants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.refresh_constants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.refresh_constants" title="Permalink to this definition">¶</a></dt>
 <dd><p>Refresh constant arrays according to their chemical values,
 including the molecular weight, heats of formation,
 and heats of combustion.</p>
 <p class="rubric">Examples</p>
-<p>Some chemical constants may not be defined in thermosteam, 
+<p>Some chemical constants may not be defined in thermosteam,
 such as the heat of combustion.
 We can update it and refresh the compiled constants:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
@@ -286,14 +368,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.subgroup">
-<code class="sig-name descname">subgroup</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.subgroup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">subgroup</code><span class="sig-paren">(</span><em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.subgroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new subgroup of chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">Iterable[str]</span></dt><dd><p>Chemical identifiers.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>Iterable</em><em>[</em><em>str</em><em>]</em>) – Chemical identifiers.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -306,14 +385,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.get_synonyms">
-<code class="sig-name descname">get_synonyms</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_synonyms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_synonyms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_synonyms</code><span class="sig-paren">(</span><em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_synonyms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_synonyms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all synonyms of a chemical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>Chemical identifier.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – Chemical identifier.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -328,16 +404,14 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.set_synonym">
-<code class="sig-name descname">set_synonym</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em>, <em class="sig-param">synonym</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.set_synonym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.set_synonym" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_synonym</code><span class="sig-paren">(</span><em class="sig-param">ID</em>, <em class="sig-param">synonym</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.set_synonym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.set_synonym" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a new synonym for a chemical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID</strong><span class="classifier">str</span></dt><dd><p>Chemical identifier.</p>
-</dd>
-<dt><strong>synonym</strong><span class="classifier">str</span></dt><dd><p>New identifier for chemical.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ID</strong> (<em>str</em>) – Chemical identifier.</p></li>
+<li><p><strong>synonym</strong> (<em>str</em>) – New identifier for chemical.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -353,14 +427,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.kwarray">
-<code class="sig-name descname">kwarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.kwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.kwarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">kwarray</code><span class="sig-paren">(</span><em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.kwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.kwarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an array with entries that correspond to the orded chemical IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID_data</strong><span class="classifier">dict</span></dt><dd><p>ID-data pairs.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ID_data</strong> (<em>dict</em>) – ID-data pairs.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -374,16 +445,14 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.array">
-<code class="sig-name descname">array</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.array" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">array</code><span class="sig-paren">(</span><em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an array with entries that correspond to the ordered chemical IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Compound IDs.</p>
-</dd>
-<dt><strong>data</strong><span class="classifier">array_like</span></dt><dd><p>Data corresponding to IDs.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDs</strong> (<em>iterable</em>) – Compound IDs.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Data corresponding to IDs.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -397,16 +466,14 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.iarray">
-<code class="sig-name descname">iarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.iarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.iarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iarray</code><span class="sig-paren">(</span><em class="sig-param">IDs</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.iarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.iarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a chemical indexer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Chemical IDs.</p>
-</dd>
-<dt><strong>data</strong><span class="classifier">array_like</span></dt><dd><p>Data corresponding to IDs.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDs</strong> (<em>iterable</em>) – Chemical IDs.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em>) – Data corresponding to IDs.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -431,14 +498,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.ikwarray">
-<code class="sig-name descname">ikwarray</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.ikwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.ikwarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ikwarray</code><span class="sig-paren">(</span><em class="sig-param">ID_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.ikwarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.ikwarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a chemical indexer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID_data</strong><span class="classifier">Dict[str: float]</span></dt><dd><p>Chemical ID-value pairs.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ID_data</strong> (<em>Dict</em><em>[</em><em>str: float</em><em>]</em>) – Chemical ID-value pairs.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -463,14 +527,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.index">
-<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return index of specified chemical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ID: str</strong></dt><dd><p>Chemical ID</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – Chemical ID</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -490,14 +551,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.indices">
-<code class="sig-name descname">indices</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.indices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">indices</code><span class="sig-paren">(</span><em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return indices of specified chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>IDs</strong><span class="classifier">iterable</span></dt><dd><p>Chemical IDs or CAS numbers.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>iterable</em>) – Chemical IDs or CAS numbers.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -517,14 +575,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.get_index">
-<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return index/indices of specified chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>key</strong><span class="classifier">iterable[str] or str</span></dt><dd><p>A single chemical identifier or multiple.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>key</strong> (<em>iterable</em><em>[</em><em>str</em><em>] or </em><em>str</em>) – A single chemical identifier or multiple.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -546,7 +601,7 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.get_equilibrium_indices">
-<code class="sig-name descname">get_equilibrium_indices</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_equilibrium_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_equilibrium_indices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_equilibrium_indices</code><span class="sig-paren">(</span><em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_equilibrium_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_equilibrium_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return indices of species in equilibrium
 given an array dictating whether or not
 the chemicals are present.</p>

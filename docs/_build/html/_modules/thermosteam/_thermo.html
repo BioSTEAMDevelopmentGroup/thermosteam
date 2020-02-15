@@ -175,7 +175,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">equilibrium</span> <span class="k">as</span> <span class="n">eq</span>
 <span class="kn">from</span> <span class="nn">._chemicals</span> <span class="kn">import</span> <span class="n">Chemicals</span>
-<span class="kn">from</span> <span class="nn">.mixture</span> <span class="kn">import</span> <span class="n">Mixture</span>
+<span class="kn">from</span> <span class="nn">.mixture</span> <span class="kn">import</span> <span class="n">Mixture</span><span class="p">,</span> <span class="n">new_ideal_mixture</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_only</span><span class="p">,</span> <span class="n">cucumber</span>
 <span class="kn">from</span> <span class="nn">._settings</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -191,13 +191,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    chemicals : Chemicals or Iterable[str]</span>
 <span class="sd">        Pure component chemical data.</span>
-<span class="sd">    mixture : Mixture</span>
-<span class="sd">        Calculator for mixture properties.</span>
-<span class="sd">    Gamma : ActivityCoefficients subclass</span>
+<span class="sd">    mixture : Mixture, optional</span>
+<span class="sd">        Calculates mixture properties.</span>
+<span class="sd">    Gamma : ActivityCoefficients subclass, optional</span>
 <span class="sd">        Class for computing activity coefficiente.</span>
-<span class="sd">    Phi : FugacityCoefficients subclass</span>
+<span class="sd">    Phi : FugacityCoefficients subclass, optional</span>
 <span class="sd">        Class for computing fugacity coefficiente.</span>
-<span class="sd">    PCF : PoyntingCorrectionFactor subclass.</span>
+<span class="sd">    PCF : PoyntingCorrectionFactor subclass, optional</span>
 <span class="sd">        Class for computing poynting correction factors.</span>
 <span class="sd">    </span>
 <span class="sd">    Examples</span>
@@ -209,6 +209,19 @@
 <span class="sd">    </span>
 <span class="sd">    Note how chemicals are compiled when it becomes part of a Thermo object.</span>
 <span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chemicals : Chemicals or Iterable[str]</span>
+<span class="sd">        Pure component chemical data.</span>
+<span class="sd">    mixture : Mixture, optional</span>
+<span class="sd">        Calculates mixture properties.</span>
+<span class="sd">    Gamma : ActivityCoefficients subclass, optional</span>
+<span class="sd">        Class for computing activity coefficiente.</span>
+<span class="sd">    Phi : FugacityCoefficients subclass, optional</span>
+<span class="sd">        Class for computing fugacity coefficiente.</span>
+<span class="sd">    PCF : PoyntingCorrectionFactor subclass, optional</span>
+<span class="sd">        Class for computing poynting correction factors.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;mixture&#39;</span><span class="p">,</span> <span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Phi&#39;</span><span class="p">,</span> <span class="s1">&#39;PCF&#39;</span><span class="p">)</span> 
     
@@ -217,7 +230,11 @@
                  <span class="n">Phi</span><span class="o">=</span><span class="n">eq</span><span class="o">.</span><span class="n">IdealFugacityCoefficients</span><span class="p">,</span>
                  <span class="n">PCF</span><span class="o">=</span><span class="n">eq</span><span class="o">.</span><span class="n">IdealPoyintingCorrectionFactors</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">Chemicals</span><span class="p">):</span> <span class="n">chemicals</span> <span class="o">=</span> <span class="n">Chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
-        <span class="n">mixture</span> <span class="o">=</span> <span class="n">mixture</span> <span class="ow">or</span> <span class="n">Mixture</span><span class="o">.</span><span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mixture</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mixture</span><span class="p">,</span> <span class="n">Mixture</span><span class="p">),</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;mixture must be a &#39;</span><span class="si">{Mixture.__name__}</span><span class="s2">&#39; object&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mixture</span> <span class="o">=</span> <span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="n">chemicals</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
             <span class="n">issubtype</span> <span class="o">=</span> <span class="nb">issubclass</span>
