@@ -22,9 +22,16 @@ def test_chemical_docs():
 def test_reaction_docs():
     doctest.testmod(tmo.reaction._reaction)
     
-if __name__ == '__main__':
+def test_equilibrium_docs():
+    doctest.testmod(tmo.equilibrium.vle)
+    
+def test_thermosteam():
     test_stream_docs()
     test_multi_stream_docs()
     test_chemicals_docs()
     test_chemical_docs()
     test_reaction_docs()
+    test_equilibrium_docs()
+    
+if __name__ == '__main__':
+    test_thermosteam()

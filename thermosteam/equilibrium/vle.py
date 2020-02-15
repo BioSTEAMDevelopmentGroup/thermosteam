@@ -212,7 +212,8 @@ class VLE:
             g=[('Methanol', 40), ('Propanol', 1)],
             l=[('Water', 304), ('Ethanol', 30)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
-    >>> vle(T=400, P=101325)
+    >>> vle(V=0.5, P=101325)
+    >>> vle
     VLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.896)],
             l=[('Water', 177.3), ('Ethanol', 3.598), ('Methanol', 6.509), ('Propanol', 0.104)]),
