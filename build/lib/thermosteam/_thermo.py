@@ -33,9 +33,8 @@ class Thermo:
     
     Examples
     --------
-    >>> from thermosteam import Thermo, Chemicals
-    >>> chemicals = Chemicals(['Ethanol', 'Water'])
-    >>> Thermo(chemicals)
+    >>> from thermosteam import Thermo
+    >>> Thermo(['Ethanol', 'Water'])
     Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
     
     Note how chemicals are compiled when it becomes part of a Thermo object.

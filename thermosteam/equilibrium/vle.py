@@ -205,17 +205,17 @@ class VLE:
 
         Parameters
         ----------
-        P : float, optional
+        P=None : float
             Operating pressure [Pa].
-        H : float, optional
+        H=None : float
             Enthalpy [kJ/hr].
-        T : float, optional
+        T=None : float
             Operating temperature [K].
-        V : float, optional
+        V=None : float
             Molar vapor fraction.
-        x : float, optional
+        x=None : float
             Molar composition of liquid (for binary mixtures).
-        y : float, optional
+        y=None : float
             Molar composition of vapor (for binary mixtures).
         
         Notes

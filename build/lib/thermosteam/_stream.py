@@ -41,7 +41,7 @@ class Stream:
     flow=() : tuple
         All flow rates corresponding to chemical `IDs`.
     phase='l' : 'l', 'g', or 's'
-        Either gas ("g"), liquid ("l"), or solid ("s").
+        Either gas (g), liquid (l), or solid (s).
     T=298.15 : float
         Temperature [K].
     P=101325 : float

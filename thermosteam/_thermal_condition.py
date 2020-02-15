@@ -13,9 +13,9 @@ class ThermalCondition:
     Parameters
     ----------
     T : float
-        Temperature in Kelvin
+        Temperature [K].
     P : float
-        Pressure in Pascal
+        Pressure [Pa].
     
     """
     __slots__ = ('T', 'P')

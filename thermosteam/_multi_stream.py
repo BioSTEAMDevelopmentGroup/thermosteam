@@ -30,8 +30,8 @@ class MultiStream(Stream):
     units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid).
-    phases=('g, l') : tuple['g', 'l', 's', 'G', 'L', 'S']
-        Tuple denoting the phases present.
+    phases : tuple['g', 'l', 's', 'G', 'L', 'S']
+        Tuple denoting the phases present. Defaults to ('g, l').
     T=298.15 : float
         Temperature [K].
     P=101325 : float
