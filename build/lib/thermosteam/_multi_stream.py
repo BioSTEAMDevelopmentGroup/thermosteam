@@ -26,12 +26,12 @@ class MultiStream(Stream):
     flow=() : 2d array
         All flow rates corresponding to `phases` by row and chemical IDs by column.
     thermo=None : Thermo
-        Thermodynamic equilibrium package. Defaults to `settings.get_thermo()`.
+        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
     units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid).
     phases : tuple['g', 'l', 's', 'G', 'L', 'S']
-        Tuple denoting the phases present. Defaults to ('g, l').
+        Tuple denoting the phases present. Defaults to ('g', 'l').
     T=298.15 : float
         Temperature [K].
     P=101325 : float
@@ -117,7 +117,6 @@ class MultiStream(Stream):
      phase: 'l', T: 365 K, P: 101325 Pa
      flow (kmol/hr): Water    0.619
                      Ethanol  0.0238
-    
     >>> s1['g'].show()
     Stream: 
      phase: 'g', T: 365 K, P: 101325 Pa
@@ -509,7 +508,7 @@ class MultiStream(Stream):
             for i in range(N_IDs):
                 spaces = ' ' * (maxlen - lengths[i])
                 if i == N - 1:
-                    flowrates += '...' + new_line
+                    flowrates += '...'
                     break
                 flowrates += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
                 if i != N_IDs - 1:

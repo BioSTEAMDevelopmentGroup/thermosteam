@@ -182,7 +182,44 @@ def V_3N(zs, Ks):
 
 @thermo_user
 class VLE:
-    """Create a VLE object for solving VLE."""
+    """
+    Create a VLE object that performs vapor-liquid equilibrium when called.
+        
+    Parameters
+    ----------
+    imol : MaterialIndexer
+        Chemical phase data is stored here.
+    thermal_condition=None : ThermalCondition, optional
+        Temperature and pressure results are stored here.
+    thermo=None : Thermo, optional
+        Themodynamic property package for equilibrium calculations.
+        Defaults to `thermosteam.settings.get_thermo()`.
+    bubble_point_cache=None : thermosteam.utils.Cache, optional
+        Cache to retrieve bubble point object.
+    dew_point_cache=None : thermosteam.utils.Cache, optional
+        Cache to retrieve dew point object
+    
+    Examples
+    --------
+    >>> from thermosteam import indexer, equilibrium, settings
+    >>> settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
+    >>> imol = indexer.MolarFlowIndexer(
+    ...             l=[('Water', 304), ('Ethanol', 30)],
+    ...             g=[('Methanol', 40), ('Propanol', 1)])
+    >>> vle = equilibrium.VLE(imol)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Methanol', 40), ('Propanol', 1)],
+            l=[('Water', 304), ('Ethanol', 30)]),
+        thermal_condition=ThermalCondition(T=298.15, P=101325))
+    >>> vle(V=0.5, P=101325)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.896)],
+            l=[('Water', 177.3), ('Ethanol', 3.598), ('Methanol', 6.509), ('Propanol', 0.104)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
+    
+    """
     __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_TP', '_y',
                  '_dew_point', '_bubble_point', '_x',
                  '_phi', '_pcf', '_gamma', '_imol',
@@ -198,6 +235,21 @@ class VLE:
     P_tol = 0.1
     H_hat_tol = 0.1
     V_tol = 0.00001
+    
+    def __init__(self, imol, thermal_condition=None,
+                 thermo=None, bubble_point_cache=None, dew_point_cache=None):
+        self._T = self._P = self._H_hat = self._V = 0
+        self._dew_point_cache = dew_point_cache or Cache(DewPoint)
+        self._bubble_point_cache = bubble_point_cache or Cache(BubblePoint)
+        self._load_thermo(thermo)
+        self._imol = imol
+        self._TP = thermal_condition or ThermalCondition(298.15, 101325.)
+        self._phase_data = tuple(imol.iter_data())
+        self._liquid_mol = liquid_mol = imol['l']
+        self._vapor_mol = imol['g']
+        self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
+        self._index = ()
+        self._y = None
     
     def __call__(self, P=None, H=None, T=None, V=None, x=None, y=None):
         """
@@ -271,30 +323,6 @@ class VLE:
                 raise ValueError("specification V and x is invalid")
         else: # x_spec and y_spec
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
-    
-    def __init__(self, imol, thermal_condition=None,
-                 thermo=None, bubble_point_cache=None, dew_point_cache=None):
-        """Create a VLE object that performs vapor-liquid equilibrium when called.
-        
-        Parameters
-        ----------
-        imol : MaterialIndexer
-        
-        thermal_condition : ThermalCondition
-        
-        """
-        self._T = self._P = self._H_hat = self._V = 0
-        self._dew_point_cache = dew_point_cache or Cache(DewPoint)
-        self._bubble_point_cache = bubble_point_cache or Cache(BubblePoint)
-        self._load_thermo(thermo)
-        self._imol = imol
-        self._TP = thermal_condition or ThermalCondition(298.15, 101325.)
-        self._phase_data = tuple(imol.iter_data())
-        self._liquid_mol = liquid_mol = imol['l']
-        self._vapor_mol = imol['g']
-        self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
-        self._index = ()
-        self._y = None
     
     def _setup(self):
         # Get flow rates
