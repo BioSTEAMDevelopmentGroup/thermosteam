@@ -1376,7 +1376,7 @@ class Stream:
         for i in range(N_IDs):
             spaces = ' ' * (maxlen - lengths[i])
             if i == _N:
-                flowrates += '...' + new_line
+                flowrates += '...'
                 break
             flowrates += IDs[i] + spaces + f'{flow_array[i]:.3g}'
             if i != N_IDs-1: flowrates += new_line

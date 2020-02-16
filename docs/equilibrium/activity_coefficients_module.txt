@@ -3,4 +3,4 @@ activity_coefficients
 
 .. automodule:: thermosteam.equilibrium.activity_coefficients
    :members:
-   :special-members:
+   :special-members: __call__

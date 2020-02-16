@@ -3,4 +3,4 @@ DewPoint
 
 .. autoclass:: thermosteam.equilibrium.DewPoint
    :members:
-   :special-members:
+   :special-members: __call__
