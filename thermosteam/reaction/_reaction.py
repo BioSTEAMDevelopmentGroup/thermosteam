@@ -77,7 +77,7 @@ class Reaction:
         new = self.copy()
         stoi = self._stoi*self.X + rxn._stoi*rxn.X
         new._stoi = stoi/-(stoi[new._Xindex])
-        new.X = (self.X + rxn.X)/2
+        new.X = self.X + rxn.X
         return new
     
     def __iadd__(self, rxn):
@@ -85,7 +85,7 @@ class Reaction:
         assert self.reactant is rxn.reactant, 'reactants must be the same to add reactions'
         stoi = self._stoi*self.X + rxn._stoi*rxn.X
         self._stoi = stoi/-(stoi[self._Xindex])
-        self.X = (self.X + rxn.X)/2
+        self.X = self.X + rxn.X
         return self
     
     def __mul__(self, num):
@@ -120,7 +120,7 @@ class Reaction:
         new = self.copy()
         stoi = self._stoi*self.X - rxn._stoi*rxn.X
         new._stoi = stoi/-(stoi[new._Xindex])
-        new.X = (self.X - rxn.X)/2
+        new.X = self.X - rxn.X
         return new
     
     def __isub__(self, rxn):
@@ -128,7 +128,7 @@ class Reaction:
         assert self.reactant is rxn.reactant, 'reactants must be the same to add reactions'
         stoi = self._stoi*self.X + rxn._stoi*rxn.X
         self._stoi = stoi/-(stoi[self._Xindex])
-        self.X = (self.X - rxn.X)/2
+        self.X = self.X - rxn.X
         return 
     
     def __call__(self, material):

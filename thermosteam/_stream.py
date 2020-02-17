@@ -1273,7 +1273,7 @@ class Stream:
         """
         return self.imol[IDs]/self.F_vol
     
-    def recieve_vent(self, other):
+    def recieve_vent(self, other, accumulate=False):
         """
         Recieve vapors from another stream as if in equilibrium.
 
@@ -1299,6 +1299,12 @@ class Stream:
                          N2       0.369
         """
         chemicals = other.equilibrium_chemicals
+        light_indices = other.chemicals._light_indices
+        if accumulate:
+            self.mol[light_indices] += other.mol[light_indices]
+        else:
+            self.empty()
+        other.mol[light_indices] = 0
         F_l = eq.LiquidFugacities(chemicals, other.thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = other.get_molar_composition(IDs)
@@ -1308,9 +1314,13 @@ class Stream:
         y = f_l / P
         imol = self.imol
         mol_old = imol[IDs]
-        imol[IDs] = mol_new = self.F_mol * y
+        if accumulate:
+            mol_new = self.F_mol * y
+            imol[IDs] += mol_new            
+        else:
+            imol[IDs] = mol_new = self.F_mol * y
         other.imol[IDs] += mol_old - mol_new 
-    
+        
     ### Casting ###
     
     @property

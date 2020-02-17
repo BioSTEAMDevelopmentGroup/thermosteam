@@ -50,6 +50,7 @@ class LockedPhase(Phase):
         return Phase, (self.phase,)
     
     def __setattr__(self, name, value):
-        raise AttributeError('phase is locked')
+        if value != self.phase:
+            raise AttributeError('phase is locked')
         
 NoPhase = LockedPhase(None)
