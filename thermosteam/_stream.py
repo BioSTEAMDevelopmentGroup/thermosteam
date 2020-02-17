@@ -1304,6 +1304,7 @@ class Stream:
             self.mol[light_indices] += other.mol[light_indices]
         else:
             self.empty()
+            self.mol[light_indices] = other.mol[light_indices]
         other.mol[light_indices] = 0
         F_l = eq.LiquidFugacities(chemicals, other.thermo)
         IDs = tuple([i.ID for i in chemicals])
