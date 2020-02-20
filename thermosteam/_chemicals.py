@@ -39,7 +39,6 @@ class Chemicals:
     
     Examples
     --------
-    
     Create a Chemicals object from chemical identifiers:
     
     >>> from thermosteam import Chemicals

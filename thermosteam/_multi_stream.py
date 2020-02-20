@@ -468,7 +468,7 @@ class MultiStream(Stream):
         T_units = T or display_units.T
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
-        N = N or display_units.N
+        N_max = N or display_units.N
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
         N_all_IDs = len(all_IDs)
         if N_all_IDs == 0:
@@ -487,14 +487,14 @@ class MultiStream(Stream):
         first_line_spaces = len(first_line)*" "
 
         # Set up chemical data for all phases
-        phases_flowrates_info = ''
+        phases_flow_rates_info = ''
         for phase in self.phases:
             phase_data = factor * indexer[phase, all_IDs] 
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue
             if composition:
                 total_flow = data.sum()
-                data /= total_flow
+                data = data/total_flow
         
             # Get basic structure for phase data            
             beginning = (first_line or first_line_spaces) + f' ({phase}) '
@@ -502,24 +502,24 @@ class MultiStream(Stream):
             new_line = '\n' + len(beginning) * ' '
 
             # Set chemical data
-            flowrates = ''
+            flow_rates = ''
             N_IDs = len(data)
             lengths = [len(i) for i in IDs]
-            for i in range(N_IDs):
+            too_many_chemicals = N_IDs > N_max
+            N = N_max if too_many_chemicals else N_IDs
+            for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
-                if i == N - 1:
-                    flowrates += '...'
-                    break
-                flowrates += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
-                if i != N_IDs - 1:
-                    flowrates += new_line
+                if i: flow_rates += new_line    
+                flow_rates += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
+            if too_many_chemicals:
+                flow_rates += new_line + '...'
             if composition:
                 dashes = '-' * maxlen
-                flowrates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
+                flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
             # Put it together
-            phases_flowrates_info += beginning + flowrates + '\n'
+            phases_flow_rates_info += beginning + flow_rates + '\n'
             
-        return basic_info + phases_flowrates_info[:-1]
+        return basic_info + phases_flow_rates_info.rstrip('\n')
     
     def print(self):
         from .utils import repr_kwarg, repr_couples
