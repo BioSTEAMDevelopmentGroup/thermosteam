@@ -205,13 +205,13 @@ are available as methods.</p>
 <li><p><strong>ID=''</strong> (<em>str</em>) – A unique identification. If ID is None, stream will not be registered.
 If no ID is given, stream will be registered with a unique ID.</p></li>
 <li><p><strong>flow=</strong><strong>(</strong><strong>)</strong> (<em>tuple</em>) – All flow rates corresponding to chemical <cite>IDs</cite>.</p></li>
-<li><p><strong>phase='l'</strong> (<em>'l'</em><em>, </em><em>'g'</em><em>, or </em><em>'s'</em>) – Either gas (“g”), liquid (“l”), or solid (“s”).</p></li>
+<li><p><strong>phase='l'</strong> (<em>'l'</em><em>, </em><em>'g'</em><em>, or </em><em>'s'</em>) – Either gas (g), liquid (l), or solid (s).</p></li>
 <li><p><strong>T=298.15</strong> (<em>float</em>) – Temperature [K].</p></li>
 <li><p><strong>P=101325</strong> (<em>float</em>) – Pressure [Pa].</p></li>
 <li><p><strong>units='kmol/hr'</strong> (<em>str</em>) – Flow rate units of measure (only mass, molar, and
 volumetric flow rates are valid).</p></li>
-<li><p><strong>price=0</strong> (<em>float</em>) – Price in USD/kg.</p></li>
-<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermodynamic equilibrium package. Defaults to <cite>settings.get_thermo()</cite>.</p></li>
+<li><p><strong>price=0</strong> (<em>float</em>) – Price per unit mass [USD/kg].</p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermodynamic equilibrium package. Defaults to <cite>thermosteam.settings.get_thermo()</cite>.</p></li>
 <li><p><strong>**chemical_flows</strong> (<em>float</em>) – ID - flow pairs.</p></li>
 </ul>
 </dd>
@@ -361,7 +361,7 @@ Each phase can be accessed separately too:</p>
 </div>
 <dl class="attribute">
 <dt id="thermosteam.Stream.display_units">
-<code class="sig-name descname">display_units</code><em class="property"> = DisplayUnits(T='K', P='Pa', flow='kmol/hr', N=5)</em><a class="headerlink" href="#thermosteam.Stream.display_units" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display_units</code><em class="property"> = DisplayUnits(T='K', P='Pa', flow='kmol/hr', N=7)</em><a class="headerlink" href="#thermosteam.Stream.display_units" title="Permalink to this definition">¶</a></dt>
 <dd><p>[DisplayUnits] Units of measure for IPython display (class attribute)</p>
 </dd></dl>
 
@@ -1233,7 +1233,7 @@ the split fraction or an array of split fractions.</p>
 
 <dl class="method">
 <dt id="thermosteam.Stream.recieve_vent">
-<code class="sig-name descname">recieve_vent</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.recieve_vent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.recieve_vent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">recieve_vent</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">accumulate=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_stream.html#Stream.recieve_vent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Stream.recieve_vent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recieve vapors from another stream as if in equilibrium.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

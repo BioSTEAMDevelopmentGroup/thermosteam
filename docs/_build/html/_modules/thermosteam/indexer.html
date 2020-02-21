@@ -373,35 +373,37 @@
     
     <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return string with all specifications.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Stream</span>
         <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
         <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">N_IDs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">N_IDs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: (empty)&quot;</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
             <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__} (</span><span class="si">{self.units}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{self.phase}</span><span class="s1">) &#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
-        <span class="n">new_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
+        <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
         <span class="n">data_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
         <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">N_max</span> <span class="o">=</span> <span class="n">N</span> <span class="ow">or</span> <span class="n">Stream</span><span class="o">.</span><span class="n">display_units</span><span class="o">.</span><span class="n">N</span>
+        <span class="n">too_many_chemicals</span> <span class="o">=</span> <span class="n">N_IDs</span> <span class="o">&gt;</span> <span class="n">N_max</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N_max</span> <span class="k">if</span> <span class="n">too_many_chemicals</span> <span class="k">else</span> <span class="n">N_IDs</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
             <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">_N</span><span class="p">:</span>
-                <span class="n">data_info</span> <span class="o">+=</span> <span class="s1">&#39;...</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
-                <span class="k">break</span>
-            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
-        <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">len_</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[len_-1]:.4g}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span>
+            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">too_many_chemicals</span><span class="p">:</span>
+            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">basic_info</span>
               <span class="o">+</span> <span class="n">beginning</span>
               <span class="o">+</span> <span class="n">data_info</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ChemicalIndexer.show"><a class="viewcode-back" href="../../indexer/ChemicalIndexer.html#thermosteam.indexer.ChemicalIndexer.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="ChemicalIndexer.show"><a class="viewcode-back" href="../../indexer/ChemicalIndexer.html#thermosteam.indexer.ChemicalIndexer.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print all specifications.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -603,6 +605,8 @@
     
     <span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return string with all specifications.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Stream</span>
+        <span class="n">N_max</span> <span class="o">=</span> <span class="n">N</span> <span class="ow">or</span> <span class="n">Stream</span><span class="o">.</span><span class="n">display_units</span><span class="o">.</span><span class="n">N</span>
         <span class="n">IDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">IDs</span>
         <span class="n">index</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
@@ -619,7 +623,7 @@
         <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_lengths</span> <span class="o">+</span> <span class="p">[</span><span class="mi">8</span><span class="p">])</span>
 
         <span class="c1"># Set up chemical data for all phases</span>
-        <span class="n">phases_flowrates_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">phases_data_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
             <span class="n">phase_data</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">all_IDs</span><span class="p">]</span>
             <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">all_IDs</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">)</span>
@@ -627,28 +631,23 @@
         
             <span class="c1"># Get basic structure for phase data</span>
             <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{phase}</span><span class="s1">) &#39;</span>
-            <span class="n">new_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
 
             <span class="c1"># Set chemical data</span>
-            <span class="n">flowrates</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">N_IDs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">too_many_chemicals</span> <span class="o">=</span> <span class="n">N_IDs</span> <span class="o">&gt;</span> <span class="n">N_max</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">N_max</span> <span class="k">if</span> <span class="n">too_many_chemicals</span> <span class="k">else</span> <span class="n">N_IDs</span>
             <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
-            <span class="n">_N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
                 <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">_N</span><span class="p">:</span>
-                    <span class="n">flowrates</span> <span class="o">+=</span> <span class="s1">&#39;...</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
-                    <span class="k">break</span>
-                <span class="n">flowrates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> \
-                    <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">new_line_spaces</span>
-            <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">flowrates</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[l-1]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span>
-                          <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[l-1]:.4g}</span><span class="s1">&#39;</span><span class="p">)</span>
-
+                <span class="k">if</span> <span class="n">i</span><span class="p">:</span> <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span>
+                <span class="n">data_info</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">too_many_chemicals</span><span class="p">:</span> <span class="n">data</span> <span class="o">+=</span> <span class="n">new_line</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
             <span class="c1"># Put it together</span>
-            <span class="n">phases_flowrates_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">flowrates</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">phases_data_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">data_info</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
             
-        <span class="k">return</span> <span class="n">basic_info</span> <span class="o">+</span> <span class="n">phases_flowrates_info</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">basic_info</span> <span class="o">+</span> <span class="n">phases_data_info</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">show</span> <span class="o">=</span> <span class="n">ChemicalIndexer</span><span class="o">.</span><span class="n">show</span>
     <span class="n">_ipython_display_</span> <span class="o">=</span> <span class="n">show</span></div>
     

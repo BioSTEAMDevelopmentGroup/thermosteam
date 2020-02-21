@@ -322,7 +322,7 @@
     <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,)</span>
     
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+<div class="viewcode-block" id="GroupActivityCoefficients.__call__"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.GroupActivityCoefficients.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return UNIFAC coefficients.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -342,7 +342,7 @@
                                              <span class="bp">self</span><span class="o">.</span><span class="n">_chem_Qfractions</span><span class="p">,</span>
                                              <span class="bp">self</span><span class="o">.</span><span class="n">_group_psis</span><span class="p">)</span>
         <span class="n">gamma</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">gamma</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">gamma</span></div>
+        <span class="k">return</span> <span class="n">gamma</span></div></div>
     
     
 <div class="viewcode-block" id="UNIFACActivityCoefficiencts"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.UNIFACActivityCoefficiencts">[docs]</a><span class="k">class</span> <span class="nc">UNIFACActivityCoefficiencts</span><span class="p">(</span><span class="n">GroupActivityCoefficients</span><span class="p">):</span>

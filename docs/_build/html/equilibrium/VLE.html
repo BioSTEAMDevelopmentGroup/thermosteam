@@ -204,7 +204,39 @@
 <dl class="class">
 <dt id="thermosteam.equilibrium.VLE">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.equilibrium.</code><code class="sig-name descname">VLE</code><span class="sig-paren">(</span><em class="sig-param">imol</em>, <em class="sig-param">thermal_condition=None</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">bubble_point_cache=None</em>, <em class="sig-param">dew_point_cache=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/vle.html#VLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.VLE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a VLE object for solving VLE.</p>
+<dd><p>Create a VLE object that performs vapor-liquid equilibrium when called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imol</strong> (<a class="reference internal" href="../indexer/MaterialIndexer.html#thermosteam.indexer.MaterialIndexer" title="thermosteam.indexer.MaterialIndexer"><em>MaterialIndexer</em></a>) – Chemical phase data is stored here.</p></li>
+<li><p><strong>thermal_condition=None</strong> (<a class="reference internal" href="../ThermalCondition.html#thermosteam.ThermalCondition" title="thermosteam.ThermalCondition"><em>ThermalCondition</em></a><em>, </em><em>optional</em>) – Temperature and pressure results are stored here.</p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="../Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a><em>, </em><em>optional</em>) – Themodynamic property package for equilibrium calculations.
+Defaults to <cite>thermosteam.settings.get_thermo()</cite>.</p></li>
+<li><p><strong>bubble_point_cache=None</strong> (<em>thermosteam.utils.Cache</em><em>, </em><em>optional</em>) – Cache to retrieve bubble point object.</p></li>
+<li><p><strong>dew_point_cache=None</strong> (<em>thermosteam.utils.Cache</em><em>, </em><em>optional</em>) – Cache to retrieve dew point object</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">indexer</span><span class="p">,</span> <span class="n">equilibrium</span><span class="p">,</span> <span class="n">settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Propanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imol</span> <span class="o">=</span> <span class="n">indexer</span><span class="o">.</span><span class="n">MolarFlowIndexer</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">l</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mi">304</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="n">g</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Propanol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vle</span> <span class="o">=</span> <span class="n">equilibrium</span><span class="o">.</span><span class="n">VLE</span><span class="p">(</span><span class="n">imol</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vle</span>
+<span class="go">VLE(imol=MolarFlowIndexer(</span>
+<span class="go">        g=[(&#39;Methanol&#39;, 40), (&#39;Propanol&#39;, 1)],</span>
+<span class="go">        l=[(&#39;Water&#39;, 304), (&#39;Ethanol&#39;, 30)]),</span>
+<span class="go">    thermal_condition=ThermalCondition(T=298.15, P=101325))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vle</span><span class="p">(</span><span class="n">V</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vle</span>
+<span class="go">VLE(imol=MolarFlowIndexer(</span>
+<span class="go">        g=[(&#39;Water&#39;, 126.7), (&#39;Ethanol&#39;, 26.4), (&#39;Methanol&#39;, 33.49), (&#39;Propanol&#39;, 0.896)],</span>
+<span class="go">        l=[(&#39;Water&#39;, 177.3), (&#39;Ethanol&#39;, 3.598), (&#39;Methanol&#39;, 6.509), (&#39;Propanol&#39;, 0.104)]),</span>
+<span class="go">    thermal_condition=ThermalCondition(T=363.88, P=101325))</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="thermosteam.equilibrium.VLE.solver">
 <em class="property">static </em><code class="sig-name descname">solver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">x0</em>, <em class="sig-param">x1</em>, <em class="sig-param">y0</em>, <em class="sig-param">y1</em>, <em class="sig-param">x</em>, <em class="sig-param">yval</em>, <em class="sig-param">xtol</em>, <em class="sig-param">ytol</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.equilibrium.VLE.solver" title="Permalink to this definition">¶</a></dt>
@@ -215,6 +247,28 @@
 <dt id="thermosteam.equilibrium.VLE.itersolver">
 <em class="property">static </em><code class="sig-name descname">itersolver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">x0</em>, <em class="sig-param">xtol</em>, <em class="sig-param">args=()</em>, <em class="sig-param">maxiter=50</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.equilibrium.VLE.itersolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterative Wegstein solver.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.equilibrium.VLE.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">P=None</em>, <em class="sig-param">H=None</em>, <em class="sig-param">T=None</em>, <em class="sig-param">V=None</em>, <em class="sig-param">x=None</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/vle.html#VLE.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.VLE.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform vapor-liquid equilibrium.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P=None</strong> (<em>float</em>) – Operating pressure [Pa].</p></li>
+<li><p><strong>H=None</strong> (<em>float</em>) – Enthalpy [kJ/hr].</p></li>
+<li><p><strong>T=None</strong> (<em>float</em>) – Operating temperature [K].</p></li>
+<li><p><strong>V=None</strong> (<em>float</em>) – Molar vapor fraction.</p></li>
+<li><p><strong>x=None</strong> (<em>float</em>) – Molar composition of liquid (for binary mixtures).</p></li>
+<li><p><strong>y=None</strong> (<em>float</em>) – Molar composition of vapor (for binary mixtures).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>You may only specify two of the following parameters: P, H, T, V, x, and y.
+Additionally, If x or y is specified, the other parameter must be either
+P or T (e.g., x and V is invalid).</p>
 </dd></dl>
 
 </dd></dl>

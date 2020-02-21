@@ -351,15 +351,75 @@
 
 <div class="viewcode-block" id="VLE"><a class="viewcode-back" href="../../../equilibrium/VLE.html#thermosteam.equilibrium.VLE">[docs]</a><span class="nd">@thermo_user</span>
 <span class="k">class</span> <span class="nc">VLE</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a VLE object for solving VLE.&quot;&quot;&quot;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_T&#39;</span><span class="p">,</span> <span class="s1">&#39;_P&#39;</span><span class="p">,</span> <span class="s1">&#39;_H_hat&#39;</span><span class="p">,</span> <span class="s1">&#39;_V&#39;</span><span class="p">,</span> <span class="s1">&#39;_thermo&#39;</span><span class="p">,</span> <span class="s1">&#39;_TP&#39;</span><span class="p">,</span> <span class="s1">&#39;_y&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_dew_point&#39;</span><span class="p">,</span> <span class="s1">&#39;_bubble_point&#39;</span><span class="p">,</span> <span class="s1">&#39;_x&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_phi&#39;</span><span class="p">,</span> <span class="s1">&#39;_pcf&#39;</span><span class="p">,</span> <span class="s1">&#39;_gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;_imol&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_liquid_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_vapor_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_phase_data&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_v&#39;</span><span class="p">,</span>  <span class="s1">&#39;_index&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;_chemical&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_N&#39;</span><span class="p">,</span> <span class="s1">&#39;_solve_V&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_z&#39;</span><span class="p">,</span> <span class="s1">&#39;_Ks&#39;</span><span class="p">,</span> <span class="s1">&#39;_nonzero&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mol&#39;</span><span class="p">,</span> <span class="s1">&#39;_F_mol_equilibrium&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_dew_point_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_bubble_point_cache&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a VLE object that performs vapor-liquid equilibrium when called.</span>
+<span class="sd">        </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    imol : MaterialIndexer</span>
+<span class="sd">        Chemical phase data is stored here.</span>
+<span class="sd">    thermal_condition=None : ThermalCondition, optional</span>
+<span class="sd">        Temperature and pressure results are stored here.</span>
+<span class="sd">    thermo=None : Thermo, optional</span>
+<span class="sd">        Themodynamic property package for equilibrium calculations.</span>
+<span class="sd">        Defaults to `thermosteam.settings.get_thermo()`.</span>
+<span class="sd">    bubble_point_cache=None : thermosteam.utils.Cache, optional</span>
+<span class="sd">        Cache to retrieve bubble point object.</span>
+<span class="sd">    dew_point_cache=None : thermosteam.utils.Cache, optional</span>
+<span class="sd">        Cache to retrieve dew point object</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from thermosteam import indexer, equilibrium, settings</span>
+<span class="sd">    &gt;&gt;&gt; settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;, &#39;Propanol&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; imol = indexer.MolarFlowIndexer(</span>
+<span class="sd">    ...             l=[(&#39;Water&#39;, 304), (&#39;Ethanol&#39;, 30)],</span>
+<span class="sd">    ...             g=[(&#39;Methanol&#39;, 40), (&#39;Propanol&#39;, 1)])</span>
+<span class="sd">    &gt;&gt;&gt; vle = equilibrium.VLE(imol)</span>
+<span class="sd">    &gt;&gt;&gt; vle</span>
+<span class="sd">    VLE(imol=MolarFlowIndexer(</span>
+<span class="sd">            g=[(&#39;Methanol&#39;, 40), (&#39;Propanol&#39;, 1)],</span>
+<span class="sd">            l=[(&#39;Water&#39;, 304), (&#39;Ethanol&#39;, 30)]),</span>
+<span class="sd">        thermal_condition=ThermalCondition(T=298.15, P=101325))</span>
+<span class="sd">    &gt;&gt;&gt; vle(V=0.5, P=101325)</span>
+<span class="sd">    &gt;&gt;&gt; vle</span>
+<span class="sd">    VLE(imol=MolarFlowIndexer(</span>
+<span class="sd">            g=[(&#39;Water&#39;, 126.7), (&#39;Ethanol&#39;, 26.4), (&#39;Methanol&#39;, 33.49), (&#39;Propanol&#39;, 0.896)],</span>
+<span class="sd">            l=[(&#39;Water&#39;, 177.3), (&#39;Ethanol&#39;, 3.598), (&#39;Methanol&#39;, 6.509), (&#39;Propanol&#39;, 0.104)]),</span>
+<span class="sd">        thermal_condition=ThermalCondition(T=363.88, P=101325))</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_T&#39;</span><span class="p">,</span> <span class="c1"># [float] Temperature [K].</span>
+                 <span class="s1">&#39;_P&#39;</span><span class="p">,</span> <span class="c1"># [float] Pressure [Pa].</span>
+                 <span class="s1">&#39;_H_hat&#39;</span><span class="p">,</span> <span class="c1"># [float] Specific enthalpy [kJ/kg].</span>
+                 <span class="s1">&#39;_V&#39;</span><span class="p">,</span> <span class="c1"># [float] Molar vapor fraction.</span>
+                 <span class="s1">&#39;_thermo&#39;</span><span class="p">,</span> <span class="c1"># [float] Thermo object for estimating mixture properties.</span>
+                 <span class="s1">&#39;_TP&#39;</span><span class="p">,</span> <span class="c1"># [ThermalCondition] T and P results are stored here.</span>
+                 <span class="s1">&#39;_y&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Molar vapor composition.</span>
+                 <span class="s1">&#39;_dew_point&#39;</span><span class="p">,</span> <span class="c1"># [DewPoint] Solves for dew point.</span>
+                 <span class="s1">&#39;_bubble_point&#39;</span><span class="p">,</span> <span class="c1"># [BubblePoint] Solves for bubble point.</span>
+                 <span class="s1">&#39;_x&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Liquid composition.</span>
+                 <span class="s1">&#39;_phi&#39;</span><span class="p">,</span> <span class="c1"># [FugacityCoefficients] Estimates fugacity coefficients of gas.</span>
+                 <span class="s1">&#39;_pcf&#39;</span><span class="p">,</span> <span class="c1"># [PoyintingCorrectionFactors] Estimates the PCF of a liquid.</span>
+                 <span class="s1">&#39;_gamma&#39;</span><span class="p">,</span> <span class="c1"># [ActivityCoefficients] Estimates activity coefficients of a liquid.</span>
+                 <span class="s1">&#39;_imol&#39;</span><span class="p">,</span> <span class="c1"># [MaterialIndexer] Stores vapor and liquid molar data.</span>
+                 <span class="s1">&#39;_liquid_mol&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Liquid molar data.</span>
+                 <span class="s1">&#39;_vapor_mol&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Vapor molar data.</span>
+                 <span class="s1">&#39;_phase_data&#39;</span><span class="p">,</span> <span class="c1"># tuple[str, 1d array] Phase-data pairs.</span>
+                 <span class="s1">&#39;_v&#39;</span><span class="p">,</span>  <span class="c1"># [1d array] Vapor molar data.</span>
+                 <span class="s1">&#39;_index&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Index of chemicals in equilibrium.</span>
+                 <span class="s1">&#39;_F_mass&#39;</span><span class="p">,</span> <span class="c1"># [float] Total mass data.</span>
+                 <span class="s1">&#39;_chemical&#39;</span><span class="p">,</span> <span class="c1"># [Chemical] Single chemical in equilibrium.</span>
+                 <span class="s1">&#39;_mol&#39;</span><span class="p">,</span> <span class="c1"># [Chemical] Single chemical in equilibrium.</span>
+                 <span class="s1">&#39;_N&#39;</span><span class="p">,</span> <span class="c1"># [int] Number of chemicals in equilibrium.</span>
+                 <span class="s1">&#39;_solve_V&#39;</span><span class="p">,</span> <span class="c1"># [function] Solves for vapor fraction.</span>
+                 <span class="s1">&#39;_z&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Molar composition of chemicals in equilibrium</span>
+                 <span class="s1">&#39;_Ks&#39;</span><span class="p">,</span> <span class="c1"># [1d array] Partition coefficients.</span>
+                 <span class="s1">&#39;_nonzero&#39;</span><span class="p">,</span> <span class="c1"># [1d array(bool)] Chemicals present in the mixture</span>
+                 <span class="s1">&#39;_F_mol&#39;</span><span class="p">,</span> <span class="c1"># [float] Total molar data.</span>
+                 <span class="s1">&#39;_F_mol_equilibrium&#39;</span><span class="p">,</span> <span class="c1"># [float] Total moles in equilibrium.</span>
+                 <span class="s1">&#39;_dew_point_cache&#39;</span><span class="p">,</span> <span class="c1"># [Cache] Retrieves the DewPoint object if arguments are the same.</span>
+                 <span class="s1">&#39;_bubble_point_cache&#39;</span><span class="p">)</span> <span class="c1"># [Cache] Retrieves the BubblePoint object if arguments are the same.</span>
     
     <span class="n">solver</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">IQ_interpolation</span><span class="p">)</span>
     <span class="n">itersolver</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">wegstein</span><span class="p">)</span>
@@ -368,23 +428,38 @@
     <span class="n">H_hat_tol</span> <span class="o">=</span> <span class="mf">0.1</span>
     <span class="n">V_tol</span> <span class="o">=</span> <span class="mf">0.00001</span>
     
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imol</span><span class="p">,</span> <span class="n">thermal_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bubble_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dew_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span> <span class="o">=</span> <span class="n">dew_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">DewPoint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span> <span class="o">=</span> <span class="n">bubble_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">BubblePoint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="n">imol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">thermal_condition</span> <span class="ow">or</span> <span class="n">ThermalCondition</span><span class="p">(</span><span class="mf">298.15</span><span class="p">,</span> <span class="mf">101325.</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span> <span class="o">=</span> <span class="n">liquid_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">liquid_mol</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
+    
+<div class="viewcode-block" id="VLE.__call__"><a class="viewcode-back" href="../../../equilibrium/VLE.html#thermosteam.equilibrium.VLE.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform vapor-liquid equilibrium.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        P : float, optional</span>
+<span class="sd">        P=None : float</span>
 <span class="sd">            Operating pressure [Pa].</span>
-<span class="sd">        H : float, optional</span>
+<span class="sd">        H=None : float</span>
 <span class="sd">            Enthalpy [kJ/hr].</span>
-<span class="sd">        T : float, optional</span>
+<span class="sd">        T=None : float</span>
 <span class="sd">            Operating temperature [K].</span>
-<span class="sd">        V : float, optional</span>
+<span class="sd">        V=None : float</span>
 <span class="sd">            Molar vapor fraction.</span>
-<span class="sd">        x : float, optional</span>
+<span class="sd">        x=None : float</span>
 <span class="sd">            Molar composition of liquid (for binary mixtures).</span>
-<span class="sd">        y : float, optional</span>
+<span class="sd">        y=None : float</span>
 <span class="sd">            Molar composition of vapor (for binary mixtures).</span>
 <span class="sd">        </span>
 <span class="sd">        Notes</span>
@@ -439,31 +514,7 @@
             <span class="k">else</span><span class="p">:</span> <span class="c1"># x_spec</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;specification V and x is invalid&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span> <span class="c1"># x_spec and y_spec</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can only pass either &#39;x&#39; or &#39;y&#39; arguments, not both&quot;</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imol</span><span class="p">,</span> <span class="n">thermal_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bubble_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dew_point_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a VLE object that performs vapor-liquid equilibrium when called.</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        imol : MaterialIndexer</span>
-<span class="sd">        </span>
-<span class="sd">        thermal_condition : ThermalCondition</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span> <span class="o">=</span> <span class="n">dew_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">DewPoint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span> <span class="o">=</span> <span class="n">bubble_point_cache</span> <span class="ow">or</span> <span class="n">Cache</span><span class="p">(</span><span class="n">BubblePoint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="n">imol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">thermal_condition</span> <span class="ow">or</span> <span class="n">ThermalCondition</span><span class="p">(</span><span class="mf">298.15</span><span class="p">,</span> <span class="mf">101325.</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_phase_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_liquid_mol</span> <span class="o">=</span> <span class="n">liquid_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vapor_mol</span> <span class="o">=</span> <span class="n">imol</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nonzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">liquid_mol</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can only pass either &#39;x&#39; or &#39;y&#39; arguments, not both&quot;</span><span class="p">)</span></div>
     
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Get flow rates</span>

@@ -202,10 +202,10 @@
 <li><p><strong>ID=''</strong> (<em>str</em>) – A unique identification. If ID is None, stream will not be registered.
 If no ID is given, stream will be registered with a unique ID.</p></li>
 <li><p><strong>flow=</strong><strong>(</strong><strong>)</strong> (<em>2d array</em>) – All flow rates corresponding to <cite>phases</cite> by row and chemical IDs by column.</p></li>
-<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermodynamic equilibrium package. Defaults to <cite>settings.get_thermo()</cite>.</p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermodynamic equilibrium package. Defaults to <cite>thermosteam.settings.get_thermo()</cite>.</p></li>
 <li><p><strong>units='kmol/hr'</strong> (<em>str</em>) – Flow rate units of measure (only mass, molar, and
 volumetric flow rates are valid).</p></li>
-<li><p><strong>l'</strong><strong>)</strong> (<em>phases=</em><em>(</em><em>'g</em><em>,</em>) – Tuple denoting the phases present.</p></li>
+<li><p><strong>phases</strong> (<em>tuple</em><em>[</em><em>'g'</em><em>, </em><em>'l'</em><em>, </em><em>'s'</em><em>, </em><em>'G'</em><em>, </em><em>'L'</em><em>, </em><em>'S'</em><em>]</em>) – Tuple denoting the phases present. Defaults to (‘g’, ‘l’).</p></li>
 <li><p><strong>T=298.15</strong> (<em>float</em>) – Temperature [K].</p></li>
 <li><p><strong>P=101325</strong> (<em>float</em>) – Pressure [Pa].</p></li>
 <li><p><strong>price=0</strong> (<em>float</em>) – Price per unit mass [USD/kg].</p></li>
@@ -287,9 +287,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 <span class="go"> phase: &#39;l&#39;, T: 365 K, P: 101325 Pa</span>
 <span class="go"> flow (kmol/hr): Water    0.619</span>
 <span class="go">                 Ethanol  0.0238</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Stream:</span>
 <span class="go"> phase: &#39;g&#39;, T: 365 K, P: 101325 Pa</span>
 <span class="go"> flow (kmol/hr): Water    0.491</span>

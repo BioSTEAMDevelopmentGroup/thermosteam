@@ -18,7 +18,7 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 What is Thermosteam?
 --------------------
 
-Thermosteam is an open-source thermodynamic property package with an easily extendable structure.
+Thermosteam is a standalone thermodynamic engine capable of creating property packages for the rigorous estimation of temperature and pressure dependent mixture properties and thermodynamic equilibrium. Thermosteam builds upon `thermo <https://github.com/CalebBell/thermo>`_, the chemical properties component of the Chemical Engineering Design Library, with a robust and flexible framework that facilitates the creation of property packages.  `The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ is dependent on thermosteam for the simulation of unit operations.
 
 Installation
 ------------

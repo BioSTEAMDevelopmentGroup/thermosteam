@@ -5,7 +5,7 @@ Use the equilibrium subpackage to perform equilibrium calculations.
 
 .. toctree::
    :maxdepth: 1
-
+   
    VLE
    BubblePoint
    DewPoint

@@ -220,14 +220,37 @@ class VLE:
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     """
-    __slots__ = ('_T', '_P', '_H_hat', '_V', '_thermo', '_TP', '_y',
-                 '_dew_point', '_bubble_point', '_x',
-                 '_phi', '_pcf', '_gamma', '_imol',
-                 '_liquid_mol', '_vapor_mol', '_phase_data',
-                 '_v',  '_index', '_F_mass', '_chemical',
-                 '_mol', '_N', '_solve_V',
-                 '_z', '_Ks', '_nonzero', '_F_mol', '_F_mol_equilibrium',
-                 '_dew_point_cache', '_bubble_point_cache')
+    __slots__ = ('_T', # [float] Temperature [K].
+                 '_P', # [float] Pressure [Pa].
+                 '_H_hat', # [float] Specific enthalpy [kJ/kg].
+                 '_V', # [float] Molar vapor fraction.
+                 '_thermo', # [float] Thermo object for estimating mixture properties.
+                 '_TP', # [ThermalCondition] T and P results are stored here.
+                 '_y', # [1d array] Molar vapor composition.
+                 '_dew_point', # [DewPoint] Solves for dew point.
+                 '_bubble_point', # [BubblePoint] Solves for bubble point.
+                 '_x', # [1d array] Liquid composition.
+                 '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
+                 '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
+                 '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
+                 '_imol', # [MaterialIndexer] Stores vapor and liquid molar data.
+                 '_liquid_mol', # [1d array] Liquid molar data.
+                 '_vapor_mol', # [1d array] Vapor molar data.
+                 '_phase_data', # tuple[str, 1d array] Phase-data pairs.
+                 '_v',  # [1d array] Vapor molar data.
+                 '_index', # [1d array] Index of chemicals in equilibrium.
+                 '_F_mass', # [float] Total mass data.
+                 '_chemical', # [Chemical] Single chemical in equilibrium.
+                 '_mol', # [Chemical] Single chemical in equilibrium.
+                 '_N', # [int] Number of chemicals in equilibrium.
+                 '_solve_V', # [function] Solves for vapor fraction.
+                 '_z', # [1d array] Molar composition of chemicals in equilibrium
+                 '_Ks', # [1d array] Partition coefficients.
+                 '_nonzero', # [1d array(bool)] Chemicals present in the mixture
+                 '_F_mol', # [float] Total molar data.
+                 '_F_mol_equilibrium', # [float] Total moles in equilibrium.
+                 '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
+                 '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
     
     solver = staticmethod(IQ_interpolation)
     itersolver = staticmethod(wegstein)

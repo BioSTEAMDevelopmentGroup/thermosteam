@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**The thermosteam.reaction package contains array based obejects that can model stoichiometric reactions given a conversion.**"
+    "**The thermosteam.reaction package contains array based objects that can model stoichiometric reactions given a conversion.**"
    ]
   },
   {
@@ -144,7 +144,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "When a Reaction object is called with array (with each entry corresponding to species), it updates the array to reflect the change in material due to the reaction:"
+    "When a Reaction object is called with array (with each entry corresponding to a chemical in the same order), it updates the array to reflect the change in material due to the reaction:"
    ]
   },
   {
