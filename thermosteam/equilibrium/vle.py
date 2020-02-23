@@ -351,19 +351,19 @@ class VLE:
         # Get flow rates
         liquid_mol = self._liquid_mol
         vapor_mol = self._vapor_mol
-        mol = self._liquid_mol + self._vapor_mol
-        notzero = mol > 0
+        mol = liquid_mol + vapor_mol
+        nonzero = mol > 0
         chemicals = self.chemicals
-        if (self._nonzero == notzero).all():
+        if (self._nonzero == nonzero).all():
             index = self._index
         else:
             # Set up indices for both equilibrium and non-equilibrium species
-            index = chemicals.get_equilibrium_indices(notzero)
+            index = chemicals.get_equilibrium_indices(nonzero)
             self._y = None            
             self._N = N = len(index)
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
-            self._nonzero = notzero
+            self._nonzero = nonzero
             self._index = index
             if N == 1:
                 self._chemical, = eq_chems
@@ -479,8 +479,8 @@ class VLE:
         liquid_mol[index] = 0
         H_dew = thermo.mixture.xH(phase_data, T, P)
         if H >= H_dew:
-            # TODO: Possibly make this an error
             self._TP.T = thermo.xsolve_T(phase_data, H, T, P)
+            return
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -488,6 +488,7 @@ class VLE:
         H_bubble = thermo.mixture.xH(phase_data, T, P)
         if H <= H_bubble:
             self._TP.T = thermo.xsolve_T(phase_data, H, T, P)
+            return
         
         # Adjust vapor fraction accordingly
         V = (H - H_bubble)/(H_dew - H_bubble)
@@ -616,9 +617,9 @@ class VLE:
         H_dew = self.mixture.xH(phase_data, T, P_dew)
         dH_dew = (H - H_dew)
         if dH_dew >= 0:
-            # TODO: Possibly make this an error
             self._T = self.mixture.xsolve_T(phase_data, H, T, P_dew)
             self._TP.P = P_dew
+            return
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -628,6 +629,7 @@ class VLE:
         if dH_bubble <= 0:
             self._T = self.mixture.xsolve_T(phase_data, H, T, P_bubble)
             self._TP.P = P_bubble
+            return
 
         # Guess overall vapor fraction, and vapor flow rates
         V = self._V or dH_bubble/(H_dew - H_bubble)

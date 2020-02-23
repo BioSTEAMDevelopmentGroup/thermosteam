@@ -204,35 +204,37 @@ class ChemicalIndexer(Indexer):
     
     def _info(self, N):
         """Return string with all specifications."""
+        from thermosteam import Stream
         IDs = self.chemicals.IDs
         data = self.data
         IDs, data = nonzeros(IDs, data)
-        len_ = len(data)
-        if len_ == 0:
+        N_IDs = len(IDs)
+        if N_IDs == 0:
             return f"{type(self).__name__}: (empty)"
         elif self.units:
             basic_info = f"{type(self).__name__} ({self.units}):\n"
         else:
             basic_info = f"{type(self).__name__}:\n"
         beginning = f' ({self.phase}) ' if self.phase else " "
-        new_line_spaces = len(beginning) * ' '
+        new_line = '\n' + len(beginning) * ' '
         data_info = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1
-        _N = N - 1
-        for i in range(len_-1):
+        N_max = N or Stream.display_units.N
+        too_many_chemicals = N_IDs > N_max
+        N = N_max if too_many_chemicals else N_IDs
+        for i in range(N):
             spaces = ' ' * (maxlen - lengths[i])
-            if i == _N:
-                data_info += '...\n' + new_line_spaces
-                break
-            data_info += IDs[i] + spaces + f' {data[i]:.4g}\n' + new_line_spaces
-        spaces = ' ' * (maxlen - lengths[len_-1])
-        data_info += IDs[len_-1] + spaces + f' {data[len_-1]:.4g}'
+            if i != 0:
+                data_info += new_line
+            data_info += IDs[i] + spaces + f' {data[i]:.4g}'
+        if too_many_chemicals:
+            data_info += new_line + '...'
         return (basic_info
               + beginning
               + data_info)
 
-    def show(self, N=5):
+    def show(self, N=None):
         """Print all specifications.
         
         Parameters
@@ -434,6 +436,8 @@ class MaterialIndexer(Indexer):
     
     def _info(self, N):
         """Return string with all specifications."""
+        from thermosteam import Stream
+        N_max = N or Stream.display_units.N
         IDs = self.chemicals.IDs
         index, = np.where(self.data.sum(0) != 0)
         len_ = len(index)
@@ -450,7 +454,7 @@ class MaterialIndexer(Indexer):
         maxlen = max(all_lengths + [8])
 
         # Set up chemical data for all phases
-        phases_flowrates_info = ''
+        phases_data_info = ''
         for phase in self.phases:
             phase_data = self[phase, all_IDs]
             IDs, data = nonzeros(all_IDs, phase_data)
@@ -458,28 +462,23 @@ class MaterialIndexer(Indexer):
         
             # Get basic structure for phase data
             beginning = f' ({phase}) '
-            new_line_spaces = len(beginning) * ' '
+            new_line = '\n' + len(beginning) * ' '
 
             # Set chemical data
-            flowrates = ''
-            l = len(data)
+            data_info = ''
+            N_IDs = len(data)
+            too_many_chemicals = N_IDs > N_max
+            N = N_max if too_many_chemicals else N_IDs
             lengths = [len(i) for i in IDs]
-            _N = N - 1
-            for i in range(l-1):
+            for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
-                if i == _N:
-                    flowrates += '...\n' + new_line_spaces
-                    break
-                flowrates += f'{IDs[i]} ' + spaces + \
-                    f' {data[i]:.4g}\n' + new_line_spaces
-            spaces = ' ' * (maxlen - lengths[l-1])
-            flowrates += (f'{IDs[l-1]} ' + spaces
-                          + f' {data[l-1]:.4g}')
-
+                if i: data_info += new_line
+                data_info += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
+            if too_many_chemicals: data += new_line + '...'
             # Put it together
-            phases_flowrates_info += beginning + flowrates + '\n'
+            phases_data_info += beginning + data_info + '\n'
             
-        return basic_info + phases_flowrates_info[:-1]
+        return basic_info + phases_data_info.rstrip('\n')
     show = ChemicalIndexer.show
     _ipython_display_ = show
     

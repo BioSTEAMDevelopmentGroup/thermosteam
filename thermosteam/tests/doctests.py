@@ -23,7 +23,10 @@ def test_reaction_docs():
     doctest.testmod(tmo.reaction._reaction)
     
 def test_equilibrium_docs():
+    doctest.testmod(tmo.equilibrium.bubble_point)
+    doctest.testmod(tmo.equilibrium.dew_point)
     doctest.testmod(tmo.equilibrium.vle)
+    
     
 def test_thermosteam():
     test_stream_docs()

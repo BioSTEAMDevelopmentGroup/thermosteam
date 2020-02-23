@@ -1290,7 +1290,7 @@ class Stream:
         >>> tmo.settings.set_thermo(chemicals) 
         >>> s1 = tmo.Stream('s1', N2=10, units='m3/hr', phase='g', T=330)
         >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
-        >>> s1.recieve_vent(s2)
+        >>> s1.recieve_vent(s2, accumulate=True)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
          phase: 'g', T: 330 K, P: 101325 Pa
@@ -1303,7 +1303,6 @@ class Stream:
         if accumulate:
             self.mol[light_indices] += other.mol[light_indices]
         else:
-            self.empty()
             self.mol[light_indices] = other.mol[light_indices]
         other.mol[light_indices] = 0
         F_l = eq.LiquidFugacities(chemicals, other.thermo)

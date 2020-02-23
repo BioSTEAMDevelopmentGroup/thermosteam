@@ -209,7 +209,7 @@ class Stream:
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = thermo_units.DisplayUnits(T='K', P='Pa',
                                               flow=('kmol/hr', 'kg/hr', 'm3/hr'),
-                                              N=5)
+                                              N=7)
 
     _flow_cache = {}
 
@@ -1360,7 +1360,7 @@ class Stream:
         T_units = T or display_units.T
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
-        N = N or display_units.N
+        N_max = N or display_units.N
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
         N_IDs = len(IDs)
         if N_IDs == 0:
@@ -1376,27 +1376,26 @@ class Stream:
             total_flow = flow_array.sum()
             beginning = " composition: "
             new_line = '\n' + 14 * ' '
-            flow_array /= total_flow
+            flow_array = flow_array/total_flow
         else:
             beginning = f' flow ({flow_units}): '
             new_line = '\n' + len(beginning) * ' '
-        flowrates = ''
+        flow_rates = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 2
-        _N = N - 1
-        for i in range(N_IDs):
+        too_many_chemicals = N_IDs > N_max
+        N = N_max if too_many_chemicals else N_IDs
+        for i in range(N):
             spaces = ' ' * (maxlen - lengths[i])
-            if i == _N:
-                flowrates += '...'
-                break
-            flowrates += IDs[i] + spaces + f'{flow_array[i]:.3g}'
-            if i != N_IDs-1: flowrates += new_line
+            if i: flow_rates += new_line
+            flow_rates += IDs[i] + spaces + f'{flow_array[i]:.3g}'
+        if too_many_chemicals: flow_rates += new_line + '...'
         if composition:
             dashes = '-' * (maxlen - 2)
-            flowrates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
+            flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
         return (basic_info 
               + beginning
-              + flowrates)
+              + flow_rates)
 
     def show(self, T=None, P=None, flow=None, composition=False, N=None):
         """Print all specifications.
@@ -1428,6 +1427,6 @@ class Stream:
         price = repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
               f"P={self.P:.6g}{price}{chemical_flows})")
-        
+    
 from . import _multi_stream as ms
 del registered
