@@ -448,8 +448,17 @@ class Stream:
     ### Stream data ###
 
     @property
+    def source(self):
+        """[Unit] Outlet location."""
+        return self._source
+    @property
+    def sink(self):
+        """[Unit] Inlet location."""
+        return self._sink
+
+    @property
     def thermal_condition(self):
-        """ [ThermalCondition] Contains the temperature and pressure conditions of the stream."""
+        """[ThermalCondition] Contains the temperature and pressure conditions of the stream."""
         return self._TP
 
     @property
