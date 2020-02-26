@@ -448,8 +448,17 @@ class Stream:
     ### Stream data ###
 
     @property
+    def source(self):
+        """[Unit] Outlet location."""
+        return self._source
+    @property
+    def sink(self):
+        """[Unit] Inlet location."""
+        return self._sink
+
+    @property
     def thermal_condition(self):
-        """ [ThermalCondition] Contains the temperature and pressure conditions of the stream."""
+        """[ThermalCondition] Contains the temperature and pressure conditions of the stream."""
         return self._TP
 
     @property
@@ -1290,7 +1299,7 @@ class Stream:
         >>> tmo.settings.set_thermo(chemicals) 
         >>> s1 = tmo.Stream('s1', N2=10, units='m3/hr', phase='g', T=330)
         >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
-        >>> s1.recieve_vent(s2)
+        >>> s1.recieve_vent(s2, accumulate=True)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
          phase: 'g', T: 330 K, P: 101325 Pa
@@ -1303,7 +1312,6 @@ class Stream:
         if accumulate:
             self.mol[light_indices] += other.mol[light_indices]
         else:
-            self.empty()
             self.mol[light_indices] = other.mol[light_indices]
         other.mol[light_indices] = 0
         F_l = eq.LiquidFugacities(chemicals, other.thermo)

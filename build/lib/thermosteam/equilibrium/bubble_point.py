@@ -31,13 +31,34 @@ class BubblePointValues:
 # %% Bubble point calculation
 
 class BubblePoint:
-    """Create a BubblePoint object that returns bubble point values when called with a composition and either a temperture (T) or pressure (P).
+    """
+    Create a BubblePoint object that returns bubble point values when
+    called with a composition and either a temperture (T) or pressure (P).
     
     Parameters
     ----------
-    chemicals=None : Iterable[Chemical], optional
+    chemicals=() : Iterable[Chemical], optional
     
     thermo=None : Thermo, optional
+    
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> import numpy as np
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(chemicals)
+    >>> BP = tmo.equilibrium.BubblePoint(chemicals)
+    >>> molar_composition = np.array([0.5, 0.5])
+    >>> # Solve bubble point at constant temperature
+    >>> bp = BP(z=molar_composition, T=355)
+    >>> bp
+    BubblePointValues(T=355, P=109755.45319868939, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
+    >>> (bp.T, bp.P, bp.IDs, bp.z, bp.y)
+    (355, 109755.45319868939, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    >>> # Solve bubble point at constant pressure
+    >>> BP(z=molar_composition, P=101325)
+    BubblePointValues(T=352.95030269946596, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
@@ -94,21 +115,23 @@ class BubblePoint:
         z : array_like
             Molar composotion.
         P : float
-            Pressure (Pa).
+            Pressure [Pa].
         
         Returns
         -------
         T : float 
-            Bubble point temperature (K)
+            Bubble point temperature [K].
         y : numpy.ndarray
-            Composition of the vapor phase.
+            Vapor phase molar composition.
 
         Examples
         --------
-        >>> from thermotree import Chemicals, BubblePoint
-        >>> bp = BubblePoint(Chemicals('Ethanol', 'Water'))
-        >>> bp.solve_Ty(z=(0.6, 0.4), P=101325)
-        (352.2820850833474, array([0.703, 0.297]))
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> BP = tmo.equilibrium.BubblePoint(chemicals)
+        >>> BP.solve_Ty(z=(0.6, 0.4), P=101325)
+        (353.7543445955407, array([0.381, 0.619]))
         
         """
         
@@ -141,21 +164,23 @@ class BubblePoint:
         z : array_like
             Molar composotion.
         T : float
-            Temperature (K).
+            Temperature [K].
         
         Returns
         -------
         P : float
-            Bubble point pressure (Pa).
+            Bubble point pressure [Pa].
         y : numpy.ndarray
-            Vapor phase composition.
+            Vapor phase molar composition.
 
         Examples
         --------
-        >>> from thermotree import Chemicals, BubblePoint
-        >>> bp = BubblePoint(*Chemicals('Ethanol', 'Water'))
-        >>> bp.solve_Py(z=(0.703, 0.297), T=352.28)
-        (103494.17209657285, array([0.757, 0.243]))
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> BP = tmo.equilibrium.BubblePoint(chemicals)
+        >>> BP.solve_Py(z=(0.703, 0.297), T=352.28)
+        (91830.97988957923, array([0.419, 0.581]))
         
         """
         z = asarray(z)

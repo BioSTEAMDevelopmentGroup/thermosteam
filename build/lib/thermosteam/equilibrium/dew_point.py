@@ -32,7 +32,9 @@ class DewPointValues:
 # %% Dew point calculation
 
 class DewPoint:
-    """Create a DewPoint object that returns dew point values when called with a composition and either a temperture (T) or pressure (P).
+    """
+    Create a DewPoint object that returns dew point values when called with a 
+    composition and either a temperture (T) or pressure (P).
     
     Parameters
     ----------
@@ -40,6 +42,25 @@ class DewPoint:
     
     thermo=None : Thermo, optional
     
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> import numpy as np
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(chemicals)
+    >>> DP = tmo.equilibrium.DewPoint(chemicals)
+    >>> # Solve for dew point at constant temperautre
+    >>> molar_composition = np.array([0.5, 0.5])
+    >>> dp = DP(z=molar_composition, T=355)
+    >>> dp
+    DewPointValues(T=355, P=91970.14968399677, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
+    >>> # Note that the result is a DewPointValues object which contain all results as attibutes
+    >>> (dp.T, dp.P, dp.IDs, dp.z, dp.x)
+    (355, 91970.14968399677, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
+    >>> # Solve for dew point at constant pressure
+    >>> DP(z=molar_composition, P=2*101324)
+    DewPointValues(T=376.261660024686, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
+
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
@@ -87,29 +108,33 @@ class DewPoint:
         return DewPointValues(T, P, self.IDs, z, x)
     
     def solve_Tx(self, z, P):
-        """Dew point given composition and pressure.
+        """
+        Dew point given composition and pressure.
 
         Parameters
         ----------
         z : array_like
             Molar composition.
-
         P : float
-            Pressure (Pa).
+            Pressure [Pa].
 
         Returns
         -------
         T : float
-            Dew point temperature (K).
+            Dew point temperature [K].
         x : numpy.ndarray
-            Liquid phase composition.
+            Liquid phase molar composition.
 
         Examples
         --------
-        >>> from thermotree import Chemicals, DewPoint
-        >>> dp = DewPoint(Chemicals('Ethanol', 'Water'))
-        >>> dp.solve_Tx(z=(0.5, 0.5), P=101325)
-        (357.45184742263075, array([0.151, 0.849]))
+        >>> import thermosteam as tmo
+        >>> import numpy as np
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> DP = tmo.equilibrium.DewPoint(chemicals)
+        >>> DP.solve_Tx(z=(0.5, 0.5), P=101325)
+        (357.45184743325217, array([0.849, 0.151]))
+        
         """
         z = asarray(z)
         z_norm = z/z.sum()
@@ -131,7 +156,8 @@ class DewPoint:
         return self.T, self.x
     
     def solve_Px(self, z, T):
-        """Dew point given composition and temperature.
+        """
+        Dew point given composition and temperature.
 
         Parameters
         ----------
@@ -145,14 +171,17 @@ class DewPoint:
         P : float
             Dew point pressure (Pa).
         x : numpy.ndarray
-            Liquid phase composition.
+            Liquid phase molar composition.
 
         Examples
         --------
-        >>> from thermotree import Chemicals, DewPoint
-        >>> dp = DewPoint(Chemicals('Ethanol', 'Water'))
-        >>> dp.solve_Px(z=(0.703, 0.297), T=352.28)
-        (111366.15384513882, array([0.6, 0.4]))
+        >>> import thermosteam as tmo
+        >>> import numpy as np
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> DP = tmo.equilibrium.DewPoint(chemicals)
+        >>> DP.solve_Px(z=(0.5, 0.5), T=352.28)
+        (82444.29876048012, array([0.853, 0.147]))
  
        """
         z = asarray(z)

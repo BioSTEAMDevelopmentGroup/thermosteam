@@ -440,6 +440,7 @@ class VLE:
         liquid_mol = self._liquid_mol
         thermo = self._thermo
         phase_data = self._phase_data
+        mixture = thermo.mixture
         
         # Set temperature in equilibrium
         self._T = self._TP.T = T = self._chemical.Tsat(P)
@@ -447,16 +448,16 @@ class VLE:
         # Check if super heated vapor
         vapor_mol[index] = mol
         liquid_mol[index] = 0
-        H_dew = thermo.mixture.xH(phase_data, T, P)
+        H_dew = mixture.xH(phase_data, T, P)
         if H >= H_dew:
-            self._TP.T = thermo.xsolve_T(phase_data, H, T, P)
+            self._TP.T = mixture.xsolve_T(phase_data, H, T, P)
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
         liquid_mol[index] = mol
-        H_bubble = thermo.mixture.xH(phase_data, T, P)
+        H_bubble = mixture.xH(phase_data, T, P)
         if H <= H_bubble:
-            self._TP.T = thermo.xsolve_T(phase_data, H, T, P)
+            self._TP.T = mixture.xsolve_T(phase_data, H, T, P)
         
         # Adjust vapor fraction accordingly
         V = (H - H_bubble)/(H_dew - H_bubble)
