@@ -156,7 +156,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     @classmethod
-    def from_data(cls, data, phase, chemicals=None, check_data=False):
+    def from_data(cls, data, phase, chemicals=None, check_data=True):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._set_cache()
@@ -332,7 +332,7 @@ class MaterialIndexer(Indexer):
         return self
     
     @classmethod
-    def from_data(cls, data, phases, chemicals=None, check_data=False):
+    def from_data(cls, data, phases, chemicals=None, check_data=True):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._set_phases(phases)

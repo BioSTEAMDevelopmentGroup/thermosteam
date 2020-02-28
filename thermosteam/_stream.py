@@ -242,9 +242,8 @@ class Stream:
                 imol = flow 
                 imol.phase = phase
             else:
-                check_data = True
                 imol = indexer.ChemicalMolarFlowIndexer.from_data(
-                    np.asarray(flow, dtype=float), phase, chemicals, check_data)
+                    np.asarray(flow, dtype=float), phase, chemicals)
         self._imol = imol
 
     def _init_cache(self):
