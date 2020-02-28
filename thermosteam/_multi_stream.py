@@ -156,7 +156,8 @@ class MultiStream(Stream):
             if isinstance(flow, MolarFlowIndexer):
                 imol = flow
             else:
-                imol = MolarFlowIndexer.from_data(flow, phases, chemicals)
+                check_data = True
+                imol = MolarFlowIndexer.from_data(flow, phases, chemicals, check_data)
         self._imol = imol
         
     def _init_cache(self):
