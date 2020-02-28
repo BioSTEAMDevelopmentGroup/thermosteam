@@ -161,10 +161,9 @@ class ChemicalIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_cache()
         self._phase = Phase.convert(phase)
-        if settings._debug:
-            assert data.ndim == 1, 'data must be a 1d numpy array'
-            assert data.size == self._chemicals.size, ('size of data must be equal to '
-                                                       'size of chemicals')
+        assert data.ndim == 1, 'material data must be a 1d numpy array'
+        assert data.size == self._chemicals.size, ('size of material data must be equal to '
+                                                   'size of chemicals')
         self._data = data
         self._data_cache = {}
         return self
@@ -337,16 +336,15 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        if settings._debug:
-            assert data.ndim == 2, ('data must be an 2d numpy array')
-            M_phases = len(self._phases)
-            N_chemicals = self._chemicals.size
-            M, N = data.shape
-            assert M == M_phases, ('number of phases must be equal to '
-                                   'the number of data rows')
-            assert N == N_chemicals, ('size of chemicals '
-                                      'must be equal to '
-                                      'number of data columns')
+        assert data.ndim == 2, ('material data must be an 2d numpy array')
+        M_phases = len(self._phases)
+        N_chemicals = self._chemicals.size
+        M, N = data.shape
+        assert M == M_phases, ('number of phases must be equal to '
+                               'the number of material data rows')
+        assert N == N_chemicals, ('size of chemicals '
+                                  'must be equal to '
+                                  'number of material data columns')
         self._data = data
         self._data_cache = {}
         return self
