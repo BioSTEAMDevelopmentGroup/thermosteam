@@ -9,7 +9,7 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
    :target: https://thermosteam.readthedocs.io/en/latest/
    :alt: Documentation
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
-   :target: https://github.com/yoelcortes/thermosteam/blob/master/LICENSE.txt
+   :target: https://github.com/BioSTEAMDevelopmentGroup/thermosteam/blob/master/LICENSE.txt
    :alt: license
 
 
@@ -32,7 +32,7 @@ If you have an installation of Python with pip, simple install it with:
 
 To get the git version, run:
 
-    $ git clone git://github.com/yoelcortes/thermosteam
+    $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
 
 Documentation
 -------------
@@ -46,7 +46,7 @@ Bug reports
 
 To report bugs, please use the thermosteam's Bug Tracker at:
 
-    https://github.com/yoelcortes/thermosteam
+    https://github.com/BioSTEAMDevelopmentGroup/thermosteam
 
 
 License information
@@ -56,7 +56,7 @@ See ``LICENSE.txt`` for information on the terms & conditions for usage
 of this software, and a DISCLAIMER OF ALL WARRANTIES.
 
 Although not required by the thermosteam license, if it is convenient for you,
-please cite ThermoSTEAM if used in your work. Please also consider contributing
+please cite Thermosteam if used in your work. Please also consider contributing
 any changes you make back, and benefit the community.
 
 
@@ -66,4 +66,4 @@ Citation
 To cite Thermosteam in publications use::
 
     Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Engine.
-    https://github.com/yoelcortes/thermosteam
+    https://github.com/BioSTEAMDevelopmentGroup/thermosteam
