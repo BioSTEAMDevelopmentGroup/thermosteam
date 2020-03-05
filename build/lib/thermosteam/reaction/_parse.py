@@ -4,8 +4,32 @@ Created on Sat Jun 29 20:47:24 2019
 
 @author: yoelr
 """
+from numpy import ndarray
 
-__all__ = ('str2dct', 'dct2str', 'dct2arr', 'arr2dct',  'str2arr', 'arr2str')
+__all__ = ('get_stoichiometric_array',
+           'get_stoichiometric_string',
+           'str2dct', 'dct2str', 'arr2dct')
+
+def get_stoichiometric_array(reaction, chemicals):
+    """Return stoichiometric array given a string defining the reaction and chemicals."""
+    if isinstance(reaction, dict):
+        stoichiometry_dict = reaction
+    elif isinstance(reaction, str):
+        stoichiometry_dict = str2dct(reaction)
+    else:
+        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+    stoichiometric_array = chemicals.kwarray(stoichiometry_dict)
+    return stoichiometric_array
+
+def get_stoichiometric_string(reaction, chemicals):
+    """Return a string defining the reaction given the stoichiometric array and chemicals."""
+    if isinstance(reaction, dict):
+        stoichiometric_dict = reaction
+    elif isinstance(reaction, ndarray):
+        stoichiometric_dict = arr2dct(reaction, chemicals)
+    else:
+        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+    return dct2str(stoichiometric_dict)
 
 def str2dct(reaction) -> dict:
     reaction = reaction.replace(' ', '')
@@ -15,17 +39,20 @@ def str2dct(reaction) -> dict:
     dct = {}
     for nID in reactants:
         for i, letter in enumerate(nID):
+            if letter == 'e': continue
             if letter.isalpha(): break
         if i: dct[nID[i:]] = -float(nID[:i])
         else: dct[nID] = -1
     for nID in products:
         for i, letter in enumerate(nID):
+            if letter == 'e': continue
             if letter.isalpha(): break
         if i: dct[nID[i:]] = float(nID[:i])
         else: dct[nID] = 1
     return dct
 
 def dct2str(dct):
+    if not dct: return "no reaction"
     left = []
     right = []
     for ID, N in dct.items():
@@ -40,17 +67,6 @@ def dct2str(dct):
     reaction = left + ' -> ' + right
     return reaction
 
-def dct2arr(dct, species):
-    return species.array(dct.keys(), [*dct.values()])
+def arr2dct(arr, chemicals):
+    return {ID: N for N, ID in zip(arr, chemicals.IDs) if N}
 
-def arr2dct(arr, species):
-    dct = {}
-    for N, ID in zip(arr, species.IDs):
-        if N: dct[ID] = N
-    return dct
-
-def str2arr(reaction, species):
-    return dct2arr(str2dct(reaction), species)
-
-def arr2str(arr, species):
-    return dct2str(arr2dct(arr, species))

@@ -8,12 +8,13 @@ from .utils import read_only
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer
+import thermosteam as tmo
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
 
-key_thermo_props = ('V', 'S', 'H', 'Cn')
+key_thermo_props = ('V', 'S', 'H', 'Cn',)
 
 # %% Utilities
 
@@ -241,7 +242,7 @@ class CompiledChemicals(Chemicals):
         return CompiledChemicals, (self.tuple,)
     
     def compile(self):
-        """Do nothing, CompiledChemicals objects are already compiled."""
+        """Do nothing, CompiledChemicals objects are already compiled.""" 
     
     def refresh_constants(self):
         """
@@ -257,24 +258,33 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Glucose'])
-        >>> chemicals.Glucose.Hc = 2291836.024
+        >>> chemicals.Glucose.HHV = -2291836.024
         >>> chemicals.refresh_constants()
-        >>> chemicals.Hc
-        array([2291836.024])
+        >>> chemicals.HHV
+        array([-2291836.024])
         
         """
         dct = self.__dict__
         chemicals = self.tuple
         dct['MW'] = np.array([i.MW for i in chemicals])
         dct['Hf'] = np.array([i.Hf for i in chemicals])
-        dct['Hc'] = np.array([i.Hc for i in chemicals])
+        dct['LHV'] = np.array([i.LHV for i in chemicals])
+        dct['HHV'] = np.array([i.HHV for i in chemicals])
+
+    def get_combustion_reactions(self):
+        reactions = [i.get_combustion_reaction(self) 
+                         for i in self if i.combustion]
+        return tmo.reaction.ParallelReaction(reactions)
 
     def _compile(self):
         dct = self.__dict__
         tuple_ = tuple
         chemicals = tuple_(dct.values())
         for i in chemicals:
-            assert not i.get_missing_slots(key_thermo_props), f"{i} is missing key thermodynamic properties"
+            assert not i.get_missing_slots(key_thermo_props), (
+                f"{i} is missing key thermodynamic properties; "
+                "use the `<Chemical>.get_missing_slots()` to check "
+                "which are missing")
         IDs = tuple_([i.ID for i in chemicals])
         CAS = tuple_([i.CAS for i in chemicals])
         N = len(IDs)
@@ -286,7 +296,8 @@ class CompiledChemicals(Chemicals):
         dct['CASs'] = tuple_([i.CAS for i in chemicals])
         dct['MW'] = np.array([i.MW for i in chemicals])
         dct['Hf'] = np.array([i.Hf for i in chemicals])
-        dct['Hc'] = np.array([i.Hc for i in chemicals])
+        dct['LHV'] = np.array([i.LHV for i in chemicals])
+        dct['HHV'] = np.array([i.HHV for i in chemicals])
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
@@ -312,7 +323,6 @@ class CompiledChemicals(Chemicals):
         dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
         dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
         has_equilibrium[eq_index] = True
-        
     
     def subgroup(self, IDs):
         """
