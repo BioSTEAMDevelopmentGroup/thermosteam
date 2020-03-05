@@ -3,6 +3,7 @@
 __all__ = ('Chemical',)
 
 import re
+import thermosteam as tmo
 from flexsolve import bounded_wegstein
 from .utils import copy_maybe
 from .functors.identifiers import CAS_from_any, pubchem_db
@@ -14,8 +15,8 @@ from .functors.triple import Tt, Pt
 from .functors.volume import Volume
 from .functors.heat_capacity import HeatCapacity
 from .functors.reaction import Hf
-from .functors.combustion import Hcombustion
-from .functors.elements import similarity_variable, simple_formula_parser
+from .functors.combustion import CombustionData
+from .functors.elements import compute_similarity_variable, parse_simple_formula
 from .functors.eos import GCEOS_DUMMY, PR
 from .functors.viscosity import Viscosity
 from .functors.thermal_conductivity import ThermalConductivity
@@ -113,9 +114,11 @@ def create_eos(eos, Tc, Pc, omega):
 
 _names = ('_CAS', 'InChI', 'InChI_key',
          'common_name', 'iupac_name',
-         'pubchemid', 'smiles')
+         'pubchemid', 'smiles', 'formula')
 
 _groups = ('Dortmund', 'UNIFAC', 'PSRK')
+
+_reactions = ('combustion',)
 
 _thermo = ('S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cn',
            'Psat', 'Hvap', 'sigma', 'epsilon')
@@ -129,10 +132,12 @@ _liquid_only_properties = ('sigma', 'epsilon')
 _equilibrium_properties = ('Psat', 'Hvap')
 
 _data = ('MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc',
-         'Hf', 'Hc', 'Hfus', 'Hsub', 'omega', 'dipole',
+         'Hf', 'LHV', 'HHV', 'Hfus', 'Hsub', 'omega', 'dipole',
          'StielPolar', 'similarity_variable', 'iscyclic_aliphatic')
 
-important_slots = ('phase_ref', 'eos', 'eos_1atm', *_names, *_groups, *_thermo, *_data)
+_checked_slots = ('phase_ref', 'eos', 'eos_1atm',
+                  *_names[1:], *_groups, *_reactions,
+                  *_thermo, *_data)
 
 _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
@@ -166,8 +171,8 @@ class Chemical:
     >>> import thermosteam as tmo
     >>> # Initialize with an identifier
     >>> # (e.g. by name, CAS, InChI...)
-    >>> water = tmo.Chemical('Water') 
-    >>> water.show()
+    >>> Water = tmo.Chemical('Water') 
+    >>> Water.show()
     Chemical: Water (phase_ref='l')
     [Names]  CAS: 7732-18-5
              InChI: H2O/h1H2
@@ -176,6 +181,7 @@ class Chemical:
              iupac_name: oxidane
              pubchemid: 962
              smiles: O
+             formula: H2O
     [Groups] Dortmund: <1H2O>
              UNIFAC: <1H2O>
              PSRK: <1H2O>
@@ -201,7 +207,8 @@ class Chemical:
              Vc: 5.6e-05 m^3/mol
              Zc: 0.22947
              Hf: -2.4182e+05 J/mol
-             Hc: 0 J/mol
+             LHV: 0
+             HHV: 0
              Hfus: 6010 J/mol
              Hsub: None
              omega: 0.344
@@ -212,46 +219,46 @@ class Chemical:
 
     All fields shown are accessible:
     
-    >>> water.CAS
+    >>> Water.CAS
     '7732-18-5'
 
     Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods. In other words, these attributes define the functional groups for thermodynamic equilibrium calculations:
         
-    >>> water.Dortmund
+    >>> Water.Dortmund
     <DortmundGroupCounts: 1H2O>
     
     Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:
         
     >>> # Vapor pressure (Pa)
-    >>> water.Psat(T=373.15)
+    >>> Water.Psat(T=373.15)
     101284.55179999319
     >>> # Surface tension (N/m)
-    >>> water.sigma(T=298.15)
+    >>> Water.sigma(T=298.15)
     0.07205503890847455
     >>> # Molar volume (m^3/mol)
-    >>> water.V(phase='l', T=298.15, P=101325)
+    >>> Water.V(phase='l', T=298.15, P=101325)
     1.7970929501497658e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
-    >>> (water.T_ref, water.P_ref)
+    >>> (Water.T_ref, Water.P_ref)
     (298.15, 101325.0)
     >>> # Enthalpy at reference conditions (J/mol; without excess energies)
-    >>> water.H(T=298.15, phase='l')
+    >>> Water.H(T=298.15, phase='l')
     0.0
     
     Constant pure component properties are also available:
     
     >>> # Molecular weight (g/mol)
-    >>> water.MW
+    >>> Water.MW
     18.01528
     >>> # Boiling point (K)
-    >>> water.Tb
+    >>> Water.Tb
     373.124
     
     Temperature dependent properties are managed by model handles:
     
-    >>> water.Psat.show()
+    >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] Wagner_McGraw
     [1] Antoine
@@ -265,14 +272,14 @@ class Chemical:
 
     Phase dependent properties have attributes with model handles for each phase:
 
-    >>> water.V
+    >>> Water.V
     <PhaseTPProperty(phase, T, P) -> V [m^3/mol]>
-    >>> (water.V.l, water.V.g)
+    >>> (Water.V.l, Water.V.g)
     (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>, <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
 
     A model handle contains a series of models applicable to a certain domain:
     
-    >>> water.Psat[0].show()
+    >>> Water.Psat[0].show()
     TDependentModel: Wagner_McGraw
      evaluate: Wagner_McGraw(T, P=None) -> Psat [Pa]
      Tmin: 275.00
@@ -280,13 +287,13 @@ class Chemical:
 
     When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
         
-    >>> # water.Psat(1000.0) ->
+    >>> # Water.Psat(1000.0) ->
     >>> # ValueError: <TDependentModelHandle(T, P=None) -> Psat [Pa]>
     >>> # contains no valid model at T=1000.00 K
     
     Each model may contain either a function or a functor (a function with stored data) to compute the property:
         
-    >>> functor = water.Psat[0].evaluate
+    >>> functor = Water.Psat[0].evaluate
     >>> functor.show()
     Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
      a: -7.7645
@@ -302,10 +309,10 @@ class Chemical:
     A new model can be added easily to a model handle through the `add_model` method, for example:
         
     >>> # Set top_priority=True to place model in postion [0]
-    >>> @water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)
+    >>> @Water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)
     ... def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T + 42.98))
-    >>> water.Psat.show()
+    >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] User_antoine_model
     [1] Wagner_McGraw
@@ -320,8 +327,8 @@ class Chemical:
 
     The `models` object is a `deque` for easier management of model order:
     
-    >>> water.Psat.models.rotate(-1)
-    >>> water.Psat.show()
+    >>> Water.Psat.models.rotate(-1)
+    >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] Wagner_McGraw
     [1] Antoine
@@ -336,9 +343,9 @@ class Chemical:
 
     The `add_model` method is a high level interface that even lets you create a constant model:
         
-    >>> value = water.V.l.add_model(1.687e-05)
+    >>> value = Water.V.l.add_model(1.687e-05)
     ... # Model is appended at the end by default
-    >>> added_model = water.V.l[-1] 
+    >>> added_model = Water.V.l[-1] 
     >>> added_model.show()
     ConstantThermoModel: Constant
      value: 1.687e-05
@@ -419,8 +426,10 @@ class Chemical:
         Critical point molar volume [m^3/mol].
     Hf : float
         Heat of formation [J/mol].
-    Hc : float
-        Heat of combustion [J/mol].
+    LHV : float
+        Lower heating value [J/mol].
+    HHV : float
+        Higher heating value [J/mol].
     Hfus : float
         Heat of fusion [J/mol].
     Hsub : float
@@ -441,7 +450,10 @@ class Chemical:
         Instance for solving equations of state at 1 atm.
     
     """
-    __slots__ = ('_ID', '_locked_state', *important_slots)
+    __slots__ = ('_ID', '_locked_state', 
+                 'phase_ref', 'eos', 'eos_1atm',
+                 *_names, *_groups, *_reactions,
+                 *_thermo, *_data)
     
     #: [float] Reference temperature in Kelvin
     T_ref = 298.15
@@ -495,12 +507,13 @@ class Chemical:
         info = pubchem_db.search_CAS(CAS)
         self._locked_state = None
         self._init_names(CAS, info.smiles, info.InChI, info.InChI_key, 
-                         info.pubchemid, info.iupac_name, info.common_name)
+                         info.pubchemid, info.iupac_name, info.common_name,
+                         info.formula)
         self._init_groups(info.InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
-            from .equilibrium.unifac_data import GroupCounts
-            self.Dortmund = GroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
-        self._init_data(CAS, info.MW, atoms=simple_formula_parser(info.formula))
+            from .equilibrium.unifac_data import DortmundGroupCounts
+            self.Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
+        self._init_data(CAS, self.get_atoms(), info.MW)
         self._init_eos(eos, self.Tc, self.Pc, self.omega)
         has_hydroxyl = False
         for dct in (self.Dortmund, self.UNIFAC, self.PSRK):
@@ -517,6 +530,18 @@ class Chemical:
                             self.Tm, self.Tb, self.eos, self.eos_1atm,
                             phase_ref)
         
+    def get_combustion_reaction(self, chemicals):
+        ID = self.ID
+        combustion = self.combustion.copy()
+        combustion[ID] = -1
+        return tmo.reaction.Reaction(combustion, ID, 1.0, chemicals)
+        
+    def load_combustion_data(self, method="Stoichiometry"):
+        CD = CombustionData.from_chemical_data(self.get_atoms(), self.CAS,
+                                               self.MW, self.Hf, method)
+        self.LHV = CD.LHV
+        self.HHV = CD.HHV
+        self.combustion = CD.stoichiometry
 
     def __reduce__(self):
         return unpickle_chemical, (get_chemical_data(self),)
@@ -529,6 +554,10 @@ class Chemical:
     def CAS(self):
         """[str] CAS number of chemical."""
         return self._CAS
+    
+    def get_atoms(self):
+        """dict[str: int] Atom-count pairs."""
+        return parse_simple_formula(self.formula)
 
     def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None):
         """Return the saturated temperature (in Kelvin) given the pressure (in Pascal)."""
@@ -566,7 +595,7 @@ class Chemical:
     __copy__ = copy
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
-                    pubchemid, iupac_name, common_name):
+                    pubchemid, iupac_name, common_name, formula):
         self._CAS = CAS
         self.smiles = smiles
         self.InChI = InChI
@@ -574,6 +603,7 @@ class Chemical:
         self.pubchemid = pubchemid
         self.iupac_name = iupac_name
         self.common_name = common_name
+        self.formula = formula
         
     def _init_groups(self, InChI_key):
         if InChI_key in DDBST_UNIFAC_assignments:
@@ -589,7 +619,7 @@ class Chemical:
         else:
             self.PSRK = {}
 
-    def _init_data(self, CAS, MW, atoms):
+    def _init_data(self, CAS, atoms, MW):
         self.MW = MW
         self.Tm = Tm(CAS)
         self.Tb = Tb(CAS)
@@ -610,15 +640,22 @@ class Chemical:
         self.Hsub = Hsub(CASRN=CAS)
 
         # Chemistry
-        self.Hf = Hf(CAS) or 0.
-        self.Hc = Hcombustion(atoms=atoms, Hf=self.Hf) or 0.
+        self.Hf = Hf(CAS) or None
+        try:
+            CD = CombustionData.from_chemical_data(atoms, self.CAS, MW, self.Hf)
+        except:
+            self.LHV = self.HHV = self.combustion = None
+        else:
+            self.LHV = CD.LHV
+            self.HHV = CD.HHV
+            self.combustion = CD.stoichiometry
         
         # Critical Point
         self.StielPolar = StielPolar(CAS, Tc, Pc, omega)
         
         # Other
         self.dipole = dipole(CAS)
-        self.similarity_variable = similarity_variable(atoms, MW)
+        self.similarity_variable = compute_similarity_variable(atoms, MW)
         self.iscyclic_aliphatic = False
 
     def _init_eos(self, eos, Tc, Pc, omega):
@@ -831,7 +868,10 @@ class Chemical:
             self.H = self.S = self.S_excess = self.H_excess = None
 
     def default(self, slots=None):
-        """Default all `slots` with the chemical properties of water. If no `slots` given, all essential chemical properties that are missing are defaulted. `slots` which are still missing are returned as set.
+        """
+        Default all `slots` with the chemical properties of water. If no
+        `slots` given, all essential chemical properties that are missing
+        are defaulted. `slots` which are still missing are returned as set.
         
         Parameters
         ----------
@@ -849,7 +889,7 @@ class Chemical:
         >>> Substance = Chemical.blank('Substance')
         >>> missing_slots = Substance.default()
         >>> sorted(missing_slots)
-        ['Dortmund', 'Hfus', 'Hsub', 'Hvap', 'InChI', 'InChI_key', 'PSRK', 'Pc', 'Psat', 'Pt', 'StielPolar', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'Zc', 'common_name', 'dipole', 'eos', 'eos_1atm', 'iscyclic_aliphatic', 'iupac_name', 'omega', 'pubchemid', 'similarity_variable', 'smiles']
+        ['Dortmund', 'Hfus', 'Hsub', 'Hvap', 'InChI', 'InChI_key', 'PSRK', 'Pc', 'Psat', 'Pt', 'StielPolar', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'Zc', 'combustion', 'common_name', 'dipole', 'eos', 'eos_1atm', 'formula', 'iscyclic_aliphatic', 'iupac_name', 'omega', 'pubchemid', 'similarity_variable', 'smiles']
         
         Note that missing slots does not include essential properties volume, heat capacity, and conductivity.
         
@@ -883,8 +923,29 @@ class Chemical:
                 kappa.l.add_model(0.5942)
             if not kappa:
                 kappa.add_model(0.5942)
-        if 'Hc' in slots:
-            self.Hc = 0
+        if self.formula:
+            if any([i in slots for i in ('HHV', 'LHV', 'combustion', 'Hf')]):
+                if 'Hf' in slots:
+                    method = 'Dulong'
+                else:
+                    method = 'Stoichiometry'
+                CD = CombustionData.from_chemical_data(self.get_atoms(), self.CAS,
+                                                       MW, self.Hf, method)
+                if 'Hf' in slots:
+                    self.Hf = CD.Hf
+                if 'HHV' in slots:
+                    self.HHV = CD.HHV
+                if 'LHV' in slots:
+                    self.LHV = CD.LHV
+                if 'combustion' in slots:
+                    self.combustion = CD.stoichiometry
+        else:
+            if 'LHV' in slots:
+                self.LHV = 0
+            if 'HHV' in slots:
+                self.HHV = 0
+            if 'combustion' in slots:
+                self.combustion = ""
         if 'Hf' in slots:
             self.Hf = 0
         if 'epsilon' in slots:
@@ -911,7 +972,7 @@ class Chemical:
             self.load_free_energies()
         missing = set(slots)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
-                                   'mu', 'kappa', 'Hc', 'epsilon', 'H',
+                                   'mu', 'kappa', 'LHV', 'HHV', 'epsilon', 'H',
                                    'S', 'H_excess', 'S_excess', 'phase_ref'})
         return missing
     
@@ -934,11 +995,11 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> Substance.get_missing_slots()
-        ['eos', 'eos_1atm', 'InChI', 'InChI_key', 'common_name', 'iupac_name', 'pubchemid', 'smiles', 'Dortmund', 'UNIFAC', 'PSRK', 'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 'MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc', 'Hf', 'Hc', 'Hfus', 'Hsub', 'omega', 'dipole', 'StielPolar', 'similarity_variable', 'iscyclic_aliphatic']
+        ['eos', 'eos_1atm', 'InChI', 'InChI_key', 'common_name', 'iupac_name', 'pubchemid', 'smiles', 'formula', 'Dortmund', 'UNIFAC', 'PSRK', 'combustion', 'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 'MW', 'Tm', 'Tb', 'Tt', 'Tc', 'Pt', 'Pc', 'Vc', 'Zc', 'Hf', 'LHV', 'HHV', 'Hfus', 'Hsub', 'omega', 'dipole', 'StielPolar', 'similarity_variable', 'iscyclic_aliphatic']
         
         """
         getfield = getattr
-        return [i for i in (slots or important_slots) if not getfield(self, i)]
+        return [i for i in (slots or _checked_slots) if not getfield(self, i)]
     
     def copy_missing_slots_from(self, *sources, slots=None, default=True):
         """Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing."""
@@ -982,6 +1043,7 @@ class Chemical:
                  iupac_name: None
                  pubchemid: None
                  smiles: None
+                 formula: None
         [Groups] Dortmund: None
                  UNIFAC: None
                  PSRK: None
@@ -1007,7 +1069,8 @@ class Chemical:
                  Vc: None
                  Zc: None
                  Hf: None
-                 Hc: None
+                 LHV: None
+                 HHV: None
                  Hfus: None
                  Hsub: None
                  omega: None
@@ -1018,9 +1081,10 @@ class Chemical:
         
         """
         self = super().__new__(cls)
-        setfield = setattr
         self.eos = self.eos_1atm = None
+        setfield = setattr
         for i in _names: setfield(self, i, None)
+        for i in _reactions: setfield(self, i, None)
         for i in _groups: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _free_energies: setfield(self, i, None)
@@ -1062,7 +1126,8 @@ class Chemical:
         return self._locked_state
     
     def at_state(self, phase=None, copy=False):
-        """Set the state of chemical.
+        """
+        Set the state of chemical.
         
         Examples
         --------
@@ -1078,6 +1143,7 @@ class Chemical:
                  iupac_name: molecular nitro...
                  pubchemid: 947
                  smiles: N#N
+                 formula: N2
         [Groups] Dortmund: {}
                  UNIFAC: {}
                  PSRK: {}
@@ -1102,8 +1168,9 @@ class Chemical:
                  Pc: 3.3944e+06 Pa
                  Vc: 8.95e-05 m^3/mol
                  Zc: 0.28953
-                 Hf: 0 J/mol
-                 Hc: 0 J/mol
+                 Hf: None
+                 LHV: 0
+                 HHV: 0
                  Hfus: 710 J/mol
                  Hsub: None
                  omega: 0.04
@@ -1143,15 +1210,14 @@ class Chemical:
                 if callable(value):
                     line = f"{display_asfunctor(value, name=field, var=field, show_var=False)}"
                 else:
-                    try:
+                    if isinstance(value, (int, float)):
                         line = f"{field}: {value:.5g}"
-                    except:
+                        units = chemical_units_of_measure.get(field, "")
+                        if units: line += f' {units}'
+                    else:
                         value = str(value)
                         line = f"{field}: {value}"
                         if len(line) > 27: line = line[:27] + '...'
-                    else:
-                        units = chemical_units_of_measure.get(field, "")
-                        if units: line += f' {units}'
                 section.append(line)
             if section:
                 info += header + ("\n" + 9*" ").join(section)

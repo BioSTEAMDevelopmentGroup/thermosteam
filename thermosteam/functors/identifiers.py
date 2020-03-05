@@ -82,7 +82,7 @@ def checkCAS(CASRN):
         return False
 
 
-class ChemicalMetadata(object):
+class ChemicalMetadata:
     __slots__ = ['pubchemid', 'formula', 'MW', 'smiles', 'InChI', 'InChI_key',
                  'iupac_name', 'common_name', 'all_names', 'CAS', '_charge']
     def __repr__(self):
@@ -122,7 +122,7 @@ class ChemicalMetadata(object):
         
     
 
-class ChemicalMetadataDB(object):
+class ChemicalMetadataDB:
     exclusion_options = [os.path.join(folder, 'dippr_2014_int.csv'),
                          os.path.join(folder, 'Chemicals with data.csv')]
     

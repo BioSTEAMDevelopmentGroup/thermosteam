@@ -143,7 +143,8 @@ _chemical_fields = {'\n[Names]  ': _names,
 # %% Chemical
 
 class Chemical:
-    """Creates a Chemical object which contains basic information such as 
+    """
+    Creates a Chemical object which contains basic information such as 
     molecular weight and the structure of the species, as well as thermodynamic
     and transport properties as a function of temperature and pressure.
     
@@ -300,7 +301,6 @@ class Chemical:
     
     A new model can be added easily to a model handle through the `add_model` method, for example:
         
-    
     >>> # Set top_priority=True to place model in postion [0]
     >>> @water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)
     ... def User_antoine_model(T):
@@ -334,7 +334,7 @@ class Chemical:
     [8] Edalat
     [9] User_antoine_model
 
-    The `model` method is a high level interface that even lets you create a constant model:
+    The `add_model` method is a high level interface that even lets you create a constant model:
         
     >>> value = water.V.l.add_model(1.687e-05)
     ... # Model is appended at the end by default

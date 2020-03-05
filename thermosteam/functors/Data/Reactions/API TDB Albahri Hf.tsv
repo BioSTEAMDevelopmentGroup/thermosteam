@@ -176,13 +176,13 @@ CASRN	Compound	Hf
 141-43-5	Monoethanolamine	-210180
 4457-00-5	n-Hexylcyclopentane	-209490
 67-68-5	Dimethyl Sulfoxide	-209160
-111-65-9	n-Octane	-208820
+111-65-9	n-Octane	-249730
 1120-36-1	1-Tetradecene	-206520
 123-72-8	n-Butyraldehyde	-206070
 590-35-2	2,2-Dimethylpentane	-205810
 464-06-2	2,2,3-Trimethylbutane (Triptane)	-204430
 108-08-7	2,4-Dimethylpentane	-201670
-67-56-1	Methanol	-200660
+67-56-1	Methanol	-238400
 562-49-2	3,3-Dimethylpentane	-199790
 123-02-4	n-Tridecylbenzene	-199700
 1310-73-2	Sodium Hydroxide	-197770
@@ -570,3 +570,12 @@ CASRN	Compound	Hf
 501-65-5	Diphenylacetylene	430110
 75-71-8	Dichlorodifluoromethane	491610
 2189-60-8	n-Octylbenzene	538810
+50-99-7	D-Glucose	-1271100
+57-50-1	Sucrose	-2221200
+56-81-5	Glycerol	-668600
+112-62-9	Methyl oleate	-727640
+25990-60-7	Xylose	-1043700
+7664-38-2	Phosphoric acid	-1271660
+50-21-5	Lactic acid	-682502.448
+110-15-6	Succinic acid	-940260.0
+

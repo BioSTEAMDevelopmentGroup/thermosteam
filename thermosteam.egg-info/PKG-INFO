@@ -1,12 +1,12 @@
 Metadata-Version: 1.2
 Name: thermosteam
-Version: 0.2.16
+Version: 0.2.17
 Summary: BioSTEAM's Premier Thermodynamic Engine
-Home-page: https://github.com/yoelcortes/thermosteam
+Home-page: https://github.com/BioSTEAMDevelopmentGroup/thermosteam
 Author: Yoel Cortes-Pena
 Author-email: yoelcortes@gmail.com
 License: MIT
-Download-URL: https://github.com/yoelcortes/thermosteam.git
+Download-URL: https://github.com/BioSTEAMDevelopmentGroup/thermosteam.git
 Description: ====================================================
         Thermosteam: BioSTEAM's Premier Thermodynamic Engine 
         ====================================================
@@ -18,7 +18,7 @@ Description: ====================================================
            :target: https://thermosteam.readthedocs.io/en/latest/
            :alt: Documentation
         .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
-           :target: https://github.com/yoelcortes/thermosteam/blob/master/LICENSE.txt
+           :target: https://github.com/BioSTEAMDevelopmentGroup/thermosteam/blob/master/LICENSE.txt
            :alt: license
         
         
@@ -41,7 +41,7 @@ Description: ====================================================
         
         To get the git version, run:
         
-            $ git clone git://github.com/yoelcortes/thermosteam
+            $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
         
         Documentation
         -------------
@@ -55,7 +55,7 @@ Description: ====================================================
         
         To report bugs, please use the thermosteam's Bug Tracker at:
         
-            https://github.com/yoelcortes/thermosteam
+            https://github.com/BioSTEAMDevelopmentGroup/thermosteam
         
         
         License information
@@ -65,7 +65,7 @@ Description: ====================================================
         of this software, and a DISCLAIMER OF ALL WARRANTIES.
         
         Although not required by the thermosteam license, if it is convenient for you,
-        please cite ThermoSTEAM if used in your work. Please also consider contributing
+        please cite Thermosteam if used in your work. Please also consider contributing
         any changes you make back, and benefit the community.
         
         
@@ -75,7 +75,7 @@ Description: ====================================================
         To cite Thermosteam in publications use::
         
             Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Engine.
-            https://github.com/yoelcortes/thermosteam
+            https://github.com/BioSTEAMDevelopmentGroup/thermosteam
         
 Keywords: thermodynamics chemical engineering mass energy balance material properties phase equilibrium
 Platform: Windows

@@ -581,9 +581,13 @@ class Stream:
         """[float] Enthalpy of formation flow rate in kJ/hr."""
         return (self.chemicals.Hf * self.mol).sum()
     @property
-    def Hc(self):
-        """[float] Enthalpy of combustion flow rate in kJ/hr."""
-        return (self.chemicals.Hc * self.mol).sum()    
+    def LHV(self):
+        """[float] Lower heating value flow rate in kJ/hr."""
+        return (self.chemicals.LHV * self.mol).sum()    
+    @property
+    def HHV(self):
+        """[float] Higher heating value flow rate in kJ/hr."""
+        return (self.chemicals.HHV * self.mol).sum()    
     @property
     def Hvap(self):
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
