@@ -272,6 +272,7 @@ class CompiledChemicals(Chemicals):
         dct['HHV'] = np.array([i.HHV for i in chemicals])
 
     def get_combustion_reactions(self):
+        """Return a ParallelReactions object with all defined combustion reactions."""
         reactions = [i.get_combustion_reaction(self) 
                          for i in self if i.combustion]
         return tmo.reaction.ParallelReaction(reactions)

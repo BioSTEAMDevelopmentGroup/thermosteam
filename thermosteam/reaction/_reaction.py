@@ -19,13 +19,10 @@ class Reaction:
     reaction : dict or str
                A dictionary of stoichiometric coefficients or a stoichiometric equation written as:
                i1 R1 + ... + in Rn -> j1 P1 + ... + jm Pm
-
     reactant : str
                ID of reactant compound.
-        
     X : float
         Reactant conversion (fraction).
-        
     chemicals=None : Chemicals, defaults to settings.chemicals.
         Chemicals corresponing to each entry in the stoichiometry array.
     

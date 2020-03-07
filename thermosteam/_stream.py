@@ -203,7 +203,7 @@ class Stream:
     """
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_sink', '_source', 'price')
+                 '_vle_cache', '_sink', '_source', '_price')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -218,7 +218,6 @@ class Stream:
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
-        #: [float] Price in USD/kg
         self.price = price 
         if units != 'kmol/hr':
             name, factor = self._get_flow_name_and_factor(units)
@@ -448,6 +447,14 @@ class Stream:
     ### Stream data ###
 
     @property
+    def price(self):
+        return self._price
+    @price.setter
+    def price(self, price):
+        """Price of stream per unit mass [USD/kg]"""
+        self._price = float(price)
+
+    @property
     def source(self):
         """[Unit] Outlet location."""
         return self._source
@@ -533,7 +540,7 @@ class Stream:
     @property
     def cost(self):
         """[float] Total cost of stream in USD/hr."""
-        return self.price * self.F_mass
+        return self._price * self.F_mass
     
     @property
     def F_mol(self):
@@ -773,7 +780,7 @@ class Stream:
         'g'
         
         """
-        assert isinstance(other, self.__class__), "other must be of same type to link with"
+        assert isinstance(other._imol, self._imol.__class__), "other must be of same type to link with"
         
         if TP and flow and phase:
             self._imol._data_cache = other._imol._data_cache
@@ -907,7 +914,7 @@ class Stream:
             else:
                 mol[index] = 0
     
-    def copy(self):
+    def copy(self, ID=None):
         """
         Return a copy of the stream.
 
@@ -919,24 +926,27 @@ class Stream:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> tmo.settings.set_thermo(chemicals) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s1_copy = s1.copy()
+        >>> s1_copy = s1.copy('s1_copy')
         >>> s1_copy.show(flow='kg/hr')
-        Stream: 
+        Stream: s1_copy
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Water    20
                        Ethanol  10
         
-        Note that the copy does not have an ID and its not registerd.
+        Warnings
+        --------
+        Prices are not copied.
         
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._sink = new._source = new._ID = None
+        new._sink = new._source = None
         new._thermo = self._thermo
         new._imol = self._imol.copy()
         new._TP = self._TP.copy()
         new._init_cache()
         new.price = 0
+        new.ID = ID
         return new
     __copy__ = copy
     
@@ -1352,7 +1362,7 @@ class Stream:
     ### Representation ###
     
     def _basic_info(self):
-        return type(self).__name__ + ': ' + (self.ID or '') + '\n'
+        return f"{type(self).__name__}: {self.ID or ''}\n"
     
     def _info_phaseTP(self, phase, T_units, P_units):
         T = thermo_units.convert(self.T, 'K', T_units)
