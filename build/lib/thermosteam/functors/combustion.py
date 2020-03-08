@@ -10,7 +10,7 @@ combustion_products = {'7782-44-7', '124-38-9', '7726-95-6', '7553-56-2',
                        '7647-01-0', '7664-39-3', '7446-09-5', '7727-37-9',
                        '16752-60-6', '7732-18-5', '630-08-0',
                        'Ash', 'H2O', 'CO2', 'CO', 'SO2', 'Br2',
-                       'I2', 'HCl', 'Hf', 'P4O10', 'O2', 'N2'}
+                       'I2', 'HCl', 'HF', 'P4O10', 'O2', 'N2'}
 
 Hf_combustion_products = {
     'H2O': -285825,
@@ -71,9 +71,10 @@ def estimate_HHV_from_stoichiometry(stoichiometry, Hf):
     return sum([stoichiometry[chem] * Hf_combustion_products[chem] for chem in stoichiometry]) - Hf
 
 # TODO: Continue adding more methods for estimating HHV
-def estimate_HHV_modified_Dulong(atoms, MW=None):
+def estimate_HHV_modified_Dulong(atoms, MW=None, check_oxygen_content=False):
     r"""
-    Return higher heating value [HHV; in J/mol] based on the Dulong's equation modified to account for the latent heat of vaporization of water.
+    Return higher heating value [HHV; in J/mol] based on the modified 
+    Dulong's equation.
     
     Parameters
     ----------
@@ -85,17 +86,21 @@ def estimate_HHV_modified_Dulong(atoms, MW=None):
     .. math:: 
         Hc (J/mol) = MW \cdot (338C + 1428(H - O/8)+ 95S)
     
-    This equation is only good for <10% Oxygen content. Variables C, H, O, and S are atom weight fractions
+    This equation is only good for <10 wt. % Oxygen content. Variables C, H, O,
+    and S are atom weight fractions.
     
     References
     ----------
     .. [1] Brown et al., Energy Fuels 2010, 24 (6), 3639–3646.
+    
     """
     mass_fractions = compute_mass_fractions(atoms, MW)
     C = mass_fractions.get('C', 0)
     H = mass_fractions.get('H', 0)
     O = mass_fractions.get('O', 0)
     S = mass_fractions.get('S', 0)
+    if check_oxygen_content:
+        assert O <= 0.105, f"Dulong's formula is only valid at 10 wt. % Oxygen or less ({O:.0%} given)"
     return - MW * (338*C  + 1428*(H - O/8)+ 95*S)
 
 def estimate_LHV(HHV, N_H2O):

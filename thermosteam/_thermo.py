@@ -16,7 +16,8 @@ __all__ = ('Thermo',)
 @cucumber # Just means you can pickle it
 @read_only
 class Thermo:
-    """Create a Thermo object that defines a thermodynamic property package
+    """
+    Create a Thermo object that defines a thermodynamic property package
     
     Parameters
     ----------
@@ -25,9 +26,9 @@ class Thermo:
     mixture : Mixture, optional
         Calculates mixture properties.
     Gamma : ActivityCoefficients subclass, optional
-        Class for computing activity coefficiente.
+        Class for computing activity coefficients.
     Phi : FugacityCoefficients subclass, optional
-        Class for computing fugacity coefficiente.
+        Class for computing fugacity coefficients.
     PCF : PoyntingCorrectionFactor subclass, optional
         Class for computing poynting correction factors.
     
@@ -37,8 +38,6 @@ class Thermo:
     >>> Thermo(['Ethanol', 'Water'])
     Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
     
-    Note how chemicals are compiled when it becomes part of a Thermo object.
-    
     Attributes
     ----------
     chemicals : Chemicals or Iterable[str]
@@ -46,9 +45,9 @@ class Thermo:
     mixture : Mixture, optional
         Calculates mixture properties.
     Gamma : ActivityCoefficients subclass, optional
-        Class for computing activity coefficiente.
+        Class for computing activity coefficients.
     Phi : FugacityCoefficients subclass, optional
-        Class for computing fugacity coefficiente.
+        Class for computing fugacity coefficients.
     PCF : PoyntingCorrectionFactor subclass, optional
         Class for computing poynting correction factors.
     

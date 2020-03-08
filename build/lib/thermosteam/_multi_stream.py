@@ -131,7 +131,7 @@ class MultiStream(Stream):
     """
     __slots__ = ()
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), units=None,
-                 thermo=None, price=None, **phase_flows):
+                 thermo=None, price=0, **phase_flows):
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
