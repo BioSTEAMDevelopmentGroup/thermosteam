@@ -81,8 +81,8 @@ class Chemicals:
         CompiledChemicals([Water, Ethanol])
         
         """
+        CompiledChemicals._compile(self)
         setattr(self, '__class__', CompiledChemicals)
-        self._compile()
     
     def subgroup(self, IDs):
         """

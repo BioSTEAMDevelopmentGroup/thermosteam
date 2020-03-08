@@ -83,10 +83,7 @@ class Settings:
         """Set the default Thermo object. If `thermo` is not a Thermo object,
         an attempt is made to convert it to one."""
         if not isinstance(thermo, tmo.Thermo):
-            try:
-                thermo = tmo.Thermo(thermo)
-            except:    
-                raise ValueError(f"could not convert {thermo} to a Thermo object")
+            thermo = tmo.Thermo(thermo)
         self._thermo = thermo
     
     def __repr__(self):
