@@ -6,6 +6,8 @@ Created on Fri Jun 28 19:23:52 2019
 """
 from . import _parse as prs
 from ..utils import chemicals_user
+from .._phase import NoPhase
+from ..indexer import ChemicalIndexer
 import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
@@ -275,7 +277,9 @@ class ReactionSet:
     _ipython_display_ = show
         
 class ParallelReaction(ReactionSet):
-    """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all parallel reactions.
+    """
+    Create a ParallelReaction object from Reaction objects. When called, 
+    it returns the change in material due to all parallel reactions.
     
     Parameters
     ----------
@@ -290,14 +294,16 @@ class ParallelReaction(ReactionSet):
 
     @property
     def X_net(self):
-        """[dict] Net reaction conversion of reactants."""
+        """[ChemicalIndexer] Net reaction conversion of reactants."""
         X_net = {}
         for i, j in zip(self.reactants, self.X):
             if i in X_net:
                 X_net[i] += j
             else:
                 X_net[i] = j
-        return X_net
+        chemicals = self.chemicals
+        data = chemicals.kwarray(X_net)
+        return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
 
 class SeriesReaction(ReactionSet):
     """Create a ParallelReaction object from Reaction objects. When called, it returns the change in material due to all reactions in series.
@@ -316,14 +322,16 @@ class SeriesReaction(ReactionSet):
 
     @property
     def X_net(self):
-        """[dict] Net reaction conversion of reactants."""
+        """[ChemicalIndexer] Net reaction conversion of reactants."""
         X_net = {}
         for i, j in zip(self.reactants, self.X):
             if i in X_net:
                 X_net[i] *= j
             else:
                 X_net[i] = j
-        return X_net
+        chemicals = self.chemicals
+        data = chemicals.kwarray(X_net)
+        return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
 
 # Short-hand conventions
 # Rxn = Reaction

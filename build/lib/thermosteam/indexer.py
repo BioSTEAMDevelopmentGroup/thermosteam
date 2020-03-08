@@ -122,7 +122,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._phase, self._chemicals)
+        return self.from_data, (self._data, self._phase, self._chemicals, False)
     
     def _set_cache(self):
         self._index_cache = self._chemicals._index_cache
@@ -286,7 +286,7 @@ class MaterialIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._phases, self._chemicals)
+        return self.from_data, (self._data, self._phases, self._chemicals, False)
     
     def copy_like(self, other):
         if isa(other, ChemicalIndexer):
@@ -356,11 +356,11 @@ class MaterialIndexer(Indexer):
         return self._phases
     
     def to_chemical_indexer(self, phase=NoPhase):
-        return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals)
+        return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals, False)
     
     def get_phase(self, phase):
         return self._ChemicalIndexer.from_data(self._data[self._get_phase_index(phase)],
-                                               LockedPhase(phase), self._chemicals)
+                                               LockedPhase(phase), self._chemicals, False)
     
     def _get_index(self, phase_IDs):
         if isa(phase_IDs, str):
@@ -533,7 +533,8 @@ def by_mass(self):
             mass[i] = MassFlowProperty(chem.ID, mol, i, chem.MW)
         self._data_cache['mass'] = mass = ChemicalMassFlowIndexer.from_data(
                                                         property_array(mass),
-                                                        self._phase, chemicals)
+                                                        self._phase, chemicals,
+                                                        False)
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
 
@@ -552,7 +553,8 @@ def by_mass(self):
                 mass[index] = MassFlowProperty(chem.ID, mol, index, chem.MW)
         self._data_cache['mass'] = mass = MassFlowIndexer.from_data(
                                                         property_array(mass),
-                                                        phases, chemicals)
+                                                        phases, chemicals,
+                                                        False)
     return mass
 MolarFlowIndexer.by_mass = by_mass; del by_mass
 
@@ -594,7 +596,9 @@ def by_volume(self, TP):
         for i, chem in enumerate(chemicals):
             vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V, TP, None, self._phase)
         self._data_cache[TP] = \
-        vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol), self._phase, chemicals)
+        vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
+                                                      self._phase, chemicals,
+                                                      False)
     return vol
 ChemicalMolarFlowIndexer.by_volume = by_volume
 	
@@ -621,7 +625,8 @@ def by_volume(self, TP):
                                                                 index, chem.V, TP, phase)
         self._data_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(property_array(vol),
-                                                        phases, chemicals)
+                                              phases, chemicals,
+                                              False)
     return vol
 MolarFlowIndexer.by_volume = by_volume; del by_volume
 del PropertyFactory
