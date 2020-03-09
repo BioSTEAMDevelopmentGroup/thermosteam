@@ -4,7 +4,8 @@ Created on Thu Nov 28 22:59:17 2019
 
 @author: yoelr
 """
-__all__ = ('repr_IDs_data', 'repr_kwargs', 'repr_kwarg', 'repr_couples')
+__all__ = ('repr_IDs_data', 'repr_kwargs', 'repr_kwarg', 'repr_couples',
+           'repr_listed_values')
     
 def repr_IDs_data(IDs, data, dlim=", ", start=None):
     return (start or dlim) + dlim.join([f"{ID}={i:.4g}" for ID, i in zip(IDs, data) if i])
@@ -33,4 +34,9 @@ def repr_kwarg(name, value, spec=None, dlim=", "):
 def repr_couples(dlim, IDs, data):
     return dlim.join([f"('{ID}', {i:.4g})" for ID, i in zip(IDs, data) if i])
 
-
+def repr_listed_values(values):
+    *values, last = values 
+    if values:
+        return ", ".join(values) + ' and ' + last
+    else:
+        return last
