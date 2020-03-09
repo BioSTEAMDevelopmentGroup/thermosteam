@@ -530,13 +530,23 @@ class Chemical:
                             self.Tm, self.Tb, self.eos, self.eos_1atm,
                             phase_ref)
         
+    def get_key_property_names(self):
+        """Return the attribute names of key properties required to model a process."""
+        if not self.locked_state and self.phase_ref != 's':
+            return ('V', 'S', 'H', 'Cn', 'Psat', 'Tb')
+        else:
+            return ('V', 'S', 'H', 'Cn',)
+        
     def get_combustion_reaction(self, chemicals):
+        """Return a Reaction object defining the combustion of this chemical."""
         ID = self.ID
         combustion = self.combustion.copy()
         combustion[ID] = -1
         return tmo.reaction.Reaction(combustion, ID, 1.0, chemicals)
         
     def load_combustion_data(self, method="Stoichiometry"):
+        """Load combustion data (LHV, HHV, and combution attributes)
+        based on the molecular formula and the heat of formation."""
         CD = CombustionData.from_chemical_data(self.get_atoms(), self.CAS,
                                                self.MW, self.Hf, method)
         self.LHV = CD.LHV
@@ -1194,7 +1204,6 @@ class Chemical:
             lock_phase(self, phase)
         else:
             raise ValueError(f"invalid phase {repr(phase)}")
-        self._locked_state = phase
     
     def show(self):
         """Print all specifications"""
@@ -1245,6 +1254,7 @@ def lock_phase(chemical, phase):
         if hasfield(phase_property, phase):
             functor = getfield(phase_property, phase)
             setfield(chemical, field, functor)
+    chemical._locked_state = phase
 
 # # Fire Safety Limits
 # self.Tflash = Tflash(CAS)

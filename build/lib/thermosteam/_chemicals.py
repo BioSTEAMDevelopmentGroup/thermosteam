@@ -4,7 +4,7 @@ Created on Sat Nov 23 09:41:02 2019
 
 @author: yoelr
 """
-from .utils import read_only
+from .utils import read_only, repr_listed_values
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer
@@ -13,8 +13,6 @@ import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
-
-key_thermo_props = ('V', 'S', 'H', 'Cn',)
 
 # %% Utilities
 
@@ -281,11 +279,15 @@ class CompiledChemicals(Chemicals):
         dct = self.__dict__
         tuple_ = tuple
         chemicals = tuple_(dct.values())
-        for i in chemicals:
-            assert not i.get_missing_slots(key_thermo_props), (
-                f"{i} is missing key thermodynamic properties; "
+        for chemical in chemicals:
+            key_properties = chemical.get_key_property_names()
+            missing_slots = chemical.get_missing_slots(key_properties)
+            if not missing_slots: continue
+            missing = repr_listed_values(missing_slots)
+            raise RuntimeError(
+                f"{chemical} is missing key thermodynamic properties ({missing}); "
                 "use the `<Chemical>.get_missing_slots()` to check "
-                "which are missing")
+                "all missing properties")
         IDs = tuple_([i.ID for i in chemicals])
         CAS = tuple_([i.CAS for i in chemicals])
         N = len(IDs)
