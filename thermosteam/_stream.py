@@ -1355,11 +1355,19 @@ class Stream:
         self.__class__ = ms.MultiStream
         self._imol = self._imol.to_material_indexer(phases)
         self._streams = {}
-        self._vle_cache = Cache(eq.VLE, self._imol, self._TP, thermo=self._thermo,
+        self._vle_cache = Cache(eq.VLE, self._imol, self._TP,
+                                thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
     
     ### Representation ###
+    
+    def diagram(self, file=None, format='png'):
+        from biosteam._digraph import make_digraph, save_digraph
+        units = [i for i in (self.source, self.sink) if i]
+        streams = sum([i.ins + i.outs for i in units], [])
+        f = make_digraph(units, set(streams))
+        save_digraph(f, file, format)
     
     def _basic_info(self):
         return f"{type(self).__name__}: {self.ID or ''}\n"
