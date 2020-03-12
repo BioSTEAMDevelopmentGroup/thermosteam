@@ -1296,6 +1296,16 @@ class Stream:
         """
         return self.imol[IDs]/self.F_vol
     
+    @property
+    def P_vapor(self):
+        """Vapor pressure of liquid."""
+        chemicals = self.equilibrium_chemicals
+        F_l = eq.LiquidFugacities(chemicals, self.thermo)
+        IDs = tuple([i.ID for i in chemicals])
+        x = self.get_molar_composition(IDs)
+        T = self.T
+        return F_l(x, T).sum()
+    
     def recieve_vent(self, other, accumulate=False):
         """
         Recieve vapors from another stream as if in equilibrium.
