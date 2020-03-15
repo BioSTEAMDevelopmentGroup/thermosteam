@@ -568,7 +568,7 @@ class Stream:
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.ivol._data[:] *= value / F_vol / 1000.
+        self.imol._data[:] *= value / F_vol
     
     @property
     def H(self):

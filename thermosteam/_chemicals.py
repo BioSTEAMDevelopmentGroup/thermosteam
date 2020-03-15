@@ -14,11 +14,18 @@ import numpy as np
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
 
-# %% Utilities
+# %% Functions
 
 def must_compile(*args, **kwargs):
     raise TypeError("method valid only for compiled chemicals; "
                     "run <chemicals>.compile() to compile")
+
+def chemical_data_array(chemicals, attr):
+    getfield = getattr
+    data = np.array([getfield(i, attr) for i in chemicals])
+    data.setflags(0)
+    return data
+    
 
 # %% Chemicals
 
@@ -297,10 +304,10 @@ class CompiledChemicals(Chemicals):
         dct['size'] = N
         dct['IDs'] = IDs
         dct['CASs'] = tuple_([i.CAS for i in chemicals])
-        dct['MW'] = np.array([i.MW for i in chemicals])
-        dct['Hf'] = np.array([i.Hf for i in chemicals])
-        dct['LHV'] = np.array([i.LHV for i in chemicals])
-        dct['HHV'] = np.array([i.HHV for i in chemicals])
+        dct['MW'] = chemical_data_array(chemicals, 'MW')
+        dct['Hf'] = chemical_data_array(chemicals, 'Hf')
+        dct['LHV'] = chemical_data_array(chemicals, 'LHV')
+        dct['HHV'] = chemical_data_array(chemicals, 'HHV')
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
