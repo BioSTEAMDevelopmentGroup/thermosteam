@@ -203,7 +203,8 @@ class Stream:
     """
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_sink', '_source', '_price')
+                 '_vle_cache', '_sink', '_source', '_price',
+                 'path_priority')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -215,6 +216,9 @@ class Stream:
 
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units='kmol/hr',
                  price=0., thermo=None, **chemical_flows):
+        #: [bool] True if BioSTEAM should follow this stream's path first when 
+        # creating systems.
+        self.path_priority = 0
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
@@ -940,6 +944,7 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
+        new.path_priority = 0
         new._sink = new._source = None
         new._thermo = self._thermo
         new._imol = self._imol.copy()
