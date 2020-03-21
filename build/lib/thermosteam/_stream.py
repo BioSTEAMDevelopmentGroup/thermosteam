@@ -203,7 +203,8 @@ class Stream:
     """
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_sink', '_source', '_price')
+                 '_vle_cache', '_sink', '_source', '_price',
+                 'path_priority')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -215,6 +216,9 @@ class Stream:
 
     def __init__(self, ID='', flow=(), phase='l', T=298.15, P=101325., units='kmol/hr',
                  price=0., thermo=None, **chemical_flows):
+        #: [bool] True if BioSTEAM should follow this stream's path first when 
+        # creating systems.
+        self.path_priority = 0
         self._TP = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
@@ -568,7 +572,7 @@ class Stream:
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.ivol._data[:] *= value / F_vol / 1000.
+        self.imol._data[:] *= value / F_vol
     
     @property
     def H(self):
@@ -940,6 +944,7 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
+        new.path_priority = 0
         new._sink = new._source = None
         new._thermo = self._thermo
         new._imol = self._imol.copy()
@@ -1296,6 +1301,16 @@ class Stream:
         """
         return self.imol[IDs]/self.F_vol
     
+    @property
+    def P_vapor(self):
+        """Vapor pressure of liquid."""
+        chemicals = self.equilibrium_chemicals
+        F_l = eq.LiquidFugacities(chemicals, self.thermo)
+        IDs = tuple([i.ID for i in chemicals])
+        x = self.get_molar_composition(IDs)
+        T = self.T
+        return F_l(x, T).sum()
+    
     def recieve_vent(self, other, accumulate=False):
         """
         Recieve vapors from another stream as if in equilibrium.
@@ -1355,11 +1370,19 @@ class Stream:
         self.__class__ = ms.MultiStream
         self._imol = self._imol.to_material_indexer(phases)
         self._streams = {}
-        self._vle_cache = Cache(eq.VLE, self._imol, self._TP, thermo=self._thermo,
+        self._vle_cache = Cache(eq.VLE, self._imol, self._TP,
+                                thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
     
     ### Representation ###
+    
+    def diagram(self, file=None, format='png'):
+        from biosteam._digraph import make_digraph, save_digraph
+        units = [i for i in (self.source, self.sink) if i]
+        streams = sum([i.ins + i.outs for i in units], [])
+        f = make_digraph(units, set(streams))
+        save_digraph(f, file, format)
     
     def _basic_info(self):
         return f"{type(self).__name__}: {self.ID or ''}\n"

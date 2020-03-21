@@ -6,7 +6,7 @@ Created on Sun Jul 21 22:15:30 2019
 """
 
 from numpy import asarray, array
-from flexsolve import aitken_secant
+from flexsolve import aitken_secant, IQ_interpolation
 from .solve_composition import solve_x
 from ..utils import fill_like
 from .._settings import settings
@@ -147,10 +147,12 @@ class DewPoint:
                                      1e-6, 5e-8, args)
         except:
             self.x = z.copy()
-            Tbs = [i.Tsat(P) for i in self.chemicals]
-            T = (z * Tbs).sum()
-            self.T = self.rootsolver(self._T_error, T, T-0.01,
-                                     1e-6, 5e-8, args)
+            T = (z * self.Tbs).sum()
+            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
+            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
+            if Tmin < 10: Tmin = 10
+            self.T = IQ_interpolation(self._T_error, Tmin, Tmax,
+                                      x=T, args=args, xtol=1e-4, ytol=1e-4)
                 
         self.x /= self.x.sum()
         return self.T, self.x

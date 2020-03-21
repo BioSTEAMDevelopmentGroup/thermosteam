@@ -4,7 +4,7 @@ __all__ = ('Chemical',)
 
 import re
 import thermosteam as tmo
-from flexsolve import bounded_wegstein
+from flexsolve import IQ_interpolation
 from .utils import copy_maybe
 from .functors.identifiers import CAS_from_any, pubchem_db
 from .functors.vapor_pressure import VaporPressure
@@ -582,7 +582,7 @@ class Chemical:
                 Tguess = Tb * (P / 101325)
         elif not Tguess:
             Tguess = (Tmin + Tmax)/2
-        return bounded_wegstein(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-2, 1e-1)
+        return IQ_interpolation(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-2, 1e-1)
 
     def copy(self, ID, CAS=None):
         """Return a copy of the chemical with a new ID."""

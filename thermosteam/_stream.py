@@ -980,6 +980,34 @@ class Stream:
         new._init_cache()
         return new
     
+    def proxy(self):
+        """Return a new stream that shares all data with this one.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = s1.proxy()
+        >>> s2.imol is s1.imol and s2.thermal_condition is s1.thermal_condition
+        True
+        
+        """
+        cls = self.__class__
+        new = cls.__new__(cls)
+        new._sink = new._source = new._ID = None
+        new.price = self.price
+        new._thermo = self._thermo
+        new._imol = self._imol
+        new._TP = self._TP
+        new._bubble_point_cache = self._bubble_point_cache
+        new._dew_point_cache = self._dew_point_cache
+        try: new._vle_cache = self._vle_cache
+        except AttributeError: pass
+        new.path_priority = self.path_priority
+        return new
+    
     def empty(self):
         """Empty stream flow rates.
         
@@ -1078,7 +1106,7 @@ class Stream:
         
         """
         bp = self.get_bubble_point(IDs)
-        z = self.get_molar_composition(bp.IDs)
+        z = self.get_normalized_mol(bp.IDs)
         return bp(z, T=T or self.T)
     
     def bubble_point_at_P(self, P=None, IDs=None):
@@ -1101,7 +1129,7 @@ class Stream:
         
         """
         bp = self.get_bubble_point(IDs)
-        z = self.get_molar_composition(bp.IDs)
+        z = self.get_normalized_mol(bp.IDs)
         return bp(z, P=P or self.P)
     
     def dew_point_at_T(self, T=None, IDs=None):
@@ -1124,7 +1152,7 @@ class Stream:
         
         """
         dp = self.get_dew_point(IDs)
-        z = self.get_molar_composition(dp.IDs)
+        z = self.get_normalized_mol(dp.IDs)
         return dp(z, T=T or self.T)
     
     def dew_point_at_P(self, P=None, IDs=None):
@@ -1147,7 +1175,7 @@ class Stream:
         
         """
         dp = self.get_dew_point(IDs)
-        z = self.get_molar_composition(dp.IDs)
+        z = self.get_normalized_mol(dp.IDs)
         return dp(z, P=P or self.P)
     
     def get_normalized_mol(self, IDs):
@@ -1311,9 +1339,9 @@ class Stream:
         T = self.T
         return F_l(x, T).sum()
     
-    def recieve_vent(self, other, accumulate=False):
+    def receive_vent(self, other, accumulate=False):
         """
-        Recieve vapors from another stream as if in equilibrium.
+        Receive vapors from another stream as if in equilibrium.
 
         Parameters
         ----------
@@ -1328,7 +1356,7 @@ class Stream:
         >>> tmo.settings.set_thermo(chemicals) 
         >>> s1 = tmo.Stream('s1', N2=10, units='m3/hr', phase='g', T=330)
         >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
-        >>> s1.recieve_vent(s2, accumulate=True)
+        >>> s1.receive_vent(s2, accumulate=True)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
          phase: 'g', T: 330 K, P: 101325 Pa

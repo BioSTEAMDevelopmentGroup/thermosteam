@@ -26,7 +26,7 @@ class Registry:
         assert isinstance(ID, str), f"ID must be a string, not a '{type(ID).__name__}' object"
         assert ID[0].isalpha(), "ID must start with a letter"
         ID_words = ID.split('_')
-        assert all(word.isalnum() for word in ID_words), (
+        assert all([word.isalnum() for word in ID_words if word]), (
                 'ID may only contain letters, numbers, and/or underscores; '
                 'no special characters or spaces')
         self.__dict__[ID] = obj
