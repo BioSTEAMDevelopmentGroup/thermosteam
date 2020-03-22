@@ -16,7 +16,7 @@ def _registered(cls, ticket_name):
     cls.registry = Registry()
     cls.ticket_name = ticket_name
     cls.ticket_number = 0
-    cls.unnamed_ticket_number = 0
+    cls.unregistered_ticket_number = 0
     cls._take_unregistered_ticket = _take_unregistered_ticket
     cls._take_ticket = _take_ticket
     cls._unregister = _unregister
@@ -32,8 +32,11 @@ def _take_ticket(cls):
     return cls.ticket_name + str(cls.ticket_number)
 @classmethod
 def _take_unregistered_ticket(cls):
-    cls.ticket_number += 1
-    return cls.ticket_name + '.' + str(cls.ticket_number)
+    if cls.unregistered_ticket_number > 100:
+       cls.unregistered_ticket_number = 1 
+    else:
+        cls.unregistered_ticket_number += 1
+    return cls.ticket_name + '.' + str(cls.unregistered_ticket_number)
 
 def _unregister(self):
     try: delattr(self.registry, self._ID)

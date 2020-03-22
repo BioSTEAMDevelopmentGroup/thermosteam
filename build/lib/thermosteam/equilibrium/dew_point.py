@@ -6,7 +6,7 @@ Created on Sun Jul 21 22:15:30 2019
 """
 
 from numpy import asarray, array
-from flexsolve import aitken_secant
+from flexsolve import aitken_secant, IQ_interpolation, safe_divide
 from .solve_composition import solve_x
 from ..utils import fill_like
 from .._settings import settings
@@ -53,13 +53,13 @@ class DewPoint:
     >>> molar_composition = np.array([0.5, 0.5])
     >>> dp = DP(z=molar_composition, T=355)
     >>> dp
-    DewPointValues(T=355, P=91970.14968399677, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
+    DewPointValues(T=355, P=91970.14968399865, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
     >>> # Note that the result is a DewPointValues object which contain all results as attibutes
     >>> (dp.T, dp.P, dp.IDs, dp.z, dp.x)
-    (355, 91970.14968399677, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
+    (355, 91970.14968399865, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
     >>> # Solve for dew point at constant pressure
     >>> DP(z=molar_composition, P=2*101324)
-    DewPointValues(T=376.261660024686, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
+    DewPointValues(T=376.2616600246861, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
 
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
@@ -88,7 +88,7 @@ class DewPoint:
     def _T_error(self, T, P, z_norm, zP):
         Psats = array([i(T) for i in self.Psats])
         phi = self.phi(z_norm, T, P)
-        x_gamma_pcf = phi * zP / Psats
+        x_gamma_pcf = safe_divide(phi * zP, Psats)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
@@ -147,10 +147,12 @@ class DewPoint:
                                      1e-6, 5e-8, args)
         except:
             self.x = z.copy()
-            Tbs = [i.Tsat(P) for i in self.chemicals]
-            T = (z * Tbs).sum()
-            self.T = self.rootsolver(self._T_error, T, T-0.01,
-                                     1e-6, 5e-8, args)
+            T = (z * self.Tbs).sum()
+            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
+            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
+            if Tmin < 10: Tmin = 10
+            self.T = IQ_interpolation(self._T_error, Tmin, Tmax,
+                                      x=T, args=args, xtol=1e-4, ytol=1e-4)
                 
         self.x /= self.x.sum()
         return self.T, self.x
