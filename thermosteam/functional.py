@@ -1284,14 +1284,16 @@ polylog2._pqoffset2 = ((8.548256176424551e+34, 1.8485781239087334e+35,
                        0.999)
 
 @njit
-def normalize(array):
-    """Return a normalized array to a magnitude of 1.
-    If magnitude is zero, all fractions will have equal value."""
+def normalize(array, minimum=1e-12):
+    """
+    Return a normalized array to a magnitude of 1.
+    If magnitude is zero, all fractions will have equal value.
+    """
     array = np.asarray(array)
     sum_array = array.sum()
-    if sum_array == 0:
-        l = array.size
-        return np.ones(l)/l
+    if sum_array < minimum:
+        size = array.size
+        return np.ones(size)/size
     else:
         return array/sum_array
 

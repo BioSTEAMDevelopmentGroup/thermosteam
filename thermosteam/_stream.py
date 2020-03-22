@@ -182,7 +182,7 @@ class Stream:
      flow (kmol/hr): (g) Water    0.4721
                          Ethanol  0.1916
                      (l) Water    0.6381
-                         Ethanol  0.02551
+                         Ethanol  0.02552
     
     Note that the stream is a now a MultiStream to manage multiple phases.
     Each phase can be accessed separately too:
@@ -720,7 +720,8 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(chemicals)
         >>> s = tmo.Stream('s', Water=20, Ethanol=10, units='kg/hr')
         >>> s1 = tmo.Stream('s1')
         >>> s2 = tmo.Stream('s2')

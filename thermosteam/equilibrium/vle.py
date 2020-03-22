@@ -10,6 +10,7 @@ from .dew_point import DewPoint
 from .bubble_point import BubblePoint
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .._thermal_condition import ThermalCondition
+from ..functional import normalize
 from ..utils import Cache
 from numba import njit
 import numpy as np
@@ -792,7 +793,7 @@ class VLE:
         v = self._v
         y = v / v.sum()
         l = self._mol - v
-        self._x = l / l.sum()
+        self._x = normalize(l)
         if isinstance(self._phi, IdealFugacityCoefficients):
             self._y = self._y_iter(y, Psats_over_P, T, P)
         else:
