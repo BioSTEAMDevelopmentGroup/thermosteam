@@ -61,8 +61,7 @@ class Stream:
     Before creating a stream, first set the chemicals:
         
     >>> import thermosteam as tmo
-    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-    >>> tmo.settings.set_thermo(chemicals)
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
     
     Create a stream, defining the thermodynamic condition and flow rates:
         
@@ -291,8 +290,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals)
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_flow('kg/hr', 'Water')
         20.0
@@ -318,8 +316,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals)
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream(ID='s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_flow(10, 'kg/hr', 'Water')
         >>> s1.get_flow('kg/hr', 'Water')
@@ -342,8 +339,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals)
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_total_flow('kg/hr')
         30.0
@@ -367,8 +363,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals)
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_total_flow(1.0,'kg/hr')
         >>> s1.get_total_flow('kg/hr')
@@ -392,8 +387,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_property('sigma', 'N/m') # Surface tension
         0.06384967976396348
@@ -428,8 +422,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.set_property('P', 2, 'atm')
         >>> s1.P
@@ -698,8 +691,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = s1.copy()
         >>> s1.mix_from([s1, s2])
@@ -728,8 +720,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s = tmo.Stream('s', Water=20, Ethanol=10, units='kg/hr')
         >>> s1 = tmo.Stream('s1')
         >>> s2 = tmo.Stream('s2')
@@ -770,8 +761,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
         >>> s2.link_with(s1)
@@ -805,8 +795,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
         >>> s2.link_with(s1)
@@ -828,8 +817,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
         >>> s1.copy_like(s2)
@@ -861,8 +849,7 @@ class Stream:
         Initialize streams:
         
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
         
@@ -927,8 +914,7 @@ class Stream:
         Create a copy of a new stream:
         
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1_copy = s1.copy('s1_copy')
         >>> s1_copy.show(flow='kg/hr')
@@ -961,8 +947,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = s1.flow_proxy()
         >>> s2.mol is s1.mol
@@ -986,8 +971,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = s1.proxy()
         >>> s2.imol is s1.imol and s2.thermal_condition is s1.thermal_condition
@@ -1014,8 +998,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.empty()
         >>> s1.F_mol
@@ -1052,8 +1035,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.get_bubble_point()
         BubblePoint([Water, Ethanol])
@@ -1075,8 +1057,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.get_dew_point()
         DewPoint([Water, Ethanol])
@@ -1098,8 +1079,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_T()
         BubblePointValues(T=350, P=76621.54388128374, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
@@ -1121,8 +1101,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_P()
         BubblePointValues(T=357.0881141715846, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
@@ -1144,8 +1123,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_T()
         DewPointValues(T=350, P=48990.56398459762, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
@@ -1167,8 +1145,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_P()
         DewPointValues(T=368.6573659718087, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
@@ -1190,8 +1167,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
         >>> s1.get_normalized_mol(('Water', 'Ethanol'))
         array([0.667, 0.333])
@@ -1213,8 +1189,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
         >>> s1.get_normalized_mass(('Water', 'Ethanol'))
         array([0.667, 0.333])
@@ -1235,8 +1210,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_normalized_vol(('Water', 'Ethanol'))
         array([0.667, 0.333])
@@ -1257,8 +1231,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
         >>> s1.get_molar_composition(('Water', 'Ethanol'))
         array([0.5 , 0.25])
@@ -1278,8 +1251,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
         >>> s1.get_mass_composition(('Water', 'Ethanol'))
         array([0.5 , 0.25])
@@ -1299,8 +1271,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_volumetric_composition(('Water', 'Ethanol'))
         array([0.5 , 0.25])
@@ -1320,8 +1291,7 @@ class Stream:
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'])
-        >>> tmo.settings.set_thermo(chemicals) 
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_concentration(('Water', 'Ethanol'))
         array([27.823,  4.265])

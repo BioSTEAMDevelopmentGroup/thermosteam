@@ -16,7 +16,10 @@ __all__ = ('MultiStream', )
 
 class MultiStream(Stream):
     """
-    Create a MultiStream object that defines material flow rates for multiple phases along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
+    Create a MultiStream object that defines material flow rates for multiple
+    phases along with its thermodynamic state. Thermodynamic and transport
+    properties of a stream are available as properties, while thermodynamic
+    equilbrium (e.g. VLE, and bubble and dew points) are available as methods. 
 
     Parameters
     ----------

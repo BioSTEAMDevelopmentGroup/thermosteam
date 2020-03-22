@@ -9,7 +9,7 @@ from flexsolve import wegstein
 __all__ = ('solve_x', 'solve_y')
 
 def x_iter(x, x_gamma_poyinting, gamma, poyinting, T):
-    x = x/x.sum()    
+    x = x/x.sum()  
     return x_gamma_poyinting / (gamma(x, T) * poyinting(x, T))
 
 def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess=None):
@@ -17,7 +17,9 @@ def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess=None):
     return wegstein(x_iter, x_guess, 1e-5, args=(x_gamma_poyinting, gamma, poyinting, T))
 
 def y_iter(y, y_phi, phi, T, P):
-    return y_phi / phi(y/y.sum(), T, P)
+    y_sum = y.sum()
+    if y_sum > 1e-5: y /= y_sum
+    return y_phi / phi(y, T, P)
 
 def solve_y(y_phi, phi, T, P, y_guess):
     if y_guess is None: y_guess = y_phi
