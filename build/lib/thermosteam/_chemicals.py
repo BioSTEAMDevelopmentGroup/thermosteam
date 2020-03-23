@@ -580,13 +580,13 @@ class CompiledChemicals(Chemicals):
             for i in IDs:
                 if i not in dct: raise UndefinedChemical(i)     
     
-    def get_index(self, key):
+    def get_index(self, IDs):
         """
         Return index/indices of specified chemicals.
 
         Parameters
         ----------
-        key : iterable[str] or str
+        IDs : iterable[str] or str
               A single chemical identifier or multiple.
 
         Notes
@@ -599,7 +599,8 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
-        >>> chemicals.get_index(['Water', 'Ethanol'])
+        >>> IDs = ('Water', 'Ethanol')
+        >>> chemicals.get_index(IDs)
         [0, 1]
         
         Get a single index:
@@ -610,12 +611,11 @@ class CompiledChemicals(Chemicals):
         """
         cache = self._index_cache
         try: 
-            index = cache[key]
+            index = cache[IDs]
         except KeyError: 
-            cache[key] = index = self._get_index(key)
+            cache[IDs] = index = self._get_index(IDs)
         except TypeError:
-            key = tuple(key)
-            cache[key] = index = self._get_index(key)
+            raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
         return index
     
     def _get_index(self, IDs):
@@ -626,7 +626,7 @@ class CompiledChemicals(Chemicals):
         elif IDs is ...:
             return IDs
         else:
-            raise IndexError(f"only strings, tuples, and ellipsis are valid IDs")
+            raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
     
     def __len__(self):
         return self.size
