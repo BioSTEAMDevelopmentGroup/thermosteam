@@ -75,7 +75,7 @@ class Indexer:
         except KeyError: 
             cache[key] = index = self._get_index(key)
         except TypeError:
-            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
+            raise TypeError(f"only strings, tuples, and ellipsis are valid indices")
         return index
     
     @property
