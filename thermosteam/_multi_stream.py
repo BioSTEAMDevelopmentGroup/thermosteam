@@ -176,6 +176,7 @@ class MultiStream(Stream):
             stream = streams[phase]
         else:
             stream = Stream.__new__(Stream)
+            stream._sink = stream._source = None
             stream._imol = self._imol.get_phase(phase)
             stream._ID = None
             stream._TP = self._TP
