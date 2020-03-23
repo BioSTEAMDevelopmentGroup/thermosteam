@@ -1,0 +1,206 @@
+README.rst
+setup.py
+thermosteam/__init__.py
+thermosteam/_chemical.py
+thermosteam/_chemicals.py
+thermosteam/_constants.py
+thermosteam/_multi_stream.py
+thermosteam/_phase.py
+thermosteam/_settings.py
+thermosteam/_stream.py
+thermosteam/_thermal_condition.py
+thermosteam/_thermo.py
+thermosteam/exceptions.py
+thermosteam/functional.py
+thermosteam/indexer.py
+thermosteam/mixture.py
+thermosteam.egg-info/PKG-INFO
+thermosteam.egg-info/SOURCES.txt
+thermosteam.egg-info/dependency_links.txt
+thermosteam.egg-info/requires.txt
+thermosteam.egg-info/top_level.txt
+thermosteam/base/__init__.py
+thermosteam/base/documenter.py
+thermosteam/base/functor.py
+thermosteam/base/handle_builder.py
+thermosteam/base/phase_property.py
+thermosteam/base/thermo_model.py
+thermosteam/base/thermo_model_handle.py
+thermosteam/base/units_of_measure.py
+thermosteam/base/units_of_measure.txt
+thermosteam/equilibrium/__init__.py
+thermosteam/equilibrium/activity_coefficients.py
+thermosteam/equilibrium/bubble_point.py
+thermosteam/equilibrium/dew_point.py
+thermosteam/equilibrium/fugacities.py
+thermosteam/equilibrium/fugacity_coefficients.py
+thermosteam/equilibrium/poyinting_correction_factors.py
+thermosteam/equilibrium/solve_composition.py
+thermosteam/equilibrium/unifac_data.py
+thermosteam/equilibrium/vle.py
+thermosteam/equilibrium/Data/DDBST UNIFAC assignments.tsv
+thermosteam/equilibrium/Data/PSRK interaction parameters.tsv
+thermosteam/equilibrium/Data/UNIFAC modified Dortmund interaction parameters 2006.tsv
+thermosteam/equilibrium/Data/UNIFAC modified Dortmund interaction parameters.tsv
+thermosteam/equilibrium/Data/UNIFAC modified NIST 2015 interaction parameters.tsv
+thermosteam/equilibrium/Data/UNIFAC original interaction parameters.tsv
+thermosteam/functors/__init__.py
+thermosteam/functors/acentric.py
+thermosteam/functors/combustion.py
+thermosteam/functors/coolprop.py
+thermosteam/functors/critical.py
+thermosteam/functors/datasheet.py
+thermosteam/functors/dipole.py
+thermosteam/functors/dippr.py
+thermosteam/functors/electrochem.py
+thermosteam/functors/elements.py
+thermosteam/functors/environment.py
+thermosteam/functors/eos.py
+thermosteam/functors/free_energy.py
+thermosteam/functors/heat_capacity.py
+thermosteam/functors/identifiers.py
+thermosteam/functors/interface.py
+thermosteam/functors/joback.py
+thermosteam/functors/law.py
+thermosteam/functors/lennard_jones.py
+thermosteam/functors/miscdata.py
+thermosteam/functors/permittivity.py
+thermosteam/functors/phase_change.py
+thermosteam/functors/reaction.py
+thermosteam/functors/refractivity.py
+thermosteam/functors/safety.py
+thermosteam/functors/solubility.py
+thermosteam/functors/temperature.py
+thermosteam/functors/thermal_conductivity.py
+thermosteam/functors/triple.py
+thermosteam/functors/utils.py
+thermosteam/functors/vapor_pressure.py
+thermosteam/functors/virial.py
+thermosteam/functors/viscosity.py
+thermosteam/functors/volume.py
+thermosteam/functors/Data/Critical Properties/Appendix to PSRK Revision 4.tsv
+thermosteam/functors/Data/Critical Properties/CRCCriticalOrganics.tsv
+thermosteam/functors/Data/Critical Properties/IUPACOrganicCriticalProps.tsv
+thermosteam/functors/Data/Critical Properties/Mathews1972InorganicCriticalProps.tsv
+thermosteam/functors/Data/Critical Properties/PassutDanner1973.tsv
+thermosteam/functors/Data/Critical Properties/Yaws Collection.tsv
+thermosteam/functors/Data/Density/COSTALD Parameters.tsv
+thermosteam/functors/Data/Density/CRC Inorganics densties of molten compounds and salts.tsv
+thermosteam/functors/Data/Density/CRC Liquid Inorganic Constant Densities.tsv
+thermosteam/functors/Data/Density/CRC Solid Inorganic Constant Densities.tsv
+thermosteam/functors/Data/Density/CRC Virial polynomials.tsv
+thermosteam/functors/Data/Density/Mchaweh SN0 deltas.tsv
+thermosteam/functors/Data/Density/Perry Parameters 105.tsv
+thermosteam/functors/Data/Density/VDI PPDS Density of Saturated Liquids.tsv
+thermosteam/functors/Data/Electrolytes/CRC Thermodynamic Properties of Aqueous Ions.csv
+thermosteam/functors/Data/Electrolytes/CRC conductivity infinite dilution.tsv
+thermosteam/functors/Data/Electrolytes/Electrolyte dissociations.csv
+thermosteam/functors/Data/Electrolytes/Laliberte2009.tsv
+thermosteam/functors/Data/Electrolytes/Lange Pure Species Conductivity.tsv
+thermosteam/functors/Data/Electrolytes/Magomedov Thermal Conductivity.tsv
+thermosteam/functors/Data/Electrolytes/Marcus Ion Conductivities.tsv
+thermosteam/functors/Data/Electrolytes/McCleskey Electrical Conductivity.csv
+thermosteam/functors/Data/Electrolytes/Permittivity (Dielectric Constant) of Liquids.tsv
+thermosteam/functors/Data/Environment/CRC logP table.tsv
+thermosteam/functors/Data/Environment/Official Global Warming Potentials.tsv
+thermosteam/functors/Data/Environment/Ozone Depletion Potentials.tsv
+thermosteam/functors/Data/Environment/Syrres logP data.csv.gz
+thermosteam/functors/Data/Heat Capacity/CRC Standard Thermodynamic Properties of Chemical Substances.tsv
+thermosteam/functors/Data/Heat Capacity/CRCHeatCapacitySolids.tsv
+thermosteam/functors/Data/Heat Capacity/Perrys Table 2-151-2.tsv
+thermosteam/functors/Data/Heat Capacity/Perrys Table 2-151.tsv
+thermosteam/functors/Data/Heat Capacity/PolingDatabank.tsv
+thermosteam/functors/Data/Heat Capacity/TRC Thermodynamics of Organic Compounds in the Gas State.tsv
+thermosteam/functors/Data/Heat Capacity/Zabransky.tsv
+thermosteam/functors/Data/Identifiers/Anion db.tsv
+thermosteam/functors/Data/Identifiers/Cation db.tsv
+thermosteam/functors/Data/Identifiers/Chemicals with data.csv
+thermosteam/functors/Data/Identifiers/Fake CAS Registry.tsv
+thermosteam/functors/Data/Identifiers/Inorganic db.tsv
+thermosteam/functors/Data/Identifiers/Mixtures Compositions.tsv
+thermosteam/functors/Data/Identifiers/chemical identifiers example user db.tsv
+thermosteam/functors/Data/Identifiers/chemical identifiers.tsv
+thermosteam/functors/Data/Identifiers/dippr_2014.csv
+thermosteam/functors/Data/Identifiers/dippr_2014_int.csv
+thermosteam/functors/Data/Interface/Jasper-Lange.tsv
+thermosteam/functors/Data/Interface/MuleroCachadinaParameters.tsv
+thermosteam/functors/Data/Interface/Somayajulu.tsv
+thermosteam/functors/Data/Interface/SomayajuluRevised.tsv
+thermosteam/functors/Data/Interface/VDI PPDS surface tensions.tsv
+thermosteam/functors/Data/Law/Canada Feb 11 2015 - DSL.csv.gz
+thermosteam/functors/Data/Law/EC Inventory No Longer Polymers (NLP).csv
+thermosteam/functors/Data/Law/ECHA Tonnage Bands.csv.zip
+thermosteam/functors/Data/Law/EINECS 2015-03.csv.gz
+thermosteam/functors/Data/Law/EPA 2012 Chemical Data Reporting.csv
+thermosteam/functors/Data/Law/EPA Chemical Data Reporting - 2012.csv.gz
+thermosteam/functors/Data/Law/HPV 2015 March 3.csv
+thermosteam/functors/Data/Law/SPIN Inventory 2015-03.csv.gz
+thermosteam/functors/Data/Law/TSCA Inventory 2016-01.csv.gz
+thermosteam/functors/Data/Misc/CRC Handbook Organic RI.csv
+thermosteam/functors/Data/Misc/CoolProp CP0MOLAR fits.json
+thermosteam/functors/Data/Misc/CoolProp vapor properties fits.json
+thermosteam/functors/Data/Misc/Element data.csv
+thermosteam/functors/Data/Misc/Muller Supporting Info Dipoles.csv
+thermosteam/functors/Data/Misc/Physical Constants of Inorganic Compounds.csv
+thermosteam/functors/Data/Misc/Physical Constants of Organic Compounds.csv
+thermosteam/functors/Data/Misc/Poling Dipole.csv
+thermosteam/functors/Data/Misc/VDI Saturation Compounds Data.csv
+thermosteam/functors/Data/Misc/cccbdb.nist.gov Dipoles.csv
+thermosteam/functors/Data/Misc/element.txt
+thermosteam/functors/Data/Phase Change/Alibakhshi one-coefficient enthalpy of vaporization.tsv
+thermosteam/functors/Data/Phase Change/CRC Handbook Heat of Fusion.tsv
+thermosteam/functors/Data/Phase Change/CRC Handbook Heat of Vaporization.tsv
+thermosteam/functors/Data/Phase Change/Ghazerati Appendix Sublimation Enthalpy.tsv
+thermosteam/functors/Data/Phase Change/Ghazerati Appendix Vaporization Enthalpy.tsv
+thermosteam/functors/Data/Phase Change/OpenNotebook Melting Points.tsv
+thermosteam/functors/Data/Phase Change/Table 2-150 Heats of Vaporization of Inorganic and Organic Liquids.tsv
+thermosteam/functors/Data/Phase Change/VDI PPDS Enthalpies of vaporization.tsv
+thermosteam/functors/Data/Phase Change/Yaws Boiling Points.tsv
+thermosteam/functors/Data/Phase Change/phase STP.tsv
+thermosteam/functors/Data/Reactions/API TDB Albahri Hf.tsv
+thermosteam/functors/Data/Reactions/ATcT 1.112 (g).tsv
+thermosteam/functors/Data/Reactions/ATcT 1.112 (l).tsv
+thermosteam/functors/Data/Safety/DIPPR Tflash Serat.csv
+thermosteam/functors/Data/Safety/IARC Carcinogen Database.tsv
+thermosteam/functors/Data/Safety/IS IEC 60079-20-1 2010.tsv
+thermosteam/functors/Data/Safety/NFPA 497 2008.tsv
+thermosteam/functors/Data/Safety/National Toxicology Program Carcinogens.tsv
+thermosteam/functors/Data/Safety/Ontario Exposure Limits.tsv
+thermosteam/functors/Data/Thermal Conductivity/Table 2-314 Vapor Thermal Conductivity of Inorganic and Organic Substances.tsv
+thermosteam/functors/Data/Thermal Conductivity/Table 2-315 Thermal Conductivity of Inorganic and Organic Liquids.tsv
+thermosteam/functors/Data/Thermal Conductivity/VDI PPDS Thermal conductivity of gases.tsv
+thermosteam/functors/Data/Thermal Conductivity/VDI PPDS Thermal conductivity of saturated liquids.tsv
+thermosteam/functors/Data/Triple Properties/Staveley 1981.tsv
+thermosteam/functors/Data/Vapor Pressure/Antoine Collection Poling.tsv
+thermosteam/functors/Data/Vapor Pressure/Antoine Extended Collection Poling.tsv
+thermosteam/functors/Data/Vapor Pressure/Table 2-8 Vapor Pressure of Inorganic and Organic Liquids.tsv
+thermosteam/functors/Data/Vapor Pressure/VDI PPDS Boiling temperatures at different pressures.tsv
+thermosteam/functors/Data/Vapor Pressure/Wagner Collection Poling.tsv
+thermosteam/functors/Data/Vapor Pressure/Wagner Original McGarry.tsv
+thermosteam/functors/Data/Viscosity/Dutt Prasad 3 term.tsv
+thermosteam/functors/Data/Viscosity/MagalhaesLJ.tsv
+thermosteam/functors/Data/Viscosity/Table 2-312 Vapor Viscosity of Inorganic and Organic Substances.tsv
+thermosteam/functors/Data/Viscosity/Table 2-313 Viscosity of Inorganic and Organic Liquids.tsv
+thermosteam/functors/Data/Viscosity/VDI PPDS Dynamic viscosity of gases polynomials.tsv
+thermosteam/functors/Data/Viscosity/VDI PPDS Dynamic viscosity of saturated liquids polynomials.tsv
+thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 2 term Exponential.tsv
+thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 2 term.tsv
+thermosteam/functors/Data/Viscosity/Viswanath Natarajan Dynamic 3 term.tsv
+thermosteam/reaction/__init__.py
+thermosteam/reaction/_parse.py
+thermosteam/reaction/_reaction.py
+thermosteam/utils/__init__.py
+thermosteam/utils/assert_utils.py
+thermosteam/utils/cache.py
+thermosteam/utils/define_from.py
+thermosteam/utils/math_display.py
+thermosteam/utils/other_utils.py
+thermosteam/utils/pickle_utils.py
+thermosteam/utils/registry.py
+thermosteam/utils/repr_utils.py
+thermosteam/utils/var_utils.py
+thermosteam/utils/decorator_utils/__init__.py
+thermosteam/utils/decorator_utils/chemicals_user.py
+thermosteam/utils/decorator_utils/read_only.py
+thermosteam/utils/decorator_utils/registered.py
+thermosteam/utils/decorator_utils/thermo_user.py
