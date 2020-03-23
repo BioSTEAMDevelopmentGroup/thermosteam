@@ -36,7 +36,8 @@ def nonzeros(IDs, data):
 # %% Abstract indexer
     
 class Indexer:
-    """Abstract class for fast indexing."""
+    """Abstract class for fast indexing. Abstract methods include
+    `_get_index`, `__getitem__`, and `__setitem__`."""
     __slots__ = ('_data', '_index_cache')
     units = None
     
@@ -76,12 +77,6 @@ class Indexer:
         except TypeError:
             raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
         return index
-    
-    def __getitem__(self, key):
-        return self._data[self.get_index(key)]
-    
-    def __setitem__(self, key, data):
-        self._data[self.get_index(key)] = data._data if isa(data, Indexer) else data
     
     @property
     def data(self):
@@ -123,6 +118,22 @@ class ChemicalIndexer(Indexer):
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phase, self._chemicals, False)
+
+    def __getitem__(self, key):
+        return self._data[self.get_index(key)]
+    
+    def __setitem__(self, key, data):
+        self._data[self.get_index(key)] = data
+    
+    def _get_index(self, IDs):
+        if isa(IDs, str):
+            return self._chemicals.index(IDs)
+        elif isa(IDs, tuple):
+            return self._chemicals.indices(IDs)
+        elif IDs is ...:
+            return IDs
+        else:
+            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
     
     def _set_cache(self):
         self._index_cache = self._chemicals._index_cache
@@ -175,16 +186,6 @@ class ChemicalIndexer(Indexer):
     @phase.setter
     def phase(self, phase):
         self._phase.phase = phase
-    
-    def _get_index(self, IDs):
-        if isa(IDs, str):
-            return self._chemicals.index(IDs)
-        elif isa(IDs, tuple):
-            return self._chemicals.indices(IDs)
-        elif IDs is ...:
-            return IDs
-        else:
-            raise IndexError(f"only strings, tuples, and ellipsis are valid indices")
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -288,6 +289,23 @@ class MaterialIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)
     
+    def __getitem__(self, key):
+        try:
+            index = self.get_index(key)
+        except (UndefinedPhase, IndexError):
+            index = self.get_index((..., key))
+            values = self._data[index].sum(0)
+        else:
+            values = self._data[index]
+        return values
+    
+    def __setitem__(self, key, data):
+        try:
+            index = self.get_index(key)
+        except (UndefinedPhase, IndexError):
+            index = self.get_index((..., key))
+        self._data[index] = data
+    
     def copy_like(self, other):
         if isa(other, ChemicalIndexer):
             self._data[:] = 0
@@ -386,7 +404,7 @@ class MaterialIndexer(Indexer):
                 index = (phase, IDs_index)
             else:
                 raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
-                                  "where phase is a (str, or ellipsis), "
+                                  "where phase is a (str, ellipsis, or missing), "
                                   "and IDs is a (str, tuple(str), ellipisis, or missing)")
             
         return index
