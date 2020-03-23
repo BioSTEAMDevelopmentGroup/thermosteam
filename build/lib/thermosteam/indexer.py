@@ -292,8 +292,9 @@ class MaterialIndexer(Indexer):
     def __getitem__(self, key):
         try:
             index = self.get_index(key)
-        except (UndefinedPhase, IndexError):
-            index = self.get_index((..., key))
+        except (UndefinedPhase, IndexError) as Error:
+            try: index = self.get_index((..., key))
+            except: raise Error
             values = self._data[index].sum(0)
         else:
             values = self._data[index]
