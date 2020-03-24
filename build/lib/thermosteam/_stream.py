@@ -272,7 +272,7 @@ class Stream:
 
     ### Property getters ###
 
-    def get_flow(self, units, IDs=...):
+    def get_flow(self, units, key=...):
         """
         Return an flow rates in requested units.
         
@@ -280,7 +280,7 @@ class Stream:
         ----------
         units : str
             Units of measure.
-        IDs : Iterable[str] or str, optional
+        key : Iterable[str] or str, optional
             Chemical identifiers.
 
         Examples
@@ -294,9 +294,9 @@ class Stream:
         """
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
-        return factor * indexer[IDs]
+        return factor * indexer[key]
     
-    def set_flow(self, data, units, IDs=...):
+    def set_flow(self, data, units, key=...):
         """
         Set flow rates in given units.
 
@@ -306,7 +306,7 @@ class Stream:
             Flow rate data.
         units : str
             Units of measure.
-        IDs : Iterable[str] or str, optional
+        key : Iterable[str] or str, optional
             Chemical identifiers.
 
         Examples
@@ -321,7 +321,7 @@ class Stream:
         """
         name, factor = self._get_flow_name_and_factor(units)
         indexer = getattr(self, 'i' + name)
-        indexer[IDs] = np.asarray(data, dtype=float) / factor
+        indexer[key] = np.asarray(data, dtype=float) / factor
     
     def get_total_flow(self, units):
         """
