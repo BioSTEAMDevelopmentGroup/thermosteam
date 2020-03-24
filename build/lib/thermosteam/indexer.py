@@ -8,7 +8,7 @@ Created on Mon Dec  2 01:41:50 2019
 from .base import UnitsOfMeasure
 from .utils import repr_IDs_data, repr_couples, chemicals_user
 from ._settings import settings
-from .exceptions import UndefinedPhase
+from .exceptions import UndefinedPhase, UndefinedChemical
 from ._phase import Phase, LockedPhase, NoPhase
 from free_properties import PropertyFactory, property_array
 import numpy as np
@@ -32,6 +32,14 @@ _new = object.__new__
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
+
+class ChemicalIndex:
+    __slots__ = ('value')
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"{type(self).__name__}({self.value})"
+
 
 # %% Abstract indexer
     
@@ -342,35 +350,34 @@ class MaterialIndexer(Indexer):
                                                LockedPhase(phase), self._chemicals, False)
     
     def __getitem__(self, key):
-        try:
-            index = self.get_index(key)
-        except (UndefinedPhase, IndexError) as Error:
-            try: index = self._chemicals.get_index(key)
-            except: raise Error
-            values = self._data[..., index].sum(0)
+        index = self.get_index(key)
+        if isa(index, ChemicalIndex):
+            values = self._data[..., index.value].sum(0)
         else:
             values = self._data[index]
         return values
     
     def __setitem__(self, key, data):
-        try:
-            index = self.get_index(key)
-        except (IndexError, UndefinedPhase) as Error:
-            try: self._chemicals.get_index(key)
-            except: raise Error
-            raise IndexError("multiple phases present; index phase "
-                             "to set chemical data")
-        else:
-            self._data[index] = data
+        index = self.get_index(key)
+        if isa(index, ChemicalIndex):
+            raise IndexError("multiple phases present; must include phase index "
+                             "to set chemical data")                
+        self._data[index] = data
     
     def get_index(self, key):
         cache = self._index_cache
         try: 
             index = cache[key]
-        except KeyError: 
-            cache[key] = index = self._get_index(key)
+        except KeyError:
+            try:
+                index = self._chemicals.get_index(key)
+            except UndefinedChemical:
+                index = self._get_index(key)
+            else:
+                index = ChemicalIndex(index)
+            cache[key] = index
         except TypeError:
-            raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
+            raise TypeError("only strings, tuples, and ellipsis are valid index keys")
         return index
     
     def _get_index(self, phase_IDs):
@@ -382,24 +389,23 @@ class MaterialIndexer(Indexer):
             try:
                 phase, IDs = phase_IDs
             except:
-                raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
-                                  "where phase is a (str, ellipsis, or missing), "
-                                  "and IDs is a (str, tuple(str), ellipisis, or missing)")
+                raise IndexError("index by [phase, IDs] where phase is a "
+                                 "(str, ellipsis, or missing), and IDs is a "
+                                 "(str, tuple(str), ellipisis, or missing)")
             if isa(IDs, (str, tuple)):
                 IDs_index = self._chemicals.get_index(IDs)
             elif IDs is ...:
                 IDs_index = IDs
             else:
-                raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
+                raise TypeError("only strings, tuples, and ellipsis are valid index keys")
             if isa(phase, str):
                 index = (self._get_phase_index(phase), IDs_index)
             elif phase is ...:
                 index = (phase, IDs_index)
             else:
-                raise IndexError(f"use <{type(self).__name__}>[phase, IDs] "
-                                  "where phase is a (str, ellipsis, or missing), "
-                                  "and IDs is a (str, tuple(str), ellipisis, or missing)")
-            
+                raise IndexError("index by [phase, IDs] where phase is a "
+                                 "(str, ellipsis, or missing), and IDs is a "
+                                 "(str, tuple(str), ellipisis, or missing)")
         return index
     
     def _get_phase_index(self, phase):
@@ -498,12 +504,12 @@ def _replace_indexer_doc(Indexer, Parent):
     doc = doc[:doc.index("Notes")]
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
     
-def _new_Indexer(name, units, slots=()):
+def _new_Indexer(name, units):
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
     
     ChemicalIndexerSubclass.__slots__ = \
-    MaterialIndexerSubclass.__slots__ = slots
+    MaterialIndexerSubclass.__slots__ = ()
     
     ChemicalIndexerSubclass.units = \
     MaterialIndexerSubclass.units = UnitsOfMeasure(units)
@@ -517,7 +523,7 @@ def _new_Indexer(name, units, slots=()):
     return ChemicalIndexerSubclass, MaterialIndexerSubclass
 
 ChemicalIndexer._MaterialIndexer = MaterialIndexer
-ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr', ('_mass', '_vol'))
+ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr')
 ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr')
 ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr')
 
@@ -605,7 +611,8 @@ def by_volume(self, TP):
         mol = self.data
         vol = np.zeros_like(mol, dtype=object)
         for i, chem in enumerate(chemicals):
-            vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V, TP, None, self._phase)
+            vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V,
+                                            TP, None, self._phase)
         self._data_cache[TP] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
                                                       self._phase, chemicals,
@@ -632,8 +639,8 @@ def by_volume(self, TP):
             for j, chem in enumerate(chemicals):
                 index = i, j
                 phase_name = settings._phase_names[phase]
-                vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", mol,
-                                                                index, chem.V, TP, phase)
+                vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
+                                                    mol, index, chem.V, TP, phase)
         self._data_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(property_array(vol),
                                               phases, chemicals,

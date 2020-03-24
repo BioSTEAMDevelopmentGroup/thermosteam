@@ -128,9 +128,8 @@ class Chemicals:
         dct = self.__dict__
         try:
             return [dct[i] for i in IDs]
-        except KeyError:
-            for ID in IDs:
-                if ID not in dct: raise UndefinedChemical(ID)
+        except KeyError as key_error:
+            raise UndefinedChemical(key_error.args[0])
     
     def append(self, chemical):
         """Append a Chemical."""
@@ -576,9 +575,8 @@ class CompiledChemicals(Chemicals):
         try:
             dct = self._index
             return [dct[i] for i in IDs]
-        except:
-            for i in IDs:
-                if i not in dct: raise UndefinedChemical(i)     
+        except KeyError as key_error:
+            raise UndefinedChemical(key_error.args[0])
     
     def get_index(self, IDs):
         """
@@ -615,7 +613,7 @@ class CompiledChemicals(Chemicals):
         except KeyError: 
             cache[IDs] = index = self._get_index(IDs)
         except TypeError:
-            raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
+            raise TypeError("only strings, tuples, and ellipsis are valid index keys")
         return index
     
     def _get_index(self, IDs):
@@ -626,7 +624,7 @@ class CompiledChemicals(Chemicals):
         elif IDs is ...:
             return IDs
         else:
-            raise TypeError(f"only strings, tuples, and ellipsis are valid index keys")
+            raise TypeError("only strings, tuples, and ellipsis are valid index keys")
     
     def __len__(self):
         return self.size

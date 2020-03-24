@@ -360,7 +360,7 @@ class MaterialIndexer(Indexer):
     def __setitem__(self, key, data):
         index = self.get_index(key)
         if isa(index, ChemicalIndex):
-            raise IndexError("multiple phases present; must include phase index "
+            raise IndexError("multiple phases present; must include phase key "
                              "to set chemical data")                
         self._data[index] = data
     
