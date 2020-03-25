@@ -14,6 +14,6 @@ numpy>=1.18.1
 xlrd==1.2.0
 openpyxl==3.0.0
 free_properties>=0.2.3
-flexsolve>=0.2.0
+flexsolve>=0.2.1
 pyglet
 sympy

@@ -6,7 +6,7 @@ Created on Sun Jul 21 22:15:30 2019
 """
 
 from numpy import asarray, array
-from flexsolve import aitken_secant, IQ_interpolation, safe_divide
+from flexsolve import aitken_secant, IQ_interpolation
 from .solve_composition import solve_x
 from ..utils import fill_like
 from .._settings import settings
@@ -88,7 +88,7 @@ class DewPoint:
     def _T_error(self, T, P, z_norm, zP):
         Psats = array([i(T) for i in self.Psats])
         phi = self.phi(z_norm, T, P)
-        x_gamma_pcf = safe_divide(phi * zP, Psats)
+        x_gamma_pcf = phi * zP / Psats
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     

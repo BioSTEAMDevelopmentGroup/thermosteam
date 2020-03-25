@@ -527,7 +527,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         ID: str
-            Chemical ID
+            Chemical identifier.
 
         Examples
         --------
@@ -555,7 +555,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable
-              Chemical IDs or CAS numbers.
+              Chemical indentifiers.
 
         Examples
         --------
@@ -585,7 +585,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable[str] or str
-              A single chemical identifier or multiple.
+              Chemical identifiers.
 
         Notes
         -----
