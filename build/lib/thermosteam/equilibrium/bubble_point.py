@@ -6,7 +6,7 @@ Created on Sun Jul 21 21:30:33 2019
 """
 from numpy import asarray, array
 from flexsolve import aitken_secant, IQ_interpolation
-from .solve_composition import solve_y
+from .solve_vle_composition import solve_y
 from ..utils import fill_like
 from .._settings import settings
 
@@ -38,7 +38,6 @@ class BubblePoint:
     Parameters
     ----------
     chemicals=() : Iterable[Chemical], optional
-    
     thermo=None : Thermo, optional
     
     Examples

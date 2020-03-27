@@ -7,7 +7,7 @@ Created on Sun Jul 21 22:15:30 2019
 
 from numpy import asarray, array
 from flexsolve import aitken_secant, IQ_interpolation
-from .solve_composition import solve_x
+from .solve_vle_composition import solve_x
 from ..utils import fill_like
 from .._settings import settings
 

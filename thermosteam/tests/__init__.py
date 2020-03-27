@@ -26,6 +26,7 @@ def test_equilibrium_docs():
     doctest.testmod(tmo.equilibrium.bubble_point)
     doctest.testmod(tmo.equilibrium.dew_point)
     doctest.testmod(tmo.equilibrium.vle)
+    doctest.testmod(tmo.equilibrium.lle)
     
     
 def test_thermosteam():

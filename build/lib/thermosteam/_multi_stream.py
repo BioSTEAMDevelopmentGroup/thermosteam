@@ -8,7 +8,7 @@ from ._stream import Stream
 from ._thermal_condition import ThermalCondition
 from .indexer import MolarFlowIndexer
 from ._settings import settings
-from .equilibrium import VLE
+from .equilibrium import VLE, LLE
 from .utils import Cache, assert_same_chemicals
 import numpy as np
 
@@ -201,6 +201,7 @@ class MultiStream(Stream):
         self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
+        self._lle_cache = Cache(LLE, self._imol, thermo=self._thermo)
         
     def __getitem__(self, phase):
         streams = self._streams
@@ -478,6 +479,10 @@ class MultiStream(Stream):
     def vle(self):
         """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
         return self._vle_cache.retrieve()
+    @property
+    def lle(self):
+        """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
+        return self._lle_cache.retrieve()
     
     ### Casting ###
     

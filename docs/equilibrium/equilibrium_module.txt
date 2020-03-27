@@ -7,6 +7,7 @@ Use the equilibrium subpackage to perform equilibrium calculations.
    :maxdepth: 1
    
    VLE
+   LLE
    BubblePoint
    DewPoint
    activity_coefficients_module

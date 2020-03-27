@@ -22,7 +22,10 @@ SOFTWARE.'''
 
 __all__ = ('DDBST_UNIFAC_assignments', 
            'DDBST_MODIFIED_UNIFAC_assignments', 
-           'DDBST_PSRK_assignments')
+           'DDBST_PSRK_assignments',
+           'UNIFACGroupCounts',
+           'DortmundGroupCounts',
+           'PSRKGroupCounts')
 import os
 
 folder = os.path.join(os.path.dirname(__file__), 'Data')
@@ -871,29 +874,46 @@ with open(os.path.join(folder, 'PSRK interaction parameters.tsv')) as f:
 
 # %% Assignments
 
-def _show_group_counts(group_counts):
-    subgroups = group_counts.subgroups
-    data = [str(count) + subgroups[key].group for key, count in group_counts.items()]
-    return ', '.join(data)
-
 class GroupCounts(dict):
     __slots__ = ()
+    
+    def __init_subclass__(cls):
+        cls.subgroups_by_name = {i.group:i for i in cls.subgroups_by_id.values()}
+    
+    def set_group_counts_by_name(self, group_counts):
+        for name, count in group_counts.items():
+            subgroup = self.subgroups_by_name[name]
+            key = subgroup.main_group_id
+            if key in self:
+                self[key] += count
+            else:
+                self[key] = count
+            
+    def _show_group_counts(self):
+        if self:
+            subgroups_by_id = self.subgroups_by_id
+            data = [str(count) + subgroups_by_id[key].group
+                    for key, count in self.items()]
+            return ', '.join(data)
+        else:
+            return 'Empty'
+            
     def __str__(self):
-        return f"<{_show_group_counts(self)}>"
+        return f"<{self._show_group_counts()}>"
     
     def __repr__(self):
-        group_counts =_show_group_counts(self)
-        return f"<{type(self).__name__}: {group_counts}>" 
+        group_counts = self._show_group_counts()
+        return f"<{type(self).__name__}: {group_counts}>"
 
 class UNIFACGroupCounts(GroupCounts):
     __slots__ = ()
-    subgroups = UFSG
+    subgroups_by_id = UFSG
 class DortmundGroupCounts(GroupCounts):
     __slots__ = ()
-    subgroups = DOUFSG 
+    subgroups_by_id = DOUFSG 
 class PSRKGroupCounts(GroupCounts):
     __slots__ = ()
-    subgroups = PSRKSG
+    subgroups_by_id = PSRKSG
 
 
 class GroupAssigner:

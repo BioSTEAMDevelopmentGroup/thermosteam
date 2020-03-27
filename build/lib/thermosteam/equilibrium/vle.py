@@ -6,180 +6,16 @@ Created on Wed Mar 20 18:40:05 2019
 """
 from flexsolve import wegstein, IQ_interpolation, fixed_point
 from ..utils.decorator_utils import thermo_user
+from .binary_phase_fraction import phase_fraction
 from .dew_point import DewPoint
 from .bubble_point import BubblePoint
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .._thermal_condition import ThermalCondition
 from ..functional import normalize
 from ..utils import Cache
-from numba import njit
 import numpy as np
 
-__all__ = ('VLE', 'V_2N', 'V_3N', 'V_error')
-
-@njit
-def V_error(V, zs, Ks):
-    """Vapor fraction error."""
-    return (zs*(Ks-1.)/(1.+V*(Ks-1.))).sum()
-@njit
-def V_2N(zs, Ks):
-    """Solution for 2 component flash vessel."""
-    z1, z2 = zs
-    K1, K2 = Ks
-    K1z1 = K1*z1
-    K1z2 = K1*z2
-    K2z1 = K2*z1
-    K2z2 = K2*z2
-    K1K2 = K1*K2
-    K1K2z1 = K1K2*z1
-    K1K2z2 = K1K2*z2
-    z1_z2 = z1 + z2
-    K1z1_K2z2 = K1z1 + K2z2
-    return (-K1z1_K2z2 + z1_z2)/(K1K2z1 + K1K2z2 - K1z2 - K1z1_K2z2 - K2z1 + z1_z2)
-@njit    
-def V_3N(zs, Ks):
-    """Solution for 3 component flash vessel."""
-    z1, z2, z3 = zs
-    K1, K2, K3 = Ks
-    
-    K1z1 = K1*z1
-    K1z2 = K1*z2
-    K1z3 = K1*z3
-    
-    K2z1 = K2*z1
-    K2z2 = K2*z2
-    K2z3 = K2*z3
-    
-    K3z1 = K3*z1
-    K3z2 = K3*z2
-    K3z3 = K3*z3
-    
-    K1K2 = K1*K2
-    K1K3 = K1*K3
-    K2K3 = K2*K3
-    
-    K1K2z1 = K1K2*z1
-    K1K2z2 = K1K2*z2
-    K1K3z1 = K1K3*z1
-    K1K3z3 = K1K3*z3
-    K2K3z2 = K2K3*z2
-    K2K3z3 = K2K3*z3
-    
-    K12 = K1**2
-    K22 = K2**2
-    K32 = K3**2
-    
-    K12K2 = K12*K2
-    K12K3 = K12*K3
-    K12K22 = K12*K22
-    K12K2K3 = K12*K2*K3
-    K1K22 = K1*K22
-    K1K22K3 = K1K22*K3
-    
-    K1K2K3 = K1K2*K3
-    K22K3 = K22*K3
-    K1K32 = K1*K32
-    K2K32 = K2*K32
-    K22K32 = K22*K32
-    K12K32 = K12K3*K3
-    
-    
-    z1_z2_z3 = z1 + z2 + z3
-    z12 = z1**2
-    z22 = z2**2
-    z32 = z3**2
-    z1z2 = z1*z2
-    z1z3 = z1*z3
-    z2z3 = z2*z3
-    
-    K1K2K32 = K1K2K3*K3
-    K12K2K3 = K12K2*K3
-    K12K22z12 = K12K22*z12
-    K12K22z1z2 = K12K22*z1z2
-    K12K22z22 = K12K22*z22
-    K12K2K3z12 = K12K2K3*z12
-    K12K2K3z1z2 = K12K2K3*z1z2
-    K12K2K3z1z3 = K12K2K3*z1z3
-    K12K2K3z2z3 = K12K2K3*z2z3
-    K12K2z1z2 = K12K2*z1z2
-    K12K2z1z3 = K12K2*z1z3
-    K12K2z22 = K12K2*z22
-    K12K2z2z3 = K12K2*z2z3
-    K12K32z12 = K12K32*z12
-    K12K32z1z3 = K12K32*z1z3
-    K12K32z32 = K12K32*z32
-    K12K3z1z2 = K12K3*z1z2
-    K12K3z1z3 = K12K3*z1z3
-    K12K3z2z3 = K12K3*z2z3
-    K12K3z32 = K12K3*z32
-    K12z2z3 = K12*z2z3
-    K12z22 = K12*z22
-    K12z32 = K12*z32
-    K1K22K3z1z2 = K1K22K3*z1z2
-    K1K22K3z1z3 = K1K22K3*z1z3
-    K1K22K3z22 = K1K22K3*z22
-    K1K22K3z2z3 = K1K22K3*z2z3
-    K1K22z12 = K1K22*z12
-    K1K22z1z2 = K1K22*z1z2
-    K1K22z1z3 = K1K22*z1z3
-    K1K22z2z3 = K1K22*z2z3
-    K1K2K32z1z2 = K1K2K32*z1z2
-    K1K2K32z1z3 = K1K2K32*z1z3
-    K1K2K32z2z3 = K1K2K32*z2z3
-    K1K2K32z32 = K1K2K32*z32
-    K1K2K3z12 = K1K2K3*z12
-    K1K2K3z1z2 = K1K2K3*z1z2
-    K1K2K3z1z3 = K1K2K3*z1z3
-    K1K2K3z22 = K1K2K3*z22
-    K1K2K3z2z3 = K1K2K3*z2z3
-    K1K2K3z32 = K1K2K3*z32
-    K1K2z1z2 = K1K2*z1z2
-    K1K2z1z3 = K1K2*z1z3
-    K1K2z2z3 = K1K2*z2z3
-    K1K2z32 = K1K2*z32
-    K1K32z12 = K1K32*z12
-    K1K2z1z3 = K1K2*z1z3
-    K1K32z1z2 = K1K32*z1z2
-    K1K32z1z3 = K1K32*z1z3
-    K1K32z2z3 = K1K32*z2z3
-    K1K3z1z2 = K1K3*z1z2
-    K1K3z1z3 = K1K3*z1z3
-    K1K3z22 = K1K3*z22
-    K1K3z2z3 = K1K3*z2z3
-    K22K32z22 = K22K32*z22
-    K22K3z1z2 = K22K3*z1z2
-    K22K32z2z3 = K22K32*z2z3
-    K22K32z32 = K22K32*z32
-    return ((-K1K2z1/2 - K1K2z2/2 - K1K3z1/2 - K1K3z3/2 + K1z1
-             + K1z2/2 + K1z3/2 - K2K3z2/2 - K2K3z3/2 + K2z1/2 + K2z2
-             + K2z3/2 + K3z1/2 + K3z2/2 + K3z3 - z1_z2_z3
-             - (K12K22z12 + 2*K12K22z1z2 + K12K22z22
-                - 2*K12K2K3z12 - 2*K12K2K3z1z2 - 2*K12K2K3z1z3
-                + 2*K12K2K3z2z3 - 2*K12K2z1z2 + 2*K12K2z1z3
-                - 2*K12K2z22 - 2*K12K2z2z3 + K12K32z12
-                + 2*K12K32z1z3 + K12K32z32 + 2*K12K3z1z2
-                - 2*K12K3z1z3 - 2*K12K3z2z3 - 2*K12K3z32
-                + K12z22 + 2*K12z2z3 + K12z32
-                - 2*K1K22K3z1z2 + 2*K1K22K3z1z3 - 2*K1K22K3z22
-                - 2*K1K22K3z2z3 - 2*K1K22z12 - 2*K1K22z1z2
-                - 2*K1K22z1z3 + 2*K1K22z2z3 + 2*K1K2K32z1z2
-                - 2*K1K2K32z1z3 - 2*K1K2K32z2z3 - 2*K1K2K32z32
-                + 4*K1K2K3z12 + 4*K1K2K3z1z2 + 4*K1K2K3z1z3
-                + 4*K1K2K3z22 + 4*K1K2K3z2z3 + 4*K1K2K3z32
-                + 2*K1K2z1z2 - 2*K1K2z1z3 - 2*K1K2z2z3 - 2*K1K2z32
-                - 2*K1K32z12 - 2*K1K32z1z2 - 2*K1K32z1z3
-                + 2*K1K32z2z3 - 2*K1K3z1z2 + 2*K1K3z1z3 - 2*K1K3z22
-                - 2*K1K3z2z3 + K22K32z22 + 2*K22K32z2z3
-                + K22K32z32 + 2*K22K3z1z2 - 2*K22K3*z1z3
-                - 2*K22K3*z2z3 - 2*K22K3*z32 + K22*z12
-                + 2*K22*z1z3 + K22*z32 - 2*K2K32*z1z2
-                + 2*K2K32*z1z3 - 2*K2K32*z22 - 2*K2K32*z2z3
-                - 2*K2K3*z12 - 2*K2K3*z1z2 - 2*K2K3*z1z3
-                + 2*K2K3*z2z3 + K32*z12 + 2*K32*z1z2 + K32*z22)**0.5/2)
-                / (K1K2K3*z1 + K1K2K3*z2 + K1K2K3*z3 - K1K2*z1 - K1K2*z2
-                   - K1K2*z3 - K1K3*z1 - K1K3*z2 - K1K3*z3 + K1z1 + K1z2
-                   + K1z3 - K2K3*z1 - K2K3*z2 - K2K3*z3 + K2z1 + K2z2 + K2z3
-                   + K3z1 + K3z2 + K3z3 - z1_z2_z3))
+__all__ = ('VLE',)
 
 @thermo_user
 class VLE:
@@ -227,7 +63,7 @@ class VLE:
                  '_V', # [float] Molar vapor fraction.
                  '_thermo', # [float] Thermo object for estimating mixture properties.
                  '_TP', # [ThermalCondition] T and P results are stored here.
-                 '_y', # [1d array] Molar vapor composition.
+                 '_y', # [1d array] Molar vapor composition in equilibrium.
                  '_dew_point', # [DewPoint] Solves for dew point.
                  '_bubble_point', # [BubblePoint] Solves for bubble point.
                  '_x', # [1d array] Liquid composition.
@@ -238,18 +74,17 @@ class VLE:
                  '_liquid_mol', # [1d array] Liquid molar data.
                  '_vapor_mol', # [1d array] Vapor molar data.
                  '_phase_data', # tuple[str, 1d array] Phase-data pairs.
-                 '_v',  # [1d array] Vapor molar data.
+                 '_v',  # [1d array] Molar vapor data in equilibrium.
                  '_index', # [1d array] Index of chemicals in equilibrium.
                  '_F_mass', # [float] Total mass data.
                  '_chemical', # [Chemical] Single chemical in equilibrium.
                  '_mol', # [Chemical] Single chemical in equilibrium.
                  '_N', # [int] Number of chemicals in equilibrium.
-                 '_solve_V', # [function] Solves for vapor fraction.
                  '_z', # [1d array] Molar composition of chemicals in equilibrium
                  '_Ks', # [1d array] Partition coefficients.
                  '_nonzero', # [1d array(bool)] Chemicals present in the mixture
                  '_F_mol', # [float] Total molar data.
-                 '_F_mol_equilibrium', # [float] Total moles in equilibrium.
+                 '_F_mol_vle', # [float] Total moles in equilibrium.
                  '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
                  '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
     
@@ -359,7 +194,7 @@ class VLE:
             index = self._index
         else:
             # Set up indices for both equilibrium and non-equilibrium species
-            index = chemicals.get_equilibrium_indices(nonzero)
+            index = chemicals.get_vle_indices(nonzero)
             self._y = None            
             self._N = N = len(index)
             eq_chems = chemicals.tuple
@@ -368,14 +203,7 @@ class VLE:
             self._index = index
             if N == 1:
                 self._chemical, = eq_chems
-            elif N == 2:
-                self._solve_V = self._solve_V_2
-            elif N == 3:
-                self._solve_V = self._solve_V_3
             else:
-                self._solve_V = self._solve_V_N
-            
-            if N != 1:
                 # Set equilibrium objects
                 thermo = self._thermo
                 self._bubble_point = bp = self._bubble_point_cache.reload(eq_chems, thermo)
@@ -385,9 +213,8 @@ class VLE:
                 self._phi = bp.phi
         
         # Get overall composition
-        data = self._imol._data
-        self._F_mass = (chemicals.MW * data).sum()
-        F_mol = data.sum()
+        self._F_mass = (chemicals.MW * mol).sum()
+        F_mol = mol.sum()
         assert F_mol != 0, 'empty stream cannot perform equilibrium'
         self._mol = mol[index]
 
@@ -401,8 +228,8 @@ class VLE:
         F_mol_light = light_mol.sum()
         F_mol_heavy = heavy_mol.sum()
         self._F_mol = F_mol
-        self._F_mol_equilibrium = F_mol_equilibrium = F_mol - F_mol_light - F_mol_heavy
-        self._z = self._mol / F_mol_equilibrium
+        self._F_mol_vle = F_mol_vle = F_mol - F_mol_light - F_mol_heavy
+        self._z = self._mol / F_mol_vle
 
     @property
     def imol(self):
@@ -504,7 +331,7 @@ class VLE:
             split_frac = 1
         elif split_frac < 0:
             split_frac = 0
-        self._vapor_mol[self._index] = v = self._F_mol_equilibrium * split_frac * y
+        self._vapor_mol[self._index] = v = self._F_mol_vle * split_frac * y
         self._liquid_mol[self._index] = self._mol - v
     
     def set_Tx(self, T, x):
@@ -739,14 +566,14 @@ class VLE:
                                            self.T_tol, self.H_hat_tol)
     
     def _estimate_v(self, V, y_bubble):
-        return (V*self._z + (1-V)*y_bubble) * V * self._F_mol_equilibrium
+        return (V*self._z + (1-V)*y_bubble) * V * self._F_mol_vle
     
     def _refresh_v(self, V, y_bubble):
         y = self._y
         if y is None:
             self._v = self._estimate_v(V, y_bubble)
         else:
-            self._v = y * self._F_mol_equilibrium * V
+            self._v = y * self._F_mol_vle * V
     
     def _H_hat_at_T(self, T):
         self._vapor_mol[self._index] = self._solve_v(T, self._P)
@@ -769,7 +596,8 @@ class VLE:
         x[x < 0.] = 0.
         x = x/x.sum()
         self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
-        return self._z/(1. + self._solve_V() * (self._Ks - 1.))
+        self._V = V = phase_fraction(self._z, self._Ks, self._V)
+        return self._z/(1. + V * (self._Ks - 1.))
     
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
@@ -782,7 +610,7 @@ class VLE:
             self._x = x = fixed_point(self._x_iter,
                                       self._x, 1e-4,
                                       args=(Psat_over_P_phi,))
-        self._v = v = self._F_mol_equilibrium * self._V * x * self._Ks     
+        self._v = v = self._F_mol_vle * self._V * x * self._Ks     
         return v / v.sum()
     
     def _solve_v(self, T, P):
@@ -801,35 +629,6 @@ class VLE:
                                       args=(Psats_over_P, T, P))
         return self._v
 
-    def _load_V(self, V):
-        if V > 1.:
-            V = 1.
-        elif V < 0.:
-            V = 0.
-        self._V = V
-        return V
-
-    def _V_error(self, V):
-        """Vapor fraction error."""
-        return (self._z * (self._Ks-1.) / (1. + V * (self._Ks-1.))).sum()
-
-    def _solve_V_N(self):
-        """Update V for N components."""
-        V = self.solver(self._V_error, 0, 1,
-                        self._V_error(0), self._V_error(1),
-                        self._V, 0, 1e-4, 1e-7)
-        return self._load_V(V)
-
-    def _solve_V_2(self):
-        """Update V for 2 components."""
-        V = V_2N(self._z, self._Ks)
-        return self._load_V(V)
-    
-    def _solve_V_3(self):
-        """Update V for 3 components."""
-        V = V_3N(self._z, self._Ks)
-        return self._load_V(V)
-
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs)
@@ -839,7 +638,7 @@ class VLE:
             dlim = "\n" + tab
         else:
             dlim = ", "
-        return (f"VLE(imol={imol},{dlim}"
+        return (f"{type(self).__name__}(imol={imol},{dlim}"
                 f"thermal_condition={self.thermal_condition})")
     
     def __repr__(self):

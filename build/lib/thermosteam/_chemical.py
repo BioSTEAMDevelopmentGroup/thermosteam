@@ -33,7 +33,8 @@ from . import functional as fn
 from .functors.permittivity import Permittivity
 from .functors.interface import SurfaceTension
 from .equilibrium.unifac_data import \
-    DDBST_UNIFAC_assignments, DDBST_MODIFIED_UNIFAC_assignments, DDBST_PSRK_assignments
+    DDBST_UNIFAC_assignments, DDBST_MODIFIED_UNIFAC_assignments, DDBST_PSRK_assignments, \
+    UNIFACGroupCounts, DortmundGroupCounts, PSRKGroupCounts
 # from .solubility import SolubilityParameter
 # from .safety import Tflash, Tautoignition, LFL, UFL, TWA, STEL, Ceiling, Skin, Carcinogen
 # from .lennard_jones import Stockmayer, MolecularDiameter
@@ -511,7 +512,6 @@ class Chemical:
                          info.formula)
         self._init_groups(info.InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
-            from .equilibrium.unifac_data import DortmundGroupCounts
             self.Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
         self._init_data(CAS, self.get_atoms(), info.MW)
         self._init_eos(eos, self.Tc, self.Pc, self.omega)
@@ -619,15 +619,15 @@ class Chemical:
         if InChI_key in DDBST_UNIFAC_assignments:
             self.UNIFAC = DDBST_UNIFAC_assignments[InChI_key]
         else:
-            self.UNIFAC = {}
+            self.UNIFAC = UNIFACGroupCounts()
         if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
             self.Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
         else:
-            self.Dortmund = {}
+            self.Dortmund = DortmundGroupCounts()
         if InChI_key in DDBST_PSRK_assignments:
             self.PSRK = DDBST_PSRK_assignments[InChI_key]
         else:
-            self.PSRK = {}
+            self.PSRK = PSRKGroupCounts()
 
     def _init_data(self, CAS, atoms, MW):
         self.MW = MW
@@ -1054,9 +1054,9 @@ class Chemical:
                  pubchemid: None
                  smiles: None
                  formula: None
-        [Groups] Dortmund: None
-                 UNIFAC: None
-                 PSRK: None
+        [Groups] Dortmund: <Empty>
+                 UNIFAC: <Empty>
+                 PSRK: <Empty>
         [Thermo] S_excess: None
                  H_excess: None
                  mu(phase, T, P) -> Pa*s
@@ -1093,9 +1093,11 @@ class Chemical:
         self = super().__new__(cls)
         self.eos = self.eos_1atm = None
         setfield = setattr
+        self.UNIFAC = UNIFACGroupCounts()
+        self.Dortmund = DortmundGroupCounts()
+        self.PSRK = PSRKGroupCounts()
         for i in _names: setfield(self, i, None)
         for i in _reactions: setfield(self, i, None)
-        for i in _groups: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _free_energies: setfield(self, i, None)
         if phase:
@@ -1116,7 +1118,7 @@ class Chemical:
         return self
     
     def get_phase(self, T=298.15, P=101325.):
-        """Return phase of chemical at given state.
+        """Return phase of chemical at given thermal condition.
         
         Examples
         --------
@@ -1154,9 +1156,9 @@ class Chemical:
                  pubchemid: 947
                  smiles: N#N
                  formula: N2
-        [Groups] Dortmund: {}
-                 UNIFAC: {}
-                 PSRK: {}
+        [Groups] Dortmund: <Empty>
+                 UNIFAC: <Empty>
+                 PSRK: <Empty>
         [Thermo] S_excess(T, P) -> J/mol
                  H_excess(T, P) -> J/mol
                  mu(T, P) -> Pa*s

@@ -14,9 +14,11 @@ from . import dew_point
 from . import bubble_point
 from . import poyinting_correction_factors
 from . import fugacities
+from . import lle
 
 __all__ = (*activity_coefficients.__all__,
            *vle.__all__,
+           *lle.__all__,
            *dew_point.__all__,
            *bubble_point.__all__,
            *fugacity_coefficients.__all__,
@@ -24,6 +26,7 @@ __all__ = (*activity_coefficients.__all__,
            *fugacities.__all__,)
 
 from .vle import *
+from .lle import *
 from .activity_coefficients import *
 from .fugacity_coefficients import *
 from .poyinting_correction_factors import *

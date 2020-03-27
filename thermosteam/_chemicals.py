@@ -193,12 +193,14 @@ class CompiledChemicals(Chemicals):
          Heats of formation of all chemicals.
     Hc : 1d ndarray
          Heats of combustion of all chemicals.
-    equilibrium_chemicals : tuple[str]
-                            IDs of chemicals that may have multiple phases.
-    heavy_chemicals : tuple[str]
-                      IDs of chemicals that are only present in liquid or solid phases.
-    light_chemicals : tuple[str]
-                      IDs of chemicals that are only present in gas phases.
+    vle_chemicals : tuple[Chemical]
+        Chemicals that may have vapor and liquid phases.
+    lle_chemicals : tuple[Chemical]
+        Chemicals that may have two liquid phases.
+    heavy_chemicals : tuple[Chemical]
+        Chemicals that are only present in liquid or solid phases.
+    light_chemicals : tuple[Chemical]
+        IDs of chemicals that are only present in gas phases.
         
     Examples
     --------
@@ -310,7 +312,8 @@ class CompiledChemicals(Chemicals):
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
-        equilibrium_chemicals = []
+        vle_chemicals = []
+        lle_chemicals = []
         heavy_chemicals = []
         light_chemicals = []
         for i in chemicals:
@@ -318,20 +321,27 @@ class CompiledChemicals(Chemicals):
             if locked_phase:
                 if locked_phase in ('s', 'l'):
                     heavy_chemicals.append(i)
+                    if i.Dortmund or i.UNIFAC:
+                        lle_chemicals.append(i)
                 elif locked_phase == 'g':
                     light_chemicals.append(i)
                 else:
                     raise Exception('chemical locked state has an invalid phase')
             else:
-                equilibrium_chemicals.append(i)
-        dct['equilibrium_chemicals'] = tuple_(equilibrium_chemicals)
+                vle_chemicals.append(i)
+                lle_chemicals.append(i)
+        dct['vle_chemicals'] = tuple_(vle_chemicals)
+        dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)
         dct['light_chemicals'] = tuple_(light_chemicals)
-        dct['_equilibrium_indices'] = eq_index = [index[i.ID] for i in equilibrium_chemicals]
-        dct['_has_equilibrium'] = has_equilibrium = np.zeros(N, dtype=bool)
+        dct['_has_vle'] = has_vle = np.zeros(N, dtype=bool)
+        dct['_has_lle'] = has_lle = np.zeros(N, dtype=bool)
         dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
         dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
-        has_equilibrium[eq_index] = True
+        vle_index = [index[i.ID] for i in vle_chemicals]
+        lle_index = [index[i.ID] for i in lle_chemicals]
+        has_vle[vle_index] = True
+        has_lle[lle_index] = True
     
     def subgroup(self, IDs):
         """
@@ -635,22 +645,37 @@ class CompiledChemicals(Chemicals):
     def __iter__(self):
         return iter(self.tuple)
         
-    def get_equilibrium_indices(self, nonzeros):
+    def get_vle_indices(self, nonzeros):
         """
-        Return indices of species in equilibrium
-        given an array dictating whether or not
-        the chemicals are present.
+        Return indices of species in vapor-liquid equilibrium given an array
+        dictating whether or not the chemicals are present.
         
         Examples
         --------
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
-        >>> chemicals.get_equilibrium_indices(data!=0)
+        >>> chemicals.get_vle_indices(data!=0)
         array([0, 2], dtype=int64)
         
         """
-        return np.where(self._has_equilibrium & nonzeros)[0]
+        return np.where(self._has_vle & nonzeros)[0]
+    
+    def get_lle_indices(self, nonzeros):
+        """
+        Return indices of species in liquid-liquid equilibrium given an array
+        dictating whether or not the chemicals are present.
+        
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
+        >>> chemicals.get_lle_indices(data!=0)
+        array([0, 2], dtype=int64)
+        
+        """
+        return np.where(self._has_lle & nonzeros)[0]
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"

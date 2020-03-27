@@ -202,7 +202,8 @@ class Stream:
     """
     __slots__ = ('_ID', '_imol', '_TP', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_sink', '_source', '_price')
+                 '_vle_cache', '_lle_cache',
+                 '_sink', '_source', '_price')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -1007,15 +1008,29 @@ class Stream:
     @property
     def vle(self):
         """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
-        self.phases = 'gl'
+        self.phases = ('g', 'l')
         return self.vle
 
     @property
-    def equilibrium_chemicals(self):
+    def lle(self):
+        """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
+        self.phases = ('L', 'l')
+        return self.lle
+
+    @property
+    def vle_chemicals(self):
         """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_equilibrium_indices(self.mol != 0)
+        indices = chemicals.get_vle_indices(self.mol != 0)
+        return [chemicals_tuple[i] for i in indices]
+    
+    @property
+    def lle_chemicals(self):
+        """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
+        chemicals = self.chemicals
+        chemicals_tuple = chemicals.tuple
+        indices = chemicals.get_lle_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs=None):
@@ -1036,7 +1051,7 @@ class Stream:
         BubblePoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrium_chemicals
+        chemicals = self.chemicals.retrieve(IDs) if IDs else self.vle_chemicals
         bp = self._bubble_point_cache.reload(chemicals, self._thermo)
         return bp
     
@@ -1058,7 +1073,7 @@ class Stream:
         DewPoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.equilibrium_chemicals
+        chemicals = self.chemicals.retrieve(IDs) if IDs else self.vle_chemicals
         dp = self._dew_point_cache.reload(chemicals, self._thermo)
         return dp
     
@@ -1297,7 +1312,7 @@ class Stream:
     @property
     def P_vapor(self):
         """Vapor pressure of liquid."""
-        chemicals = self.equilibrium_chemicals
+        chemicals = self.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, self.thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = self.get_molar_composition(IDs)
@@ -1329,7 +1344,7 @@ class Stream:
                          Ethanol  0.0616
                          N2       0.369
         """
-        chemicals = other.equilibrium_chemicals
+        chemicals = other.vle_chemicals
         light_indices = other.chemicals._light_indices
         if accumulate:
             self.mol[light_indices] += other.mol[light_indices]
@@ -1367,6 +1382,7 @@ class Stream:
                                 thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
+        self._lle_cache = Cache(eq.LLE, self._imol, self._thermo)
     
     ### Representation ###
     

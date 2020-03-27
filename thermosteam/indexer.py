@@ -431,7 +431,7 @@ class MaterialIndexer(Indexer):
             ID_data = repr_couples(", ", IDs, data)
             if ID_data:
                 phase_data.append(f"{phase}=[{ID_data}]")
-        tabs = int(tabs)
+        tabs = int(tabs) if tabs else 1
         if tabs:
             tab = tabs*4*" "
             dlim = ",\n" + tab 
