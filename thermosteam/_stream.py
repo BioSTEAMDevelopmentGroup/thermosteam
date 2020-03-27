@@ -1382,7 +1382,7 @@ class Stream:
                                 thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
-        self._lle_cache = Cache(eq.LLE, self._imol, self._thermo)
+        self._lle_cache = Cache(eq.LLE, self._imol, self._TP, self._thermo)
     
     ### Representation ###
     

@@ -29,7 +29,7 @@ class LLE:
     """
     Create a LLE object that performs liquid-liquid equilibrium when called.
     Differential evolution is used to find the solution that globally minimizes
-    the gibb's free energy.
+    the gibb's free energy of both phases.
         
     Parameters
     ----------

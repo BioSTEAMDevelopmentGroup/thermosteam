@@ -201,7 +201,7 @@ class MultiStream(Stream):
         self._vle_cache = Cache(VLE, self._imol, self._TP, thermo=self._thermo,
                                 bubble_point_cache=self._bubble_point_cache,
                                 dew_point_cache=self._dew_point_cache)
-        self._lle_cache = Cache(LLE, self._imol, thermo=self._thermo)
+        self._lle_cache = Cache(LLE, self._imol, self._TP, self._thermo)
         
     def __getitem__(self, phase):
         streams = self._streams
