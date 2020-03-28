@@ -23,9 +23,7 @@ Thermosteam is a standalone thermodynamic engine capable of creating property pa
 Installation
 ------------
 
-Get the latest version of Thermosteam from
-https://pypi.python.org/pypi/thermosteam/
-
+Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`_.
 If you have an installation of Python with pip, simple install it with:
 
     $ pip install thermosteam
@@ -33,6 +31,7 @@ If you have an installation of Python with pip, simple install it with:
 To get the git version, run:
 
     $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+
 
 Documentation
 -------------
