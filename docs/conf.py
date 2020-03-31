@@ -24,6 +24,8 @@ project = 'Thermosteam'
 copyright = '2020, Yoel Cortes-Pena'
 author = 'Yoel Cortes-Pena'
 
+nbsphinx_execute = 'never'
+
 # The full version, including alpha/beta/rc tags
 release = ''
 
