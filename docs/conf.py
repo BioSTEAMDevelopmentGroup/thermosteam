@@ -48,6 +48,9 @@ extensions = [
     'sphinx.ext.autosummary',
     'nbsphinx']
 
+# Allow exceptions to occur in notebooks
+nbsphinx_allow_errors = True
+
 # Do not show all members of the class
 numpydoc_show_class_members = False
 
