@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: thermosteam
-Version: 0.7.1
+Version: 0.7.2
 Summary: BioSTEAM's Premier Thermodynamic Engine
 Home-page: https://github.com/BioSTEAMDevelopmentGroup/thermosteam
 Author: Yoel Cortes-Pena
@@ -32,9 +32,7 @@ Description: ====================================================
         Installation
         ------------
         
-        Get the latest version of Thermosteam from
-        https://pypi.python.org/pypi/thermosteam/
-        
+        Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`_.
         If you have an installation of Python with pip, simple install it with:
         
             $ pip install thermosteam
@@ -42,6 +40,7 @@ Description: ====================================================
         To get the git version, run:
         
             $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+        
         
         Documentation
         -------------

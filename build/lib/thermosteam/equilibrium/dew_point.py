@@ -155,7 +155,7 @@ class DewPoint:
                                       x=T, args=args, xtol=1e-4, ytol=1e-4)
                 
         self.x /= self.x.sum()
-        return self.T, self.x
+        return self.T, self.x.copy()
     
     def solve_Px(self, z, T):
         """
@@ -202,7 +202,7 @@ class DewPoint:
             self.P = self.rootsolver(self._P_error, P, P+1, 
                                      1e-2, 5e-8, args)
         self.x /= self.x.sum()
-        return self.P, self.x
+        return self.P, self.x.copy()
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

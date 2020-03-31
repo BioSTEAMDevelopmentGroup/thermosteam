@@ -153,7 +153,7 @@ class BubblePoint:
                                       f(Tmin), f(Tmax),
                                       T, 0., 1e-6, 5e-8)
         self.y /= self.y.sum()
-        return self.T, self.y
+        return self.T, self.y.copy()
     
     def solve_Py(self, z, T):
         """Bubble point at given composition and temperature.
@@ -197,7 +197,7 @@ class BubblePoint:
             self.P = self.rootsolver(self._P_error, P, P-1,
                                      1e-2, 5e-8, args)
         self.y /= self.y.sum()
-        return self.P, self.y
+        return self.P, self.y.copy()
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

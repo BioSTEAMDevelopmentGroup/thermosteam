@@ -12,12 +12,6 @@ class Registry:
     def search(self, ID):
         return self.__dict__.get(ID)
     
-    def __setattr__(self, ID, obj):
-        self[ID] = obj
-    
-    def __iter__(self):
-        return iter(self.__dict__.values())
-    
     def __getitem__(self, ID):
         return self.__dict__[ID]
     
@@ -30,6 +24,21 @@ class Registry:
                 'ID may only contain letters, numbers, and/or underscores; '
                 'no special characters or spaces')
         self.__dict__[ID] = obj
+    
+    def __setattr__(self, ID, obj):
+        self[ID] = obj
+    
+    def discard(self, ID):
+        dct = self.__dict__
+        try: dct[ID].disconnect()
+        except AttributeError: pass
+        del dct[ID]
+    
+    def __contains__(self, ID):
+        return ID in self.__dict__
+    
+    def __iter__(self):
+        return iter(self.__dict__.values())
     
     def __repr__(self):
         if self.__dict__:

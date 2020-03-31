@@ -226,6 +226,18 @@ class Stream:
         self._sink = self._source = None # For BioSTEAM
         self._init_cache()
         self._register(ID)
+
+    def disconnect(self):
+        sink = self._sink
+        source = self._source
+        if sink:
+            ins = sink.ins
+            index = ins.index(self)
+            ins[index] = None
+        else:
+            outs = source.outs
+            index = outs.index(self)
+            outs[index] = None
     
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
@@ -939,7 +951,8 @@ class Stream:
     __copy__ = copy
     
     def flow_proxy(self):
-        """Return a new stream that shares flow rate data with this one.
+        """
+        Return a new stream that shares flow rate data with this one.
         
         Examples
         --------
@@ -963,7 +976,8 @@ class Stream:
         return new
     
     def proxy(self):
-        """Return a new stream that shares all data with this one.
+        """
+        Return a new stream that shares all data with this one.
         
         Examples
         --------
@@ -1019,7 +1033,7 @@ class Stream:
 
     @property
     def vle_chemicals(self):
-        """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
+        """list[Chemical] Chemicals cabable of liquid-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.get_vle_indices(self.mol != 0)
