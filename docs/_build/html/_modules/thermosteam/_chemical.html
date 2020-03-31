@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -172,7 +174,8 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Chemical&#39;</span><span class="p">,)</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">flexsolve</span> <span class="kn">import</span> <span class="n">bounded_wegstein</span>
+<span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="kn">from</span> <span class="nn">flexsolve</span> <span class="kn">import</span> <span class="n">IQ_interpolation</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">copy_maybe</span>
 <span class="kn">from</span> <span class="nn">.functors.identifiers</span> <span class="kn">import</span> <span class="n">CAS_from_any</span><span class="p">,</span> <span class="n">pubchem_db</span>
 <span class="kn">from</span> <span class="nn">.functors.vapor_pressure</span> <span class="kn">import</span> <span class="n">VaporPressure</span>
@@ -183,8 +186,8 @@
 <span class="kn">from</span> <span class="nn">.functors.volume</span> <span class="kn">import</span> <span class="n">Volume</span>
 <span class="kn">from</span> <span class="nn">.functors.heat_capacity</span> <span class="kn">import</span> <span class="n">HeatCapacity</span>
 <span class="kn">from</span> <span class="nn">.functors.reaction</span> <span class="kn">import</span> <span class="n">Hf</span>
-<span class="kn">from</span> <span class="nn">.functors.combustion</span> <span class="kn">import</span> <span class="n">Hcombustion</span>
-<span class="kn">from</span> <span class="nn">.functors.elements</span> <span class="kn">import</span> <span class="n">similarity_variable</span><span class="p">,</span> <span class="n">simple_formula_parser</span>
+<span class="kn">from</span> <span class="nn">.functors.combustion</span> <span class="kn">import</span> <span class="n">CombustionData</span>
+<span class="kn">from</span> <span class="nn">.functors.elements</span> <span class="kn">import</span> <span class="n">compute_similarity_variable</span><span class="p">,</span> <span class="n">parse_simple_formula</span>
 <span class="kn">from</span> <span class="nn">.functors.eos</span> <span class="kn">import</span> <span class="n">GCEOS_DUMMY</span><span class="p">,</span> <span class="n">PR</span>
 <span class="kn">from</span> <span class="nn">.functors.viscosity</span> <span class="kn">import</span> <span class="n">Viscosity</span>
 <span class="kn">from</span> <span class="nn">.functors.thermal_conductivity</span> <span class="kn">import</span> <span class="n">ThermalConductivity</span>
@@ -201,7 +204,8 @@
 <span class="kn">from</span> <span class="nn">.functors.permittivity</span> <span class="kn">import</span> <span class="n">Permittivity</span>
 <span class="kn">from</span> <span class="nn">.functors.interface</span> <span class="kn">import</span> <span class="n">SurfaceTension</span>
 <span class="kn">from</span> <span class="nn">.equilibrium.unifac_data</span> <span class="kn">import</span> \
-    <span class="n">DDBST_UNIFAC_assignments</span><span class="p">,</span> <span class="n">DDBST_MODIFIED_UNIFAC_assignments</span><span class="p">,</span> <span class="n">DDBST_PSRK_assignments</span>
+    <span class="n">DDBST_UNIFAC_assignments</span><span class="p">,</span> <span class="n">DDBST_MODIFIED_UNIFAC_assignments</span><span class="p">,</span> <span class="n">DDBST_PSRK_assignments</span><span class="p">,</span> \
+    <span class="n">UNIFACGroupCounts</span><span class="p">,</span> <span class="n">DortmundGroupCounts</span><span class="p">,</span> <span class="n">PSRKGroupCounts</span>
 <span class="c1"># from .solubility import SolubilityParameter</span>
 <span class="c1"># from .safety import Tflash, Tautoignition, LFL, UFL, TWA, STEL, Ceiling, Skin, Carcinogen</span>
 <span class="c1"># from .lennard_jones import Stockmayer, MolecularDiameter</span>
@@ -282,9 +286,11 @@
 
 <span class="n">_names</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_CAS&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI_key&#39;</span><span class="p">,</span>
          <span class="s1">&#39;common_name&#39;</span><span class="p">,</span> <span class="s1">&#39;iupac_name&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;pubchemid&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">)</span>
+         <span class="s1">&#39;pubchemid&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;formula&#39;</span><span class="p">)</span>
 
 <span class="n">_groups</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Dortmund&#39;</span><span class="p">,</span> <span class="s1">&#39;UNIFAC&#39;</span><span class="p">,</span> <span class="s1">&#39;PSRK&#39;</span><span class="p">)</span>
+
+<span class="n">_reactions</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;combustion&#39;</span><span class="p">,)</span>
 
 <span class="n">_thermo</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;S_excess&#39;</span><span class="p">,</span> <span class="s1">&#39;H_excess&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">,</span>
            <span class="s1">&#39;Psat&#39;</span><span class="p">,</span> <span class="s1">&#39;Hvap&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">)</span>
@@ -298,10 +304,12 @@
 <span class="n">_equilibrium_properties</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Psat&#39;</span><span class="p">,</span> <span class="s1">&#39;Hvap&#39;</span><span class="p">)</span>
 
 <span class="n">_data</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MW&#39;</span><span class="p">,</span> <span class="s1">&#39;Tm&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">,</span> <span class="s1">&#39;Tt&#39;</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">,</span> <span class="s1">&#39;Pc&#39;</span><span class="p">,</span> <span class="s1">&#39;Vc&#39;</span><span class="p">,</span> <span class="s1">&#39;Zc&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;Hf&#39;</span><span class="p">,</span> <span class="s1">&#39;Hc&#39;</span><span class="p">,</span> <span class="s1">&#39;Hfus&#39;</span><span class="p">,</span> <span class="s1">&#39;Hsub&#39;</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">,</span> <span class="s1">&#39;dipole&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;Hf&#39;</span><span class="p">,</span> <span class="s1">&#39;LHV&#39;</span><span class="p">,</span> <span class="s1">&#39;HHV&#39;</span><span class="p">,</span> <span class="s1">&#39;Hfus&#39;</span><span class="p">,</span> <span class="s1">&#39;Hsub&#39;</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">,</span> <span class="s1">&#39;dipole&#39;</span><span class="p">,</span>
          <span class="s1">&#39;StielPolar&#39;</span><span class="p">,</span> <span class="s1">&#39;similarity_variable&#39;</span><span class="p">,</span> <span class="s1">&#39;iscyclic_aliphatic&#39;</span><span class="p">)</span>
 
-<span class="n">important_slots</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;phase_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;eos&#39;</span><span class="p">,</span> <span class="s1">&#39;eos_1atm&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">_names</span><span class="p">,</span> <span class="o">*</span><span class="n">_groups</span><span class="p">,</span> <span class="o">*</span><span class="n">_thermo</span><span class="p">,</span> <span class="o">*</span><span class="n">_data</span><span class="p">)</span>
+<span class="n">_checked_slots</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;phase_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;eos&#39;</span><span class="p">,</span> <span class="s1">&#39;eos_1atm&#39;</span><span class="p">,</span>
+                  <span class="o">*</span><span class="n">_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="o">*</span><span class="n">_groups</span><span class="p">,</span> <span class="o">*</span><span class="n">_reactions</span><span class="p">,</span>
+                  <span class="o">*</span><span class="n">_thermo</span><span class="p">,</span> <span class="o">*</span><span class="n">_data</span><span class="p">)</span>
 
 <span class="n">_chemical_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[Names]  &#39;</span><span class="p">:</span> <span class="n">_names</span><span class="p">,</span>
                     <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[Groups] &#39;</span><span class="p">:</span> <span class="n">_groups</span><span class="p">,</span>
@@ -312,7 +320,8 @@
 <span class="c1"># %% Chemical</span>
 
 <div class="viewcode-block" id="Chemical"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical">[docs]</a><span class="k">class</span> <span class="nc">Chemical</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Creates a Chemical object which contains basic information such as </span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a Chemical object which contains basic information such as </span>
 <span class="sd">    molecular weight and the structure of the species, as well as thermodynamic</span>
 <span class="sd">    and transport properties as a function of temperature and pressure.</span>
 <span class="sd">    </span>
@@ -334,8 +343,8 @@
 <span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
 <span class="sd">    &gt;&gt;&gt; # Initialize with an identifier</span>
 <span class="sd">    &gt;&gt;&gt; # (e.g. by name, CAS, InChI...)</span>
-<span class="sd">    &gt;&gt;&gt; water = tmo.Chemical(&#39;Water&#39;) </span>
-<span class="sd">    &gt;&gt;&gt; water.show()</span>
+<span class="sd">    &gt;&gt;&gt; Water = tmo.Chemical(&#39;Water&#39;) </span>
+<span class="sd">    &gt;&gt;&gt; Water.show()</span>
 <span class="sd">    Chemical: Water (phase_ref=&#39;l&#39;)</span>
 <span class="sd">    [Names]  CAS: 7732-18-5</span>
 <span class="sd">             InChI: H2O/h1H2</span>
@@ -344,6 +353,7 @@
 <span class="sd">             iupac_name: oxidane</span>
 <span class="sd">             pubchemid: 962</span>
 <span class="sd">             smiles: O</span>
+<span class="sd">             formula: H2O</span>
 <span class="sd">    [Groups] Dortmund: &lt;1H2O&gt;</span>
 <span class="sd">             UNIFAC: &lt;1H2O&gt;</span>
 <span class="sd">             PSRK: &lt;1H2O&gt;</span>
@@ -369,7 +379,8 @@
 <span class="sd">             Vc: 5.6e-05 m^3/mol</span>
 <span class="sd">             Zc: 0.22947</span>
 <span class="sd">             Hf: -2.4182e+05 J/mol</span>
-<span class="sd">             Hc: 0 J/mol</span>
+<span class="sd">             LHV: 0</span>
+<span class="sd">             HHV: 0</span>
 <span class="sd">             Hfus: 6010 J/mol</span>
 <span class="sd">             Hsub: None</span>
 <span class="sd">             omega: 0.344</span>
@@ -380,46 +391,46 @@
 
 <span class="sd">    All fields shown are accessible:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; water.CAS</span>
+<span class="sd">    &gt;&gt;&gt; Water.CAS</span>
 <span class="sd">    &#39;7732-18-5&#39;</span>
 
 <span class="sd">    Functional group identifiers (e.g. `Dortmund`, `UNIFAC`, `PSRK`) allow for the estimation of activity coefficients through group contribution methods. In other words, these attributes define the functional groups for thermodynamic equilibrium calculations:</span>
 <span class="sd">        </span>
-<span class="sd">    &gt;&gt;&gt; water.Dortmund</span>
+<span class="sd">    &gt;&gt;&gt; Water.Dortmund</span>
 <span class="sd">    &lt;DortmundGroupCounts: 1H2O&gt;</span>
 <span class="sd">    </span>
 <span class="sd">    Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; # Vapor pressure (Pa)</span>
-<span class="sd">    &gt;&gt;&gt; water.Psat(T=373.15)</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat(T=373.15)</span>
 <span class="sd">    101284.55179999319</span>
 <span class="sd">    &gt;&gt;&gt; # Surface tension (N/m)</span>
-<span class="sd">    &gt;&gt;&gt; water.sigma(T=298.15)</span>
+<span class="sd">    &gt;&gt;&gt; Water.sigma(T=298.15)</span>
 <span class="sd">    0.07205503890847455</span>
 <span class="sd">    &gt;&gt;&gt; # Molar volume (m^3/mol)</span>
-<span class="sd">    &gt;&gt;&gt; water.V(phase=&#39;l&#39;, T=298.15, P=101325)</span>
+<span class="sd">    &gt;&gt;&gt; Water.V(phase=&#39;l&#39;, T=298.15, P=101325)</span>
 <span class="sd">    1.7970929501497658e-05</span>
 <span class="sd">    </span>
 <span class="sd">    Note that the reference state of all chemicals is 25 degC and 1 atm:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; (water.T_ref, water.P_ref)</span>
+<span class="sd">    &gt;&gt;&gt; (Water.T_ref, Water.P_ref)</span>
 <span class="sd">    (298.15, 101325.0)</span>
 <span class="sd">    &gt;&gt;&gt; # Enthalpy at reference conditions (J/mol; without excess energies)</span>
-<span class="sd">    &gt;&gt;&gt; water.H(T=298.15, phase=&#39;l&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Water.H(T=298.15, phase=&#39;l&#39;)</span>
 <span class="sd">    0.0</span>
 <span class="sd">    </span>
 <span class="sd">    Constant pure component properties are also available:</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; # Molecular weight (g/mol)</span>
-<span class="sd">    &gt;&gt;&gt; water.MW</span>
+<span class="sd">    &gt;&gt;&gt; Water.MW</span>
 <span class="sd">    18.01528</span>
 <span class="sd">    &gt;&gt;&gt; # Boiling point (K)</span>
-<span class="sd">    &gt;&gt;&gt; water.Tb</span>
+<span class="sd">    &gt;&gt;&gt; Water.Tb</span>
 <span class="sd">    373.124</span>
 <span class="sd">    </span>
 <span class="sd">    Temperature dependent properties are managed by model handles:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; water.Psat.show()</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
 <span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">    [0] Wagner_McGraw</span>
 <span class="sd">    [1] Antoine</span>
@@ -433,14 +444,14 @@
 
 <span class="sd">    Phase dependent properties have attributes with model handles for each phase:</span>
 
-<span class="sd">    &gt;&gt;&gt; water.V</span>
+<span class="sd">    &gt;&gt;&gt; Water.V</span>
 <span class="sd">    &lt;PhaseTPProperty(phase, T, P) -&gt; V [m^3/mol]&gt;</span>
-<span class="sd">    &gt;&gt;&gt; (water.V.l, water.V.g)</span>
+<span class="sd">    &gt;&gt;&gt; (Water.V.l, Water.V.g)</span>
 <span class="sd">    (&lt;TPDependentModelHandle(T, P) -&gt; V.l [m^3/mol]&gt;, &lt;TPDependentModelHandle(T, P) -&gt; V.g [m^3/mol]&gt;)</span>
 
 <span class="sd">    A model handle contains a series of models applicable to a certain domain:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; water.Psat[0].show()</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat[0].show()</span>
 <span class="sd">    TDependentModel: Wagner_McGraw</span>
 <span class="sd">     evaluate: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">     Tmin: 275.00</span>
@@ -448,13 +459,13 @@
 
 <span class="sd">    When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:</span>
 <span class="sd">        </span>
-<span class="sd">    &gt;&gt;&gt; # water.Psat(1000.0) -&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Water.Psat(1000.0) -&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # ValueError: &lt;TDependentModelHandle(T, P=None) -&gt; Psat [Pa]&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # contains no valid model at T=1000.00 K</span>
 <span class="sd">    </span>
 <span class="sd">    Each model may contain either a function or a functor (a function with stored data) to compute the property:</span>
 <span class="sd">        </span>
-<span class="sd">    &gt;&gt;&gt; functor = water.Psat[0].evaluate</span>
+<span class="sd">    &gt;&gt;&gt; functor = Water.Psat[0].evaluate</span>
 <span class="sd">    &gt;&gt;&gt; functor.show()</span>
 <span class="sd">    Functor: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">     a: -7.7645</span>
@@ -469,12 +480,11 @@
 <span class="sd">    </span>
 <span class="sd">    A new model can be added easily to a model handle through the `add_model` method, for example:</span>
 <span class="sd">        </span>
-<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; # Set top_priority=True to place model in postion [0]</span>
-<span class="sd">    &gt;&gt;&gt; @water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)</span>
+<span class="sd">    &gt;&gt;&gt; @Water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)</span>
 <span class="sd">    ... def User_antoine_model(T):</span>
 <span class="sd">    ...     return 10.0**(10.116 -  1687.537 / (T + 42.98))</span>
-<span class="sd">    &gt;&gt;&gt; water.Psat.show()</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
 <span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">    [0] User_antoine_model</span>
 <span class="sd">    [1] Wagner_McGraw</span>
@@ -489,8 +499,8 @@
 
 <span class="sd">    The `models` object is a `deque` for easier management of model order:</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; water.Psat.models.rotate(-1)</span>
-<span class="sd">    &gt;&gt;&gt; water.Psat.show()</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.models.rotate(-1)</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
 <span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="sd">    [0] Wagner_McGraw</span>
 <span class="sd">    [1] Antoine</span>
@@ -503,11 +513,11 @@
 <span class="sd">    [8] Edalat</span>
 <span class="sd">    [9] User_antoine_model</span>
 
-<span class="sd">    The `model` method is a high level interface that even lets you create a constant model:</span>
+<span class="sd">    The `add_model` method is a high level interface that even lets you create a constant model:</span>
 <span class="sd">        </span>
-<span class="sd">    &gt;&gt;&gt; value = water.V.l.add_model(1.687e-05)</span>
+<span class="sd">    &gt;&gt;&gt; value = Water.V.l.add_model(1.687e-05)</span>
 <span class="sd">    ... # Model is appended at the end by default</span>
-<span class="sd">    &gt;&gt;&gt; added_model = water.V.l[-1] </span>
+<span class="sd">    &gt;&gt;&gt; added_model = Water.V.l[-1] </span>
 <span class="sd">    &gt;&gt;&gt; added_model.show()</span>
 <span class="sd">    ConstantThermoModel: Constant</span>
 <span class="sd">     value: 1.687e-05</span>
@@ -588,8 +598,10 @@
 <span class="sd">        Critical point molar volume [m^3/mol].</span>
 <span class="sd">    Hf : float</span>
 <span class="sd">        Heat of formation [J/mol].</span>
-<span class="sd">    Hc : float</span>
-<span class="sd">        Heat of combustion [J/mol].</span>
+<span class="sd">    LHV : float</span>
+<span class="sd">        Lower heating value [J/mol].</span>
+<span class="sd">    HHV : float</span>
+<span class="sd">        Higher heating value [J/mol].</span>
 <span class="sd">    Hfus : float</span>
 <span class="sd">        Heat of fusion [J/mol].</span>
 <span class="sd">    Hsub : float</span>
@@ -610,7 +622,10 @@
 <span class="sd">        Instance for solving equations of state at 1 atm.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_locked_state&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">important_slots</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_locked_state&#39;</span><span class="p">,</span> 
+                 <span class="s1">&#39;phase_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;eos&#39;</span><span class="p">,</span> <span class="s1">&#39;eos_1atm&#39;</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">_names</span><span class="p">,</span> <span class="o">*</span><span class="n">_groups</span><span class="p">,</span> <span class="o">*</span><span class="n">_reactions</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">_thermo</span><span class="p">,</span> <span class="o">*</span><span class="n">_data</span><span class="p">)</span>
     
     <span class="c1">#: [float] Reference temperature in Kelvin</span>
     <span class="n">T_ref</span> <span class="o">=</span> <span class="mf">298.15</span>
@@ -664,12 +679,12 @@
         <span class="n">info</span> <span class="o">=</span> <span class="n">pubchem_db</span><span class="o">.</span><span class="n">search_CAS</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_locked_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_names</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">smiles</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">InChI</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">InChI_key</span><span class="p">,</span> 
-                         <span class="n">info</span><span class="o">.</span><span class="n">pubchemid</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">iupac_name</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">common_name</span><span class="p">)</span>
+                         <span class="n">info</span><span class="o">.</span><span class="n">pubchemid</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">iupac_name</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">common_name</span><span class="p">,</span>
+                         <span class="n">info</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_groups</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">InChI_key</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">CAS</span> <span class="o">==</span> <span class="s1">&#39;56-81-5&#39;</span><span class="p">:</span> <span class="c1"># TODO: Make this part of data</span>
-            <span class="kn">from</span> <span class="nn">.equilibrium.unifac_data</span> <span class="kn">import</span> <span class="n">GroupCounts</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="n">GroupCounts</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">81</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">MW</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">simple_formula_parser</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">formula</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="n">DortmundGroupCounts</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">81</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_data</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(),</span> <span class="n">info</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_eos</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">)</span>
         <span class="n">has_hydroxyl</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNIFAC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PSRK</span><span class="p">):</span>
@@ -686,6 +701,28 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">Tm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_1atm</span><span class="p">,</span>
                             <span class="n">phase_ref</span><span class="p">)</span></div>
         
+<div class="viewcode-block" id="Chemical.get_key_property_names"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.get_key_property_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_key_property_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the attribute names of key properties required to model a process.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked_state</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_ref</span> <span class="o">!=</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">,</span> <span class="s1">&#39;Psat&#39;</span><span class="p">,</span> <span class="s1">&#39;Tb&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">,)</span></div>
+        
+<div class="viewcode-block" id="Chemical.get_combustion_reaction"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.get_combustion_reaction">[docs]</a>    <span class="k">def</span> <span class="nf">get_combustion_reaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a Reaction object defining the combustion of this chemical.&quot;&quot;&quot;</span>
+        <span class="n">ID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span>
+        <span class="n">combustion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">combustion</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">tmo</span><span class="o">.</span><span class="n">reaction</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="n">combustion</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="Chemical.load_combustion_data"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.load_combustion_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_combustion_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Stoichiometry&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load combustion data (LHV, HHV, and combution attributes)</span>
+<span class="sd">        based on the molecular formula and the heat of formation.&quot;&quot;&quot;</span>
+        <span class="n">CD</span> <span class="o">=</span> <span class="n">CombustionData</span><span class="o">.</span><span class="n">from_chemical_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">CAS</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">MW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">LHV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">HHV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">stoichiometry</span></div>
 
     <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">unpickle_chemical</span><span class="p">,</span> <span class="p">(</span><span class="n">get_chemical_data</span><span class="p">(</span><span class="bp">self</span><span class="p">),)</span>
@@ -698,6 +735,10 @@
     <span class="k">def</span> <span class="nf">CAS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[str] CAS number of chemical.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CAS</span>
+    
+<div class="viewcode-block" id="Chemical.get_atoms"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.get_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">get_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;dict[str: int] Atom-count pairs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">parse_simple_formula</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Chemical.Tsat"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.Tsat">[docs]</a>    <span class="k">def</span> <span class="nf">Tsat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tguess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the saturated temperature (in Kelvin) given the pressure (in Pascal).&quot;&quot;&quot;</span>
@@ -712,7 +753,7 @@
                 <span class="n">Tguess</span> <span class="o">=</span> <span class="n">Tb</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span> <span class="o">/</span> <span class="mi">101325</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">Tguess</span><span class="p">:</span>
             <span class="n">Tguess</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tmin</span> <span class="o">+</span> <span class="n">Tmax</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-        <span class="k">return</span> <span class="n">bounded_wegstein</span><span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Psat</span><span class="p">(</span><span class="n">Tmax</span><span class="o">-</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">Tguess</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">IQ_interpolation</span><span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Psat</span><span class="p">(</span><span class="n">Tmax</span><span class="o">-</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">Tguess</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Chemical.copy"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">CAS</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a copy of the chemical with a new ID.&quot;&quot;&quot;</span>
@@ -735,7 +776,7 @@
     <span class="n">__copy__</span> <span class="o">=</span> <span class="n">copy</span>
     
     <span class="k">def</span> <span class="nf">_init_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">smiles</span><span class="p">,</span> <span class="n">InChI</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">,</span>
-                    <span class="n">pubchemid</span><span class="p">,</span> <span class="n">iupac_name</span><span class="p">,</span> <span class="n">common_name</span><span class="p">):</span>
+                    <span class="n">pubchemid</span><span class="p">,</span> <span class="n">iupac_name</span><span class="p">,</span> <span class="n">common_name</span><span class="p">,</span> <span class="n">formula</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_CAS</span> <span class="o">=</span> <span class="n">CAS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="n">smiles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">InChI</span> <span class="o">=</span> <span class="n">InChI</span>
@@ -743,22 +784,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pubchemid</span> <span class="o">=</span> <span class="n">pubchemid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iupac_name</span> <span class="o">=</span> <span class="n">iupac_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">common_name</span> <span class="o">=</span> <span class="n">common_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formula</span> <span class="o">=</span> <span class="n">formula</span>
         
     <span class="k">def</span> <span class="nf">_init_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InChI_key</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">InChI_key</span> <span class="ow">in</span> <span class="n">DDBST_UNIFAC_assignments</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">UNIFAC</span> <span class="o">=</span> <span class="n">DDBST_UNIFAC_assignments</span><span class="p">[</span><span class="n">InChI_key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">UNIFAC</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UNIFAC</span> <span class="o">=</span> <span class="n">UNIFACGroupCounts</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">InChI_key</span> <span class="ow">in</span> <span class="n">DDBST_MODIFIED_UNIFAC_assignments</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="n">DDBST_MODIFIED_UNIFAC_assignments</span><span class="p">[</span><span class="n">InChI_key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="n">DortmundGroupCounts</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">InChI_key</span> <span class="ow">in</span> <span class="n">DDBST_PSRK_assignments</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">PSRK</span> <span class="o">=</span> <span class="n">DDBST_PSRK_assignments</span><span class="p">[</span><span class="n">InChI_key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PSRK</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PSRK</span> <span class="o">=</span> <span class="n">PSRKGroupCounts</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CAS</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MW</span> <span class="o">=</span> <span class="n">MW</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Tm</span> <span class="o">=</span> <span class="n">Tm</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Tb</span> <span class="o">=</span> <span class="n">Tb</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
@@ -779,15 +821,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Hsub</span> <span class="o">=</span> <span class="n">Hsub</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CAS</span><span class="p">)</span>
 
         <span class="c1"># Chemistry</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="n">Hf</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="n">Hcombustion</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">Hf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="n">Hf</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">CD</span> <span class="o">=</span> <span class="n">CombustionData</span><span class="o">.</span><span class="n">from_chemical_data</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CAS</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">LHV</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">HHV</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">stoichiometry</span>
         
         <span class="c1"># Critical Point</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">StielPolar</span> <span class="o">=</span> <span class="n">StielPolar</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
         
         <span class="c1"># Other</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dipole</span> <span class="o">=</span> <span class="n">dipole</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_variable</span> <span class="o">=</span> <span class="n">similarity_variable</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_variable</span> <span class="o">=</span> <span class="n">compute_similarity_variable</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iscyclic_aliphatic</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_init_eos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
@@ -1000,7 +1049,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">S_excess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_excess</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Chemical.default"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Default all `slots` with the chemical properties of water. If no `slots` given, all essential chemical properties that are missing are defaulted. `slots` which are still missing are returned as set.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default all `slots` with the chemical properties of water. If no</span>
+<span class="sd">        `slots` given, all essential chemical properties that are missing</span>
+<span class="sd">        are defaulted. `slots` which are still missing are returned as set.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1018,7 +1070,7 @@
 <span class="sd">        &gt;&gt;&gt; Substance = Chemical.blank(&#39;Substance&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; missing_slots = Substance.default()</span>
 <span class="sd">        &gt;&gt;&gt; sorted(missing_slots)</span>
-<span class="sd">        [&#39;Dortmund&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;Hvap&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;PSRK&#39;, &#39;Pc&#39;, &#39;Psat&#39;, &#39;Pt&#39;, &#39;StielPolar&#39;, &#39;Tb&#39;, &#39;Tc&#39;, &#39;Tm&#39;, &#39;Tt&#39;, &#39;UNIFAC&#39;, &#39;V&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;common_name&#39;, &#39;dipole&#39;, &#39;eos&#39;, &#39;eos_1atm&#39;, &#39;iscyclic_aliphatic&#39;, &#39;iupac_name&#39;, &#39;omega&#39;, &#39;pubchemid&#39;, &#39;similarity_variable&#39;, &#39;smiles&#39;]</span>
+<span class="sd">        [&#39;Dortmund&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;Hvap&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;PSRK&#39;, &#39;Pc&#39;, &#39;Psat&#39;, &#39;Pt&#39;, &#39;StielPolar&#39;, &#39;Tb&#39;, &#39;Tc&#39;, &#39;Tm&#39;, &#39;Tt&#39;, &#39;UNIFAC&#39;, &#39;V&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;combustion&#39;, &#39;common_name&#39;, &#39;dipole&#39;, &#39;eos&#39;, &#39;eos_1atm&#39;, &#39;formula&#39;, &#39;iscyclic_aliphatic&#39;, &#39;iupac_name&#39;, &#39;omega&#39;, &#39;pubchemid&#39;, &#39;similarity_variable&#39;, &#39;smiles&#39;]</span>
 <span class="sd">        </span>
 <span class="sd">        Note that missing slots does not include essential properties volume, heat capacity, and conductivity.</span>
 <span class="sd">        </span>
@@ -1052,8 +1104,29 @@
                 <span class="n">kappa</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">kappa</span><span class="p">:</span>
                 <span class="n">kappa</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.5942</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;Hc&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">formula</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">i</span> <span class="ow">in</span> <span class="n">slots</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;HHV&#39;</span><span class="p">,</span> <span class="s1">&#39;LHV&#39;</span><span class="p">,</span> <span class="s1">&#39;combustion&#39;</span><span class="p">,</span> <span class="s1">&#39;Hf&#39;</span><span class="p">)]):</span>
+                <span class="k">if</span> <span class="s1">&#39;Hf&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Dulong&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Stoichiometry&#39;</span>
+                <span class="n">CD</span> <span class="o">=</span> <span class="n">CombustionData</span><span class="o">.</span><span class="n">from_chemical_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">CAS</span><span class="p">,</span>
+                                                       <span class="n">MW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;Hf&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">Hf</span>
+                <span class="k">if</span> <span class="s1">&#39;HHV&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">HHV</span>
+                <span class="k">if</span> <span class="s1">&#39;LHV&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">LHV</span>
+                <span class="k">if</span> <span class="s1">&#39;combustion&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span> <span class="o">=</span> <span class="n">CD</span><span class="o">.</span><span class="n">stoichiometry</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;LHV&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="s1">&#39;HHV&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="s1">&#39;combustion&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">combustion</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;Hf&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="s1">&#39;epsilon&#39;</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
@@ -1080,7 +1153,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">load_free_energies</span><span class="p">()</span>
         <span class="n">missing</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">slots</span><span class="p">)</span>
         <span class="n">missing</span><span class="o">.</span><span class="n">difference_update</span><span class="p">({</span><span class="s1">&#39;MW&#39;</span><span class="p">,</span> <span class="s1">&#39;CAS&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">,</span> <span class="s1">&#39;Hf&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">,</span>
-                                   <span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;Hc&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;LHV&#39;</span><span class="p">,</span> <span class="s1">&#39;HHV&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
                                    <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H_excess&#39;</span><span class="p">,</span> <span class="s1">&#39;S_excess&#39;</span><span class="p">,</span> <span class="s1">&#39;phase_ref&#39;</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">missing</span></div>
     
@@ -1103,11 +1176,11 @@
 <span class="sd">        &gt;&gt;&gt; from thermosteam import Chemical</span>
 <span class="sd">        &gt;&gt;&gt; Substance = Chemical.blank(&#39;Substance&#39;, phase_ref=&#39;l&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; Substance.get_missing_slots()</span>
-<span class="sd">        [&#39;eos&#39;, &#39;eos_1atm&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;common_name&#39;, &#39;iupac_name&#39;, &#39;pubchemid&#39;, &#39;smiles&#39;, &#39;Dortmund&#39;, &#39;UNIFAC&#39;, &#39;PSRK&#39;, &#39;S_excess&#39;, &#39;H_excess&#39;, &#39;mu&#39;, &#39;kappa&#39;, &#39;V&#39;, &#39;S&#39;, &#39;H&#39;, &#39;Cn&#39;, &#39;Psat&#39;, &#39;Hvap&#39;, &#39;sigma&#39;, &#39;epsilon&#39;, &#39;MW&#39;, &#39;Tm&#39;, &#39;Tb&#39;, &#39;Tt&#39;, &#39;Tc&#39;, &#39;Pt&#39;, &#39;Pc&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;Hf&#39;, &#39;Hc&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;omega&#39;, &#39;dipole&#39;, &#39;StielPolar&#39;, &#39;similarity_variable&#39;, &#39;iscyclic_aliphatic&#39;]</span>
+<span class="sd">        [&#39;eos&#39;, &#39;eos_1atm&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;common_name&#39;, &#39;iupac_name&#39;, &#39;pubchemid&#39;, &#39;smiles&#39;, &#39;formula&#39;, &#39;Dortmund&#39;, &#39;UNIFAC&#39;, &#39;PSRK&#39;, &#39;combustion&#39;, &#39;S_excess&#39;, &#39;H_excess&#39;, &#39;mu&#39;, &#39;kappa&#39;, &#39;V&#39;, &#39;S&#39;, &#39;H&#39;, &#39;Cn&#39;, &#39;Psat&#39;, &#39;Hvap&#39;, &#39;sigma&#39;, &#39;epsilon&#39;, &#39;MW&#39;, &#39;Tm&#39;, &#39;Tb&#39;, &#39;Tt&#39;, &#39;Tc&#39;, &#39;Pt&#39;, &#39;Pc&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;Hf&#39;, &#39;LHV&#39;, &#39;HHV&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;omega&#39;, &#39;dipole&#39;, &#39;StielPolar&#39;, &#39;similarity_variable&#39;, &#39;iscyclic_aliphatic&#39;]</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">getfield</span> <span class="o">=</span> <span class="nb">getattr</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="n">slots</span> <span class="ow">or</span> <span class="n">important_slots</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">getfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="n">slots</span> <span class="ow">or</span> <span class="n">_checked_slots</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">getfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span></div>
     
 <div class="viewcode-block" id="Chemical.copy_missing_slots_from"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.copy_missing_slots_from">[docs]</a>    <span class="k">def</span> <span class="nf">copy_missing_slots_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sources</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copy the missing thermodynamic properties by copying from sources. Also return any names of thermodynamic properties that are still missing.&quot;&quot;&quot;</span>
@@ -1151,9 +1224,10 @@
 <span class="sd">                 iupac_name: None</span>
 <span class="sd">                 pubchemid: None</span>
 <span class="sd">                 smiles: None</span>
-<span class="sd">        [Groups] Dortmund: None</span>
-<span class="sd">                 UNIFAC: None</span>
-<span class="sd">                 PSRK: None</span>
+<span class="sd">                 formula: None</span>
+<span class="sd">        [Groups] Dortmund: &lt;Empty&gt;</span>
+<span class="sd">                 UNIFAC: &lt;Empty&gt;</span>
+<span class="sd">                 PSRK: &lt;Empty&gt;</span>
 <span class="sd">        [Thermo] S_excess: None</span>
 <span class="sd">                 H_excess: None</span>
 <span class="sd">                 mu(phase, T, P) -&gt; Pa*s</span>
@@ -1176,7 +1250,8 @@
 <span class="sd">                 Vc: None</span>
 <span class="sd">                 Zc: None</span>
 <span class="sd">                 Hf: None</span>
-<span class="sd">                 Hc: None</span>
+<span class="sd">                 LHV: None</span>
+<span class="sd">                 HHV: None</span>
 <span class="sd">                 Hfus: None</span>
 <span class="sd">                 Hsub: None</span>
 <span class="sd">                 omega: None</span>
@@ -1187,10 +1262,13 @@
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">setfield</span> <span class="o">=</span> <span class="nb">setattr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_1atm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">setfield</span> <span class="o">=</span> <span class="nb">setattr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UNIFAC</span> <span class="o">=</span> <span class="n">UNIFACGroupCounts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Dortmund</span> <span class="o">=</span> <span class="n">DortmundGroupCounts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PSRK</span> <span class="o">=</span> <span class="n">PSRKGroupCounts</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_names</span><span class="p">:</span> <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_groups</span><span class="p">:</span> <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_reactions</span><span class="p">:</span> <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_data</span><span class="p">:</span> <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_free_energies</span><span class="p">:</span> <span class="n">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
@@ -1211,7 +1289,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
     
 <div class="viewcode-block" id="Chemical.get_phase"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.get_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return phase of chemical at given state.</span>
+        <span class="sd">&quot;&quot;&quot;Return phase of chemical at given thermal condition.</span>
 <span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1231,7 +1309,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_locked_state</span>
     
 <div class="viewcode-block" id="Chemical.at_state"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.at_state">[docs]</a>    <span class="k">def</span> <span class="nf">at_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the state of chemical.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the state of chemical.</span>
 <span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1247,9 +1326,10 @@
 <span class="sd">                 iupac_name: molecular nitro...</span>
 <span class="sd">                 pubchemid: 947</span>
 <span class="sd">                 smiles: N#N</span>
-<span class="sd">        [Groups] Dortmund: {}</span>
-<span class="sd">                 UNIFAC: {}</span>
-<span class="sd">                 PSRK: {}</span>
+<span class="sd">                 formula: N2</span>
+<span class="sd">        [Groups] Dortmund: &lt;Empty&gt;</span>
+<span class="sd">                 UNIFAC: &lt;Empty&gt;</span>
+<span class="sd">                 PSRK: &lt;Empty&gt;</span>
 <span class="sd">        [Thermo] S_excess(T, P) -&gt; J/mol</span>
 <span class="sd">                 H_excess(T, P) -&gt; J/mol</span>
 <span class="sd">                 mu(T, P) -&gt; Pa*s</span>
@@ -1271,8 +1351,9 @@
 <span class="sd">                 Pc: 3.3944e+06 Pa</span>
 <span class="sd">                 Vc: 8.95e-05 m^3/mol</span>
 <span class="sd">                 Zc: 0.28953</span>
-<span class="sd">                 Hf: 0 J/mol</span>
-<span class="sd">                 Hc: 0 J/mol</span>
+<span class="sd">                 Hf: None</span>
+<span class="sd">                 LHV: 0</span>
+<span class="sd">                 HHV: 0</span>
 <span class="sd">                 Hfus: 710 J/mol</span>
 <span class="sd">                 Hsub: None</span>
 <span class="sd">                 omega: 0.04</span>
@@ -1295,8 +1376,7 @@
         <span class="k">elif</span> <span class="n">phase</span><span class="p">:</span>
             <span class="n">lock_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid phase {repr(phase)}&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_locked_state</span> <span class="o">=</span> <span class="n">phase</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid phase {repr(phase)}&quot;</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Chemical.show"><a class="viewcode-back" href="../../Chemical.html#thermosteam.Chemical.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print all specifications&quot;&quot;&quot;</span>
@@ -1312,15 +1392,14 @@
                 <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{display_asfunctor(value, name=field, var=field, show_var=False)}&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
                         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{field}</span><span class="s2">: </span><span class="si">{value:.5g}</span><span class="s2">&quot;</span>
-                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">units</span> <span class="o">=</span> <span class="n">chemical_units_of_measure</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">units</span><span class="p">:</span> <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{units}</span><span class="s1">&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{field}</span><span class="s2">: </span><span class="si">{value}</span><span class="s2">&quot;</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">27</span><span class="p">:</span> <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">27</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">units</span> <span class="o">=</span> <span class="n">chemical_units_of_measure</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">units</span><span class="p">:</span> <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{units}</span><span class="s1">&#39;</span>
                 <span class="n">section</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">section</span><span class="p">:</span>
                 <span class="n">info</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="mi">9</span><span class="o">*</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
@@ -1348,6 +1427,7 @@
         <span class="k">if</span> <span class="n">hasfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
             <span class="n">functor</span> <span class="o">=</span> <span class="n">getfield</span><span class="p">(</span><span class="n">phase_property</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
             <span class="n">setfield</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">functor</span><span class="p">)</span>
+    <span class="n">chemical</span><span class="o">.</span><span class="n">_locked_state</span> <span class="o">=</span> <span class="n">phase</span>
 
 <span class="c1"># # Fire Safety Limits</span>
 <span class="c1"># self.Tflash = Tflash(CAS)</span>

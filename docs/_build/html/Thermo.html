@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -175,18 +177,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="thermo">
@@ -200,8 +207,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>chemicals</strong> (<a class="reference internal" href="Chemicals.html#thermosteam.Chemicals" title="thermosteam.Chemicals"><em>Chemicals</em></a><em> or </em><em>Iterable</em><em>[</em><em>str</em><em>]</em>) – Pure component chemical data.</p></li>
 <li><p><strong>mixture</strong> (<em>Mixture</em><em>, </em><em>optional</em>) – Calculates mixture properties.</p></li>
-<li><p><strong>Gamma</strong> (<em>ActivityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing activity coefficiente.</p></li>
-<li><p><strong>Phi</strong> (<em>FugacityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing fugacity coefficiente.</p></li>
+<li><p><strong>Gamma</strong> (<em>ActivityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing activity coefficients.</p></li>
+<li><p><strong>Phi</strong> (<em>FugacityCoefficients subclass</em><em>, </em><em>optional</em>) – Class for computing fugacity coefficients.</p></li>
 <li><p><strong>PCF</strong> (<em>PoyntingCorrectionFactor subclass</em><em>, </em><em>optional</em>) – Class for computing poynting correction factors.</p></li>
 </ul>
 </dd>
@@ -212,7 +219,6 @@
 <span class="go">Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)</span>
 </pre></div>
 </div>
-<p>Note how chemicals are compiled when it becomes part of a Thermo object.</p>
 <dl class="attribute">
 <dt id="thermosteam.Thermo.chemicals">
 <code class="sig-name descname">chemicals</code><a class="headerlink" href="#thermosteam.Thermo.chemicals" title="Permalink to this definition">¶</a></dt>
@@ -238,7 +244,7 @@
 <dl class="attribute">
 <dt id="thermosteam.Thermo.Gamma">
 <code class="sig-name descname">Gamma</code><a class="headerlink" href="#thermosteam.Thermo.Gamma" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for computing activity coefficiente.</p>
+<dd><p>Class for computing activity coefficients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ActivityCoefficients subclass, optional</p>
@@ -249,7 +255,7 @@
 <dl class="attribute">
 <dt id="thermosteam.Thermo.Phi">
 <code class="sig-name descname">Phi</code><a class="headerlink" href="#thermosteam.Thermo.Phi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for computing fugacity coefficiente.</p>
+<dd><p>Class for computing fugacity coefficients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>FugacityCoefficients subclass, optional</p>

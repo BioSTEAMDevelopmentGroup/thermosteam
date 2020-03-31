@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -182,16 +184,16 @@
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput,
-div.nbinput div.prompt,
-div.nbinput div.input_area,
-div.nbinput div[class*=highlight],
-div.nbinput div[class*=highlight] pre,
-div.nboutput,
-div.nbinput div.prompt,
-div.nbinput div.output_area,
-div.nboutput div[class*=highlight],
-div.nboutput div[class*=highlight] pre {
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
     background: none;
     border: none;
     padding: 0 0;
@@ -200,13 +202,13 @@ div.nboutput div[class*=highlight] pre {
 }
 
 /* avoid gaps between output lines */
-div.nboutput div[class*=highlight] pre {
+div.nboutput.container div[class*=highlight] pre {
     line-height: normal;
 }
 
 /* input/output containers */
-div.nbinput,
-div.nboutput {
+div.nbinput.container,
+div.nboutput.container {
     display: -webkit-flex;
     display: flex;
     align-items: flex-start;
@@ -214,92 +216,91 @@ div.nboutput {
     width: 100%;
 }
 @media (max-width: 540px) {
-    div.nbinput,
-    div.nboutput {
+    div.nbinput.container,
+    div.nboutput.container {
         flex-direction: column;
     }
 }
 
 /* input container */
-div.nbinput {
+div.nbinput.container {
     padding-top: 5px;
 }
 
 /* last container */
-div.nblast {
+div.nblast.container {
     padding-bottom: 5px;
 }
 
 /* input prompt */
-div.nbinput div.prompt pre {
-    color: #303F9F;
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
 }
 
 /* output prompt */
-div.nboutput div.prompt pre {
-    color: #D84315;
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
 }
 
 /* all prompts */
-div.nbinput div.prompt,
-div.nboutput div.prompt {
-    min-width: 8ex;
-    padding-top: 0.4em;
-    padding-right: 0.4em;
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    min-width: 5ex;
+    padding-top: 0.3rem;
+    padding-right: 0.3rem;
     text-align: right;
     flex: 0;
 }
 @media (max-width: 540px) {
-    div.nbinput div.prompt,
-    div.nboutput div.prompt {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
         text-align: left;
         padding: 0.4em;
     }
-    div.nboutput div.prompt.empty {
+    div.nboutput.container div.prompt.empty {
         padding: 0;
     }
 }
 
 /* disable scrollbars on prompts */
-div.nbinput div.prompt pre,
-div.nboutput div.prompt pre {
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
     overflow: hidden;
 }
 
 /* input/output area */
-div.nbinput div.input_area,
-div.nboutput div.output_area {
-    padding: 0.4em;
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
     -webkit-flex: 1;
     flex: 1;
     overflow: auto;
 }
 @media (max-width: 540px) {
-    div.nbinput div.input_area,
-    div.nboutput div.output_area {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
         width: 100%;
     }
 }
 
 /* input area */
-div.nbinput div.input_area {
-    border: 1px solid #cfcfcf;
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f7f7f7;
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
-div.nboutput div[class*=MathJax] {
+div.nboutput.container div[class*=MathJax] {
     text-align: left !important;
 }
 
-/* override sphinx.ext.pngmath center alignment in output cells */
-div.nboutput div.math p {
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
     text-align: left;
 }
 
 /* standard error */
-div.nboutput div.output_area.stderr {
+div.nboutput.container div.output_area.stderr {
     background: #fdd;
 }
 
@@ -343,27 +344,86 @@ div.nboutput div.output_area.stderr {
 .ansi-bold { font-weight: bold; }
 .ansi-underline { text-decoration: underline; }
 
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 0.3rem;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="Stoichiometric-reactions">
 <h1><span class="section-number">6. </span>Stoichiometric reactions<a class="headerlink" href="#Stoichiometric-reactions" title="Permalink to this headline">¶</a></h1>
-<p><strong>The thermosteam.reaction package contains array based objects that can
-model stoichiometric reactions given a conversion.</strong></p>
+<p><strong>The thermosteam.reaction package contains array based objects that can model stoichiometric reactions given a conversion.</strong></p>
 <div class="section" id="Single-reaction">
 <h2><span class="section-number">6.1. </span>Single reaction<a class="headerlink" href="#Single-reaction" title="Permalink to this headline">¶</a></h2>
 <p>Create a Reaction object based on the transesterification reaction:</p>
@@ -387,14 +447,12 @@ model stoichiometric reactions given a conversion.</strong></p>
 </tbody>
 </table>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
 <span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">reaction</span> <span class="k">as</span> <span class="n">rxn</span>
-<span class="c1"># pip install biorefineries before importing</span>
 <span class="kn">from</span> <span class="nn">biorefineries.lipidcane.chemicals</span> <span class="kn">import</span> <span class="n">lipidcane_chemicals</span>
 
 <span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">lipidcane_chemicals</span><span class="p">)</span>
@@ -415,8 +473,7 @@ Reaction:
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -425,18 +482,16 @@ Reaction:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, CO2, Octane, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid])
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, P4O10, CO2, Octane, O2, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid])
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -445,19 +500,17 @@ Reaction:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>array([ 0., -3.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  3.,  0.,  0.,  0.,
-        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.])
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([ 0., -3.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  3.,  0.,
+        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.])
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -466,18 +519,16 @@ Reaction:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>&#39;Lipid&#39;
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;Lipid&#39;
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -486,21 +537,17 @@ Reaction:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>0.9
-</pre></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.9
+</pre></div></div>
 </div>
-</div>
-<p>When a Reaction object is called with array (with each entry
-corresponding to a chemical in the same order), it updates the array to
-reflect the change in material due to the reaction:</p>
+<p>When a Reaction object is called with array (with each entry corresponding to a chemical in the same order), it updates the array to reflect the change in material due to the reaction:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -538,8 +585,7 @@ Stream: s1
 </div>
 <div class="section" id="Parallel-reactions">
 <h2><span class="section-number">6.2. </span>Parallel reactions<a class="headerlink" href="#Parallel-reactions" title="Permalink to this headline">¶</a></h2>
-<p>Model the pretreatment hydrolysis reactions and assumed conversions from
-Humbird et. al. as shown in the follwing table <a class="reference external" href="#References">[1]</a>:</p>
+<p>Model the pretreatment hydrolysis reactions and assumed conversions from Humbird et. al. as shown in the follwing table <a class="reference external" href="#References">[1]</a>:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 63%" />
@@ -593,8 +639,7 @@ Humbird et. al. as shown in the follwing table <a class="reference external" hr
 </table>
 <p>Create a ParallelReaction from Reaction objects:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -604,7 +649,7 @@ Humbird et. al. as shown in the follwing table <a class="reference external" hr
 <span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">cornstover_chemicals</span><span class="p">)</span>
 
 <span class="c1"># Create reactions</span>
-<span class="n">pretreatment_rxn</span> <span class="o">=</span> <span class="n">rxn</span><span class="o">.</span><span class="n">ParallelReaction</span><span class="p">([</span>
+<span class="n">pretreatment_parallel_rxn</span> <span class="o">=</span> <span class="n">rxn</span><span class="o">.</span><span class="n">ParallelReaction</span><span class="p">([</span>
     <span class="c1">#            Reaction definition                 Reactant    Conversion</span>
     <span class="n">rxn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;Glucan + H2O -&gt; Glucose&#39;</span><span class="p">,</span>          <span class="s1">&#39;Glucan&#39;</span><span class="p">,</span>   <span class="mf">0.0990</span><span class="p">),</span>
     <span class="n">rxn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;Glucan + H2O -&gt; GlucoseOligomer&#39;</span><span class="p">,</span>  <span class="s1">&#39;Glucan&#39;</span><span class="p">,</span>   <span class="mf">0.0030</span><span class="p">),</span>
@@ -616,7 +661,7 @@ Humbird et. al. as shown in the follwing table <a class="reference external" hr
     <span class="n">rxn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;Acetate -&gt; AceticAcid&#39;</span><span class="p">,</span>            <span class="s1">&#39;Acetate&#39;</span><span class="p">,</span>  <span class="mf">1.0000</span><span class="p">),</span>
     <span class="n">rxn</span><span class="o">.</span><span class="n">Reaction</span><span class="p">(</span><span class="s1">&#39;Lignin -&gt; SolubleLignin&#39;</span><span class="p">,</span>          <span class="s1">&#39;Lignin&#39;</span><span class="p">,</span>   <span class="mf">0.0050</span><span class="p">)])</span>
 
-<span class="n">pretreatment_rxn</span>
+<span class="n">pretreatment_parallel_rxn</span>
 </pre></div>
 </div>
 </div>
@@ -640,8 +685,7 @@ index  stoichiometry                       reactant    X[%]
 </div>
 <p>Model the reaction:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -663,7 +707,7 @@ index  stoichiometry                       reactant    X[%]
 <span class="n">feed</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
 <span class="c1"># React feed molar flow rate</span>
-<span class="n">pretreatment_rxn</span><span class="p">(</span><span class="n">feed</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">pretreatment_parallel_rxn</span><span class="p">(</span><span class="n">feed</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;AFTER REACTION&#39;</span><span class="p">)</span>
 <span class="n">feed</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -722,12 +766,11 @@ Stream: s2
 <h2><span class="section-number">6.3. </span>Reactions in series<a class="headerlink" href="#Reactions-in-series" title="Permalink to this headline">¶</a></h2>
 <p>SeriesReaction objects work the same way, but in series:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pretreatment_series_rxn</span> <span class="o">=</span> <span class="n">rxn</span><span class="o">.</span><span class="n">SeriesReaction</span><span class="p">(</span><span class="n">pretreatment_rxn</span><span class="p">)</span>
+<span></span><span class="n">pretreatment_series_rxn</span> <span class="o">=</span> <span class="n">rxn</span><span class="o">.</span><span class="n">SeriesReaction</span><span class="p">(</span><span class="n">pretreatment_parallel_rxn</span><span class="p">)</span>
 <span class="n">pretreatment_series_rxn</span>
 </pre></div>
 </div>
@@ -750,18 +793,13 @@ index  stoichiometry                       reactant    X[%]
 [8]    Lignin -&gt; SolubleLignin             Lignin      0.50
 </pre></div></div>
 </div>
+<p>Net conversion in parallel:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NET CONVERSION IN PARALLEL&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pretreatment_rxn</span><span class="o">.</span><span class="n">X_net</span><span class="p">))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">NET CONVERSION IN SERIES&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pretreatment_series_rxn</span><span class="o">.</span><span class="n">X_net</span><span class="p">))</span>
+<span></span><span class="n">pretreatment_parallel_rxn</span><span class="o">.</span><span class="n">X_net</span>
 </pre></div>
 </div>
 </div>
@@ -770,26 +808,39 @@ index  stoichiometry                       reactant    X[%]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-NET CONVERSION IN PARALLEL
-Glucan    0.105
-Sucrose   0.003
-Xylan     0.907
-Acetate       1
-Lignin    0.005
-dtype: float64
-
-NET CONVERSION IN SERIES
-Glucan    8.91e-07
-Sucrose      0.003
-Xylan     1.08e-05
-Acetate          1
-Lignin       0.005
-dtype: float64
+ChemicalIndexer:
+ Sucrose  0.003
+ Acetate  1
+ Lignin   0.005
+ Glucan   0.105
+ Xylan    0.9074
+</pre></div></div>
+</div>
+<p>Net conversion in series:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pretreatment_series_rxn</span><span class="o">.</span><span class="n">X_net</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ChemicalIndexer:
+ Sucrose  0.003
+ Acetate  1
+ Lignin   0.005
+ Glucan   8.91e-07
+ Xylan    1.08e-05
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -870,13 +921,12 @@ Stream: s3
 <h2><span class="section-number">6.4. </span>Indexing reactions<a class="headerlink" href="#Indexing-reactions" title="Permalink to this headline">¶</a></h2>
 <p>Both SeriesReaction, and ParallelReaction objects are indexable:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Index a slice</span>
-<span class="n">pretreatment_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">pretreatment_parallel_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -892,13 +942,12 @@ index  stoichiometry                      reactant    X[%]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Index an item</span>
-<span class="n">pretreatment_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">pretreatment_parallel_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -913,23 +962,21 @@ ReactionItem:
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Change conversion through the item</span>
-<span class="n">pretreatment_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="mf">0.10</span>
+<span class="n">pretreatment_parallel_rxn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="mf">0.10</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pretreatment_rxn</span>
+<span></span><span class="n">pretreatment_parallel_rxn</span>
 </pre></div>
 </div>
 </div>
@@ -951,27 +998,15 @@ index  stoichiometry                       reactant    X[%]
 [8]    Lignin -&gt; SolubleLignin             Lignin      0.50
 </pre></div></div>
 </div>
-<p>Notice how changing conversion of a ReationItem object changes the
-converion in the ParallelReaction object.</p>
+<p>Notice how changing conversion of a ReationItem object changes the converion in the ParallelReaction object.</p>
 </div>
 <div class="section" id="References">
 <h2><span class="section-number">6.5. </span>References<a class="headerlink" href="#References" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li><p>Humbird, D., Davis, R., Tao, L., Kinchin, C., Hsu, D., Aden, A.,
-Dudgeon, D. (2011). Process Design and Economics for Biochemical
-Conversion of Lignocellulosic Biomass to Ethanol: Dilute-Acid
-Pretreatment and Enzymatic Hydrolysis of Corn Stover
-(No. NREL/TP-5100-47764, 1013269). <a class="reference external" href="https://doi.org/10.2172/1013269">https://doi.org/10.2172/1013269</a></p></li>
-<li><p>Hatakeyama, T., Nakamura, K., &amp; Hatakeyama, H. (1982). Studies on
-heat capacity of cellulose and lignin by differential scanning
-calorimetry. Polymer, 23(12), 1801–1804.
-<a class="reference external" href="https://doi.org/10.1016/0032-3861(82)90125-2">https://doi.org/10.1016/0032-3861(82)90125-2</a></p></li>
-<li><p>Thybring, E. E. (2014). Explaining the heat capacity of wood
-constituents by molecular vibrations. Journal of Materials Science,
-49(3), 1317–1327. <a class="reference external" href="https://doi.org/10.1007/s10853-013-7815-6">https://doi.org/10.1007/s10853-013-7815-6</a></p></li>
-<li><p>Murphy W. K., and K. R. Masters. (1978). Gross heat of combustion of
-northern red oak (Quercus rubra) chemical components. Wood Sci.
-10:139-141.</p></li>
+<li><p>Humbird, D., Davis, R., Tao, L., Kinchin, C., Hsu, D., Aden, A., Dudgeon, D. (2011). Process Design and Economics for Biochemical Conversion of Lignocellulosic Biomass to Ethanol: Dilute-Acid Pretreatment and Enzymatic Hydrolysis of Corn Stover (No. NREL/TP-5100-47764, 1013269). <a class="reference external" href="https://doi.org/10.2172/1013269">https://doi.org/10.2172/1013269</a></p></li>
+<li><p>Hatakeyama, T., Nakamura, K., &amp; Hatakeyama, H. (1982). Studies on heat capacity of cellulose and lignin by differential scanning calorimetry. Polymer, 23(12), 1801–1804. <a class="reference external" href="https://doi.org/10.1016/0032-3861(82)90125-2">https://doi.org/10.1016/0032-3861(82)90125-2</a></p></li>
+<li><p>Thybring, E. E. (2014). Explaining the heat capacity of wood constituents by molecular vibrations. Journal of Materials Science, 49(3), 1317–1327. <a class="reference external" href="https://doi.org/10.1007/s10853-013-7815-6">https://doi.org/10.1007/s10853-013-7815-6</a></p></li>
+<li><p>Murphy W. K., and K. R. Masters. (1978). Gross heat of combustion of northern red oak (Quercus rubra) chemical components. Wood Sci. 10:139-141.</p></li>
 </ol>
 </div>
 </div>

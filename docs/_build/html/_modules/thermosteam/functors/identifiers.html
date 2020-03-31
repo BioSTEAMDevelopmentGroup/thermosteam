@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -251,7 +253,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<span class="k">class</span> <span class="nc">ChemicalMetadata</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ChemicalMetadata</span><span class="p">:</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pubchemid&#39;</span><span class="p">,</span> <span class="s1">&#39;formula&#39;</span><span class="p">,</span> <span class="s1">&#39;MW&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI&#39;</span><span class="p">,</span> <span class="s1">&#39;InChI_key&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;iupac_name&#39;</span><span class="p">,</span> <span class="s1">&#39;common_name&#39;</span><span class="p">,</span> <span class="s1">&#39;all_names&#39;</span><span class="p">,</span> <span class="s1">&#39;CAS&#39;</span><span class="p">,</span> <span class="s1">&#39;_charge&#39;</span><span class="p">]</span>
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -291,7 +293,7 @@
         
     
 
-<span class="k">class</span> <span class="nc">ChemicalMetadataDB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ChemicalMetadataDB</span><span class="p">:</span>
     <span class="n">exclusion_options</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;dippr_2014_int.csv&#39;</span><span class="p">),</span>
                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Chemicals with data.csv&#39;</span><span class="p">)]</span>
     

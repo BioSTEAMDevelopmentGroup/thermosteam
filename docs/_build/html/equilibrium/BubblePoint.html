@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -37,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="DewPoint" href="DewPoint.html" />
-    <link rel="prev" title="VLE" href="VLE.html" /> 
+    <link rel="prev" title="LLE" href="LLE.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="equilibrium_module.html">equilibrium</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="VLE.html">VLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LLE.html">LLE</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">BubblePoint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DewPoint.html">DewPoint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="activity_coefficients_module.html">activity_coefficients</a></li>
@@ -185,18 +188,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="bubblepoint">
@@ -204,15 +212,35 @@
 <dl class="class">
 <dt id="thermosteam.equilibrium.BubblePoint">
 <em class="property">class </em><code class="sig-prename descclassname">thermosteam.equilibrium.</code><code class="sig-name descname">BubblePoint</code><span class="sig-paren">(</span><em class="sig-param">chemicals=()</em>, <em class="sig-param">thermo=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/equilibrium/bubble_point.html#BubblePoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a BubblePoint object that returns bubble point values when called with a composition and either a temperture (T) or pressure (P).</p>
+<dd><p>Create a BubblePoint object that returns bubble point values when
+called with a composition and either a temperture (T) or pressure (P).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>chemicals=None</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="../Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>chemicals=</strong><strong>(</strong><strong>)</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="../Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical"><em>Chemical</em></a><em>]</em><em>, </em><em>optional</em>) – </p></li>
 <li><p><strong>thermo=None</strong> (<a class="reference internal" href="../Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a><em>, </em><em>optional</em>) – </p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">BubblePoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">molar_composition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve bubble point at constant temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span> <span class="o">=</span> <span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span>
+<span class="go">BubblePointValues(T=355, P=109755.45319868939, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Note that the result is a BubblePointValues object which contain all results as attibutes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+<span class="go">(355, 109755.45319868939, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve bubble point at constant pressure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="go">BubblePointValues(T=352.95030269946596, P=101325, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.342 0.658])</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="thermosteam.equilibrium.BubblePoint.rootsolver">
 <em class="property">static </em><code class="sig-name descname">rootsolver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">x0</em>, <em class="sig-param">x1</em>, <em class="sig-param">xtol</em>, <em class="sig-param">ytol=5e-08</em>, <em class="sig-param">args=()</em>, <em class="sig-param">maxiter=50</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.equilibrium.BubblePoint.rootsolver" title="Permalink to this definition">¶</a></dt>
@@ -233,22 +261,24 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>z</strong> (<em>array_like</em>) – Molar composotion.</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – Pressure (Pa).</p></li>
+<li><p><strong>P</strong> (<em>float</em>) – Pressure [Pa].</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>T</strong> (<em>float</em>) – Bubble point temperature (K)</p></li>
-<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Composition of the vapor phase.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Bubble point temperature [K].</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Vapor phase molar composition.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermotree</span> <span class="kn">import</span> <span class="n">Chemicals</span><span class="p">,</span> <span class="n">BubblePoint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span> <span class="o">=</span> <span class="n">BubblePoint</span><span class="p">(</span><span class="n">Chemicals</span><span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
-<span class="go">(352.2820850833474, array([0.703, 0.297]))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">BubblePoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span><span class="o">.</span><span class="n">solve_Ty</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="go">(353.7543445955407, array([0.381, 0.619]))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -261,22 +291,24 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>z</strong> (<em>array_like</em>) – Molar composotion.</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – Temperature (K).</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature [K].</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>P</strong> (<em>float</em>) – Bubble point pressure (Pa).</p></li>
-<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Vapor phase composition.</p></li>
+<li><p><strong>P</strong> (<em>float</em>) – Bubble point pressure [Pa].</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – Vapor phase molar composition.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermotree</span> <span class="kn">import</span> <span class="n">Chemicals</span><span class="p">,</span> <span class="n">BubblePoint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span> <span class="o">=</span> <span class="n">BubblePoint</span><span class="p">(</span><span class="o">*</span><span class="n">Chemicals</span><span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.703</span><span class="p">,</span> <span class="mf">0.297</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mf">352.28</span><span class="p">)</span>
-<span class="go">(103494.17209657285, array([0.757, 0.243]))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">BubblePoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.703</span><span class="p">,</span> <span class="mf">0.297</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mf">352.28</span><span class="p">)</span>
+<span class="go">(91830.97988957923, array([0.419, 0.581]))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -296,7 +328,7 @@
         <a href="DewPoint.html" class="btn btn-neutral float-right" title="DewPoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="VLE.html" class="btn btn-neutral float-left" title="VLE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="LLE.html" class="btn btn-neutral float-left" title="LLE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

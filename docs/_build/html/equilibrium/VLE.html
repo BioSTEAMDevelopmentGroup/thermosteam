@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -36,7 +38,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="BubblePoint" href="BubblePoint.html" />
+    <link rel="next" title="LLE" href="LLE.html" />
     <link rel="prev" title="equilibrium" href="equilibrium_module.html" /> 
 </head>
 
@@ -102,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="equilibrium_module.html">equilibrium</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">VLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LLE.html">LLE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BubblePoint.html">BubblePoint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DewPoint.html">DewPoint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="activity_coefficients_module.html">activity_coefficients</a></li>
@@ -185,18 +188,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="vle">
@@ -239,7 +247,7 @@ Defaults to <cite>thermosteam.settings.get_thermo()</cite>.</p></li>
 </div>
 <dl class="method">
 <dt id="thermosteam.equilibrium.VLE.solver">
-<em class="property">static </em><code class="sig-name descname">solver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">x0</em>, <em class="sig-param">x1</em>, <em class="sig-param">y0</em>, <em class="sig-param">y1</em>, <em class="sig-param">x</em>, <em class="sig-param">yval</em>, <em class="sig-param">xtol</em>, <em class="sig-param">ytol</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.equilibrium.VLE.solver" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">solver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">x0</em>, <em class="sig-param">x1</em>, <em class="sig-param">y0=None</em>, <em class="sig-param">y1=None</em>, <em class="sig-param">x=None</em>, <em class="sig-param">yval=0.0</em>, <em class="sig-param">xtol=1e-06</em>, <em class="sig-param">ytol=1e-06</em>, <em class="sig-param">args=()</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.equilibrium.VLE.solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse quadratic interpolation solver.</p>
 </dd></dl>
 
@@ -283,7 +291,7 @@ P or T (e.g., x and V is invalid).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="BubblePoint.html" class="btn btn-neutral float-right" title="BubblePoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="LLE.html" class="btn btn-neutral float-right" title="LLE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="equilibrium_module.html" class="btn btn-neutral float-left" title="equilibrium" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

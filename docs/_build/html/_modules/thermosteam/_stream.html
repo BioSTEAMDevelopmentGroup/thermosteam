@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -230,8 +232,7 @@
 <span class="sd">    Before creating a stream, first set the chemicals:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">    &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">    </span>
 <span class="sd">    Create a stream, defining the thermodynamic condition and flow rates:</span>
 <span class="sd">        </span>
@@ -352,7 +353,7 @@
 <span class="sd">     flow (kmol/hr): (g) Water    0.4721</span>
 <span class="sd">                         Ethanol  0.1916</span>
 <span class="sd">                     (l) Water    0.6381</span>
-<span class="sd">                         Ethanol  0.02551</span>
+<span class="sd">                         Ethanol  0.02552</span>
 <span class="sd">    </span>
 <span class="sd">    Note that the stream is a now a MultiStream to manage multiple phases.</span>
 <span class="sd">    Each phase can be accessed separately too:</span>
@@ -372,7 +373,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_imol&#39;</span><span class="p">,</span> <span class="s1">&#39;_TP&#39;</span><span class="p">,</span> <span class="s1">&#39;_thermo&#39;</span><span class="p">,</span> <span class="s1">&#39;_streams&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_bubble_point_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_dew_point_cache&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_vle_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_sink&#39;</span><span class="p">,</span> <span class="s1">&#39;_source&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">)</span>
+                 <span class="s1">&#39;_vle_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_lle_cache&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_sink&#39;</span><span class="p">,</span> <span class="s1">&#39;_source&#39;</span><span class="p">,</span> <span class="s1">&#39;_price&#39;</span><span class="p">)</span>
     <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;Stream&#39;</span>
     
     <span class="c1">#: [DisplayUnits] Units of measure for IPython display (class attribute)</span>
@@ -387,7 +389,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">ThermalCondition</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         <span class="n">thermo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_indexer</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">thermo</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">chemical_flows</span><span class="p">)</span>
-        <span class="c1">#: [float] Price in USD/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">price</span> 
         <span class="k">if</span> <span class="n">units</span> <span class="o">!=</span> <span class="s1">&#39;kmol/hr&#39;</span><span class="p">:</span>
             <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
@@ -396,6 +397,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sink</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># For BioSTEAM</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_cache</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sink</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sink</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source</span>
+        <span class="k">if</span> <span class="n">sink</span><span class="p">:</span>
+            <span class="n">ins</span> <span class="o">=</span> <span class="n">sink</span><span class="o">.</span><span class="n">ins</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">ins</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">ins</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outs</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">outs</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">outs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">outs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     
     <span class="k">def</span> <span class="nf">_init_indexer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">,</span> <span class="n">chemical_flows</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize molar flow rates.&quot;&quot;&quot;</span>
@@ -443,7 +456,7 @@
 
     <span class="c1">### Property getters ###</span>
 
-<div class="viewcode-block" id="Stream.get_flow"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.get_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream.get_flow"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.get_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">key</span><span class="o">=...</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an flow rates in requested units.</span>
 <span class="sd">        </span>
@@ -451,14 +464,13 @@
 <span class="sd">        ----------</span>
 <span class="sd">        units : str</span>
 <span class="sd">            Units of measure.</span>
-<span class="sd">        IDs : Iterable[str] or str, optional</span>
+<span class="sd">        key : Iterable[str] or str, optional</span>
 <span class="sd">            Chemical identifiers.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;Water&#39;)</span>
 <span class="sd">        20.0</span>
@@ -466,9 +478,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
     
-<div class="viewcode-block" id="Stream.set_flow"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream.set_flow"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">key</span><span class="o">=...</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set flow rates in given units.</span>
 
@@ -478,14 +490,13 @@
 <span class="sd">            Flow rate data.</span>
 <span class="sd">        units : str</span>
 <span class="sd">            Units of measure.</span>
-<span class="sd">        IDs : Iterable[str] or str, optional</span>
+<span class="sd">        key : Iterable[str] or str, optional</span>
 <span class="sd">            Chemical identifiers.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(ID=&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.set_flow(10, &#39;kg/hr&#39;, &#39;Water&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;Water&#39;)</span>
@@ -494,7 +505,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="n">indexer</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span></div>
+        <span class="n">indexer</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span></div>
     
 <div class="viewcode-block" id="Stream.get_total_flow"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.get_total_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -508,8 +519,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_total_flow(&#39;kg/hr&#39;)</span>
 <span class="sd">        30.0</span>
@@ -533,8 +543,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.set_total_flow(1.0,&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_total_flow(&#39;kg/hr&#39;)</span>
@@ -558,8 +567,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_property(&#39;sigma&#39;, &#39;N/m&#39;) # Surface tension</span>
 <span class="sd">        0.06384967976396348</span>
@@ -594,8 +602,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.set_property(&#39;P&#39;, 2, &#39;atm&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.P</span>
@@ -617,8 +624,25 @@
     <span class="c1">### Stream data ###</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">price</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_price</span>
+    <span class="nd">@price</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Price of stream per unit mass [USD/kg]&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Unit] Outlet location.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Unit] Inlet location.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sink</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">thermal_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; [ThermalCondition] Contains the temperature and pressure conditions of the stream.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[ThermalCondition] Contains the temperature and pressure conditions of the stream.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span>
 
     <span class="nd">@property</span>
@@ -693,7 +717,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[float] Total cost of stream in USD/hr.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_mass</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_mass</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">F_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -721,7 +745,7 @@
     <span class="k">def</span> <span class="nf">F_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">F_vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_vol</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">F_vol</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;undefined composition; cannot set flow rate&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ivol</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">*=</span> <span class="n">value</span> <span class="o">/</span> <span class="n">F_vol</span> <span class="o">/</span> <span class="mf">1000.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="o">.</span><span class="n">_data</span><span class="p">[:]</span> <span class="o">*=</span> <span class="n">value</span> <span class="o">/</span> <span class="n">F_vol</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">H</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -741,9 +765,13 @@
         <span class="sd">&quot;&quot;&quot;[float] Enthalpy of formation flow rate in kJ/hr.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">Hf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">Hc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[float] Enthalpy of combustion flow rate in kJ/hr.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">Hc</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>    
+    <span class="k">def</span> <span class="nf">LHV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Lower heating value flow rate in kJ/hr.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">LHV</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">HHV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[float] Higher heating value flow rate in kJ/hr.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">HHV</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>    
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Hvap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[float] Enthalpy of vaporization flow rate in kJ/hr.&quot;&quot;&quot;</span>
@@ -843,8 +871,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = s1.copy()</span>
 <span class="sd">        &gt;&gt;&gt; s1.mix_from([s1, s2])</span>
@@ -874,7 +901,7 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
 <span class="sd">        &gt;&gt;&gt; s = tmo.Stream(&#39;s&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;)</span>
@@ -915,8 +942,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2.link_with(s1)</span>
@@ -929,7 +955,7 @@
 <span class="sd">        &#39;g&#39;</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="s2">&quot;other must be of same type to link with&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="s2">&quot;other must be of same type to link with&quot;</span>
         
         <span class="k">if</span> <span class="n">TP</span> <span class="ow">and</span> <span class="n">flow</span> <span class="ow">and</span> <span class="n">phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data_cache</span>
@@ -950,8 +976,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2.link_with(s1)</span>
@@ -973,8 +998,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;, Water=2, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.copy_like(s2)</span>
@@ -1006,8 +1030,7 @@
 <span class="sd">        Initialize streams:</span>
 <span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;)</span>
 <span class="sd">        </span>
@@ -1063,7 +1086,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
     
-<div class="viewcode-block" id="Stream.copy"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream.copy"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the stream.</span>
 
@@ -1072,38 +1095,40 @@
 <span class="sd">        Create a copy of a new stream:</span>
 <span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; s1_copy = s1.copy()</span>
+<span class="sd">        &gt;&gt;&gt; s1_copy = s1.copy(&#39;s1_copy&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1_copy.show(flow=&#39;kg/hr&#39;)</span>
-<span class="sd">        Stream: </span>
+<span class="sd">        Stream: s1_copy</span>
 <span class="sd">         phase: &#39;l&#39;, T: 298.15 K, P: 101325 Pa</span>
 <span class="sd">         flow (kg/hr): Water    20</span>
 <span class="sd">                       Ethanol  10</span>
 <span class="sd">        </span>
-<span class="sd">        Note that the copy does not have an ID and its not registerd.</span>
+<span class="sd">        Warnings</span>
+<span class="sd">        --------</span>
+<span class="sd">        Prices are not copied.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
         <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">new</span><span class="o">.</span><span class="n">_sink</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_ID</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_sink</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">new</span><span class="o">.</span><span class="n">_thermo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span>
         <span class="n">new</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">new</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">new</span><span class="o">.</span><span class="n">_init_cache</span><span class="p">()</span>
         <span class="n">new</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="n">ID</span>
         <span class="k">return</span> <span class="n">new</span></div>
     <span class="n">__copy__</span> <span class="o">=</span> <span class="n">copy</span>
     
 <div class="viewcode-block" id="Stream.flow_proxy"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.flow_proxy">[docs]</a>    <span class="k">def</span> <span class="nf">flow_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a new stream that shares flow rate data with this one.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new stream that shares flow rate data with this one.</span>
 <span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = s1.flow_proxy()</span>
 <span class="sd">        &gt;&gt;&gt; s2.mol is s1.mol</span>
@@ -1121,14 +1146,40 @@
         <span class="n">new</span><span class="o">.</span><span class="n">_init_cache</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">new</span></div>
     
+<div class="viewcode-block" id="Stream.proxy"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.proxy">[docs]</a>    <span class="k">def</span> <span class="nf">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new stream that shares all data with this one.</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
+<span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s2 = s1.proxy()</span>
+<span class="sd">        &gt;&gt;&gt; s2.imol is s1.imol and s2.thermal_condition is s1.thermal_condition</span>
+<span class="sd">        True</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_sink</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_ID</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_thermo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_bubble_point_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_dew_point_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span>
+        <span class="k">try</span><span class="p">:</span> <span class="n">new</span><span class="o">.</span><span class="n">_vle_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+    
 <div class="viewcode-block" id="Stream.empty"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.empty">[docs]</a>    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Empty stream flow rates.</span>
 <span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.empty()</span>
 <span class="sd">        &gt;&gt;&gt; s1.F_mol</span>
@@ -1142,15 +1193,29 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[VLE] An object that can perform vapor-liquid equilibrium on the stream.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="s1">&#39;gl&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vle</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">equilibrium_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">lle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[LLE] An object that can perform liquid-liquid equilibrium on the stream.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lle</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vle_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;list[Chemical] Chemicals cabable of liquid-liquid equilibrium.&quot;&quot;&quot;</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
+        <span class="n">chemicals_tuple</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">tuple</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_vle_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">chemicals_tuple</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lle_chemicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;list[Chemical] Chemicals cabable of vapor-liquid equilibrium.&quot;&quot;&quot;</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span>
         <span class="n">chemicals_tuple</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">tuple</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_equilibrium_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">get_lle_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">chemicals_tuple</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
     
 <div class="viewcode-block" id="Stream.get_bubble_point"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.get_bubble_point">[docs]</a>    <span class="k">def</span> <span class="nf">get_bubble_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1165,14 +1230,13 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_bubble_point()</span>
 <span class="sd">        BubblePoint([Water, Ethanol])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">vle_chemicals</span>
         <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bp</span></div>
     
@@ -1188,14 +1252,13 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_dew_point()</span>
 <span class="sd">        DewPoint([Water, Ethanol])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span> <span class="k">if</span> <span class="n">IDs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">vle_chemicals</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dp</span></div>
     
@@ -1211,15 +1274,14 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.bubble_point_at_T()</span>
 <span class="sd">        BubblePointValues(T=350, P=76621.54388128374, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.836 0.164], y=[0.486 0.514])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bubble_point</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_normalized_mol</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Stream.bubble_point_at_P"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.bubble_point_at_P">[docs]</a>    <span class="k">def</span> <span class="nf">bubble_point_at_P</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1234,15 +1296,14 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.bubble_point_at_P()</span>
 <span class="sd">        BubblePointValues(T=357.0881141715846, P=101325.0, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.836 0.164], y=[0.49 0.51])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bubble_point</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_normalized_mol</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="n">P</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Stream.dew_point_at_T"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.dew_point_at_T">[docs]</a>    <span class="k">def</span> <span class="nf">dew_point_at_T</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1257,15 +1318,14 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.dew_point_at_T()</span>
 <span class="sd">        DewPointValues(T=350, P=48990.56398459762, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.836 0.164], x=[0.984 0.016])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dew_point</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_normalized_mol</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Stream.dew_point_at_P"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.dew_point_at_P">[docs]</a>    <span class="k">def</span> <span class="nf">dew_point_at_P</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1280,15 +1340,14 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, T=350, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.dew_point_at_P()</span>
 <span class="sd">        DewPointValues(T=368.6573659718087, P=101325.0, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.836 0.164], x=[0.984 0.016])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dew_point</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_normalized_mol</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="n">P</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Stream.get_normalized_mol"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.get_normalized_mol">[docs]</a>    <span class="k">def</span> <span class="nf">get_normalized_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
@@ -1303,8 +1362,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;kmol/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_normalized_mol((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.667, 0.333])</span>
@@ -1326,8 +1384,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_normalized_mass((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.667, 0.333])</span>
@@ -1348,8 +1405,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;m3/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_normalized_vol((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.667, 0.333])</span>
@@ -1370,8 +1426,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;kmol/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_molar_composition((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.5 , 0.25])</span>
@@ -1391,8 +1446,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;kg/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_mass_composition((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.5 , 0.25])</span>
@@ -1412,8 +1466,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;m3/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_volumetric_composition((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([0.5 , 0.25])</span>
@@ -1433,8 +1486,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;, &#39;Methanol&#39;]) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, Water=20, Ethanol=10, Methanol=10, units=&#39;m3/hr&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s1.get_concentration((&#39;Water&#39;, &#39;Ethanol&#39;))</span>
 <span class="sd">        array([27.823,  4.265])</span>
@@ -1442,9 +1494,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">F_vol</span></div>
     
-<div class="viewcode-block" id="Stream.recieve_vent"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.recieve_vent">[docs]</a>    <span class="k">def</span> <span class="nf">recieve_vent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">accumulate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">P_vapor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Vapor pressure of liquid.&quot;&quot;&quot;</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vle_chemicals</span>
+        <span class="n">F_l</span> <span class="o">=</span> <span class="n">eq</span><span class="o">.</span><span class="n">LiquidFugacities</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thermo</span><span class="p">)</span>
+        <span class="n">IDs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">F_l</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    
+<div class="viewcode-block" id="Stream.receive_vent"><a class="viewcode-back" href="../../Stream.html#thermosteam.Stream.receive_vent">[docs]</a>    <span class="k">def</span> <span class="nf">receive_vent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">accumulate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Recieve vapors from another stream as if in equilibrium.</span>
+<span class="sd">        Receive vapors from another stream as if in equilibrium.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1459,7 +1521,7 @@
 <span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals) </span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.Stream(&#39;s1&#39;, N2=10, units=&#39;m3/hr&#39;, phase=&#39;g&#39;, T=330)</span>
 <span class="sd">        &gt;&gt;&gt; s2 = tmo.Stream(&#39;s2&#39;, Water=10, Ethanol=2, T=330)</span>
-<span class="sd">        &gt;&gt;&gt; s1.recieve_vent(s2)</span>
+<span class="sd">        &gt;&gt;&gt; s1.receive_vent(s2, accumulate=True)</span>
 <span class="sd">        &gt;&gt;&gt; s1.show(flow=&#39;kmol/hr&#39;)</span>
 <span class="sd">        Stream: s1</span>
 <span class="sd">         phase: &#39;g&#39;, T: 330 K, P: 101325 Pa</span>
@@ -1467,12 +1529,11 @@
 <span class="sd">                         Ethanol  0.0616</span>
 <span class="sd">                         N2       0.369</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">equilibrium_chemicals</span>
+        <span class="n">chemicals</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">vle_chemicals</span>
         <span class="n">light_indices</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">chemicals</span><span class="o">.</span><span class="n">_light_indices</span>
         <span class="k">if</span> <span class="n">accumulate</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">light_indices</span><span class="p">]</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">light_indices</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">light_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">light_indices</span><span class="p">]</span>
         <span class="n">other</span><span class="o">.</span><span class="n">mol</span><span class="p">[</span><span class="n">light_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">F_l</span> <span class="o">=</span> <span class="n">eq</span><span class="o">.</span><span class="n">LiquidFugacities</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">thermo</span><span class="p">)</span>
@@ -1502,14 +1563,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">MultiStream</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">to_material_indexer</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_streams</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">VLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">,</span> <span class="n">thermo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">VLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">,</span>
+                                <span class="n">thermo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">,</span>
                                 <span class="n">bubble_point_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span><span class="p">,</span>
                                 <span class="n">dew_point_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lle_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">eq</span><span class="o">.</span><span class="n">LLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
     
     <span class="c1">### Representation ###</span>
     
+    <span class="k">def</span> <span class="nf">diagram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">biosteam._digraph</span> <span class="kn">import</span> <span class="n">make_digraph</span><span class="p">,</span> <span class="n">save_digraph</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sink</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">streams</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ins</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">outs</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">units</span><span class="p">],</span> <span class="p">[])</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">make_digraph</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">streams</span><span class="p">))</span>
+        <span class="n">save_digraph</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
+    
     <span class="k">def</span> <span class="nf">_basic_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: {self.ID or &#39;&#39;}</span><span class="se">\n</span><span class="s2">&quot;</span>
     
     <span class="k">def</span> <span class="nf">_info_phaseTP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">T_units</span><span class="p">,</span> <span class="n">P_units</span><span class="p">):</span>
         <span class="n">T</span> <span class="o">=</span> <span class="n">thermo_units</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">T_units</span><span class="p">)</span>

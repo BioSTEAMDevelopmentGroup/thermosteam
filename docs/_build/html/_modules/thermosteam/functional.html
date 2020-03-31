@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -1453,14 +1455,16 @@
                        <span class="mf">0.999</span><span class="p">)</span>
 
 <div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.normalize">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a normalized array to a magnitude of 1.</span>
-<span class="sd">    If magnitude is zero, all fractions will have equal value.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a normalized array to a magnitude of 1.</span>
+<span class="sd">    If magnitude is zero, all fractions will have equal value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
     <span class="n">sum_array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">sum_array</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">/</span><span class="n">l</span>
+    <span class="k">if</span> <span class="n">sum_array</span> <span class="o">&lt;</span> <span class="n">minimum</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">/</span><span class="n">size</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">array</span><span class="o">/</span><span class="n">sum_array</span></div>
 

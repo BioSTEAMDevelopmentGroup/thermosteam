@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -182,15 +184,15 @@
 
 <div class="viewcode-block" id="UndefinedChemical"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedChemical">[docs]</a><span class="k">class</span> <span class="nc">UndefinedChemical</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined chemicals.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{ID}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ID</span><span class="p">))</span></div>
     
 <div class="viewcode-block" id="UndefinedPhase"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedPhase">[docs]</a><span class="k">class</span> <span class="nc">UndefinedPhase</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined phases.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{phase}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="UndefinedPhaseOrChemical"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedPhaseOrChemical">[docs]</a><span class="k">class</span> <span class="nc">UndefinedPhaseOrChemical</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined phases or chemicals.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_or_ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{phase_or_ID}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_or_ID</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">phase_or_ID</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DimensionError"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.DimensionError">[docs]</a><span class="k">class</span> <span class="nc">DimensionError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;ValueError regarding wrong dimensions.&quot;&quot;&quot;</span></div>

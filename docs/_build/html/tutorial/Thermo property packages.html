@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -181,16 +183,16 @@
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput,
-div.nbinput div.prompt,
-div.nbinput div.input_area,
-div.nbinput div[class*=highlight],
-div.nbinput div[class*=highlight] pre,
-div.nboutput,
-div.nbinput div.prompt,
-div.nbinput div.output_area,
-div.nboutput div[class*=highlight],
-div.nboutput div[class*=highlight] pre {
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
     background: none;
     border: none;
     padding: 0 0;
@@ -199,13 +201,13 @@ div.nboutput div[class*=highlight] pre {
 }
 
 /* avoid gaps between output lines */
-div.nboutput div[class*=highlight] pre {
+div.nboutput.container div[class*=highlight] pre {
     line-height: normal;
 }
 
 /* input/output containers */
-div.nbinput,
-div.nboutput {
+div.nbinput.container,
+div.nboutput.container {
     display: -webkit-flex;
     display: flex;
     align-items: flex-start;
@@ -213,92 +215,91 @@ div.nboutput {
     width: 100%;
 }
 @media (max-width: 540px) {
-    div.nbinput,
-    div.nboutput {
+    div.nbinput.container,
+    div.nboutput.container {
         flex-direction: column;
     }
 }
 
 /* input container */
-div.nbinput {
+div.nbinput.container {
     padding-top: 5px;
 }
 
 /* last container */
-div.nblast {
+div.nblast.container {
     padding-bottom: 5px;
 }
 
 /* input prompt */
-div.nbinput div.prompt pre {
-    color: #303F9F;
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
 }
 
 /* output prompt */
-div.nboutput div.prompt pre {
-    color: #D84315;
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
 }
 
 /* all prompts */
-div.nbinput div.prompt,
-div.nboutput div.prompt {
-    min-width: 8ex;
-    padding-top: 0.4em;
-    padding-right: 0.4em;
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    min-width: 5ex;
+    padding-top: 0.3rem;
+    padding-right: 0.3rem;
     text-align: right;
     flex: 0;
 }
 @media (max-width: 540px) {
-    div.nbinput div.prompt,
-    div.nboutput div.prompt {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
         text-align: left;
         padding: 0.4em;
     }
-    div.nboutput div.prompt.empty {
+    div.nboutput.container div.prompt.empty {
         padding: 0;
     }
 }
 
 /* disable scrollbars on prompts */
-div.nbinput div.prompt pre,
-div.nboutput div.prompt pre {
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
     overflow: hidden;
 }
 
 /* input/output area */
-div.nbinput div.input_area,
-div.nboutput div.output_area {
-    padding: 0.4em;
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
     -webkit-flex: 1;
     flex: 1;
     overflow: auto;
 }
 @media (max-width: 540px) {
-    div.nbinput div.input_area,
-    div.nboutput div.output_area {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
         width: 100%;
     }
 }
 
 /* input area */
-div.nbinput div.input_area {
-    border: 1px solid #cfcfcf;
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f7f7f7;
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
-div.nboutput div[class*=MathJax] {
+div.nboutput.container div[class*=MathJax] {
     text-align: left !important;
 }
 
-/* override sphinx.ext.pngmath center alignment in output cells */
-div.nboutput div.math p {
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
     text-align: left;
 }
 
 /* standard error */
-div.nboutput div.output_area.stderr {
+div.nboutput.container div.output_area.stderr {
     background: #fdd;
 }
 
@@ -342,90 +343,135 @@ div.nboutput div.output_area.stderr {
 .ansi-bold { font-weight: bold; }
 .ansi-underline { text-decoration: underline; }
 
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 0.3rem;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
 </style>
 <div class="section" id="Thermo-property-packages">
 <h1><span class="section-number">5. </span>Thermo property packages<a class="headerlink" href="#Thermo-property-packages" title="Permalink to this headline">¶</a></h1>
-<p>A <a class="reference external" href="https://thermosteam.readthedocs.io/en/latest/Thermo.html">Thermo</a>
-object defines a thermodynamic property package. To build a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code>
-object, we must first define all the chemicals involed. The following
-example will show how this can be done through the creation of a
-property package for the co-production of biodiesel and ethanol from
-lipid-cane <a class="reference external" href="#References">[1]</a>:</p>
+<p>A <a class="reference external" href="https://thermosteam.readthedocs.io/en/latest/Thermo.html">Thermo</a> object defines a thermodynamic property package. To build a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code> object, we must first define all the chemicals involed. The following example will show how this can be done through the creation of a property package for the co-production of biodiesel and ethanol from lipid-cane <a class="reference external" href="#References">[1]</a>:</p>
 <div class="section" id="Chemicals">
 <h2><span class="section-number">5.1. </span>Chemicals<a class="headerlink" href="#Chemicals" title="Permalink to this headline">¶</a></h2>
-<p>We can first start by defining the common chemicals already in the data
-base:</p>
+<p>We can first start by defining the common chemicals already in the data base:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="n">Biodiesel</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Biodiesel&#39;</span><span class="p">,</span> <span class="n">search_ID</span><span class="o">=</span><span class="s1">&#39;Methyl oleate&#39;</span><span class="p">)</span>
-<span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Glycerol&#39;</span><span class="p">,</span> <span class="s1">&#39;Glucose&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;Sucrose&#39;</span><span class="p">,</span> <span class="s1">&#39;H3PO4&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;Octane&#39;</span><span class="p">,</span> <span class="n">Biodiesel</span><span class="p">])</span>
+<span class="n">Biodiesel</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Biodiesel&#39;</span><span class="p">,</span>
+                         <span class="n">search_ID</span><span class="o">=</span><span class="s1">&#39;Methyl oleate&#39;</span><span class="p">)</span>
+<span class="n">lipidcane_chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Glycerol&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Glucose&#39;</span><span class="p">,</span> <span class="s1">&#39;Sucrose&#39;</span><span class="p">,</span> <span class="s1">&#39;H3PO4&#39;</span><span class="p">,</span> <span class="s1">&#39;P4O10&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Octane&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="n">Biodiesel</span><span class="p">])</span>
+
 <span class="p">(</span><span class="n">Water</span><span class="p">,</span> <span class="n">Methanol</span><span class="p">,</span> <span class="n">Ethanol</span><span class="p">,</span>
  <span class="n">Glycerol</span><span class="p">,</span> <span class="n">Glucose</span><span class="p">,</span> <span class="n">Sucrose</span><span class="p">,</span>
- <span class="n">H3PO4</span><span class="p">,</span> <span class="n">CO2</span><span class="p">,</span> <span class="n">Octane</span><span class="p">,</span> <span class="n">Biodiesel</span><span class="p">)</span> <span class="o">=</span> <span class="n">chemicals</span>
+ <span class="n">H3PO4</span><span class="p">,</span> <span class="n">P4O10</span><span class="p">,</span> <span class="n">CO2</span><span class="p">,</span> <span class="n">Octane</span><span class="p">,</span> <span class="n">O2</span><span class="p">,</span> <span class="n">Biodiesel</span><span class="p">)</span> <span class="o">=</span> <span class="n">lipidcane_chemicals</span>
 </pre></div>
 </div>
 </div>
-<p>We can assume that CO2 gas will always remain a gas in the process by
-setting the state:</p>
+<p>We can assume that CO2 and O2 will always remain a gas in the process by setting the state:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">CO2</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span></span><span class="n">O2</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">CO2</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Similarly, we can assume glucose, sucrose, and phosphoric acid all
-remain as solids:</p>
+<p>Similarly, we can assume glucose, sucrose, and phosphoric acid all remain as solids:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">H3PO4</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="n">P4O10</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
 <span class="n">Glucose</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
 <span class="n">Sucrose</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
-
-<span class="c1"># The reference phase of glucose is originally liquid,</span>
-<span class="c1"># so we change it to solid to not have to include</span>
-<span class="c1"># the heat of fusion in the calculation of free energies.</span>
-<span class="c1"># Note that we load the free energies to update this change.</span>
-<span class="n">Glucose</span><span class="o">.</span><span class="n">phase_ref</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
-<span class="n">Glucose</span><span class="o">.</span><span class="n">load_free_energies</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>Now we can define the solids in the process (both soluble and
-insoluble). We can use the <code class="docutils literal notranslate"><span class="pre">Chemical.blank</span></code> method to create a “blank”
-<code class="docutils literal notranslate"><span class="pre">Chemical</span></code> object and add the thermo models ourselves:</p>
+<p>Now we can define the solids in the process (both soluble and insoluble). We can use the <code class="docutils literal notranslate"><span class="pre">Chemical.blank</span></code> method to create a “blank” <code class="docutils literal notranslate"><span class="pre">Chemical</span></code> object and add the thermo models ourselves:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -434,48 +480,54 @@ insoluble). We can use the <code class="docutils literal notranslate"><span clas
     <span class="n">solid</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="o">**</span><span class="n">constants</span><span class="p">)</span>
 
     <span class="c1"># Add chemical to the Chemicals object</span>
-    <span class="n">chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solid</span><span class="p">)</span>
+    <span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solid</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">solid</span>
 
-<span class="n">Ash</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Ash&#39;</span><span class="p">)</span>
-<span class="n">Cellulose</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Cellulose&#39;</span><span class="p">)</span>
-<span class="n">Hemicellulose</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Hemicellulose&#39;</span><span class="p">)</span>
-<span class="n">Flocculant</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Flocculant&#39;</span><span class="p">)</span>
-<span class="n">Lignin</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Lignin&#39;</span><span class="p">)</span>
-<span class="n">Solids</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Solids&#39;</span><span class="p">)</span>
-<span class="n">DryYeast</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;DryYeast&#39;</span><span class="p">,</span> <span class="n">CAS</span><span class="o">=</span><span class="s1">&#39;Yeast&#39;</span><span class="p">)</span>
+<span class="c1"># Cellulose and hemicellulose are modeled</span>
+<span class="c1"># as their monomer minus on H2O.</span>
+<span class="n">Cellulose</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Cellulose&#39;</span><span class="p">,</span>
+                                <span class="n">formula</span><span class="o">=</span><span class="s2">&quot;C6H10O5&quot;</span><span class="p">,</span> <span class="c1"># Hydrolyzed glucose monomer</span>
+                                <span class="n">MW</span><span class="o">=</span><span class="mf">162.14</span><span class="p">,</span>
+                                <span class="n">Hf</span><span class="o">=-</span><span class="mf">975708.8</span><span class="p">)</span>
+<span class="n">Hemicellulose</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Hemicellulose&#39;</span><span class="p">,</span>
+                                    <span class="n">formula</span><span class="o">=</span><span class="s2">&quot;C5H8O5&quot;</span><span class="p">,</span> <span class="c1"># Hydrolyzed xylose monomer</span>
+                                    <span class="n">MW</span><span class="o">=</span><span class="mf">132.12</span><span class="p">,</span>
+                                    <span class="n">Hf</span><span class="o">=-</span><span class="mf">761906.4</span><span class="p">)</span>
+<span class="n">Flocculant</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Flocculant&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="c1"># Lignin is modeled as vanillin.</span>
+<span class="n">Lignin</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Lignin&#39;</span><span class="p">,</span>
+                             <span class="n">formula</span><span class="o">=</span><span class="s1">&#39;C8H8O3&#39;</span><span class="p">,</span> <span class="c1"># Vanillin</span>
+                             <span class="n">MW</span><span class="o">=</span><span class="mf">152.15</span><span class="p">,</span>
+                             <span class="n">Hf</span><span class="o">=-</span><span class="mf">452909.632</span><span class="p">)</span>
+<span class="n">Ash</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Ash&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">Solids</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;Solids&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">DryYeast</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;DryYeast&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">CAS</span><span class="o">=</span><span class="s1">&#39;Yeast&#39;</span><span class="p">)</span>
+<span class="n">NaOCH3</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;NaOCH3&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">54.023689</span><span class="p">)</span>
 <span class="n">CaO</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;CaO&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">56.0774</span><span class="p">)</span>
 <span class="n">HCl</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;HCl&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">36.46094</span><span class="p">)</span>
 <span class="n">NaOH</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;NaOH&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">39.997109</span><span class="p">)</span>
-<span class="n">NaOCH3</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span><span class="s1">&#39;NaOCH3&#39;</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">54.023689</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Note that we are still missing the lipid, modeled as Triolein. However,
-Triolein is not in the data bank, so let’s start making it from scratch:</p>
+<p>Note that we are still missing the lipid, modeled as Triolein. However, Triolein is not in the data bank, so let’s start making it from scratch:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">Lipid</span> <span class="o">=</span> <span class="n">create_new_chemical</span><span class="p">(</span>
     <span class="s1">&#39;Lipid&#39;</span><span class="p">,</span>
     <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span>
-    <span class="n">Hc</span><span class="o">=</span><span class="mf">35099.6e3</span><span class="p">,</span> <span class="c1"># https://webbook.nist.gov/cgi/cbook.cgi?ID=C122327&amp;Mask=2</span>
     <span class="n">Hf</span><span class="o">=-</span><span class="mf">2193.7e3</span><span class="p">,</span>
     <span class="n">MW</span><span class="o">=</span><span class="mf">885.432</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Instead of creating new models based on external sources, here we will
-approximate Triolein with the properties of Tripalmitin (which does
-exist in the data bank):</p>
+<p>Instead of creating new models based on external sources, here we will approximate Triolein with the properties of Tripalmitin (which does exist in the data bank):</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -490,43 +542,39 @@ exist in the data bank):</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>{&#39;V&#39;}
-</pre></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;V&#39;}
+</pre></div></div>
 </div>
-</div>
-<p>All what is left is to fill the chemical properties. This done through
-the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method of the chemical model handles. Let’s begin with
-the solids using data from <a class="reference external" href="#References">[1-4]</a>:</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
+<p>All what is left is to fill the chemical properties. This done through the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method of the chemical model handles. Let’s begin with the solids using data from <a class="reference external" href="#References">[1-4]</a>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">fn</span>
-<span class="n">insoluble_solid_molar_volume</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="mi">1540</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
 
 <span class="c1"># Assume a constant volume for lipid</span>
 <span class="n">lipid_molar_volume</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="n">Lipid</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
 <span class="n">Lipid</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">lipid_molar_volume</span><span class="p">)</span>
 
 <span class="c1"># Insolubles occupy a significant volume</span>
-<span class="n">insoluble_solids</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ash</span><span class="p">,</span> <span class="n">Cellulose</span><span class="p">,</span> <span class="n">Hemicellulose</span><span class="p">,</span> <span class="n">Flocculant</span><span class="p">,</span> <span class="n">Lignin</span><span class="p">,</span> <span class="n">Solids</span><span class="p">,</span> <span class="n">DryYeast</span><span class="p">)</span>
+<span class="n">insoluble_solids</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ash</span><span class="p">,</span> <span class="n">Cellulose</span><span class="p">,</span> <span class="n">Hemicellulose</span><span class="p">,</span> <span class="n">Sucrose</span><span class="p">,</span>
+                    <span class="n">Flocculant</span><span class="p">,</span> <span class="n">Lignin</span><span class="p">,</span> <span class="n">Solids</span><span class="p">,</span> <span class="n">DryYeast</span><span class="p">,</span> <span class="n">P4O10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">insoluble_solids</span><span class="p">:</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="mi">1540</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="n">chemical</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+    <span class="n">chemical</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Solubles don&#39;t occupy much volume</span>
-<span class="n">soluble_solids</span> <span class="o">=</span> <span class="p">(</span><span class="n">CaO</span><span class="p">,</span> <span class="n">HCl</span><span class="p">,</span> <span class="n">NaOH</span><span class="p">,</span> <span class="n">Glucose</span><span class="p">,</span> <span class="n">Sucrose</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">insoluble_solids</span><span class="p">:</span>
-    <span class="n">chemical</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">insoluble_solid_molar_volume</span><span class="p">)</span>
-
+<span class="n">soluble_solids</span> <span class="o">=</span> <span class="p">(</span><span class="n">CaO</span><span class="p">,</span> <span class="n">HCl</span><span class="p">,</span> <span class="n">NaOH</span><span class="p">,</span> <span class="n">H3PO4</span><span class="p">,</span> <span class="n">Glucose</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">soluble_solids</span><span class="p">:</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="mf">1e5</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="n">chemical</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
     <span class="n">chemical</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
 
 <span class="c1"># Assume sodium methoxide has some of the same properities as methanol</span>
 <span class="n">LiquidMethanol</span> <span class="o">=</span> <span class="n">Methanol</span><span class="o">.</span><span class="n">at_state</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -535,117 +583,113 @@ the solids using data from <a class="reference external" href="#References">[1-4
                                                       <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">])</span>
 
 <span class="c1"># Add constant models for molar heat capacity of solids</span>
-<span class="n">Ash</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.09</span> <span class="o">*</span> <span class="mf">4.184</span><span class="p">)</span>
-<span class="n">CaO</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.02388</span> <span class="o">*</span> <span class="mf">56.0774</span><span class="p">)</span>
-<span class="n">Cellulose</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span><span class="p">)</span>
-<span class="n">Hemicellulose</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span><span class="p">)</span>
-<span class="n">Flocculant</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">4.184</span><span class="p">)</span>
-<span class="n">Lignin</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span><span class="p">)</span>
-<span class="n">Solids</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.100</span><span class="p">)</span>
+<span class="n">Ash</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">0.09</span> <span class="o">*</span> <span class="mf">4.184</span> <span class="o">*</span> <span class="n">Ash</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">CaO</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.02388</span> <span class="o">*</span> <span class="n">CaO</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">Cellulose</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span> <span class="o">*</span> <span class="n">Cellulose</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">Hemicellulose</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span> <span class="o">*</span> <span class="n">Hemicellulose</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">Flocculant</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">4.184</span> <span class="o">*</span> <span class="n">Flocculant</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">Lignin</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.364</span> <span class="o">*</span> <span class="n">Lignin</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
+<span class="n">Solids</span><span class="o">.</span><span class="n">Cn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.100</span> <span class="o">*</span> <span class="n">Solids</span><span class="o">.</span><span class="n">MW</span><span class="p">)</span>
 
-<span class="c1"># Set heats of formation and combustion (for those that need it)</span>
-<span class="n">Hemicellulose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">17e3</span>
-<span class="n">Cellulose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">17e3</span>
-<span class="n">Lignin</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">21e3</span>
-<span class="n">Glucose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">2.8e6</span>
-<span class="n">Sucrose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">5.7e6</span>
-<span class="n">Lipid</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">36e6</span>
-
-<span class="n">Ethanol</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">277.690e3</span>
-<span class="n">Water</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">241.820e3</span>
-<span class="n">CO2</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">393.520e3</span> <span class="c1"># in gas</span>
-<span class="n">Glucose</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1274e3</span>
-<span class="n">Sucrose</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2221.2e3</span>
-<span class="n">Octane</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">250e3</span>
-<span class="n">H3PO4</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1271.66e3</span>
-<span class="n">Lipid</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.1937e3</span>
-<span class="n">Biodiesel</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.72764e3</span>
-<span class="n">Glycerol</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.6696e3</span>
 </pre></div>
 </div>
 </div>
-<p>We don’t care much about the rest of the properties (e.g. thermal
-conductivity), so we can default them to the values of water:</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.1
+</pre></div></div>
+</div>
+<p>We don’t care much about the rest of the properties (e.g. thermal conductivity), so we can default them to the values of water:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
-    <span class="n">chemical</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span></span><span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">lipidcane_chemicals</span><span class="p">:</span> <span class="n">chemical</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <p>Finalize the chemicals by compiling:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">chemicals</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
+<span></span><span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>This enables methods such as <code class="docutils literal notranslate"><span class="pre">&lt;CompiledChemicals&gt;.array</span></code> to create
-chemical data ordered according to the IDs, as well as
-<code class="docutils literal notranslate"><span class="pre">&lt;CompiledChemicals&gt;.get_index</span></code> to get the index of a chemical:</p>
+<p>This enables methods such as <code class="docutils literal notranslate"><span class="pre">&lt;CompiledChemicals&gt;.array</span></code> to create chemical data ordered according to the IDs, as well as <code class="docutils literal notranslate"><span class="pre">&lt;CompiledChemicals&gt;.get_index</span></code> to get the index of a chemical:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span></span><span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>array([2., 0., 2., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-       0., 0., 0., 0., 0.])
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([2., 0., 2., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0.])
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
+<span></span><span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>[0, 2]
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0, 2]
+</pre></div></div>
+</div>
+<p>After compiling, it is possible to set synonyms for indexing:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">set_synonym</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">H2O</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Water
+</pre></div></div>
 </div>
 </div>
 <div class="section" id="Mixture-objects">
 <h2><span class="section-number">5.2. </span>Mixture objects<a class="headerlink" href="#Mixture-objects" title="Permalink to this headline">¶</a></h2>
-<p>Before creating a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code> object, we must define the mixing rules to
-calculate mixture properties. A <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> object is able to calculate
-mixture properties through functors. In this example we will use a
-function to create a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> object with ideal mixing rules:</p>
+<p>Before creating a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code> object, we must define the mixing rules to calculate mixture properties. A <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> object is able to calculate mixture properties through functors. In this example we will use a function to create a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> object with ideal mixing rules:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">mixture</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span>
+<span></span><span class="n">mixture</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">lipidcane_chemicals</span><span class="p">,</span>
                                         <span class="n">rigorous_energy_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                         <span class="n">include_excess_energies</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">mixture</span>
@@ -653,156 +697,127 @@ function to create a <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False)
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False)
+</pre></div></div>
 </div>
 <p>You can use the mixture for estimating mixture properties:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">mixture</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span></span><span class="n">array</span> <span class="o">=</span> <span class="n">lipidcane_chemicals</span><span class="o">.</span><span class="n">array</span>
+<span class="n">mixture</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>694.8275427425033
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+694.8275427425033
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">mixture</span><span class="o">.</span><span class="n">Cn</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span></span><span class="n">mixture</span><span class="o">.</span><span class="n">Cn</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>376.3036205916924
-</pre></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+376.3036205916924
+</pre></div></div>
 </div>
-</div>
-<p>You can also estimate multi-phase mixture properties through methods
-that start with “x” (e.g. <code class="docutils literal notranslate"><span class="pre">xCn</span></code>):</p>
+<p>You can also estimate multi-phase mixture properties through methods that start with “x” (e.g. <code class="docutils literal notranslate"><span class="pre">xCn</span></code>):</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">z_liquid</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="n">z_vapor</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span></span><span class="n">z_liquid</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">z_vapor</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">phase_data</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">z_liquid</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">z_vapor</span><span class="p">)]</span>
 <span class="n">mixture</span><span class="o">.</span><span class="n">xCn</span><span class="p">(</span><span class="n">phase_data</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>574.6439104469846
-</pre></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+574.6439104469846
+</pre></div></div>
 </div>
-</div>
-<p>Note: To implement a your own Mixture object, you can request help on
-this process through <a class="reference external" href="https://github.com/yoelcortes/thermosteam">https://github.com/yoelcortes/thermosteam</a>.</p>
+<p>Note: To implement a your own Mixture object, you can request help on this process through <a class="reference external" href="https://github.com/BioSTEAMDevelopmentGroup/thermosteam">https://github.com/BioSTEAMDevelopmentGroup/thermosteam</a>.</p>
 </div>
 <div class="section" id="Thermo-objects">
 <h2><span class="section-number">5.3. </span>Thermo objects<a class="headerlink" href="#Thermo-objects" title="Permalink to this headline">¶</a></h2>
-<p>Once the chemicals and mixture objects are finalized, we can compile
-them into a Thermo object:</p>
+<p>Once the chemicals and mixture objects are finalized, we can compile them into a Thermo object:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">thermo</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span>
+<span></span><span class="n">thermo</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Thermo</span><span class="p">(</span><span class="n">lipidcane_chemicals</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span>
 <span class="n">thermo</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Thermo(chemicals=CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, CO2, Octane, Biodiesel, Ash, Cellulose, Hemicellulose, Flocculant, Lignin, Solids, DryYeast, CaO, HCl, NaOH, NaOCH3, Lipid]), mixture=Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
-</pre></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Thermo(chemicals=CompiledChemicals([Water, Methanol, Ethanol, Glycerol, Glucose, Sucrose, H3PO4, P4O10, CO2, Octane, O2, Biodiesel, Cellulose, Hemicellulose, Flocculant, Lignin, Ash, Solids, DryYeast, NaOCH3, CaO, HCl, NaOH, Lipid]), mixture=Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
+</pre></div></div>
 </div>
-</div>
-<p>Note that a Thermo object contains <code class="docutils literal notranslate"><span class="pre">ActivityCoefficients</span></code>,
-<code class="docutils literal notranslate"><span class="pre">FugacityCoefficients</span></code>, and <code class="docutils literal notranslate"><span class="pre">PoyintingCorrectionFactors</span></code> subclasses
-to define fugacity estimation methods. By default, the Dortmund modified
-UNIFAC method for estimating activities is selected, while ideal values
-for (vapor phase) fugacity coefficients and poyinting correction factos
-are selected. Additionally, a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code> object defaults to ideal mixing
-rules for estimating mixture properties, and neglects excess properties
-in the calculation of enthalpy and entropy:</p>
+<p>Note that a Thermo object contains <code class="docutils literal notranslate"><span class="pre">ActivityCoefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">FugacityCoefficients</span></code>, and <code class="docutils literal notranslate"><span class="pre">PoyintingCorrectionFactors</span></code> subclasses to define fugacity estimation methods. By default, the Dortmund modified UNIFAC method for estimating activities is selected, while ideal values for (vapor phase) fugacity coefficients and poyinting correction factos are selected. Additionally, a <code class="docutils literal notranslate"><span class="pre">Thermo</span></code> object defaults to ideal mixing rules for estimating mixture properties, and neglects excess properties in
+the calculation of enthalpy and entropy:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">thermo</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span></span><span class="n">thermo</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Thermo</span><span class="p">(</span><span class="n">lipidcane_chemicals</span><span class="p">)</span>
 <span class="n">thermo</span><span class="o">.</span><span class="n">mixture</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False)
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mixture(&#39;ideal mixing rules&#39;, ..., rigorous_energy_balance=True, include_excess_energies=False)
+</pre></div></div>
 </div>
 </div>
 <div class="section" id="References">
 <h2><span class="section-number">5.4. </span>References<a class="headerlink" href="#References" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li><p>Huang, H., Long, S., &amp; Singh, V. (2016) “Techno-economic analysis of
-biodiesel and ethanol co-production from lipid-producing sugarcane”
-Biofuels, Bioproducts and Biorefining, 10(3), 299–315.
-<a class="reference external" href="https://doi.org/10.1002/bbb.1640">https://doi.org/10.1002/bbb.1640</a></p></li>
-<li><p>Hatakeyama, T., Nakamura, K., &amp; Hatakeyama, H. (1982). Studies on
-heat capacity of cellulose and lignin by differential scanning
-calorimetry. Polymer, 23(12), 1801–1804.
-<a class="reference external" href="https://doi.org/10.1016/0032-3861(82)90125-2">https://doi.org/10.1016/0032-3861(82)90125-2</a></p></li>
-<li><p>Thybring, E. E. (2014). Explaining the heat capacity of wood
-constituents by molecular vibrations. Journal of Materials Science,
-49(3), 1317–1327. <a class="reference external" href="https://doi.org/10.1007/s10853-013-7815-6">https://doi.org/10.1007/s10853-013-7815-6</a></p></li>
-<li><p>Murphy W. K., and K. R. Masters. (1978). Gross heat of combustion of
-northern red oak (Quercus rubra) chemical components. Wood Sci.
-10:139-141.</p></li>
+<li><p>Huang, H., Long, S., &amp; Singh, V. (2016) “Techno-economic analysis of biodiesel and ethanol co-production from lipid-producing sugarcane” Biofuels, Bioproducts and Biorefining, 10(3), 299–315. <a class="reference external" href="https://doi.org/10.1002/bbb.1640">https://doi.org/10.1002/bbb.1640</a></p></li>
+<li><p>Hatakeyama, T., Nakamura, K., &amp; Hatakeyama, H. (1982). Studies on heat capacity of cellulose and lignin by differential scanning calorimetry. Polymer, 23(12), 1801–1804. <a class="reference external" href="https://doi.org/10.1016/0032-3861(82)90125-2">https://doi.org/10.1016/0032-3861(82)90125-2</a></p></li>
+<li><p>Thybring, E. E. (2014). Explaining the heat capacity of wood constituents by molecular vibrations. Journal of Materials Science, 49(3), 1317–1327. <a class="reference external" href="https://doi.org/10.1007/s10853-013-7815-6">https://doi.org/10.1007/s10853-013-7815-6</a></p></li>
+<li><p>Murphy W. K., and K. R. Masters. (1978). Gross heat of combustion of northern red oak (Quercus rubra) chemical components. Wood Sci. 10:139-141.</p></li>
 </ol>
 </div>
 </div>

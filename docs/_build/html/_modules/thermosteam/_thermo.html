@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -185,7 +187,8 @@
 <div class="viewcode-block" id="Thermo"><a class="viewcode-back" href="../../Thermo.html#thermosteam.Thermo">[docs]</a><span class="nd">@cucumber</span> <span class="c1"># Just means you can pickle it</span>
 <span class="nd">@read_only</span>
 <span class="k">class</span> <span class="nc">Thermo</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a Thermo object that defines a thermodynamic property package</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a Thermo object that defines a thermodynamic property package</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -194,9 +197,9 @@
 <span class="sd">    mixture : Mixture, optional</span>
 <span class="sd">        Calculates mixture properties.</span>
 <span class="sd">    Gamma : ActivityCoefficients subclass, optional</span>
-<span class="sd">        Class for computing activity coefficiente.</span>
+<span class="sd">        Class for computing activity coefficients.</span>
 <span class="sd">    Phi : FugacityCoefficients subclass, optional</span>
-<span class="sd">        Class for computing fugacity coefficiente.</span>
+<span class="sd">        Class for computing fugacity coefficients.</span>
 <span class="sd">    PCF : PoyntingCorrectionFactor subclass, optional</span>
 <span class="sd">        Class for computing poynting correction factors.</span>
 <span class="sd">    </span>
@@ -206,8 +209,6 @@
 <span class="sd">    &gt;&gt;&gt; Thermo([&#39;Ethanol&#39;, &#39;Water&#39;])</span>
 <span class="sd">    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=IdealMixture(...), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)</span>
 <span class="sd">    </span>
-<span class="sd">    Note how chemicals are compiled when it becomes part of a Thermo object.</span>
-<span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    chemicals : Chemicals or Iterable[str]</span>
@@ -215,9 +216,9 @@
 <span class="sd">    mixture : Mixture, optional</span>
 <span class="sd">        Calculates mixture properties.</span>
 <span class="sd">    Gamma : ActivityCoefficients subclass, optional</span>
-<span class="sd">        Class for computing activity coefficiente.</span>
+<span class="sd">        Class for computing activity coefficients.</span>
 <span class="sd">    Phi : FugacityCoefficients subclass, optional</span>
-<span class="sd">        Class for computing fugacity coefficiente.</span>
+<span class="sd">        Class for computing fugacity coefficients.</span>
 <span class="sd">    PCF : PoyntingCorrectionFactor subclass, optional</span>
 <span class="sd">        Class for computing poynting correction factors.</span>
 <span class="sd">    </span>

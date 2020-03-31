@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -175,18 +177,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="multistream">
@@ -194,8 +201,11 @@
 <p>A MultiStream object represents a material flow with multiple phases in a chemical process.</p>
 <dl class="class">
 <dt id="thermosteam.MultiStream">
-<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">MultiStream</code><span class="sig-paren">(</span><em class="sig-param">ID=''</em>, <em class="sig-param">flow=()</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em>, <em class="sig-param">phases=('g'</em>, <em class="sig-param">'l')</em>, <em class="sig-param">units=None</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">price=None</em>, <em class="sig-param">**phase_flows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a MultiStream object that defines material flow rates for multiple phases along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods.</p>
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.</code><code class="sig-name descname">MultiStream</code><span class="sig-paren">(</span><em class="sig-param">ID=''</em>, <em class="sig-param">flow=()</em>, <em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em>, <em class="sig-param">phases=('g'</em>, <em class="sig-param">'l')</em>, <em class="sig-param">units=None</em>, <em class="sig-param">thermo=None</em>, <em class="sig-param">price=0</em>, <em class="sig-param">**phase_flows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a MultiStream object that defines material flow rates for multiple
+phases along with its thermodynamic state. Thermodynamic and transport
+properties of a stream are available as properties, while thermodynamic
+equilbrium (e.g. VLE, and bubble and dew points) are available as methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -216,11 +226,11 @@ volumetric flow rates are valid).</p></li>
 <p class="rubric">Examples</p>
 <p>Before creating streams, first set the chemicals:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Create a multi phase stream, defining the thermodynamic condition and flow rates:</p>
+<p>Create a multi phase stream, defining the thermodynamic condition and
+flow rates:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">MultiStream</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span>
 <span class="gp">... </span>                     <span class="n">l</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">flow</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span> <span class="c1"># Use the show method to select units of display</span>
@@ -228,6 +238,21 @@ volumetric flow rates are valid).</p></li>
 <span class="go"> phases: (&#39;g&#39;, &#39;l&#39;), T: 298.15 K, P: 101325 Pa</span>
 <span class="go"> flow (kg/hr): (l) Water    20</span>
 <span class="go">                   Ethanol  10</span>
+</pre></div>
+</div>
+<p>The temperature and pressure are stored as attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s1</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
+<span class="go">(298.15, 101325)</span>
+</pre></div>
+</div>
+<p>Unlike Stream objects, the <cite>mol</cite> attribute does not store data, it simply
+returns the total flow rate of each chemical. Setting an element of the
+array raises an error to prevent the wrong assumption that the data is
+linked:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">mol</span>
+<span class="go">array([1.11 , 0.217])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># s1.mol[0] = 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># -&gt; ValueError: assignment destination is read-only</span>
 </pre></div>
 </div>
 <p>All flow rates are stored in the <cite>imol</cite> attribute:</p>
@@ -244,36 +269,52 @@ volumetric flow rates are valid).</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Index the vapor phase</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
 <span class="go">array([0., 0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Index flow of chemicals summed across all phases</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">]</span>
+<span class="go">array([0.217, 1.11 ])</span>
 </pre></div>
 </div>
-<p>The <cite>mol</cite> attribute no longer stores any data,
-it simply returns the total flow rate of each chemical.
-Setting an element of the array raises an error to
-prevent the wrong assumption that the data is linked:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">mol</span>
-<span class="go">array([1.11 , 0.217])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># s1.mol[0] = 1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># -&gt; ValueError: assignment destination is read-only</span>
+<p>Note that overall chemical flows in MultiStream objects cannot be set like
+with Stream objects:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># s1.imol[&#39;Ethanol&#39;, &#39;Water&#39;] = [1, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># -&gt; IndexError: multiple phases present; must include phase key to</span>
+<span class="go">set chemical data</span>
 </pre></div>
 </div>
-<p>The temperature and pressure are stored as attributes:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s1</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
-<span class="go">(298.15, 101325)</span>
+<p>Chemical flows must be set by phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The most convinient way to get and set flow rates is through
-the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
+<p>The most convinient way to get and set flow rates is through the
+<cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set flow</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;gpm&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;gpm&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;gpm&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;gpm&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 <span class="go">0.9999999999999999</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set multiple flows</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 <span class="go">array([10., 20.])</span>
 </pre></div>
 </div>
-<p>Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list:
+<p>Chemical flows across all phases can be retrieved if no phase is
+given:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
+<span class="go">array([10., 20.])</span>
+</pre></div>
+</div>
+<p>However, setting chemical data requires the phase to be specified:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># s1.set_flow([10, 20], &#39;kg/hr&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># -&gt; IndexError: multiple phases present; must include phase key to set chemical data</span>
+</pre></div>
+</div>
+<p>Note that for both Stream and MultiStream objects, <cite>mol</cite>, <cite>imol</cite>,
+and <cite>get_flow</cite> return chemical flows across all phases when given only
+chemical IDs.</p>
+<p>Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom
+from the following list:
 * T [Temperature; in K]
 * P [Pressure; in K]
 * V [Vapor fraction]
@@ -301,23 +342,25 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </div>
 <dl class="method">
 <dt id="thermosteam.MultiStream.get_flow">
-<code class="sig-name descname">get_flow</code><span class="sig-paren">(</span><em class="sig-param">units</em>, <em class="sig-param">phase</em>, <em class="sig-param">IDs=Ellipsis</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream.get_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream.get_flow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an flow rates in requested units.</p>
+<code class="sig-name descname">get_flow</code><span class="sig-paren">(</span><em class="sig-param">units</em>, <em class="sig-param">key=Ellipsis</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream.get_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream.get_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array of flow rates in requested units.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>units</strong> (<em>str</em>) – Units of measure.</p></li>
-<li><p><strong>phase</strong> (<em>str</em>) – </p></li>
-<li><p><strong>IDs</strong> (<em>Iterable</em><em>[</em><em>str</em><em>] or </em><em>str</em><em>, </em><em>optional</em>) – Chemical identifiers.</p></li>
+<li><p><strong>key</strong> (<em>tuple</em><em>(</em><em>phase</em><em>, </em><em>IDs</em><em>)</em><em>, </em><em>phase</em><em>, or </em><em>IDs</em>) – <ul>
+<li><p>phase: str, ellipsis, or missing.</p></li>
+<li><p>IDs: str, tuple(str), ellipisis, or missing.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">MultiStream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
 <span class="go">20.0</span>
 </pre></div>
 </div>
@@ -325,25 +368,27 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 
 <dl class="method">
 <dt id="thermosteam.MultiStream.set_flow">
-<code class="sig-name descname">set_flow</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">units</em>, <em class="sig-param">phase</em>, <em class="sig-param">IDs=Ellipsis</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream.set_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream.set_flow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_flow</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">units</em>, <em class="sig-param">key=Ellipsis</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_multi_stream.html#MultiStream.set_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.MultiStream.set_flow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set flow rates in given units.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>1d ndarray</em><em> or </em><em>float</em>) – Flow rate data.</p></li>
 <li><p><strong>units</strong> (<em>str</em>) – Units of measure.</p></li>
-<li><p><strong>phase</strong> (<em>str</em>) – </p></li>
-<li><p><strong>IDs</strong> (<em>Iterable</em><em>[</em><em>str</em><em>] or </em><em>str</em><em>, </em><em>optional</em>) – Chemical identifiers.</p></li>
+<li><p><strong>key</strong> (<em>tuple</em><em>(</em><em>phase</em><em>, </em><em>IDs</em><em>)</em><em>, </em><em>phase</em><em>, or </em><em>IDs</em>) – <ul>
+<li><p>phase: str, ellipsis, or missing.</p></li>
+<li><p>IDs: str, tuple(str), ellipisis, or missing.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">MultiStream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">set_flow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_flow</span><span class="p">(</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;Water&#39;</span><span class="p">))</span>
 <span class="go">10.0</span>
 </pre></div>
 </div>
@@ -469,8 +514,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kmol/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_normalized_mol</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.667, 0.333])</span>
@@ -489,8 +533,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;m3/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_normalized_vol</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.667, 0.333])</span>
@@ -509,8 +552,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_normalized_mass</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.667, 0.333])</span>
@@ -529,8 +571,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kmol/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_molar_composition</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.5 , 0.25])</span>
@@ -549,8 +590,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_mass_composition</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.5 , 0.25])</span>
@@ -569,8 +609,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;m3/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_volumetric_composition</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([0.5 , 0.25])</span>
@@ -589,8 +628,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">Methanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;m3/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">get_concentration</span><span class="p">((</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">))</span>
 <span class="go">array([27.823,  4.265])</span>
@@ -604,8 +642,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 <dd><p>Mix all other streams into this one, ignoring its initial contents.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span><span class="o">.</span><span class="n">mix_from</span><span class="p">([</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">])</span>
@@ -634,8 +671,7 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span> <span class="n">Water</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kg/hr&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;s2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span><span class="o">.</span><span class="n">link_with</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
@@ -654,6 +690,12 @@ the <cite>get_flow</cite> and <cite>set_flow</cite> methods:</p>
 <dt id="thermosteam.MultiStream.vle">
 <em class="property">property </em><code class="sig-name descname">vle</code><a class="headerlink" href="#thermosteam.MultiStream.vle" title="Permalink to this definition">¶</a></dt>
 <dd><p>[VLE] An object that can perform vapor-liquid equilibrium on the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.MultiStream.lle">
+<em class="property">property </em><code class="sig-name descname">lle</code><a class="headerlink" href="#thermosteam.MultiStream.lle" title="Permalink to this definition">¶</a></dt>
+<dd><p>[LLE] An object that can perform liquid-liquid equilibrium on the stream.</p>
 </dd></dl>
 
 <dl class="method">

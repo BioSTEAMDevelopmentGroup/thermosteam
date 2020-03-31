@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -173,22 +175,28 @@
 
 <span class="sd">@author: yoelr</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_only</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_only</span><span class="p">,</span> <span class="n">repr_listed_values</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">UndefinedChemical</span>
 <span class="kn">from</span> <span class="nn">._chemical</span> <span class="kn">import</span> <span class="n">Chemical</span>
 <span class="kn">from</span> <span class="nn">.indexer</span> <span class="kn">import</span> <span class="n">ChemicalIndexer</span>
+<span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;CompiledChemicals&#39;</span><span class="p">)</span>
 <span class="nb">setattr</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
-<span class="n">key_thermo_props</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Cn&#39;</span><span class="p">)</span>
-
-<span class="c1"># %% Utilities</span>
+<span class="c1"># %% Functions</span>
 
 <span class="k">def</span> <span class="nf">must_compile</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;method valid only for compiled chemicals; &quot;</span>
                     <span class="s2">&quot;run &lt;chemicals&gt;.compile() to compile&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">chemical_data_array</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="n">getfield</span> <span class="o">=</span> <span class="nb">getattr</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">getfield</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
+    
 
 <span class="c1"># %% Chemicals</span>
 
@@ -249,8 +257,8 @@
 <span class="sd">        CompiledChemicals([Water, Ethanol])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">CompiledChemicals</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span></div>
+        <span class="n">CompiledChemicals</span><span class="o">.</span><span class="n">_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">CompiledChemicals</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Chemicals.subgroup"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.subgroup">[docs]</a>    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -291,9 +299,8 @@
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span></div>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">key_error</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
     
 <div class="viewcode-block" id="Chemicals.append"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Append a Chemical.&quot;&quot;&quot;</span>
@@ -357,12 +364,14 @@
 <span class="sd">         Heats of formation of all chemicals.</span>
 <span class="sd">    Hc : 1d ndarray</span>
 <span class="sd">         Heats of combustion of all chemicals.</span>
-<span class="sd">    equilibrium_chemicals : tuple[str]</span>
-<span class="sd">                            IDs of chemicals that may have multiple phases.</span>
-<span class="sd">    heavy_chemicals : tuple[str]</span>
-<span class="sd">                      IDs of chemicals that are only present in liquid or solid phases.</span>
-<span class="sd">    light_chemicals : tuple[str]</span>
-<span class="sd">                      IDs of chemicals that are only present in gas phases.</span>
+<span class="sd">    vle_chemicals : tuple[Chemical]</span>
+<span class="sd">        Chemicals that may have vapor and liquid phases.</span>
+<span class="sd">    lle_chemicals : tuple[Chemical]</span>
+<span class="sd">        Chemicals that may have two liquid phases.</span>
+<span class="sd">    heavy_chemicals : tuple[Chemical]</span>
+<span class="sd">        Chemicals that are only present in liquid or solid phases.</span>
+<span class="sd">    light_chemicals : tuple[Chemical]</span>
+<span class="sd">        IDs of chemicals that are only present in gas phases.</span>
 <span class="sd">        </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -410,7 +419,7 @@
         <span class="k">return</span> <span class="n">CompiledChemicals</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple</span><span class="p">,)</span>
     
 <div class="viewcode-block" id="CompiledChemicals.compile"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do nothing, CompiledChemicals objects are already compiled.&quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot;Do nothing, CompiledChemicals objects are already compiled.&quot;&quot;&quot;</span> </div>
     
 <div class="viewcode-block" id="CompiledChemicals.refresh_constants"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.refresh_constants">[docs]</a>    <span class="k">def</span> <span class="nf">refresh_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -426,24 +435,38 @@
 <span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Glucose&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; chemicals.Glucose.Hc = 2291836.024</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.Glucose.HHV = -2291836.024</span>
 <span class="sd">        &gt;&gt;&gt; chemicals.refresh_constants()</span>
-<span class="sd">        &gt;&gt;&gt; chemicals.Hc</span>
-<span class="sd">        array([2291836.024])</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.HHV</span>
+<span class="sd">        array([-2291836.024])</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuple</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">MW</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hc</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span></div>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;LHV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">LHV</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;HHV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">HHV</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CompiledChemicals.get_combustion_reactions"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_combustion_reactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_combustion_reactions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a ParallelReactions object with all defined combustion reactions.&quot;&quot;&quot;</span>
+        <span class="n">reactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">get_combustion_reaction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> 
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">combustion</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">tmo</span><span class="o">.</span><span class="n">reaction</span><span class="o">.</span><span class="n">ParallelReaction</span><span class="p">(</span><span class="n">reactions</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="n">tuple_</span> <span class="o">=</span> <span class="nb">tuple</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">get_missing_slots</span><span class="p">(</span><span class="n">key_thermo_props</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{i}</span><span class="s2"> is missing key thermodynamic properties&quot;</span>
+        <span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
+            <span class="n">key_properties</span> <span class="o">=</span> <span class="n">chemical</span><span class="o">.</span><span class="n">get_key_property_names</span><span class="p">()</span>
+            <span class="n">missing_slots</span> <span class="o">=</span> <span class="n">chemical</span><span class="o">.</span><span class="n">get_missing_slots</span><span class="p">(</span><span class="n">key_properties</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_slots</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="n">repr_listed_values</span><span class="p">(</span><span class="n">missing_slots</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{chemical}</span><span class="s2"> is missing key thermodynamic properties (</span><span class="si">{missing}</span><span class="s2">); &quot;</span>
+                <span class="s2">&quot;use the `&lt;Chemical&gt;.get_missing_slots()` to check &quot;</span>
+                <span class="s2">&quot;all missing properties&quot;</span><span class="p">)</span>
         <span class="n">IDs</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">CAS</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
@@ -453,13 +476,15 @@
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;IDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IDs</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;CASs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">CAS</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">MW</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hf</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">Hc</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;MW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical_data_array</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="s1">&#39;MW&#39;</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;Hf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical_data_array</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="s1">&#39;Hf&#39;</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;LHV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical_data_array</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="s1">&#39;LHV&#39;</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;HHV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical_data_array</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="s1">&#39;HHV&#39;</span><span class="p">)</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">CAS</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
                                       <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">index</span><span class="p">)))</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_index_cache&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">equilibrium_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vle_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lle_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">heavy_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">light_chemicals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
@@ -467,21 +492,27 @@
             <span class="k">if</span> <span class="n">locked_phase</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">locked_phase</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">):</span>
                     <span class="n">heavy_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">Dortmund</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">UNIFAC</span><span class="p">:</span>
+                        <span class="n">lle_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">locked_phase</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span>
                     <span class="n">light_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;chemical locked state has an invalid phase&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">equilibrium_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;equilibrium_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">equilibrium_chemicals</span><span class="p">)</span>
+                <span class="n">vle_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">lle_chemicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;vle_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">vle_chemicals</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;lle_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">lle_chemicals</span><span class="p">)</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;heavy_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">heavy_chemicals</span><span class="p">)</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;light_chemicals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="n">light_chemicals</span><span class="p">)</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_equilibrium_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eq_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">equilibrium_chemicals</span><span class="p">]</span>
-        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_equilibrium&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_equilibrium</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_vle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_vle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_has_lle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_lle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_heavy_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">heavy_chemicals</span><span class="p">]</span>
         <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;_light_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">light_chemicals</span><span class="p">]</span>
-        <span class="n">has_equilibrium</span><span class="p">[</span><span class="n">eq_index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        
+        <span class="n">vle_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">vle_chemicals</span><span class="p">]</span>
+        <span class="n">lle_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lle_chemicals</span><span class="p">]</span>
+        <span class="n">has_vle</span><span class="p">[</span><span class="n">vle_index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">has_lle</span><span class="p">[</span><span class="n">lle_index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     
 <div class="viewcode-block" id="CompiledChemicals.subgroup"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.subgroup">[docs]</a>    <span class="k">def</span> <span class="nf">subgroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -677,7 +708,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ID: str</span>
-<span class="sd">            Chemical ID</span>
+<span class="sd">            Chemical identifier.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -705,7 +736,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        IDs : iterable</span>
-<span class="sd">              Chemical IDs or CAS numbers.</span>
+<span class="sd">              Chemical indentifiers.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -725,18 +756,17 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">dct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span> <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>     </div>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UndefinedChemical</span><span class="p">(</span><span class="n">key_error</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
     
-<div class="viewcode-block" id="CompiledChemicals.get_index"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="CompiledChemicals.get_index"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return index/indices of specified chemicals.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        key : iterable[str] or str</span>
-<span class="sd">              A single chemical identifier or multiple.</span>
+<span class="sd">        IDs : iterable[str] or str</span>
+<span class="sd">              Chemical identifiers.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -748,7 +778,8 @@
 <span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; chemicals.get_index([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; IDs = (&#39;Water&#39;, &#39;Ethanol&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_index(IDs)</span>
 <span class="sd">        [0, 1]</span>
 <span class="sd">        </span>
 <span class="sd">        Get a single index:</span>
@@ -759,12 +790,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_cache</span>
         <span class="k">try</span><span class="p">:</span> 
-            <span class="n">index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> 
-            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid index keys&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">index</span></div>
     
     <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">IDs</span><span class="p">):</span>
@@ -775,7 +805,7 @@
         <span class="k">elif</span> <span class="n">IDs</span> <span class="ow">is</span> <span class="o">...</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">IDs</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid IDs&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only strings, tuples, and ellipsis are valid index keys&quot;</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
@@ -786,22 +816,37 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
         
-<div class="viewcode-block" id="CompiledChemicals.get_equilibrium_indices"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_equilibrium_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_equilibrium_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzeros</span><span class="p">):</span>
+<div class="viewcode-block" id="CompiledChemicals.get_vle_indices"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_vle_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_vle_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzeros</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return indices of species in equilibrium</span>
-<span class="sd">        given an array dictating whether or not</span>
-<span class="sd">        the chemicals are present.</span>
+<span class="sd">        Return indices of species in vapor-liquid equilibrium given an array</span>
+<span class="sd">        dictating whether or not the chemicals are present.</span>
 <span class="sd">        </span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
 <span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Methanol&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; data = chemicals.kwarray(dict(Water=2., Ethanol=1.))</span>
-<span class="sd">        &gt;&gt;&gt; chemicals.get_equilibrium_indices(data!=0)</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_vle_indices(data!=0)</span>
 <span class="sd">        array([0, 2], dtype=int64)</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_equilibrium</span> <span class="o">&amp;</span> <span class="n">nonzeros</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_vle</span> <span class="o">&amp;</span> <span class="n">nonzeros</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="CompiledChemicals.get_lle_indices"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals.get_lle_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_lle_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonzeros</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return indices of species in liquid-liquid equilibrium given an array</span>
+<span class="sd">        dictating whether or not the chemicals are present.</span>
+<span class="sd">        </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam import CompiledChemicals</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = CompiledChemicals([&#39;Water&#39;, &#39;Methanol&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; data = chemicals.kwarray(dict(Water=2., Ethanol=1.))</span>
+<span class="sd">        &gt;&gt;&gt; chemicals.get_lle_indices(data!=0)</span>
+<span class="sd">        array([0, 2], dtype=int64)</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_lle</span> <span class="o">&amp;</span> <span class="n">nonzeros</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(self.IDs)}])&quot;</span></div>

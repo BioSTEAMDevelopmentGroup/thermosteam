@@ -22,11 +22,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -211,6 +213,8 @@
 </li>
         <li><a href="equilibrium/fugacity_coefficients_module.html#thermosteam.equilibrium.fugacity_coefficients.IdealFugacityCoefficients.__call__">(thermosteam.equilibrium.fugacity_coefficients.IdealFugacityCoefficients method)</a>
 </li>
+        <li><a href="equilibrium/LLE.html#thermosteam.equilibrium.LLE.__call__">(thermosteam.equilibrium.LLE method)</a>
+</li>
         <li><a href="equilibrium/poyinting_correction_factors_module.html#thermosteam.equilibrium.poyinting_correction_factors.IdealPoyintingCorrectionFactors.__call__">(thermosteam.equilibrium.poyinting_correction_factors.IdealPoyintingCorrectionFactors method)</a>
 </li>
         <li><a href="equilibrium/VLE.html#thermosteam.equilibrium.VLE.__call__">(thermosteam.equilibrium.VLE method)</a>
@@ -250,10 +254,10 @@
 </li>
       <li><a href="functional.html#thermosteam.functional.allclose_variable">allclose_variable() (in module thermosteam.functional)</a>
 </li>
-      <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Almeida">Almeida() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Almeida">Almeida() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
+</li>
       <li><a href="Stream.html#thermosteam.Stream.alpha">alpha() (thermosteam.Stream property)</a>
 </li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS">ALPHA_FUNCTIONS (class in thermosteam.functors.eos)</a>
@@ -275,8 +279,6 @@
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.array">array() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.at_state">at_state() (thermosteam.Chemical method)</a>
-</li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.atom_fractions">atom_fractions() (in module thermosteam.functors.elements)</a>
 </li>
       <li><a href="functors/elements.html#thermosteam.functors.elements.atoms_to_Hill">atoms_to_Hill() (in module thermosteam.functors.elements)</a>
 </li>
@@ -301,8 +303,6 @@
       <li><a href="functional.html#thermosteam.functional.Biot">Biot() (in module thermosteam.functional)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.blank">blank() (thermosteam.Chemical class method)</a>
-</li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.blocks">blocks (in module thermosteam.functors.elements)</a>
 </li>
       <li><a href="functional.html#thermosteam.functional.Boiling">Boiling() (in module thermosteam.functional)</a>
 </li>
@@ -412,11 +412,13 @@
         <li><a href="Stream.html#thermosteam.Stream.Cn">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.collision_integral_Kim_Monroe">collision_integral_Kim_Monroe() (in module thermosteam.functors.lennard_jones)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.collision_integral_Neufeld_Janzen_Aziz">collision_integral_Neufeld_Janzen_Aziz() (in module thermosteam.functors.lennard_jones)</a>
+</li>
+      <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData">CombustionData (class in thermosteam.functors.combustion)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.common_name">common_name (thermosteam.Chemical attribute)</a>
 </li>
@@ -427,6 +429,14 @@
 </li>
       </ul></li>
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals">CompiledChemicals (class in thermosteam)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.compute_atom_fractions">compute_atom_fractions() (in module thermosteam.functors.elements)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.compute_mass_fractions">compute_mass_fractions() (in module thermosteam.functors.elements)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.compute_molecular_weight">compute_molecular_weight() (in module thermosteam.functors.elements)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.compute_similarity_variable">compute_similarity_variable() (in module thermosteam.functors.elements)</a>
 </li>
       <li><a href="functors/electrochem.html#thermosteam.functors.electrochem.conductivity">conductivity() (in module thermosteam.functors.electrochem)</a>
 </li>
@@ -548,10 +558,10 @@
         <li><a href="Stream.html#thermosteam.Stream.epsilon">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
-      <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling">epsilon_Bird_Stewart_Lightfoot_boiling() (in module thermosteam.functors.lennard_jones)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling">epsilon_Bird_Stewart_Lightfoot_boiling() (in module thermosteam.functors.lennard_jones)</a>
+</li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_critical">epsilon_Bird_Stewart_Lightfoot_critical() (in module thermosteam.functors.lennard_jones)</a>
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Bird_Stewart_Lightfoot_melting">epsilon_Bird_Stewart_Lightfoot_melting() (in module thermosteam.functors.lennard_jones)</a>
@@ -564,11 +574,9 @@
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.epsilon_Tee_Gotoh_Steward_2">epsilon_Tee_Gotoh_Steward_2() (in module thermosteam.functors.lennard_jones)</a>
 </li>
-      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.equilibrium_chemicals">equilibrium_chemicals (thermosteam.CompiledChemicals attribute)</a>
-</li>
-      <li><a href="Stream.html#thermosteam.Stream.equilibrium_chemicals">equilibrium_chemicals() (thermosteam.Stream property)</a>
-</li>
       <li><a href="functors/joback.html#thermosteam.functors.joback.Joback.estimate">estimate() (thermosteam.functors.joback.Joback method)</a>
+</li>
+      <li><a href="functors/combustion.html#thermosteam.functors.combustion.estimate_HHV_modified_Dulong">estimate_HHV_modified_Dulong() (in module thermosteam.functors.combustion)</a>
 </li>
       <li><a href="functional.html#thermosteam.functional.Euler">Euler() (in module thermosteam.functional)</a>
 </li>
@@ -604,6 +612,8 @@
 </li>
       <li><a href="functional.html#thermosteam.functional.Fourier_mass">Fourier_mass() (in module thermosteam.functional)</a>
 </li>
+      <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData.from_chemical_data">from_chemical_data() (thermosteam.functors.combustion.CombustionData class method)</a>
+</li>
       <li><a href="functional.html#thermosteam.functional.Froude">Froude() (in module thermosteam.functional)</a>
 </li>
       <li><a href="functional.html#thermosteam.functional.Froude_densimetric">Froude_densimetric() (in module thermosteam.functional)</a>
@@ -626,7 +636,13 @@
 </li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.GCEOS_DUMMY">GCEOS_DUMMY (class in thermosteam.functors.eos)</a>
 </li>
+      <li><a href="Chemical.html#thermosteam.Chemical.get_atoms">get_atoms() (thermosteam.Chemical method)</a>
+</li>
       <li><a href="Stream.html#thermosteam.Stream.get_bubble_point">get_bubble_point() (thermosteam.Stream method)</a>
+</li>
+      <li><a href="Chemical.html#thermosteam.Chemical.get_combustion_reaction">get_combustion_reaction() (thermosteam.Chemical method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_combustion_reactions">get_combustion_reactions() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_concentration">get_concentration() (thermosteam.MultiStream method)</a>
 
@@ -636,8 +652,6 @@
       </ul></li>
       <li><a href="Stream.html#thermosteam.Stream.get_dew_point">get_dew_point() (thermosteam.Stream method)</a>
 </li>
-      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_equilibrium_indices">get_equilibrium_indices() (thermosteam.CompiledChemicals method)</a>
-</li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_flow">get_flow() (thermosteam.MultiStream method)</a>
 
       <ul>
@@ -645,6 +659,10 @@
 </li>
       </ul></li>
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_index">get_index() (thermosteam.CompiledChemicals method)</a>
+</li>
+      <li><a href="Chemical.html#thermosteam.Chemical.get_key_property_names">get_key_property_names() (thermosteam.Chemical method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_lle_indices">get_lle_indices() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_mass_composition">get_mass_composition() (thermosteam.MultiStream method)</a>
 
@@ -660,14 +678,14 @@
         <li><a href="Stream.html#thermosteam.Stream.get_molar_composition">(thermosteam.Stream method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_normalized_mass">get_normalized_mass() (thermosteam.MultiStream method)</a>
 
       <ul>
         <li><a href="Stream.html#thermosteam.Stream.get_normalized_mass">(thermosteam.Stream method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_normalized_mol">get_normalized_mol() (thermosteam.MultiStream method)</a>
 
       <ul>
@@ -687,6 +705,8 @@
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_synonyms">get_synonyms() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.get_total_flow">get_total_flow() (thermosteam.Stream method)</a>
+</li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.get_vle_indices">get_vle_indices() (thermosteam.CompiledChemicals method)</a>
 </li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.get_volumetric_composition">get_volumetric_composition() (thermosteam.MultiStream method)</a>
 
@@ -736,15 +756,7 @@
 </li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Harmens_Knapp">Harmens_Knapp() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
 </li>
-      <li><a href="Chemical.html#thermosteam.Chemical.Hc">Hc (thermosteam.Chemical attribute)</a>
-
-      <ul>
-        <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.Hc">(thermosteam.CompiledChemicals attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="Stream.html#thermosteam.Stream.Hc">Hc() (thermosteam.Stream property)</a>
-</li>
-      <li><a href="functors/combustion.html#thermosteam.functors.combustion.Hcombustion">Hcombustion() (in module thermosteam.functors.combustion)</a>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.Hc">Hc (thermosteam.CompiledChemicals attribute)</a>
 </li>
       <li><a href="functional.html#thermosteam.functional.head_from_K">head_from_K() (in module thermosteam.functional)</a>
 </li>
@@ -754,12 +766,12 @@
 </li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.ALPHA_FUNCTIONS.Heyen">Heyen() (thermosteam.functors.eos.ALPHA_FUNCTIONS static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Chemical.html#thermosteam.Chemical.Hf">Hf (thermosteam.Chemical attribute)</a>
 
       <ul>
         <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.Hf">(thermosteam.CompiledChemicals attribute)</a>
+</li>
+        <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData.Hf">(thermosteam.functors.combustion.CombustionData attribute)</a>
 </li>
       </ul></li>
       <li><a href="functors/reaction.html#thermosteam.functors.reaction.Hf">Hf() (in module thermosteam.functors.reaction)</a>
@@ -770,6 +782,8 @@
         <li><a href="Stream.html#thermosteam.Stream.Hf">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/reaction.html#thermosteam.functors.reaction.Hf_g">Hf_g() (in module thermosteam.functors.reaction)</a>
 </li>
       <li><a href="functors/reaction.html#thermosteam.functors.reaction.Hf_l">Hf_l() (in module thermosteam.functors.reaction)</a>
@@ -782,6 +796,14 @@
         <li><a href="functors/joback.html#thermosteam.functors.joback.Joback.Hfus">(thermosteam.functors.joback.Joback static method)</a>
 </li>
       </ul></li>
+      <li><a href="Chemical.html#thermosteam.Chemical.HHV">HHV (thermosteam.Chemical attribute)</a>
+
+      <ul>
+        <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData.HHV">(thermosteam.functors.combustion.CombustionData attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Stream.html#thermosteam.Stream.HHV">HHV() (thermosteam.Stream property)</a>
+</li>
       <li><a href="Chemical.html#thermosteam.Chemical.Hsub">Hsub (thermosteam.Chemical attribute)</a>
 </li>
       <li><a href="functors/phase_change.html#thermosteam.functors.phase_change.Hsub">Hsub() (in module thermosteam.functors.phase_change)</a>
@@ -924,12 +946,20 @@
 </li>
       <li><a href="functional.html#thermosteam.functional.Lewis">Lewis() (in module thermosteam.functional)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/safety.html#thermosteam.functors.safety.LFL">LFL() (in module thermosteam.functors.safety)</a>
+</li>
+      <li><a href="Chemical.html#thermosteam.Chemical.LHV">LHV (thermosteam.Chemical attribute)</a>
+
+      <ul>
+        <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData.LHV">(thermosteam.functors.combustion.CombustionData attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Stream.html#thermosteam.Stream.LHV">LHV() (thermosteam.Stream property)</a>
 </li>
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.light_chemicals">light_chemicals (thermosteam.CompiledChemicals attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MultiStream.html#thermosteam.MultiStream.link_with">link_with() (thermosteam.MultiStream method)</a>
 
       <ul>
@@ -940,7 +970,21 @@
 </li>
       <li><a href="functors/acentric.html#thermosteam.functors.acentric.LK_omega">LK_omega() (in module thermosteam.functors.acentric)</a>
 </li>
+      <li><a href="equilibrium/LLE.html#thermosteam.equilibrium.LLE">LLE (class in thermosteam.equilibrium)</a>
+</li>
+      <li><a href="MultiStream.html#thermosteam.MultiStream.lle">lle() (thermosteam.MultiStream property)</a>
+
+      <ul>
+        <li><a href="Stream.html#thermosteam.Stream.lle">(thermosteam.Stream property)</a>
+</li>
+      </ul></li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.lle_chemicals">lle_chemicals (thermosteam.CompiledChemicals attribute)</a>
+</li>
+      <li><a href="Stream.html#thermosteam.Stream.lle_chemicals">lle_chemicals() (thermosteam.Stream property)</a>
+</li>
       <li><a href="Chemical.html#thermosteam.Chemical.load_chemical">load_chemical() (thermosteam.Chemical method)</a>
+</li>
+      <li><a href="Chemical.html#thermosteam.Chemical.load_combustion_data">load_combustion_data() (thermosteam.Chemical method)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.load_free_energies">load_free_energies() (thermosteam.Chemical method)</a>
 </li>
@@ -962,8 +1006,6 @@
         <li><a href="Stream.html#thermosteam.Stream.mass">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.mass_fractions">mass_fractions() (in module thermosteam.functors.elements)</a>
-</li>
       <li><a href="indexer/MassFlowIndexer.html#thermosteam.indexer.MassFlowIndexer">MassFlowIndexer (class in thermosteam.indexer)</a>
 </li>
       <li><a href="indexer/MaterialIndexer.html#thermosteam.indexer.MaterialIndexer">MaterialIndexer (class in thermosteam.indexer)</a>
@@ -1012,8 +1054,6 @@
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.molecular_diameter">molecular_diameter() (in module thermosteam.functors.lennard_jones)</a>
 </li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.molecular_weight">molecular_weight() (in module thermosteam.functors.elements)</a>
-</li>
       <li><a href="functional.html#thermosteam.functional.Morton">Morton() (in module thermosteam.functional)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.mu">mu (thermosteam.Chemical attribute)</a>
@@ -1055,8 +1095,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/identifiers.html#thermosteam.functors.identifiers.name">name() (in module thermosteam.functors.identifiers)</a>
-</li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.nested_formula_parser">nested_formula_parser() (in module thermosteam.functors.elements)</a>
 </li>
       <li><a href="functional.html#thermosteam.functional.none_and_length_check">none_and_length_check() (in module thermosteam.functional)</a>
 </li>
@@ -1102,9 +1140,15 @@
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.P_ref">P_ref (thermosteam.Chemical attribute)</a>
 </li>
+      <li><a href="Stream.html#thermosteam.Stream.P_vapor">P_vapor() (thermosteam.Stream property)</a>
+</li>
       <li><a href="functional.html#thermosteam.functional.Parachor">Parachor() (in module thermosteam.functional)</a>
 </li>
       <li><a href="reaction/ParallelReaction.html#thermosteam.reaction.ParallelReaction">ParallelReaction (class in thermosteam.reaction)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.parse_nested_formula">parse_nested_formula() (in module thermosteam.functors.elements)</a>
+</li>
+      <li><a href="functors/elements.html#thermosteam.functors.elements.parse_simple_formula">parse_simple_formula() (in module thermosteam.functors.elements)</a>
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.Pc">Pc (thermosteam.Chemical attribute)</a>
 </li>
@@ -1138,14 +1182,14 @@
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.phase_ref">phase_ref (thermosteam.Chemical attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MultiStream.html#thermosteam.MultiStream.phases">phases() (thermosteam.MultiStream property)</a>
 
       <ul>
         <li><a href="Stream.html#thermosteam.Stream.phases">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Thermo.html#thermosteam.Thermo.Phi">Phi (thermosteam.Thermo attribute)</a>
 </li>
       <li><a href="functors/phase_change.html#thermosteam.functors.phase_change.Pitzer">Pitzer (class in thermosteam.functors.phase_change)</a>
@@ -1170,7 +1214,7 @@
 </li>
       <li><a href="functional.html#thermosteam.functional.Prandtl">Prandtl() (in module thermosteam.functional)</a>
 </li>
-      <li><a href="Stream.html#thermosteam.Stream.price">price (thermosteam.Stream attribute)</a>
+      <li><a href="Stream.html#thermosteam.Stream.proxy">proxy() (thermosteam.Stream method)</a>
 </li>
       <li><a href="functors/eos.html#thermosteam.functors.eos.PRSV">PRSV (class in thermosteam.functors.eos)</a>
 </li>
@@ -1204,7 +1248,7 @@
 </li>
       <li><a href="reaction/Reaction.html#thermosteam.reaction.Reaction">Reaction (class in thermosteam.reaction)</a>
 </li>
-      <li><a href="Stream.html#thermosteam.Stream.recieve_vent">recieve_vent() (thermosteam.Stream method)</a>
+      <li><a href="Stream.html#thermosteam.Stream.receive_vent">receive_vent() (thermosteam.Stream method)</a>
 </li>
       <li><a href="functors/refractivity.html#thermosteam.functors.refractivity.refractive_index">refractive_index() (in module thermosteam.functors.refractivity)</a>
 </li>
@@ -1330,18 +1374,16 @@
 </li>
       <li><a href="Chemical.html#thermosteam.Chemical.similarity_variable">similarity_variable (thermosteam.Chemical attribute)</a>
 </li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.similarity_variable">similarity_variable() (in module thermosteam.functors.elements)</a>
-</li>
-      <li><a href="functors/elements.html#thermosteam.functors.elements.simple_formula_parser">simple_formula_parser() (in module thermosteam.functors.elements)</a>
+      <li><a href="Stream.html#thermosteam.Stream.sink">sink() (thermosteam.Stream property)</a>
 </li>
       <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.size">size (thermosteam.CompiledChemicals attribute)</a>
 </li>
       <li><a href="functors/safety.html#thermosteam.functors.safety.Skin">Skin() (in module thermosteam.functors.safety)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/joback.html#thermosteam.functors.joback.smarts_fragment">smarts_fragment() (in module thermosteam.functors.joback)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Chemical.html#thermosteam.Chemical.smiles">smiles (thermosteam.Chemical attribute)</a>
 </li>
       <li><a href="functors/identifiers.html#thermosteam.functors.identifiers.smiles">smiles() (in module thermosteam.functors.identifiers)</a>
@@ -1390,6 +1432,8 @@
 </li>
       <li><a href="equilibrium/VLE.html#thermosteam.equilibrium.VLE.solver">solver() (thermosteam.equilibrium.VLE static method)</a>
 </li>
+      <li><a href="Stream.html#thermosteam.Stream.source">source() (thermosteam.Stream property)</a>
+</li>
       <li><a href="functional.html#thermosteam.functional.speed_of_sound">speed_of_sound() (in module thermosteam.functional)</a>
 </li>
       <li><a href="Stream.html#thermosteam.Stream.split_to">split_to() (thermosteam.Stream method)</a>
@@ -1405,6 +1449,8 @@
       <li><a href="functors/acentric.html#thermosteam.functors.acentric.StielPolar">StielPolar() (in module thermosteam.functors.acentric)</a>
 </li>
       <li><a href="functors/lennard_jones.html#thermosteam.functors.lennard_jones.Stockmayer">Stockmayer() (in module thermosteam.functors.lennard_jones)</a>
+</li>
+      <li><a href="functors/combustion.html#thermosteam.functors.combustion.CombustionData.stoichiometry">stoichiometry (thermosteam.functors.combustion.CombustionData attribute)</a>
 </li>
       <li><a href="reaction/Reaction.html#thermosteam.reaction.Reaction.stoichiometry">stoichiometry() (thermosteam.reaction.Reaction property)</a>
 </li>
@@ -1630,10 +1676,10 @@
       </ul></li>
       <li><a href="functors/miscdata.html#thermosteam.functors.miscdata.VDI_tabular_data">VDI_tabular_data() (in module thermosteam.functors.miscdata)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/eos.html#thermosteam.functors.eos.VDW">VDW (class in thermosteam.functors.eos)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functors/phase_change.html#thermosteam.functors.phase_change.Velasco">Velasco (class in thermosteam.functors.phase_change)</a>
 </li>
       <li><a href="functors/phase_change.html#thermosteam.functors.phase_change.Vetere">Vetere() (in module thermosteam.functors.phase_change)</a>
@@ -1648,6 +1694,10 @@
         <li><a href="Stream.html#thermosteam.Stream.vle">(thermosteam.Stream property)</a>
 </li>
       </ul></li>
+      <li><a href="CompiledChemicals.html#thermosteam.CompiledChemicals.vle_chemicals">vle_chemicals (thermosteam.CompiledChemicals attribute)</a>
+</li>
+      <li><a href="Stream.html#thermosteam.Stream.vle_chemicals">vle_chemicals() (thermosteam.Stream property)</a>
+</li>
       <li><a href="MultiStream.html#thermosteam.MultiStream.vol">vol() (thermosteam.MultiStream property)</a>
 
       <ul>

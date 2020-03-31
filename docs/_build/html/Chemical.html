@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -175,18 +177,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="chemical">
@@ -218,8 +225,8 @@ and transport properties as a function of temperature and pressure.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">thermosteam</span> <span class="k">as</span> <span class="nn">tmo</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize with an identifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># (e.g. by name, CAS, InChI...)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Chemical: Water (phase_ref=&#39;l&#39;)</span>
 <span class="go">[Names]  CAS: 7732-18-5</span>
 <span class="go">         InChI: H2O/h1H2</span>
@@ -228,6 +235,7 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">         iupac_name: oxidane</span>
 <span class="go">         pubchemid: 962</span>
 <span class="go">         smiles: O</span>
+<span class="go">         formula: H2O</span>
 <span class="go">[Groups] Dortmund: &lt;1H2O&gt;</span>
 <span class="go">         UNIFAC: &lt;1H2O&gt;</span>
 <span class="go">         PSRK: &lt;1H2O&gt;</span>
@@ -253,7 +261,8 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">         Vc: 5.6e-05 m^3/mol</span>
 <span class="go">         Zc: 0.22947</span>
 <span class="go">         Hf: -2.4182e+05 J/mol</span>
-<span class="go">         Hc: 0 J/mol</span>
+<span class="go">         LHV: 0</span>
+<span class="go">         HHV: 0</span>
 <span class="go">         Hfus: 6010 J/mol</span>
 <span class="go">         Hsub: None</span>
 <span class="go">         omega: 0.344</span>
@@ -264,46 +273,46 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>All fields shown are accessible:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">CAS</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">CAS</span>
 <span class="go">&#39;7732-18-5&#39;</span>
 </pre></div>
 </div>
 <p>Functional group identifiers (e.g. <cite>Dortmund</cite>, <cite>UNIFAC</cite>, <cite>PSRK</cite>) allow for the estimation of activity coefficients through group contribution methods. In other words, these attributes define the functional groups for thermodynamic equilibrium calculations:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Dortmund</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Dortmund</span>
 <span class="go">&lt;DortmundGroupCounts: 1H2O&gt;</span>
 </pre></div>
 </div>
 <p>Temperature (in Kelvin) and pressure (in Pascal) dependent properties can be computed:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Vapor pressure (Pa)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">373.15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">373.15</span><span class="p">)</span>
 <span class="go">101284.55179999319</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Surface tension (N/m)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">sigma</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">sigma</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">)</span>
 <span class="go">0.07205503890847455</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Molar volume (m^3/mol)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
 <span class="go">1.7970929501497658e-05</span>
 </pre></div>
 </div>
 <p>Note that the reference state of all chemicals is 25 degC and 1 atm:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">T_ref</span><span class="p">,</span> <span class="n">water</span><span class="o">.</span><span class="n">P_ref</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">Water</span><span class="o">.</span><span class="n">T_ref</span><span class="p">,</span> <span class="n">Water</span><span class="o">.</span><span class="n">P_ref</span><span class="p">)</span>
 <span class="go">(298.15, 101325.0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Enthalpy at reference conditions (J/mol; without excess energies)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
 <span class="go">0.0</span>
 </pre></div>
 </div>
 <p>Constant pure component properties are also available:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Molecular weight (g/mol)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">MW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">MW</span>
 <span class="go">18.01528</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Boiling point (K)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Tb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Tb</span>
 <span class="go">373.124</span>
 </pre></div>
 </div>
 <p>Temperature dependent properties are managed by model handles:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="go">[0] Wagner_McGraw</span>
 <span class="go">[1] Antoine</span>
@@ -317,14 +326,14 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>Phase dependent properties have attributes with model handles for each phase:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">V</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">V</span>
 <span class="go">&lt;PhaseTPProperty(phase, T, P) -&gt; V [m^3/mol]&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
 <span class="go">(&lt;TPDependentModelHandle(T, P) -&gt; V.l [m^3/mol]&gt;, &lt;TPDependentModelHandle(T, P) -&gt; V.g [m^3/mol]&gt;)</span>
 </pre></div>
 </div>
 <p>A model handle contains a series of models applicable to a certain domain:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">TDependentModel: Wagner_McGraw</span>
 <span class="go"> evaluate: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
 <span class="go"> Tmin: 275.00</span>
@@ -332,13 +341,13 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># water.Psat(1000.0) -&gt;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Water.Psat(1000.0) -&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ValueError: &lt;TDependentModelHandle(T, P=None) -&gt; Psat [Pa]&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># contains no valid model at T=1000.00 K</span>
 </pre></div>
 </div>
 <p>Each model may contain either a function or a functor (a function with stored data) to compute the property:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Functor: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
 <span class="go"> a: -7.7645</span>
@@ -355,10 +364,10 @@ and transport properties as a function of temperature and pressure.</p>
 </div>
 <p>A new model can be added easily to a model handle through the <cite>add_model</cite> method, for example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set top_priority=True to place model in postion [0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nd">@water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="mf">273.20</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">473.20</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">Tmin</span><span class="o">=</span><span class="mf">273.20</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">473.20</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">User_antoine_model</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">10.116</span> <span class="o">-</span>  <span class="mf">1687.537</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mf">42.98</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="go">[0] User_antoine_model</span>
 <span class="go">[1] Wagner_McGraw</span>
@@ -373,8 +382,8 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>The <cite>models</cite> object is a <cite>deque</cite> for easier management of model order:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
 <span class="go">[0] Wagner_McGraw</span>
 <span class="go">[1] Antoine</span>
@@ -388,10 +397,10 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">[9] User_antoine_model</span>
 </pre></div>
 </div>
-<p>The <cite>model</cite> method is a high level interface that even lets you create a constant model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
+<p>The <cite>add_model</cite> method is a high level interface that even lets you create a constant model:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
 <span class="gp">... </span><span class="c1"># Model is appended at the end by default</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span> <span class="o">=</span> <span class="n">water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">added_model</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">ConstantThermoModel: Constant</span>
 <span class="go"> value: 1.687e-05</span>
@@ -701,9 +710,20 @@ identifiers as keys and the number of groups as values.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="thermosteam.Chemical.Hc">
-<code class="sig-name descname">Hc</code><a class="headerlink" href="#thermosteam.Chemical.Hc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Heat of combustion [J/mol].</p>
+<dt id="thermosteam.Chemical.LHV">
+<code class="sig-name descname">LHV</code><a class="headerlink" href="#thermosteam.Chemical.LHV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lower heating value [J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.Chemical.HHV">
+<code class="sig-name descname">HHV</code><a class="headerlink" href="#thermosteam.Chemical.HHV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Higher heating value [J/mol].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -845,6 +865,25 @@ identifiers as keys and the number of groups as values.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="thermosteam.Chemical.get_key_property_names">
+<code class="sig-name descname">get_key_property_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_key_property_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_key_property_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the attribute names of key properties required to model a process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Chemical.get_combustion_reaction">
+<code class="sig-name descname">get_combustion_reaction</code><span class="sig-paren">(</span><em class="sig-param">chemicals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_combustion_reaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_combustion_reaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Reaction object defining the combustion of this chemical.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Chemical.load_combustion_data">
+<code class="sig-name descname">load_combustion_data</code><span class="sig-paren">(</span><em class="sig-param">method='Stoichiometry'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.load_combustion_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.load_combustion_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load combustion data (LHV, HHV, and combution attributes)
+based on the molecular formula and the heat of formation.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="thermosteam.Chemical.ID">
 <em class="property">property </em><code class="sig-name descname">ID</code><a class="headerlink" href="#thermosteam.Chemical.ID" title="Permalink to this definition">¶</a></dt>
 <dd><p>[str] Identification of chemical.</p>
@@ -854,6 +893,12 @@ identifiers as keys and the number of groups as values.</p>
 <dt id="thermosteam.Chemical.CAS">
 <em class="property">property </em><code class="sig-name descname">CAS</code><a class="headerlink" href="#thermosteam.Chemical.CAS" title="Permalink to this definition">¶</a></dt>
 <dd><p>[str] CAS number of chemical.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Chemical.get_atoms">
+<code class="sig-name descname">get_atoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict[str: int] Atom-count pairs.</p>
 </dd></dl>
 
 <dl class="method">
@@ -871,7 +916,9 @@ identifiers as keys and the number of groups as values.</p>
 <dl class="method">
 <dt id="thermosteam.Chemical.default">
 <code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">slots=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.default" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default all <cite>slots</cite> with the chemical properties of water. If no <cite>slots</cite> given, all essential chemical properties that are missing are defaulted. <cite>slots</cite> which are still missing are returned as set.</p>
+<dd><p>Default all <cite>slots</cite> with the chemical properties of water. If no
+<cite>slots</cite> given, all essential chemical properties that are missing
+are defaulted. <cite>slots</cite> which are still missing are returned as set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>slots</strong> (<em>Iterable</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Names of chemical properties to default.</p>
@@ -888,7 +935,7 @@ identifiers as keys and the number of groups as values.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Substance</span> <span class="o">=</span> <span class="n">Chemical</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s1">&#39;Substance&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">missing_slots</span> <span class="o">=</span> <span class="n">Substance</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing_slots</span><span class="p">)</span>
-<span class="go">[&#39;Dortmund&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;Hvap&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;PSRK&#39;, &#39;Pc&#39;, &#39;Psat&#39;, &#39;Pt&#39;, &#39;StielPolar&#39;, &#39;Tb&#39;, &#39;Tc&#39;, &#39;Tm&#39;, &#39;Tt&#39;, &#39;UNIFAC&#39;, &#39;V&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;common_name&#39;, &#39;dipole&#39;, &#39;eos&#39;, &#39;eos_1atm&#39;, &#39;iscyclic_aliphatic&#39;, &#39;iupac_name&#39;, &#39;omega&#39;, &#39;pubchemid&#39;, &#39;similarity_variable&#39;, &#39;smiles&#39;]</span>
+<span class="go">[&#39;Dortmund&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;Hvap&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;PSRK&#39;, &#39;Pc&#39;, &#39;Psat&#39;, &#39;Pt&#39;, &#39;StielPolar&#39;, &#39;Tb&#39;, &#39;Tc&#39;, &#39;Tm&#39;, &#39;Tt&#39;, &#39;UNIFAC&#39;, &#39;V&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;combustion&#39;, &#39;common_name&#39;, &#39;dipole&#39;, &#39;eos&#39;, &#39;eos_1atm&#39;, &#39;formula&#39;, &#39;iscyclic_aliphatic&#39;, &#39;iupac_name&#39;, &#39;omega&#39;, &#39;pubchemid&#39;, &#39;similarity_variable&#39;, &#39;smiles&#39;]</span>
 </pre></div>
 </div>
 <p>Note that missing slots does not include essential properties volume, heat capacity, and conductivity.</p>
@@ -908,7 +955,7 @@ identifiers as keys and the number of groups as values.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemical</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Substance</span> <span class="o">=</span> <span class="n">Chemical</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s1">&#39;Substance&#39;</span><span class="p">,</span> <span class="n">phase_ref</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Substance</span><span class="o">.</span><span class="n">get_missing_slots</span><span class="p">()</span>
-<span class="go">[&#39;eos&#39;, &#39;eos_1atm&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;common_name&#39;, &#39;iupac_name&#39;, &#39;pubchemid&#39;, &#39;smiles&#39;, &#39;Dortmund&#39;, &#39;UNIFAC&#39;, &#39;PSRK&#39;, &#39;S_excess&#39;, &#39;H_excess&#39;, &#39;mu&#39;, &#39;kappa&#39;, &#39;V&#39;, &#39;S&#39;, &#39;H&#39;, &#39;Cn&#39;, &#39;Psat&#39;, &#39;Hvap&#39;, &#39;sigma&#39;, &#39;epsilon&#39;, &#39;MW&#39;, &#39;Tm&#39;, &#39;Tb&#39;, &#39;Tt&#39;, &#39;Tc&#39;, &#39;Pt&#39;, &#39;Pc&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;Hf&#39;, &#39;Hc&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;omega&#39;, &#39;dipole&#39;, &#39;StielPolar&#39;, &#39;similarity_variable&#39;, &#39;iscyclic_aliphatic&#39;]</span>
+<span class="go">[&#39;eos&#39;, &#39;eos_1atm&#39;, &#39;InChI&#39;, &#39;InChI_key&#39;, &#39;common_name&#39;, &#39;iupac_name&#39;, &#39;pubchemid&#39;, &#39;smiles&#39;, &#39;formula&#39;, &#39;Dortmund&#39;, &#39;UNIFAC&#39;, &#39;PSRK&#39;, &#39;combustion&#39;, &#39;S_excess&#39;, &#39;H_excess&#39;, &#39;mu&#39;, &#39;kappa&#39;, &#39;V&#39;, &#39;S&#39;, &#39;H&#39;, &#39;Cn&#39;, &#39;Psat&#39;, &#39;Hvap&#39;, &#39;sigma&#39;, &#39;epsilon&#39;, &#39;MW&#39;, &#39;Tm&#39;, &#39;Tb&#39;, &#39;Tt&#39;, &#39;Tc&#39;, &#39;Pt&#39;, &#39;Pc&#39;, &#39;Vc&#39;, &#39;Zc&#39;, &#39;Hf&#39;, &#39;LHV&#39;, &#39;HHV&#39;, &#39;Hfus&#39;, &#39;Hsub&#39;, &#39;omega&#39;, &#39;dipole&#39;, &#39;StielPolar&#39;, &#39;similarity_variable&#39;, &#39;iscyclic_aliphatic&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -946,9 +993,10 @@ identifiers as keys and the number of groups as values.</p>
 <span class="go">         iupac_name: None</span>
 <span class="go">         pubchemid: None</span>
 <span class="go">         smiles: None</span>
-<span class="go">[Groups] Dortmund: None</span>
-<span class="go">         UNIFAC: None</span>
-<span class="go">         PSRK: None</span>
+<span class="go">         formula: None</span>
+<span class="go">[Groups] Dortmund: &lt;Empty&gt;</span>
+<span class="go">         UNIFAC: &lt;Empty&gt;</span>
+<span class="go">         PSRK: &lt;Empty&gt;</span>
 <span class="go">[Thermo] S_excess: None</span>
 <span class="go">         H_excess: None</span>
 <span class="go">         mu(phase, T, P) -&gt; Pa*s</span>
@@ -971,7 +1019,8 @@ identifiers as keys and the number of groups as values.</p>
 <span class="go">         Vc: None</span>
 <span class="go">         Zc: None</span>
 <span class="go">         Hf: None</span>
-<span class="go">         Hc: None</span>
+<span class="go">         LHV: None</span>
+<span class="go">         HHV: None</span>
 <span class="go">         Hfus: None</span>
 <span class="go">         Hsub: None</span>
 <span class="go">         omega: None</span>
@@ -986,7 +1035,7 @@ identifiers as keys and the number of groups as values.</p>
 <dl class="method">
 <dt id="thermosteam.Chemical.get_phase">
 <code class="sig-name descname">get_phase</code><span class="sig-paren">(</span><em class="sig-param">T=298.15</em>, <em class="sig-param">P=101325.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemical.html#Chemical.get_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.Chemical.get_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return phase of chemical at given state.</p>
+<dd><p>Return phase of chemical at given thermal condition.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">Chemical</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span> <span class="o">=</span> <span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">)</span>
@@ -1019,9 +1068,10 @@ identifiers as keys and the number of groups as values.</p>
 <span class="go">         iupac_name: molecular nitro...</span>
 <span class="go">         pubchemid: 947</span>
 <span class="go">         smiles: N#N</span>
-<span class="go">[Groups] Dortmund: {}</span>
-<span class="go">         UNIFAC: {}</span>
-<span class="go">         PSRK: {}</span>
+<span class="go">         formula: N2</span>
+<span class="go">[Groups] Dortmund: &lt;Empty&gt;</span>
+<span class="go">         UNIFAC: &lt;Empty&gt;</span>
+<span class="go">         PSRK: &lt;Empty&gt;</span>
 <span class="go">[Thermo] S_excess(T, P) -&gt; J/mol</span>
 <span class="go">         H_excess(T, P) -&gt; J/mol</span>
 <span class="go">         mu(T, P) -&gt; Pa*s</span>
@@ -1043,8 +1093,9 @@ identifiers as keys and the number of groups as values.</p>
 <span class="go">         Pc: 3.3944e+06 Pa</span>
 <span class="go">         Vc: 8.95e-05 m^3/mol</span>
 <span class="go">         Zc: 0.28953</span>
-<span class="go">         Hf: 0 J/mol</span>
-<span class="go">         Hc: 0 J/mol</span>
+<span class="go">         Hf: None</span>
+<span class="go">         LHV: 0</span>
+<span class="go">         HHV: 0</span>
 <span class="go">         Hfus: 710 J/mol</span>
 <span class="go">         Hsub: None</span>
 <span class="go">         omega: 0.04</span>

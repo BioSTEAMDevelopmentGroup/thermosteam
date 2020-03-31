@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -175,7 +177,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">array</span>
 <span class="kn">from</span> <span class="nn">flexsolve</span> <span class="kn">import</span> <span class="n">aitken_secant</span><span class="p">,</span> <span class="n">IQ_interpolation</span>
-<span class="kn">from</span> <span class="nn">.solve_composition</span> <span class="kn">import</span> <span class="n">solve_y</span>
+<span class="kn">from</span> <span class="nn">.solve_vle_composition</span> <span class="kn">import</span> <span class="n">solve_y</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_like</span>
 <span class="kn">from</span> <span class="nn">.._settings</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -200,13 +202,33 @@
 <span class="c1"># %% Bubble point calculation</span>
 
 <div class="viewcode-block" id="BubblePoint"><a class="viewcode-back" href="../../../equilibrium/BubblePoint.html#thermosteam.equilibrium.BubblePoint">[docs]</a><span class="k">class</span> <span class="nc">BubblePoint</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a BubblePoint object that returns bubble point values when called with a composition and either a temperture (T) or pressure (P).</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a BubblePoint object that returns bubble point values when</span>
+<span class="sd">    called with a composition and either a temperture (T) or pressure (P).</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    chemicals=None : Iterable[Chemical], optional</span>
-<span class="sd">    </span>
+<span class="sd">    chemicals=() : Iterable[Chemical], optional</span>
 <span class="sd">    thermo=None : Thermo, optional</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">    &gt;&gt;&gt; BP = tmo.equilibrium.BubblePoint(chemicals)</span>
+<span class="sd">    &gt;&gt;&gt; molar_composition = np.array([0.5, 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; # Solve bubble point at constant temperature</span>
+<span class="sd">    &gt;&gt;&gt; bp = BP(z=molar_composition, T=355)</span>
+<span class="sd">    &gt;&gt;&gt; bp</span>
+<span class="sd">    BubblePointValues(T=355, P=109755.45319868939, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
+<span class="sd">    &gt;&gt;&gt; # Note that the result is a BubblePointValues object which contain all results as attibutes</span>
+<span class="sd">    &gt;&gt;&gt; (bp.T, bp.P, bp.IDs, bp.z, bp.y)</span>
+<span class="sd">    (355, 109755.45319868939, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
+<span class="sd">    &gt;&gt;&gt; # Solve bubble point at constant pressure</span>
+<span class="sd">    &gt;&gt;&gt; BP(z=molar_composition, P=101325)</span>
+<span class="sd">    BubblePointValues(T=352.95030269946596, P=101325, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.342 0.658])</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;phi&#39;</span><span class="p">,</span> <span class="s1">&#39;pcf&#39;</span><span class="p">,</span>
@@ -263,21 +285,23 @@
 <span class="sd">        z : array_like</span>
 <span class="sd">            Molar composotion.</span>
 <span class="sd">        P : float</span>
-<span class="sd">            Pressure (Pa).</span>
+<span class="sd">            Pressure [Pa].</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        T : float </span>
-<span class="sd">            Bubble point temperature (K)</span>
+<span class="sd">            Bubble point temperature [K].</span>
 <span class="sd">        y : numpy.ndarray</span>
-<span class="sd">            Composition of the vapor phase.</span>
+<span class="sd">            Vapor phase molar composition.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from thermotree import Chemicals, BubblePoint</span>
-<span class="sd">        &gt;&gt;&gt; bp = BubblePoint(Chemicals(&#39;Ethanol&#39;, &#39;Water&#39;))</span>
-<span class="sd">        &gt;&gt;&gt; bp.solve_Ty(z=(0.6, 0.4), P=101325)</span>
-<span class="sd">        (352.2820850833474, array([0.703, 0.297]))</span>
+<span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; BP = tmo.equilibrium.BubblePoint(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; BP.solve_Ty(z=(0.6, 0.4), P=101325)</span>
+<span class="sd">        (353.7543445955407, array([0.381, 0.619]))</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -300,7 +324,7 @@
                                       <span class="n">f</span><span class="p">(</span><span class="n">Tmin</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">Tmax</span><span class="p">),</span>
                                       <span class="n">T</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">5e-8</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
     
 <div class="viewcode-block" id="BubblePoint.solve_Py"><a class="viewcode-back" href="../../../equilibrium/BubblePoint.html#thermosteam.equilibrium.BubblePoint.solve_Py">[docs]</a>    <span class="k">def</span> <span class="nf">solve_Py</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Bubble point at given composition and temperature.</span>
@@ -310,21 +334,23 @@
 <span class="sd">        z : array_like</span>
 <span class="sd">            Molar composotion.</span>
 <span class="sd">        T : float</span>
-<span class="sd">            Temperature (K).</span>
+<span class="sd">            Temperature [K].</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        P : float</span>
-<span class="sd">            Bubble point pressure (Pa).</span>
+<span class="sd">            Bubble point pressure [Pa].</span>
 <span class="sd">        y : numpy.ndarray</span>
-<span class="sd">            Vapor phase composition.</span>
+<span class="sd">            Vapor phase molar composition.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from thermotree import Chemicals, BubblePoint</span>
-<span class="sd">        &gt;&gt;&gt; bp = BubblePoint(*Chemicals(&#39;Ethanol&#39;, &#39;Water&#39;))</span>
-<span class="sd">        &gt;&gt;&gt; bp.solve_Py(z=(0.703, 0.297), T=352.28)</span>
-<span class="sd">        (103494.17209657285, array([0.757, 0.243]))</span>
+<span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
+<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; BP = tmo.equilibrium.BubblePoint(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; BP.solve_Py(z=(0.703, 0.297), T=352.28)</span>
+<span class="sd">        (91830.97988957923, array([0.419, 0.581]))</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
@@ -342,7 +368,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootsolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_P_error</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
                                      <span class="mf">1e-2</span><span class="p">,</span> <span class="mf">5e-8</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="p">])</span>

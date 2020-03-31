@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -175,18 +177,23 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
+.nbinput.nblast.container,
+.nboutput.nblast.container {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast + .nbinput {
+.nblast.container + .nbinput.container {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
 }
 </style>
 <div class="section" id="compiledchemicals">
@@ -289,12 +296,23 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="thermosteam.CompiledChemicals.equilibrium_chemicals">
-<code class="sig-name descname">equilibrium_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.equilibrium_chemicals" title="Permalink to this definition">¶</a></dt>
-<dd><p>IDs of chemicals that may have multiple phases.</p>
+<dt id="thermosteam.CompiledChemicals.vle_chemicals">
+<code class="sig-name descname">vle_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.vle_chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chemicals that may have vapor and liquid phases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>tuple[str]</p>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical">Chemical</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.CompiledChemicals.lle_chemicals">
+<code class="sig-name descname">lle_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.lle_chemicals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chemicals that may have two liquid phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical">Chemical</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -302,10 +320,10 @@
 <dl class="attribute">
 <dt id="thermosteam.CompiledChemicals.heavy_chemicals">
 <code class="sig-name descname">heavy_chemicals</code><a class="headerlink" href="#thermosteam.CompiledChemicals.heavy_chemicals" title="Permalink to this definition">¶</a></dt>
-<dd><p>IDs of chemicals that are only present in liquid or solid phases.</p>
+<dd><p>Chemicals that are only present in liquid or solid phases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>tuple[str]</p>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical">Chemical</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,7 +334,7 @@
 <dd><p>IDs of chemicals that are only present in gas phases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>tuple[str]</p>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="Chemical.html#thermosteam.Chemical" title="thermosteam.Chemical">Chemical</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -358,12 +376,18 @@ such as the heat of combustion.
 We can update it and refresh the compiled constants:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Glucose&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Glucose</span><span class="o">.</span><span class="n">Hc</span> <span class="o">=</span> <span class="mf">2291836.024</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Glucose</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2291836.024</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">refresh_constants</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">Hc</span>
-<span class="go">array([2291836.024])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">HHV</span>
+<span class="go">array([-2291836.024])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.get_combustion_reactions">
+<code class="sig-name descname">get_combustion_reactions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_combustion_reactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_combustion_reactions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a ParallelReactions object with all defined combustion reactions.</p>
 </dd></dl>
 
 <dl class="method">
@@ -531,7 +555,7 @@ We can update it and refresh the compiled constants:</p>
 <dd><p>Return index of specified chemical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – Chemical ID</p>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – Chemical identifier.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -555,7 +579,7 @@ We can update it and refresh the compiled constants:</p>
 <dd><p>Return indices of specified chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>IDs</strong> (<em>iterable</em>) – Chemical IDs or CAS numbers.</p>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>iterable</em>) – Chemical indentifiers.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -575,11 +599,11 @@ We can update it and refresh the compiled constants:</p>
 
 <dl class="method">
 <dt id="thermosteam.CompiledChemicals.get_index">
-<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_index</code><span class="sig-paren">(</span><em class="sig-param">IDs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return index/indices of specified chemicals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>iterable</em><em>[</em><em>str</em><em>] or </em><em>str</em>) – A single chemical identifier or multiple.</p>
+<dd class="field-odd"><p><strong>IDs</strong> (<em>iterable</em><em>[</em><em>str</em><em>] or </em><em>str</em>) – Chemical identifiers.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -588,7 +612,8 @@ We can update it and refresh the compiled constants:</p>
 <p>Get multiple indices:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">IDs</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
 <span class="go">[0, 1]</span>
 </pre></div>
 </div>
@@ -600,16 +625,30 @@ We can update it and refresh the compiled constants:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="thermosteam.CompiledChemicals.get_equilibrium_indices">
-<code class="sig-name descname">get_equilibrium_indices</code><span class="sig-paren">(</span><em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_equilibrium_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_equilibrium_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return indices of species in equilibrium
-given an array dictating whether or not
-the chemicals are present.</p>
+<dt id="thermosteam.CompiledChemicals.get_vle_indices">
+<code class="sig-name descname">get_vle_indices</code><span class="sig-paren">(</span><em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_vle_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_vle_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of species in vapor-liquid equilibrium given an array
+dictating whether or not the chemicals are present.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Water</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mf">1.</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_equilibrium_indices</span><span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_vle_indices</span><span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([0, 2], dtype=int64)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.CompiledChemicals.get_lle_indices">
+<code class="sig-name descname">get_lle_indices</code><span class="sig-paren">(</span><em class="sig-param">nonzeros</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/_chemicals.html#CompiledChemicals.get_lle_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.CompiledChemicals.get_lle_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of species in liquid-liquid equilibrium given an array
+dictating whether or not the chemicals are present.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam</span> <span class="kn">import</span> <span class="n">CompiledChemicals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span> <span class="o">=</span> <span class="n">CompiledChemicals</span><span class="p">([</span><span class="s1">&#39;Water&#39;</span><span class="p">,</span> <span class="s1">&#39;Methanol&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethanol&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">chemicals</span><span class="o">.</span><span class="n">kwarray</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Water</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">Ethanol</span><span class="o">=</span><span class="mf">1.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chemicals</span><span class="o">.</span><span class="n">get_lle_indices</span><span class="p">(</span><span class="n">data</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
 <span class="go">array([0, 2], dtype=int64)</span>
 </pre></div>
 </div>

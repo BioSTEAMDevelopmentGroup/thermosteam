@@ -21,11 +21,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -177,7 +179,7 @@
 <span class="kn">from</span> <span class="nn">._thermal_condition</span> <span class="kn">import</span> <span class="n">ThermalCondition</span>
 <span class="kn">from</span> <span class="nn">.indexer</span> <span class="kn">import</span> <span class="n">MolarFlowIndexer</span>
 <span class="kn">from</span> <span class="nn">._settings</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">.equilibrium</span> <span class="kn">import</span> <span class="n">VLE</span>
+<span class="kn">from</span> <span class="nn">.equilibrium</span> <span class="kn">import</span> <span class="n">VLE</span><span class="p">,</span> <span class="n">LLE</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Cache</span><span class="p">,</span> <span class="n">assert_same_chemicals</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -185,7 +187,10 @@
 
 <div class="viewcode-block" id="MultiStream"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream">[docs]</a><span class="k">class</span> <span class="nc">MultiStream</span><span class="p">(</span><span class="n">Stream</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a MultiStream object that defines material flow rates for multiple phases along with its thermodynamic state. Thermodynamic and transport properties of a stream are available as properties, while thermodynamic equilbrium (e.g. VLE, and bubble and dew points) are available as methods. </span>
+<span class="sd">    Create a MultiStream object that defines material flow rates for multiple</span>
+<span class="sd">    phases along with its thermodynamic state. Thermodynamic and transport</span>
+<span class="sd">    properties of a stream are available as properties, while thermodynamic</span>
+<span class="sd">    equilbrium (e.g. VLE, and bubble and dew points) are available as methods. </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -215,10 +220,10 @@
 <span class="sd">    Before creating streams, first set the chemicals:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">    &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">    &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">    </span>
-<span class="sd">    Create a multi phase stream, defining the thermodynamic condition and flow rates:</span>
+<span class="sd">    Create a multi phase stream, defining the thermodynamic condition and</span>
+<span class="sd">    flow rates:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; s1 = tmo.MultiStream(ID=&#39;s1&#39;,T=298.15, P=101325,</span>
 <span class="sd">    ...                      l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
@@ -227,6 +232,21 @@
 <span class="sd">     phases: (&#39;g&#39;, &#39;l&#39;), T: 298.15 K, P: 101325 Pa</span>
 <span class="sd">     flow (kg/hr): (l) Water    20</span>
 <span class="sd">                       Ethanol  10</span>
+<span class="sd">    </span>
+<span class="sd">    The temperature and pressure are stored as attributes:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; (s1.T, s1.P)</span>
+<span class="sd">    (298.15, 101325)</span>
+<span class="sd">    </span>
+<span class="sd">    Unlike Stream objects, the `mol` attribute does not store data, it simply</span>
+<span class="sd">    returns the total flow rate of each chemical. Setting an element of the</span>
+<span class="sd">    array raises an error to prevent the wrong assumption that the data is</span>
+<span class="sd">    linked:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; s1.mol</span>
+<span class="sd">    array([1.11 , 0.217])</span>
+<span class="sd">    &gt;&gt;&gt; # s1.mol[0] = 1</span>
+<span class="sd">    &gt;&gt;&gt; # -&gt; ValueError: assignment destination is read-only</span>
 <span class="sd">    </span>
 <span class="sd">    All flow rates are stored in the `imol` attribute:</span>
 <span class="sd">    </span>
@@ -243,35 +263,52 @@
 <span class="sd">    &gt;&gt;&gt; # Index the vapor phase</span>
 <span class="sd">    &gt;&gt;&gt; s1.imol[&#39;g&#39;]</span>
 <span class="sd">    array([0., 0.])</span>
+<span class="sd">    &gt;&gt;&gt; # Index flow of chemicals summed across all phases</span>
+<span class="sd">    &gt;&gt;&gt; s1.imol[&#39;Ethanol&#39;, &#39;Water&#39;]</span>
+<span class="sd">    array([0.217, 1.11 ])</span>
 <span class="sd">    </span>
-<span class="sd">    The `mol` attribute no longer stores any data,</span>
-<span class="sd">    it simply returns the total flow rate of each chemical.</span>
-<span class="sd">    Setting an element of the array raises an error to </span>
-<span class="sd">    prevent the wrong assumption that the data is linked:</span>
+<span class="sd">    Note that overall chemical flows in MultiStream objects cannot be set like</span>
+<span class="sd">    with Stream objects:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; # s1.imol[&#39;Ethanol&#39;, &#39;Water&#39;] = [1, 0]</span>
+<span class="sd">    &gt;&gt;&gt; # -&gt; IndexError: multiple phases present; must include phase key to</span>
+<span class="sd">    set chemical data</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; s1.mol</span>
-<span class="sd">    array([1.11 , 0.217])</span>
-<span class="sd">    &gt;&gt;&gt; # s1.mol[0] = 1</span>
-<span class="sd">    &gt;&gt;&gt; # -&gt; ValueError: assignment destination is read-only</span>
+<span class="sd">    Chemical flows must be set by phase:</span>
+
+<span class="sd">    &gt;&gt;&gt; s1.imol[&#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;)] = [1, 0]</span>
 <span class="sd">    </span>
-<span class="sd">    The temperature and pressure are stored as attributes:</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; (s1.T, s1.P)</span>
-<span class="sd">    (298.15, 101325)</span>
-<span class="sd">    </span>
-<span class="sd">    The most convinient way to get and set flow rates is through</span>
-<span class="sd">    the `get_flow` and `set_flow` methods:</span>
+<span class="sd">    The most convinient way to get and set flow rates is through the </span>
+<span class="sd">    `get_flow` and `set_flow` methods:</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; # Set flow</span>
-<span class="sd">    &gt;&gt;&gt; s1.set_flow(1, &#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;gpm&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; key = (&#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; s1.set_flow(1, &#39;gpm&#39;, key)</span>
+<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;gpm&#39;, key)</span>
 <span class="sd">    0.9999999999999999</span>
 <span class="sd">    &gt;&gt;&gt; # Set multiple flows</span>
-<span class="sd">    &gt;&gt;&gt; s1.set_flow([10, 20], &#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
-<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; key = (&#39;l&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; s1.set_flow([10, 20], &#39;kg/hr&#39;, key)</span>
+<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, key)</span>
 <span class="sd">    array([10., 20.])</span>
 <span class="sd">    </span>
-<span class="sd">    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom from the following list:</span>
+<span class="sd">    Chemical flows across all phases can be retrieved if no phase is</span>
+<span class="sd">    given:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    array([10., 20.])</span>
+<span class="sd">    </span>
+<span class="sd">    However, setting chemical data requires the phase to be specified:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; # s1.set_flow([10, 20], &#39;kg/hr&#39;, (&#39;Ethanol&#39;, &#39;Water&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; # -&gt; IndexError: multiple phases present; must include phase key to set chemical data</span>
+<span class="sd">    </span>
+<span class="sd">    Note that for both Stream and MultiStream objects, `mol`, `imol`, </span>
+<span class="sd">    and `get_flow` return chemical flows across all phases when given only </span>
+<span class="sd">    chemical IDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom</span>
+<span class="sd">    from the following list:</span>
 <span class="sd">    * T [Temperature; in K]</span>
 <span class="sd">    * P [Pressure; in K]</span>
 <span class="sd">    * V [Vapor fraction]</span>
@@ -299,8 +336,9 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="p">(),</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">),</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_flows</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="p">(),</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span>
+                 <span class="n">phases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">),</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">thermo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_flows</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="n">ThermalCondition</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
         <span class="n">thermo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_thermo</span><span class="p">(</span><span class="n">thermo</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_indexer</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">thermo</span><span class="o">.</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">phase_flows</span><span class="p">)</span>
@@ -334,6 +372,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">VLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">,</span> <span class="n">thermo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">,</span>
                                 <span class="n">bubble_point_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bubble_point_cache</span><span class="p">,</span>
                                 <span class="n">dew_point_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dew_point_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lle_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">LLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thermo</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
         <span class="n">streams</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streams</span>
@@ -341,6 +380,7 @@
             <span class="n">stream</span> <span class="o">=</span> <span class="n">streams</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">Stream</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">_sink</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">stream</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">get_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
             <span class="n">stream</span><span class="o">.</span><span class="n">_ID</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">stream</span><span class="o">.</span><span class="n">_TP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span>
@@ -353,33 +393,32 @@
     
     <span class="c1">### Property getters ###</span>
     
-<div class="viewcode-block" id="MultiStream.get_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.get_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.get_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">key</span><span class="o">=...</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return an flow rates in requested units.</span>
+<span class="sd">        Return an array of flow rates in requested units.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        units : str</span>
 <span class="sd">            Units of measure.</span>
-<span class="sd">        phase : str</span>
-<span class="sd">        IDs : Iterable[str] or str, optional</span>
-<span class="sd">            Chemical identifiers.</span>
+<span class="sd">        key : tuple(phase, IDs), phase, or IDs</span>
+<span class="sd">            * phase: str, ellipsis, or missing.</span>
+<span class="sd">            * IDs: str, tuple(str), ellipisis, or missing.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.MultiStream(&#39;s1&#39;, l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, (&#39;l&#39;, &#39;Water&#39;))</span>
 <span class="sd">        20.0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">indexer</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
     
-<div class="viewcode-block" id="MultiStream.set_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="o">=...</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiStream.set_flow"><a class="viewcode-back" href="../../MultiStream.html#thermosteam.MultiStream.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">key</span><span class="o">=...</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set flow rates in given units.</span>
 
@@ -389,24 +428,23 @@
 <span class="sd">            Flow rate data.</span>
 <span class="sd">        units : str</span>
 <span class="sd">            Units of measure.</span>
-<span class="sd">        phase : str</span>
-<span class="sd">        IDs : Iterable[str] or str, optional</span>
-<span class="sd">            Chemical identifiers.</span>
+<span class="sd">        key : tuple(phase, IDs), phase, or IDs</span>
+<span class="sd">            * phase: str, ellipsis, or missing.</span>
+<span class="sd">            * IDs: str, tuple(str), ellipisis, or missing.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import thermosteam as tmo</span>
-<span class="sd">        &gt;&gt;&gt; chemicals = tmo.Chemicals([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
+<span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo([&#39;Water&#39;, &#39;Ethanol&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s1 = tmo.MultiStream(&#39;s1&#39;, l=[(&#39;Water&#39;, 20), (&#39;Ethanol&#39;, 10)], units=&#39;kg/hr&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; s1.set_flow(10, &#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, &#39;l&#39;, &#39;Water&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s1.set_flow(10, &#39;kg/hr&#39;, (&#39;l&#39;, &#39;Water&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; s1.get_flow(&#39;kg/hr&#39;, (&#39;l&#39;, &#39;Water&#39;))</span>
 <span class="sd">        10.0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_flow_name_and_factor</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
         <span class="n">indexer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-        <span class="n">indexer</span><span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">IDs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span></div>
+        <span class="n">indexer</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span></div>
     
     <span class="c1">### Stream data ###</span>
     
@@ -612,6 +650,10 @@
     <span class="k">def</span> <span class="nf">vle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[VLE] An object that can perform vapor-liquid equilibrium on the stream.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vle_cache</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[LLE] An object that can perform liquid-liquid equilibrium on the stream.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lle_cache</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
     
     <span class="c1">### Casting ###</span>
     
