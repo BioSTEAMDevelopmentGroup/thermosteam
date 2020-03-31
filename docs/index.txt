@@ -27,10 +27,10 @@ Key Features & Capabilities
    
    Overview
    Installation
-   tutorial/Getting started
-   tutorial/Thermodynamic equilibrium
-   tutorial/Thermo property packages
-   tutorial/Stoichiometric reactions
+   tutorial/Getting_started
+   tutorial/Thermodynamic_equilibrium
+   tutorial/Thermo property_packages
+   tutorial/Stoichiometric_reactions
 
 
 .. toctree::
