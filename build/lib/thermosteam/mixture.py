@@ -319,13 +319,14 @@ class Mixture:
     def solve_T(self, phase, z, H, T_guess, P):
         """Solve for temperature in Kelvin"""
         # First approximation
+        H_guess = self.H(phase, z, T_guess, P)
+        if (H - H_guess) < 1e-3: return T_guess
         Cn = self.Cn(phase, z, T_guess)
-        T = T_guess + (H - self.H(phase, z, T_guess, P))/Cn
+        T = T_guess + (H - H_guess) / Cn
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
-            it = 0
+            it = 3
             it2 = 0
-            Cn = self.Cn(phase, z, T_guess)
             while abs(T - T_guess) > 0.05:
                 T_guess = T
                 if it == 3:
@@ -341,12 +342,14 @@ class Mixture:
     def xsolve_T(self, phase_data, H, T_guess, P):
         """Solve for temperature in Kelvin"""
         # First approximation
+        H_guess = self.xH(phase_data, T_guess, P)
+        if (H - H_guess) < 1e-3: return T_guess
         Cn = self.xCn(phase_data, T_guess)
-        T = T_guess + (H - self.xH(phase_data, T_guess, P))/Cn
+        T = T_guess + (H - H_guess)/Cn
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
-            it2 = it = 0
-            Cn = self.xCn(phase_data, T_guess)
+            it = 3
+            it2 = 0
             while abs(T - T_guess) > 0.05:
                 T_guess = T
                 if it == 3:
