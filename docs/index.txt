@@ -29,7 +29,7 @@ Key Features & Capabilities
    Installation
    tutorial/Getting_started
    tutorial/Thermodynamic_equilibrium
-   tutorial/Thermo property_packages
+   tutorial/Thermo_property_packages
    tutorial/Stoichiometric_reactions
 
 
