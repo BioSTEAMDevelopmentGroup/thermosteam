@@ -227,6 +227,9 @@ class Stream:
         self._init_cache()
         self._register(ID)
 
+    def isempty(self):
+        return (self._imol._data == 0.).all()
+
     def disconnect(self):
         sink = self._sink
         source = self._source
@@ -471,7 +474,10 @@ class Stream:
 
     @property
     def thermal_condition(self):
-        """[ThermalCondition] Contains the temperature and pressure conditions of the stream."""
+        """
+        [ThermalCondition] Contains the temperature and pressure conditions 
+        of the stream.
+        """
         return self._TP
 
     @property
@@ -712,7 +718,10 @@ class Stream:
         
         """
         others = [i for i in others if i]
-        if len(others) == 1:
+        N_others = len(others)
+        if N_others == 0:
+            self.empty()
+        elif N_others == 1:
             self.copy_like(others[0])
         else:
             assert_same_chemicals(self, others)

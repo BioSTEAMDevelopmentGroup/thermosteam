@@ -40,6 +40,12 @@ class Registry:
         except AttributeError: pass
         del dct[ID]
     
+    def get_IDs(self):
+        return set(self.__dict__)
+    
+    def to_set(self):
+        return set(self.__dict__.values())
+    
     def __contains__(self, ID):
         return ID in self.__dict__
     
