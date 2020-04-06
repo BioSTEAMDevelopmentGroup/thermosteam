@@ -36,9 +36,9 @@ class Documenter:
     def get_type(self, var):
         user_types = self.types
         if user_types:
-            return user_types.get(var) or types.get(var) or 'float'
+            return user_types.get(var) or types.get(var, 'float')
         else:
-            return types.get(var)
+            return types.get(var, 'float')
 
     def describe_functor(self, functor, equation, ref):
         var = functor.var
@@ -74,8 +74,13 @@ class Documenter:
             parameters += (self.describe_parameter_type(var) + sub_line
                          + self.describe_parameter(var) + '.' + new_line)
         if coefficients:
-            parameters += (", ".join(coefficients) + " : float" + sub_line
-                         + "Regressed coefficients." + new_line)
+            N_coefficients = len(coefficients)
+            if N_coefficients == 1:
+                parameters += (coefficients[0] + " : float" + sub_line
+                               + "Regressed coefficient." + new_line)
+            else:
+                parameters += (",".join(coefficients) + " : float" + sub_line
+                               + "Regressed coefficients." + new_line)
         return parameters
     
     def describe_return_value(self, var):

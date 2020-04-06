@@ -6,21 +6,21 @@ import re
 import thermosteam as tmo
 from flexsolve import IQ_interpolation
 from .utils import copy_maybe
-from .functors.identifiers import CAS_from_any, pubchem_db
-from .functors.vapor_pressure import VaporPressure
-from .functors.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
-from .functors.critical import Tc, Pc, Vc
-from .functors.acentric import omega, StielPolar
-from .functors.triple import Tt, Pt
-from .functors.volume import Volume
-from .functors.heat_capacity import HeatCapacity
-from .functors.reaction import Hf
-from .functors.combustion import CombustionData
-from .functors.elements import compute_similarity_variable, parse_simple_formula
-from .functors.eos import GCEOS_DUMMY, PR
-from .functors.viscosity import Viscosity
-from .functors.thermal_conductivity import ThermalConductivity
-from .functors.free_energy import \
+from .properties.identifiers import CAS_from_any, pubchem_db
+from .properties.vapor_pressure import VaporPressure
+from .properties.phase_change import Tb, Tm, Hfus, Hsub, EnthalpyVaporization
+from .properties.critical import Tc, Pc, Vc
+from .properties.acentric import omega, StielPolar
+from .properties.triple import Tt, Pt
+from .properties.volume import Volume
+from .properties.heat_capacity import HeatCapacity
+from .properties.reaction import Hf
+from .properties.combustion import CombustionData
+from .properties.elements import compute_similarity_variable, parse_simple_formula
+from .properties.eos import GCEOS_DUMMY, PR
+from .properties.viscosity import Viscosity
+from .properties.thermal_conductivity import ThermalConductivity
+from .properties.free_energy import \
     EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas, \
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas, \
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
@@ -28,10 +28,10 @@ from .functors.free_energy import \
 from .base import PhaseProperty, PhaseTProperty, PhaseTPProperty, \
                   display_asfunctor, TDependentModelHandle, TPDependentModelHandle
 from .base.units_of_measure import chemical_units_of_measure
-from .functors.dipole import dipole_moment as dipole
+from .properties.dipole import dipole_moment as dipole
 from . import functional as fn 
-from .functors.permittivity import Permittivity
-from .functors.interface import SurfaceTension
+from .properties.permittivity import Permittivity
+from .properties.interface import SurfaceTension
 from .equilibrium.unifac_data import \
     DDBST_UNIFAC_assignments, DDBST_MODIFIED_UNIFAC_assignments, DDBST_PSRK_assignments, \
     UNIFACGroupCounts, DortmundGroupCounts, PSRKGroupCounts
@@ -305,7 +305,7 @@ class Chemical:
      Pc: 2.2122e+07 Pa
     
     .. Note::
-       All functor classes are available in the thermosteam.functors subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
+       All chemical property functors are available in the thermosteam.properties subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
     
     A new model can be added easily to a model handle through the `add_model` method, for example:
         

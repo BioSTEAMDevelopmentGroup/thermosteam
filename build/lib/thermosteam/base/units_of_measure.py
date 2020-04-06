@@ -241,12 +241,14 @@ types['iscyclic_aliphatic'] = types['has_hydroxy'] = 'bool'
 # Synonyms
 for i, j in [('ω', 'omega')]:
     definitions[i] = definitions[j]
-    if j in chemical_units_of_measure: chemical_units_of_measure[i] = chemical_units_of_measure[j]
+    if j in chemical_units_of_measure:
+        chemical_units_of_measure[i] = chemical_units_of_measure[j]
 
 # Phase properties
 for var in ('Cn', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
     units = chemical_units_of_measure[var]
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):
-        phasevar = var + '.' +tag
-        definitions[phasevar] = phase + definition
+        phase_var = var + '.' + tag
+        phase_var2 = var + '_' + tag
+        definitions[phase_var] = definitions[phase_var2] = phase + definition
