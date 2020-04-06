@@ -1,0 +1,527 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>identifiers &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="joback" href="joback.html" />
+    <link rel="prev" title="heat_capacity" href="heat_capacity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>identifiers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/identifiers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.identifiers">
+<span id="identifiers"></span><h1>identifiers<a class="headerlink" href="#module-thermosteam.properties.identifiers" title="Permalink to this headline">¶</a></h1>
+<p>All data and methods related to chemical identifiers.</p>
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.checkCAS">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">checkCAS</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#checkCAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.checkCAS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a CAS number is valid. Returns False if the parser cannot
+parse the given string..</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – A three-piece, dash-separated set of numbers</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>result</strong> – Boolean value if CASRN was valid. If parsing fails, return False also.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Check method is according to Chemical Abstract Society. However, no lookup
+to their service is performed; therefore, this function cannot detect
+false positives.</p>
+<p>Function also does not support additional separators, apart from ‘-‘.</p>
+<p>CAS numbers up to the series 1 XXX XXX-XX-X are now being issued.</p>
+<p>A long can hold CAS numbers up to 2 147 483-64-7</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">checkCAS</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkCAS</span><span class="p">(</span><span class="s1">&#39;77332-18-5&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.CAS_from_any">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">CAS_from_any</code><span class="sig-paren">(</span><em class="sig-param">ID</em>, <em class="sig-param">autoload=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#CAS_from_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.CAS_from_any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up the CAS number of a chemical by searching and testing for the
+string being any of the following types of chemical identifiers:</p>
+<ul class="simple">
+<li><p>Name, in IUPAC form or common form or a synonym registered in PubChem</p></li>
+<li><p>InChI name, prefixed by ‘InChI=1S/’ or ‘InChI=1/’</p></li>
+<li><p>InChI key, prefixed by ‘InChIKey=’</p></li>
+<li><p>PubChem CID, prefixed by ‘PubChem=’</p></li>
+<li><p>SMILES (prefix with ‘SMILES=’ to ensure smiles parsing; ex.
+‘C’ will return Carbon as it is an element whereas the SMILES
+interpretation for ‘C’ is methane)</p></li>
+<li><p>CAS number (obsolete numbers may point to the current number)</p></li>
+</ul>
+<p>If the input is an ID representing an element, the following additional
+inputs may be specified as</p>
+<ul class="simple">
+<li><p>Atomic symbol (ex ‘Na’)</p></li>
+<li><p>Atomic number (as a string)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – One of the name formats described above</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>CASRN</strong> – A three-piece, dash-separated set of numbers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>An exception is raised if the name cannot be identified. The PubChem
+database includes a wide variety of other synonyms, but these may not be
+present for all chemcials.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;water&#39;</span><span class="p">)</span>
+<span class="go">&#39;7732-18-5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3&#39;</span><span class="p">)</span>
+<span class="go">&#39;64-17-5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;CCCCCCCCCC&#39;</span><span class="p">)</span>
+<span class="go">&#39;124-18-5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;InChIKey=LFQSCWFLJHTTHZ-UHFFFAOYSA-N&#39;</span><span class="p">)</span>
+<span class="go">&#39;64-17-5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;pubchem=702&#39;</span><span class="p">)</span>
+<span class="go">&#39;64-17-5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CAS_from_any</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="c1"># only elements can be specified by symbol</span>
+<span class="go">&#39;17778-80-2&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.PubChem">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">PubChem</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#PubChem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.PubChem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a CASRN in the database, obtain the PubChem database
+number of the compound.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – Valid CAS number in PubChem database [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pubchem</strong> – PubChem database id, as an integer [-]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>CASRN must be an indexing key in the pubchem database.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">PubChem</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">962</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Pubchem.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.MW">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">MW</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#MW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.MW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a CASRN in the database, obtain the Molecular weight of the
+compound, if it is in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – Valid CAS number in PubChem database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>MolecularWeight</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>CASRN must be an indexing key in the pubchem database. No MW Calculation is
+performed; nor are any historical isotopic corrections applied.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">MW</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">18.01528</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Pubchem.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.formula">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">formula</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.formula" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">formula</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;H2O&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.smiles">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">smiles</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#smiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.smiles" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smiles</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;O&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.InChI">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">InChI</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#InChI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.InChI" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">InChI</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;H2O/h1H2&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.InChI_Key">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">InChI_Key</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#InChI_Key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.InChI_Key" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">InChI_Key</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;XLYOFNOQVPJJNP-UHFFFAOYSA-N&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.IUPAC_name">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">IUPAC_name</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#IUPAC_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.IUPAC_name" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">IUPAC_name</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;oxidane&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.name">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">name</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.name" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name</span><span class="p">(</span><span class="s1">&#39;7732-18-5&#39;</span><span class="p">)</span>
+<span class="go">&#39;water&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.synonyms">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">synonyms</code><span class="sig-paren">(</span><em class="sig-param">CASRN</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#synonyms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.synonyms" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">synonyms</span><span class="p">(</span><span class="s1">&#39;98-00-0&#39;</span><span class="p">)</span>
+<span class="go">[&#39;furan-2-ylmethanol&#39;, &#39;furfuryl alcohol&#39;, &#39;2-furanmethanol&#39;, &#39;2-furancarbinol&#39;, &#39;2-furylmethanol&#39;, &#39;2-furylcarbinol&#39;, &#39;98-00-0&#39;, &#39;2-furanylmethanol&#39;, &#39;furfuranol&#39;, &#39;furan-2-ylmethanol&#39;, &#39;2-furfuryl alcohol&#39;, &#39;5-hydroxymethylfuran&#39;, &#39;furfural alcohol&#39;, &#39;alpha-furylcarbinol&#39;, &#39;2-hydroxymethylfuran&#39;, &#39;furfuralcohol&#39;, &#39;furylcarbinol&#39;, &#39;furyl alcohol&#39;, &#39;2-(hydroxymethyl)furan&#39;, &#39;furan-2-yl-methanol&#39;, &#39;furfurylalcohol&#39;, &#39;furfurylcarb&#39;, &#39;methanol, (2-furyl)-&#39;, &#39;2-furfurylalkohol&#39;, &#39;furan-2-methanol&#39;, &#39;2-furane-methanol&#39;, &#39;2-furanmethanol, homopolymer&#39;, &#39;(2-furyl)methanol&#39;, &#39;2-hydroxymethylfurane&#39;, &#39;furylcarbinol (van)&#39;, &#39;2-furylmethan-1-ol&#39;, &#39;25212-86-6&#39;, &#39;93793-62-5&#39;, &#39;furanmethanol&#39;, &#39;polyfurfuryl alcohol&#39;, &#39;pffa&#39;, &#39;poly(furfurylalcohol)&#39;, &#39;poly-furfuryl alcohol&#39;, &#39;(fur-2-yl)methanol&#39;, &#39;.alpha.-furylcarbinol&#39;, &#39;2-hydroxymethyl-furan&#39;, &#39;poly(furfuryl alcohol)&#39;, &#39;.alpha.-furfuryl alcohol&#39;, &#39;agn-pc-04y237&#39;, &#39;h159&#39;, &#39;omega-hydroxypoly(furan-2,5-diylmethylene)&#39;, &#39;(2-furyl)-methanol (furfurylalcohol)&#39;, &#39;40795-25-3&#39;, &#39;88161-36-8&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.identifiers.mixture_from_any">
+<code class="sig-prename descclassname">thermosteam.properties.identifiers.</code><code class="sig-name descname">mixture_from_any</code><span class="sig-paren">(</span><em class="sig-param">ID</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/identifiers.html#mixture_from_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.identifiers.mixture_from_any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up a string which may represent a mixture in the database of
+thermo to determine the key by which the composition of that mixture can
+be obtained in the dictionary <cite>_MixtureDict</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ID</strong> (<em>str</em>) – A string or 1-element list containing the name which may represent a
+mixture.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>key</strong> – Key for access to the data on the mixture in <cite>_MixtureDict</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>White space, ‘-‘, and upper case letters are removed in the search.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mixture_from_any</span><span class="p">(</span><span class="s1">&#39;R512A&#39;</span><span class="p">)</span>
+<span class="go">&#39;R512A&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mixture_from_any</span><span class="p">([</span><span class="sa">u</span><span class="s1">&#39;air&#39;</span><span class="p">])</span>
+<span class="go">&#39;Air&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="joback.html" class="btn btn-neutral float-right" title="joback" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="heat_capacity.html" class="btn btn-neutral float-left" title="heat_capacity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,5 +1,0 @@
-utils
-=====
-
-.. automodule:: thermosteam.functors.utils
-   :members:

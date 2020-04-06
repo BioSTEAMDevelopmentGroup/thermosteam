@@ -1,5 +1,0 @@
-safety
-======
-
-.. automodule:: thermosteam.functors.safety
-   :members:

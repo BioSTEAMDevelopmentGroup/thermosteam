@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.properties.combustion &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.properties.combustion</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.properties.combustion</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">All data and methods related to chemical combustion.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.elements</span> <span class="kn">import</span> <span class="n">compute_mass_fractions</span><span class="p">,</span> <span class="n">compute_molecular_weight</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;CombustionData&#39;</span><span class="p">,</span> <span class="s1">&#39;estimate_HHV_modified_Dulong&#39;</span><span class="p">)</span>
+
+<span class="c1"># %% Combustion functions</span>
+
+<span class="n">combustible_elements</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;Cl&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)</span>
+<span class="n">combustion_products</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;7782-44-7&#39;</span><span class="p">,</span> <span class="s1">&#39;124-38-9&#39;</span><span class="p">,</span> <span class="s1">&#39;7726-95-6&#39;</span><span class="p">,</span> <span class="s1">&#39;7553-56-2&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;7647-01-0&#39;</span><span class="p">,</span> <span class="s1">&#39;7664-39-3&#39;</span><span class="p">,</span> <span class="s1">&#39;7446-09-5&#39;</span><span class="p">,</span> <span class="s1">&#39;7727-37-9&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;16752-60-6&#39;</span><span class="p">,</span> <span class="s1">&#39;7732-18-5&#39;</span><span class="p">,</span> <span class="s1">&#39;630-08-0&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;Ash&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;SO2&#39;</span><span class="p">,</span> <span class="s1">&#39;Br2&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;I2&#39;</span><span class="p">,</span> <span class="s1">&#39;HCl&#39;</span><span class="p">,</span> <span class="s1">&#39;HF&#39;</span><span class="p">,</span> <span class="s1">&#39;P4O10&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">}</span>
+
+<span class="n">Hf_combustion_products</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;H2O&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">285825</span><span class="p">,</span>
+    <span class="s1">&#39;CO2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">393474</span><span class="p">,</span>
+    <span class="s1">&#39;SO2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">296800</span><span class="p">,</span>
+    <span class="s1">&#39;Br2&#39;</span><span class="p">:</span> <span class="mi">30880</span><span class="p">,</span>
+    <span class="s1">&#39;I2&#39;</span><span class="p">:</span> <span class="mi">62417</span><span class="p">,</span>
+    <span class="s1">&#39;HCl&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">92173</span><span class="p">,</span>
+    <span class="s1">&#39;HF&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">272711</span><span class="p">,</span>
+    <span class="s1">&#39;P4O10&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">3009940</span><span class="p">,</span>
+    <span class="s1">&#39;O2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s1">&#39;N2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;Ash&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">get_combustion_stoichiometry</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dictionary of the combustion stoichiometry of a chemical.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : dict</span>
+<span class="sd">        Dictionary of atoms and their counts.</span>
+<span class="sd">    MW : float, optional</span>
+<span class="sd">        Molecular weight of chemical.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The stoichiometry is given by:</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        C_c H_h O_o N_n S_s Br_b I_i Cl_x F_f P_p + (c + s + \frac{h}{4} + \frac{5P}{4} - \frac{x + f}{4} - \frac{o}{2}) -&gt; cCO_2 + \frac{b}{2}Br_2 + \frac{i}{2}I + xHCl + fHF + sSO_2 + \frac{n}{2}N_2 + \frac{p}{4}P_4O_{10} +\frac{h + x + f}{2}H_2O</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">combustion_atoms</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="n">atoms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">combustible_elements</span><span class="p">}</span>
+    <span class="n">C</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">Br</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">Cl</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">combustion_atoms</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">MW</span> <span class="ow">or</span> <span class="n">compute_molecular_weight</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="n">Ash</span> <span class="o">=</span> <span class="n">MW</span> <span class="o">-</span> <span class="n">compute_molecular_weight</span><span class="p">(</span><span class="n">combustion_atoms</span><span class="p">)</span>
+    <span class="n">stoichiometry</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;O2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">Cl</span> <span class="o">+</span> <span class="n">F</span><span class="p">)</span><span class="o">/</span><span class="mf">4.</span> <span class="o">+</span> <span class="n">O</span><span class="o">/</span><span class="mf">2.</span> <span class="o">-</span> <span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">S</span> <span class="o">+</span> <span class="n">H</span><span class="o">/</span><span class="mf">4.</span> <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="n">P</span><span class="o">/</span><span class="mf">4.</span><span class="p">),</span>
+        <span class="s1">&#39;CO2&#39;</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span>
+        <span class="s1">&#39;Br2&#39;</span><span class="p">:</span> <span class="n">Br</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span>
+        <span class="s1">&#39;I2&#39;</span><span class="p">:</span> <span class="n">I</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span>
+        <span class="s1">&#39;HCl&#39;</span><span class="p">:</span> <span class="n">Cl</span><span class="p">,</span>
+        <span class="s1">&#39;HF&#39;</span><span class="p">:</span> <span class="n">F</span><span class="p">,</span>
+        <span class="s1">&#39;SO2&#39;</span><span class="p">:</span> <span class="n">S</span><span class="p">,</span>
+        <span class="s1">&#39;N2&#39;</span><span class="p">:</span> <span class="n">N</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span>
+        <span class="s1">&#39;P4O10&#39;</span><span class="p">:</span> <span class="n">P</span><span class="o">/</span><span class="mf">4.</span><span class="p">,</span>
+        <span class="s1">&#39;H2O&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="n">Cl</span> <span class="o">-</span> <span class="n">F</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span>
+        <span class="s1">&#39;Ash&#39;</span><span class="p">:</span> <span class="n">Ash</span> <span class="k">if</span> <span class="n">Ash</span> <span class="o">&gt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">j</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">stoichiometry</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">j</span><span class="p">}</span>
+    
+
+<span class="k">def</span> <span class="nf">estimate_HHV_from_stoichiometry</span><span class="p">(</span><span class="n">stoichiometry</span><span class="p">,</span> <span class="n">Hf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Estimate the higher heating value [HHV; in J/mol] given a dictionary</span>
+<span class="sd">    of the combustion stoichiometry and the heat of formation of the chemical.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">stoichiometry</span><span class="p">[</span><span class="n">chem</span><span class="p">]</span> <span class="o">*</span> <span class="n">Hf_combustion_products</span><span class="p">[</span><span class="n">chem</span><span class="p">]</span> <span class="k">for</span> <span class="n">chem</span> <span class="ow">in</span> <span class="n">stoichiometry</span><span class="p">])</span> <span class="o">-</span> <span class="n">Hf</span>
+
+<span class="c1"># TODO: Continue adding more methods for estimating HHV</span>
+<div class="viewcode-block" id="estimate_HHV_modified_Dulong"><a class="viewcode-back" href="../../../properties/combustion.html#thermosteam.properties.combustion.estimate_HHV_modified_Dulong">[docs]</a><span class="k">def</span> <span class="nf">estimate_HHV_modified_Dulong</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check_oxygen_content</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return higher heating value [HHV; in J/mol] based on the modified </span>
+<span class="sd">    Dulong&#39;s equation.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The heat of combustion in J/mol is given by Dulong&#39;s equation [1]_:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math:: </span>
+<span class="sd">        Hc (J/mol) = MW \cdot (338C + 1428(H - O/8)+ 95S)</span>
+<span class="sd">    </span>
+<span class="sd">    This equation is only good for &lt;10 wt. % Oxygen content. Variables C, H, O,</span>
+<span class="sd">    and S are atom weight fractions.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Brown et al., Energy Fuels 2010, 24 (6), 3639–3646.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mass_fractions</span> <span class="o">=</span> <span class="n">compute_mass_fractions</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">mass_fractions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">mass_fractions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">O</span> <span class="o">=</span> <span class="n">mass_fractions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">mass_fractions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check_oxygen_content</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">O</span> <span class="o">&lt;=</span> <span class="mf">0.105</span><span class="p">,</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Dulong&#39;s formula is only valid at &quot;</span>
+             <span class="s2">&quot;10 wt. % Oxygen or less (</span><span class="si">{O:.0%}</span><span class="s2"> given)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span> <span class="n">MW</span> <span class="o">*</span> <span class="p">(</span><span class="mi">338</span><span class="o">*</span><span class="n">C</span>  <span class="o">+</span> <span class="mi">1428</span><span class="o">*</span><span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="n">O</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">+</span> <span class="mi">95</span><span class="o">*</span><span class="n">S</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">estimate_LHV</span><span class="p">(</span><span class="n">HHV</span><span class="p">,</span> <span class="n">N_H2O</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Estimate the lower heating value [LHV; in J/mol] of a chemical given</span>
+<span class="sd">    the higher heating value [HHV; in J/mol] and the number of water</span>
+<span class="sd">    molecules formed per molecule burned.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">HHV</span> <span class="o">+</span> <span class="mf">44011.496</span> <span class="o">*</span> <span class="n">N_H2O</span>
+
+
+<span class="c1"># %% Combustion reaction</span>
+
+<div class="viewcode-block" id="CombustionData"><a class="viewcode-back" href="../../../properties/combustion.html#thermosteam.properties.combustion.CombustionData">[docs]</a><span class="k">class</span> <span class="nc">CombustionData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a CombustionData object that contains the stoichiometry </span>
+<span class="sd">    coefficients of the reactants and products and the lower and higher </span>
+<span class="sd">    heating values of a chemical [LHV, HHV; in J/mol].</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stoichiometry : dict[str: float] </span>
+<span class="sd">        Stoichiometry coefficients of the reactants and products.</span>
+<span class="sd">    LHV : float </span>
+<span class="sd">        Lower heating value [J/mol].</span>
+<span class="sd">    HHV : float</span>
+<span class="sd">        Higher heating value [J/mol].</span>
+<span class="sd">    Hf : float</span>
+<span class="sd">        Heat of formation [J/mol].</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;stoichiometry&#39;</span><span class="p">,</span> <span class="s1">&#39;HHV&#39;</span><span class="p">,</span> <span class="s1">&#39;LHV&#39;</span><span class="p">,</span> <span class="s1">&#39;Hf&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stoichiometry</span><span class="p">,</span> <span class="n">LHV</span><span class="p">,</span> <span class="n">HHV</span><span class="p">,</span> <span class="n">Hf</span><span class="p">):</span>
+        <span class="c1">#: dict[str: float] Stoichiometry coefficients of the reactants and products</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometry</span> <span class="o">=</span> <span class="n">stoichiometry</span>
+        <span class="c1">#: [float] Lower heating value [J/mol]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LHV</span> <span class="o">=</span> <span class="n">LHV</span>
+        <span class="c1">#: [float] Higher heating value [J/mol]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">HHV</span> <span class="o">=</span> <span class="n">HHV</span>
+        <span class="c1">#: [float] Heat of formation [J/mol]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hf</span> <span class="o">=</span> <span class="n">Hf</span>
+    
+<div class="viewcode-block" id="CombustionData.from_chemical_data"><a class="viewcode-back" href="../../../properties/combustion.html#thermosteam.properties.combustion.CombustionData.from_chemical_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_chemical_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">CAS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Hf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Stoichiometry&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a CombustionData object that contains the stoichiometry </span>
+<span class="sd">        coefficients of the reactants and products and the lower and higher </span>
+<span class="sd">        heating values [LHV, HHV; in J/mol].</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms : dict</span>
+<span class="sd">            Dictionary of atoms and their counts.</span>
+<span class="sd">        CAS : str, optional</span>
+<span class="sd">            CAS of chemical.</span>
+<span class="sd">        MW : float, optional</span>
+<span class="sd">            Molecular weight of chemical [g/mol].</span>
+<span class="sd">        Hf : float, optional</span>
+<span class="sd">            Heat of formation of given chemical [J/mol].</span>
+<span class="sd">            Required if method is &quot;Stoichiometry&quot;.</span>
+<span class="sd">        method : &quot;Stoichiometry&quot; or &quot;Dulong&quot;</span>
+<span class="sd">            Method to estimate LHV and HHV.    </span>
+<span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Default heats of formation for chemicals are at 298 K, 1 atm. The</span>
+<span class="sd">        combustion reaction is based on the following equation:</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            C_c H_h O_o N_n S_s Br_b I_i Cl_x F_f P_p + (c + s + \frac{h}{4} + \frac{5P}{4} - \frac{x + f}{4} - \frac{o}{2}) -&gt; cCO_2 + \frac{b}{2}Br_2 + \frac{i}{2}I + xHCl + fHF + sSO_2 + \frac{n}{2}N_2 + \frac{p}{4}P_4O_{10} +\frac{h + x + f}{2}H_2O</span>
+<span class="sd">    </span>
+<span class="sd">        If the method is &quot;Stoichiometry&quot;, the HHV is found using </span>
+<span class="sd">        through an energy balance on the reaction (i.e. heat of reaction).</span>
+<span class="sd">        If the method is &quot;Dulong&quot;, Dulong&#39;s equation is used [1]_:</span>
+<span class="sd">    </span>
+<span class="sd">        .. math:: </span>
+<span class="sd">            Hc (J/mol) = MW \cdot (338C + 1428(H - O/8)+ 95S)</span>
+<span class="sd">            </span>
+<span class="sd">        The LHV is calculated as follows:</span>
+<span class="sd">            </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            LHV = HHV + H_{vap} \cdot H_2O</span>
+<span class="sd">            H_{vap} = 44011.496 \frac{J}{mol H_2O}</span>
+<span class="sd">            H_2O = \frac{mol H_2O}{mol}</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Liquid methanol burning:</span>
+<span class="sd">    </span>
+<span class="sd">        &gt;&gt;&gt; from thermosteam.functors.combustion import CombustionData</span>
+<span class="sd">        &gt;&gt;&gt; CombustionData.from_chemical_data({&#39;H&#39;: 4, &#39;C&#39;: 1, &#39;O&#39;: 1}, Hf=-239100)</span>
+<span class="sd">        CombustionData(stoichiometry={&#39;O2&#39;: -1.5, &#39;CO2&#39;: 1, &#39;H2O&#39;: 2.0}, LHV=-6.38e+05, HHV=-7.26e+05, Hf=-2.39e+05)</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">combustion_products</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Hf</span><span class="p">)</span>
+        <span class="n">stoichiometry</span> <span class="o">=</span> <span class="n">get_combustion_stoichiometry</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Stoichiometry&#39;</span><span class="p">:</span>
+            <span class="n">HHV</span> <span class="o">=</span> <span class="n">estimate_HHV_from_stoichiometry</span><span class="p">(</span><span class="n">stoichiometry</span><span class="p">,</span> <span class="n">Hf</span><span class="p">)</span>
+            <span class="n">N_H2O</span> <span class="o">=</span> <span class="n">stoichiometry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Dulong&#39;</span><span class="p">:</span>
+            <span class="n">HHV</span> <span class="o">=</span> <span class="n">estimate_HHV_modified_Dulong</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+            <span class="n">Hf</span> <span class="o">=</span> <span class="n">HHV</span> <span class="o">-</span> <span class="n">estimate_HHV_from_stoichiometry</span><span class="p">(</span><span class="n">stoichiometry</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">N_H2O</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid method </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="si">}</span><span class="s2">; method must be either &#39;Stoichiometry&#39; or &#39;Dulong&#39;&quot;</span><span class="p">)</span>
+        <span class="n">LHV</span> <span class="o">=</span> <span class="n">estimate_LHV</span><span class="p">(</span><span class="n">HHV</span><span class="p">,</span> <span class="n">N_H2O</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">stoichiometry</span><span class="p">,</span> <span class="n">LHV</span><span class="p">,</span> <span class="n">HHV</span><span class="p">,</span> <span class="n">Hf</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(stoichiometry=</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stoichiometry</span><span class="p">)</span><span class="si">}</span><span class="s2">, LHV=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">LHV</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">, HHV=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">HHV</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">, Hf=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Hf</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1164 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lennard_jones &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="miscdata" href="miscdata.html" />
+    <link rel="prev" title="law" href="law.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>lennard_jones</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/lennard_jones.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.lennard_jones">
+<span id="lennard-jones"></span><h1>lennard_jones<a class="headerlink" href="#module-thermosteam.properties.lennard_jones" title="Permalink to this headline">¶</a></h1>
+<p>All data and functions for computing the Lennard-Jones molecular diameter.</p>
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.Stockmayer">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">Stockmayer</code><span class="sig-paren">(</span><em class="sig-param">Tm=None</em>, <em class="sig-param">Tb=None</em>, <em class="sig-param">Tc=None</em>, <em class="sig-param">Zc=None</em>, <em class="sig-param">omega=None</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#Stockmayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.Stockmayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation a chemical’s
+Stockmayer parameter. Values are available from one source with lookup
+based on CASRNs, or can be estimated from 7 CSP methods.
+Will automatically select a data source to use if no Method is provided;
+returns None if the data is not available.</p>
+<p>Prefered sources are ‘Magalhães, Lito, Da Silva, and Silva (2013)’ for
+common chemicals which had valies listed in that source, and the CSP method
+<cite>Tee, Gotoh, and Stewart CSP with Tc, omega (1966)</cite> for chemicals which
+don’t.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Stockmayer</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">1291.41</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tm</strong> (<em>float</em><em>, </em><em>optional</em>) – Melting temperature of fluid [K]</p></li>
+<li><p><strong>Tb</strong> (<em>float</em><em>, </em><em>optional</em>) – Boiling temperature of fluid [K]</p></li>
+<li><p><strong>Tc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical temperature, [K]</p></li>
+<li><p><strong>Zc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical compressibility, [-]</p></li>
+<li><p><strong>omega</strong> (<em>float</em><em>, </em><em>optional</em>) – Acentric factor of compound, [-]</p></li>
+<li><p><strong>CASRN</strong> (<em>string</em><em>, </em><em>optional</em>) – CASRN [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>epsilon_k</strong> (<em>float</em>) – Lennard-Jones depth of potential-energy minimum over k, [K]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain epsilon with the given
+inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+Stockmayer_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+epsilon for the desired chemical, and will return methods instead of
+epsilon</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>These values are somewhat rough, as they attempt to pigeonhole a chemical
+into L-J behavior.</p>
+<p>The tabulated data is from <a href="#id52"><span class="problematic" id="id1">[2]_</span></a>, for 322 chemicals.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets">2</span></dt>
+<dd><p>Magalhães, Ana L., Patrícia F. Lito, Francisco A. Da Silva, and
+Carlos M. Silva. “Simple and Accurate Correlations for Diffusion
+Coefficients of Solutes in Liquids and Supercritical Fluids over Wide
+Ranges of Temperature and Density.” The Journal of Supercritical Fluids
+76 (April 2013): 94-114. doi:10.1016/j.supflu.2013.02.002.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.molecular_diameter">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">molecular_diameter</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">Vc=None</em>, <em class="sig-param">Zc=None</em>, <em class="sig-param">omega=None</em>, <em class="sig-param">Vm=None</em>, <em class="sig-param">Vb=None</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#molecular_diameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.molecular_diameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval or calculation a chemical’s
+L-J molecular diameter. Values are available from one source with lookup
+based on CASRNs, or can be estimated from 9 CSP methods.
+Will automatically select a data source to use if no Method is provided;
+returns None if the data is not available.</p>
+<p>Prefered sources are ‘Magalhães, Lito, Da Silva, and Silva (2013)’ for
+common chemicals which had valies listed in that source, and the CSP method
+<cite>Tee, Gotoh, and Stewart CSP with Tc, Pc, omega (1966)</cite> for chemicals which
+don’t.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecular_diameter</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">4.23738</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical temperature, [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical pressure, [Pa]</p></li>
+<li><p><strong>Vc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical volume, [m^3/mol]</p></li>
+<li><p><strong>Zc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical compressibility, [-]</p></li>
+<li><p><strong>omega</strong> (<em>float</em><em>, </em><em>optional</em>) – Acentric factor of compound, [-]</p></li>
+<li><p><strong>Vm</strong> (<em>float</em><em>, </em><em>optional</em>) – Molar volume of liquid at the melting point of the fluid [K]</p></li>
+<li><p><strong>Vb</strong> (<em>float</em><em>, </em><em>optional</em>) – Molar volume of liquid at the boiling point of the fluid [K]</p></li>
+<li><p><strong>CASRN</strong> (<em>string</em><em>, </em><em>optional</em>) – CASRN [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sigma</strong> (<em>float</em>) – Lennard-Jones molecular diameter, [Angstrom]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain epsilon with the given
+inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+molecular_diameter_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+sigma for the desired chemical, and will return methods instead of
+sigma</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>These values are somewhat rough, as they attempt to pigeonhole a chemical
+into L-J behavior.</p>
+<p>The tabulated data is from <a href="#id53"><span class="problematic" id="id4">[2]_</span></a>, for 322 chemicals.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">2</span></dt>
+<dd><p>Magalhães, Ana L., Patrícia F. Lito, Francisco A. Da Silva, and
+Carlos M. Silva. “Simple and Accurate Correlations for Diffusion
+Coefficients of Solutes in Liquids and Supercritical Fluids over Wide
+Ranges of Temperature and Density.” The Journal of Supercritical Fluids
+76 (April 2013): 94-114. doi:10.1016/j.supflu.2013.02.002.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Flynn">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Flynn</code><span class="sig-paren">(</span><em class="sig-param">Vc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Flynn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Flynn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical volume. CSP method by <a href="#id54"><span class="problematic" id="id7">[1]_</span></a> as reported in <a href="#id55"><span class="problematic" id="id8">[2]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 0.561(V_c^{1/3})^{5/4}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid [m^3/mol]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Vc is originally in units of mL/mol.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Flynn</span><span class="p">(</span><span class="mf">0.000268</span><span class="p">)</span>
+<span class="go">5.2506948422196285</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id9"><span class="brackets">1</span></dt>
+<dd><p>Flynn, L.W., M.S. thesis, Northwestern Univ., Evanston, Ill. (1960).</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets">2</span></dt>
+<dd><p>Stiel, L. I., and George Thodos. “Lennard-Jones Force Constants
+Predicted from Critical Properties.” Journal of Chemical &amp; Engineering
+Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_2">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_critical_2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_critical_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical temperature and pressure. CSP method by <a href="#id56"><span class="problematic" id="id11">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 2.44(T_c/P_c)^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid [Pa]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of critical pressure are atmospheres.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Bird_Stewart_Lightfoot_critical_2</span><span class="p">(</span><span class="mf">560.1</span><span class="p">,</span> <span class="mi">4550000</span><span class="p">)</span>
+<span class="go">5.658657684653222</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id12"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_1">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_critical_1</code><span class="sig-paren">(</span><em class="sig-param">Vc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_critical_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical volume. CSP method by <a href="#id57"><span class="problematic" id="id13">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 0.841 V_c^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid [m^3/mol]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of Vc are mL/mol.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Bird_Stewart_Lightfoot_critical_1</span><span class="p">(</span><span class="mf">0.000268</span><span class="p">)</span>
+<span class="go">5.422184116631474</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id14"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_boiling">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_boiling</code><span class="sig-paren">(</span><em class="sig-param">Vb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_boiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_boiling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses molar volume of liquid at boiling. CSP method by <a href="#id58"><span class="problematic" id="id15">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 1.166V_{b,liq}^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Vb</strong> (<em>float</em>) – Boiling molar volume of liquid [m^3/mol]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones collision integral, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of Vb are mL/mol.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="mf">0.0001015</span><span class="p">)</span>
+<span class="go">5.439018856944655</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id16"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_melting">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Bird_Stewart_Lightfoot_melting</code><span class="sig-paren">(</span><em class="sig-param">Vm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Bird_Stewart_Lightfoot_melting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_melting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses molar volume of a liquid at its melting point. CSP method by <a href="#id59"><span class="problematic" id="id17">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 1.222 V_{m,sol}^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Vm</strong> (<em>float</em>) – Melting molar volume of a liquid at its melting point [m^3/mol]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of Vm are mL/mol.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="mf">8.8e-05</span><span class="p">)</span>
+<span class="go">5.435407341351406</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id18"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Stiel_Thodos">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Stiel_Thodos</code><span class="sig-paren">(</span><em class="sig-param">Vc</em>, <em class="sig-param">Zc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Stiel_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Stiel_Thodos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical volume and compressibility. CSP method by <a href="#id60"><span class="problematic" id="id19">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 0.1866 V_c^{1/3} Z_c^{-6/5}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid [m^3/mol]</p></li>
+<li><p><strong>Zc</strong> (<em>float</em>) – Critical compressibility of fluid, [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Vc is originally in units of mL/mol.</p>
+<p class="rubric">Examples</p>
+<p>Monofluorobenzene</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Stiel_Thodos</span><span class="p">(</span><span class="mf">0.000271</span><span class="p">,</span> <span class="mf">0.265</span><span class="p">)</span>
+<span class="go">5.94300853971033</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id20"><span class="brackets">1</span></dt>
+<dd><p>Stiel, L. I., and George Thodos. “Lennard-Jones Force Constants
+Predicted from Critical Properties.” Journal of Chemical &amp; Engineering
+Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_1">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Tee_Gotoh_Steward_1</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Tee_Gotoh_Steward_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical temperature and pressure. CSP method by <a href="#id61"><span class="problematic" id="id21">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = 2.3647 \left(\frac{T_c}{P_c}\right)^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid [Pa]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of Pc are atm. Further regressions with other parameters
+were performed in <a href="#id62"><span class="problematic" id="id22">[1]_</span></a> but are not included here, except for
+<cite>sigma_Tee_Gotoh_Steward_2</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="mf">560.1</span><span class="p">,</span> <span class="mi">4550000</span><span class="p">)</span>
+<span class="go">5.48402779790962</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id23"><span class="brackets">1</span></dt>
+<dd><p>Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. “Molecular
+Parameters for Normal Fluids. Lennard-Jones 12-6 Potential.” Industrial
+&amp; Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.
+doi:10.1021/i160019a011</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_2">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Tee_Gotoh_Steward_2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em>, <em class="sig-param">omega</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Tee_Gotoh_Steward_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical temperature, pressure, and acentric factor. CSP method by
+<a href="#id63"><span class="problematic" id="id24">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma = (2.3551 - 0.0874\omega)\left(\frac{T_c}{P_c}\right)^{1/3}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid [Pa]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Original units of Pc are atm. Further regressions with other parameters
+were performed in <a href="#id64"><span class="problematic" id="id25">[1]_</span></a> but are not included here, except for
+<cite>sigma_Tee_Gotoh_Steward_1</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="mf">560.1</span><span class="p">,</span> <span class="mi">4550000</span><span class="p">,</span> <span class="mf">0.245</span><span class="p">)</span>
+<span class="go">5.412104867264477</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id26"><span class="brackets">1</span></dt>
+<dd><p>Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. “Molecular Parameters
+for Normal Fluids. Lennard-Jones 12-6 Potential.” Industrial
+&amp; Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.
+doi:10.1021/i160019a011</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.sigma_Silva_Liu_Macedo">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">sigma_Silva_Liu_Macedo</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Pc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#sigma_Silva_Liu_Macedo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.sigma_Silva_Liu_Macedo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones molecular diameter.
+Uses critical temperature and pressure. CSP method by <a href="#id65"><span class="problematic" id="id27">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{LJ}^3 = 0.17791 + 11.779 \left( \frac{T_c}{P_c}\right)
+- 0.049029\left( \frac{T_c}{P_c}\right)^2\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid [Pa]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sigma</strong> – Lennard-Jones molecular diameter, [Angstrom]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Pc is originally in bar. An excellent paper. None is
+returned if the polynomial returns a negative number, as in the case of
+1029.13 K and 3.83 bar.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigma_Silva_Liu_Macedo</span><span class="p">(</span><span class="mf">560.1</span><span class="p">,</span> <span class="mi">4550000</span><span class="p">)</span>
+<span class="go">5.164483998730177</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id28"><span class="brackets">1</span></dt>
+<dd><p>Silva, Carlos M., Hongqin Liu, and Eugenia A. Macedo. “Models for
+Self-Diffusion Coefficients of Dense Fluids, Including Hydrogen-Bonding
+Substances.” Chemical Engineering Science 53, no. 13 (July 1, 1998):
+2423-29. doi:10.1016/S0009-2509(98)00037-2</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Flynn">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Flynn</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Flynn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Flynn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses critical temperature. CSP method by <a href="#id66"><span class="problematic" id="id29">[1]_</span></a> as reported in <a href="#id67"><span class="problematic" id="id30">[2]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.77 T_c^{5/6}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Flynn</span><span class="p">(</span><span class="mf">560.1</span><span class="p">)</span>
+<span class="go">345.2984087011443</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id31"><span class="brackets">1</span></dt>
+<dd><p>Flynn, L.W., M.S. thesis, Northwestern Univ., Evanston, Ill. (1960).</p>
+</dd>
+<dt class="label" id="id32"><span class="brackets">2</span></dt>
+<dd><p>Stiel, L. I., and George Thodos. “Lennard-Jones Force Constants
+Predicted from Critical Properties.” Journal of Chemical &amp; Engineering
+Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_critical">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_critical</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_critical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses critical temperature. CSP method by <a href="#id68"><span class="problematic" id="id33">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 0.77T_c\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Bird_Stewart_Lightfoot_critical</span><span class="p">(</span><span class="mf">560.1</span><span class="p">)</span>
+<span class="go">431.27700000000004</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id34"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_boiling</code><span class="sig-paren">(</span><em class="sig-param">Tb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_boiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses boiling temperature. CSP method by <a href="#id69"><span class="problematic" id="id35">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.15 T_b\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tb</strong> (<em>float</em>) – Boiling temperature [K]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="mf">357.85</span><span class="p">)</span>
+<span class="go">411.5275</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id36"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_melting">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Bird_Stewart_Lightfoot_melting</code><span class="sig-paren">(</span><em class="sig-param">Tm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Bird_Stewart_Lightfoot_melting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_melting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses melting temperature. CSP method by <a href="#id70"><span class="problematic" id="id37">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 1.92T_m\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tm</strong> (<em>float</em>) – Melting temperature [K]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="mf">231.15</span><span class="p">)</span>
+<span class="go">443.808</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id38"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Stiel_Thodos">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Stiel_Thodos</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">Zc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Stiel_Thodos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Stiel_Thodos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses Critical temperature and critical compressibility. CSP method by <a href="#id71"><span class="problematic" id="id39">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 65.3 T_c Z_c^{3.6}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Zc</strong> (<em>float</em>) – Critical compressibility of fluid, [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<p>Fluorobenzene</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Stiel_Thodos</span><span class="p">(</span><span class="mf">358.5</span><span class="p">,</span> <span class="mf">0.265</span><span class="p">)</span>
+<span class="go">196.3755830305783</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id40"><span class="brackets">1</span></dt>
+<dd><p>Stiel, L. I., and George Thodos. “Lennard-Jones Force Constants
+Predicted from Critical Properties.” Journal of Chemical &amp; Engineering
+Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_1">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Tee_Gotoh_Steward_1</code><span class="sig-paren">(</span><em class="sig-param">Tc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Tee_Gotoh_Steward_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses Critical temperature. CSP method by <a href="#id72"><span class="problematic" id="id41">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = 0.7740T_c\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Further regressions with other parameters were performed in <a href="#id73"><span class="problematic" id="id42">[1]_</span></a> but are
+not included here, except for <cite>epsilon_Tee_Gotoh_Steward_2</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="mf">560.1</span><span class="p">)</span>
+<span class="go">433.5174</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id43"><span class="brackets">1</span></dt>
+<dd><p>Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. “Molecular Parameters
+for Normal Fluids. Lennard-Jones 12-6 Potential.” Industrial &amp;
+Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.
+doi:10.1021/i160019a011</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_2">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">epsilon_Tee_Gotoh_Steward_2</code><span class="sig-paren">(</span><em class="sig-param">Tc</em>, <em class="sig-param">omega</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#epsilon_Tee_Gotoh_Steward_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones depth of potential-energy minimum.
+Uses critical temperature and acentric factor. CSP method by <a href="#id74"><span class="problematic" id="id44">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\epsilon/k = (0.7915 + 0.1693 \omega)T_c\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>omega</strong> (<em>float</em>) – Acentric factor for fluid, [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epsilon_k</strong> – Lennard-Jones depth of potential-energy minimum over k, [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Further regressions with other parameters were performed in <a href="#id75"><span class="problematic" id="id45">[1]_</span></a> but are
+not included here, except for <cite>epsilon_Tee_Gotoh_Steward_1</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="mf">560.1</span><span class="p">,</span> <span class="mf">0.245</span><span class="p">)</span>
+<span class="go">466.55125785</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id46"><span class="brackets">1</span></dt>
+<dd><p>Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. “Molecular Parameters
+for Normal Fluids. Lennard-Jones 12-6 Potential.” Industrial &amp;
+Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.
+doi:10.1021/i160019a011</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.collision_integral_Neufeld_Janzen_Aziz">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">collision_integral_Neufeld_Janzen_Aziz</code><span class="sig-paren">(</span><em class="sig-param">Tstar</em>, <em class="sig-param">l=1</em>, <em class="sig-param">s=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#collision_integral_Neufeld_Janzen_Aziz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.collision_integral_Neufeld_Janzen_Aziz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones collision integral for any of 16 values of
+(l,j) for the wide range of 0.3 &lt; Tstar &lt; 100. Values are accurate to
+0.1 % of actual values, but the calculation of actual values is
+computationally intensive and so these simplifications are used, developed
+in <a href="#id76"><span class="problematic" id="id47">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\Omega_D = \frac{A}{T^{*B}} + \frac{C}{\exp(DT^*)} +
+\frac{E}{\exp(FT^{*})} + \frac{G}{\exp(HT^*)} + RT^{*B}\sin(ST^{*W}-P)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tstar</strong> (<em>float</em>) – Reduced temperature of the fluid [-]</p></li>
+<li><p><strong>l</strong> (<em>int</em>) – term</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – term</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Omega</strong> – Collision integral of A and B</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+(1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),
+(3, 5), and (4, 4).</p>
+<div class="math notranslate nohighlight">
+\[T^* = \frac{k_b T}{\epsilon}\]</div>
+<p>Results are very similar to those of the more modern formulation,
+<cite>collision_integral_Kim_Monroe</cite>.</p>
+<p>Calculations begin to yield overflow errors in some values of (l, 2) after
+Tstar = 75, beginning with (1, 7). Also susceptible are (1, 5) and (1, 6).</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collision_integral_Neufeld_Janzen_Aziz</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">0.516717697672334</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id48"><span class="brackets">1</span></dt>
+<dd><p>Neufeld, Philip D., A. R. Janzen, and R. A. Aziz. “Empirical
+Equations to Calculate 16 of the Transport Collision Integrals
+Omega(l, S)* for the Lennard-Jones (12-6) Potential.” The Journal of
+Chemical Physics 57, no. 3 (August 1, 1972): 1100-1102.
+doi:10.1063/1.1678363</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.collision_integral_Kim_Monroe">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">collision_integral_Kim_Monroe</code><span class="sig-paren">(</span><em class="sig-param">Tstar</em>, <em class="sig-param">l=1</em>, <em class="sig-param">s=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#collision_integral_Kim_Monroe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.collision_integral_Kim_Monroe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates Lennard-Jones collision integral for any of 16 values of
+(l,j) for the wide range of 0.3 &lt; Tstar &lt; 400. Values are accurate to
+0.007 % of actual values, but the calculation of actual values is
+computationally intensive and so these simplifications are used, developed
+in <a href="#id77"><span class="problematic" id="id49">[1]_</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\Omega^{(l,s)*} = A^{(l,s)} + \sum_{k=1}^6 \left[ \frac{B_k^{(l,s)}}
+{(T^*)^k} + C_k^{(l,s)} (\ln T^*)^k \right]\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tstar</strong> (<em>float</em>) – Reduced temperature of the fluid [-]</p></li>
+<li><p><strong>l</strong> (<em>int</em>) – term</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – term</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Omega</strong> – Collision integral of A and B</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+(1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),
+(3, 5), and (4, 4).</p>
+<div class="math notranslate nohighlight">
+\[T^* = \frac{k_b T}{\epsilon}\]</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collision_integral_Kim_Monroe</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">0.4141818082392228</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id50"><span class="brackets">1</span></dt>
+<dd><p>Kim, Sun Ung, and Charles W. Monroe. “High-Accuracy Calculations of
+Sixteen Collision Integrals for Lennard-Jones (12-6) Gases and Their
+Interpolation to Parameterize Neon, Argon, and Krypton.” Journal of
+Computational Physics 273 (September 15, 2014): 358-73.
+doi:10.1016/j.jcp.2014.05.018.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.lennard_jones.Tstar">
+<code class="sig-prename descclassname">thermosteam.properties.lennard_jones.</code><code class="sig-name descname">Tstar</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">epsilon_k=None</em>, <em class="sig-param">epsilon=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/lennard_jones.html#Tstar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.lennard_jones.Tstar" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the parameter <cite>Tstar</cite> as needed in performing
+collision integral calculations.</p>
+<div class="math notranslate nohighlight">
+\[T^* = \frac{kT}{\epsilon}\]</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tstar</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">318.2</span><span class="p">,</span> <span class="n">epsilon_k</span><span class="o">=</span><span class="mf">308.43</span><span class="p">)</span>
+<span class="go">1.0316765554582887</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epsilon_k</strong> (<em>float</em><em>, </em><em>optional</em>) – Lennard-Jones depth of potential-energy minimum over k, [K]</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em><em>, </em><em>optional</em>) – Lennard-Jones depth of potential-energy minimum [J]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tstar</strong> – Dimentionless temperature for calculating collision integral, [-]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Tabulated values are normally listed as epsilon/k. k is the Boltzman
+constant, with units of J/K.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id51"><span class="brackets">1</span></dt>
+<dd><p>Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.
+Transport Phenomena, Revised 2nd Edition. New York:
+John Wiley &amp; Sons, Inc., 2006</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="miscdata.html" class="btn btn-neutral float-right" title="miscdata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="law.html" class="btn btn-neutral float-left" title="law" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

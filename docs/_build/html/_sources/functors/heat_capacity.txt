@@ -1,5 +1,0 @@
-heat_capacity
-=============
-
-.. automodule:: thermosteam.functors.heat_capacity
-   :members:

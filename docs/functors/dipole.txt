@@ -1,5 +1,0 @@
-dipole
-======
-
-.. automodule:: thermosteam.functors.dipole
-   :members:

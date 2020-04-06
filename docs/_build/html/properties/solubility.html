@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>solubility &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="interface" href="interface.html" />
+    <link rel="prev" title="safety" href="safety.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>solubility</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/solubility.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.solubility">
+<span id="solubility"></span><h1>solubility<a class="headerlink" href="#module-thermosteam.properties.solubility" title="Permalink to this headline">¶</a></h1>
+<p>All data and methods for estimating a chemical’s solubility.</p>
+<dl class="function">
+<dt id="thermosteam.properties.solubility.solubility_parameter">
+<code class="sig-prename descclassname">thermosteam.properties.solubility.</code><code class="sig-name descname">solubility_parameter</code><span class="sig-paren">(</span><em class="sig-param">T=298.15</em>, <em class="sig-param">Hvapm=None</em>, <em class="sig-param">Vml=None</em>, <em class="sig-param">CASRN=''</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/solubility.html#solubility_parameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.solubility.solubility_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the calculation of a chemical’s solubility
+parameter. Calculation is a function of temperature, but is not always
+presented as such. No lookup values are available; either <cite>Hvapm</cite>, <cite>Vml</cite>,
+and <cite>T</cite> are provided or the calculation cannot be performed.</p>
+<div class="math notranslate nohighlight">
+\[\delta = \sqrt{\frac{\Delta H_{vap} - RT}{V_m}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of the fluid [k]</p></li>
+<li><p><strong>Hvapm</strong> (<em>float</em>) – Heat of vaporization [J/mol/K]</p></li>
+<li><p><strong>Vml</strong> (<em>float</em>) – Specific volume of the liquid [m^3/mol]</p></li>
+<li><p><strong>CASRN</strong> (<em>str</em><em>, </em><em>optional</em>) – CASRN of the fluid, not currently used [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>delta</strong> (<em>float</em>) – Solubility parameter, [Pa^0.5]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain the solubility parameter
+with the given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – A string for the method name to use, as defined by constants in
+solubility_parameter_methods</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+the solubility parameter for the desired chemical, and will return
+methods instead of the solubility parameter</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Undefined past the critical point. For convenience, if Hvap is not defined,
+an error is not raised; None is returned instead. Also for convenience,
+if Hvapm is less than RT, None is returned to avoid taking the root of a
+negative number.</p>
+<p>This parameter is often given in units of cal/ml, which is 2045.48 times
+smaller than the value returned here.</p>
+<p class="rubric">Examples</p>
+<p>Pentane at STP</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solubility_parameter</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">298.2</span><span class="p">,</span> <span class="n">Hvapm</span><span class="o">=</span><span class="mf">26403.3</span><span class="p">,</span> <span class="n">Vml</span><span class="o">=</span><span class="mf">0.000116055</span><span class="p">)</span>
+<span class="go">14357.681538173534</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Barton, Allan F. M. CRC Handbook of Solubility Parameters and Other
+Cohesion Parameters, Second Edition. CRC Press, 1991.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.solubility.solubility_eutectic">
+<code class="sig-prename descclassname">thermosteam.properties.solubility.</code><code class="sig-name descname">solubility_eutectic</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">Tm</em>, <em class="sig-param">Hm</em>, <em class="sig-param">Cpl=0</em>, <em class="sig-param">Cps=0</em>, <em class="sig-param">gamma=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/solubility.html#solubility_eutectic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.solubility.solubility_eutectic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum solubility of a solute in a solvent.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\ln x_i^L \gamma_i^L = \frac{\Delta H_{m,i}}{RT}\left(
+1 - \frac{T}{T_{m,i}}\right) - \frac{\Delta C_{p,i}(T_{m,i}-T)}{RT}
++ \frac{\Delta C_{p,i}}{R}\ln\frac{T_m}{T}\\\Delta C_{p,i} = C_{p,i}^L - C_{p,i}^S\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em>) – Temperature of the system [K]</p></li>
+<li><p><strong>Tm</strong> (<em>float</em>) – Melting temperature of the solute [K]</p></li>
+<li><p><strong>Hm</strong> (<em>float</em>) – Heat of melting at the melting temperature of the solute [J/mol]</p></li>
+<li><p><strong>Cpl</strong> (<em>float</em><em>, </em><em>optional</em>) – Molar heat capacity of the solute as a liquid [J/mol/K]</p></li>
+<li><p><strong>Cpls</strong> (<em>float</em><em>, </em><em>optional</em>) – Molar heat capacity of the solute as a solid [J/mol/K]</p></li>
+<li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) – Activity coefficient of the solute as a liquid [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Mole fraction of solute at maximum solubility [-]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>gamma is of the solute in liquid phase</p>
+<p class="rubric">Examples</p>
+<p>From <a href="#id6"><span class="problematic" id="id2">[1]_</span></a>, matching example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solubility_eutectic</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mf">260.</span><span class="p">,</span> <span class="n">Tm</span><span class="o">=</span><span class="mf">278.68</span><span class="p">,</span> <span class="n">Hm</span><span class="o">=</span><span class="mf">9952.</span><span class="p">,</span> <span class="n">Cpl</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Cps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">3.0176</span><span class="p">)</span>
+<span class="go">0.24340068761677464</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
+<dd><p>Gmehling, Jurgen. Chemical Thermodynamics: For Process Simulation.
+Weinheim, Germany: Wiley-VCH, 2012.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.solubility.Tm_depression_eutectic">
+<code class="sig-prename descclassname">thermosteam.properties.solubility.</code><code class="sig-name descname">Tm_depression_eutectic</code><span class="sig-paren">(</span><em class="sig-param">Tm</em>, <em class="sig-param">Hm</em>, <em class="sig-param">x=None</em>, <em class="sig-param">M=None</em>, <em class="sig-param">MW=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/solubility.html#Tm_depression_eutectic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.solubility.Tm_depression_eutectic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the freezing point depression caused by a solute in a solvent.
+Can use either the mole fraction of the solute or its molality and the
+molecular weight of the solvent. Assumes ideal system behavior.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\Delta T_m = \frac{R T_m^2 x}{\Delta H_m}\\\Delta T_m = \frac{R T_m^2 (MW) M}{1000 \Delta H_m}\end{aligned}\end{align} \]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tm</strong> (<em>float</em>) – Melting temperature of the solute [K]</p></li>
+<li><p><strong>Hm</strong> (<em>float</em>) – Heat of melting at the melting temperature of the solute [J/mol]</p></li>
+<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – Mole fraction of the solute [-]</p></li>
+<li><p><strong>M</strong> (<em>float</em><em>, </em><em>optional</em>) – Molality [mol/kg]</p></li>
+<li><p><strong>MW</strong> (<em>float</em><em>, </em><em>optional</em>) – Molecular weight of the solvent [g/mol]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dTm</strong> – Freezing point depression [K]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>MW is the molecular weight of the solvent. M is the molality of the solute.</p>
+<p class="rubric">Examples</p>
+<p>From <a href="#id7"><span class="problematic" id="id4">[1]_</span></a>, matching example.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tm_depression_eutectic</span><span class="p">(</span><span class="mf">353.35</span><span class="p">,</span> <span class="mi">19110</span><span class="p">,</span> <span class="o">.</span><span class="mi">02</span><span class="p">)</span>
+<span class="go">1.0864594900639515</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
+<dd><p>Gmehling, Jurgen. Chemical Thermodynamics: For Process Simulation.
+Weinheim, Germany: Wiley-VCH, 2012.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="interface.html" class="btn btn-neutral float-right" title="interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="safety.html" class="btn btn-neutral float-left" title="safety" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

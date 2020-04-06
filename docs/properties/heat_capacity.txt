@@ -1,0 +1,5 @@
+heat_capacity
+=============
+
+.. automodule:: thermosteam.properties.heat_capacity
+   :members:

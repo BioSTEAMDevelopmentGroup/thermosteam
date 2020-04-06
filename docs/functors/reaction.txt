@@ -1,5 +1,0 @@
-reaction
-========
-
-.. automodule:: thermosteam.functors.reaction
-   :members:

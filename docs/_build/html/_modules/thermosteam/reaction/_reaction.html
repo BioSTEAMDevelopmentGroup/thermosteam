@@ -85,10 +85,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../functors/functors_module.html">functors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
 </ul>
 
             
@@ -324,10 +324,10 @@
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">stoichiometry</span> <span class="o">=</span> <span class="n">prs</span><span class="o">.</span><span class="n">get_stoichiometric_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stoichiometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(&#39;</span><span class="si">{stoichiometry}</span><span class="s2">&#39;, reactant=&#39;</span><span class="si">{self.reactant}</span><span class="s2">&#39;, X=</span><span class="si">{self.X:.3g}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(&#39;</span><span class="si">{</span><span class="n">stoichiometry</span><span class="si">}</span><span class="s2">&#39;, reactant=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="si">}</span><span class="s2">&#39;, X=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">)&quot;</span>
     
     <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">outs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:&quot;</span>
+        <span class="n">outs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:&quot;</span>
         <span class="n">rxn</span> <span class="o">=</span> <span class="n">prs</span><span class="o">.</span><span class="n">get_stoichiometric_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stoichiometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="p">)</span>
         <span class="nb">cmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>
         <span class="n">lrxn</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rxn</span><span class="p">)</span>
@@ -338,7 +338,7 @@
         <span class="n">outs</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> stoichiometry&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">maxrxnlen</span> <span class="o">-</span> <span class="mi">13</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;reactant&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">maxcmplen</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  X[%]&#39;</span>
         <span class="n">rxn_spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">maxrxnlen</span> <span class="o">-</span> <span class="n">lrxn</span><span class="p">)</span>
         <span class="n">cmp_spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">maxcmplen</span> <span class="o">-</span> <span class="n">lcmp</span><span class="p">)</span>
-        <span class="n">outs</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{rxn}{rxn_spaces}{cmp}{cmp_spaces}</span><span class="s2">{X*100: &gt;6.2f}&quot;</span>
+        <span class="n">outs</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">rxn</span><span class="si">}{</span><span class="n">rxn_spaces</span><span class="si">}{</span><span class="nb">cmp</span><span class="si">}{</span><span class="n">cmp_spaces</span><span class="si">}{</span><span class="n">X</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2"> &gt;6.2f</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">outs</span><span class="p">)</span>
     <span class="n">_ipython_display_</span> <span class="o">=</span> <span class="n">show</span></div>
 
@@ -425,10 +425,10 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_X_index</span><span class="p">])</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;{type(self).__name__}: {&#39;, &#39;.join(set(self.reactants))}&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reactants</span><span class="p">))</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
     
     <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">outs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:&quot;</span>
+        <span class="n">outs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:&quot;</span>
         <span class="n">chemicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span>
         <span class="n">rxns</span> <span class="o">=</span> <span class="p">[</span><span class="n">prs</span><span class="o">.</span><span class="n">get_stoichiometric_string</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stoichiometry</span><span class="p">]</span>
         <span class="n">maxrxnlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="mi">13</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rxns</span><span class="p">]])</span> <span class="o">+</span> <span class="mi">2</span>
@@ -443,7 +443,7 @@
             <span class="n">cmp_spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">maxcmplen</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">cmp</span><span class="p">))</span>
             <span class="n">num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
             <span class="n">numspace</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxnumspace</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">))</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
-            <span class="n">outs</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[</span><span class="si">{N}</span><span class="s2">]</span><span class="si">{numspace}{rxn}{rxn_spaces}{cmp}{cmp_spaces}</span><span class="s2">{X*100: &gt;6.2f}&quot;</span>
+            <span class="n">outs</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">numspace</span><span class="si">}{</span><span class="n">rxn</span><span class="si">}{</span><span class="n">rxn_spaces</span><span class="si">}{</span><span class="nb">cmp</span><span class="si">}{</span><span class="n">cmp_spaces</span><span class="si">}{</span><span class="n">X</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2"> &gt;6.2f</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">outs</span><span class="p">)</span>
     <span class="n">_ipython_display_</span> <span class="o">=</span> <span class="n">show</span>
         

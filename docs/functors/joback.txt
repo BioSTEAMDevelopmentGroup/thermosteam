@@ -1,5 +1,0 @@
-joback
-======
-
-.. automodule:: thermosteam.functors.joback
-   :members:

@@ -85,10 +85,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../properties/properties_module.html">properties</a></li>
 </ul>
 
             
@@ -209,7 +209,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(</span><span class="si">{self.value}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 
 <span class="c1"># %% Abstract indexer</span>
@@ -347,14 +347,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tabs</span><span class="p">:</span> <span class="n">tabs</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">tabs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span> 
         <span class="n">tab</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;phase={repr(self.phase)}&quot;</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;phase=</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">tab</span><span class="p">:</span>
             <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span>
             <span class="n">phase</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">phase</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
         <span class="n">ID_data</span> <span class="o">=</span> <span class="n">repr_IDs_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">dlim</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(</span><span class="si">{phase}{ID_data}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">phase</span><span class="si">}{</span><span class="n">ID_data</span><span class="si">}</span><span class="s2">)&quot;</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">()</span>
@@ -367,12 +367,12 @@
         <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">nonzeros</span><span class="p">(</span><span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="n">N_IDs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">N_IDs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: (empty)&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: (empty)&quot;</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
-            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__} (</span><span class="si">{self.units}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{self.phase}</span><span class="s1">) &#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="si">}</span><span class="s1">) &#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
         <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
         <span class="n">data_info</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IDs</span><span class="p">]</span>
@@ -384,7 +384,7 @@
             <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span>
-            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+            <span class="n">data_info</span> <span class="o">+=</span> <span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="n">too_many_chemicals</span><span class="p">:</span>
             <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">basic_info</span>
@@ -601,7 +601,7 @@
         <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_data</span><span class="p">():</span>
             <span class="n">ID_data</span> <span class="o">=</span> <span class="n">repr_couples</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ID_data</span><span class="p">:</span>
-                <span class="n">phase_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{phase}</span><span class="s2">=[</span><span class="si">{ID_data}</span><span class="s2">]&quot;</span><span class="p">)</span>
+                <span class="n">phase_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">=[</span><span class="si">{</span><span class="n">ID_data</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
         <span class="n">tabs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span> <span class="k">if</span> <span class="n">tabs</span> <span class="k">else</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">tabs</span><span class="p">:</span>
             <span class="n">tab</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
@@ -614,10 +614,10 @@
             <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
                 <span class="n">phase_data</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">phase_data</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">phases</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;phases=</span><span class="si">{self.phases}</span><span class="s1">&#39;</span>
+            <span class="n">phases</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;phases=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
                 <span class="n">phase_data</span> <span class="o">=</span> <span class="n">dlim</span> <span class="o">+</span> <span class="n">phase_data</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(</span><span class="si">{phases}{phase_data}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">phases</span><span class="si">}{</span><span class="n">phase_data</span><span class="si">}</span><span class="s2">)&quot;</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
@@ -630,11 +630,11 @@
         <span class="n">index</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}: (empty)&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: (empty)&quot;</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
-            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__} (</span><span class="si">{self.units}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">basic_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">all_IDs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">])</span>
 
         <span class="c1"># Length of chemical column</span>
@@ -649,7 +649,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">IDs</span><span class="p">:</span> <span class="k">continue</span>
         
             <span class="c1"># Get basic structure for phase data</span>
-            <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{phase}</span><span class="s1">) &#39;</span>
+            <span class="n">beginning</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s1">) &#39;</span>
             <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
 
             <span class="c1"># Set chemical data</span>
@@ -661,7 +661,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
                 <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">i</span><span class="p">:</span> <span class="n">data_info</span> <span class="o">+=</span> <span class="n">new_line</span>
-                <span class="n">data_info</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+                <span class="n">data_info</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">if</span> <span class="n">too_many_chemicals</span><span class="p">:</span> <span class="n">data</span> <span class="o">+=</span> <span class="n">new_line</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
             <span class="c1"># Put it together</span>
             <span class="n">phases_data_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">data_info</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -810,7 +810,7 @@
             <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">chem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chemicals</span><span class="p">):</span>
                 <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
                 <span class="n">phase_name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">_phase_names</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
-                <span class="n">vol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">VolumetricFlowProperty</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{phase_name}{chem.ID}</span><span class="s2">&quot;</span><span class="p">,</span> 
+                <span class="n">vol</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">VolumetricFlowProperty</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}{</span><span class="n">chem</span><span class="o">.</span><span class="n">ID</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> 
                                                     <span class="n">mol</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">chem</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">TP</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">[</span><span class="n">TP</span><span class="p">]</span> <span class="o">=</span> \
         <span class="n">vol</span> <span class="o">=</span> <span class="n">VolumetricFlowIndexer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">property_array</span><span class="p">(</span><span class="n">vol</span><span class="p">),</span>

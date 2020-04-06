@@ -1,0 +1,39 @@
+properties
+==========
+
+The functors subpackage contains all pure component functors for Chemical objects.
+
+.. toctree::
+   :maxdepth: 1
+
+   acentric
+   combustion
+   critical
+   dipole
+   dippr
+   datasheet
+   electrolytes
+   electrolyte_conductivity
+   elements
+   eos
+   heat_capacity
+   identifiers
+   joback
+   law
+   lennard_jones
+   miscdata
+   permittivity
+   phase_change
+   reaction
+   refractivity
+   safety
+   solubility
+   interface
+   thermal_conductivity
+   triple
+   utils
+   vapor_pressure
+   virial
+   viscosity
+   volume
+   

@@ -14,7 +14,7 @@ from ._thermal_condition import ThermalCondition
 from .base import functor
 
 from . import base
-from . import functors
+from . import properties
 from . import indexer
 from . import equilibrium
 from . import exceptions
@@ -24,5 +24,5 @@ from . import mixture
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture',
-           'settings', 'functor', 'functors', 'base', 'equilibrium',
+           'settings', 'functor', 'properties', 'base', 'equilibrium',
            'exceptions', 'functional', 'reaction')

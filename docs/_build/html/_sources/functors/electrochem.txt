@@ -1,5 +1,0 @@
-electrochem
-===========
-
-.. automodule:: thermosteam.functors.electrochem
-   :members:

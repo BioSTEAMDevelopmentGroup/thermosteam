@@ -85,10 +85,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../properties/properties_module.html">properties</a></li>
 </ul>
 
             
@@ -305,7 +305,7 @@
 <div class="viewcode-block" id="Chemicals.append"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Append a Chemical.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;only &#39;Chemical&#39; objects are allowed, &quot;</span>
-                                               <span class="sa">f</span><span class="s2">&quot;not &#39;{type(chemical).__name__}&#39;&quot;</span><span class="p">)</span>
+                                               <span class="sa">f</span><span class="s2">&quot;not &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">chemical</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="Chemicals.extend"><a class="viewcode-back" href="../../Chemicals.html#thermosteam.Chemicals.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">):</span>
@@ -315,7 +315,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chemical</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemical</span><span class="p">,</span> <span class="n">Chemical</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;only &#39;Chemical&#39; objects are allowed, &quot;</span>
-                                                        <span class="sa">f</span><span class="s2">&quot;not &#39;{type(chemical).__name__}&#39;&quot;</span><span class="p">)</span>
+                                                        <span class="sa">f</span><span class="s2">&quot;not &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">chemical</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chemical</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">chemical</span><span class="p">)</span></div>
     
     <span class="n">kwarray</span> <span class="o">=</span> <span class="n">array</span> <span class="o">=</span> <span class="n">index</span> <span class="o">=</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">must_compile</span>
@@ -330,7 +330,7 @@
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(self.__dict__)}])&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">([</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="si">}</span><span class="s2">])&quot;</span></div>
 
 
 <div class="viewcode-block" id="CompiledChemicals"><a class="viewcode-back" href="../../CompiledChemicals.html#thermosteam.CompiledChemicals">[docs]</a><span class="nd">@read_only</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;extend&#39;</span><span class="p">))</span>
@@ -464,7 +464,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_slots</span><span class="p">:</span> <span class="k">continue</span>
             <span class="n">missing</span> <span class="o">=</span> <span class="n">repr_listed_values</span><span class="p">(</span><span class="n">missing_slots</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{chemical}</span><span class="s2"> is missing key thermodynamic properties (</span><span class="si">{missing}</span><span class="s2">); &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chemical</span><span class="si">}</span><span class="s2"> is missing key thermodynamic properties (</span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">); &quot;</span>
                 <span class="s2">&quot;use the `&lt;Chemical&gt;.get_missing_slots()` to check &quot;</span>
                 <span class="s2">&quot;all missing properties&quot;</span><span class="p">)</span>
         <span class="n">IDs</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">ID</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chemicals</span><span class="p">])</span>
@@ -588,7 +588,7 @@
         <span class="n">chemical</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">)</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="k">if</span> <span class="n">synonym</span> <span class="ow">in</span> <span class="n">dct</span> <span class="ow">and</span> <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">chemical</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;synonym &#39;</span><span class="si">{synonym}</span><span class="s2">&#39; already in use by {repr(dct[synonym])}&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;synonym &#39;</span><span class="si">{</span><span class="n">synonym</span><span class="si">}</span><span class="s2">&#39; already in use by </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">ID</span><span class="p">]</span>
             <span class="n">dct</span><span class="p">[</span><span class="n">synonym</span><span class="p">]</span> <span class="o">=</span> <span class="n">chemical</span></div>
@@ -849,7 +849,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_lle</span> <span class="o">&amp;</span> <span class="n">nonzeros</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}([{&#39;, &#39;.join(self.IDs)}])&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">([</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IDs</span><span class="p">)</span><span class="si">}</span><span class="s2">])&quot;</span></div>
 </pre></div>
 
            </div>

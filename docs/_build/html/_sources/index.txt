@@ -27,10 +27,10 @@ Key Features & Capabilities
    
    Overview
    Installation
-   tutorial/Getting started
-   tutorial/Thermodynamic equilibrium
-   tutorial/Thermo property packages
-   tutorial/Stoichiometric reactions
+   tutorial/Getting_started
+   tutorial/Thermodynamic_equilibrium
+   tutorial/Thermo_property_packages
+   tutorial/Stoichiometric_reactions
 
 
 .. toctree::
@@ -50,7 +50,7 @@ Key Features & Capabilities
    indexer/indexer_module
    exceptions
    functional
-   functors/functors_module
+   properties/properties_module
 
 
 Indices and tables

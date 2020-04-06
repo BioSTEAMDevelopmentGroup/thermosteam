@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dippr &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="datasheet" href="datasheet.html" />
+    <link rel="prev" title="dipole" href="dipole.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>dippr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/dippr.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.dippr">
+<span id="dippr"></span><h1>dippr<a class="headerlink" href="#module-thermosteam.properties.dippr" title="Permalink to this headline">¶</a></h1>
+<p>Property calculation methods from the Design Institute for Physical Properties (DIPPR) <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id4">2</a>,<a href="#id5">3</a>,<a href="#id6">4</a>,<a href="#id7">5</a>,<a href="#id8">6</a>,<a href="#id9">7</a>,<a href="#id10">8</a>,<a href="#id12">9</a>,<a href="#id13">10</a>,<a href="#id14">11</a>,<a href="#id15">12</a>)</span></dt>
+<dd><p>Design Institute for Physical Properties, 1996. DIPPR Project 801
+DIPPR/AIChE</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id11">2</a></span></dt>
+<dd><p>Aly, Fouad A., and Lloyd L. Lee. “Self-Consistent Equations for
+Calculating the Ideal Gas Heat Capacity, Enthalpy, and Entropy.” Fluid
+Phase Equilibria 6, no. 3 (January 1, 1981): 169-79.
+doi:10.1016/0378-3812(81)85002-9.</p>
+</dd>
+</dl>
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ100">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ100</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ100" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ100 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id4">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>G</strong> (<em>float</em>) – Gibbs free energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong><strong>,</strong><strong>F</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation # 100. Used in calculating the molar heat capacities</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>liquids and solids</strong><strong>, </strong><strong>liquid thermal conductivity</strong><strong>, </strong><strong>and solid density.</strong> (<em>of</em>) – </p></li>
+<li><p><strong>parameters default to zero. As this is a straightforward polynomial</strong><strong>,</strong> (<em>All</em>) – </p></li>
+<li><p><strong>restrictions on parameters apply. Note that high-order polynomials like</strong> (<em>no</em>) – </p></li>
+<li><p><strong>may need large numbers of decimal places to avoid unnecessary error.</strong> (<em>this</em>) – </p></li>
+<li><p><strong>math:</strong> (<em>.</em>) – Y = A + BT + CT^2 + DT^3 + ET^4 + FT^5 + GT^6:</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-G</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ100_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ100_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ100_integral_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. All derivatives and
+integrals are easily computed with SymPy.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = B + 2 C T + 3 D T^{2} + 4 E T^{3} + 5 F T^{4}
++ 6 G T^{5}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = A T + \frac{B T^{2}}{2} + \frac{C T^{3}}{3} + \frac{D
+T^{4}}{4} + \frac{E T^{5}}{5} + \frac{F T^{6}}{6} + \frac{G T^{7}}{7}\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = A \log{\left (T \right )} + B T + \frac{C T^{2}}
+{2} + \frac{D T^{3}}{3} + \frac{E T^{4}}{4} + \frac{F T^{5}}{5}
++ \frac{G T^{6}}{6}\]</div>
+<p class="rubric">Examples</p>
+<p>Water liquid heat capacity; DIPPR coefficients normally listed in J/kmol/K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ100</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">276370.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2090.1</span><span class="p">,</span> <span class="mf">8.125</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.014116</span><span class="p">,</span> <span class="mf">0.0000093701</span><span class="p">)</span>
+<span class="go">75355.81000000003</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ101">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ101</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ101"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ101" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ101 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id5">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation # 101. Used in calculating vapor pressure</strong><strong>, </strong><strong>sublimation</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>and liquid viscosity. All 5 parameters are required.</strong> (<em>pressure</em><em>,</em>) – </p></li>
+<li><p><strong>is often an integer. As the model is exponential</strong><strong>, </strong><strong>a sufficiently high</strong> (<em>E</em>) – </p></li>
+<li><p><strong>will cause an OverflowError. A negative temperature</strong> (<em>temperature</em>) – </p></li>
+<li><p><strong>just low</strong><strong>, </strong><strong>if fit poorly</strong><strong>) </strong><strong>may cause a math domain error.</strong> (<em>(</em><em>or</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = expleft(A + frac{B}{T} + Ccdot ln T + D cdot T^Eright)</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-E</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is not integrable for either dT or Y/T dT.</p>
+<p class="rubric">Examples</p>
+<p>Water vapor pressure; DIPPR coefficients normally listed in Pa:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ101</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">73.649</span><span class="p">,</span> <span class="o">-</span><span class="mf">7258.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.3037</span><span class="p">,</span> <span class="mf">4.1653E-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">3537.44834545549</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ102">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ102</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ102"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ102" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ102 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id6">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation # 102. Used in calculating vapor viscosity</strong><strong>, </strong><strong>vapor</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>conductivity</strong><strong>, </strong><strong>and sometimes solid heat capacity. High values of B</strong> (<em>thermal</em>) – </p></li>
+<li><p><strong>an OverflowError. All 4 parameters are required. C and D are often 0.</strong> (<em>raise</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = frac{Acdot T^B}{1 + frac{C}{T} + frac{D}{T^2}}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-D</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ102_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ102_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ102_integral_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. The first derivative is
+easily computed; the two integrals required Rubi to perform the integration.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = \frac{A B T^{B}}{T \left(\frac{C}{T} + \frac{D}{T^{2}}
++ 1\right)} + \frac{A T^{B} \left(\frac{C}{T^{2}} + \frac{2 D}{T^{3}}
+\right)}{\left(\frac{C}{T} + \frac{D}{T^{2}} + 1\right)^{2}}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = - \frac{2 A T^{B + 3} \operatorname{hyp2f1}{\left (1,B + 3,
+B + 4,- \frac{2 T}{C - \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 3\right)
+\left(C + \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}} + \frac{2 A
+T^{B + 3} \operatorname{hyp2f1}{\left (1,B + 3,B + 4,- \frac{2 T}{C
++ \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 3\right) \left(C
+- \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = - \frac{2 A T^{B + 2} \operatorname{hyp2f1}{\left
+(1,B + 2,B + 3,- \frac{2 T}{C + \sqrt{C^{2} - 4 D}} \right )}}{\left(B
++ 2\right) \left(C + \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}
++ \frac{2 A T^{B + 2} \operatorname{hyp2f1}{\left (1,B + 2,B + 3,
+- \frac{2 T}{C - \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 2\right)
+\left(C - \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}\]</div>
+<p class="rubric">Examples</p>
+<p>Water vapor viscosity; DIPPR coefficients normally listed in Pa*s:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ102</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">1.7096E-8</span><span class="p">,</span> <span class="mf">1.1146</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">9.860384711890639e-06</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ104">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ104</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ104"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ104" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ104 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id7">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #104. Often used in calculating second virial</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>of gases.</strong> (<em>coefficients</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = A + frac{B}{T} + frac{C}{T^3} + frac{D}{T^8} + frac{E}{T^9}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-E</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ104_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ104_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ104_derivative_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. All expressions can be
+obtained with SymPy readily.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = - \frac{B}{T^{2}} - \frac{3 C}{T^{4}}
+- \frac{8 D}{T^{9}} - \frac{9 E}{T^{10}}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = A T + B \log{\left (T \right )} - \frac{1}{56 T^{8}}
+\left(28 C T^{6} + 8 D T + 7 E\right)\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = A \log{\left (T \right )} - \frac{1}{72 T^{9}}
+\left(72 B T^{8} + 24 C T^{6} + 9 D T + 8 E\right)\]</div>
+<p class="rubric">Examples</p>
+<p>Water second virial coefficient; DIPPR coefficients normally dimensionless:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ104</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">0.02222</span><span class="p">,</span> <span class="o">-</span><span class="mf">26.38</span><span class="p">,</span> <span class="o">-</span><span class="mi">16750000</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.894E19</span><span class="p">,</span> <span class="mf">3.133E21</span><span class="p">)</span>
+<span class="go">-1.1204179007265156</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ105">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ105</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ105"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ105" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ105 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id8">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>vol</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #105. Often used in calculating liquid molar density.</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>is sometimes the fluid's critical temperature.</strong> (<em>C</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = frac{A}{B^{1 + (1-frac{T}{C})^D}}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-D</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This expression can be integrated in terms of the incomplete gamma function
+for dT, but for Y/T dT no integral could be found.</p>
+<p class="rubric">Examples</p>
+<p>Hexane molar density; DIPPR coefficients normally in kmol/m^3:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ105</span><span class="p">(</span><span class="mf">300.</span><span class="p">,</span> <span class="mf">0.70824</span><span class="p">,</span> <span class="mf">0.26411</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">,</span> <span class="mf">0.27537</span><span class="p">)</span>
+<span class="go">7.593170096339236</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ106">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ106</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ106"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ106" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ106 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id9">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #106. Often used in calculating liquid surface tension</strong><strong>,</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>heat of vaporization. Only parameters A and B parameters are required;</strong> (<em>and</em>) – </p></li>
+<li><p><strong>fits include no further parameters. Critical temperature is also</strong> (<em>many</em>) – </p></li>
+<li><p><strong>required.</strong> – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = A(1-T_r)^{B + C T_r + D T_r^2 + E T_r^3}
+Tr = frac{T}{Tc}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>Tc</strong> – Critical temperature, [K]</p></li>
+<li><p><strong>A-D</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The integral could not be found, but the integral over T actually could,
+again in terms of hypergeometric functions.</p>
+<p class="rubric">Examples</p>
+<p>Water surface tension; DIPPR coefficients normally in Pa*s:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ106</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mf">647.096</span><span class="p">,</span> <span class="mf">0.17766</span><span class="p">,</span> <span class="mf">2.567</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.3377</span><span class="p">,</span> <span class="mf">1.9699</span><span class="p">)</span>
+<span class="go">0.07231499373541</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ107">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ107</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ107"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ107" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ107 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id10">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #107. Often used in calculating ideal-gas heat capacity.</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>called the Aly-Lee equation 2.</strong> (<em>Also</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = A + Bleft[frac{C/T}{sinh(C/T)}right]^2 + Dleft[frac{E/T}{
+cosh(E/T)}right]^2</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-E</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ107_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ107_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ107_derivative_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. The derivative is
+obtained via SymPy; the integrals from Wolfram Alpha.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = \frac{2 B C^{3} \cosh{\left (\frac{C}{T} \right )}}
+{T^{4} \sinh^{3}{\left (\frac{C}{T} \right )}} - \frac{2 B C^{2}}{T^{3}
+\sinh^{2}{\left (\frac{C}{T} \right )}} + \frac{2 D E^{3} \sinh{\left
+(\frac{E}{T} \right )}}{T^{4} \cosh^{3}{\left (\frac{E}{T} \right )}}
+- \frac{2 D E^{2}}{T^{3} \cosh^{2}{\left (\frac{E}{T} \right )}}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = A T + \frac{B C}{\tanh{\left (\frac{C}{T} \right )}}
+- D E \tanh{\left (\frac{E}{T} \right )}\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = A \log{\left (T \right )} + \frac{B C}{T \tanh{
+\left (\frac{C}{T} \right )}} - B \log{\left (\sinh{\left (\frac{C}{T}
+\right )} \right )} - \frac{D E}{T} \tanh{\left (\frac{E}{T} \right )}
++ D \log{\left (\cosh{\left (\frac{E}{T} \right )} \right )}\]</div>
+<p class="rubric">Examples</p>
+<p>Water ideal gas molar heat capacity; DIPPR coefficients normally in
+J/kmol/K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ107</span><span class="p">(</span><span class="mf">300.</span><span class="p">,</span> <span class="mf">33363.</span><span class="p">,</span> <span class="mf">26790.</span><span class="p">,</span> <span class="mf">2610.5</span><span class="p">,</span> <span class="mf">8896.</span><span class="p">,</span> <span class="mf">1169.</span><span class="p">)</span>
+<span class="go">33585.90452768923</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ114">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ114</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ114"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ114" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ114 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id12">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #114. Rarely used</strong><strong>, </strong><strong>normally as an alternate liquid</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>capacity expression. All 4 parameters are required</strong><strong>, </strong><strong>as well as</strong> (<em>heat</em>) – </p></li>
+<li><p><strong>temperature.</strong> (<em>critical</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = frac{A^2}{tau} + B - 2ACtau - ADtau^2 - frac{1}{3}C^2tau^3
+- frac{1}{2}CDtau^4 - frac{1}{5}D^2tau^5
+tau = 1 - frac{T}{Tc}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>Tc</strong> – Critical temperature, [K]</p></li>
+<li><p><strong>A-D</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ114_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ114_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ114_derivative_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. All expressions can be
+obtained with SymPy readily.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = \frac{A^{2}}{T_{c} \left(- \frac{T}{T_{c}}
++ 1\right)^{2}} + \frac{2 A}{T_{c}} C + \frac{2 A}{T_{c}} D \left(
+- \frac{T}{T_{c}} + 1\right) + \frac{C^{2}}{T_{c}} \left(
+- \frac{T}{T_{c}} + 1\right)^{2} + \frac{2 C}{T_{c}} D \left(
+- \frac{T}{T_{c}} + 1\right)^{3} + \frac{D^{2}}{T_{c}} \left(
+- \frac{T}{T_{c}} + 1\right)^{4}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = - A^{2} T_{c} \log{\left (T - T_{c} \right )} + \frac{D^{2}
+T^{6}}{30 T_{c}^{5}} - \frac{T^{5}}{10 T_{c}^{4}} \left(C D + 2 D^{2}
+\right) + \frac{T^{4}}{12 T_{c}^{3}} \left(C^{2} + 6 C D + 6 D^{2}
+\right) - \frac{T^{3}}{3 T_{c}^{2}} \left(A D + C^{2} + 3 C D
++ 2 D^{2}\right) + \frac{T^{2}}{2 T_{c}} \left(2 A C + 2 A D + C^{2}
++ 2 C D + D^{2}\right) + T \left(- 2 A C - A D + B - \frac{C^{2}}{3}
+- \frac{C D}{2} - \frac{D^{2}}{5}\right)\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = - A^{2} \log{\left (T + \frac{- 60 A^{2} T_{c}
++ 60 A C T_{c} + 30 A D T_{c} - 30 B T_{c} + 10 C^{2} T_{c}
++ 15 C D T_{c} + 6 D^{2} T_{c}}{60 A^{2} - 60 A C - 30 A D + 30 B
+- 10 C^{2} - 15 C D - 6 D^{2}} \right )} + \frac{D^{2} T^{5}}
+{25 T_{c}^{5}} - \frac{T^{4}}{8 T_{c}^{4}} \left(C D + 2 D^{2}
+\right) + \frac{T^{3}}{9 T_{c}^{3}} \left(C^{2} + 6 C D + 6 D^{2}
+\right) - \frac{T^{2}}{2 T_{c}^{2}} \left(A D + C^{2} + 3 C D
++ 2 D^{2}\right) + \frac{T}{T_{c}} \left(2 A C + 2 A D + C^{2}
++ 2 C D + D^{2}\right) + \frac{1}{30} \left(30 A^{2} - 60 A C
+- 30 A D + 30 B - 10 C^{2} - 15 C D - 6 D^{2}\right) \log{\left
+(T + \frac{1}{60 A^{2} - 60 A C - 30 A D + 30 B - 10 C^{2} - 15 C D
+- 6 D^{2}} \left(- 30 A^{2} T_{c} + 60 A C T_{c} + 30 A D T_{c}
+- 30 B T_{c} + 10 C^{2} T_{c} + 15 C D T_{c} + 6 D^{2} T_{c}
++ T_{c} \left(30 A^{2} - 60 A C - 30 A D + 30 B - 10 C^{2} - 15 C D
+- 6 D^{2}\right)\right) \right )}\]</div>
+<p>Strictly speaking, the integral over T has an imaginary component, but
+only the real component is relevant and the complex part discarded.</p>
+<p class="rubric">Examples</p>
+<p>Hydrogen liquid heat capacity; DIPPR coefficients normally in J/kmol/K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ114</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mf">33.19</span><span class="p">,</span> <span class="mf">66.653</span><span class="p">,</span> <span class="mf">6765.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">123.63</span><span class="p">,</span> <span class="mf">478.27</span><span class="p">)</span>
+<span class="go">19423.948911676463</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ115">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ115</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ115"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ115" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ115 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id13">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #115. No major uses; has been used as an alternate</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>viscosity expression</strong><strong>, </strong><strong>and as a model for vapor pressure.</strong> (<em>liquid</em>) – </p></li>
+<li><p><strong>parameters A and B are required.</strong> (<em>Only</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = expleft(A + frac{B}{T} + Clog T + D T^2 + frac{E}{T^2}right)</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-E</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>No coefficients found for this expression.
+This function is not integrable for either dT or Y/T dT.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ116">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ116</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ116"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ116" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ116 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id14">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical point temperature [K].</p></li>
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #116. Used to describe the molar density of water fairly</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>no other uses listed. All 5 parameters are needed</strong><strong>, </strong><strong>as well as</strong> (<em>precisely;</em>) – </p></li>
+<li><p><strong>critical temperature.</strong> (<em>the</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = A + Btau^{0.35} + Ctau^{2/3} + Dtau + Etau^{4/3}
+tau = 1 - frac{T}{T_c}</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>Tc</strong> – Critical temperature, [K]</p></li>
+<li><p><strong>A-E</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ116_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ116_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ116_derivative_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T and integral with respect to T are
+computed as follows. The integral divided by T with respect to T has an
+extremely complicated (but still elementary) integral which can be read
+from the source. It was computed with Rubi; the other expressions can
+readily be obtained with SymPy.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = - \frac{7 B}{20 T_c \left(- \frac{T}{T_c} + 1\right)^{
+\frac{13}{20}}} - \frac{2 C}{3 T_c \sqrt[3]{- \frac{T}{T_c} + 1}}
+- \frac{D}{T_c} - \frac{4 E}{3 T_c} \sqrt[3]{- \frac{T}{T_c} + 1}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = A T - \frac{20 B}{27} T_c \left(- \frac{T}{T_c} + 1\right)^{
+\frac{27}{20}} - \frac{3 C}{5} T_c \left(- \frac{T}{T_c} + 1\right)^{
+\frac{5}{3}} + D \left(- \frac{T^{2}}{2 T_c} + T\right) - \frac{3 E}{7}
+T_c \left(- \frac{T}{T_c} + 1\right)^{\frac{7}{3}}\]</div>
+<p class="rubric">Examples</p>
+<p>Water liquid molar density; DIPPR coefficients normally in kmol/m^3:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ116</span><span class="p">(</span><span class="mf">300.</span><span class="p">,</span> <span class="mf">647.096</span><span class="p">,</span> <span class="mf">17.863</span><span class="p">,</span> <span class="mf">58.606</span><span class="p">,</span> <span class="o">-</span><span class="mf">95.396</span><span class="p">,</span> <span class="mf">213.89</span><span class="p">,</span> <span class="o">-</span><span class="mf">141.26</span><span class="p">)</span>
+<span class="go">55.17615446406527</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.dippr.DIPPR_EQ127">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.dippr.</code><code class="sig-name descname">DIPPR_EQ127</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/dippr.html#DIPPR_EQ127"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.dippr.DIPPR_EQ127" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a functor of temperature (T; in K)based on the DIPPR EQ127 equation, as described in <a class="footnote-reference brackets" href="#id2" id="id15">1</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – Helmholtz energy [J/mol].</p></li>
+<li><p><strong>G</strong> (<em>float</em>) – Gibbs free energy [J/mol].</p></li>
+<li><p><strong>B</strong><strong>,</strong><strong>C</strong><strong>,</strong><strong>D</strong><strong>,</strong><strong>E</strong><strong>,</strong><strong>F</strong> (<em>float</em>) – Regressed coefficients.</p></li>
+<li><p><strong>Equation #127. Rarely used</strong><strong>, </strong><strong>and then only in calculating</strong> (<em>DIPPR</em>) – </p></li>
+<li><p><strong>heat capacity. All 7 parameters are required.</strong> (<em>ideal-gas</em>) – </p></li>
+<li><p><strong>math::</strong> (<em>.</em>) – Y = A+Bleft[frac{left(frac{C}{T}right)^2expleft(frac{C}{T}
+right)}{left(expfrac{C}{T}-1 right)^2}right]
++Dleft[frac{left(frac{E}{T}right)^2expleft(frac{E}{T}right)}
+{left(expfrac{E}{T}-1 right)^2}right]
++Fleft[frac{left(frac{G}{T}right)^2expleft(frac{G}{T}right)}
+{left(expfrac{G}{T}-1 right)^2}right]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature, [K]</p></li>
+<li><p><strong>A-G</strong> (<em>float</em>) – Parameter for the equation; chemical and property specific [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Y</strong> – Property [constant-specific]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ127_derivative_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ127_integral_by_T</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DIPPR_EQ127_derivative_by_T_over_T</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The derivative with respect to T, integral with respect to T, and integral
+over T with respect to T are computed as follows. All expressions can be
+obtained with SymPy readily.</p>
+<div class="math notranslate nohighlight">
+\[\frac{d Y}{dT} = - \frac{B C^{3} e^{\frac{C}{T}}}{T^{4}
+\left(e^{\frac{C}{T}} - 1\right)^{2}} + \frac{2 B C^{3}
+e^{\frac{2 C}{T}}}{T^{4} \left(e^{\frac{C}{T}} - 1\right)^{3}}
+- \frac{2 B C^{2} e^{\frac{C}{T}}}{T^{3} \left(e^{\frac{C}{T}}
+- 1\right)^{2}} - \frac{D E^{3} e^{\frac{E}{T}}}{T^{4}
+\left(e^{\frac{E}{T}} - 1\right)^{2}} + \frac{2 D E^{3}
+e^{\frac{2 E}{T}}}{T^{4} \left(e^{\frac{E}{T}} - 1\right)^{3}}
+- \frac{2 D E^{2} e^{\frac{E}{T}}}{T^{3} \left(e^{\frac{E}{T}}
+- 1\right)^{2}} - \frac{F G^{3} e^{\frac{G}{T}}}{T^{4}
+\left(e^{\frac{G}{T}} - 1\right)^{2}} + \frac{2 F G^{3}
+e^{\frac{2 G}{T}}}{T^{4} \left(e^{\frac{G}{T}} - 1\right)^{3}}
+- \frac{2 F G^{2} e^{\frac{G}{T}}}{T^{3} \left(e^{\frac{G}{T}}
+- 1\right)^{2}}\]</div>
+<div class="math notranslate nohighlight">
+\[\int Y dT = A T + \frac{B C^{2}}{C e^{\frac{C}{T}} - C}
++ \frac{D E^{2}}{E e^{\frac{E}{T}} - E}
++ \frac{F G^{2}}{G e^{\frac{G}{T}} - G}\]</div>
+<div class="math notranslate nohighlight">
+\[\int \frac{Y}{T} dT = A \log{\left (T \right )} + B C^{2} \left(
+\frac{1}{C T e^{\frac{C}{T}} - C T} + \frac{1}{C T} - \frac{1}{C^{2}}
+\log{\left (e^{\frac{C}{T}} - 1 \right )}\right) + D E^{2} \left(
+\frac{1}{E T e^{\frac{E}{T}} - E T} + \frac{1}{E T} - \frac{1}{E^{2}}
+\log{\left (e^{\frac{E}{T}} - 1 \right )}\right) + F G^{2} \left(
+\frac{1}{G T e^{\frac{G}{T}} - G T} + \frac{1}{G T} - \frac{1}{G^{2}}
+\log{\left (e^{\frac{G}{T}} - 1 \right )}\right)\]</div>
+<p class="rubric">Examples</p>
+<p>Ideal gas heat capacity of methanol; DIPPR coefficients normally in
+J/kmol/K:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EQ127</span><span class="p">(</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">3.3258E4</span><span class="p">,</span> <span class="mf">3.6199E4</span><span class="p">,</span> <span class="mf">1.2057E3</span><span class="p">,</span> <span class="mf">1.5373E7</span><span class="p">,</span> <span class="mf">3.2122E3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5318E7</span><span class="p">,</span> <span class="mf">3.2122E3</span><span class="p">)</span>
+<span class="go">33258.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="datasheet.html" class="btn btn-neutral float-right" title="datasheet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dipole.html" class="btn btn-neutral float-left" title="dipole" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

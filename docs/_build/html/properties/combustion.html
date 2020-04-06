@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>combustion &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="critical" href="critical.html" />
+    <link rel="prev" title="acentric" href="acentric.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">combustion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="critical.html">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>combustion</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/combustion.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.combustion">
+<span id="combustion"></span><h1>combustion<a class="headerlink" href="#module-thermosteam.properties.combustion" title="Permalink to this headline">¶</a></h1>
+<p>All data and methods related to chemical combustion.</p>
+<dl class="function">
+<dt id="thermosteam.properties.combustion.estimate_HHV_modified_Dulong">
+<code class="sig-prename descclassname">thermosteam.properties.combustion.</code><code class="sig-name descname">estimate_HHV_modified_Dulong</code><span class="sig-paren">(</span><em class="sig-param">atoms</em>, <em class="sig-param">MW=None</em>, <em class="sig-param">check_oxygen_content=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/combustion.html#estimate_HHV_modified_Dulong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.combustion.estimate_HHV_modified_Dulong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return higher heating value [HHV; in J/mol] based on the modified
+Dulong’s equation.</p>
+<p class="rubric">Notes</p>
+<p>The heat of combustion in J/mol is given by Dulong’s equation <a class="footnote-reference brackets" href="#id2" id="id1">1</a>:</p>
+<div class="math notranslate nohighlight">
+\[Hc (J/mol) = MW \cdot (338C + 1428(H - O/8)+ 95S)\]</div>
+<p>This equation is only good for &lt;10 wt. % Oxygen content. Variables C, H, O,
+and S are atom weight fractions.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dd><p>Brown et al., Energy Fuels 2010, 24 (6), 3639–3646.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="thermosteam.properties.combustion.CombustionData">
+<em class="property">class </em><code class="sig-prename descclassname">thermosteam.properties.combustion.</code><code class="sig-name descname">CombustionData</code><span class="sig-paren">(</span><em class="sig-param">stoichiometry</em>, <em class="sig-param">LHV</em>, <em class="sig-param">HHV</em>, <em class="sig-param">Hf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/combustion.html#CombustionData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a CombustionData object that contains the stoichiometry
+coefficients of the reactants and products and the lower and higher
+heating values of a chemical [LHV, HHV; in J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stoichiometry</strong> (<em>dict</em><em>[</em><em>str: float</em><em>]</em>) – Stoichiometry coefficients of the reactants and products.</p></li>
+<li><p><strong>LHV</strong> (<em>float</em>) – Lower heating value [J/mol].</p></li>
+<li><p><strong>HHV</strong> (<em>float</em>) – Higher heating value [J/mol].</p></li>
+<li><p><strong>Hf</strong> (<em>float</em>) – Heat of formation [J/mol].</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="thermosteam.properties.combustion.CombustionData.stoichiometry">
+<code class="sig-name descname">stoichiometry</code><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData.stoichiometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>float] Stoichiometry coefficients of the reactants and products</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict[str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.properties.combustion.CombustionData.LHV">
+<code class="sig-name descname">LHV</code><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData.LHV" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Lower heating value [J/mol]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.properties.combustion.CombustionData.HHV">
+<code class="sig-name descname">HHV</code><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData.HHV" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Higher heating value [J/mol]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thermosteam.properties.combustion.CombustionData.Hf">
+<code class="sig-name descname">Hf</code><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData.Hf" title="Permalink to this definition">¶</a></dt>
+<dd><p>[float] Heat of formation [J/mol]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.properties.combustion.CombustionData.from_chemical_data">
+<em class="property">classmethod </em><code class="sig-name descname">from_chemical_data</code><span class="sig-paren">(</span><em class="sig-param">atoms</em>, <em class="sig-param">CAS=None</em>, <em class="sig-param">MW=None</em>, <em class="sig-param">Hf=None</em>, <em class="sig-param">method='Stoichiometry'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/combustion.html#CombustionData.from_chemical_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.combustion.CombustionData.from_chemical_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a CombustionData object that contains the stoichiometry
+coefficients of the reactants and products and the lower and higher
+heating values [LHV, HHV; in J/mol].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>dict</em>) – Dictionary of atoms and their counts.</p></li>
+<li><p><strong>CAS</strong> (<em>str</em><em>, </em><em>optional</em>) – CAS of chemical.</p></li>
+<li><p><strong>MW</strong> (<em>float</em><em>, </em><em>optional</em>) – Molecular weight of chemical [g/mol].</p></li>
+<li><p><strong>Hf</strong> (<em>float</em><em>, </em><em>optional</em>) – Heat of formation of given chemical [J/mol].
+Required if method is “Stoichiometry”.</p></li>
+<li><p><strong>method</strong> (<em>&quot;Stoichiometry&quot;</em><em> or </em><em>&quot;Dulong&quot;</em>) – Method to estimate LHV and HHV.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Default heats of formation for chemicals are at 298 K, 1 atm. The
+combustion reaction is based on the following equation:</p>
+<div class="math notranslate nohighlight">
+\[C_c H_h O_o N_n S_s Br_b I_i Cl_x F_f P_p + (c + s + \frac{h}{4} + \frac{5P}{4} - \frac{x + f}{4} - \frac{o}{2}) -&gt; cCO_2 + \frac{b}{2}Br_2 + \frac{i}{2}I + xHCl + fHF + sSO_2 + \frac{n}{2}N_2 + \frac{p}{4}P_4O_{10} +\frac{h + x + f}{2}H_2O\]</div>
+<p>If the method is “Stoichiometry”, the HHV is found using
+through an energy balance on the reaction (i.e. heat of reaction).
+If the method is “Dulong”, Dulong’s equation is used <a class="footnote-reference brackets" href="#id2" id="id3">1</a>:</p>
+<div class="math notranslate nohighlight">
+\[Hc (J/mol) = MW \cdot (338C + 1428(H - O/8)+ 95S)\]</div>
+<p>The LHV is calculated as follows:</p>
+<div class="math notranslate nohighlight">
+\[LHV = HHV + H_{vap} \cdot H_2O
+H_{vap} = 44011.496 \frac{J}{mol H_2O}
+H_2O = \frac{mol H_2O}{mol}\]</div>
+<p class="rubric">Examples</p>
+<p>Liquid methanol burning:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermosteam.functors.combustion</span> <span class="kn">import</span> <span class="n">CombustionData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CombustionData</span><span class="o">.</span><span class="n">from_chemical_data</span><span class="p">({</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">Hf</span><span class="o">=-</span><span class="mi">239100</span><span class="p">)</span>
+<span class="go">CombustionData(stoichiometry={&#39;O2&#39;: -1.5, &#39;CO2&#39;: 1, &#39;H2O&#39;: 2.0}, LHV=-6.38e+05, HHV=-7.26e+05, Hf=-2.39e+05)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="critical.html" class="btn btn-neutral float-right" title="critical" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="acentric.html" class="btn btn-neutral float-left" title="acentric" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

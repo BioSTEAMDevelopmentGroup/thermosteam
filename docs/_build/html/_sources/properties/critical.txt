@@ -1,0 +1,5 @@
+critical
+========
+
+.. automodule:: thermosteam.properties.critical
+   :members:

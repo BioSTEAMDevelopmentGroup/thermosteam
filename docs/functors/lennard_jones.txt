@@ -1,5 +1,0 @@
-lennard_jones
-=============
-
-.. automodule:: thermosteam.functors.lennard_jones
-   :members:

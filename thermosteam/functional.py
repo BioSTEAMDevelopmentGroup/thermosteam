@@ -4,8 +4,6 @@ Created on Wed Nov 27 19:11:28 2019
 
 @author: yoelr
 """
-from fluids import core as fluids_core
-from fluids.core import *
 from cmath import sqrt as csqrt
 from numba import njit
 from .base import functor
@@ -21,7 +19,7 @@ __all__ = ('isobaric_expansion', 'isothermal_compressibility',
            'Vfs_to_zs', 'none_and_length_check', 'normalize', 'mixing_simple', 
            'mixing_logarithmic', 'Parachor', 'SG_to_API', 'API_to_SG', 'SG',
            'horner', 'allclose_variable', 'polylog2', 'horner',
-           ) + tuple(fluids_core.__all__)
+           )
             
 
 @functor

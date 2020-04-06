@@ -1,0 +1,5 @@
+dipole
+======
+
+.. automodule:: thermosteam.properties.dipole
+   :members:

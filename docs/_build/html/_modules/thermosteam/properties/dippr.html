@@ -1,0 +1,1036 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.properties.dippr &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.properties.dippr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.properties.dippr</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Property calculation methods from the Design Institute for Physical Properties (DIPPR) [1]_.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Design Institute for Physical Properties, 1996. DIPPR Project 801</span>
+<span class="sd">   DIPPR/AIChE</span>
+<span class="sd">.. [2] Aly, Fouad A., and Lloyd L. Lee. &quot;Self-Consistent Equations for</span>
+<span class="sd">       Calculating the Ideal Gas Heat Capacity, Enthalpy, and Entropy.&quot; Fluid</span>
+<span class="sd">       Phase Equilibria 6, no. 3 (January 1, 1981): 169-79.</span>
+<span class="sd">       doi:10.1016/0378-3812(81)85002-9.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DIPPR_EQ100&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ101&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ102&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;DIPPR_EQ104&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ105&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ106&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;DIPPR_EQ107&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ114&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ115&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;DIPPR_EQ116&#39;</span><span class="p">,</span> <span class="s1">&#39;DIPPR_EQ127&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">..base.functor</span> <span class="kn">import</span> <span class="n">functor</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">sinh</span><span class="p">,</span> <span class="n">cosh</span><span class="p">,</span> <span class="n">atan</span><span class="p">,</span> <span class="n">atanh</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">tanh</span>
+<span class="kn">from</span> <span class="nn">cmath</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">clog</span>
+<span class="kn">from</span> <span class="nn">cmath</span> <span class="kn">import</span> <span class="n">sqrt</span> <span class="k">as</span> <span class="n">csqrt</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">hyp2f1</span>
+
+<div class="viewcode-block" id="DIPPR_EQ100"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ100">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ100</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation # 100. Used in calculating the molar heat capacities</span>
+<span class="sd">    of liquids and solids, liquid thermal conductivity, and solid density.</span>
+<span class="sd">    All parameters default to zero. As this is a straightforward polynomial,</span>
+<span class="sd">    no restrictions on parameters apply. Note that high-order polynomials like</span>
+<span class="sd">    this may need large numbers of decimal places to avoid unnecessary error.</span>
+
+<span class="sd">    .. math:: Y = A + BT + CT^2 + DT^3 + ET^4 + FT^5 + GT^6</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-G : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ100_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ100_integral_by_T</span>
+<span class="sd">    DIPPR_EQ100_integral_by_T_over_T</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. All derivatives and </span>
+<span class="sd">    integrals are easily computed with SymPy.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = B + 2 C T + 3 D T^{2} + 4 E T^{3} + 5 F T^{4} </span>
+<span class="sd">        + 6 G T^{5}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = A T + \frac{B T^{2}}{2} + \frac{C T^{3}}{3} + \frac{D </span>
+<span class="sd">        T^{4}}{4} + \frac{E T^{5}}{5} + \frac{F T^{6}}{6} + \frac{G T^{7}}{7}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = A \log{\left (T \right )} + B T + \frac{C T^{2}}</span>
+<span class="sd">        {2} + \frac{D T^{3}}{3} + \frac{E T^{4}}{4} + \frac{F T^{5}}{5} </span>
+<span class="sd">        + \frac{G T^{6}}{6}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water liquid heat capacity; DIPPR coefficients normally listed in J/kmol/K:</span>
+
+<span class="sd">    &gt;&gt;&gt; EQ100(300, 276370., -2090.1, 8.125, -0.014116, 0.0000093701)</span>
+<span class="sd">    75355.81000000003</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">F</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="p">)))))</span></div>
+ 
+<span class="nd">@functor</span>   
+<span class="k">def</span> <span class="nf">DIPPR_EQ100_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">B</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">E</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">F</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="p">))))</span>
+    
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ100_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">B</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="mi">3</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">/</span><span class="mi">4</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">F</span><span class="o">/</span><span class="mi">6</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="mi">7</span><span class="p">))))))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ100_integral_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">/</span><span class="mi">3</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="mi">4</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">F</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="mi">6</span><span class="p">)))))</span>
+
+<div class="viewcode-block" id="DIPPR_EQ101"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ101">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ101</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation # 101. Used in calculating vapor pressure, sublimation</span>
+<span class="sd">    pressure, and liquid viscosity. All 5 parameters are required.</span>
+<span class="sd">    E is often an integer. As the model is exponential, a sufficiently high</span>
+<span class="sd">    temperature will cause an OverflowError. A negative temperature </span>
+<span class="sd">    (or just low, if fit poorly) may cause a math domain error.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = \exp\left(A + \frac{B}{T} + C\cdot \ln T + D \cdot T^E\right)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-E : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is not integrable for either dT or Y/T dT.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water vapor pressure; DIPPR coefficients normally listed in Pa:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ101(300, 73.649, -7258.2, -7.3037, 4.1653E-6, 2)</span>
+<span class="sd">    3537.44834545549</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="n">B</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="n">E</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIPPR_EQ102"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ102">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ102</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation # 102. Used in calculating vapor viscosity, vapor</span>
+<span class="sd">    thermal conductivity, and sometimes solid heat capacity. High values of B</span>
+<span class="sd">    raise an OverflowError. All 4 parameters are required. C and D are often 0.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = \frac{A\cdot T^B}{1 + \frac{C}{T} + \frac{D}{T^2}}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-D : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ102_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ102_integral_by_T</span>
+<span class="sd">    DIPPR_EQ102_integral_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. The first derivative is</span>
+<span class="sd">    easily computed; the two integrals required Rubi to perform the integration.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = \frac{A B T^{B}}{T \left(\frac{C}{T} + \frac{D}{T^{2}} </span>
+<span class="sd">        + 1\right)} + \frac{A T^{B} \left(\frac{C}{T^{2}} + \frac{2 D}{T^{3}}</span>
+<span class="sd">        \right)}{\left(\frac{C}{T} + \frac{D}{T^{2}} + 1\right)^{2}}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = - \frac{2 A T^{B + 3} \operatorname{hyp2f1}{\left (1,B + 3,</span>
+<span class="sd">        B + 4,- \frac{2 T}{C - \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 3\right) </span>
+<span class="sd">        \left(C + \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}} + \frac{2 A </span>
+<span class="sd">        T^{B + 3} \operatorname{hyp2f1}{\left (1,B + 3,B + 4,- \frac{2 T}{C </span>
+<span class="sd">        + \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 3\right) \left(C </span>
+<span class="sd">        - \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = - \frac{2 A T^{B + 2} \operatorname{hyp2f1}{\left</span>
+<span class="sd">        (1,B + 2,B + 3,- \frac{2 T}{C + \sqrt{C^{2} - 4 D}} \right )}}{\left(B </span>
+<span class="sd">        + 2\right) \left(C + \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}</span>
+<span class="sd">        + \frac{2 A T^{B + 2} \operatorname{hyp2f1}{\left (1,B + 2,B + 3,</span>
+<span class="sd">        - \frac{2 T}{C - \sqrt{C^{2} - 4 D}} \right )}}{\left(B + 2\right) </span>
+<span class="sd">        \left(C - \sqrt{C^{2} - 4 D}\right) \sqrt{C^{2} - 4 D}}</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water vapor viscosity; DIPPR coefficients normally listed in Pa*s:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ102(300, 1.7096E-8, 1.1146, 0, 0)</span>
+<span class="sd">    9.860384711890639e-06</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">C</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">D</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">T</span><span class="p">))</span></div>
+
+<span class="k">def</span> <span class="nf">DIPPR_EQ102_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">D</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> 
+            <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">D</span><span class="o">/</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+<span class="k">def</span> <span class="nf">DIPPR_EQ102_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="c1"># imaginary part is 0</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="n">hyp2f1</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="mi">4</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span> 
+            <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">/</span><span class="p">((</span><span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span><span class="o">*</span><span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span>
+            <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="p">(</span><span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="n">hyp2f1</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="mi">4</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span>
+                    <span class="p">(</span><span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span><span class="o">*</span><span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">.</span><span class="n">real</span>
+    
+<span class="k">def</span> <span class="nf">DIPPR_EQ102_integral_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="n">hyp2f1</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span><span class="o">*</span><span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span>
+        <span class="n">hyp2f1</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="mi">3</span><span class="o">+</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">/</span><span class="p">((</span><span class="mi">2</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">csqrt</span><span class="p">(</span>
+                            <span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">))</span><span class="o">*</span><span class="n">csqrt</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">C</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="p">)))</span><span class="o">.</span><span class="n">real</span>
+        
+<div class="viewcode-block" id="DIPPR_EQ104"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ104">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ104</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #104. Often used in calculating second virial</span>
+<span class="sd">    coefficients of gases.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = A + \frac{B}{T} + \frac{C}{T^3} + \frac{D}{T^8} + \frac{E}{T^9}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-E : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ104_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ104_integral_by_T</span>
+<span class="sd">    DIPPR_EQ104_derivative_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. All expressions can be</span>
+<span class="sd">    obtained with SymPy readily.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = - \frac{B}{T^{2}} - \frac{3 C}{T^{4}} </span>
+<span class="sd">        - \frac{8 D}{T^{9}} - \frac{9 E}{T^{10}}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = A T + B \log{\left (T \right )} - \frac{1}{56 T^{8}} </span>
+<span class="sd">        \left(28 C T^{6} + 8 D T + 7 E\right)</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = A \log{\left (T \right )} - \frac{1}{72 T^{9}} </span>
+<span class="sd">        \left(72 B T^{8} + 24 C T^{6} + 9 D T + 8 E\right)</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water second virial coefficient; DIPPR coefficients normally dimensionless:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ104(300, 0.02222, -26.38, -16750000, -3.894E19, 3.133E21)</span>
+<span class="sd">    -1.1204179007265156</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">T2</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">+</span> <span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T2</span><span class="o">*</span><span class="n">T2</span><span class="o">*</span><span class="n">T</span><span class="p">))</span><span class="o">/</span><span class="n">T2</span><span class="p">)</span><span class="o">/</span><span class="n">T</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ104_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="n">T2</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">T</span>
+    <span class="n">T4</span> <span class="o">=</span> <span class="n">T2</span><span class="o">*</span><span class="n">T2</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">B</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="o">*</span><span class="n">D</span> <span class="o">-</span> <span class="mi">9</span><span class="o">*</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T4</span><span class="o">*</span><span class="n">T</span><span class="p">))</span><span class="o">/</span><span class="n">T2</span><span class="p">)</span><span class="o">/</span><span class="n">T2</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ104_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">28</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">8</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mi">7</span><span class="o">*</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">56</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ104_derivative_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">72</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">8</span> <span class="o">+</span> <span class="mi">24</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">9</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="mi">8</span><span class="o">*</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">72</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">9</span><span class="p">)</span>
+    
+
+<div class="viewcode-block" id="DIPPR_EQ105"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ105">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ105</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">vol</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #105. Often used in calculating liquid molar density.</span>
+<span class="sd">    C is sometimes the fluid&#39;s critical temperature.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = \frac{A}{B^{1 + (1-\frac{T}{C})^D}}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-D : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This expression can be integrated in terms of the incomplete gamma function</span>
+<span class="sd">    for dT, but for Y/T dT no integral could be found.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Hexane molar density; DIPPR coefficients normally in kmol/m^3:</span>
+<span class="sd">        </span>
+<span class="sd">    &gt;&gt;&gt; EQ105(300., 0.70824, 0.26411, 507.6, 0.27537)</span>
+<span class="sd">    7.593170096339236</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">vol</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">B</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">C</span><span class="p">)</span><span class="o">**</span><span class="n">D</span><span class="p">)</span><span class="o">/</span><span class="n">A</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">A</span><span class="o">/</span><span class="n">B</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">C</span><span class="p">)</span><span class="o">**</span><span class="n">D</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIPPR_EQ106"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ106">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ106</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #106. Often used in calculating liquid surface tension,</span>
+<span class="sd">    and heat of vaporization. Only parameters A and B parameters are required; </span>
+<span class="sd">    many fits include no further parameters. Critical temperature is also</span>
+<span class="sd">    required.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = A(1-T_r)^{B + C T_r + D T_r^2 + E T_r^3}</span>
+<span class="sd">        Tr = \frac{T}{Tc}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    A-D : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The integral could not be found, but the integral over T actually could,</span>
+<span class="sd">    again in terms of hypergeometric functions.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water surface tension; DIPPR coefficients normally in Pa*s:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ106(300, 647.096, 0.17766, 2.567, -3.3377, 1.9699)</span>
+<span class="sd">    0.07231499373541</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Tr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">B</span> <span class="o">+</span> <span class="n">Tr</span><span class="o">*</span><span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="n">Tr</span><span class="o">*</span><span class="p">(</span><span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="o">*</span><span class="n">Tr</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="DIPPR_EQ107"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ107">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ107</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #107. Often used in calculating ideal-gas heat capacity.</span>
+<span class="sd">    Also called the Aly-Lee equation [2]_.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = A + B\left[\frac{C/T}{\sinh(C/T)}\right]^2 + D\left[\frac{E/T}{</span>
+<span class="sd">        \cosh(E/T)}\right]^2</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-E : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ107_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ107_integral_by_T</span>
+<span class="sd">    DIPPR_EQ107_derivative_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. The derivative is </span>
+<span class="sd">    obtained via SymPy; the integrals from Wolfram Alpha.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = \frac{2 B C^{3} \cosh{\left (\frac{C}{T} \right )}}</span>
+<span class="sd">        {T^{4} \sinh^{3}{\left (\frac{C}{T} \right )}} - \frac{2 B C^{2}}{T^{3}</span>
+<span class="sd">        \sinh^{2}{\left (\frac{C}{T} \right )}} + \frac{2 D E^{3} \sinh{\left</span>
+<span class="sd">        (\frac{E}{T} \right )}}{T^{4} \cosh^{3}{\left (\frac{E}{T} \right )}} </span>
+<span class="sd">        - \frac{2 D E^{2}}{T^{3} \cosh^{2}{\left (\frac{E}{T} \right )}}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = A T + \frac{B C}{\tanh{\left (\frac{C}{T} \right )}}</span>
+<span class="sd">        - D E \tanh{\left (\frac{E}{T} \right )}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = A \log{\left (T \right )} + \frac{B C}{T \tanh{</span>
+<span class="sd">        \left (\frac{C}{T} \right )}} - B \log{\left (\sinh{\left (\frac{C}{T}</span>
+<span class="sd">        \right )} \right )} - \frac{D E}{T} \tanh{\left (\frac{E}{T} \right )}</span>
+<span class="sd">        + D \log{\left (\cosh{\left (\frac{E}{T} \right )} \right )}</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water ideal gas molar heat capacity; DIPPR coefficients normally in</span>
+<span class="sd">    J/kmol/K:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ107(300., 33363., 26790., 2610.5, 8896., 1169.)</span>
+<span class="sd">    33585.90452768923</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="p">((</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">sinh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="p">((</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">cosh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ107_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">cosh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> 
+            <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+            <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">sinh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="n">cosh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+            <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">cosh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ107_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ107_derivative_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="n">tanh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span> <span class="o">-</span> <span class="n">B</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">sinh</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">))</span> 
+                <span class="o">-</span> <span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">tanh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">cosh</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)))</span>
+
+
+<div class="viewcode-block" id="DIPPR_EQ114"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ114">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ114</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #114. Rarely used, normally as an alternate liquid</span>
+<span class="sd">    heat capacity expression. All 4 parameters are required, as well as</span>
+<span class="sd">    critical temperature.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = \frac{A^2}{\tau} + B - 2AC\tau - AD\tau^2 - \frac{1}{3}C^2\tau^3</span>
+<span class="sd">        - \frac{1}{2}CD\tau^4 - \frac{1}{5}D^2\tau^5</span>
+<span class="sd">        \tau = 1 - \frac{T}{Tc}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    A-D : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ114_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ114_integral_by_T</span>
+<span class="sd">    DIPPR_EQ114_derivative_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. All expressions can be</span>
+<span class="sd">    obtained with SymPy readily.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = \frac{A^{2}}{T_{c} \left(- \frac{T}{T_{c}} </span>
+<span class="sd">        + 1\right)^{2}} + \frac{2 A}{T_{c}} C + \frac{2 A}{T_{c}} D \left(</span>
+<span class="sd">        - \frac{T}{T_{c}} + 1\right) + \frac{C^{2}}{T_{c}} \left(</span>
+<span class="sd">        - \frac{T}{T_{c}} + 1\right)^{2} + \frac{2 C}{T_{c}} D \left(</span>
+<span class="sd">        - \frac{T}{T_{c}} + 1\right)^{3} + \frac{D^{2}}{T_{c}} \left(</span>
+<span class="sd">        - \frac{T}{T_{c}} + 1\right)^{4}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = - A^{2} T_{c} \log{\left (T - T_{c} \right )} + \frac{D^{2}</span>
+<span class="sd">        T^{6}}{30 T_{c}^{5}} - \frac{T^{5}}{10 T_{c}^{4}} \left(C D + 2 D^{2}</span>
+<span class="sd">        \right) + \frac{T^{4}}{12 T_{c}^{3}} \left(C^{2} + 6 C D + 6 D^{2}</span>
+<span class="sd">        \right) - \frac{T^{3}}{3 T_{c}^{2}} \left(A D + C^{2} + 3 C D </span>
+<span class="sd">        + 2 D^{2}\right) + \frac{T^{2}}{2 T_{c}} \left(2 A C + 2 A D + C^{2} </span>
+<span class="sd">        + 2 C D + D^{2}\right) + T \left(- 2 A C - A D + B - \frac{C^{2}}{3} </span>
+<span class="sd">        - \frac{C D}{2} - \frac{D^{2}}{5}\right)</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = - A^{2} \log{\left (T + \frac{- 60 A^{2} T_{c}</span>
+<span class="sd">        + 60 A C T_{c} + 30 A D T_{c} - 30 B T_{c} + 10 C^{2} T_{c}</span>
+<span class="sd">        + 15 C D T_{c} + 6 D^{2} T_{c}}{60 A^{2} - 60 A C - 30 A D + 30 B </span>
+<span class="sd">        - 10 C^{2} - 15 C D - 6 D^{2}} \right )} + \frac{D^{2} T^{5}}</span>
+<span class="sd">        {25 T_{c}^{5}} - \frac{T^{4}}{8 T_{c}^{4}} \left(C D + 2 D^{2}</span>
+<span class="sd">        \right) + \frac{T^{3}}{9 T_{c}^{3}} \left(C^{2} + 6 C D + 6 D^{2}</span>
+<span class="sd">        \right) - \frac{T^{2}}{2 T_{c}^{2}} \left(A D + C^{2} + 3 C D</span>
+<span class="sd">        + 2 D^{2}\right) + \frac{T}{T_{c}} \left(2 A C + 2 A D + C^{2} </span>
+<span class="sd">        + 2 C D + D^{2}\right) + \frac{1}{30} \left(30 A^{2} - 60 A C </span>
+<span class="sd">        - 30 A D + 30 B - 10 C^{2} - 15 C D - 6 D^{2}\right) \log{\left </span>
+<span class="sd">        (T + \frac{1}{60 A^{2} - 60 A C - 30 A D + 30 B - 10 C^{2} - 15 C D</span>
+<span class="sd">        - 6 D^{2}} \left(- 30 A^{2} T_{c} + 60 A C T_{c} + 30 A D T_{c} </span>
+<span class="sd">        - 30 B T_{c} + 10 C^{2} T_{c} + 15 C D T_{c} + 6 D^{2} T_{c}</span>
+<span class="sd">        + T_{c} \left(30 A^{2} - 60 A C - 30 A D + 30 B - 10 C^{2} - 15 C D</span>
+<span class="sd">        - 6 D^{2}\right)\right) \right )}</span>
+<span class="sd">    </span>
+<span class="sd">    Strictly speaking, the integral over T has an imaginary component, but</span>
+<span class="sd">    only the real component is relevant and the complex part discarded.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Hydrogen liquid heat capacity; DIPPR coefficients normally in J/kmol/K:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ114(20, 33.19, 66.653, 6765.9, -123.63, 478.27)</span>
+<span class="sd">    19423.948911676463</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">**</span><span class="mf">2.</span><span class="o">/</span><span class="n">t</span> <span class="o">+</span> <span class="n">B</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">t</span> <span class="o">-</span> <span class="n">A</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">2.</span> <span class="o">-</span> <span class="n">C</span><span class="o">**</span><span class="mf">2.</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">3.</span><span class="o">/</span><span class="mf">3.</span> 
+            <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">4.</span><span class="o">/</span><span class="mf">2.</span> <span class="o">-</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="mf">5.</span><span class="o">/</span><span class="mf">5.</span><span class="p">)</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ114_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">Tc</span> 
+            <span class="o">+</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">Tc</span> 
+            <span class="o">+</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ114_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">Tc</span><span class="p">)</span><span class="o">.</span><span class="n">real</span> <span class="o">+</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">6</span><span class="o">/</span><span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="n">T</span><span class="o">**</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> 
+                <span class="o">+</span> <span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">12</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span> 
+                <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> 
+                <span class="o">+</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">B</span> <span class="o">-</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ114_derivative_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">Tc</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">Tc</span> 
+                <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> 
+                <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span> <span class="o">-</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">real</span> 
+                <span class="o">+</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">5</span><span class="o">/</span><span class="p">(</span><span class="mi">25</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> 
+                <span class="o">+</span> <span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">9</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span>
+                <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span>
+                <span class="o">+</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span> <span class="o">-</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span>
+                <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">clog</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">Tc</span> 
+                <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">Tc</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span> 
+                <span class="o">+</span> <span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span> <span class="o">-</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> 
+               <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">60</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">C</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">30</span><span class="o">*</span><span class="n">B</span> <span class="o">-</span> <span class="mi">10</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> 
+                    <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">D</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="o">/</span><span class="mi">30</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DIPPR_EQ115"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ115">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ115</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #115. No major uses; has been used as an alternate</span>
+<span class="sd">    liquid viscosity expression, and as a model for vapor pressure.</span>
+<span class="sd">    Only parameters A and B are required.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = \exp\left(A + \frac{B}{T} + C\log T + D T^2 + \frac{E}{T^2}\right)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-E : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    No coefficients found for this expression.</span>
+<span class="sd">    This function is not integrable for either dT or Y/T dT.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">T2</span> <span class="o">=</span> <span class="n">T</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="o">/</span><span class="n">T</span><span class="o">+</span><span class="n">C</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">+</span><span class="n">D</span><span class="o">*</span><span class="n">T2</span> <span class="o">+</span> <span class="n">E</span><span class="o">/</span><span class="n">T2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIPPR_EQ116"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ116">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ116</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #116. Used to describe the molar density of water fairly</span>
+<span class="sd">    precisely; no other uses listed. All 5 parameters are needed, as well as</span>
+<span class="sd">    the critical temperature.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = A + B\tau^{0.35} + C\tau^{2/3} + D\tau + E\tau^{4/3}</span>
+<span class="sd">        \tau = 1 - \frac{T}{T_c}</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    A-E : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ116_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ116_integral_by_T</span>
+<span class="sd">    DIPPR_EQ116_derivative_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T and integral with respect to T are </span>
+<span class="sd">    computed as follows. The integral divided by T with respect to T has an</span>
+<span class="sd">    extremely complicated (but still elementary) integral which can be read </span>
+<span class="sd">    from the source. It was computed with Rubi; the other expressions can </span>
+<span class="sd">    readily be obtained with SymPy.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = - \frac{7 B}{20 T_c \left(- \frac{T}{T_c} + 1\right)^{</span>
+<span class="sd">        \frac{13}{20}}} - \frac{2 C}{3 T_c \sqrt[3]{- \frac{T}{T_c} + 1}} </span>
+<span class="sd">        - \frac{D}{T_c} - \frac{4 E}{3 T_c} \sqrt[3]{- \frac{T}{T_c} + 1}</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = A T - \frac{20 B}{27} T_c \left(- \frac{T}{T_c} + 1\right)^{</span>
+<span class="sd">        \frac{27}{20}} - \frac{3 C}{5} T_c \left(- \frac{T}{T_c} + 1\right)^{</span>
+<span class="sd">        \frac{5}{3}} + D \left(- \frac{T^{2}}{2 T_c} + T\right) - \frac{3 E}{7} </span>
+<span class="sd">        T_c \left(- \frac{T}{T_c} + 1\right)^{\frac{7}{3}}</span>
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Water liquid molar density; DIPPR coefficients normally in kmol/m^3:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ116(300., 647.096, 17.863, 58.606, -95.396, 213.89, -141.26)</span>
+<span class="sd">    55.17615446406527</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="mf">0.35</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">tau</span> <span class="o">+</span> <span class="n">E</span><span class="o">*</span><span class="n">tau</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ116_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="mi">7</span><span class="o">*</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">13</span><span class="o">/</span><span class="mi">20</span><span class="p">))</span> 
+                <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span> 
+                <span class="o">-</span> <span class="n">D</span><span class="o">/</span><span class="n">Tc</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">Tc</span><span class="p">))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ116_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">T</span> <span class="o">-</span> <span class="mi">20</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">27</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span><span class="o">/</span><span class="mi">27</span> 
+                <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Tc</span><span class="p">)</span> <span class="o">+</span> <span class="n">T</span><span class="p">)</span>
+                <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">7</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ116_derivative_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+    <span class="c1"># 3x increase in speed - cse via sympy</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">x0</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">x3</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">x2</span>
+    <span class="n">x4</span> <span class="o">=</span> <span class="o">-</span><span class="n">x3</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">x5</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">C</span>
+    <span class="n">x6</span> <span class="o">=</span> <span class="n">x4</span><span class="o">**</span><span class="mf">0.333333333333333</span>
+    <span class="n">x7</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">B</span>
+    <span class="n">x8</span> <span class="o">=</span> <span class="n">x4</span><span class="o">**</span><span class="mf">0.05</span>
+    <span class="n">x9</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">x6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x10</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">x11</span> <span class="o">=</span> <span class="n">x10</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x10</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">x12</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">x13</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">x12</span>
+    <span class="n">x14</span> <span class="o">=</span> <span class="n">x13</span> <span class="o">+</span> <span class="mf">0.5</span>
+    <span class="n">x15</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">x14</span>
+    <span class="n">x16</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x13</span> <span class="o">+</span> <span class="mf">2.5</span><span class="p">)</span>
+    <span class="n">x17</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x8</span>
+    <span class="n">x18</span> <span class="o">=</span> <span class="o">-</span><span class="n">x17</span>
+    <span class="n">x19</span> <span class="o">=</span> <span class="o">-</span><span class="n">x13</span>
+    <span class="n">x20</span> <span class="o">=</span> <span class="n">x19</span> <span class="o">+</span> <span class="mf">0.5</span>
+    <span class="n">x21</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">x20</span>
+    <span class="n">x22</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x19</span> <span class="o">+</span> <span class="mf">2.5</span><span class="p">)</span>
+    <span class="n">x23</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">x16</span>
+    <span class="n">x24</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="n">x12</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">x25</span> <span class="o">=</span> <span class="n">x12</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">x26</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">x8</span>
+    <span class="n">x27</span> <span class="o">=</span> <span class="o">-</span><span class="n">x26</span>
+    <span class="n">x28</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">*</span><span class="n">B</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x12</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">x29</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x12</span>
+    <span class="n">x30</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x29</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">x31</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">x30</span>
+    <span class="n">x32</span> <span class="o">=</span> <span class="o">-</span><span class="n">x12</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">x33</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">x22</span>
+    <span class="n">x34</span> <span class="o">=</span> <span class="o">-</span><span class="n">x2</span><span class="o">*</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">Tc</span><span class="p">)</span>
+    <span class="n">x35</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">x34</span><span class="o">**</span><span class="mf">0.1</span>
+    <span class="n">x36</span> <span class="o">=</span> <span class="n">x35</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">x37</span> <span class="o">=</span> <span class="n">x34</span><span class="o">**</span><span class="mf">0.05</span>
+    <span class="n">x38</span> <span class="o">=</span> <span class="n">x30</span><span class="o">*</span><span class="n">x37</span>
+    <span class="n">x39</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">x16</span>
+    <span class="n">x40</span> <span class="o">=</span> <span class="n">x37</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">x29</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">x41</span> <span class="o">=</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">x12</span>
+    <span class="n">x42</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">x41</span> <span class="o">+</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">x43</span> <span class="o">=</span> <span class="n">x12</span><span class="o">*</span><span class="n">x37</span>
+    <span class="n">x44</span> <span class="o">=</span> <span class="n">x35</span> <span class="o">+</span> <span class="n">x37</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">x45</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="n">x41</span> <span class="o">+</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">x46</span> <span class="o">=</span> <span class="o">-</span><span class="n">x43</span>
+    <span class="n">x47</span> <span class="o">=</span> <span class="n">x35</span> <span class="o">-</span> <span class="n">x37</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">*</span><span class="n">x0</span> <span class="o">+</span> <span class="mf">2.85714285714286</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">x4</span><span class="o">**</span><span class="mf">0.35</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">x11</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">x0</span> <span class="o">-</span> <span class="n">D</span><span class="o">*</span><span class="n">x3</span> <span class="o">-</span> <span class="n">E</span><span class="o">*</span><span class="n">x1</span> <span class="o">-</span> <span class="n">E</span><span class="o">*</span><span class="n">x11</span> <span class="o">+</span> <span class="mf">0.75</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">x4</span><span class="o">**</span><span class="mf">1.33333333333333</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">x6</span> <span class="o">+</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">x9</span> <span class="o">-</span> <span class="n">x15</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x14</span><span class="o">*</span><span class="p">(</span><span class="n">x16</span> <span class="o">+</span> <span class="n">x17</span><span class="p">))</span> <span class="o">+</span> <span class="n">x15</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x14</span><span class="o">*</span><span class="p">(</span><span class="n">x16</span> <span class="o">+</span> <span class="n">x18</span><span class="p">))</span> <span class="o">-</span> <span class="n">x21</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x20</span><span class="o">*</span><span class="p">(</span><span class="n">x17</span> <span class="o">+</span> <span class="n">x22</span><span class="p">))</span> <span class="o">+</span> <span class="n">x21</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x20</span><span class="o">*</span><span class="p">(</span><span class="n">x18</span> <span class="o">+</span> <span class="n">x22</span><span class="p">))</span> <span class="o">+</span> <span class="n">x23</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x24</span><span class="o">*</span><span class="p">(</span><span class="n">x25</span> <span class="o">+</span> <span class="n">x26</span><span class="p">))</span> <span class="o">-</span> <span class="n">x23</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x24</span><span class="o">*</span><span class="p">(</span><span class="n">x25</span> <span class="o">+</span> <span class="n">x27</span><span class="p">))</span> <span class="o">-</span> <span class="n">x28</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x31</span><span class="o">*</span><span class="p">(</span><span class="n">x26</span> <span class="o">+</span> <span class="n">x32</span><span class="p">))</span> <span class="o">+</span> <span class="n">x28</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x31</span><span class="o">*</span><span class="p">(</span><span class="n">x27</span> <span class="o">+</span> <span class="n">x32</span><span class="p">))</span> <span class="o">-</span> <span class="n">x33</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x36</span> <span class="o">-</span> <span class="n">x38</span><span class="p">)</span> <span class="o">+</span> <span class="n">x33</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x36</span> <span class="o">+</span> <span class="n">x38</span><span class="p">)</span> <span class="o">+</span> <span class="n">x39</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x36</span> <span class="o">-</span> <span class="n">x40</span><span class="p">)</span> <span class="o">-</span> <span class="n">x39</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x36</span> <span class="o">+</span> <span class="n">x40</span><span class="p">)</span> <span class="o">+</span> <span class="n">x4</span><span class="o">**</span><span class="mf">0.666666666666667</span><span class="o">*</span><span class="n">x5</span> <span class="o">-</span> <span class="n">x42</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x43</span> <span class="o">+</span> <span class="n">x44</span><span class="p">)</span> <span class="o">+</span> <span class="n">x42</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x46</span> <span class="o">+</span> <span class="n">x47</span><span class="p">)</span> <span class="o">+</span> <span class="n">x45</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x43</span> <span class="o">+</span> <span class="n">x47</span><span class="p">)</span> <span class="o">-</span> <span class="n">x45</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">x44</span> <span class="o">+</span> <span class="n">x46</span><span class="p">)</span> <span class="o">+</span> <span class="n">x5</span><span class="o">*</span><span class="n">x9</span> <span class="o">+</span> <span class="n">x7</span><span class="o">*</span><span class="n">atan</span><span class="p">(</span><span class="n">x8</span><span class="p">)</span> <span class="o">-</span> <span class="n">x7</span><span class="o">*</span><span class="n">atanh</span><span class="p">(</span><span class="n">x8</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DIPPR_EQ127"><a class="viewcode-back" href="../../../properties/dippr.html#thermosteam.properties.dippr.DIPPR_EQ127">[docs]</a><span class="nd">@functor</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[1]_&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ127</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    DIPPR Equation #127. Rarely used, and then only in calculating</span>
+<span class="sd">    ideal-gas heat capacity. All 7 parameters are required.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        Y = A+B\left[\frac{\left(\frac{C}{T}\right)^2\exp\left(\frac{C}{T}</span>
+<span class="sd">        \right)}{\left(\exp\frac{C}{T}-1 \right)^2}\right]</span>
+<span class="sd">        +D\left[\frac{\left(\frac{E}{T}\right)^2\exp\left(\frac{E}{T}\right)}</span>
+<span class="sd">        {\left(\exp\frac{E}{T}-1 \right)^2}\right]</span>
+<span class="sd">        +F\left[\frac{\left(\frac{G}{T}\right)^2\exp\left(\frac{G}{T}\right)}</span>
+<span class="sd">        {\left(\exp\frac{G}{T}-1 \right)^2}\right]</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        Temperature, [K]</span>
+<span class="sd">    A-G : float</span>
+<span class="sd">        Parameter for the equation; chemical and property specific [-]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Y : float</span>
+<span class="sd">        Property [constant-specific]</span>
+<span class="sd">    </span>
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    DIPPR_EQ127_derivative_by_T</span>
+<span class="sd">    DIPPR_EQ127_integral_by_T</span>
+<span class="sd">    DIPPR_EQ127_derivative_by_T_over_T</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The derivative with respect to T, integral with respect to T, and integral</span>
+<span class="sd">    over T with respect to T are computed as follows. All expressions can be</span>
+<span class="sd">    obtained with SymPy readily.</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{d Y}{dT} = - \frac{B C^{3} e^{\frac{C}{T}}}{T^{4}</span>
+<span class="sd">        \left(e^{\frac{C}{T}} - 1\right)^{2}} + \frac{2 B C^{3} </span>
+<span class="sd">        e^{\frac{2 C}{T}}}{T^{4} \left(e^{\frac{C}{T}} - 1\right)^{3}} </span>
+<span class="sd">        - \frac{2 B C^{2} e^{\frac{C}{T}}}{T^{3} \left(e^{\frac{C}{T}} </span>
+<span class="sd">        - 1\right)^{2}} - \frac{D E^{3} e^{\frac{E}{T}}}{T^{4} </span>
+<span class="sd">        \left(e^{\frac{E}{T}} - 1\right)^{2}} + \frac{2 D E^{3} </span>
+<span class="sd">        e^{\frac{2 E}{T}}}{T^{4} \left(e^{\frac{E}{T}} - 1\right)^{3}}</span>
+<span class="sd">        - \frac{2 D E^{2} e^{\frac{E}{T}}}{T^{3} \left(e^{\frac{E}{T}} </span>
+<span class="sd">        - 1\right)^{2}} - \frac{F G^{3} e^{\frac{G}{T}}}{T^{4}</span>
+<span class="sd">        \left(e^{\frac{G}{T}} - 1\right)^{2}} + \frac{2 F G^{3}</span>
+<span class="sd">        e^{\frac{2 G}{T}}}{T^{4} \left(e^{\frac{G}{T}} - 1\right)^{3}}</span>
+<span class="sd">        - \frac{2 F G^{2} e^{\frac{G}{T}}}{T^{3} \left(e^{\frac{G}{T}} </span>
+<span class="sd">        - 1\right)^{2}}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int Y dT = A T + \frac{B C^{2}}{C e^{\frac{C}{T}} - C} </span>
+<span class="sd">        + \frac{D E^{2}}{E e^{\frac{E}{T}} - E} </span>
+<span class="sd">        + \frac{F G^{2}}{G e^{\frac{G}{T}} - G}</span>
+<span class="sd">        </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \int \frac{Y}{T} dT = A \log{\left (T \right )} + B C^{2} \left(</span>
+<span class="sd">        \frac{1}{C T e^{\frac{C}{T}} - C T} + \frac{1}{C T} - \frac{1}{C^{2}} </span>
+<span class="sd">        \log{\left (e^{\frac{C}{T}} - 1 \right )}\right) + D E^{2} \left(</span>
+<span class="sd">        \frac{1}{E T e^{\frac{E}{T}} - E T} + \frac{1}{E T} - \frac{1}{E^{2}} </span>
+<span class="sd">        \log{\left (e^{\frac{E}{T}} - 1 \right )}\right) + F G^{2} \left(</span>
+<span class="sd">        \frac{1}{G T e^{\frac{G}{T}} - G T} + \frac{1}{G T} - \frac{1}{G^{2}} </span>
+<span class="sd">        \log{\left (e^{\frac{G}{T}} - 1 \right )}\right)</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Ideal gas heat capacity of methanol; DIPPR coefficients normally in</span>
+<span class="sd">    J/kmol/K:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; EQ127(20., 3.3258E4, 3.6199E4, 1.2057E3, 1.5373E7, 3.2122E3, -1.5318E7, 3.2122E3)</span>
+<span class="sd">    33258.0</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="o">*</span><span class="p">((</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> 
+        <span class="n">D</span><span class="o">*</span><span class="p">((</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> 
+        <span class="n">F</span><span class="o">*</span><span class="p">((</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span></div>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ127_derivative_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+                <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+                <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ127_integral_by_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">C</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">E</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">G</span><span class="p">))</span>
+
+<span class="nd">@functor</span>
+<span class="k">def</span> <span class="nf">DIPPR_EQ127_derivative_by_T_over_T</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">T</span><span class="p">)</span>
+                <span class="o">-</span> <span class="n">log</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">E</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> 
+                <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">log</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">E</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">E</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">F</span><span class="o">*</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">G</span><span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span> <span class="n">log</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> 
+                <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

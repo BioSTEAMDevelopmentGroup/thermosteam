@@ -85,10 +85,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../properties/properties_module.html">properties</a></li>
 </ul>
 
             
@@ -662,7 +662,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_phases</span><span class="p">)</span>
     <span class="nd">@phase</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;invalid phase {repr(phase)}&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;invalid phase </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">Stream</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">to_chemical_indexer</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
         
@@ -694,7 +694,7 @@
         <span class="k">if</span> <span class="n">composition</span><span class="p">:</span>
             <span class="n">first_line</span> <span class="o">=</span> <span class="s2">&quot; composition:&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">first_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; flow (</span><span class="si">{flow_units}</span><span class="s1">):&#39;</span>
+            <span class="n">first_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; flow (</span><span class="si">{</span><span class="n">flow_units</span><span class="si">}</span><span class="s1">):&#39;</span>
         <span class="n">first_line_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_line</span><span class="p">)</span><span class="o">*</span><span class="s2">&quot; &quot;</span>
 
         <span class="c1"># Set up chemical data for all phases</span>
@@ -708,7 +708,7 @@
                 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">/</span><span class="n">total_flow</span>
         
             <span class="c1"># Get basic structure for phase data            </span>
-            <span class="n">beginning</span> <span class="o">=</span> <span class="p">(</span><span class="n">first_line</span> <span class="ow">or</span> <span class="n">first_line_spaces</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{phase}</span><span class="s1">) &#39;</span>
+            <span class="n">beginning</span> <span class="o">=</span> <span class="p">(</span><span class="n">first_line</span> <span class="ow">or</span> <span class="n">first_line_spaces</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s1">) &#39;</span>
             <span class="n">first_line</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">new_line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">beginning</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span>
 
@@ -721,12 +721,12 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
                 <span class="n">spaces</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxlen</span> <span class="o">-</span> <span class="n">lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">i</span><span class="p">:</span> <span class="n">flow_rates</span> <span class="o">+=</span> <span class="n">new_line</span>    
-                <span class="n">flow_rates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{IDs[i]}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{data[i]:.4g}</span><span class="s1">&#39;</span>
+                <span class="n">flow_rates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">IDs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">spaces</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">.4g</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">if</span> <span class="n">too_many_chemicals</span><span class="p">:</span>
                 <span class="n">flow_rates</span> <span class="o">+=</span> <span class="n">new_line</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
             <span class="k">if</span> <span class="n">composition</span><span class="p">:</span>
                 <span class="n">dashes</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="n">maxlen</span>
-                <span class="n">flow_rates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{new_line}{dashes}</span><span class="s2">  </span><span class="si">{total_flow:.3g}</span><span class="s2"> </span><span class="si">{flow_units}</span><span class="s2">&quot;</span>
+                <span class="n">flow_rates</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_line</span><span class="si">}{</span><span class="n">dashes</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">total_flow</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">flow_units</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="c1"># Put it together</span>
             <span class="n">phases_flow_rates_info</span> <span class="o">+=</span> <span class="n">beginning</span> <span class="o">+</span> <span class="n">flow_rates</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
             
@@ -739,15 +739,15 @@
         <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="o">.</span><span class="n">iter_data</span><span class="p">():</span>
             <span class="n">IDdata</span> <span class="o">=</span> <span class="n">repr_couples</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">IDdata</span><span class="p">:</span>
-                <span class="n">phase_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{phase}</span><span class="s2">=[</span><span class="si">{IDdata}</span><span class="s2">]&quot;</span><span class="p">)</span>
+                <span class="n">phase_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">=[</span><span class="si">{</span><span class="n">IDdata</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
         <span class="n">dlim</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
         <span class="n">phase_data</span> <span class="o">=</span> <span class="n">dlim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phase_data</span><span class="p">)</span>
-        <span class="n">phases</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;phases=</span><span class="si">{self.phases}</span><span class="s1">&#39;</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;phases=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="n">phase_data</span><span class="p">:</span>
             <span class="n">phase_data</span> <span class="o">=</span> <span class="n">dlim</span> <span class="o">+</span> <span class="n">phase_data</span>
         <span class="n">price</span> <span class="o">=</span> <span class="n">repr_kwarg</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(ID={repr(self.ID)}, </span><span class="si">{phases}</span><span class="s2">, T=</span><span class="si">{self.T:.2f}</span><span class="s2">, &quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;P=</span><span class="si">{self.P:.6g}{price}{phase_data}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(ID=</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">phases</span><span class="si">}</span><span class="s2">, T=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;P=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}{</span><span class="n">price</span><span class="si">}{</span><span class="n">phase_data</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
     
 </pre></div>
 

@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.properties.acentric &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.properties.acentric</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.properties.acentric</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">All data and methods related to estimating a chemical&#39;s accentric factor.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;omega&#39;</span><span class="p">,</span> <span class="s1">&#39;LK_omega&#39;</span><span class="p">,</span> <span class="s1">&#39;StielPolar&#39;</span><span class="p">]</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;omega_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Stiel_polar_methods&#39;</span><span class="p">])</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">log10</span>
+<span class="kn">from</span> <span class="nn">.critical</span> <span class="kn">import</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span>
+<span class="kn">from</span> <span class="nn">.critical</span> <span class="kn">import</span> <span class="n">_crit_PSRKR4</span><span class="p">,</span> <span class="n">_crit_PassutDanner</span><span class="p">,</span> <span class="n">_crit_Yaws</span>
+<span class="kn">from</span> <span class="nn">.phase_change</span> <span class="kn">import</span> <span class="n">Tb</span>
+
+
+<span class="n">omega_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PSRK&#39;</span><span class="p">,</span> <span class="s1">&#39;PD&#39;</span><span class="p">,</span> <span class="s1">&#39;YAWS&#39;</span><span class="p">,</span> <span class="s1">&#39;LK&#39;</span><span class="p">,</span> <span class="s1">&#39;DEFINITION&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="omega"><a class="viewcode-back" href="../../../properties/acentric.html#thermosteam.properties.acentric.omega">[docs]</a><span class="k">def</span> <span class="nf">omega</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">IgnoreMethods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LK&#39;</span><span class="p">,</span> <span class="s1">&#39;DEFINITION&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">P_at_Tr_seventenths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s acentric factor,</span>
+<span class="sd">    `omega`, or its calculation from correlations or directly through the</span>
+<span class="sd">    definition of acentric factor if possible. Requires a known boiling point,</span>
+<span class="sd">    critical temperature and pressure for use of the correlations. Requires</span>
+<span class="sd">    accurate vapor pressure data for direct calculation.</span>
+
+<span class="sd">    Will automatically select a method to use if no Method is provided;</span>
+<span class="sd">    returns None if the data is not available and cannot be calculated.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \omega \equiv -\log_{10}\left[\lim_{T/T_c=0.7}(P^{sat}/P_c)\right]-1.0</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; omega(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    0.635</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        Acentric factor of compound</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain omega with the given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Accepted methods are &#39;PSRK&#39;, &#39;PD&#39;, &#39;YAWS&#39;, </span>
+<span class="sd">        &#39;LK&#39;, and &#39;DEFINITION&#39;. All valid values are also held in the list</span>
+<span class="sd">        omega_methods.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        omega for the desired chemical, and will return methods instead of</span>
+<span class="sd">        omega</span>
+<span class="sd">    IgnoreMethods : list, optional</span>
+<span class="sd">        A list of methods to ignore in obtaining the full list of methods,</span>
+<span class="sd">        useful for for performance reasons and ignoring inaccurate methods</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A total of five sources are available for this function. They are:</span>
+
+<span class="sd">        * &#39;PSRK&#39;, a compillation of experimental and estimated data published </span>
+<span class="sd">          in the Appendix of [2]_, the fourth revision of the PSRK model.</span>
+<span class="sd">        * &#39;PD&#39;, an older compillation of</span>
+<span class="sd">          data published in (Passut &amp; Danner, 1973) [3]_.</span>
+<span class="sd">        * &#39;YAWS&#39;, a large compillation of data from a</span>
+<span class="sd">          variety of sources; no data points are sourced in the work of [4]_.</span>
+<span class="sd">        * &#39;LK&#39;, a estimation method for hydrocarbons.</span>
+<span class="sd">        * &#39;DEFINITION&#39;, based on the definition of omega as</span>
+<span class="sd">          presented in [1]_, using vapor pressure data.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Pitzer, K. S., D. Z. Lippmann, R. F. Curl, C. M. Huggins, and</span>
+<span class="sd">       D. E. Petersen: The Volumetric and Thermodynamic Properties of Fluids.</span>
+<span class="sd">       II. Compressibility Factor, Vapor Pressure and Entropy of Vaporization.</span>
+<span class="sd">       J. Am. Chem. Soc., 77: 3433 (1955).</span>
+<span class="sd">    .. [2] Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and</span>
+<span class="sd">       Jürgen Gmehling. &quot;PSRK Group Contribution Equation of State:</span>
+<span class="sd">       Comprehensive Revision and Extension IV, Including Critical Constants</span>
+<span class="sd">       and Α-Function Parameters for 1000 Components.&quot; Fluid Phase Equilibria</span>
+<span class="sd">       227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</span>
+<span class="sd">    .. [3] Passut, Charles A., and Ronald P. Danner. &quot;Acentric Factor. A</span>
+<span class="sd">       Valuable Correlating Parameter for the Properties of Hydrocarbons.&quot;</span>
+<span class="sd">       Industrial &amp; Engineering Chemistry Process Design and Development 12,</span>
+<span class="sd">       no. 3 (July 1, 1973): 365-68. doi:10.1021/i260047a026.</span>
+<span class="sd">    .. [4] Yaws, Carl L. Thermophysical Properties of Chemicals and</span>
+<span class="sd">       Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional</span>
+<span class="sd">       Publishing, 2014.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;PSRK&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;PD&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;YAWS&#39;</span><span class="p">)</span>
+        <span class="n">Tcrit</span><span class="p">,</span> <span class="n">Pcrit</span> <span class="o">=</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">),</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tcrit</span> <span class="ow">and</span> <span class="n">Pcrit</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Tb</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+                <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;LK&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">P_at_Tr_seventenths</span><span class="p">:</span>
+                <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;DEFINITION&#39;</span><span class="p">)</span>  <span class="c1"># TODO: better integration</span>
+        <span class="k">if</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">IgnoreMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                    <span class="n">methods</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Method</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;NONE&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># This is the calculate, given the method section</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;PSRK&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PSRKR4</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;PD&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_PassutDanner</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;YAWS&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_crit_Yaws</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;omega&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;LK&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="n">LK_omega</span><span class="p">(</span><span class="n">Tb</span><span class="p">(</span><span class="n">CASRN</span><span class="p">),</span> <span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">),</span> <span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;DEFINITION&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="o">-</span><span class="n">log10</span><span class="p">(</span><span class="n">P_at_Tr_seventenths</span><span class="o">/</span><span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;NONE&#39;</span><span class="p">:</span>
+        <span class="n">_omega</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_omega</span></div>
+
+
+<div class="viewcode-block" id="LK_omega"><a class="viewcode-back" href="../../../properties/acentric.html#thermosteam.properties.acentric.LK_omega">[docs]</a><span class="k">def</span> <span class="nf">LK_omega</span><span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Estimates the acentric factor of a fluid using a correlation in [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \omega = \frac{\ln P_{br}^{sat} - 5.92714 + 6.09648/T_{br} + 1.28862</span>
+<span class="sd">        \ln T_{br} -0.169347T_{br}^6}</span>
+<span class="sd">        {15.2518 - 15.6875/T_{br} - 13.4721 \ln T_{br} + 0.43577 T_{br}^6}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tb : float</span>
+<span class="sd">        Boiling temperature of the fluid [K]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of the fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of the fluid [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        Acentric factor of the fluid [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Internal units are atmosphere and Kelvin.</span>
+<span class="sd">    Example value from Reid (1987). Using ASPEN V8.4, LK method gives 0.325595.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Isopropylbenzene</span>
+
+<span class="sd">    &gt;&gt;&gt; LK_omega(425.6, 631.1, 32.1E5)</span>
+<span class="sd">    0.32544249926397856</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lee, Byung Ik, and Michael G. Kesler. &quot;A Generalized Thermodynamic</span>
+<span class="sd">       Correlation Based on Three-Parameter Corresponding States.&quot; AIChE Journal</span>
+<span class="sd">       21, no. 3 (1975): 510-527. doi:10.1002/aic.690210313.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">T_br</span> <span class="o">=</span> <span class="n">Tb</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="mf">101325.0</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.92714</span> <span class="o">+</span> <span class="mf">6.09648</span><span class="o">/</span><span class="n">T_br</span> <span class="o">+</span> <span class="mf">1.28862</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T_br</span><span class="p">)</span> <span class="o">-</span>
+             <span class="mf">0.169347</span><span class="o">*</span><span class="n">T_br</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">15.2518</span> <span class="o">-</span> <span class="mf">15.6875</span><span class="o">/</span><span class="n">T_br</span> <span class="o">-</span> <span class="mf">13.4721</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">T_br</span><span class="p">)</span> <span class="o">+</span>
+             <span class="mf">0.43577</span><span class="o">*</span><span class="n">T_br</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">omega</span></div>
+
+
+<span class="n">Stiel_polar_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DEFINITION&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="StielPolar"><a class="viewcode-back" href="../../../properties/acentric.html#thermosteam.properties.acentric.StielPolar">[docs]</a><span class="k">def</span> <span class="nf">StielPolar</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">P_at_Tr_sixtenths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the calculation of a chemical&#39;s Stiel Polar</span>
+<span class="sd">    factor, directly through the definition of Stiel-polar factor if possible.</span>
+<span class="sd">    Requires Tc, Pc, acentric factor, and a vapor pressure datum at Tr=0.6.</span>
+
+<span class="sd">    Will automatically select a method to use if no Method is provided;</span>
+<span class="sd">    returns None if the data is not available and cannot be calculated.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        x = \log P_r|_{T_r=0.6} + 1.70 \omega + 1.552</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        Acentric factor of the fluid [-]</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">    P_at_Tr_sixtenths : float</span>
+<span class="sd">        Pressure at Tr=0.6</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    factor : float</span>
+<span class="sd">        Stiel polar factor of compound</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Stiel polar factor with the</span>
+<span class="sd">        given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        The method name to use. Only &#39;DEFINITION&#39; is accepted so far.</span>
+<span class="sd">        All valid values are also held in the list Stiel_polar_methods.</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        Stiel-polar factor for the desired chemical, and will return methods</span>
+<span class="sd">        instead of stiel-polar factor</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Only one source is available for this function. It is:</span>
+
+<span class="sd">        * &#39;DEFINITION&#39;, based on the definition of</span>
+<span class="sd">          Stiel Polar Factor presented in [1]_, using vapor pressure data.</span>
+
+<span class="sd">    A few points have also been published in [2]_, which may be used for</span>
+<span class="sd">    comparison. Currently this is only used for a surface tension correlation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; StielPolar(647.3, 22048321.0, 0.344, CASRN=&#39;7732-18-5&#39;)</span>
+<span class="sd">    0.024581140348734376</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Halm, Roland L., and Leonard I. Stiel. &quot;A Fourth Parameter for the</span>
+<span class="sd">       Vapor Pressure and Entropy of Vaporization of Polar Fluids.&quot; AIChE</span>
+<span class="sd">       Journal 13, no. 2 (1967): 351-355. doi:10.1002/aic.690130228.</span>
+<span class="sd">    .. [2] D, Kukoljac Miloš, and Grozdanić Dušan K. &quot;New Values of the</span>
+<span class="sd">       Polarity Factor.&quot; Journal of the Serbian Chemical Society 65, no. 12</span>
+<span class="sd">       (January 1, 2000). http://www.shd.org.rs/JSCS/Vol65/No12-Pdf/JSCS12-07.pdf</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">omega</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;DEFINITION&#39;</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;NONE&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;DEFINITION&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">P_at_Tr_sixtenths</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Pr</span> <span class="o">=</span> <span class="n">P_at_Tr_sixtenths</span><span class="o">/</span><span class="n">Pc</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="n">Pr</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.70</span><span class="o">*</span><span class="n">omega</span> <span class="o">+</span> <span class="mf">1.552</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="s1">&#39;NONE&#39;</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">factor</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

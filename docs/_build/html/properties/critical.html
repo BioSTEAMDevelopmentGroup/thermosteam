@@ -1,0 +1,1236 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>critical &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dipole" href="dipole.html" />
+    <link rel="prev" title="combustion" href="combustion.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../functional.html">functional</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="properties_module.html">properties</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="acentric.html">acentric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combustion.html">combustion</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">critical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dipole.html">dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dippr.html">dippr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasheet.html">datasheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolytes.html">electrolytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="electrolyte_conductivity.html">electrolyte_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elements.html">elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos.html">eos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heat_capacity.html">heat_capacity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identifiers.html">identifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joback.html">joback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="law.html">law</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lennard_jones.html">lennard_jones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="miscdata.html">miscdata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permittivity.html">permitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_change.html">phase_change</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reaction.html">reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refractivity.html">refractivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety.html">safety</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solubility.html">solubility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_conductivity.html">thermal_conductivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triple.html">triple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vapor_pressure.html">vapor_pressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virial.html">virial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viscosity.html">viscosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volume.html">volume</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="properties_module.html">properties</a> &raquo;</li>
+        
+      <li>critical</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/properties/critical.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-thermosteam.properties.critical">
+<span id="critical"></span><h1>critical<a class="headerlink" href="#module-thermosteam.properties.critical" title="Permalink to this headline">¶</a></h1>
+<p>All data and methods related to the estimation of a chemical’s critical properties.</p>
+<dl class="function">
+<dt id="thermosteam.properties.critical.Tc">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Tc</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['SURF']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Tc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Tc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of a chemical’s critical
+temperature. Lookup is based on CASRNs. Will automatically select a data
+source to use if no Method is provided; returns None if the data is not
+available.</p>
+<p>Prefered sources are ‘IUPAC’ for organic chemicals, and ‘MATTHEWS’ for
+inorganic chemicals. Function has data for approximately 1000 chemicals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature, [K]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Tc with the given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Accepted methods are ‘IUPAC’, ‘MATTHEWS’,
+‘CRC’, ‘PSRK’, ‘PD’, ‘YAWS’, and ‘SURF’. All valid values are also held
+in the list <cite>Tc_methods</cite>.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Tc for the desired chemical, and will return methods instead of Tc</p></li>
+<li><p><strong>IgnoreMethods</strong> (<em>list, optional</em>) – A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A total of seven sources are available for this function. They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘IUPAC Organic Critical Properties’, a series of critically evaluated
+experimental datum for organic compounds in <a href="#id143"><span class="problematic" id="id1">[1]_</span></a>, <a href="#id144"><span class="problematic" id="id2">[2]_</span></a>, <a href="#id145"><span class="problematic" id="id3">[3]_</span></a>, <a href="#id146"><span class="problematic" id="id4">[4]_</span></a>,
+<a href="#id147"><span class="problematic" id="id5">[5]_</span></a>, <a href="#id148"><span class="problematic" id="id6">[6]_</span></a>, <a href="#id149"><span class="problematic" id="id7">[7]_</span></a>, <a href="#id150"><span class="problematic" id="id8">[8]_</span></a>, <a href="#id151"><span class="problematic" id="id9">[9]_</span></a>, <a href="#id152"><span class="problematic" id="id10">[10]_</span></a>, <a href="#id153"><span class="problematic" id="id11">[11]_</span></a>, and <a href="#id154"><span class="problematic" id="id12">[12]_</span></a>.</p></li>
+<li><p>‘Matthews Inorganic Critical Properties’, a series of critically
+evaluated data for inorganic compounds in <a href="#id155"><span class="problematic" id="id13">[13]_</span></a>.</p></li>
+<li><p>‘CRC Organic Critical Properties’, a compillation of critically
+evaluated data by the TRC as published in <a href="#id156"><span class="problematic" id="id14">[14]_</span></a>.</p></li>
+<li><p>‘PSRK Revision 4 Appendix’, a compillation of experimental and
+estimated data published in <a href="#id157"><span class="problematic" id="id15">[15]_</span></a>.</p></li>
+<li><p>‘Passut Danner 1973 Critical Properties’, an older compillation of
+data published in <a href="#id158"><span class="problematic" id="id16">[16]_</span></a></p></li>
+<li><p>‘Yaws Critical Properties’, a large compillation of data from a
+variety of sources; no data points are sourced in the work of <a href="#id159"><span class="problematic" id="id17">[17]_</span></a>.</p></li>
+<li><p>Critical Surface’, an estimation method using a
+simple quadratic method for estimating Tc from Pc and Vc. This is
+ignored and not returned as a method by default, as no compounds
+have values of Pc and Vc but not Tc currently.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Tc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">514.0</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id18"><span class="brackets">1</span></dt>
+<dd><p>Ambrose, Douglas, and Colin L. Young. “Vapor-Liquid Critical
+Properties of Elements and Compounds. 1. An Introductory Survey.”
+Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):
+154-154. doi:10.1021/je950378q.</p>
+</dd>
+<dt class="label" id="id19"><span class="brackets">2</span></dt>
+<dd><p>Ambrose, Douglas, and Constantine Tsonopoulos. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 2. Normal Alkanes.”
+Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.
+doi:10.1021/je00019a001.</p>
+</dd>
+<dt class="label" id="id20"><span class="brackets">3</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 3. Aromatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 40, no. 3
+(May 1, 1995): 547-58. doi:10.1021/je00019a002.</p>
+</dd>
+<dt class="label" id="id21"><span class="brackets">4</span></dt>
+<dd><p>Gude, Michael, and Amyn S. Teja. “Vapor-Liquid Critical Properties
+of Elements and Compounds. 4. Aliphatic Alkanols.” Journal of Chemical
+&amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.
+doi:10.1021/je00021a001.</p>
+</dd>
+<dt class="label" id="id22"><span class="brackets">5</span></dt>
+<dd><p>Daubert, Thomas E. “Vapor-Liquid Critical Properties of Elements
+and Compounds. 5. Branched Alkanes and Cycloalkanes.” Journal of
+Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.
+doi:10.1021/je9501548.</p>
+</dd>
+<dt class="label" id="id23"><span class="brackets">6</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 41, no. 4
+(January 1, 1996): 645-56. doi:10.1021/je9501999.</p>
+</dd>
+<dt class="label" id="id24"><span class="brackets">7</span></dt>
+<dd><p>Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen
+Compounds Other Than Alkanols and Cycloalkanols.” Journal of Chemical &amp;
+Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</p>
+</dd>
+<dt class="label" id="id25"><span class="brackets">8</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 8. Organic Sulfur,
+Silicon, and Tin Compounds (C + H + S, Si, and Sn).” Journal of Chemical
+&amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.
+doi:10.1021/je000210r.</p>
+</dd>
+<dt class="label" id="id26"><span class="brackets">9</span></dt>
+<dd><p>Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,
+and Constantine Tsonopoulos. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 9. Organic Compounds Containing Nitrogen.”
+Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):
+305-14. doi:10.1021/je050221q.</p>
+</dd>
+<dt class="label" id="id27"><span class="brackets">10</span></dt>
+<dd><p>Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,
+Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic
+Compounds Containing Halogens.” Journal of Chemical &amp; Engineering Data
+52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</p>
+</dd>
+<dt class="label" id="id28"><span class="brackets">11</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic
+Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;
+N + O; and O + S, + Si.” Journal of Chemical &amp; Engineering Data 54,
+no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</p>
+</dd>
+<dt class="label" id="id29"><span class="brackets">12</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David
+W. Morton, and Kenneth N. Marsh. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and
+Non-Hydrocarbons.” Journal of Chemical &amp; Engineering Data, October 5,
+2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</p>
+</dd>
+<dt class="label" id="id30"><span class="brackets">13</span></dt>
+<dd><p>Mathews, Joseph F. “Critical Constants of Inorganic Substances.”
+Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.
+doi:10.1021/cr60275a004.</p>
+</dd>
+<dt class="label" id="id31"><span class="brackets">14</span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
+</dd>
+<dt class="label" id="id32"><span class="brackets">15</span></dt>
+<dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
+Jürgen Gmehling. “PSRK Group Contribution Equation of State:
+Comprehensive Revision and Extension IV, Including Critical Constants
+and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
+227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
+</dd>
+<dt class="label" id="id33"><span class="brackets">16</span></dt>
+<dd><p>Passut, Charles A., and Ronald P. Danner. “Acentric Factor. A
+Valuable Correlating Parameter for the Properties of Hydrocarbons.”
+Industrial &amp; Engineering Chemistry Process Design and Development 12,
+no. 3 (July 1, 1973): 365–68. doi:10.1021/i260047a026.</p>
+</dd>
+<dt class="label" id="id34"><span class="brackets">17</span></dt>
+<dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
+Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+Publishing, 2014.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Pc">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Pc</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['SURF']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Pc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of a chemical’s critical
+pressure. Lookup is based on CASRNs. Will automatically select a data
+source to use if no Method is provided; returns None if the data is not
+available.</p>
+<p>Prefered sources are ‘IUPAC’ for organic chemicals, and ‘MATTHEWS’ for
+inorganic chemicals. Function has data for approximately 1000 chemicals.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">6137000.0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure, [Pa]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Pc with the given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Accepted methods are ‘IUPAC’, ‘MATTHEWS’,
+‘CRC’, ‘PSRK’, ‘PD’, ‘YAWS’, and ‘SURF’. All valid values are also held
+in the list <cite>Pc_methods</cite>.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Pc for the desired chemical, and will return methods instead of Pc</p></li>
+<li><p><strong>IgnoreMethods</strong> (<em>list, optional</em>) – A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A total of seven sources are available for this function. They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘IUPAC’, a series of critically evaluated
+experimental datum for organic compounds in <a href="#id160"><span class="problematic" id="id35">[1]_</span></a>, <a href="#id161"><span class="problematic" id="id36">[2]_</span></a>, <a href="#id162"><span class="problematic" id="id37">[3]_</span></a>, <a href="#id163"><span class="problematic" id="id38">[4]_</span></a>,
+<a href="#id164"><span class="problematic" id="id39">[5]_</span></a>, <a href="#id165"><span class="problematic" id="id40">[6]_</span></a>, <a href="#id166"><span class="problematic" id="id41">[7]_</span></a>, <a href="#id167"><span class="problematic" id="id42">[8]_</span></a>, <a href="#id168"><span class="problematic" id="id43">[9]_</span></a>, <a href="#id169"><span class="problematic" id="id44">[10]_</span></a>, <a href="#id170"><span class="problematic" id="id45">[11]_</span></a>, and <a href="#id171"><span class="problematic" id="id46">[12]_</span></a>.</p></li>
+<li><p>‘MATTHEWS’, a series of critically
+evaluated data for inorganic compounds in <a href="#id172"><span class="problematic" id="id47">[13]_</span></a>.</p></li>
+<li><p>‘CRC’, a compillation of critically
+evaluated data by the TRC as published in <a href="#id173"><span class="problematic" id="id48">[14]_</span></a>.</p></li>
+<li><p>‘PSRK’, a compillation of experimental and
+estimated data published in <a href="#id174"><span class="problematic" id="id49">[15]_</span></a>.</p></li>
+<li><p>‘PD’, an older compillation of
+data published in <a href="#id175"><span class="problematic" id="id50">[16]_</span></a></p></li>
+<li><p>‘YAWS’, a large compillation of data from a
+variety of sources; no data points are sourced in the work of <a href="#id176"><span class="problematic" id="id51">[17]_</span></a>.</p></li>
+<li><p>SURF’, an estimation method using a
+simple quadratic method for estimating Pc from Tc and Vc. This is
+ignored and not returned as a method by default.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id52"><span class="brackets">1</span></dt>
+<dd><p>Ambrose, Douglas, and Colin L. Young. “Vapor-Liquid Critical
+Properties of Elements and Compounds. 1. An Introductory Survey.”
+Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):
+154-154. doi:10.1021/je950378q.</p>
+</dd>
+<dt class="label" id="id53"><span class="brackets">2</span></dt>
+<dd><p>Ambrose, Douglas, and Constantine Tsonopoulos. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 2. Normal Alkanes.”
+Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.
+doi:10.1021/je00019a001.</p>
+</dd>
+<dt class="label" id="id54"><span class="brackets">3</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 3. Aromatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 40, no. 3
+(May 1, 1995): 547-58. doi:10.1021/je00019a002.</p>
+</dd>
+<dt class="label" id="id55"><span class="brackets">4</span></dt>
+<dd><p>Gude, Michael, and Amyn S. Teja. “Vapor-Liquid Critical Properties
+of Elements and Compounds. 4. Aliphatic Alkanols.” Journal of Chemical
+&amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.
+doi:10.1021/je00021a001.</p>
+</dd>
+<dt class="label" id="id56"><span class="brackets">5</span></dt>
+<dd><p>Daubert, Thomas E. “Vapor-Liquid Critical Properties of Elements
+and Compounds. 5. Branched Alkanes and Cycloalkanes.” Journal of
+Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.
+doi:10.1021/je9501548.</p>
+</dd>
+<dt class="label" id="id57"><span class="brackets">6</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 41, no. 4
+(January 1, 1996): 645-56. doi:10.1021/je9501999.</p>
+</dd>
+<dt class="label" id="id58"><span class="brackets">7</span></dt>
+<dd><p>Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen
+Compounds Other Than Alkanols and Cycloalkanols.” Journal of Chemical &amp;
+Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</p>
+</dd>
+<dt class="label" id="id59"><span class="brackets">8</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 8. Organic Sulfur,
+Silicon, and Tin Compounds (C + H + S, Si, and Sn).” Journal of Chemical
+&amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.
+doi:10.1021/je000210r.</p>
+</dd>
+<dt class="label" id="id60"><span class="brackets">9</span></dt>
+<dd><p>Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,
+and Constantine Tsonopoulos. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 9. Organic Compounds Containing Nitrogen.”
+Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):
+305-14. doi:10.1021/je050221q.</p>
+</dd>
+<dt class="label" id="id61"><span class="brackets">10</span></dt>
+<dd><p>Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,
+Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic
+Compounds Containing Halogens.” Journal of Chemical &amp; Engineering Data
+52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</p>
+</dd>
+<dt class="label" id="id62"><span class="brackets">11</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic
+Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;
+N + O; and O + S, + Si.” Journal of Chemical &amp; Engineering Data 54,
+no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</p>
+</dd>
+<dt class="label" id="id63"><span class="brackets">12</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David
+W. Morton, and Kenneth N. Marsh. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and
+Non-Hydrocarbons.” Journal of Chemical &amp; Engineering Data, October 5,
+2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</p>
+</dd>
+<dt class="label" id="id64"><span class="brackets">13</span></dt>
+<dd><p>Mathews, Joseph F. “Critical Constants of Inorganic Substances.”
+Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.
+doi:10.1021/cr60275a004.</p>
+</dd>
+<dt class="label" id="id65"><span class="brackets">14</span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
+</dd>
+<dt class="label" id="id66"><span class="brackets">15</span></dt>
+<dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
+Jürgen Gmehling. “PSRK Group Contribution Equation of State:
+Comprehensive Revision and Extension IV, Including Critical Constants
+and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
+227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
+</dd>
+<dt class="label" id="id67"><span class="brackets">16</span></dt>
+<dd><p>Passut, Charles A., and Ronald P. Danner. “Acentric Factor. A
+Valuable Correlating Parameter for the Properties of Hydrocarbons.”
+Industrial &amp; Engineering Chemistry Process Design and Development 12,
+no. 3 (July 1, 1973): 365–68. doi:10.1021/i260047a026.</p>
+</dd>
+<dt class="label" id="id68"><span class="brackets">17</span></dt>
+<dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
+Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+Publishing, 2014.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Vc">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Vc</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['SURF']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Vc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of a chemical’s critical
+volume. Lookup is based on CASRNs. Will automatically select a data
+source to use if no Method is provided; returns None if the data is not
+available.</p>
+<p>Prefered sources are ‘IUPAC’ for organic chemicals, and ‘MATTHEWS’ for
+inorganic chemicals. Function has data for approximately 1000 chemicals.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Vc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">0.000168</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Vc</strong> (<em>float</em>) – Critical volume, [m^3/mol]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Vc with the given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Accepted methods are ‘IUPAC’, ‘MATTHEWS’,
+‘CRC’, ‘PSRK’, ‘YAWS’, and ‘SURF’. All valid values are also held
+in the list <cite>Vc_methods</cite>.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Vc for the desired chemical, and will return methods instead of Vc</p></li>
+<li><p><strong>IgnoreMethods</strong> (<em>list, optional</em>) – A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A total of six sources are available for this function. They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘IUPAC’, a series of critically evaluated
+experimental datum for organic compounds in <a href="#id177"><span class="problematic" id="id69">[1]_</span></a>, <a href="#id178"><span class="problematic" id="id70">[2]_</span></a>, <a href="#id179"><span class="problematic" id="id71">[3]_</span></a>, <a href="#id180"><span class="problematic" id="id72">[4]_</span></a>,
+<a href="#id181"><span class="problematic" id="id73">[5]_</span></a>, <a href="#id182"><span class="problematic" id="id74">[6]_</span></a>, <a href="#id183"><span class="problematic" id="id75">[7]_</span></a>, <a href="#id184"><span class="problematic" id="id76">[8]_</span></a>, <a href="#id185"><span class="problematic" id="id77">[9]_</span></a>, <a href="#id186"><span class="problematic" id="id78">[10]_</span></a>, <a href="#id187"><span class="problematic" id="id79">[11]_</span></a>, and <a href="#id188"><span class="problematic" id="id80">[12]_</span></a>.</p></li>
+<li><p>‘MATTHEWS’, a series of critically
+evaluated data for inorganic compounds in <a href="#id189"><span class="problematic" id="id81">[13]_</span></a>.</p></li>
+<li><p>‘CRC’, a compillation of critically
+evaluated data by the TRC as published in <a href="#id190"><span class="problematic" id="id82">[14]_</span></a>.</p></li>
+<li><p>‘PSRK’, a compillation of experimental and
+estimated data published in <a href="#id191"><span class="problematic" id="id83">[15]_</span></a>.</p></li>
+<li><p>‘YAWS’, a large compillation of data from a
+variety of sources; no data points are sourced in the work of <a href="#id192"><span class="problematic" id="id84">[16]_</span></a>.</p></li>
+<li><p>‘SURF’, an estimation method using a
+simple quadratic method for estimating Pc from Tc and Vc. This is
+ignored and not returned as a method by default</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id85"><span class="brackets">1</span></dt>
+<dd><p>Ambrose, Douglas, and Colin L. Young. “Vapor-Liquid Critical
+Properties of Elements and Compounds. 1. An Introductory Survey.”
+Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):
+154-154. doi:10.1021/je950378q.</p>
+</dd>
+<dt class="label" id="id86"><span class="brackets">2</span></dt>
+<dd><p>Ambrose, Douglas, and Constantine Tsonopoulos. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 2. Normal Alkanes.”
+Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.
+doi:10.1021/je00019a001.</p>
+</dd>
+<dt class="label" id="id87"><span class="brackets">3</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 3. Aromatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 40, no. 3
+(May 1, 1995): 547-58. doi:10.1021/je00019a002.</p>
+</dd>
+<dt class="label" id="id88"><span class="brackets">4</span></dt>
+<dd><p>Gude, Michael, and Amyn S. Teja. “Vapor-Liquid Critical Properties
+of Elements and Compounds. 4. Aliphatic Alkanols.” Journal of Chemical
+&amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.
+doi:10.1021/je00021a001.</p>
+</dd>
+<dt class="label" id="id89"><span class="brackets">5</span></dt>
+<dd><p>Daubert, Thomas E. “Vapor-Liquid Critical Properties of Elements
+and Compounds. 5. Branched Alkanes and Cycloalkanes.” Journal of
+Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.
+doi:10.1021/je9501548.</p>
+</dd>
+<dt class="label" id="id90"><span class="brackets">6</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 41, no. 4
+(January 1, 1996): 645-56. doi:10.1021/je9501999.</p>
+</dd>
+<dt class="label" id="id91"><span class="brackets">7</span></dt>
+<dd><p>Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen
+Compounds Other Than Alkanols and Cycloalkanols.” Journal of Chemical &amp;
+Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</p>
+</dd>
+<dt class="label" id="id92"><span class="brackets">8</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 8. Organic Sulfur,
+Silicon, and Tin Compounds (C + H + S, Si, and Sn).” Journal of Chemical
+&amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.
+doi:10.1021/je000210r.</p>
+</dd>
+<dt class="label" id="id93"><span class="brackets">9</span></dt>
+<dd><p>Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,
+and Constantine Tsonopoulos. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 9. Organic Compounds Containing Nitrogen.”
+Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):
+305-14. doi:10.1021/je050221q.</p>
+</dd>
+<dt class="label" id="id94"><span class="brackets">10</span></dt>
+<dd><p>Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,
+Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic
+Compounds Containing Halogens.” Journal of Chemical &amp; Engineering Data
+52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</p>
+</dd>
+<dt class="label" id="id95"><span class="brackets">11</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic
+Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;
+N + O; and O + S, + Si.” Journal of Chemical &amp; Engineering Data 54,
+no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</p>
+</dd>
+<dt class="label" id="id96"><span class="brackets">12</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David
+W. Morton, and Kenneth N. Marsh. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and
+Non-Hydrocarbons.” Journal of Chemical &amp; Engineering Data, October 5,
+2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</p>
+</dd>
+<dt class="label" id="id97"><span class="brackets">13</span></dt>
+<dd><p>Mathews, Joseph F. “Critical Constants of Inorganic Substances.”
+Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.
+doi:10.1021/cr60275a004.</p>
+</dd>
+<dt class="label" id="id98"><span class="brackets">14</span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
+</dd>
+<dt class="label" id="id99"><span class="brackets">15</span></dt>
+<dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
+Jürgen Gmehling. “PSRK Group Contribution Equation of State:
+Comprehensive Revision and Extension IV, Including Critical Constants
+and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
+227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
+</dd>
+<dt class="label" id="id100"><span class="brackets">16</span></dt>
+<dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
+Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+Publishing, 2014.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Zc">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Zc</code><span class="sig-paren">(</span><em class="sig-param">CASRN, AvailableMethods=False, Method=None, IgnoreMethods=['COMBINED']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Zc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Zc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles the retrieval of a chemical’s critical
+compressibility. Lookup is based on CASRNs. Will automatically select a
+data source to use if no Method is provided; returns None if the data is
+not available.</p>
+<p>Prefered sources are ‘IUPAC’ for organic chemicals, and ‘MATTHEWS’ for
+inorganic chemicals. Function has data for approximately 1000 chemicals.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Zc</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;64-17-5&#39;</span><span class="p">)</span>
+<span class="go">0.24100000000000002</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CASRN</strong> (<em>string</em>) – CASRN [-]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Zc</strong> (<em>float</em>) – Critical compressibility, [-]</p></li>
+<li><p><strong>methods</strong> (<em>list, only returned if AvailableMethods == True</em>) – List of methods which can be used to obtain Vc with the given inputs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Method</strong> (<em>string, optional</em>) – The method name to use. Accepted methods are ‘IUPAC’, ‘MATTHEWS’,
+‘CRC’, ‘PSRK’, ‘YAWS’, and ‘COMBINED’. All valid values are also held
+in <cite>Zc_methods</cite>.</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool, optional</em>) – If True, function will determine which methods can be used to obtain
+Zc for the desired chemical, and will return methods instead of Zc</p></li>
+<li><p><strong>IgnoreMethods</strong> (<em>list, optional</em>) – A list of methods to ignore in obtaining the full list of methods,
+useful for for performance reasons and ignoring inaccurate methods</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A total of five sources are available for this function. They are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘IUPAC’, a series of critically evaluated
+experimental datum for organic compounds in <a href="#id193"><span class="problematic" id="id101">[1]_</span></a>, <a href="#id194"><span class="problematic" id="id102">[2]_</span></a>, <a href="#id195"><span class="problematic" id="id103">[3]_</span></a>, <a href="#id196"><span class="problematic" id="id104">[4]_</span></a>,
+<a href="#id197"><span class="problematic" id="id105">[5]_</span></a>, <a href="#id198"><span class="problematic" id="id106">[6]_</span></a>, <a href="#id199"><span class="problematic" id="id107">[7]_</span></a>, <a href="#id200"><span class="problematic" id="id108">[8]_</span></a>, <a href="#id201"><span class="problematic" id="id109">[9]_</span></a>, <a href="#id202"><span class="problematic" id="id110">[10]_</span></a>, <a href="#id203"><span class="problematic" id="id111">[11]_</span></a>, and <a href="#id204"><span class="problematic" id="id112">[12]_</span></a>.</p></li>
+<li><p>‘MATTHEWS’, a series of critically
+evaluated data for inorganic compounds in <a href="#id205"><span class="problematic" id="id113">[13]_</span></a>.</p></li>
+<li><p>‘CRC’, a compillation of critically
+evaluated data by the TRC as published in <a href="#id206"><span class="problematic" id="id114">[14]_</span></a>.</p></li>
+<li><p>‘PSRK’, a compillation of experimental and
+estimated data published in <a href="#id207"><span class="problematic" id="id115">[15]_</span></a>.</p></li>
+<li><p>‘YAWS’, a large compillation of data from a
+variety of sources; no data points are sourced in the work of <a href="#id208"><span class="problematic" id="id116">[16]_</span></a>.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id117"><span class="brackets">1</span></dt>
+<dd><p>Ambrose, Douglas, and Colin L. Young. “Vapor-Liquid Critical
+Properties of Elements and Compounds. 1. An Introductory Survey.”
+Journal of Chemical &amp; Engineering Data 41, no. 1 (January 1, 1996):
+154-154. doi:10.1021/je950378q.</p>
+</dd>
+<dt class="label" id="id118"><span class="brackets">2</span></dt>
+<dd><p>Ambrose, Douglas, and Constantine Tsonopoulos. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 2. Normal Alkanes.”
+Journal of Chemical &amp; Engineering Data 40, no. 3 (May 1, 1995): 531-46.
+doi:10.1021/je00019a001.</p>
+</dd>
+<dt class="label" id="id119"><span class="brackets">3</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 3. Aromatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 40, no. 3
+(May 1, 1995): 547-58. doi:10.1021/je00019a002.</p>
+</dd>
+<dt class="label" id="id120"><span class="brackets">4</span></dt>
+<dd><p>Gude, Michael, and Amyn S. Teja. “Vapor-Liquid Critical Properties
+of Elements and Compounds. 4. Aliphatic Alkanols.” Journal of Chemical
+&amp; Engineering Data 40, no. 5 (September 1, 1995): 1025-36.
+doi:10.1021/je00021a001.</p>
+</dd>
+<dt class="label" id="id121"><span class="brackets">5</span></dt>
+<dd><p>Daubert, Thomas E. “Vapor-Liquid Critical Properties of Elements
+and Compounds. 5. Branched Alkanes and Cycloalkanes.” Journal of
+Chemical &amp; Engineering Data 41, no. 3 (January 1, 1996): 365-72.
+doi:10.1021/je9501548.</p>
+</dd>
+<dt class="label" id="id122"><span class="brackets">6</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 6. Unsaturated Aliphatic
+Hydrocarbons.” Journal of Chemical &amp; Engineering Data 41, no. 4
+(January 1, 1996): 645-56. doi:10.1021/je9501999.</p>
+</dd>
+<dt class="label" id="id123"><span class="brackets">7</span></dt>
+<dd><p>Kudchadker, Arvind P., Douglas Ambrose, and Constantine Tsonopoulos.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 7. Oxygen
+Compounds Other Than Alkanols and Cycloalkanols.” Journal of Chemical &amp;
+Engineering Data 46, no. 3 (May 1, 2001): 457-79. doi:10.1021/je0001680.</p>
+</dd>
+<dt class="label" id="id124"><span class="brackets">8</span></dt>
+<dd><p>Tsonopoulos, Constantine, and Douglas Ambrose. “Vapor-Liquid
+Critical Properties of Elements and Compounds. 8. Organic Sulfur,
+Silicon, and Tin Compounds (C + H + S, Si, and Sn).” Journal of Chemical
+&amp; Engineering Data 46, no. 3 (May 1, 2001): 480-85.
+doi:10.1021/je000210r.</p>
+</dd>
+<dt class="label" id="id125"><span class="brackets">9</span></dt>
+<dd><p>Marsh, Kenneth N., Colin L. Young, David W. Morton, Douglas Ambrose,
+and Constantine Tsonopoulos. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 9. Organic Compounds Containing Nitrogen.”
+Journal of Chemical &amp; Engineering Data 51, no. 2 (March 1, 2006):
+305-14. doi:10.1021/je050221q.</p>
+</dd>
+<dt class="label" id="id126"><span class="brackets">10</span></dt>
+<dd><p>Marsh, Kenneth N., Alan Abramson, Douglas Ambrose, David W. Morton,
+Eugene Nikitin, Constantine Tsonopoulos, and Colin L. Young.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 10. Organic
+Compounds Containing Halogens.” Journal of Chemical &amp; Engineering Data
+52, no. 5 (September 1, 2007): 1509-38. doi:10.1021/je700336g.</p>
+</dd>
+<dt class="label" id="id127"><span class="brackets">11</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, and Eugene D. Nikitin.
+“Vapor-Liquid Critical Properties of Elements and Compounds. 11. Organic
+Compounds Containing B + O; Halogens + N, + O, + O + S, + S, + Si;
+N + O; and O + S, + Si.” Journal of Chemical &amp; Engineering Data 54,
+no. 3 (March 12, 2009): 669-89. doi:10.1021/je800580z.</p>
+</dd>
+<dt class="label" id="id128"><span class="brackets">12</span></dt>
+<dd><p>Ambrose, Douglas, Constantine Tsonopoulos, Eugene D. Nikitin, David
+W. Morton, and Kenneth N. Marsh. “Vapor-Liquid Critical Properties of
+Elements and Compounds. 12. Review of Recent Data for Hydrocarbons and
+Non-Hydrocarbons.” Journal of Chemical &amp; Engineering Data, October 5,
+2015, 151005081500002. doi:10.1021/acs.jced.5b00571.</p>
+</dd>
+<dt class="label" id="id129"><span class="brackets">13</span></dt>
+<dd><p>Mathews, Joseph F. “Critical Constants of Inorganic Substances.”
+Chemical Reviews 72, no. 1 (February 1, 1972): 71-100.
+doi:10.1021/cr60275a004.</p>
+</dd>
+<dt class="label" id="id130"><span class="brackets">14</span></dt>
+<dd><p>Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
+Chemistry and Physics, 95E. Boca Raton, FL: CRC press, 2014.</p>
+</dd>
+<dt class="label" id="id131"><span class="brackets">15</span></dt>
+<dd><p>Horstmann, Sven, Anna Jabłoniec, Jörg Krafczyk, Kai Fischer, and
+Jürgen Gmehling. “PSRK Group Contribution Equation of State:
+Comprehensive Revision and Extension IV, Including Critical Constants
+and Α-Function Parameters for 1000 Components.” Fluid Phase Equilibria
+227, no. 2 (January 25, 2005): 157-64. doi:10.1016/j.fluid.2004.11.002.</p>
+</dd>
+<dt class="label" id="id132"><span class="brackets">16</span></dt>
+<dd><p>Yaws, Carl L. Thermophysical Properties of Chemicals and
+Hydrocarbons, Second Edition. Amsterdam Boston: Gulf Professional
+Publishing, 2014.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Mersmann_Kind_predictor">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Mersmann_Kind_predictor</code><span class="sig-paren">(</span><em class="sig-param">atoms</em>, <em class="sig-param">coeff=3.645</em>, <em class="sig-param">power=0.5</em>, <em class="sig-param">covalent_radii={'Br': 1.14</em>, <em class="sig-param">'C': 0.77</em>, <em class="sig-param">'Cl': 0.99</em>, <em class="sig-param">'F': 0.71</em>, <em class="sig-param">'H': 0.37</em>, <em class="sig-param">'I': 1.33</em>, <em class="sig-param">'N': 0.71</em>, <em class="sig-param">'O': 0.6</em>, <em class="sig-param">'S': 1.04</em>, <em class="sig-param">'Si': 1.17}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Mersmann_Kind_predictor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Mersmann_Kind_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the critical molar volume of a chemical based only on its
+atomic composition according to <a href="#id209"><span class="problematic" id="id133">[1]_</span></a> and <a href="#id210"><span class="problematic" id="id134">[2]_</span></a>. This is a crude approach,
+but provides very reasonable
+estimates in practice. Optionally, the <cite>coeff</cite> used and the <cite>power</cite> in the
+fraction as well as the atomic contributions can be adjusted; this method
+is general and atomic contributions can be regressed to predict other
+properties with this routine.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{\left(\frac{V_c}{n_a N_A}\right)^{1/3}}{d_a}
+= \frac{3.645}{\left(\frac{r_a}{r_H}\right)^{1/2}}\\r_a = d_a/2\\d_a = 2 \frac{\sum_i (n_i r_i)}{n_a}\end{aligned}\end{align} \]</div>
+<p>In the above equations, <span class="math notranslate nohighlight">\(n_i\)</span> is the number of atoms of species i in
+the molecule, <span class="math notranslate nohighlight">\(r_i\)</span> is the covalent atomic radius of the atom, and
+<span class="math notranslate nohighlight">\(n_a\)</span> is the total number of atoms in the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>dict</em>) – Dictionary of atoms and their counts, [-]</p></li>
+<li><p><strong>coeff</strong> (<em>float</em><em>, </em><em>optional</em>) – Coefficient used in the relationship, [m^2]</p></li>
+<li><p><strong>power</strong> (<em>float</em><em>, </em><em>optional</em>) – Power applied to the relative atomic radius, [-]</p></li>
+<li><p><strong>covalent_radii</strong> (<em>dict</em><em> or </em><em>indexable</em><em>, </em><em>optional</em>) – Object which can be indexed to atomic contrinbutions (by symbol), [-]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Vc</strong> – Predicted critical volume of the chemical, [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">thermo.elements.periodic_table</span></code> covalent radii (from RDKit),
+the coefficient and power should be 4.261206523632586 and 0.5597281770786228
+respectively for best results.</p>
+<p class="rubric">Examples</p>
+<p>Prediction of critical volume of decane:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Mersmann_Kind_predictor</span><span class="p">({</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">})</span>
+<span class="go">0.0005851859052024729</span>
+</pre></div>
+</div>
+<p>This is compared against the experimental value, 0.000624 (a 6.2% relative
+error)</p>
+<p>Using custom fitted coefficients we can do a bit better:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">thermo.critical</span> <span class="kn">import</span> <span class="n">rcovs_regressed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Mersmann_Kind_predictor</span><span class="p">({</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">},</span> <span class="n">coeff</span><span class="o">=</span><span class="mf">4.261206523632586</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">power</span><span class="o">=</span><span class="mf">0.5597281770786228</span><span class="p">,</span> <span class="n">covalent_radii</span><span class="o">=</span><span class="n">rcovs_regressed</span><span class="p">)</span>
+<span class="go">0.0005956871011923075</span>
+</pre></div>
+</div>
+<p>The relative error is only 4.5% now. This is compared to an experimental
+uncertainty of 5.6%.</p>
+<p>Evaluating 1321 critical volumes in the database, the average relative
+error is 5.0%; standard deviation 6.8%; and worst value of 79% relative
+error for phosphorus.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id135"><span class="brackets">1</span></dt>
+<dd><p>Mersmann, Alfons, and Matthias Kind. “Correlation for the Prediction
+of Critical Molar Volume.” Industrial &amp; Engineering Chemistry Research,
+October 16, 2017. <a class="reference external" href="https://doi.org/10.1021/acs.iecr.7b03171">https://doi.org/10.1021/acs.iecr.7b03171</a>.</p>
+</dd>
+<dt class="label" id="id136"><span class="brackets">2</span></dt>
+<dd><p>Mersmann, Alfons, and Matthias Kind. “Prediction of Mechanical and
+Thermal Properties of Pure Liquids, of Critical Data, and of Vapor
+Pressure.” Industrial &amp; Engineering Chemistry Research, January 31,
+2017. <a class="reference external" href="https://doi.org/10.1021/acs.iecr.6b04323">https://doi.org/10.1021/acs.iecr.6b04323</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Ihmels">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Ihmels</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">Vc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Ihmels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Ihmels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Most recent, and most recommended method of estimating critical
+properties from each other. Two of the three properties are required.
+This model uses the “critical surface”, a general plot of Tc vs Pc vs Vc.
+The model used 421 organic compounds to derive equation.
+The general equation is in <a href="#id211"><span class="problematic" id="id137">[1]_</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[P_c = -0.025 + 2.215 \frac{T_c}{V_c}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid (optional) [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid (optional) [Pa]</p></li>
+<li><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid (optional) [m^3/mol]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tc, Pc or Vc</strong> – Critical property of fluid [K], [Pa], or [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The prediction of Tc from Pc and Vc is not tested, as this is not necessary
+anywhere, but it is implemented.
+Internal units are MPa, cm^3/mol, and K. A slight error occurs when
+Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.
+Their equation was also compared with 56 inorganic and elements.
+Devations of 20% for &lt;200K or &gt;1000K points.</p>
+<p>Examples
+——–a
+Succinic acid [110-15-6]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ihmels</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">851.0</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="mf">0.000308</span><span class="p">)</span>
+<span class="go">6095016.233766234</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id138"><span class="brackets">1</span></dt>
+<dd><p>Ihmels, E. Christian. “The Critical Surface.” Journal of Chemical
+&amp; Engineering Data 55, no. 9 (September 9, 2010): 3474-80.
+doi:10.1021/je100167w.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Meissner">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Meissner</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">Vc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Meissner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Meissner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Old (1942) relationship for estimating critical
+properties from each other. Two of the three properties are required.
+This model uses the “critical surface”, a general plot of Tc vs Pc vs Vc.
+The model used 42 organic and inorganic compounds to derive the equation.
+The general equation is in <a href="#id212"><span class="problematic" id="id139">[1]_</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[P_c = \frac{2.08 T_c}{V_c-8}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical temperature of fluid [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical pressure of fluid [Pa]</p></li>
+<li><p><strong>Vc</strong> (<em>float</em><em>, </em><em>optional</em>) – Critical volume of fluid [m^3/mol]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tc, Pc or Vc</strong> – Critical property of fluid [K], [Pa], or [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The prediction of Tc from Pc and Vc is not tested, as this is not necessary
+anywhere, but it is implemented.
+Internal units are atm, cm^3/mol, and K. A slight error occurs when
+Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.
+This equation is less accurate than that of Ihmels, but surprisingly close.
+The author also proposed means of estimated properties independently.</p>
+<p class="rubric">Examples</p>
+<p>Succinic acid [110-15-6]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Meissner</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">851.0</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="mf">0.000308</span><span class="p">)</span>
+<span class="go">5978445.199999999</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id140"><span class="brackets">1</span></dt>
+<dd><p>Meissner, H. P., and E. M. Redding. “Prediction of Critical
+Constants.” Industrial &amp; Engineering Chemistry 34, no. 5
+(May 1, 1942): 521-26. doi:10.1021/ie50389a003.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.Grigoras">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">Grigoras</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">Vc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#Grigoras"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.Grigoras" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relatively recent (1990) relationship for estimating critical
+properties from each other. Two of the three properties are required.
+This model uses the “critical surface”, a general plot of Tc vs Pc vs Vc.
+The model used 137 organic and inorganic compounds to derive the equation.
+The general equation is in <a href="#id213"><span class="problematic" id="id141">[1]_</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[P_c = 2.9 + 20.2 \frac{T_c}{V_c}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid (optional) [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid (optional) [Pa]</p></li>
+<li><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid (optional) [m^3/mol]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tc, Pc or Vc</strong> – Critical property of fluid [K], [Pa], or [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The prediction of Tc from Pc and Vc is not tested, as this is not necessary
+anywhere, but it is implemented.
+Internal units are bar, cm^3/mol, and K. A slight error occurs when
+Pa, cm^3/mol and K are used instead, on the order of &lt;0.2%.
+This equation is less accurate than that of Ihmels, but surprisingly close.
+The author also investigated an early QSPR model.</p>
+<p class="rubric">Examples</p>
+<p>Succinic acid [110-15-6]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Grigoras</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">851.0</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="mf">0.000308</span><span class="p">)</span>
+<span class="go">5871233.766233766</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id142"><span class="brackets">1</span></dt>
+<dd><p>Grigoras, Stelian. “A Structural Approach to Calculate Physical
+Properties of Pure Organic Substances: The Critical Temperature,
+Critical Volume and Related Properties.” Journal of Computational
+Chemistry 11, no. 4 (May 1, 1990): 493-510.
+doi:10.1002/jcc.540110408</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.critical_surface">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">critical_surface</code><span class="sig-paren">(</span><em class="sig-param">Tc=None</em>, <em class="sig-param">Pc=None</em>, <em class="sig-param">Vc=None</em>, <em class="sig-param">AvailableMethods=False</em>, <em class="sig-param">Method=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#critical_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.critical_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for calculating a critical property of a substance from its
+other two critical properties. Calls functions Ihmels, Meissner, and
+Grigoras, each of which use a general ‘Critical surface’ type of equation.
+Limited accuracy is expected due to very limited theoretical backing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Tc</strong> (<em>float</em>) – Critical temperature of fluid (optional) [K]</p></li>
+<li><p><strong>Pc</strong> (<em>float</em>) – Critical pressure of fluid (optional) [Pa]</p></li>
+<li><p><strong>Vc</strong> (<em>float</em>) – Critical volume of fluid (optional) [m^3/mol]</p></li>
+<li><p><strong>AvailableMethods</strong> (<em>bool</em>) – Request available methods for given parameters</p></li>
+<li><p><strong>Method</strong> (<em>string</em>) – Request calculation uses the requested method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tc, Pc or Vc</strong> – Critical property of fluid [K], [Pa], or [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p class="rubric">Examples</p>
+<p>Decamethyltetrasiloxane [141-62-8]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">critical_surface</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="mf">599.4</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">1.19E6</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="s1">&#39;IHMELS&#39;</span><span class="p">)</span>
+<span class="go">0.0010927333333333334</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="thermosteam.properties.critical.third_property">
+<code class="sig-prename descclassname">thermosteam.properties.critical.</code><code class="sig-name descname">third_property</code><span class="sig-paren">(</span><em class="sig-param">CASRN=None</em>, <em class="sig-param">T=False</em>, <em class="sig-param">P=False</em>, <em class="sig-param">V=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/thermosteam/properties/critical.html#third_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.properties.critical.third_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for calculating a critical property of a substance from its
+other two critical properties, but retrieving the actual other critical
+values for convenient calculation.
+Calls functions Ihmels, Meissner, and
+Grigoras, each of which use a general ‘Critical surface’ type of equation.
+Limited accuracy is expected due to very limited theoretical backing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CASRN</strong> (<em>string</em>) – The CAS number of the desired chemical</p></li>
+<li><p><strong>T</strong> (<em>bool</em>) – Estimate critical temperature</p></li>
+<li><p><strong>P</strong> (<em>bool</em>) – Estimate critical pressure</p></li>
+<li><p><strong>V</strong> (<em>bool</em>) – Estimate critical volume</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Tc, Pc or Vc</strong> – Critical property of fluid [K], [Pa], or [m^3/mol]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Avoids recursion only by eliminating the None and critical surface options
+for calculating each critical property. So long as it never calls itself.
+Note that when used by Tc, Pc or Vc, this function results in said function
+calling the other functions (to determine methods) and (with method specified)</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Decamethyltetrasiloxane [141-62-8]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">third_property</span><span class="p">(</span><span class="s1">&#39;141-62-8&#39;</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">0.0010920041152263375</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Succinic acid 110-15-6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">third_property</span><span class="p">(</span><span class="s1">&#39;110-15-6&#39;</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">6095016.233766234</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dipole.html" class="btn btn-neutral float-right" title="dipole" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="combustion.html" class="btn btn-neutral float-left" title="combustion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

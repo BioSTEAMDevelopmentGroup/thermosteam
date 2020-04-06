@@ -1,0 +1,1386 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.properties.lennard_jones &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.properties.lennard_jones</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.properties.lennard_jones</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">All data and functions for computing the Lennard-Jones molecular diameter.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MagalhaesLJ_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Stockmayer_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Stockmayer&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;molecular_diameter_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;molecular_diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma_Flynn&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;sigma_Bird_Stewart_Lightfoot_critical_2&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;sigma_Bird_Stewart_Lightfoot_critical_1&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;sigma_Bird_Stewart_Lightfoot_boiling&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma_Bird_Stewart_Lightfoot_melting&#39;</span><span class="p">,</span>
+<span class="s1">&#39;sigma_Stiel_Thodos&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma_Tee_Gotoh_Steward_1&#39;</span><span class="p">,</span> <span class="s1">&#39;sigma_Tee_Gotoh_Steward_2&#39;</span><span class="p">,</span>
+<span class="s1">&#39;sigma_Silva_Liu_Macedo&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon_Flynn&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;epsilon_Bird_Stewart_Lightfoot_critical&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;epsilon_Bird_Stewart_Lightfoot_boiling&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;epsilon_Bird_Stewart_Lightfoot_melting&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon_Stiel_Thodos&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;epsilon_Tee_Gotoh_Steward_1&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon_Tee_Gotoh_Steward_2&#39;</span><span class="p">,</span> 
+<span class="s1">&#39;Neufeld_collision&#39;</span><span class="p">,</span> <span class="s1">&#39;collision_integral_Neufeld_Janzen_Aziz&#39;</span><span class="p">,</span> <span class="s1">&#39;As_collision&#39;</span><span class="p">,</span>
+<span class="s1">&#39;Bs_collision&#39;</span><span class="p">,</span> <span class="s1">&#39;Cs_collision&#39;</span><span class="p">,</span> <span class="s1">&#39;collision_integral_Kim_Monroe&#39;</span><span class="p">,</span> <span class="s1">&#39;Tstar&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">sin</span>
+<span class="kn">from</span> <span class="nn">.._constants</span> <span class="kn">import</span> <span class="n">k</span>
+
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;Data/Viscosity&#39;</span><span class="p">)</span>
+
+<span class="n">MagalhaesLJ_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span>
+                        <span class="s1">&#39;MagalhaesLJ.tsv&#39;</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">FLYNN</span> <span class="o">=</span> <span class="s1">&#39;Flynn (1960)&#39;</span>
+<span class="n">STIELTHODOS</span> <span class="o">=</span> <span class="s1">&#39;Stiel and Thodos Tc, Zc (1962)&#39;</span>
+<span class="n">MAGALHAES</span> <span class="o">=</span> <span class="s1">&#39;Magalhães, Lito, Da Silva, and Silva (2013)&#39;</span>
+<span class="n">TEEGOTOSTEWARD1</span> <span class="o">=</span> <span class="s1">&#39;Tee, Gotoh, and Stewart CSP with Tc (1966)&#39;</span>
+<span class="n">TEEGOTOSTEWARD2</span> <span class="o">=</span> <span class="s1">&#39;Tee, Gotoh, and Stewart CSP with Tc, omega (1966)&#39;</span>
+<span class="n">BSLC</span> <span class="o">=</span> <span class="s1">&#39;Bird, Stewart, and Light (2002) critical relation&#39;</span>
+<span class="n">BSLB</span> <span class="o">=</span> <span class="s1">&#39;Bird, Stewart, and Light (2002) boiling relation&#39;</span>
+<span class="n">BSLM</span> <span class="o">=</span> <span class="s1">&#39;Bird, Stewart, and Light (2002) melting relation&#39;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+
+<span class="n">Stockmayer_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">MAGALHAES</span><span class="p">,</span> <span class="n">TEEGOTOSTEWARD2</span><span class="p">,</span> <span class="n">FLYNN</span><span class="p">,</span> <span class="n">BSLC</span><span class="p">,</span> <span class="n">TEEGOTOSTEWARD1</span><span class="p">,</span>
+                      <span class="n">BSLB</span><span class="p">,</span> <span class="n">BSLM</span><span class="p">,</span> <span class="n">STIELTHODOS</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Stockmayer"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.Stockmayer">[docs]</a><span class="k">def</span> <span class="nf">Stockmayer</span><span class="p">(</span><span class="n">Tm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Zc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval or calculation a chemical&#39;s</span>
+<span class="sd">    Stockmayer parameter. Values are available from one source with lookup</span>
+<span class="sd">    based on CASRNs, or can be estimated from 7 CSP methods.</span>
+<span class="sd">    Will automatically select a data source to use if no Method is provided;</span>
+<span class="sd">    returns None if the data is not available.</span>
+
+<span class="sd">    Prefered sources are &#39;Magalhães, Lito, Da Silva, and Silva (2013)&#39; for</span>
+<span class="sd">    common chemicals which had valies listed in that source, and the CSP method</span>
+<span class="sd">    `Tee, Gotoh, and Stewart CSP with Tc, omega (1966)` for chemicals which</span>
+<span class="sd">    don&#39;t.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Stockmayer(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    1291.41</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tm : float, optional</span>
+<span class="sd">        Melting temperature of fluid [K]</span>
+<span class="sd">    Tb : float, optional</span>
+<span class="sd">        Boiling temperature of fluid [K]</span>
+<span class="sd">    Tc : float, optional</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    Zc : float, optional</span>
+<span class="sd">        Critical compressibility, [-]</span>
+<span class="sd">    omega : float, optional</span>
+<span class="sd">        Acentric factor of compound, [-]</span>
+<span class="sd">    CASRN : string, optional</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain epsilon with the given</span>
+<span class="sd">        inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        Stockmayer_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        epsilon for the desired chemical, and will return methods instead of</span>
+<span class="sd">        epsilon</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    These values are somewhat rough, as they attempt to pigeonhole a chemical</span>
+<span class="sd">    into L-J behavior.</span>
+
+<span class="sd">    The tabulated data is from [2]_, for 322 chemicals.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    .. [2] Magalhães, Ana L., Patrícia F. Lito, Francisco A. Da Silva, and</span>
+<span class="sd">       Carlos M. Silva. &quot;Simple and Accurate Correlations for Diffusion</span>
+<span class="sd">       Coefficients of Solutes in Liquids and Supercritical Fluids over Wide</span>
+<span class="sd">       Ranges of Temperature and Density.&quot; The Journal of Supercritical Fluids</span>
+<span class="sd">       76 (April 2013): 94-114. doi:10.1016/j.supflu.2013.02.002.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">MagalhaesLJ_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MAGALHAES</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">omega</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TEEGOTOSTEWARD2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FLYNN</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLC</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TEEGOTOSTEWARD1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tb</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLB</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tm</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLM</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Zc</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">STIELTHODOS</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">FLYNN</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Flynn</span><span class="p">(</span><span class="n">Tc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLC</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Bird_Stewart_Lightfoot_critical</span><span class="p">(</span><span class="n">Tc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLB</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="n">Tb</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLM</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="n">Tm</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">STIELTHODOS</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Stiel_Thodos</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">TEEGOTOSTEWARD1</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="n">Tc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">TEEGOTOSTEWARD2</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MAGALHAES</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">MagalhaesLJ_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">epsilon</span></div>
+
+
+<span class="n">TEEGOTOSTEWARD3</span> <span class="o">=</span> <span class="s1">&#39;Tee, Gotoh, and Stewart CSP with Tc, Pc (1966)&#39;</span>
+<span class="n">TEEGOTOSTEWARD4</span> <span class="o">=</span> <span class="s1">&#39;Tee, Gotoh, and Stewart CSP with Tc, Pc, omega (1966)&#39;</span>
+<span class="n">BSLC1</span> <span class="o">=</span> <span class="s1">&#39;Bird, Stewart, and Light (2002) critical relation with Vc&#39;</span>
+<span class="n">BSLC2</span> <span class="o">=</span> <span class="s1">&#39;Bird, Stewart, and Light (2002) critical relation with Tc, Pc&#39;</span>
+<span class="n">STIELTHODOSMD</span> <span class="o">=</span> <span class="s1">&#39;Stiel and Thodos Vc, Zc (1962)&#39;</span>
+<span class="n">SILVALIUMACEDO</span> <span class="o">=</span> <span class="s1">&#39;Silva, Liu, and Macedo (1998) critical relation with Tc, Pc&#39;</span>
+
+<span class="n">molecular_diameter_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">MAGALHAES</span><span class="p">,</span> <span class="n">TEEGOTOSTEWARD4</span><span class="p">,</span> <span class="n">SILVALIUMACEDO</span><span class="p">,</span>
+                              <span class="n">BSLC2</span><span class="p">,</span> <span class="n">TEEGOTOSTEWARD3</span><span class="p">,</span> <span class="n">STIELTHODOSMD</span><span class="p">,</span> <span class="n">FLYNN</span><span class="p">,</span>
+                              <span class="n">BSLC1</span><span class="p">,</span> <span class="n">BSLB</span><span class="p">,</span> <span class="n">BSLM</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="molecular_diameter"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.molecular_diameter">[docs]</a><span class="k">def</span> <span class="nf">molecular_diameter</span><span class="p">(</span><span class="n">Tc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Zc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">Vm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Vb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">CASRN</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval or calculation a chemical&#39;s</span>
+<span class="sd">    L-J molecular diameter. Values are available from one source with lookup</span>
+<span class="sd">    based on CASRNs, or can be estimated from 9 CSP methods.</span>
+<span class="sd">    Will automatically select a data source to use if no Method is provided;</span>
+<span class="sd">    returns None if the data is not available.</span>
+
+<span class="sd">    Prefered sources are &#39;Magalhães, Lito, Da Silva, and Silva (2013)&#39; for</span>
+<span class="sd">    common chemicals which had valies listed in that source, and the CSP method</span>
+<span class="sd">    `Tee, Gotoh, and Stewart CSP with Tc, Pc, omega (1966)` for chemicals which</span>
+<span class="sd">    don&#39;t.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; molecular_diameter(CASRN=&#39;64-17-5&#39;)</span>
+<span class="sd">    4.23738</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float, optional</span>
+<span class="sd">        Critical temperature, [K]</span>
+<span class="sd">    Pc : float, optional</span>
+<span class="sd">        Critical pressure, [Pa]</span>
+<span class="sd">    Vc : float, optional</span>
+<span class="sd">        Critical volume, [m^3/mol]</span>
+<span class="sd">    Zc : float, optional</span>
+<span class="sd">        Critical compressibility, [-]</span>
+<span class="sd">    omega : float, optional</span>
+<span class="sd">        Acentric factor of compound, [-]</span>
+<span class="sd">    Vm : float, optional</span>
+<span class="sd">        Molar volume of liquid at the melting point of the fluid [K]</span>
+<span class="sd">    Vb : float, optional</span>
+<span class="sd">        Molar volume of liquid at the boiling point of the fluid [K]</span>
+<span class="sd">    CASRN : string, optional</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain epsilon with the given</span>
+<span class="sd">        inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        molecular_diameter_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        sigma for the desired chemical, and will return methods instead of</span>
+<span class="sd">        sigma</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    These values are somewhat rough, as they attempt to pigeonhole a chemical</span>
+<span class="sd">    into L-J behavior.</span>
+
+<span class="sd">    The tabulated data is from [2]_, for 322 chemicals.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    .. [2] Magalhães, Ana L., Patrícia F. Lito, Francisco A. Da Silva, and</span>
+<span class="sd">       Carlos M. Silva. &quot;Simple and Accurate Correlations for Diffusion</span>
+<span class="sd">       Coefficients of Solutes in Liquids and Supercritical Fluids over Wide</span>
+<span class="sd">       Ranges of Temperature and Density.&quot; The Journal of Supercritical Fluids</span>
+<span class="sd">       76 (April 2013): 94-114. doi:10.1016/j.supflu.2013.02.002.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">MagalhaesLJ_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MAGALHAES</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span> <span class="ow">and</span> <span class="n">omega</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TEEGOTOSTEWARD4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tc</span> <span class="ow">and</span> <span class="n">Pc</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SILVALIUMACEDO</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLC2</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TEEGOTOSTEWARD3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vc</span> <span class="ow">and</span> <span class="n">Zc</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">STIELTHODOSMD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vc</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FLYNN</span><span class="p">)</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLC1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vb</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLB</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vm</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSLM</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">FLYNN</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Flynn</span><span class="p">(</span><span class="n">Vc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLC1</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Bird_Stewart_Lightfoot_critical_1</span><span class="p">(</span><span class="n">Vc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLC2</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Bird_Stewart_Lightfoot_critical_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">TEEGOTOSTEWARD3</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">SILVALIUMACEDO</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Silva_Liu_Macedo</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLB</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="n">Vb</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">BSLM</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="n">Vm</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">STIELTHODOSMD</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Stiel_Thodos</span><span class="p">(</span><span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">TEEGOTOSTEWARD4</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MAGALHAES</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">MagalhaesLJ_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<span class="c1">### Sigma Lennard-Jones</span>
+
+<div class="viewcode-block" id="sigma_Flynn"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Flynn">[docs]</a><span class="k">def</span> <span class="nf">sigma_Flynn</span><span class="p">(</span><span class="n">Vc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical volume. CSP method by [1]_ as reported in [2]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 0.561(V_c^{1/3})^{5/4}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Vc is originally in units of mL/mol.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Flynn(0.000268)</span>
+<span class="sd">    5.2506948422196285</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Flynn, L.W., M.S. thesis, Northwestern Univ., Evanston, Ill. (1960).</span>
+<span class="sd">    .. [2] Stiel, L. I., and George Thodos. &quot;Lennard-Jones Force Constants</span>
+<span class="sd">       Predicted from Critical Properties.&quot; Journal of Chemical &amp; Engineering</span>
+<span class="sd">       Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.561</span><span class="o">*</span><span class="p">(</span><span class="n">Vc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">))</span><span class="o">**</span><span class="mf">1.2</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Bird_Stewart_Lightfoot_critical_2"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_2">[docs]</a><span class="k">def</span> <span class="nf">sigma_Bird_Stewart_Lightfoot_critical_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical temperature and pressure. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 2.44(T_c/P_c)^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of critical pressure are atmospheres.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Bird_Stewart_Lightfoot_critical_2(560.1, 4550000)</span>
+<span class="sd">    5.658657684653222</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.44</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Bird_Stewart_Lightfoot_critical_1"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_critical_1">[docs]</a><span class="k">def</span> <span class="nf">sigma_Bird_Stewart_Lightfoot_critical_1</span><span class="p">(</span><span class="n">Vc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical volume. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 0.841 V_c^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of Vc are mL/mol.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Bird_Stewart_Lightfoot_critical_1(0.000268)</span>
+<span class="sd">    5.422184116631474</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>  <span class="c1"># m^3/mol to cm^3/mol</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.841</span><span class="o">*</span><span class="n">Vc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Bird_Stewart_Lightfoot_boiling"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_boiling">[docs]</a><span class="k">def</span> <span class="nf">sigma_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="n">Vb</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses molar volume of liquid at boiling. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 1.166V_{b,liq}^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vb : float</span>
+<span class="sd">        Boiling molar volume of liquid [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones collision integral, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of Vb are mL/mol.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Bird_Stewart_Lightfoot_boiling(0.0001015)</span>
+<span class="sd">    5.439018856944655</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vb</span> <span class="o">=</span> <span class="n">Vb</span><span class="o">*</span><span class="mf">1E6</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.166</span><span class="o">*</span><span class="n">Vb</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Bird_Stewart_Lightfoot_melting"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Bird_Stewart_Lightfoot_melting">[docs]</a><span class="k">def</span> <span class="nf">sigma_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="n">Vm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses molar volume of a liquid at its melting point. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 1.222 V_{m,sol}^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vm : float</span>
+<span class="sd">        Melting molar volume of a liquid at its melting point [m^3/mol]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of Vm are mL/mol.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Bird_Stewart_Lightfoot_melting(8.8e-05)</span>
+<span class="sd">    5.435407341351406</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vm</span> <span class="o">=</span> <span class="n">Vm</span><span class="o">*</span><span class="mf">1E6</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.222</span><span class="o">*</span><span class="n">Vm</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Stiel_Thodos"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Stiel_Thodos">[docs]</a><span class="k">def</span> <span class="nf">sigma_Stiel_Thodos</span><span class="p">(</span><span class="n">Vc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical volume and compressibility. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 0.1866 V_c^{1/3} Z_c^{-6/5}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Vc : float</span>
+<span class="sd">        Critical volume of fluid [m^3/mol]</span>
+<span class="sd">    Zc : float</span>
+<span class="sd">        Critical compressibility of fluid, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Vc is originally in units of mL/mol.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Monofluorobenzene</span>
+
+<span class="sd">    &gt;&gt;&gt; sigma_Stiel_Thodos(0.000271, 0.265)</span>
+<span class="sd">    5.94300853971033</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Stiel, L. I., and George Thodos. &quot;Lennard-Jones Force Constants</span>
+<span class="sd">       Predicted from Critical Properties.&quot; Journal of Chemical &amp; Engineering</span>
+<span class="sd">       Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vc</span><span class="o">*</span><span class="mf">1E6</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.1866</span><span class="o">*</span><span class="n">Vc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span><span class="o">*</span><span class="n">Zc</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">1.2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Tee_Gotoh_Steward_1"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_1">[docs]</a><span class="k">def</span> <span class="nf">sigma_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical temperature and pressure. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = 2.3647 \left(\frac{T_c}{P_c}\right)^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of Pc are atm. Further regressions with other parameters</span>
+<span class="sd">    were performed in [1]_ but are not included here, except for</span>
+<span class="sd">    `sigma_Tee_Gotoh_Steward_2`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Tee_Gotoh_Steward_1(560.1, 4550000)</span>
+<span class="sd">    5.48402779790962</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. &quot;Molecular</span>
+<span class="sd">       Parameters for Normal Fluids. Lennard-Jones 12-6 Potential.&quot; Industrial</span>
+<span class="sd">       &amp; Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.</span>
+<span class="sd">       doi:10.1021/i160019a011</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.3647</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Tee_Gotoh_Steward_2"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Tee_Gotoh_Steward_2">[docs]</a><span class="k">def</span> <span class="nf">sigma_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical temperature, pressure, and acentric factor. CSP method by</span>
+<span class="sd">    [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma = (2.3551 - 0.0874\omega)\left(\frac{T_c}{P_c}\right)^{1/3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        Acentric factor for fluid, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original units of Pc are atm. Further regressions with other parameters</span>
+<span class="sd">    were performed in [1]_ but are not included here, except for</span>
+<span class="sd">    `sigma_Tee_Gotoh_Steward_1`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Tee_Gotoh_Steward_2(560.1, 4550000, 0.245)</span>
+<span class="sd">    5.412104867264477</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. &quot;Molecular Parameters</span>
+<span class="sd">       for Normal Fluids. Lennard-Jones 12-6 Potential.&quot; Industrial</span>
+<span class="sd">       &amp; Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.</span>
+<span class="sd">       doi:10.1021/i160019a011</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">101325.</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.3551</span><span class="o">-</span><span class="mf">0.0874</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<div class="viewcode-block" id="sigma_Silva_Liu_Macedo"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.sigma_Silva_Liu_Macedo">[docs]</a><span class="k">def</span> <span class="nf">sigma_Silva_Liu_Macedo</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones molecular diameter.</span>
+<span class="sd">    Uses critical temperature and pressure. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \sigma_{LJ}^3 = 0.17791 + 11.779 \left( \frac{T_c}{P_c}\right)</span>
+<span class="sd">        - 0.049029\left( \frac{T_c}{P_c}\right)^2</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Pc : float</span>
+<span class="sd">        Critical pressure of fluid [Pa]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Lennard-Jones molecular diameter, [Angstrom]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Pc is originally in bar. An excellent paper. None is  </span>
+<span class="sd">    returned if the polynomial returns a negative number, as in the case of </span>
+<span class="sd">    1029.13 K and 3.83 bar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; sigma_Silva_Liu_Macedo(560.1, 4550000)</span>
+<span class="sd">    5.164483998730177</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Silva, Carlos M., Hongqin Liu, and Eugenia A. Macedo. &quot;Models for</span>
+<span class="sd">       Self-Diffusion Coefficients of Dense Fluids, Including Hydrogen-Bonding</span>
+<span class="sd">       Substances.&quot; Chemical Engineering Science 53, no. 13 (July 1, 1998):</span>
+<span class="sd">       2423-29. doi:10.1016/S0009-2509(98)00037-2</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">Pc</span><span class="o">/</span><span class="mf">1E5</span>  <span class="c1"># Pa to bar</span>
+    <span class="n">term</span> <span class="o">=</span> <span class="mf">0.17791</span> <span class="o">+</span> <span class="mf">11.779</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.049029</span> <span class="o">*</span> <span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">term</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="n">term</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span></div>
+
+
+<span class="c1">### epsilon Lennard-Jones</span>
+
+
+<div class="viewcode-block" id="epsilon_Flynn"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Flynn">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Flynn</span><span class="p">(</span><span class="n">Tc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses critical temperature. CSP method by [1]_ as reported in [2]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 1.77 T_c^{5/6}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Flynn(560.1)</span>
+<span class="sd">    345.2984087011443</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Flynn, L.W., M.S. thesis, Northwestern Univ., Evanston, Ill. (1960).</span>
+<span class="sd">    .. [2] Stiel, L. I., and George Thodos. &quot;Lennard-Jones Force Constants</span>
+<span class="sd">       Predicted from Critical Properties.&quot; Journal of Chemical &amp; Engineering</span>
+<span class="sd">       Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">1.77</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mf">6.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Bird_Stewart_Lightfoot_critical"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_critical">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Bird_Stewart_Lightfoot_critical</span><span class="p">(</span><span class="n">Tc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses critical temperature. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 0.77T_c</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Bird_Stewart_Lightfoot_critical(560.1)</span>
+<span class="sd">    431.27700000000004</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">0.77</span><span class="o">*</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Bird_Stewart_Lightfoot_boiling"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_boiling">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Bird_Stewart_Lightfoot_boiling</span><span class="p">(</span><span class="n">Tb</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses boiling temperature. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 1.15 T_b</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tb : float</span>
+<span class="sd">        Boiling temperature [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Bird_Stewart_Lightfoot_boiling(357.85)</span>
+<span class="sd">    411.5275</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">1.15</span><span class="o">*</span><span class="n">Tb</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Bird_Stewart_Lightfoot_melting"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Bird_Stewart_Lightfoot_melting">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Bird_Stewart_Lightfoot_melting</span><span class="p">(</span><span class="n">Tm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses melting temperature. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 1.92T_m</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tm : float</span>
+<span class="sd">        Melting temperature [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Bird_Stewart_Lightfoot_melting(231.15)</span>
+<span class="sd">    443.808</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">1.92</span><span class="o">*</span><span class="n">Tm</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Stiel_Thodos"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Stiel_Thodos">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Stiel_Thodos</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses Critical temperature and critical compressibility. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 65.3 T_c Z_c^{3.6}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    Zc : float</span>
+<span class="sd">        Critical compressibility of fluid, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Fluorobenzene</span>
+
+<span class="sd">    &gt;&gt;&gt; epsilon_Stiel_Thodos(358.5, 0.265)</span>
+<span class="sd">    196.3755830305783</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Stiel, L. I., and George Thodos. &quot;Lennard-Jones Force Constants</span>
+<span class="sd">       Predicted from Critical Properties.&quot; Journal of Chemical &amp; Engineering</span>
+<span class="sd">       Data 7, no. 2 (April 1, 1962): 234-36. doi:10.1021/je60013a023</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">65.3</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="n">Zc</span><span class="o">**</span><span class="mf">3.6</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Tee_Gotoh_Steward_1"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_1">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Tee_Gotoh_Steward_1</span><span class="p">(</span><span class="n">Tc</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses Critical temperature. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = 0.7740T_c</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Further regressions with other parameters were performed in [1]_ but are</span>
+<span class="sd">    not included here, except for `epsilon_Tee_Gotoh_Steward_2`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Tee_Gotoh_Steward_1(560.1)</span>
+<span class="sd">    433.5174</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. &quot;Molecular Parameters</span>
+<span class="sd">       for Normal Fluids. Lennard-Jones 12-6 Potential.&quot; Industrial &amp;</span>
+<span class="sd">       Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.</span>
+<span class="sd">       doi:10.1021/i160019a011</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="mf">0.7740</span><span class="o">*</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<div class="viewcode-block" id="epsilon_Tee_Gotoh_Steward_2"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.epsilon_Tee_Gotoh_Steward_2">[docs]</a><span class="k">def</span> <span class="nf">epsilon_Tee_Gotoh_Steward_2</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones depth of potential-energy minimum.</span>
+<span class="sd">    Uses critical temperature and acentric factor. CSP method by [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \epsilon/k = (0.7915 + 0.1693 \omega)T_c</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Critical temperature of fluid [K]</span>
+<span class="sd">    omega : float</span>
+<span class="sd">        Acentric factor for fluid, [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epsilon_k : float</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Further regressions with other parameters were performed in [1]_ but are</span>
+<span class="sd">    not included here, except for `epsilon_Tee_Gotoh_Steward_1`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; epsilon_Tee_Gotoh_Steward_2(560.1, 0.245)</span>
+<span class="sd">    466.55125785</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Tee, L. S., Sukehiro Gotoh, and W. E. Stewart. &quot;Molecular Parameters</span>
+<span class="sd">       for Normal Fluids. Lennard-Jones 12-6 Potential.&quot; Industrial &amp;</span>
+<span class="sd">       Engineering Chemistry Fundamentals 5, no. 3 (August 1, 1966): 356-63.</span>
+<span class="sd">       doi:10.1021/i160019a011</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">epsilon_k</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.7915</span> <span class="o">+</span> <span class="mf">0.1693</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="n">Tc</span>
+    <span class="k">return</span> <span class="n">epsilon_k</span></div>
+
+
+<span class="c1">### Collision Integral</span>
+
+<span class="n">Neufeld_collision</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.06036</span><span class="p">,</span> <span class="mf">0.1561</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">,</span> <span class="mf">0.47635</span><span class="p">,</span> <span class="mf">1.03587</span><span class="p">,</span> <span class="mf">1.52996</span><span class="p">,</span> <span class="mf">1.76474</span><span class="p">,</span> <span class="mf">3.89411</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.0022</span><span class="p">,</span> <span class="mf">0.1553</span><span class="p">,</span> <span class="mf">0.16105</span><span class="p">,</span> <span class="mf">0.72751</span><span class="p">,</span> <span class="mf">0.86125</span><span class="p">,</span> <span class="mf">2.06848</span><span class="p">,</span> <span class="mf">1.95162</span><span class="p">,</span> <span class="mf">4.84492</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.96573</span><span class="p">,</span> <span class="mf">0.15611</span><span class="p">,</span> <span class="mf">0.44067</span><span class="p">,</span> <span class="mf">1.5242</span><span class="p">,</span> <span class="mf">2.38981</span><span class="p">,</span> <span class="mf">5.08063</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0005373</span><span class="p">,</span> <span class="mf">19.2866</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.30775</span><span class="p">,</span> <span class="mf">6.58711</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.93447</span><span class="p">,</span> <span class="mf">0.15578</span><span class="p">,</span> <span class="mf">0.39478</span><span class="p">,</span> <span class="mf">1.85761</span><span class="p">,</span> <span class="mf">2.45988</span><span class="p">,</span> <span class="mf">6.15727</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0004246</span><span class="p">,</span> <span class="mf">12.988</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.36399</span><span class="p">,</span> <span class="mf">3.3329</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.90972</span><span class="p">,</span> <span class="mf">0.15565</span><span class="p">,</span> <span class="mf">0.35967</span><span class="p">,</span> <span class="mf">2.18528</span><span class="p">,</span> <span class="mf">2.45169</span><span class="p">,</span> <span class="mf">7.17936</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0003814</span><span class="p">,</span> <span class="mf">9.38191</span><span class="p">,</span> <span class="mf">0.14025</span><span class="p">,</span> <span class="mf">9.93802</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.88928</span><span class="p">,</span> <span class="mf">0.15562</span><span class="p">,</span> <span class="mf">0.33305</span><span class="p">,</span> <span class="mf">2.51303</span><span class="p">,</span> <span class="mf">2.36298</span><span class="p">,</span> <span class="mf">8.1169</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0004649</span><span class="p">,</span> <span class="mf">9.86928</span><span class="p">,</span> <span class="mf">0.12851</span><span class="p">,</span> <span class="mf">9.82414</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.87208</span><span class="p">,</span> <span class="mf">0.15568</span><span class="p">,</span> <span class="mf">0.36583</span><span class="p">,</span> <span class="mf">3.01399</span><span class="p">,</span> <span class="mf">2.70659</span><span class="p">,</span> <span class="mf">9.9231</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0004902</span><span class="p">,</span> <span class="mf">10.2274</span><span class="p">,</span> <span class="mf">0.12306</span><span class="p">,</span> <span class="mf">9.97712</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.16145</span><span class="p">,</span> <span class="mf">0.14874</span><span class="p">,</span> <span class="mf">0.52487</span><span class="p">,</span> <span class="mf">0.7732</span><span class="p">,</span> <span class="mf">2.16178</span><span class="p">,</span> <span class="mf">2.43787</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0006435</span><span class="p">,</span> <span class="mf">18.0323</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7683</span><span class="p">,</span> <span class="mf">7.27371</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.11521</span><span class="p">,</span> <span class="mf">0.14796</span><span class="p">,</span> <span class="mf">0.44844</span><span class="p">,</span> <span class="mf">0.99548</span><span class="p">,</span> <span class="mf">2.30009</span><span class="p">,</span> <span class="mf">3.06031</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0004565</span><span class="p">,</span> <span class="mf">38.5868</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.69403</span><span class="p">,</span> <span class="mf">2.56375</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.08228</span><span class="p">,</span> <span class="mf">0.14807</span><span class="p">,</span> <span class="mf">0.47128</span><span class="p">,</span> <span class="mf">1.31596</span><span class="p">,</span> <span class="mf">2.42738</span><span class="p">,</span> <span class="mf">3.90018</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0005623</span><span class="p">,</span> <span class="mf">3.08449</span><span class="p">,</span> <span class="mf">0.28271</span><span class="p">,</span> <span class="mf">3.22871</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.05581</span><span class="p">,</span> <span class="mf">0.14822</span><span class="p">,</span> <span class="mf">0.51203</span><span class="p">,</span> <span class="mf">1.67007</span><span class="p">,</span> <span class="mf">2.57317</span><span class="p">,</span> <span class="mf">4.85939</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000712</span><span class="p">,</span> <span class="mf">4.7121</span><span class="p">,</span> <span class="mf">0.2173</span><span class="p">,</span> <span class="mf">4.7353</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.03358</span><span class="p">,</span> <span class="mf">0.14834</span><span class="p">,</span> <span class="mf">0.53928</span><span class="p">,</span> <span class="mf">2.01942</span><span class="p">,</span> <span class="mf">2.7235</span><span class="p">,</span> <span class="mf">5.84817</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0008576</span><span class="p">,</span> <span class="mf">7.66012</span><span class="p">,</span> <span class="mf">0.15493</span><span class="p">,</span> <span class="mf">7.6011</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.05567</span><span class="p">,</span> <span class="mf">0.1498</span><span class="p">,</span> <span class="mf">0.30887</span><span class="p">,</span> <span class="mf">0.86437</span><span class="p">,</span> <span class="mf">1.35766</span><span class="p">,</span> <span class="mf">2.44123</span><span class="p">,</span> <span class="mf">1.2903</span><span class="p">,</span> <span class="mf">5.55734</span><span class="p">,</span> <span class="mf">0.0002339</span><span class="p">,</span> <span class="mf">57.7757</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0898</span><span class="p">,</span> <span class="mf">6.9475</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.02621</span><span class="p">,</span> <span class="mf">0.1505</span><span class="p">,</span> <span class="mf">0.55381</span><span class="p">,</span> <span class="mf">1.4007</span><span class="p">,</span> <span class="mf">2.06176</span><span class="p">,</span> <span class="mf">4.26234</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0005227</span><span class="p">,</span> <span class="mf">11.3331</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8209</span><span class="p">,</span> <span class="mf">3.87185</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.99958</span><span class="p">,</span> <span class="mf">0.15029</span><span class="p">,</span> <span class="mf">0.50441</span><span class="p">,</span> <span class="mf">1.64304</span><span class="p">,</span> <span class="mf">2.06947</span><span class="p">,</span> <span class="mf">4.87712</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0005184</span><span class="p">,</span> <span class="mf">3.45031</span><span class="p">,</span> <span class="mf">0.26821</span><span class="p">,</span> <span class="mf">3.73348</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.12007</span><span class="p">,</span> <span class="mf">0.14578</span><span class="p">,</span> <span class="mf">0.53347</span><span class="p">,</span> <span class="mf">1.11986</span><span class="p">,</span> <span class="mf">2.28803</span><span class="p">,</span> <span class="mf">3.27567</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0007427</span><span class="p">,</span> <span class="mf">21.048</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.28759</span><span class="p">,</span> <span class="mf">6.69149</span><span class="p">]</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="collision_integral_Neufeld_Janzen_Aziz"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.collision_integral_Neufeld_Janzen_Aziz">[docs]</a><span class="k">def</span> <span class="nf">collision_integral_Neufeld_Janzen_Aziz</span><span class="p">(</span><span class="n">Tstar</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones collision integral for any of 16 values of</span>
+<span class="sd">    (l,j) for the wide range of 0.3 &lt; Tstar &lt; 100. Values are accurate to</span>
+<span class="sd">    0.1 % of actual values, but the calculation of actual values is</span>
+<span class="sd">    computationally intensive and so these simplifications are used, developed</span>
+<span class="sd">    in [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \Omega_D = \frac{A}{T^{*B}} + \frac{C}{\exp(DT^*)} +</span>
+<span class="sd">        \frac{E}{\exp(FT^{*})} + \frac{G}{\exp(HT^*)} + RT^{*B}\sin(ST^{*W}-P)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tstar : float</span>
+<span class="sd">        Reduced temperature of the fluid [-]</span>
+<span class="sd">    l : int</span>
+<span class="sd">        term</span>
+<span class="sd">    s : int</span>
+<span class="sd">        term</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Omega : float</span>
+<span class="sd">        Collision integral of A and B</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),</span>
+<span class="sd">    (1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),</span>
+<span class="sd">    (3, 5), and (4, 4).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T^* = \frac{k_b T}{\epsilon}</span>
+
+<span class="sd">    Results are very similar to those of the more modern formulation,</span>
+<span class="sd">    `collision_integral_Kim_Monroe`.</span>
+
+<span class="sd">    Calculations begin to yield overflow errors in some values of (l, 2) after</span>
+<span class="sd">    Tstar = 75, beginning with (1, 7). Also susceptible are (1, 5) and (1, 6).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; collision_integral_Neufeld_Janzen_Aziz(100, 1, 1)</span>
+<span class="sd">    0.516717697672334</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Neufeld, Philip D., A. R. Janzen, and R. A. Aziz. &quot;Empirical</span>
+<span class="sd">       Equations to Calculate 16 of the Transport Collision Integrals</span>
+<span class="sd">       Omega(l, S)* for the Lennard-Jones (12-6) Potential.&quot; The Journal of</span>
+<span class="sd">       Chemical Physics 57, no. 3 (August 1, 1972): 1100-1102.</span>
+<span class="sd">       doi:10.1063/1.1678363</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Neufeld_collision</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Input values of l and s are not supported&#39;</span><span class="p">)</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Neufeld_collision</span><span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">A</span><span class="o">/</span><span class="n">Tstar</span><span class="o">**</span><span class="n">B</span> <span class="o">+</span> <span class="n">C</span><span class="o">/</span><span class="n">exp</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span><span class="o">/</span><span class="n">exp</span><span class="p">(</span><span class="n">F</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]:</span>
+        <span class="n">omega</span> <span class="o">+=</span> <span class="n">G</span><span class="o">/</span><span class="n">exp</span><span class="p">(</span><span class="n">H</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]:</span>
+        <span class="n">omega</span> <span class="o">+=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tstar</span><span class="o">**</span><span class="n">B</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">S</span><span class="o">*</span><span class="n">Tstar</span><span class="o">**</span><span class="n">W</span><span class="o">-</span><span class="n">P</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">omega</span></div>
+
+
+<span class="n">As_collision</span> <span class="o">=</span> <span class="p">{(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="o">-</span><span class="mf">1.10367290</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">1.35555540</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.06771150</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.80959899</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.74128322</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">0.80998324</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="mf">0.81808091</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="o">-</span><span class="mf">0.92032979</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">2.59557990</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">1.60427450</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.82064641</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">0.79413652</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.26304910</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">2.21146360</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">1.50498090</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">2.62223930</span>
+                <span class="p">}</span>
+
+
+<span class="n">Bs_collision</span> <span class="o">=</span> <span class="p">{</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span><span class="mf">2.6431984</span><span class="p">,</span><span class="mf">0.0060432255</span><span class="p">,</span><span class="o">-</span><span class="mf">0.15158773</span><span class="p">,</span><span class="mf">0.054237938</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0090468682</span><span class="p">,</span><span class="mf">0.0006174200700</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.44668594</span><span class="p">,</span><span class="mf">0.42734391</span><span class="p">,</span><span class="o">-</span><span class="mf">0.16036459</span><span class="p">,</span><span class="mf">0.031461648</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0032587575</span><span class="p">,</span><span class="mf">0.0001386025700</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.1394539</span><span class="p">,</span><span class="mf">0.17696362</span><span class="p">,</span><span class="o">-</span><span class="mf">0.026252211</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0043814141</span><span class="p">,</span><span class="mf">0.00167521</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0001438280100</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.1293817</span><span class="p">,</span><span class="mf">0.059760309</span><span class="p">,</span><span class="mf">0.0071109469</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0063851124</span><span class="p">,</span><span class="mf">0.0010498938</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0000581492570</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.1778885</span><span class="p">,</span><span class="mf">0.027398438</span><span class="p">,</span><span class="mf">0.0076254248</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0031650182</span><span class="p">,</span><span class="mf">0.0003278652</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0000092890016</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.073071217</span><span class="p">,</span><span class="mf">0.034607908</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0011457199</span><span class="p">,</span><span class="mf">0.000281986</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0002006054</span><span class="p">,</span><span class="mf">0.0000214464830</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.044232851</span><span class="p">,</span><span class="mf">0.029750283</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0022011682</span><span class="p">,</span><span class="mf">0.0006326412</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0001755553</span><span class="p">,</span><span class="mf">0.0000142557040</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="mf">2.3508044</span><span class="p">,</span><span class="mf">0.50110649</span><span class="p">,</span><span class="o">-</span><span class="mf">0.47193769</span><span class="p">,</span><span class="mf">0.15806367</span><span class="p">,</span><span class="o">-</span><span class="mf">0.026367184</span><span class="p">,</span><span class="mf">0.0018120118000</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.8569443</span><span class="p">,</span><span class="mf">0.96985775</span><span class="p">,</span><span class="o">-</span><span class="mf">0.39888526</span><span class="p">,</span><span class="mf">0.090063692</span><span class="p">,</span><span class="o">-</span><span class="mf">0.010918991</span><span class="p">,</span><span class="mf">0.0005664679700</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.67406115</span><span class="p">,</span><span class="mf">0.42671907</span><span class="p">,</span><span class="o">-</span><span class="mf">0.10177069</span><span class="p">,</span><span class="mf">0.0006185714</span><span class="p">,</span><span class="mf">0.0031225358</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0003520605100</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.23195128</span><span class="p">,</span><span class="mf">0.12233793</span><span class="p">,</span><span class="mf">0.013891578</span><span class="p">,</span><span class="o">-</span><span class="mf">0.020903423</span><span class="p">,</span><span class="mf">0.0046715462</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0003520430300</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.23766123</span><span class="p">,</span><span class="mf">0.077125802</span><span class="p">,</span><span class="mf">0.013060901</span><span class="p">,</span><span class="o">-</span><span class="mf">0.010982362</span><span class="p">,</span><span class="mf">0.0018034505</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0000959825710</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.36104243</span><span class="p">,</span><span class="mf">0.68116214</span><span class="p">,</span><span class="o">-</span><span class="mf">0.36401583</span><span class="p">,</span><span class="mf">0.10500196</span><span class="p">,</span><span class="o">-</span><span class="mf">0.016400134</span><span class="p">,</span><span class="mf">0.0010880886000</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.4743107</span><span class="p">,</span><span class="mf">0.64918549</span><span class="p">,</span><span class="o">-</span><span class="mf">0.24075196</span><span class="p">,</span><span class="mf">0.051820149</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0060565396</span><span class="p">,</span><span class="mf">0.0002981232600</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.64335529</span><span class="p">,</span><span class="mf">0.3261704</span><span class="p">,</span><span class="o">-</span><span class="mf">0.082126072</span><span class="p">,</span><span class="mf">0.0059682011</span><span class="p">,</span><span class="mf">0.0010269488</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0001595725200</span><span class="p">],</span>
+<span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.9158462</span><span class="p">,</span><span class="mf">1.016638</span><span class="p">,</span><span class="o">-</span><span class="mf">0.43355278</span><span class="p">,</span><span class="mf">0.10496591</span><span class="p">,</span><span class="o">-</span><span class="mf">0.013951104</span><span class="p">,</span><span class="mf">0.0008004853400</span><span class="p">]</span>
+<span class="p">}</span>
+
+
+<span class="n">Cs_collision</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.6690746</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6914589</span><span class="p">,</span> <span class="mf">0.15502132</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.020642189</span><span class="p">,</span> <span class="mf">0.001540207700</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000049729535</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.47499422</span><span class="p">,</span> <span class="mf">0.14482036</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.032158368</span><span class="p">,</span> <span class="mf">0.0044357933</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00034138118</span><span class="p">,</span> <span class="mf">0.000011259742</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.25258689</span><span class="p">,</span> <span class="mf">0.059709197</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.013332695</span><span class="p">,</span> <span class="mf">0.0019619285</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000160630760</span><span class="p">,</span> <span class="mf">0.0000055804557</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.045055948</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.022642753</span><span class="p">,</span> <span class="mf">0.0056672308</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0006570876</span><span class="p">,</span> <span class="mf">0.000040733113</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0000010820157</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.0013668724</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.041730962</span><span class="p">,</span> <span class="mf">0.010378923</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0013492954</span><span class="p">,</span> <span class="mf">0.000096963599</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0000030307552</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.071180849</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.012738119</span><span class="p">,</span> <span class="mf">0.0038582834</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0004706043</span><span class="p">,</span> <span class="mf">0.000030466929</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00000085305576</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.089417548</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0051856424</span><span class="p">,</span> <span class="mf">0.0021882143</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0002487447</span><span class="p">,</span> <span class="mf">0.000013745859</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00000030285365</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[</span><span class="mf">1.6330213</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.69795156</span><span class="p">,</span> <span class="mf">0.16096572</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02210944</span><span class="p">,</span> <span class="mf">0.0017031434</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000056699986</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.4586197</span><span class="p">,</span> <span class="mf">0.52947262</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.11946363</span><span class="p">,</span> <span class="mf">0.016264589</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0012354315</span><span class="p">,</span> <span class="mf">0.000040366357</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.62774499</span><span class="p">,</span> <span class="mf">0.20700644</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.04760169</span><span class="p">,</span> <span class="mf">0.0067153792</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00052706167</span><span class="p">,</span> <span class="mf">0.000017705708</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.039184885</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.057316906</span><span class="p">,</span> <span class="mf">0.012794497</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0015336449</span><span class="p">,</span> <span class="mf">0.00010241454</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0000029975563</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.050470266</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.062621672</span><span class="p">,</span> <span class="mf">0.014326724</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0017806541</span><span class="p">,</span> <span class="mf">0.00012353365</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0000037501381</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.33227158</span><span class="p">,</span> <span class="mf">0.079723851</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.015470355</span><span class="p">,</span> <span class="mf">0.0018686705</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00012179945</span><span class="p">,</span> <span class="mf">0.0000032594587</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.1942554</span><span class="p">,</span> <span class="mf">0.43000688</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.097525871</span><span class="p">,</span> <span class="mf">0.013399366</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0010283777</span><span class="p">,</span> <span class="mf">0.000033956674</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.60014514</span><span class="p">,</span> <span class="mf">0.19764859</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.045212434</span><span class="p">,</span> <span class="mf">0.0063650284</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00049991689</span><span class="p">,</span> <span class="mf">0.000016833944</span><span class="p">],</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.4676253</span><span class="p">,</span> <span class="mf">0.53048161</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.11909781</span><span class="p">,</span> <span class="mf">0.016123847</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0012174905</span><span class="p">,</span> <span class="mf">0.0000395451</span><span class="p">]</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="collision_integral_Kim_Monroe"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.collision_integral_Kim_Monroe">[docs]</a><span class="k">def</span> <span class="nf">collision_integral_Kim_Monroe</span><span class="p">(</span><span class="n">Tstar</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates Lennard-Jones collision integral for any of 16 values of</span>
+<span class="sd">    (l,j) for the wide range of 0.3 &lt; Tstar &lt; 400. Values are accurate to</span>
+<span class="sd">    0.007 % of actual values, but the calculation of actual values is</span>
+<span class="sd">    computationally intensive and so these simplifications are used, developed</span>
+<span class="sd">    in [1]_.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \Omega^{(l,s)*} = A^{(l,s)} + \sum_{k=1}^6 \left[ \frac{B_k^{(l,s)}}</span>
+<span class="sd">        {(T^*)^k} + C_k^{(l,s)} (\ln T^*)^k \right]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Tstar : float</span>
+<span class="sd">        Reduced temperature of the fluid [-]</span>
+<span class="sd">    l : int</span>
+<span class="sd">        term</span>
+<span class="sd">    s : int</span>
+<span class="sd">        term</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Omega : float</span>
+<span class="sd">        Collision integral of A and B</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Acceptable pairs of (l,s) are (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),</span>
+<span class="sd">    (1, 6), (1, 7), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 3), (3, 4),</span>
+<span class="sd">    (3, 5), and (4, 4).</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T^* = \frac{k_b T}{\epsilon}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; collision_integral_Kim_Monroe(400, 1, 1)</span>
+<span class="sd">    0.4141818082392228</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Kim, Sun Ung, and Charles W. Monroe. &quot;High-Accuracy Calculations of</span>
+<span class="sd">       Sixteen Collision Integrals for Lennard-Jones (12-6) Gases and Their</span>
+<span class="sd">       Interpolation to Parameterize Neon, Argon, and Krypton.&quot; Journal of</span>
+<span class="sd">       Computational Physics 273 (September 15, 2014): 358-73.</span>
+<span class="sd">       doi:10.1016/j.jcp.2014.05.018.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">As_collision</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Input values of l and s are not supported&#39;</span><span class="p">)</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">As_collision</span><span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">ki</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+        <span class="n">Bs</span> <span class="o">=</span> <span class="n">Bs_collision</span><span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+        <span class="n">Cs</span> <span class="o">=</span> <span class="n">Cs_collision</span><span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+        <span class="n">omega</span> <span class="o">+=</span> <span class="n">Bs</span><span class="p">[</span><span class="n">ki</span><span class="p">]</span><span class="o">/</span><span class="n">Tstar</span><span class="o">**</span><span class="p">(</span><span class="n">ki</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Cs</span><span class="p">[</span><span class="n">ki</span><span class="p">]</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">Tstar</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">ki</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">omega</span></div>
+
+
+<span class="c1">### Misc</span>
+
+
+<div class="viewcode-block" id="Tstar"><a class="viewcode-back" href="../../../properties/lennard_jones.html#thermosteam.properties.lennard_jones.Tstar">[docs]</a><span class="k">def</span> <span class="nf">Tstar</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">epsilon_k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function calculates the parameter `Tstar` as needed in performing</span>
+<span class="sd">    collision integral calculations.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T^* = \frac{kT}{\epsilon}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Tstar(T=318.2, epsilon_k=308.43)</span>
+<span class="sd">    1.0316765554582887</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    epsilon_k : float, optional</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum over k, [K]</span>
+<span class="sd">    epsilon : float, optional</span>
+<span class="sd">        Lennard-Jones depth of potential-energy minimum [J]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tstar : float</span>
+<span class="sd">        Dimentionless temperature for calculating collision integral, [-]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Tabulated values are normally listed as epsilon/k. k is the Boltzman</span>
+<span class="sd">    constant, with units of J/K.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Bird, R. Byron, Warren E. Stewart, and Edwin N. Lightfoot.</span>
+<span class="sd">       Transport Phenomena, Revised 2nd Edition. New York:</span>
+<span class="sd">       John Wiley &amp; Sons, Inc., 2006</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">epsilon_k</span><span class="p">:</span>
+        <span class="n">_Tstar</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="n">epsilon_k</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">epsilon</span><span class="p">:</span>
+        <span class="n">_Tstar</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">epsilon</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either epsilon/k or epsilon must be provided&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Tstar</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

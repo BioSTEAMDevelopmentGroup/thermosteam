@@ -85,10 +85,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../Overview.html">1. Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting started.html">3. Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic equilibrium.html">4. Thermodynamic equilibrium</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo property packages.html">5. Thermo property packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric reactions.html">6. Stoichiometric reactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../indexer/indexer_module.html">indexer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../functors/functors_module.html">functors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../properties/properties_module.html">properties</a></li>
 </ul>
 
             
@@ -232,18 +232,18 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chemicals</span><span class="p">,</span> <span class="n">Chemicals</span><span class="p">):</span> <span class="n">chemicals</span> <span class="o">=</span> <span class="n">Chemicals</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mixture</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mixture</span><span class="p">,</span> <span class="n">Mixture</span><span class="p">),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;mixture must be a &#39;</span><span class="si">{Mixture.__name__}</span><span class="s2">&#39; object&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;mixture must be a &#39;</span><span class="si">{</span><span class="n">Mixture</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; object&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mixture</span> <span class="o">=</span> <span class="n">new_ideal_mixture</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
         <span class="n">chemicals</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
             <span class="n">issubtype</span> <span class="o">=</span> <span class="nb">issubclass</span>
             <span class="k">assert</span> <span class="n">issubtype</span><span class="p">(</span><span class="n">Gamma</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">ActivityCoefficients</span><span class="p">),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Gamma must be a &#39;</span><span class="si">{eq.ActivityCoefficients.__name__}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Gamma must be a &#39;</span><span class="si">{</span><span class="n">eq</span><span class="o">.</span><span class="n">ActivityCoefficients</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
             <span class="k">assert</span> <span class="n">issubtype</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">FugacityCoefficients</span><span class="p">),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Phi must be a &#39;</span><span class="si">{eq.FugacityCoefficients.__name__}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Phi must be a &#39;</span><span class="si">{</span><span class="n">eq</span><span class="o">.</span><span class="n">FugacityCoefficients</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
             <span class="k">assert</span> <span class="n">issubtype</span><span class="p">(</span><span class="n">PCF</span><span class="p">,</span> <span class="n">eq</span><span class="o">.</span><span class="n">PoyintingCorrectionFactors</span><span class="p">),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;PCF must be a &#39;</span><span class="si">{eq.PoyintingCorrectionFactors.__name__}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;PCF must be a &#39;</span><span class="si">{</span><span class="n">eq</span><span class="o">.</span><span class="n">PoyintingCorrectionFactors</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; subclass&quot;</span><span class="p">)</span>
         <span class="nb">setattr</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;chemicals&#39;</span><span class="p">,</span> <span class="n">chemicals</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;mixture&#39;</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span>
@@ -252,7 +252,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PCF&#39;</span><span class="p">,</span> <span class="n">PCF</span><span class="p">)</span>    
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;{type(self).__name__}(chemicals=</span><span class="si">{self.chemicals}</span><span class="s2">, mixture=</span><span class="si">{self.mixture}</span><span class="s2">, Gamma=</span><span class="si">{self.Gamma.__name__}</span><span class="s2">, Phi=</span><span class="si">{self.Phi.__name__}</span><span class="s2">, PCF=</span><span class="si">{self.PCF.__name__}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(chemicals=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chemicals</span><span class="si">}</span><span class="s2">, mixture=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="si">}</span><span class="s2">, Gamma=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Gamma</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, Phi=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Phi</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, PCF=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">PCF</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">)&quot;</span></div>
     
 
     

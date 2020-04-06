@@ -1,5 +1,0 @@
-miscdata
-========
-
-.. automodule:: thermosteam.functors.miscdata
-   :members:

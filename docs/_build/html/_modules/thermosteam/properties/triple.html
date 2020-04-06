@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>thermosteam.properties.triple &mdash; Thermosteam  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Thermosteam
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Getting_started.html">3. Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermodynamic_equilibrium.html">4. Thermodynamic equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Thermo_property_packages.html">5. Thermo property packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/Stoichiometric_reactions.html">6. Stoichiometric reactions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemical.html">Chemical</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Chemicals.html">Chemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CompiledChemicals.html">CompiledChemicals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Thermo.html">Thermo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Stream.html">Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MultiStream.html">MultiStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ThermalCondition.html">ThermalCondition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functor.html">functor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equilibrium/equilibrium_module.html">equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reaction/reaction_module.html">reaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexer/indexer_module.html">indexer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../functional.html">functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../properties/properties_module.html">properties</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Thermosteam</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>thermosteam.properties.triple</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for thermosteam.properties.triple</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">All data and methods for estimating a chemical&#39;s triple point.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Staveley_data&#39;</span><span class="p">,</span> <span class="s1">&#39;Tt_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Tt&#39;</span><span class="p">,</span> <span class="s1">&#39;Pt_methods&#39;</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.phase_change</span> <span class="kn">import</span> <span class="n">Tm</span>
+<span class="kn">from</span> <span class="nn">.vapor_pressure</span> <span class="kn">import</span> <span class="n">VaporPressure</span>
+
+<span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;Data/Triple Properties&#39;</span><span class="p">)</span>
+
+
+<span class="n">Staveley_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;Staveley 1981.tsv&#39;</span><span class="p">),</span>
+                       <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">STAVELEY</span> <span class="o">=</span> <span class="s1">&#39;STAVELEY&#39;</span>
+<span class="n">MELTING</span> <span class="o">=</span> <span class="s1">&#39;MELTING&#39;</span>
+<span class="n">NONE</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+
+<span class="n">Tt_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">STAVELEY</span><span class="p">,</span> <span class="n">MELTING</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Tt"><a class="viewcode-back" href="../../../properties/triple.html#thermosteam.properties.triple.Tt">[docs]</a><span class="k">def</span> <span class="nf">Tt</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s triple temperature.</span>
+<span class="sd">    Lookup is based on CASRNs. Will automatically select a data source to use</span>
+<span class="sd">    if no Method is provided; returns None if the data is not available.</span>
+
+<span class="sd">    Returns data from [1]_, or a chemical&#39;s melting point if available.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tt : float</span>
+<span class="sd">        Triple point temperature, [K]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Tt with the</span>
+<span class="sd">        given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        Tt_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        the Tt for the desired chemical, and will return methods</span>
+<span class="sd">        instead of the Tt</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Median difference between melting points and triple points is 0.02 K.</span>
+<span class="sd">    Accordingly, this should be more than good enough for engineering</span>
+<span class="sd">    applications.</span>
+
+<span class="sd">    Temperatures are on the ITS-68 scale.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Ammonia</span>
+
+<span class="sd">    &gt;&gt;&gt; Tt(&#39;7664-41-7&#39;)</span>
+<span class="sd">    195.47999999999999</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. &quot;Triple-Points</span>
+<span class="sd">       of Low Melting Substances and Their Use in Cryogenic Work.&quot; Cryogenics</span>
+<span class="sd">       21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">Staveley_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">STAVELEY</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tm</span><span class="p">(</span><span class="n">CASRN</span><span class="p">):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MELTING</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">STAVELEY</span><span class="p">:</span>
+        <span class="n">Tt</span> <span class="o">=</span> <span class="n">Staveley_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s2">&quot;Tt68&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">MELTING</span><span class="p">:</span>
+        <span class="n">Tt</span> <span class="o">=</span> <span class="n">Tm</span><span class="p">(</span><span class="n">CASRN</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">Tt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Tt</span></div>
+
+<span class="n">DEFINITION</span> <span class="o">=</span> <span class="s1">&#39;DEFINITION&#39;</span>
+<span class="n">Pt_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">STAVELEY</span><span class="p">,</span> <span class="n">DEFINITION</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Pt"><a class="viewcode-back" href="../../../properties/triple.html#thermosteam.properties.triple.Pt">[docs]</a><span class="k">def</span> <span class="nf">Pt</span><span class="p">(</span><span class="n">CASRN</span><span class="p">,</span> <span class="n">AvailableMethods</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;This function handles the retrieval of a chemical&#39;s triple pressure.</span>
+<span class="sd">    Lookup is based on CASRNs. Will automatically select a data source to use</span>
+<span class="sd">    if no Method is provided; returns None if the data is not available.</span>
+
+<span class="sd">    Returns data from [1]_, or attempts to calculate the vapor pressure at the</span>
+<span class="sd">    triple temperature, if data is available.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    CASRN : string</span>
+<span class="sd">        CASRN [-]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Pt : float</span>
+<span class="sd">        Triple point pressure, [Pa]</span>
+<span class="sd">    methods : list, only returned if AvailableMethods == True</span>
+<span class="sd">        List of methods which can be used to obtain Pt with the</span>
+<span class="sd">        given inputs</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    Method : string, optional</span>
+<span class="sd">        A string for the method name to use, as defined by constants in</span>
+<span class="sd">        Pt_methods</span>
+<span class="sd">    AvailableMethods : bool, optional</span>
+<span class="sd">        If True, function will determine which methods can be used to obtain</span>
+<span class="sd">        the Pt for the desired chemical, and will return methods</span>
+<span class="sd">        instead of the Pt</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Ammonia</span>
+
+<span class="sd">    &gt;&gt;&gt; Pt(&#39;7664-41-7&#39;)</span>
+<span class="sd">    6079.5</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Staveley, L. A. K., L. Q. Lobo, and J. C. G. Calado. &quot;Triple-Points</span>
+<span class="sd">       of Low Melting Substances and Their Use in Cryogenic Work.&quot; Cryogenics</span>
+<span class="sd">       21, no. 3 (March 1981): 131-144. doi:10.1016/0011-2275(81)90264-2.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">list_methods</span><span class="p">():</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">CASRN</span> <span class="ow">in</span> <span class="n">Staveley_data</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Staveley_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">]):</span>
+            <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">STAVELEY</span><span class="p">)</span>
+        <span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NONE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">methods</span>
+    <span class="k">if</span> <span class="n">AvailableMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_methods</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Method</span><span class="p">:</span>
+        <span class="n">Method</span> <span class="o">=</span> <span class="n">list_methods</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">STAVELEY</span><span class="p">:</span>
+        <span class="n">Pt</span> <span class="o">=</span> <span class="n">Staveley_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CASRN</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">DEFINITION</span><span class="p">:</span>
+        <span class="n">Pt</span> <span class="o">=</span> <span class="n">VaporPressure</span><span class="p">(</span><span class="n">CASRN</span><span class="o">=</span><span class="n">CASRN</span><span class="p">)</span><span class="o">.</span><span class="n">T_dependent_property</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">Tt</span><span class="p">(</span><span class="n">CASRN</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">Method</span> <span class="o">==</span> <span class="n">NONE</span><span class="p">:</span>
+        <span class="n">Pt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failure in in function&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Pt</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Yoel Cortes-Pena
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
