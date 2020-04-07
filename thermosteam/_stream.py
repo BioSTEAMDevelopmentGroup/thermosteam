@@ -52,7 +52,8 @@ class Stream:
     price=0 : float
         Price per unit mass [USD/kg].
     thermo=None : Thermo
-        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
+        Thermo object to initialize input and output streams. Defaults to
+        `biosteam.settings.get_thermo()`.
     **chemical_flows : float
         ID - flow pairs.
     

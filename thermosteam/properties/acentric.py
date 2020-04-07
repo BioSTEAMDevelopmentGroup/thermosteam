@@ -5,8 +5,8 @@ All data and methods related to estimating a chemical's accentric factor.
 
 from __future__ import division
 
-__all__ = ['omega', 'LK_omega', 'StielPolar']
-__all__.extend(['omega_methods', 'Stiel_polar_methods'])
+__all__ = ('omega', 'LK_omega', 'StielPolar',
+           'omega_methods', 'Stiel_polar_methods')
 
 import numpy as np
 from math import log, log10

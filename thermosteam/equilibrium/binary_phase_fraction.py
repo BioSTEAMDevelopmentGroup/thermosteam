@@ -4,7 +4,7 @@ Created on Thu Mar 26 12:14:29 2020
 
 @author: yoelr
 """
-from numba import njit
+from ..utils import njitable
 from flexsolve import IQ_interpolation
 
 __all__ = ('phase_fraction', 'solve_phase_fraction',
@@ -39,12 +39,12 @@ def solve_phase_fraction(zs, Ks, guess):
                             1e-4, 1e-7, args)
     
 
-@njit
+@njitable
 def phase_fraction_objective_function(V, zs, Ks):
     """Phase fraction objective function."""
     return (zs*(Ks-1.)/(1.+V*(Ks-1.))).sum()
 
-@njit
+@njitable
 def compute_phase_fraction_2N(zs, Ks):
     """Return phase fraction for 2-component binary equilibrium."""
     z1, z2 = zs
@@ -59,7 +59,8 @@ def compute_phase_fraction_2N(zs, Ks):
     z1_z2 = z1 + z2
     K1z1_K2z2 = K1z1 + K2z2
     return (-K1z1_K2z2 + z1_z2)/(K1K2z1 + K1K2z2 - K1z2 - K1z1_K2z2 - K2z1 + z1_z2)
-@njit    
+
+@njitable    
 def compute_phase_fraction_3N(zs, Ks):
     """Return phase fraction for 3-component binary equilibrium."""
     z1, z2, z3 = zs

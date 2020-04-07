@@ -7,7 +7,7 @@ Created on Mon Apr 16 08:58:41 2018
 """
 import numpy as np
 from .unifac_data import DOUFSG, DOUFIP2016, UFIP, UFSG
-from numba import njit
+from ..utils import njitable
 
 __all__ = ('ActivityCoefficients',
            'GroupActivityCoefficients',
@@ -25,7 +25,7 @@ def chemgroup_array(chemgroups, index):
             array[i, index[group]] = count
     return array
 
-@njit
+@njitable
 def group_activity_coefficients(x, chemgroups, loggammacs,
                                 Qs, psis, cQfs, gpsis):
     weighted_counts = chemgroups.transpose() @ x
@@ -50,6 +50,37 @@ def get_interaction(all_interactions, i, j, no_interaction):
         return all_interactions[i][j]
     except:
         return no_interaction
+
+@njitable
+def loggammacs_UNIFAC(qs, rs, x):
+    r_net = (x*rs).sum()
+    q_net = (x*qs).sum()  
+    Vs = rs/r_net
+    Fs = qs/q_net
+    Vs_over_Fs = Vs/Fs
+    return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
+
+@njitable
+def loggammacs_Dortmund(qs, rs, x):
+    r_net = (x*rs).sum()
+    q_net = (x*qs).sum()
+    rs_p = rs**0.75
+    r_pnet = (rs_p*x).sum()
+    Vs = rs/r_net
+    Fs = qs/q_net
+    Vs_over_Fs = Vs/Fs
+    Vs_p = rs_p/r_pnet
+    return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
+
+@njitable
+def psi_Dortmund(T, abc):
+    abc[:, :, 0] /= T
+    abc[:, :, 2] *= T
+    return np.exp(-abc.sum(2)) 
+
+@njitable
+def psi_UNIFAC(T, a):
+    return np.exp(-a/T)
 
 # %% Activity Coefficients
 
@@ -191,19 +222,12 @@ class UNIFACActivityCoefficiencts(GroupActivityCoefficients):
     _no_interaction = 0.
     _cached = {}
     @staticmethod
-    @njit
     def loggammacs(qs, rs, x):
-        r_net = (x*rs).sum()
-        q_net = (x*qs).sum()  
-        Vs = rs/r_net
-        Fs = qs/q_net
-        Vs_over_Fs = Vs/Fs
-        return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
+        return loggammacs_UNIFAC(qs, rs, x)
     
     @staticmethod
-    @njit
     def psi(T, a):
-        return np.exp(-a/T)
+        return psi_UNIFAC(T, a)
 
 
 class DortmundActivityCoefficients(GroupActivityCoefficients):
@@ -223,24 +247,12 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     _cached = {}
     
     @staticmethod
-    @njit
     def loggammacs(qs, rs, x):
-        r_net = (x*rs).sum()
-        q_net = (x*qs).sum()
-        rs_p = rs**0.75
-        r_pnet = (rs_p*x).sum()
-        Vs = rs/r_net
-        Fs = qs/q_net
-        Vs_over_Fs = Vs/Fs
-        Vs_p = rs_p/r_pnet
-        return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
+        return loggammacs_Dortmund(qs, rs, x)
     
     @staticmethod
-    @njit
     def psi(T, abc):
-        abc[:, :, 0] /= T
-        abc[:, :, 2] *= T
-        return np.exp(-abc.sum(2)) 
+        return psi_Dortmund(T, abc)
     
     
 
