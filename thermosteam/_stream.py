@@ -231,6 +231,11 @@ class Stream:
     def isempty(self):
         return (self._imol._data == 0.).all()
 
+    @property
+    def vapor_fraction(self):
+        """Molar vapor fraction."""
+        return 1.0 if self.phase == 'g' else 0.0
+
     def disconnect(self):
         sink = self._sink
         source = self._source

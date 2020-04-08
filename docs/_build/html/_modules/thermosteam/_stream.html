@@ -223,7 +223,8 @@
 <span class="sd">    price=0 : float</span>
 <span class="sd">        Price per unit mass [USD/kg].</span>
 <span class="sd">    thermo=None : Thermo</span>
-<span class="sd">        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.</span>
+<span class="sd">        Thermo object to initialize input and output streams. Defaults to</span>
+<span class="sd">        `biosteam.settings.get_thermo()`.</span>
 <span class="sd">    **chemical_flows : float</span>
 <span class="sd">        ID - flow pairs.</span>
 <span class="sd">    </span>
@@ -400,6 +401,11 @@
 
     <span class="k">def</span> <span class="nf">isempty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vapor_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Molar vapor fraction.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span> <span class="k">else</span> <span class="mf">0.0</span>
 
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sink</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sink</span>

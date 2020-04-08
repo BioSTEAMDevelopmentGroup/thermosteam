@@ -178,7 +178,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">.unifac_data</span> <span class="kn">import</span> <span class="n">DOUFSG</span><span class="p">,</span> <span class="n">DOUFIP2016</span><span class="p">,</span> <span class="n">UFIP</span><span class="p">,</span> <span class="n">UFSG</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">njitable</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;ActivityCoefficients&#39;</span><span class="p">,</span>
            <span class="s1">&#39;GroupActivityCoefficients&#39;</span><span class="p">,</span>
@@ -196,7 +196,7 @@
             <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">index</span><span class="p">[</span><span class="n">group</span><span class="p">]]</span> <span class="o">=</span> <span class="n">count</span>
     <span class="k">return</span> <span class="n">array</span>
 
-<span class="nd">@njit</span>
+<span class="nd">@njitable</span>
 <span class="k">def</span> <span class="nf">group_activity_coefficients</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">chemgroups</span><span class="p">,</span> <span class="n">loggammacs</span><span class="p">,</span>
                                 <span class="n">Qs</span><span class="p">,</span> <span class="n">psis</span><span class="p">,</span> <span class="n">cQfs</span><span class="p">,</span> <span class="n">gpsis</span><span class="p">):</span>
     <span class="n">weighted_counts</span> <span class="o">=</span> <span class="n">chemgroups</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">@</span> <span class="n">x</span>
@@ -221,6 +221,37 @@
         <span class="k">return</span> <span class="n">all_interactions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">no_interaction</span>
+
+<span class="nd">@njitable</span>
+<span class="k">def</span> <span class="nf">loggammacs_UNIFAC</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
+    <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
+    <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+
+<span class="nd">@njitable</span>
+<span class="k">def</span> <span class="nf">loggammacs_Dortmund</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">rs_p</span> <span class="o">=</span> <span class="n">rs</span><span class="o">**</span><span class="mf">0.75</span>
+    <span class="n">r_pnet</span> <span class="o">=</span> <span class="p">(</span><span class="n">rs_p</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
+    <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
+    <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
+    <span class="n">Vs_p</span> <span class="o">=</span> <span class="n">rs_p</span><span class="o">/</span><span class="n">r_pnet</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_p</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_p</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+
+<span class="nd">@njitable</span>
+<span class="k">def</span> <span class="nf">psi_Dortmund</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">abc</span><span class="p">):</span>
+    <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">T</span>
+    <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*=</span> <span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">abc</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> 
+
+<span class="nd">@njitable</span>
+<span class="k">def</span> <span class="nf">psi_UNIFAC</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
 
 <span class="c1"># %% Activity Coefficients</span>
 
@@ -362,19 +393,12 @@
     <span class="n">_no_interaction</span> <span class="o">=</span> <span class="mf">0.</span>
     <span class="n">_cached</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="nd">@staticmethod</span>
-    <span class="nd">@njit</span>
     <span class="k">def</span> <span class="nf">loggammacs</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  
-        <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
-        <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
-        <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
-        <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">loggammacs_UNIFAC</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
     
     <span class="nd">@staticmethod</span>
-    <span class="nd">@njit</span>
     <span class="k">def</span> <span class="nf">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="o">/</span><span class="n">T</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">psi_UNIFAC</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DortmundActivityCoefficients"><a class="viewcode-back" href="../../../equilibrium/activity_coefficients_module.html#thermosteam.equilibrium.activity_coefficients.DortmundActivityCoefficients">[docs]</a><span class="k">class</span> <span class="nc">DortmundActivityCoefficients</span><span class="p">(</span><span class="n">GroupActivityCoefficients</span><span class="p">):</span>
@@ -394,24 +418,12 @@
     <span class="n">_cached</span> <span class="o">=</span> <span class="p">{}</span>
     
     <span class="nd">@staticmethod</span>
-    <span class="nd">@njit</span>
     <span class="k">def</span> <span class="nf">loggammacs</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">r_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">rs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">q_net</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">rs_p</span> <span class="o">=</span> <span class="n">rs</span><span class="o">**</span><span class="mf">0.75</span>
-        <span class="n">r_pnet</span> <span class="o">=</span> <span class="p">(</span><span class="n">rs_p</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">Vs</span> <span class="o">=</span> <span class="n">rs</span><span class="o">/</span><span class="n">r_net</span>
-        <span class="n">Fs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">/</span><span class="n">q_net</span>
-        <span class="n">Vs_over_Fs</span> <span class="o">=</span> <span class="n">Vs</span><span class="o">/</span><span class="n">Fs</span>
-        <span class="n">Vs_p</span> <span class="o">=</span> <span class="n">rs_p</span><span class="o">/</span><span class="n">r_pnet</span>
-        <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_p</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_p</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.</span><span class="o">*</span><span class="n">qs</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">Vs_over_Fs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Vs_over_Fs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">loggammacs_Dortmund</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
     
     <span class="nd">@staticmethod</span>
-    <span class="nd">@njit</span>
     <span class="k">def</span> <span class="nf">psi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">abc</span><span class="p">):</span>
-        <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">T</span>
-        <span class="n">abc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*=</span> <span class="n">T</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">abc</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> </div>
+        <span class="k">return</span> <span class="n">psi_Dortmund</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">abc</span><span class="p">)</span></div>
     
     
 

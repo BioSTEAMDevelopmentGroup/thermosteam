@@ -3,8 +3,6 @@
 All data and methods related to chemical identifiers.
 '''
 
-from __future__ import division
-
 __all__ = ['checkCAS', 'CAS_from_any', 'PubChem', 'MW', 'formula', 'smiles', 
            'InChI', 'InChI_Key', 'IUPAC_name', 'name', 'synonyms', 
            '_MixtureDict', 'mixture_from_any', 'cryogenics', 'dippr_compounds',

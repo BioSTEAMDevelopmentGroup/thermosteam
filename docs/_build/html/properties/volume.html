@@ -536,8 +536,7 @@ Range: 0.25 &lt; Tr &lt; 0.95, often said to be to 1.0</p>
 \[ \begin{align}\begin{aligned}\alpha = \left[0.690T_{br} -0.3342 + \frac{5.79\times 10^{-10}}
 {T_{br}^{32.75}}\right] P_c^{0.145}\\\beta = 0.00318s - 0.0211 + 0.625 \Lambda^{1.35} + 5.90\Theta^{0.835}\end{aligned}\end{align} \]</div>
 <p>If a dipole is provided, the polar chemical method is used.
-The paper is an excellent read.
-Pc is internally converted to atm.</p>
+The paper is an excellent read. Pc is internally converted to atm.</p>
 <p class="rubric">Examples</p>
 <p>Calculate the volume of water at 300 K:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Campbell_Thodos</span><span class="p">(</span><span class="n">Tb</span><span class="o">=</span><span class="mf">373.124</span><span class="p">,</span> <span class="n">Tc</span><span class="o">=</span><span class="mf">647.14</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="mf">22048320.0</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">18.02</span><span class="p">,</span> <span class="n">dipole</span><span class="o">=</span><span class="mf">1.85</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

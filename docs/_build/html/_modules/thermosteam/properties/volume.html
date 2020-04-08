@@ -215,7 +215,6 @@
 <span class="sd">        Engineering Data 49, no. 6 (2004): 1512-14. doi:10.1021/je034220e.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CASDataReader</span>
@@ -227,9 +226,24 @@
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">V</span><span class="p">,</span> <span class="n">InterpolatedTDependentModel</span><span class="p">,</span> <span class="n">TPDependentModel</span><span class="p">,</span> <span class="n">TPDependentHandleBuilder</span><span class="p">,</span> <span class="n">PhaseTPPropertyBuilder</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Volume&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;Yen_Woods&#39;</span><span class="p">,</span> <span class="s1">&#39;Rackett&#39;</span><span class="p">,</span> <span class="s1">&#39;Yamada_Gunn&#39;</span><span class="p">,</span> <span class="s1">&#39;Townsend_Hales&#39;</span><span class="p">,</span> <span class="s1">&#39;Bhirud_Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Costald&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;Campbell_Thodos&#39;</span><span class="p">,</span> <span class="s1">&#39;SNM0&#39;</span><span class="p">,</span> <span class="s1">&#39;CRC_Inorganic&#39;</span><span class="p">,</span> <span class="s1">&#39;VDI_PPDS&#39;</span><span class="p">,</span> <span class="s1">&#39;Costald_Compressed&#39;</span><span class="p">,</span> <span class="s1">&#39;ideal_gas&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;Tsonopoulos_extended&#39;</span><span class="p">,</span> <span class="s1">&#39;Tsonopoulos&#39;</span><span class="p">,</span> <span class="s1">&#39;Abbott&#39;</span><span class="p">,</span> <span class="s1">&#39;Pitzer_Curl&#39;</span><span class="p">,</span> <span class="s1">&#39;CRCVirial&#39;</span><span class="p">,</span> <span class="s1">&#39;Goodman&#39;</span><span class="p">)</span>
+           <span class="s1">&#39;Yen_Woods&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Rackett&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Yamada_Gunn&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Townsend_Hales&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Bhirud_Normal&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Costald&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Campbell_Thodos&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;SNM0&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;CRC_Inorganic&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;VDI_PPDS&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Costald_Compressed&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;ideal_gas&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Tsonopoulos_extended&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Tsonopoulos&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Abbott&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Pitzer_Curl&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;CRCVirial&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Goodman&#39;</span><span class="p">)</span>
 
 <span class="n">read</span> <span class="o">=</span> <span class="n">CASDataReader</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s2">&quot;Density&quot;</span><span class="p">)</span>
 <span class="n">_COSTALD</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;COSTALD Parameters.tsv&#39;</span><span class="p">)</span>
@@ -326,7 +340,7 @@
     <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="n">Zc</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">2.</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span></div>
 
 <span class="nd">@V</span><span class="o">.</span><span class="n">l</span>
-<span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -352,12 +366,13 @@
 <span class="sd">    1.9511311612842117e-08</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">k</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">k1</span> <span class="o">*</span> <span class="n">k2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mf">7.</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Yamada_Gunn"><a class="viewcode-back" href="../../../properties/volume.html#thermosteam.properties.volume.Yamada_Gunn">[docs]</a><span class="nd">@Yamada_Gunn</span><span class="o">.</span><span class="n">wrapper</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s1">&#39;[3]_ [4]_&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Yamada_Gunn</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="o">*</span><span class="p">(</span><span class="mf">0.29056</span> <span class="o">-</span> <span class="mf">0.08775</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="n">k</span><span class="p">}</span></div>
+    <span class="n">k1</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span>
+    <span class="n">k2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.29056</span> <span class="o">-</span> <span class="mf">0.08775</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="n">Tc</span><span class="p">,</span> <span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="n">k1</span><span class="p">,</span> <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="n">k2</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="Townsend_Hales"><a class="viewcode-back" href="../../../properties/volume.html#thermosteam.properties.volume.Townsend_Hales">[docs]</a><span class="nd">@V</span><span class="o">.</span><span class="n">l</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="s2">&quot;[5]_&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">Townsend_Hales</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
@@ -540,8 +555,7 @@
 
 
 <span class="sd">    If a dipole is provided, the polar chemical method is used.</span>
-<span class="sd">    The paper is an excellent read.</span>
-<span class="sd">    Pc is internally converted to atm.</span>
+<span class="sd">    The paper is an excellent read. Pc is internally converted to atm.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -772,16 +786,12 @@
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">add_model</span><span class="p">(</span><span class="n">Townsend_Hales</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-        <span class="n">add_model</span><span class="p">(</span><span class="n">Rackett</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_SNM0</span><span class="p">:</span>
             <span class="n">SNM0_delta_SRK</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_SNM0</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;delta_SRK&#39;</span><span class="p">])</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">SNM0_delta_SRK</span><span class="p">)</span>
             <span class="n">add_model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">add_model</span><span class="p">(</span><span class="n">SNM0</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-        <span class="n">add_model</span><span class="p">(</span><span class="n">Campbell_Thodos</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">_CRC_inorg_l_const</span><span class="p">:</span>
         <span class="n">Vl</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_CRC_inorg_l_const</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">CAS</span><span class="p">,</span> <span class="s1">&#39;Vm&#39;</span><span class="p">])</span>
         <span class="n">add_model</span><span class="p">(</span><span class="n">Vl</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CRC_inorganic_liquid_constant&quot;</span><span class="p">)</span>
@@ -797,12 +807,15 @@
     <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">all_</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Psat</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-        <span class="n">add_model</span><span class="p">(</span><span class="n">Costald_Compressed</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">add_model</span><span class="p">(</span><span class="n">Costald_Compressed</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tb</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">has_hydroxyl</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all_</span><span class="p">([</span><span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]):</span>
+        <span class="n">top_priority</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">dipole</span><span class="p">)</span>
+        <span class="n">add_model</span><span class="p">(</span><span class="n">Campbell_Thodos</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">top_priority</span><span class="o">=</span><span class="n">top_priority</span><span class="p">)</span>
         
 
 <span class="c1"># %% Gases</span>
 
-<span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">ideal_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span> <span class="k">return</span> <span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">P</span>
 
 <span class="n">ideal_gas_model</span> <span class="o">=</span> <span class="n">TPDependentModel</span><span class="p">(</span><span class="n">ideal_gas</span><span class="p">,</span>

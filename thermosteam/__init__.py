@@ -12,7 +12,6 @@ from ._multi_stream import MultiStream
 from ._settings import settings
 from ._thermal_condition import ThermalCondition
 from .base import functor
-from . import utils
 
 from . import (base,
                utils,
@@ -29,4 +28,4 @@ speed_up = utils.speed_up
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture',
            'settings', 'functor', 'properties', 'base', 'equilibrium',
-           'exceptions', 'functional', 'reaction', 'speed_up')
+           'exceptions', 'functional', 'reaction', 'utils', 'speed_up')

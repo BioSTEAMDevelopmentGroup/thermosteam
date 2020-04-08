@@ -26,13 +26,12 @@ def display_asfunctor(functor, var=None, name=None, show_var=True):
     name = name or functor_name(functor)
     info = f"{name}{str(signature(functor)).replace('self, ', '')}"
     var = var or (functor.var if hasattr(functor, 'var') else None)
-    units = functor.units_of_measure if hasattr(functor, "units_of_measure") else chemical_units_of_measure
     if var:
         if show_var:
-            info += f" -> " + var_with_units(var, units)
+            info += f" -> " + var_with_units(var, chemical_units_of_measure)
         else:
             name, *_ = var.split('.')
-            u = units.get(name)
+            u = chemical_units_of_measure.get(name)
             if u: info += f" -> {u}"
     return info
 
@@ -110,7 +109,6 @@ H, S, Cn, V, kappa, mu, Psat, Hvap, sigma, delta, epsilon = [FunctorFactory(i) f
 
 class Functor: 
     __slots__ = ('function_kwargs', '_data')
-    units_of_measure = chemical_units_of_measure
     definitions = definitions
     types = types
     
@@ -189,7 +187,6 @@ class Functor:
     def _functor_info(self):
         info = f"Functor: {display_asfunctor(self)}"
         data = self._data
-        units = self.units_of_measure
         for key, value in data.items():
             if callable(value):
                 value = display_asfunctor(value, show_var=False)
@@ -201,7 +198,7 @@ class Functor:
                 info += f"\n {key}: {value}"
             else:
                 key, *_ = key.split('_')
-                u = units.get(key) or chemical_units_of_measure.get(key)
+                u = chemical_units_of_measure.get(key)
                 if u: info += ' ' + str(u)
         return info
     

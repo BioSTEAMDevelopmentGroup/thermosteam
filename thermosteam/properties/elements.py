@@ -19,8 +19,6 @@ References
        478-94. doi:10.1021/ja02046a005.
 '''
 
-from __future__ import division
-
 __all__ = (
     'PeriodicTable', 'compute_molecular_weight', 'compute_mass_fractions', 
     'compute_atom_fractions', 'compute_similarity_variable', 'atoms_to_Hill', 

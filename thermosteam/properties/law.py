@@ -4,8 +4,6 @@ All data and functions for retrieving legal information of a chemical.
 
 '''
 
-from __future__ import division
-
 __all__ = ['DSL_data', 'CAN_DSL_flags', 'TSCA_flags', 'TSCA_data', 
            'EINECS_data', 'SPIN_data', 'NLP_data', 'legal_status_methods', 
            'legal_status', 'HPV_data', '_ECHATonnageDict', '_EPACDRDict', 
@@ -16,8 +14,6 @@ import os
 import zipfile
 from .utils import to_num, CAS2int
 import pandas as pd
-from pprint import pprint
-
 
 folder = os.path.join(os.path.dirname(__file__), 'Data/Law')
 

@@ -44,7 +44,6 @@ References
         Engineering Data 49, no. 6 (2004): 1512-14. doi:10.1021/je034220e.
 """
 import numpy as np
-from numba import njit
 from scipy.interpolate import interp1d
 from math import log, exp
 from .utils import CASDataReader
@@ -56,9 +55,24 @@ from .dippr import DIPPR_EQ105
 from ..base import V, InterpolatedTDependentModel, TPDependentModel, TPDependentHandleBuilder, PhaseTPPropertyBuilder
 
 __all__ = ('Volume',
-           'Yen_Woods', 'Rackett', 'Yamada_Gunn', 'Townsend_Hales', 'Bhirud_Normal', 'Costald',
-           'Campbell_Thodos', 'SNM0', 'CRC_Inorganic', 'VDI_PPDS', 'Costald_Compressed', 'ideal_gas',
-           'Tsonopoulos_extended', 'Tsonopoulos', 'Abbott', 'Pitzer_Curl', 'CRCVirial', 'Goodman')
+           'Yen_Woods',
+           'Rackett',
+           'Yamada_Gunn', 
+           'Townsend_Hales', 
+           'Bhirud_Normal', 
+           'Costald',
+           'Campbell_Thodos', 
+           'SNM0', 
+           'CRC_Inorganic',
+           'VDI_PPDS',
+           'Costald_Compressed', 
+           'ideal_gas',
+           'Tsonopoulos_extended',
+           'Tsonopoulos', 
+           'Abbott', 
+           'Pitzer_Curl', 
+           'CRCVirial',
+           'Goodman')
 
 read = CASDataReader(__file__, "Density")
 _COSTALD = read('COSTALD Parameters.tsv')
@@ -155,7 +169,7 @@ def Rackett(T, Tc, Pc, Zc):
     return R*Tc/Pc*Zc**(1. + (1. - T/Tc)**(2./7.))
 
 @V.l
-def Yamada_Gunn(T, P, Tc, k):
+def Yamada_Gunn(T, P, Tc, k1, k2):
     r'''
     Notes
     -----
@@ -181,12 +195,13 @@ def Yamada_Gunn(T, P, Tc, k):
     1.9511311612842117e-08
 
     '''
-    return k**(1 + (1 - T/Tc)**(2/7.))
+    return k1 * k2**(1 + (1 - T/Tc)**(2/7.))
 
 @Yamada_Gunn.wrapper(ref='[3]_ [4]_')
 def Yamada_Gunn(Tc, Pc, omega):
-    k = R*Tc/Pc*(0.29056 - 0.08775*omega)
-    return {'Tc':Tc, 'k': k}
+    k1 = R*Tc/Pc
+    k2 = (0.29056 - 0.08775*omega)
+    return {'Tc':Tc, 'k1': k1, 'k2': k2}
 
 @V.l(ref="[5]_")
 def Townsend_Hales(T, Tc, Vc, omega):
@@ -369,8 +384,7 @@ def Campbell_Thodos(T, Tb, Tc, Pc, MW, dipole=None, has_hydroxyl=False):
 
 
     If a dipole is provided, the polar chemical method is used.
-    The paper is an excellent read.
-    Pc is internally converted to atm.
+    The paper is an excellent read. Pc is internally converted to atm.
 
     Examples
     --------
@@ -601,16 +615,12 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
     data = (Tc, Vc, omega)
     if all_(data):
         add_model(Townsend_Hales.from_args(data), 0, Tc)
-        add_model(Rackett.from_args(data), 0, Tc)
         if CAS in _SNM0:
             SNM0_delta_SRK = float(_SNM0.at[CAS, 'delta_SRK'])
             data = (Tc, Vc, omega, SNM0_delta_SRK)
             add_model(SNM0.from_args(data))
         else:
             add_model(SNM0.from_args(data), 0, Tc)
-    data = (Tb, Tc, Pc, MW, dipole, has_hydroxyl)
-    if all_(data):
-        add_model(Campbell_Thodos.from_args(data), 0, Tc)
     if CAS in _CRC_inorg_l_const:
         Vl = float(_CRC_inorg_l_const.at[CAS, 'Vm'])
         add_model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant")
@@ -626,12 +636,15 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
     data = (Tc, Pc, omega)
     if all_(data):
         data = (Psat, Tc, Pc, omega, handle.copy())
-        add_model(Costald_Compressed.from_args(data), 50, 500, top=True)
+        add_model(Costald_Compressed.from_args(data), 50, 500, top_priority=True)
+    data = (Tb, Tc, Pc, MW, dipole, has_hydroxyl)
+    if all_([i is not None for i in data]):
+        top_priority = bool(dipole)
+        add_model(Campbell_Thodos.from_args(data), 0, Tc, top_priority=top_priority)
         
 
 # %% Gases
 
-@njit
 def ideal_gas(T, P): return R*T/P
 
 ideal_gas_model = TPDependentModel(ideal_gas,

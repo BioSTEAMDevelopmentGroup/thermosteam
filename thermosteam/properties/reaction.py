@@ -3,8 +3,6 @@
 All data and methods for estimating a chemical's heat of formation.
 '''
 
-from __future__ import division
-
 __all__ = ['API_TDB_data', 'ATcT_l', 'ATcT_g', 'Hf_methods', 'Hf', 
            'Hf_l_methods', 'Hf_l', 'Hf_g_methods', 'Hf_g']
            

@@ -3,8 +3,6 @@
 All data and methods related to estimating a chemical's accentric factor.
 '''
 
-from __future__ import division
-
 __all__ = ('omega', 'LK_omega', 'StielPolar',
            'omega_methods', 'Stiel_polar_methods')
 

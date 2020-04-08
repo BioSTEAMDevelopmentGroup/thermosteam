@@ -20,9 +20,6 @@ References
 
 
 '''
-
-from __future__ import division
-
 __all__ = ['T_converter', 'T_scales', 'ITS90_68_difference', 'Ts_68', 
 'diffs_68', 'Ts_48', 'diffs_48', 'Ts_76', 'diffs_76', 'Ts_27', 'diffs_27']
 

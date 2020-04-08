@@ -206,4 +206,5 @@ thermosteam/utils/decorator_utils/__init__.py
 thermosteam/utils/decorator_utils/chemicals_user.py
 thermosteam/utils/decorator_utils/read_only.py
 thermosteam/utils/decorator_utils/registered.py
+thermosteam/utils/decorator_utils/speed_up.py
 thermosteam/utils/decorator_utils/thermo_user.py

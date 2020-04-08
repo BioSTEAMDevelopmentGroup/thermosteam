@@ -218,7 +218,8 @@ If no ID is given, stream will be registered with a unique ID.</p></li>
 <li><p><strong>units='kmol/hr'</strong> (<em>str</em>) – Flow rate units of measure (only mass, molar, and
 volumetric flow rates are valid).</p></li>
 <li><p><strong>price=0</strong> (<em>float</em>) – Price per unit mass [USD/kg].</p></li>
-<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermodynamic equilibrium package. Defaults to <cite>thermosteam.settings.get_thermo()</cite>.</p></li>
+<li><p><strong>thermo=None</strong> (<a class="reference internal" href="Thermo.html#thermosteam.Thermo" title="thermosteam.Thermo"><em>Thermo</em></a>) – Thermo object to initialize input and output streams. Defaults to
+<cite>biosteam.settings.get_thermo()</cite>.</p></li>
 <li><p><strong>**chemical_flows</strong> (<em>float</em>) – ID - flow pairs.</p></li>
 </ul>
 </dd>
@@ -369,6 +370,12 @@ Each phase can be accessed separately too:</p>
 <dt id="thermosteam.Stream.display_units">
 <code class="sig-name descname">display_units</code><em class="property"> = DisplayUnits(T='K', P='Pa', flow='kmol/hr', N=7)</em><a class="headerlink" href="#thermosteam.Stream.display_units" title="Permalink to this definition">¶</a></dt>
 <dd><p>[DisplayUnits] Units of measure for IPython display (class attribute)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thermosteam.Stream.vapor_fraction">
+<em class="property">property </em><code class="sig-name descname">vapor_fraction</code><a class="headerlink" href="#thermosteam.Stream.vapor_fraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Molar vapor fraction.</p>
 </dd></dl>
 
 <dl class="method">

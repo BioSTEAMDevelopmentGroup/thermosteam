@@ -345,6 +345,15 @@ class MultiStream(Stream):
     ### Composition properties ###
     
     @property
+    def vapor_fraction(self):
+        """Molar vapor fraction."""
+        if 'g' in self.phases:
+            vapor_fraction = self.imol['g'].sum() / self.F_mol
+        else:
+            vapor_fraction = 0.
+        return vapor_fraction
+    
+    @property
     def V(self):
         """[float] Molar volume [m^3/mol]."""
         return self.mixture.xV_at_TP(self._imol.iter_composition(), self._TP)

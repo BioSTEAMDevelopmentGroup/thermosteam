@@ -516,6 +516,15 @@
     <span class="c1">### Composition properties ###</span>
     
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vapor_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Molar vapor fraction.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;g&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
+            <span class="n">vapor_fraction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imol</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_mol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vapor_fraction</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">return</span> <span class="n">vapor_fraction</span>
+    
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">V</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[float] Molar volume [m^3/mol].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">xV_at_TP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imol</span><span class="o">.</span><span class="n">iter_composition</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TP</span><span class="p">)</span>

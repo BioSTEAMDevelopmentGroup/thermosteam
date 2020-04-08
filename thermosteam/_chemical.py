@@ -288,9 +288,17 @@ class Chemical:
 
     When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
         
+    >>> Water.Psat(373.15)
+    101284.55179999319
     >>> # Water.Psat(1000.0) ->
     >>> # ValueError: <TDependentModelHandle(T, P=None) -> Psat [Pa]>
     >>> # contains no valid model at T=1000.00 K
+    
+    Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.
+    
+    >>> Water.Psat.plot_vs_T(Water.Tm, Water.Tb, T_units='degC', units='atm')
+    
+    .. figure:: ./images/Water_Psat_vs_T.png
     
     Each model may contain either a function or a functor (a function with stored data) to compute the property:
         

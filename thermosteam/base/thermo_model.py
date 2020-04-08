@@ -8,16 +8,47 @@ from math import log
 from scipy.interpolate import interp1d
 from .functor import TFunctor, TPFunctor, Functor, \
                      display_asfunctor, functor_matching_params, functor_name
-from .units_of_measure import chemical_units_of_measure
+from .units_of_measure import chemical_units_of_measure, definitions, format_plot_units, convert
 from numpy import inf as infinity
 from inspect import signature
+import matplotlib.pyplot as plt
+import numpy as np
 
-__all__ = ('thermo_model', 'ThermoModel',
+__all__ = ('thermo_model', 'plot_model', 'ThermoModel',
            'TDependentModel', 'TPDependentModel', 
            'ConstantThermoModel', 'ConstantTDependentModel',
            'ConstantTPDependentModel', 'InterpolatedTDependentModel')
 
 RegisteredModels = []
+
+# %% Functions
+
+def convert_var(value, var, units):
+    var, *_ = var.split('.')
+    return convert(value, chemical_units_of_measure[var].units, units)
+
+def describe_parameter(var, units):
+    info = definitions.get(var) or var
+    if info:
+        var, *_ = var.split('.')
+        units = units or chemical_units_of_measure.get(var)
+        units = format_plot_units(units)
+        if units: info += f" [{units}]"
+        else: info += f" [-]"
+        return info
+
+def default_Tmax(Tmin, Tmax):
+    return Tmin + 200 if (not Tmax or Tmax is infinity) else Tmax
+
+def default_Pmax(Pmin, Pmax):
+    return 5 * Pmin if (not Pmax or Pmax is infinity) else Pmax
+
+def plot_model(Xvar, Xs, Yvar, Ys, X_units, Y_units, plot_kwargs):
+    Xvar_description = describe_parameter(Xvar, X_units)
+    Yvar_description = describe_parameter(Yvar, Y_units)
+    plt.xlabel(Xvar_description)
+    plt.ylabel(Yvar_description)
+    plt.plot(Xs, Ys, **plot_kwargs)
 
 # %% Interfaces
 
@@ -77,6 +108,18 @@ class ThermoModel:
         if Tmin: self.Tmin = Tmin
         if Tmax: self.Tmax = Tmax
     
+    def plot_vs_T(self, Tmin=None, Tmax=None, P=101325, T_units=None, units=None, **plot_kwargs):
+        Ts, Ys = self.tabulate_vs_T(Tmin, Tmax, P, T_units, units)
+        plot_model('T', Ts, self.var, Ys, T_units, units, plot_kwargs)
+    
+    def plot_vs_P(self, Pmin=None, Pmax=None, T=298.15, P_units=None, units=None, **plot_kwargs):
+        Ps, Ys = self.tabulate_vs_P(Pmin, Pmax, T, P_units, units)
+        plot_model('P', Ps, self.var, Ys, P_units, units, plot_kwargs)
+    
+    @property
+    def __call__(self):
+        return self.evaluate
+    
     def __repr__(self):
         return f"<{type(self).__name__}: {self.name}>"
 
@@ -87,6 +130,25 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
     def var(self):
         try: return self.evaluate.var
         except: return None
+    
+    def tabulate_vs_T(self, Tmin=None, Tmax=None, P=101325, T_units=None, units=None):
+        Tmin = Tmin or self.Tmin or 298.15
+        Tmax = Tmax or default_Tmax(Tmin, self.Tmax)
+        Ts = np.linspace(Tmin, Tmax)
+        Ys = np.array([self(T) for T in Ts])
+        if T_units: Ts = convert_var(Ts, 'T', T_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ts, Ys
+    
+    def tabulate_vs_P(self, Pmin=None, Pmax=None, T=298.15, P_units=None, units=None):
+        Pmin = Pmin or self.Pmin or 101325
+        Pmax = Pmax or default_Pmax(Pmin, self.Pmax)
+        Ps = np.array([Pmin, Pmax])
+        Y = self(T)
+        Ys = np.array([Y, Y])
+        if P_units: Ps = convert_var(Ps, 'P', P_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ps, Ys
     
     def indomain(self, T, P=None):
         return self.IGNORE_DOMAIN or self.Tmin < T < self.Tmax
@@ -118,6 +180,24 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
 class TPDependentModel(ThermoModel, Functor=TPFunctor):
     
     var = TDependentModel.var
+    
+    def tabulate_vs_T(self, Tmin=None, Tmax=None, P=101325, T_units=None, units=None):
+        Tmin = Tmin or self.Tmin or 298.15
+        Tmax = Tmax or default_Tmax(Tmin, self.Tmax)
+        Ts = np.linspace(Tmin, Tmax)
+        Ys = np.array([self(T, P) for T in Ts])
+        if T_units: Ts = convert_var(Ts, 'T', T_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ts, Ys
+    
+    def tabulate_vs_P(self, Pmin=None, Pmax=None, T=298.15, P_units=None, units=None):
+        Pmin = Pmin or self.Pmin or 101325
+        Pmax = Pmax or default_Pmax(Pmin, self.Pmax)
+        Ps = np.linspace(Pmin, Pmax)
+        Ys = np.array([self(T, P) for P in Ps])
+        if P_units: Ps = convert_var(Ps, 'P', P_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ps, Ys
     
     def indomain(self, T, P):
         return self.IGNORE_DOMAIN or (self.Tmin < T < self.Tmax
@@ -162,6 +242,24 @@ class ConstantThermoModel(ThermoModel):
         if Pmax: self.Pmax = Pmax
         if Tmin: self.Tmin = Tmin
         if Tmax: self.Tmax = Tmax
+
+    def tabulate_vs_T(self, Tmin=None, Tmax=None, P=101325, T_units=None, units=None):
+        Tmin = Tmin or self.Tmin or 298.15
+        Tmax = Tmax or default_Tmax(Tmin, self.Tmax)
+        Ts = np.array([Tmin, Tmax])
+        Ys = np.array([self.value, self.value])
+        if T_units: Ts = convert_var(Ts, 'T', T_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ts, Ys
+    
+    def tabulate_vs_P(self, Pmin=None, Pmax=None, T=298.15, P_units=None, units=None):
+        Pmin = Pmin or self.Pmin or 101325
+        Pmax = Pmax or default_Pmax(Pmin, self.Pmax)
+        Ps = np.array([Pmin, Pmax])
+        Ys = np.array([self.value, self.value])
+        if P_units: Ps = convert_var(Ps, 'P', P_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ps, Ys
     
     def indomain(self, T=None, P=None):
         return True
@@ -227,6 +325,8 @@ class InterpolatedTDependentModel(ThermoModel):
     def evaluate(self, T, P=None):
         return self.spline(T) if (self.T_lb <= T <= self.T_ub) else self.extrapolator(T)
     
+    tabulate_vs_T = TDependentModel.tabulate_vs_T
+    tabulate_vs_P = TDependentModel.tabulate_vs_P
     indomain = TDependentModel.indomain
     integrate_by_T = TDependentModel.integrate_by_T
     integrate_by_T_over_T = TDependentModel.integrate_by_T_over_T

@@ -8,7 +8,7 @@ __all__ = ('chemical_units_of_measure',
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
            'DisplayUnits', 'UnitsOfMeasure', 'convert',
-           'Quantity')
+           'Quantity', 'format_plot_units')
 
 from ..exceptions import DimensionError
 
@@ -26,12 +26,43 @@ convert = ureg.convert
 Quantity = ureg.Quantity
 del os, UnitRegistry
 
+# %% Functions
+
+def format_degrees(units):
+    if units.startswith('deg'):
+        units = '^\circ ' + units[3:]
+    return units
+
+def format_units(units, isnumerator=True):
+    if '^' in units:
+        units, power = units.split('^')
+        units = format_degrees(units)
+        units = '\mathrm{' + units + '}'
+        units += '^{' + (power if isnumerator else -power) + '}'
+    else:
+        units = format_degrees(units)
+        units = '\mathrm{' + units + '}'
+    return units
+
+def format_plot_units(units):
+    units = str(units)
+    all_numerators = []
+    all_denominators = []
+    for unprocessed_denominators in units.split("/"):
+        denominator, *numerators = unprocessed_denominators.split("*")
+        all_denominators.append(denominator)
+        all_numerators.extend(numerators)
+    all_numerators = [format_units(i) for i in all_numerators]
+    all_denominators = [format_units(i, False) for i in all_denominators]
+    return '$' + ' \cdot '.join(all_numerators + all_denominators) + '$'
+
 # %% Manage conversion factors
 
 class UnitsOfMeasure:
-    __slots__ = ('_units', '_units_container', '_dimensionality', '_factor_cache')
+    __slots__ = ('_units', '_units_container', 
+                 '_dimensionality', '_factor_cache')
     _cache = {}
-    def __new__(cls, units=""):
+    def __new__(cls, units):
         if isinstance(units, cls):
             return units
         cache = cls._cache
@@ -137,17 +168,18 @@ chemical_units_of_measure = {'MW': UnitsOfMeasure('g/mol'),
                              'Pc': UnitsOfMeasure('Pa'),
                              'Psat': UnitsOfMeasure('Pa'),
                              'Pt': UnitsOfMeasure('K'),
-                             'V': UnitsOfMeasure('m^3/mol'),
+                             'V': UnitsOfMeasure('m^3/mol',),
                              'Vc': UnitsOfMeasure('m^3/mol'),
-                             'Cp': UnitsOfMeasure('J/g/K'),
-                             'Cn': UnitsOfMeasure('J/mol/K'),
-                             'rho': UnitsOfMeasure('kg/m^3'), 
+                             'Cp': UnitsOfMeasure('J/g/K',),
+                             'Cn': UnitsOfMeasure('J/mol/K',),
+                             'R': UnitsOfMeasure('J/mol/K'),
+                             'rho': UnitsOfMeasure('kg/m^3'),
                              'rhoc': UnitsOfMeasure('kg/m^3'),
                              'nu': UnitsOfMeasure('m^2/s'),
+                             'alpha': UnitsOfMeasure('m^2/s'),
                              'mu': UnitsOfMeasure('Pa*s'),
                              'sigma': UnitsOfMeasure('N/m'),
                              'kappa': UnitsOfMeasure('W/m/K'),
-                             'alpha': UnitsOfMeasure('m^2/s'), 
                              'Hvap': UnitsOfMeasure('J/mol'),
                              'H': UnitsOfMeasure('J/mol'),  
                              'Hf': UnitsOfMeasure('J/mol'), 
@@ -160,7 +192,6 @@ chemical_units_of_measure = {'MW': UnitsOfMeasure('g/mol'),
                              'A': UnitsOfMeasure('J/mol'),
                              'H_excess': UnitsOfMeasure('J/mol'), 
                              'S_excess': UnitsOfMeasure('J/mol'),
-                             'R': UnitsOfMeasure('J/mol/K'),
                              'dipole': UnitsOfMeasure('Debye'),
                              'delta': UnitsOfMeasure('Pa^0.5'),
                              'epsilon': UnitsOfMeasure(''),

@@ -341,10 +341,19 @@ and transport properties as a function of temperature and pressure.</p>
 </pre></div>
 </div>
 <p>When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Water.Psat(1000.0) -&gt;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">(</span><span class="mf">373.15</span><span class="p">)</span>
+<span class="go">101284.55179999319</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Water.Psat(1000.0) -&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ValueError: &lt;TDependentModelHandle(T, P=None) -&gt; Psat [Pa]&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># contains no valid model at T=1000.00 K</span>
 </pre></div>
+</div>
+<p>Model handles and the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">plot_vs_T</span><span class="p">(</span><span class="n">Water</span><span class="o">.</span><span class="n">Tm</span><span class="p">,</span> <span class="n">Water</span><span class="o">.</span><span class="n">Tb</span><span class="p">,</span> <span class="n">T_units</span><span class="o">=</span><span class="s1">&#39;degC&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;atm&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="_images/Water_Psat_vs_T.png" src="_images/Water_Psat_vs_T.png" />
 </div>
 <p>Each model may contain either a function or a functor (a function with stored data) to compute the property:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span>

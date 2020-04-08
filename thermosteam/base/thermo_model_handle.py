@@ -5,7 +5,10 @@ Created on Mon Sep 30 23:02:53 2019
 @author: yoelr
 """
 from collections import deque
-from .thermo_model import ThermoModel, ConstantThermoModel, thermo_model
+from .thermo_model import (ThermoModel,
+                           TDependentModel,
+                           TPDependentModel,
+                           thermo_model)
 from .functor import functor_lookalike
 
 __all__ = ('ThermoModelHandle',
@@ -31,6 +34,9 @@ def get_not_a(obj, cls):
 @functor_lookalike
 class ThermoModelHandle:
     __slots__ = ('models',)
+    
+    plot_vs_T = ThermoModel.plot_vs_T
+    plot_vs_P = ThermoModel.plot_vs_P
     
     @property
     def var(self):
@@ -99,10 +105,8 @@ class ThermoModelHandle:
 class TDependentModelHandle(ThermoModelHandle):
     __slots__ = ()
     
-    def lock_TP(self, T, P=None):
-        models = self.models
-        constant_model = ConstantThermoModel(self(T))
-        models.appendleft(constant_model)
+    tabulate_vs_T = TDependentModel.tabulate_vs_T
+    tabulate_vs_P = TDependentModel.tabulate_vs_P
         
     @property
     def Tmin(self):
@@ -116,7 +120,7 @@ class TDependentModelHandle(ThermoModelHandle):
             if model.indomain(T): return model.evaluate(T)
         # return model.evaluate(T)
         raise ValueError(f"{repr(self)} contains no valid model at T={T:.2f} K")
-            
+        
     def differentiate_by_T(self, T, P=None, dT=1e-12):
         for model in self.models:
             if model.indomain(T): return model.differentiate_by_T(T, dT=dT)
@@ -182,10 +186,8 @@ class TPDependentModelHandle(ThermoModelHandle):
     Tmin = TDependentModelHandle.Tmin
     Tmax = TDependentModelHandle.Tmax
     
-    def lock_TP(self, T, P):
-        models = self.models
-        constant_model = ConstantThermoModel(self(T, P))
-        models.appendleft(constant_model)
+    tabulate_vs_T = TPDependentModel.tabulate_vs_T
+    tabulate_vs_P = TPDependentModel.tabulate_vs_P
     
     @property
     def Pmin(self):
