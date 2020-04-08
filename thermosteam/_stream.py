@@ -85,7 +85,7 @@ class Stream:
     >>> s1.mass
     property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
     >>> s1.vol
-    property_array([<Water: 0.019951 m^3/hr>, <Ethanol: 0.012725 m^3/hr>])
+    property_array([<Water: 0.020014 m^3/hr>, <Ethanol: 0.01344 m^3/hr>])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
@@ -112,7 +112,7 @@ class Stream:
     >>> # Set flow
     >>> s1.set_flow(1, 'gpm', 'Water')
     >>> s1.get_flow('gpm', 'Water')
-    0.9999999999999999
+    1.0
     >>> # Set multiple flows
     >>> s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
     >>> s1.get_flow('kg/hr', ('Ethanol', 'Water'))
@@ -146,12 +146,12 @@ class Stream:
     Other thermodynamic properties are temperature and pressure dependent as well:
     
     >>> s1.rho # Density [kg/m3]
-    916.3256776513755
+    889.2399542411935
     
     It may be more convinient to get properties with different units:
         
     >>> s1.get_property('rho', 'g/cm3')
-    0.9163256776513757
+    0.8892399542411936
     
     It is also possible to set some of the properties in different units:
         
@@ -1121,7 +1121,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_T()
-        BubblePointValues(T=350, P=76621.54388128374, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
+        BubblePointValues(T=350, P=76621.54388128372, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
         
         """
         bp = self.get_bubble_point(IDs)
@@ -1165,7 +1165,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_T()
-        DewPointValues(T=350, P=48990.56398459762, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        DewPointValues(T=350, P=48990.563984597604, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
         
         """
         dp = self.get_dew_point(IDs)
@@ -1333,7 +1333,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_concentration(('Water', 'Ethanol'))
-        array([27.823,  4.265])
+        array([27.734,  4.038])
 
         """
         return self.imol[IDs]/self.F_vol

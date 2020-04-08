@@ -51,10 +51,10 @@ class BubblePoint:
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
     >>> bp
-    BubblePointValues(T=355, P=109755.45319868939, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    BubblePointValues(T=355, P=109755.45319868933, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
     >>> (bp.T, bp.P, bp.IDs, bp.z, bp.y)
-    (355, 109755.45319868939, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    (355, 109755.45319868933, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
     >>> # Solve bubble point at constant pressure
     >>> BP(z=molar_composition, P=101325)
     BubblePointValues(T=352.95030269946596, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
@@ -179,7 +179,7 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Py(z=(0.703, 0.297), T=352.28)
-        (91830.97988957923, array([0.419, 0.581]))
+        (91830.9798895792, array([0.419, 0.581]))
         
         """
         z = asarray(z)

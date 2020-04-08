@@ -238,7 +238,7 @@ class Chemical:
     0.07205503890847455
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
-    1.7970929501497658e-05
+    1.802828527066713e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
@@ -296,7 +296,7 @@ class Chemical:
     
     Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.
     
-    >>> Water.Psat.plot_vs_T(Water.Tm, Water.Tb, T_units='degC', units='atm')
+    >>> # Water.Psat.plot_vs_T(Water.Tm, Water.Tb, T_units='degC', units='atm')
     
     .. figure:: ./images/Water_Psat_vs_T.png
     

@@ -59,7 +59,7 @@ class DewPoint:
     (355, 91970.14968399865, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
     >>> # Solve for dew point at constant pressure
     >>> DP(z=molar_composition, P=2*101324)
-    DewPointValues(T=376.2616600246861, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
+    DewPointValues(T=376.261660024686, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
 
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
@@ -183,7 +183,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Px(z=(0.5, 0.5), T=352.28)
-        (82444.29876048012, array([0.853, 0.147]))
+        (82444.29876048009, array([0.853, 0.147]))
  
        """
         z = asarray(z)
