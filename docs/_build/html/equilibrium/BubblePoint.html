@@ -232,10 +232,10 @@ called with a composition and either a temperture (T) or pressure (P).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve bubble point at constant temperature</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span> <span class="o">=</span> <span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">355</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span>
-<span class="go">BubblePointValues(T=355, P=109755.45319868939, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
+<span class="go">BubblePointValues(T=355, P=109755.45319868933, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Note that the result is a BubblePointValues object which contain all results as attibutes</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">IDs</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">bp</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-<span class="go">(355, 109755.45319868939, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
+<span class="go">(355, 109755.45319868933, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve bubble point at constant pressure</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
 <span class="go">BubblePointValues(T=352.95030269946596, P=101325, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.342 0.658])</span>
@@ -308,7 +308,7 @@ called with a composition and either a temperture (T) or pressure (P).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">BubblePoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BP</span><span class="o">.</span><span class="n">solve_Py</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.703</span><span class="p">,</span> <span class="mf">0.297</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mf">352.28</span><span class="p">)</span>
-<span class="go">(91830.97988957923, array([0.419, 0.581]))</span>
+<span class="go">(91830.9798895792, array([0.419, 0.581]))</span>
 </pre></div>
 </div>
 </dd></dl>

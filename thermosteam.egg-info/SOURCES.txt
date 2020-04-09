@@ -195,8 +195,8 @@ thermosteam/reaction/_reaction.py
 thermosteam/utils/__init__.py
 thermosteam/utils/assert_utils.py
 thermosteam/utils/cache.py
+thermosteam/utils/colors.py
 thermosteam/utils/define_from.py
-thermosteam/utils/math_display.py
 thermosteam/utils/other_utils.py
 thermosteam/utils/pickle_utils.py
 thermosteam/utils/registry.py

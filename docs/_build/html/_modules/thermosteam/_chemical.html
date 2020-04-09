@@ -409,7 +409,7 @@
 <span class="sd">    0.07205503890847455</span>
 <span class="sd">    &gt;&gt;&gt; # Molar volume (m^3/mol)</span>
 <span class="sd">    &gt;&gt;&gt; Water.V(phase=&#39;l&#39;, T=298.15, P=101325)</span>
-<span class="sd">    1.7970929501497658e-05</span>
+<span class="sd">    1.802828527066713e-05</span>
 <span class="sd">    </span>
 <span class="sd">    Note that the reference state of all chemicals is 25 degC and 1 atm:</span>
 <span class="sd">    </span>
@@ -465,23 +465,28 @@
 <span class="sd">    &gt;&gt;&gt; # ValueError: &lt;TDependentModelHandle(T, P=None) -&gt; Psat [Pa]&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # contains no valid model at T=1000.00 K</span>
 <span class="sd">    </span>
-<span class="sd">    Model handles and the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.</span>
+<span class="sd">    Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.</span>
 <span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; Water.Psat.plot_vs_T(Water.Tm, Water.Tb, T_units=&#39;degC&#39;, units=&#39;atm&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # Water.Psat.plot_vs_T([Water.Tm, Water.Tb], &#39;degC&#39;, &#39;atm&#39;, label=&quot;Water&quot;)</span>
 <span class="sd">    </span>
 <span class="sd">    .. figure:: ./images/Water_Psat_vs_T.png</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; # Plot all models</span>
+<span class="sd">    &gt;&gt;&gt; # Water.Psat.plot_models_vs_T([Water.Tm, Water.Tb], &#39;degC&#39;, &#39;atm&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    .. figure:: ./images/Water_all_models_Psat_vs_T.png</span>
 <span class="sd">    </span>
 <span class="sd">    Each model may contain either a function or a functor (a function with stored data) to compute the property:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; functor = Water.Psat[0].evaluate</span>
 <span class="sd">    &gt;&gt;&gt; functor.show()</span>
 <span class="sd">    Functor: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">     Tc: 647.35 K</span>
+<span class="sd">     Pc: 2.2122e+07 Pa</span>
 <span class="sd">     a: -7.7645</span>
 <span class="sd">     b: 1.4584</span>
 <span class="sd">     c: -2.7758</span>
 <span class="sd">     d: -1.233</span>
-<span class="sd">     Tc: 647.35 K</span>
-<span class="sd">     Pc: 2.2122e+07 Pa</span>
 <span class="sd">    </span>
 <span class="sd">    .. Note::</span>
 <span class="sd">       All chemical property functors are available in the thermosteam.properties subpackage. You can also use help(&lt;functor&gt;) for further information on the math and equations used in the functor.</span>
@@ -505,22 +510,6 @@
 <span class="sd">    [8] Sanjari</span>
 <span class="sd">    [9] Edalat</span>
 
-<span class="sd">    The `models` object is a `deque` for easier management of model order:</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; Water.Psat.models.rotate(-1)</span>
-<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
-<span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
-<span class="sd">    [0] Wagner_McGraw</span>
-<span class="sd">    [1] Antoine</span>
-<span class="sd">    [2] DIPPR_EQ101</span>
-<span class="sd">    [3] Wagner</span>
-<span class="sd">    [4] Boiling_Critical_Relation</span>
-<span class="sd">    [5] Lee_Kesler</span>
-<span class="sd">    [6] Ambrose_Walton</span>
-<span class="sd">    [7] Sanjari</span>
-<span class="sd">    [8] Edalat</span>
-<span class="sd">    [9] User_antoine_model</span>
-
 <span class="sd">    The `add_model` method is a high level interface that even lets you create a constant model:</span>
 <span class="sd">        </span>
 <span class="sd">    &gt;&gt;&gt; value = Water.V.l.add_model(1.687e-05)</span>
@@ -533,9 +522,61 @@
 <span class="sd">     Tmax: inf K</span>
 <span class="sd">     Pmin: 0 Pa</span>
 <span class="sd">     Pmax: inf Pa</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. Note::</span>
 <span class="sd">       Because no bounds were given, the model assumes it is valid across all temperatures and pressures.</span>
+
+<span class="sd">    Manage the model order with the `set_model_priority` and `move_up_model_priority` methods:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; # Note: In this case, we pass the model name, but its</span>
+<span class="sd">    &gt;&gt;&gt; # also possible to pass the current index, or the model itself.</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.move_up_model_priority(&#39;Wagner_McGraw&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
+<span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">    [0] Wagner_McGraw</span>
+<span class="sd">    [1] Antoine</span>
+<span class="sd">    [2] DIPPR_EQ101</span>
+<span class="sd">    [3] Wagner</span>
+<span class="sd">    [4] Boiling_Critical_Relation</span>
+<span class="sd">    [5] Lee_Kesler</span>
+<span class="sd">    [6] Ambrose_Walton</span>
+<span class="sd">    [7] Sanjari</span>
+<span class="sd">    [8] Edalat</span>
+<span class="sd">    [9] User_antoine_model</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.set_model_priority(&#39;Antoine&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
+<span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">    [0] Antoine</span>
+<span class="sd">    [1] Wagner_McGraw</span>
+<span class="sd">    [2] DIPPR_EQ101</span>
+<span class="sd">    [3] Wagner</span>
+<span class="sd">    [4] Boiling_Critical_Relation</span>
+<span class="sd">    [5] Lee_Kesler</span>
+<span class="sd">    [6] Ambrose_Walton</span>
+<span class="sd">    [7] Sanjari</span>
+<span class="sd">    [8] Edalat</span>
+<span class="sd">    [9] User_antoine_model</span>
+<span class="sd">    </span>
+<span class="sd">    The default priority is `0` (or top priority), but you can choose any priority:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.set_model_priority(&#39;Antoine&#39;, 1)</span>
+<span class="sd">    &gt;&gt;&gt; Water.Psat.show()</span>
+<span class="sd">    TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="sd">    [0] Wagner_McGraw</span>
+<span class="sd">    [1] Antoine</span>
+<span class="sd">    [2] DIPPR_EQ101</span>
+<span class="sd">    [3] Wagner</span>
+<span class="sd">    [4] Boiling_Critical_Relation</span>
+<span class="sd">    [5] Lee_Kesler</span>
+<span class="sd">    [6] Ambrose_Walton</span>
+<span class="sd">    [7] Sanjari</span>
+<span class="sd">    [8] Edalat</span>
+<span class="sd">    [9] User_antoine_model</span>
+<span class="sd">    </span>
+<span class="sd">    .. note::</span>
+<span class="sd">    </span>
+<span class="sd">        All models are stored as a `deque &lt;https://docs.python.org/3.8/library/collections.html#collections.deque&gt;`_ in the `models` attribute (e.g. Water.Psat.models).</span>
 <span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>

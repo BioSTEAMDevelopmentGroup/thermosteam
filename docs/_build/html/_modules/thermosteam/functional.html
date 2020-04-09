@@ -184,14 +184,13 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;isobaric_expansion&#39;</span><span class="p">,</span> <span class="s1">&#39;isothermal_compressibility&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;Cp_minus_Cv&#39;</span><span class="p">,</span> <span class="s1">&#39;speed_of_sound&#39;</span><span class="p">,</span> <span class="s1">&#39;Joule_Thomson&#39;</span><span class="p">,</span>
            <span class="s1">&#39;phase_identification_parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;phase_identification_parameter_phase&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;isentropic_exponent&#39;</span><span class="p">,</span> <span class="s1">&#39;rho_to_V&#39;</span><span class="p">,</span> <span class="s1">&#39;rho&#39;</span><span class="p">,</span> <span class="s1">&#39;V_to_rho&#39;</span><span class="p">,</span> <span class="s1">&#39;mu_to_nu&#39;</span><span class="p">,</span> 
-           <span class="s1">&#39;nu&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;B_to_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_to_B&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_from_virial_density_form&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;isentropic_exponent&#39;</span><span class="p">,</span> <span class="s1">&#39;rho_to_V&#39;</span><span class="p">,</span> <span class="s1">&#39;V_to_rho&#39;</span><span class="p">,</span> <span class="s1">&#39;mu_to_nu&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;B_to_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_to_B&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_from_virial_density_form&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;Z_from_virial_pressure_form&#39;</span><span class="p">,</span> <span class="s1">&#39;zs_to_ws&#39;</span><span class="p">,</span> <span class="s1">&#39;ws_to_zs&#39;</span><span class="p">,</span> <span class="s1">&#39;zs_to_Vfs&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;Vfs_to_zs&#39;</span><span class="p">,</span> <span class="s1">&#39;none_and_length_check&#39;</span><span class="p">,</span> <span class="s1">&#39;normalize&#39;</span><span class="p">,</span> <span class="s1">&#39;mixing_simple&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;mixing_logarithmic&#39;</span><span class="p">,</span> <span class="s1">&#39;Parachor&#39;</span><span class="p">,</span> <span class="s1">&#39;SG_to_API&#39;</span><span class="p">,</span> <span class="s1">&#39;API_to_SG&#39;</span><span class="p">,</span> <span class="s1">&#39;SG&#39;</span><span class="p">,</span>
            <span class="s1">&#39;horner&#39;</span><span class="p">,</span> <span class="s1">&#39;allclose_variable&#39;</span><span class="p">,</span> <span class="s1">&#39;polylog2&#39;</span><span class="p">,</span> <span class="s1">&#39;horner&#39;</span><span class="p">,</span>
-           <span class="p">)</span>
-            
+<span class="p">)</span>
 
 <span class="nd">@functor</span>
 <span class="k">def</span> <span class="nf">horner_polynomial</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
@@ -205,7 +204,8 @@
     <span class="k">return</span> <span class="n">Cp</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">/</span> <span class="n">k</span>
 
 <div class="viewcode-block" id="mu_to_nu"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.mu_to_nu">[docs]</a><span class="k">def</span> <span class="nf">mu_to_nu</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and </span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and </span>
 <span class="sd">    density (rho).</span>
 
 <span class="sd">    .. math::</span>
@@ -213,7 +213,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; nu(0.000998, 998.)</span>
+<span class="sd">    &gt;&gt;&gt; mu_to_nu(0.000998, 998.)</span>
 <span class="sd">    1.0e-06</span>
 
 <span class="sd">    References</span>
@@ -222,14 +222,14 @@
 <span class="sd">       Applications. Boston: McGraw Hill Higher Education, 2006.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span></div>
-<span class="n">nu</span> <span class="o">=</span> <span class="n">mu_to_nu</span>
 
 <div class="viewcode-block" id="V_to_rho"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.V_to_rho">[docs]</a><span class="k">def</span> <span class="nf">V_to_rho</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the density (rho) in kg/m^3 given the molar volume (V) in</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the density (rho) in kg/m^3 given the molar volume (V) in</span>
 <span class="sd">    m^3/mol and molecular weight (MW) in g/mol.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \rho = \frac{MW}{1000\cdot VM}</span>
+<span class="sd">        \rho = \frac{MW}{1000\cdot V}</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -250,10 +250,10 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">MW</span><span class="o">/</span><span class="n">V</span><span class="o">/</span><span class="mf">1000.</span></div>
-<span class="n">rho</span> <span class="o">=</span> <span class="n">V_to_rho</span>
 
 <div class="viewcode-block" id="rho_to_V"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.rho_to_V">[docs]</a><span class="k">def</span> <span class="nf">rho_to_V</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">MW</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Return the molar volume (V) in m^3/mol given the density (rho) in</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the molar volume (V) in m^3/mol given the density (rho) in</span>
 <span class="sd">    kg/m^3 and molecular weight (MW) in g/mol.</span>
 
 <span class="sd">    .. math::</span>
@@ -280,7 +280,8 @@
     <span class="k">return</span> <span class="n">MW</span><span class="o">/</span><span class="n">rho</span><span class="o">/</span><span class="mf">1000.</span></div>
 
 <div class="viewcode-block" id="SG_to_API"><a class="viewcode-back" href="../../functional.html#thermosteam.functional.SG_to_API">[docs]</a><span class="k">def</span> <span class="nf">SG_to_API</span><span class="p">(</span><span class="n">SG</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;Calculates specific gravity of a liquid given its API, as shown in</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return specific gravity of a liquid given its API, as shown in</span>
 <span class="sd">    [1]_.</span>
 
 <span class="sd">    .. math::</span>

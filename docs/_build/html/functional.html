@@ -208,7 +208,7 @@ density (rho).</p>
 <div class="math notranslate nohighlight">
 \[\nu = \frac{\mu}{\rho}\]</div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nu</span><span class="p">(</span><span class="mf">0.000998</span><span class="p">,</span> <span class="mf">998.</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mu_to_nu</span><span class="p">(</span><span class="mf">0.000998</span><span class="p">,</span> <span class="mf">998.</span><span class="p">)</span>
 <span class="go">1.0e-06</span>
 </pre></div>
 </div>
@@ -222,61 +222,12 @@ Applications. Boston: McGraw Hill Higher Education, 2006.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="thermosteam.functional.nu">
-<code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">nu</code><span class="sig-paren">(</span><em class="sig-param">mu</em>, <em class="sig-param">rho</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.functional.nu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and
-density (rho).</p>
-<div class="math notranslate nohighlight">
-\[\nu = \frac{\mu}{\rho}\]</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nu</span><span class="p">(</span><span class="mf">0.000998</span><span class="p">,</span> <span class="mf">998.</span><span class="p">)</span>
-<span class="go">1.0e-06</span>
-</pre></div>
-</div>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets">1</span></dt>
-<dd><p>Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
-Applications. Boston: McGraw Hill Higher Education, 2006.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="thermosteam.functional.V_to_rho">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">V_to_rho</code><span class="sig-paren">(</span><em class="sig-param">V</em>, <em class="sig-param">MW</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#V_to_rho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.V_to_rho" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the density (rho) in kg/m^3 given the molar volume (V) in
 m^3/mol and molecular weight (MW) in g/mol.</p>
 <div class="math notranslate nohighlight">
-\[\rho = \frac{MW}{1000\cdot VM}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>V</strong> (<em>float</em>) – Molar volume, [m^3/mol]</p></li>
-<li><p><strong>MW</strong> (<em>float</em>) – Molecular weight, [g/mol]</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>rho</strong> – Density, [kg/m^3]</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span><span class="p">(</span><span class="mf">0.000132</span><span class="p">,</span> <span class="mf">86.18</span><span class="p">)</span>
-<span class="go">652.8787878787879</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="thermosteam.functional.rho">
-<code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">rho</code><span class="sig-paren">(</span><em class="sig-param">V</em>, <em class="sig-param">MW</em><span class="sig-paren">)</span><a class="headerlink" href="#thermosteam.functional.rho" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the density (rho) in kg/m^3 given the molar volume (V) in
-m^3/mol and molecular weight (MW) in g/mol.</p>
-<div class="math notranslate nohighlight">
-\[\rho = \frac{MW}{1000\cdot VM}\]</div>
+\[\rho = \frac{MW}{1000\cdot V}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -329,8 +280,8 @@ kg/m^3 and molecular weight (MW) in g/mol.</p>
 <dl class="function">
 <dt id="thermosteam.functional.SG_to_API">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">SG_to_API</code><span class="sig-paren">(</span><em class="sig-param">SG</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#SG_to_API"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.SG_to_API" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates specific gravity of a liquid given its API, as shown in
-<a href="#id42"><span class="problematic" id="id3">[1]_</span></a>.</p>
+<dd><p>Return specific gravity of a liquid given its API, as shown in
+<a href="#id41"><span class="problematic" id="id2">[1]_</span></a>.</p>
 <div class="math notranslate nohighlight">
 \[\text{API gravity} = \frac{141.5}{\text{SG}} - 131.5\]</div>
 <dl class="field-list simple">
@@ -353,7 +304,7 @@ kg/m^3 and molecular weight (MW) in g/mol.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
 <dd><p>API Technical Data Book: General Properties &amp; Characterization.</p>
 </dd>
 </dl>
@@ -364,7 +315,7 @@ kg/m^3 and molecular weight (MW) in g/mol.</p>
 <dt id="thermosteam.functional.API_to_SG">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">API_to_SG</code><span class="sig-paren">(</span><em class="sig-param">API</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#API_to_SG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.API_to_SG" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates API of a liquid given its specific gravity, as shown in
-<a href="#id43"><span class="problematic" id="id5">[1]_</span></a>.</p>
+<a href="#id42"><span class="problematic" id="id4">[1]_</span></a>.</p>
 <div class="math notranslate nohighlight">
 \[\text{SG at}~60^\circ\text{F} = \frac{141.5}{\text{API gravity} +131.5}\]</div>
 <dl class="field-list simple">
@@ -387,7 +338,7 @@ kg/m^3 and molecular weight (MW) in g/mol.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id6"><span class="brackets">1</span></dt>
+<dt class="label" id="id5"><span class="brackets">1</span></dt>
 <dd><p>API Technical Data Book: General Properties &amp; Characterization.</p>
 </dd>
 </dl>
@@ -472,18 +423,18 @@ ketone at 293.15 K</p>
 </pre></div>
 </div>
 <p>Compared to 274.9 according to a group contribution method described in
-<a href="#id44"><span class="problematic" id="id7">[3]_</span></a>.</p>
+<a href="#id43"><span class="problematic" id="id6">[3]_</span></a>.</p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id8"><span class="brackets">1</span></dt>
+<dt class="label" id="id7"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
-<dt class="label" id="id9"><span class="brackets">2</span></dt>
+<dt class="label" id="id8"><span class="brackets">2</span></dt>
 <dd><p>Green, Don, and Robert Perry. Perry’s Chemical Engineers’ Handbook,
 8E. McGraw-Hill Professional, 2007.</p>
 </dd>
-<dt class="label" id="id10"><span class="brackets">3</span></dt>
+<dt class="label" id="id9"><span class="brackets">3</span></dt>
 <dd><p>Danner, Ronald P, and Design Institute for Physical Property Data.
 Manual for Predicting Chemical Process Design Data. New York, N.Y, 1982.</p>
 </dd>
@@ -524,7 +475,7 @@ with respect to <cite>T</cite>.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id11"><span class="brackets">1</span></dt>
+<dt class="label" id="id10"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -565,7 +516,7 @@ with respect to <cite>P</cite>.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id12"><span class="brackets">1</span></dt>
+<dt class="label" id="id11"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -575,7 +526,7 @@ New York: McGraw-Hill Professional, 2000.</p>
 <dl class="function">
 <dt id="thermosteam.functional.phase_identification_parameter">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">phase_identification_parameter</code><span class="sig-paren">(</span><em class="sig-param">V</em>, <em class="sig-param">dP_dT</em>, <em class="sig-param">dP_dV</em>, <em class="sig-param">d2P_dV2</em>, <em class="sig-param">d2P_dVdT</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#phase_identification_parameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.phase_identification_parameter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the Phase Identification Parameter developed in <a href="#id45"><span class="problematic" id="id13">[1]_</span></a> for
+<dd><p>Calculate the Phase Identification Parameter developed in <a href="#id44"><span class="problematic" id="id12">[1]_</span></a> for
 the accurate and efficient determination of whether a fluid is a liquid or
 a gas based on the results of an equation of state. For supercritical
 conditions, this provides a good method for choosing which property
@@ -617,14 +568,14 @@ unlike liquids, d2P_dVdT is always &gt;0; it is &lt; 0 for liquids and gases.</p
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id14"><span class="brackets">1</span></dt>
+<dt class="label" id="id13"><span class="brackets">1</span></dt>
 <dd><p>Venkatarathnam, G., and L. R. Oellrich. “Identification of the Phase
 of a Fluid Using Partial Derivatives of Pressure, Volume, and
 Temperature without Reference to Saturation Properties: Applications in
 Phase Equilibria Calculations.” Fluid Phase Equilibria 301, no. 2
 (February 25, 2011): 225-33. doi:10.1016/j.fluid.2010.12.001.</p>
 </dd>
-<dt class="label" id="id15"><span class="brackets">2</span></dt>
+<dt class="label" id="id14"><span class="brackets">2</span></dt>
 <dd><p>Jayanti, Pranava Chaitanya, and G. Venkatarathnam. “Identification
 of the Phase of a Substance from the Derivatives of Pressure, Volume and
 Temperature, without Prior Knowledge of Saturation Properties: Extension
@@ -637,8 +588,8 @@ doi:10.1016/j.fluid.2016.06.001.</p>
 <dl class="function">
 <dt id="thermosteam.functional.phase_identification_parameter_phase">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">phase_identification_parameter_phase</code><span class="sig-paren">(</span><em class="sig-param">d2P_dVdT</em>, <em class="sig-param">V=None</em>, <em class="sig-param">dP_dT=None</em>, <em class="sig-param">dP_dV=None</em>, <em class="sig-param">d2P_dV2=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#phase_identification_parameter_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.phase_identification_parameter_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uses the Phase Identification Parameter concept developed in <a href="#id46"><span class="problematic" id="id16">[1]_</span></a> and
-<a href="#id47"><span class="problematic" id="id17">[2]_</span></a> to determine if a chemical is a solid, liquid, or vapor given the
+<dd><p>Uses the Phase Identification Parameter concept developed in <a href="#id45"><span class="problematic" id="id15">[1]_</span></a> and
+<a href="#id46"><span class="problematic" id="id16">[2]_</span></a> to determine if a chemical is a solid, liquid, or vapor given the
 appropriate thermodynamic conditions.</p>
 <p>The criteria for liquid is PIP &gt; 1; for vapor, PIP &lt;= 1.</p>
 <p>For solids, PIP(solid) is defined to be d2P_dVdT. If it is larger than 0,
@@ -674,14 +625,14 @@ needed to determine if a species is a liquid or a gas.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id18"><span class="brackets">1</span></dt>
+<dt class="label" id="id17"><span class="brackets">1</span></dt>
 <dd><p>Venkatarathnam, G., and L. R. Oellrich. “Identification of the Phase
 of a Fluid Using Partial Derivatives of Pressure, Volume, and
 Temperature without Reference to Saturation Properties: Applications in
 Phase Equilibria Calculations.” Fluid Phase Equilibria 301, no. 2
 (February 25, 2011): 225-33. doi:10.1016/j.fluid.2010.12.001.</p>
 </dd>
-<dt class="label" id="id19"><span class="brackets">2</span></dt>
+<dt class="label" id="id18"><span class="brackets">2</span></dt>
 <dd><p>Jayanti, Pranava Chaitanya, and G. Venkatarathnam. “Identification
 of the Phase of a Substance from the Derivatives of Pressure, Volume and
 Temperature, without Prior Knowledge of Saturation Properties: Extension
@@ -695,8 +646,8 @@ doi:10.1016/j.fluid.2016.06.001.</p>
 <dt id="thermosteam.functional.Cp_minus_Cv">
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">Cp_minus_Cv</code><span class="sig-paren">(</span><em class="sig-param">T</em>, <em class="sig-param">dP_dT</em>, <em class="sig-param">dP_dV</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#Cp_minus_Cv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.Cp_minus_Cv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the difference between a real gas’s constant-pressure heat
-capacity and constant-volume heat capacity, as given in <a href="#id48"><span class="problematic" id="id20">[1]_</span></a>, <a href="#id49"><span class="problematic" id="id21">[2]_</span></a>, and
-<a href="#id50"><span class="problematic" id="id22">[3]_</span></a>. The required derivatives should be calculated with an equation of
+capacity and constant-volume heat capacity, as given in <a href="#id47"><span class="problematic" id="id19">[1]_</span></a>, <a href="#id48"><span class="problematic" id="id20">[2]_</span></a>, and
+<a href="#id49"><span class="problematic" id="id21">[3]_</span></a>. The required derivatives should be calculated with an equation of
 state.</p>
 <div class="math notranslate nohighlight">
 \[C_p - C_v = -T\left(\frac{\partial P}{\partial T}\right)_V^2/
@@ -732,15 +683,15 @@ of which are squared.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id23"><span class="brackets">1</span></dt>
+<dt class="label" id="id22"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
-<dt class="label" id="id24"><span class="brackets">2</span></dt>
+<dt class="label" id="id23"><span class="brackets">2</span></dt>
 <dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering.
 Butterworth-Heinemann, 1985.</p>
 </dd>
-<dt class="label" id="id25"><span class="brackets">3</span></dt>
+<dt class="label" id="id24"><span class="brackets">3</span></dt>
 <dd><p>Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.
 Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim:
 Wiley-VCH, 2012.</p>
@@ -753,7 +704,7 @@ Wiley-VCH, 2012.</p>
 <code class="sig-prename descclassname">thermosteam.functional.</code><code class="sig-name descname">speed_of_sound</code><span class="sig-paren">(</span><em class="sig-param">V</em>, <em class="sig-param">dP_dV</em>, <em class="sig-param">Cp</em>, <em class="sig-param">Cv</em>, <em class="sig-param">MW=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thermosteam/functional.html#speed_of_sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thermosteam.functional.speed_of_sound" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a real fluid’s speed of sound. The required derivatives should
 be calculated with an equation of state, and <cite>Cp</cite> and <cite>Cv</cite> are both the
-real fluid versions. Expression is given in <a href="#id51"><span class="problematic" id="id26">[1]_</span></a> and <a href="#id52"><span class="problematic" id="id27">[2]_</span></a>; a unit conversion
+real fluid versions. Expression is given in <a href="#id50"><span class="problematic" id="id25">[1]_</span></a> and <a href="#id51"><span class="problematic" id="id26">[2]_</span></a>; a unit conversion
 is further performed to obtain a result in m/s. If MW is not provided the
 result is returned in units of m*kg^0.5/s/mol^0.5.</p>
 <div class="math notranslate nohighlight">
@@ -786,19 +737,19 @@ result is returned in units of m*kg^0.5/s/mol^0.5.</p>
 \[w = \left[-V^2 \frac{1000}{MW}\left(\frac{\partial P}{\partial V}
 \right)_T \frac{C_p}{C_v}\right]^{1/2}\]</div>
 <p class="rubric">Examples</p>
-<p>Example from <a href="#id53"><span class="problematic" id="id28">[2]_</span></a>:</p>
+<p>Example from <a href="#id52"><span class="problematic" id="id27">[2]_</span></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed_of_sound</span><span class="p">(</span><span class="n">V</span><span class="o">=</span><span class="mf">0.00229754</span><span class="p">,</span> <span class="n">dP_dV</span><span class="o">=-</span><span class="mf">3.5459e+08</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="mf">153.235</span><span class="p">,</span> <span class="n">Cv</span><span class="o">=</span><span class="mf">132.435</span><span class="p">,</span> <span class="n">MW</span><span class="o">=</span><span class="mf">67.152</span><span class="p">)</span>
 <span class="go">179.5868138460819</span>
 </pre></div>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id29"><span class="brackets">1</span></dt>
+<dt class="label" id="id28"><span class="brackets">1</span></dt>
 <dd><p>Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.
 Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim:
 Wiley-VCH, 2012.</p>
 </dd>
-<dt class="label" id="id30"><span class="brackets">2</span></dt>
+<dt class="label" id="id29"><span class="brackets">2</span></dt>
 <dd><p>Pratt, R. M. “Thermodynamic Properties Involving Derivatives: Using
 the Peng-Robinson Equation of State.” Chemical Engineering Education 35,
 no. 2 (March 1, 2001): 112-115.</p>
@@ -835,18 +786,18 @@ or with <cite>beta</cite> if it is already known.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Example from <a href="#id54"><span class="problematic" id="id31">[2]_</span></a>:</p>
+<p>Example from <a href="#id53"><span class="problematic" id="id30">[2]_</span></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Joule_Thomson</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">390</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mf">0.00229754</span><span class="p">,</span> <span class="n">Cp</span><span class="o">=</span><span class="mf">153.235</span><span class="p">,</span> <span class="n">dV_dT</span><span class="o">=</span><span class="mf">1.226396e-05</span><span class="p">)</span>
 <span class="go">1.621956080529905e-05</span>
 </pre></div>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id32"><span class="brackets">1</span></dt>
+<dt class="label" id="id31"><span class="brackets">1</span></dt>
 <dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering.
 Butterworth-Heinemann, 1985.</p>
 </dd>
-<dt class="label" id="id33"><span class="brackets">2</span></dt>
+<dt class="label" id="id32"><span class="brackets">2</span></dt>
 <dd><p>Pratt, R. M. “Thermodynamic Properties Involving Derivatives: Using
 the Peng-Robinson Equation of State.” Chemical Engineering Education 35,
 no. 2 (March 1, 2001): 112-115.</p>
@@ -882,7 +833,7 @@ pressure and constant-volume heat capacity.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id34"><span class="brackets">1</span></dt>
+<dt class="label" id="id33"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -918,7 +869,7 @@ temperature, pressure, and molar volume.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id35"><span class="brackets">1</span></dt>
+<dt class="label" id="id34"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -956,7 +907,7 @@ second virial coefficient.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id36"><span class="brackets">1</span></dt>
+<dt class="label" id="id35"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -994,7 +945,7 @@ compressibility factor of the gas.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id37"><span class="brackets">1</span></dt>
+<dt class="label" id="id36"><span class="brackets">1</span></dt>
 <dd><p>Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
 New York: McGraw-Hill Professional, 2000.</p>
 </dd>
@@ -1043,12 +994,12 @@ C, n=2, and so on.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id38"><span class="brackets">1</span></dt>
+<dt class="label" id="id37"><span class="brackets">1</span></dt>
 <dd><p>Prausnitz, John M., Rudiger N. Lichtenthaler, and Edmundo Gomes de
 Azevedo. Molecular Thermodynamics of Fluid-Phase Equilibria. 3rd
 edition. Upper Saddle River, N.J: Prentice Hall, 1998.</p>
 </dd>
-<dt class="label" id="id39"><span class="brackets">2</span></dt>
+<dt class="label" id="id38"><span class="brackets">2</span></dt>
 <dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering.
 Butterworth-Heinemann, 1985.</p>
 </dd>
@@ -1094,12 +1045,12 @@ C, n=2, and so on.</p>
 </div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id40"><span class="brackets">1</span></dt>
+<dt class="label" id="id39"><span class="brackets">1</span></dt>
 <dd><p>Prausnitz, John M., Rudiger N. Lichtenthaler, and Edmundo Gomes de
 Azevedo. Molecular Thermodynamics of Fluid-Phase Equilibria. 3rd
 edition. Upper Saddle River, N.J: Prentice Hall, 1998.</p>
 </dd>
-<dt class="label" id="id41"><span class="brackets">2</span></dt>
+<dt class="label" id="id40"><span class="brackets">2</span></dt>
 <dd><p>Walas, Stanley M. Phase Equilibria in Chemical Engineering.
 Butterworth-Heinemann, 1985.</p>
 </dd>

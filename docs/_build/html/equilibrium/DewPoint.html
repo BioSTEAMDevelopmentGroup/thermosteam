@@ -238,7 +238,7 @@ composition and either a temperture (T) or pressure (P).</p>
 <span class="go">(355, 91970.14968399865, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.851, 0.149]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve for dew point at constant pressure</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">DP</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">molar_composition</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="mi">101324</span><span class="p">)</span>
-<span class="go">DewPointValues(T=376.2616600246861, P=202648, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.832 0.168])</span>
+<span class="go">DewPointValues(T=376.261660024686, P=202648, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.832 0.168])</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -310,7 +310,7 @@ composition and either a temperture (T) or pressure (P).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tmo</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">set_thermo</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">DP</span> <span class="o">=</span> <span class="n">tmo</span><span class="o">.</span><span class="n">equilibrium</span><span class="o">.</span><span class="n">DewPoint</span><span class="p">(</span><span class="n">chemicals</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">DP</span><span class="o">.</span><span class="n">solve_Px</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mf">352.28</span><span class="p">)</span>
-<span class="go">(82444.29876048012, array([0.853, 0.147]))</span>
+<span class="go">(82444.29876048009, array([0.853, 0.147]))</span>
 </pre></div>
 </div>
 </dd></dl>

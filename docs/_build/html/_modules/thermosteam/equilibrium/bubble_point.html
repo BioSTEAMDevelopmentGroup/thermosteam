@@ -222,10 +222,10 @@
 <span class="sd">    &gt;&gt;&gt; # Solve bubble point at constant temperature</span>
 <span class="sd">    &gt;&gt;&gt; bp = BP(z=molar_composition, T=355)</span>
 <span class="sd">    &gt;&gt;&gt; bp</span>
-<span class="sd">    BubblePointValues(T=355, P=109755.45319868939, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
+<span class="sd">    BubblePointValues(T=355, P=109755.45319868933, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.343 0.657])</span>
 <span class="sd">    &gt;&gt;&gt; # Note that the result is a BubblePointValues object which contain all results as attibutes</span>
 <span class="sd">    &gt;&gt;&gt; (bp.T, bp.P, bp.IDs, bp.z, bp.y)</span>
-<span class="sd">    (355, 109755.45319868939, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
+<span class="sd">    (355, 109755.45319868933, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.343, 0.657]))</span>
 <span class="sd">    &gt;&gt;&gt; # Solve bubble point at constant pressure</span>
 <span class="sd">    &gt;&gt;&gt; BP(z=molar_composition, P=101325)</span>
 <span class="sd">    BubblePointValues(T=352.95030269946596, P=101325, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], y=[0.342 0.658])</span>
@@ -350,7 +350,7 @@
 <span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
 <span class="sd">        &gt;&gt;&gt; BP = tmo.equilibrium.BubblePoint(chemicals)</span>
 <span class="sd">        &gt;&gt;&gt; BP.solve_Py(z=(0.703, 0.297), T=352.28)</span>
-<span class="sd">        (91830.97988957923, array([0.419, 0.581]))</span>
+<span class="sd">        (91830.9798895792, array([0.419, 0.581]))</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>

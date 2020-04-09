@@ -291,7 +291,7 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">0.07205503890847455</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Molar volume (m^3/mol)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">101325</span><span class="p">)</span>
-<span class="go">1.7970929501497658e-05</span>
+<span class="go">1.802828527066713e-05</span>
 </pre></div>
 </div>
 <p>Note that the reference state of all chemicals is 25 degC and 1 atm:</p>
@@ -348,23 +348,30 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># contains no valid model at T=1000.00 K</span>
 </pre></div>
 </div>
-<p>Model handles and the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">plot_vs_T</span><span class="p">(</span><span class="n">Water</span><span class="o">.</span><span class="n">Tm</span><span class="p">,</span> <span class="n">Water</span><span class="o">.</span><span class="n">Tb</span><span class="p">,</span> <span class="n">T_units</span><span class="o">=</span><span class="s1">&#39;degC&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;atm&#39;</span><span class="p">)</span>
+<p>Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Water.Psat.plot_vs_T([Water.Tm, Water.Tb], &#39;degC&#39;, &#39;atm&#39;, label=&quot;Water&quot;)</span>
 </pre></div>
 </div>
 <div class="figure align-default">
 <img alt="_images/Water_Psat_vs_T.png" src="_images/Water_Psat_vs_T.png" />
 </div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Plot all models</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Water.Psat.plot_models_vs_T([Water.Tm, Water.Tb], &#39;degC&#39;, &#39;atm&#39;)</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="_images/Water_all_models_Psat_vs_T.png" src="_images/Water_all_models_Psat_vs_T.png" />
+</div>
 <p>Each model may contain either a function or a functor (a function with stored data) to compute the property:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">functor</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="go">Functor: Wagner_McGraw(T, P=None) -&gt; Psat [Pa]</span>
+<span class="go"> Tc: 647.35 K</span>
+<span class="go"> Pc: 2.2122e+07 Pa</span>
 <span class="go"> a: -7.7645</span>
 <span class="go"> b: 1.4584</span>
 <span class="go"> c: -2.7758</span>
 <span class="go"> d: -1.233</span>
-<span class="go"> Tc: 647.35 K</span>
-<span class="go"> Pc: 2.2122e+07 Pa</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -390,22 +397,6 @@ and transport properties as a function of temperature and pressure.</p>
 <span class="go">[9] Edalat</span>
 </pre></div>
 </div>
-<p>The <cite>models</cite> object is a <cite>deque</cite> for easier management of model order:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
-<span class="go">[0] Wagner_McGraw</span>
-<span class="go">[1] Antoine</span>
-<span class="go">[2] DIPPR_EQ101</span>
-<span class="go">[3] Wagner</span>
-<span class="go">[4] Boiling_Critical_Relation</span>
-<span class="go">[5] Lee_Kesler</span>
-<span class="go">[6] Ambrose_Walton</span>
-<span class="go">[7] Sanjari</span>
-<span class="go">[8] Edalat</span>
-<span class="go">[9] User_antoine_model</span>
-</pre></div>
-</div>
 <p>The <cite>add_model</cite> method is a high level interface that even lets you create a constant model:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">Water</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="mf">1.687e-05</span><span class="p">)</span>
 <span class="gp">... </span><span class="c1"># Model is appended at the end by default</span>
@@ -422,6 +413,59 @@ and transport properties as a function of temperature and pressure.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Because no bounds were given, the model assumes it is valid across all temperatures and pressures.</p>
+</div>
+<p>Manage the model order with the <cite>set_model_priority</cite> and <cite>move_up_model_priority</cite> methods:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Note: In this case, we pass the model name, but its</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># also possible to pass the current index, or the model itself.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">move_up_model_priority</span><span class="p">(</span><span class="s1">&#39;Wagner_McGraw&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="go">[0] Wagner_McGraw</span>
+<span class="go">[1] Antoine</span>
+<span class="go">[2] DIPPR_EQ101</span>
+<span class="go">[3] Wagner</span>
+<span class="go">[4] Boiling_Critical_Relation</span>
+<span class="go">[5] Lee_Kesler</span>
+<span class="go">[6] Ambrose_Walton</span>
+<span class="go">[7] Sanjari</span>
+<span class="go">[8] Edalat</span>
+<span class="go">[9] User_antoine_model</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">set_model_priority</span><span class="p">(</span><span class="s1">&#39;Antoine&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="go">[0] Antoine</span>
+<span class="go">[1] Wagner_McGraw</span>
+<span class="go">[2] DIPPR_EQ101</span>
+<span class="go">[3] Wagner</span>
+<span class="go">[4] Boiling_Critical_Relation</span>
+<span class="go">[5] Lee_Kesler</span>
+<span class="go">[6] Ambrose_Walton</span>
+<span class="go">[7] Sanjari</span>
+<span class="go">[8] Edalat</span>
+<span class="go">[9] User_antoine_model</span>
+</pre></div>
+</div>
+<p>The default priority is <cite>0</cite> (or top priority), but you can choose any priority:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">set_model_priority</span><span class="p">(</span><span class="s1">&#39;Antoine&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Water</span><span class="o">.</span><span class="n">Psat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">TDependentModelHandle(T, P=None) -&gt; Psat [Pa]</span>
+<span class="go">[0] Wagner_McGraw</span>
+<span class="go">[1] Antoine</span>
+<span class="go">[2] DIPPR_EQ101</span>
+<span class="go">[3] Wagner</span>
+<span class="go">[4] Boiling_Critical_Relation</span>
+<span class="go">[5] Lee_Kesler</span>
+<span class="go">[6] Ambrose_Walton</span>
+<span class="go">[7] Sanjari</span>
+<span class="go">[8] Edalat</span>
+<span class="go">[9] User_antoine_model</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All models are stored as a <a class="reference external" href="https://docs.python.org/3.8/library/collections.html#collections.deque">deque</a> in the <cite>models</cite> attribute (e.g. Water.Psat.models).</p>
 </div>
 <dl class="attribute">
 <dt id="thermosteam.Chemical.InChI">

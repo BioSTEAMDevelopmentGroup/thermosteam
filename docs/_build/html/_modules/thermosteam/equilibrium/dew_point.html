@@ -230,7 +230,7 @@
 <span class="sd">    (355, 91970.14968399865, (&#39;Water&#39;, &#39;Ethanol&#39;), array([0.5, 0.5]), array([0.851, 0.149]))</span>
 <span class="sd">    &gt;&gt;&gt; # Solve for dew point at constant pressure</span>
 <span class="sd">    &gt;&gt;&gt; DP(z=molar_composition, P=2*101324)</span>
-<span class="sd">    DewPointValues(T=376.2616600246861, P=202648, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.832 0.168])</span>
+<span class="sd">    DewPointValues(T=376.261660024686, P=202648, IDs=(&#39;Water&#39;, &#39;Ethanol&#39;), z=[0.5 0.5], x=[0.832 0.168])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;chemicals&#39;</span><span class="p">,</span> <span class="s1">&#39;phi&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;IDs&#39;</span><span class="p">,</span>
@@ -354,7 +354,7 @@
 <span class="sd">        &gt;&gt;&gt; tmo.settings.set_thermo(chemicals)</span>
 <span class="sd">        &gt;&gt;&gt; DP = tmo.equilibrium.DewPoint(chemicals)</span>
 <span class="sd">        &gt;&gt;&gt; DP.solve_Px(z=(0.5, 0.5), T=352.28)</span>
-<span class="sd">        (82444.29876048012, array([0.853, 0.147]))</span>
+<span class="sd">        (82444.29876048009, array([0.853, 0.147]))</span>
 <span class="sd"> </span>
 <span class="sd">       &quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>

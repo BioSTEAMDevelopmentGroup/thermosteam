@@ -175,12 +175,15 @@
 
 <span class="sd">@author: yoelr</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">colors</span>
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;UndefinedChemical&#39;</span><span class="p">,</span>
            <span class="s1">&#39;UndefinedPhase&#39;</span><span class="p">,</span>
            <span class="s1">&#39;UndefinedPhaseOrChemical&#39;</span><span class="p">,</span>
            <span class="s1">&#39;DimensionError&#39;</span><span class="p">,</span>
            <span class="s1">&#39;AutodocError&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;DeprecatedAttribute&#39;</span><span class="p">)</span>
+           <span class="s1">&#39;DeprecatedAttribute&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;try_method_with_object_stamp&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UndefinedChemical"><a class="viewcode-back" href="../../exceptions.html#thermosteam.exceptions.UndefinedChemical">[docs]</a><span class="k">class</span> <span class="nc">UndefinedChemical</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AttributeError regarding undefined chemicals.&quot;&quot;&quot;</span>
@@ -204,7 +207,19 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">old</span><span class="si">}</span><span class="s2">&#39; is deprecated; please use &#39;</span><span class="si">{</span><span class="n">new</span><span class="si">}</span><span class="s2">&#39; instead&quot;</span><span class="p">)</span></div>
         
-        
+<span class="k">def</span> <span class="nf">message_with_object_stamp</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">violet</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">object</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">msg</span>
+
+<span class="k">def</span> <span class="nf">raise_error_with_object_stamp</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+    <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">args</span>
+    <span class="n">error</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">message_with_object_stamp</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">msg</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">error</span>
+
+<span class="k">def</span> <span class="nf">try_method_with_object_stamp</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">raise_error_with_object_stamp</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 </pre></div>
 
            </div>
