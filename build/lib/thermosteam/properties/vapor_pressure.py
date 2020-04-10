@@ -401,7 +401,7 @@ def Edalat(T, Tc, Pc, ω):
     lnPr = (a * τ + b * τ**1.5 + c * τ**3.0 + d * τ**6.0) / (1.0 - τ)
     return exp(lnPr) * Pc
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('Psat')
 def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
     add_model = handle.add_model
     if CAS in _WagnerMcGarry:
@@ -426,7 +426,7 @@ def VaporPressure(handle, CAS, Tb, Tc, Pc, omega):
     if CAS in _Perrys2_8:
         _, C1, C2, C3, C4, C5, Tmin, Tmax = _Perrys2_8[CAS]
         data = (C1, C2, C3, C4, C5)
-        add_model(DIPPR_EQ101.from_args(data), Tmin, Tmax, var='Psat')
+        add_model(DIPPR_EQ101.from_args(data), Tmin, Tmax)
     if CAS in _VDI_PPDS_3:
         _, Tm, Tc, Pc, a, b, c, d = _VDI_PPDS_3[CAS]
         data = (Tc, Pc, a, b, c, d)

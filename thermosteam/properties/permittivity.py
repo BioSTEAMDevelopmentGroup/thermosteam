@@ -43,7 +43,7 @@ def IAPWS_Permittivity(T, Vl,
 def CRC(T, A, B, C, D):
     return A + B*T + C*T**2 + D*T**3
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('epsilon')
 def Permittivity(handle, CAS, Vl):
     add_model = handle.add_model
     if Vl and CAS == '7732-18-5':

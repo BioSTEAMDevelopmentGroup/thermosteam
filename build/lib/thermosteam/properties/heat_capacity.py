@@ -415,7 +415,7 @@ Poling_Functors = (Poling,
                    Poling_Integral_Over_T)
 
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('Cn.g')
 def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
     add_model = handle.add_model
     if CAS in _TRC_gas:
@@ -428,7 +428,7 @@ def HeatCapacityGas(handle, CAS, MW, similarity_variable, iscyclic_aliphatic):
             funcs = CnHS(*Poling_Functors, (a, b, c, d, e))
             add_model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
         if not np.isnan(Cn_g):
-            add_model(Cn_g, Tmin, Tmax, var='Cn.g', name=POLING_CONST)
+            add_model(Cn_g, Tmin, Tmax, name=POLING_CONST)
     if CAS in _CRC_standard:
         Cn_g = _CRC_standard[CAS][-1]
         if not np.isnan(Cn_g):
@@ -732,7 +732,7 @@ zabransky_model_builders[0].many = True
 zabransky_model_builders[2].many = True
 zabransky_model_builders[4].many = True
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('Cn.l')
 def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
     Cn_g = Cn.g
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
@@ -751,11 +751,11 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
         if not np.isnan(Cn_g):
-            add_model(Cn_l, Tmin, Tmax, name=POLING_CONST, var="Cn.l")
+            add_model(Cn_l, Tmin, Tmax, name=POLING_CONST)
     if CAS in _CRC_standard:
         Cn_l = _CRC_standard[CAS][-5]
         if not np.isnan(Cn_l):
-            add_model(Cn_l, 0, Tc, name=CRCSTD, var="Cn.l")
+            add_model(Cn_l, 0, Tc, name=CRCSTD)
     # Other
     if MW and similarity_variable:
         add_model(CnHSModel(*Dadgostar_Shaw_Functors,
@@ -895,7 +895,7 @@ Perry_151_Functors = (Perry_151, Perry_151_Integral, Perry_151_Over_T_Integral)
 LASTOVKA_S = 'Lastovka, Fulem, Becerra and Shaw (2008)'
 PERRY151 = "Perry's Table 2-151"
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('Cn.s')
 def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
     Tmin = 0
     Tmax = 2000
@@ -917,5 +917,5 @@ def HeatCapacitySolid(handle, CAS, similarity_variable, MW):
         add_model(CnHSModel(*Lastovka_Solid_Functors, data), Tmin, Tmax)
 
 
-HeatCapacity = PhaseTPropertyBuilder(HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas, 'Cn')
+HeatCapacity = PhaseTPropertyBuilder('Cn', HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas)
 

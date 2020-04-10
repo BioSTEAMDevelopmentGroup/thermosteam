@@ -119,7 +119,7 @@ def Mersmann_Kind_surface_tension(T, Tm, Tb, Tc, Pc, n_associated=1):
     sigma = sigma_star*(k*Tc)**(1/3.)*(Tm/Tc)*Pc**(2/3.)*n_associated**(-1/3.)
     return sigma
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('sigma')
 def SurfaceTension(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, StielPolar, Hvap_Tb, rhol, Cpl_Tb):
     add_model = handle.add_model
     if CAS in _Mulero_Cachadina:

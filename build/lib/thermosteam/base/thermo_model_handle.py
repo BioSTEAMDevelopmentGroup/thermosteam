@@ -11,7 +11,8 @@ from .thermo_model import (ThermoModel,
                            TDependentModel,
                            TPDependentModel,
                            thermo_model,
-                           label_axis as create_axis_labels)
+                           create_axis_labels)
+from .units_of_measure import definitions
 from .functor import functor_lookalike
 
 __all__ = ('ThermoModelHandle',
@@ -29,12 +30,19 @@ def find_model_index_by_name(models, name):
     for index, model in enumerate(models):
         if model.name == name: return index
     raise LookupError(f'no model with name {name}')
+    
+def no_valid_model(chemical, var):
+    definition = definitions.get(var)
+    msg = f"{chemical} has no valid " if chemical else "no valid "
+    msg += f"{definition.lower()} model" if definition else "model"
+    return msg
+
 
 # %% Handles
 
 @functor_lookalike
 class ThermoModelHandle:
-    __slots__ = ('models',)
+    __slots__ = ('chemical', 'var', 'models',)
     
     def plot_vs_T(self, T_range=None, T_units=None, units=None, 
                   P=101325, label_axis=True, **plot_kwargs):
@@ -43,7 +51,6 @@ class ThermoModelHandle:
         if label_axis: create_axis_labels('T', T_units, self.var, units)
         plt.legend()
         
-    
     def plot_vs_P(self, P_range=None, P_units=None, units=None,
                   T=298.15, label_axis=True, **plot_kwargs):
         Ps, Ys = self.tabulate_vs_P(P_range, P_units, units, T)
@@ -63,13 +70,9 @@ class ThermoModelHandle:
         if label_axis: create_axis_labels('P', P_units, self.var, units)
         plt.legend()
     
-    @property
-    def var(self):
-        for i in self.models:
-            var = i.var
-            if var: return var
-         
-    def __init__(self, models=None):
+    def __init__(self, var, models=None):
+        self.chemical = None
+        self.var = var
         self.models = deque(models) if models else deque()
     
     def __getitem__(self, index):
@@ -88,7 +91,7 @@ class ThermoModelHandle:
         return bool(self.models)
     
     def copy(self):
-        return self.__class__(self.models.copy())
+        return self.__class__(self.var, self.models.copy())
     __copy__ = copy
     
     def set_model_priority(self, model, priority=0):
@@ -128,20 +131,19 @@ class ThermoModelHandle:
     def add_model(self, evaluate=None,
                   Tmin=None, Tmax=None,
                   Pmin=None, Pmax=None,
-                  name=None, var=None,
-                  *, top_priority=False, **funcs):
+                  name=None, *, top_priority=False, **funcs):
         if evaluate is None:
             return lambda evaluate: self.add_model(evaluate,
                                                    Tmin, Tmax,
                                                    Pmin, Pmax,
-                                                   name, var,
+                                                   name, self.var,
                                                    top_priority=top_priority,
                                                    **funcs)
         if isinstance(evaluate, ThermoModel):
             model = evaluate
         else:
             model = thermo_model(evaluate, Tmin, Tmax, Pmin,
-                                 Pmax, name, var, **funcs)
+                                 Pmax, name, self.var, **funcs)
         if top_priority:
             self.models.appendleft(model)
         else:
@@ -151,8 +153,8 @@ class ThermoModelHandle:
     def show(self):
         info = f"{self}\n"
         if self.models:
-            models = ("\n").join([f'[{i}] {model.name}'
-                                  for i, model in enumerate(self.models)])
+            models = "\n".join([f'[{i}] {model.name}'
+                                for i, model in enumerate(self.models)])
         else:
             models = "(no models available)"
         print(info + models)
@@ -177,12 +179,12 @@ class TDependentModelHandle(ThermoModelHandle):
     def __call__(self, T, P=None):
         for model in self.models:
             if model.indomain(T): return model.evaluate(T)
-        raise ValueError(f"no valid model at T={T:.2f} K")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} at T={T:.2f} K")
         
     def differentiate_by_T(self, T, P=None, dT=1e-12):
         for model in self.models:
             if model.indomain(T): return model.differentiate_by_T(T, dT=dT)
-        raise ValueError(f"no valid model at T={T:.2f} K")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} at T={T:.2f} K")
         
     def differentiate_by_P(self, T, P=None, dP=1e-12):
         return 0
@@ -209,7 +211,7 @@ class TDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T(Tmin, Tb)
                 Tb = Tmin
-        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} between T={Ta:.2f} to {Tb:.2f} K")
     
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
@@ -232,7 +234,7 @@ class TDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T_over_T(Tmin, Tb)
                 Tb = Tmin
-        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} between T={Ta:.2f} to {Tb:.2f} K")
     
     
 class TPDependentModelHandle(ThermoModelHandle):
@@ -254,17 +256,17 @@ class TPDependentModelHandle(ThermoModelHandle):
     def __call__(self, T, P):
         for model in self.models:
             if model.indomain(T, P): return model.evaluate(T, P)
-        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} at T={T:.2f} K and P={P:.0f} Pa")
 
     def differentiate_by_T(self, T, P):
         for model in self.models:
             if model.indomain(T, P): return model.differentiate_by_T(T, P)
-        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} at T={T:.2f} K and P={P:.0f} Pa")
             
     def differentiate_by_P(self, T, P):
         for model in self.models:
              if model.indomain(T, P): return model.differentiate_by_P(T, P)
-        raise ValueError(f"no valid model at T={T:.2f} K and P={P:5g} Pa")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} at T={T:.2f} K and P={P:.0f} Pa")
 
     def integrate_by_T(self, Ta, Tb, P):
         integral = 0
@@ -284,7 +286,7 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T(Tmin, Tb, P)
                 Tb = Tmin
-        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K at P={P:5g} Pa")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} between T={Ta:.2f} to {Tb:.2f} K at P={P:.0f} Pa")
     
     def integrate_by_P(self, Pa, Pb, T):
         integral = 0
@@ -305,7 +307,7 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Pmin < Pb:
                 integral += model.integrate_by_P(Pmin, Pb, T)
                 Pb = Pmin
-        raise ValueError(f"no valid model between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
     
     def integrate_by_T_over_T(self, Ta, Tb, P):
         integral = 0
@@ -326,7 +328,7 @@ class TPDependentModelHandle(ThermoModelHandle):
             elif ub_satisfied and Tmin < Tb:
                 integral += model.integrate_by_T_over_T(Tmin, Tb, P)
                 Tb = Tmin
-        raise ValueError(f"no valid model between T={Ta:.2f} to {Tb:.2f} K")
+        raise ValueError(f"{no_valid_model(self.chemical, self.var)} between T={Ta:.2f} to {Tb:.2f} K")
         
             
     

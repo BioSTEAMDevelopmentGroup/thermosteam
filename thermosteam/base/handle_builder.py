@@ -10,17 +10,21 @@ __all__ = ('HandleBuilder', 'TDependentHandleBuilder', 'TPDependentHandleBuilder
 
 class HandleBuilder:
     __slots__ = ('function',)
-    
-    def __init__(self, function):
-        self.function = function
+
+    def __new__(cls, var, build=None):
+        if not build: return lambda build: cls(var, build)
+        self = super().__new__(cls)
+        self.build = build
+        self.var = var
+        return self
 
     def __call__(self, data):
-        handle = self.Handle()
-        self.function(handle, *data)
+        handle = self.Handle(self.var)
+        self.build(handle, *data)
         return handle
         
     def __repr__(self):
-        return f"<[{type(self).__name__}] {self.function.__name__}(data)>"
+        return f"<[{type(self).__name__}] {self.build.__name__}(data)>"
     
 class TDependentHandleBuilder(HandleBuilder):
     Handle = TDependentModelHandle

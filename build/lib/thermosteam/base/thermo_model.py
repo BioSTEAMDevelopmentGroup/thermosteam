@@ -14,7 +14,7 @@ from inspect import signature
 import matplotlib.pyplot as plt
 import numpy as np
 
-__all__ = ('thermo_model', 'label_axis', 
+__all__ = ('thermo_model', 'create_axis_labels', 
            'ThermoModel', 'TDependentModel', 'TPDependentModel', 
            'ConstantThermoModel', 'ConstantTDependentModel',
            'ConstantTPDependentModel', 'InterpolatedTDependentModel')
@@ -62,7 +62,7 @@ def T_linspace(Tmin, Tmax):
 def P_linspace(Pmin, Pmax):
     return np.linspace(*P_min_max(Pmin, Pmax))
 
-def label_axis(Xvar, X_units, Yvar, Y_units):
+def create_axis_labels(Xvar, X_units, Yvar, Y_units):
     Xvar_description = describe_parameter(Xvar, X_units)
     Yvar_description = describe_parameter(Yvar, Y_units)
     plt.xlabel(Xvar_description)
@@ -119,7 +119,7 @@ class ThermoModel:
                  Tmin=None, Tmax=None,
                  Pmin=None, Pmax=None,
                  name=None, var=None, **funcs):
-        self.var = var or (evaluate.var if hasattr(evaluate, 'var') else "")
+        self.var = var or evaluate.var
         self.name = name or functor_name(evaluate)
         self.evaluate = evaluate
         self.__dict__.update(funcs)
@@ -133,7 +133,7 @@ class ThermoModel:
         Ts, Ys = self.tabulate_vs_T(T_range, T_units, units, P)
         plot_kwargs['label'] = plot_kwargs.get('label') or self.name.replace('_', " ")
         plt.plot(Ts, Ys, **plot_kwargs)
-        if label_axis: label_axis('T', T_units, self.var, units)
+        if label_axis: create_axis_labels('T', T_units, self.var, units)
         
     
     def plot_vs_P(self, P_range=None, P_units=None, units=None, T=298.15, 
@@ -141,7 +141,7 @@ class ThermoModel:
         Ps, Ys = self.tabulate_vs_P(P_range, P_units, units, T)
         plot_kwargs['label'] = plot_kwargs.get('label') or self.name.replace('_', " ")
         plt.plot(Ps, Ys, **plot_kwargs)
-        if label_axis: label_axis('P', P_units, self.var, units)
+        if label_axis: create_axis_labels('P', P_units, self.var, units)
     
     @property
     def __call__(self):

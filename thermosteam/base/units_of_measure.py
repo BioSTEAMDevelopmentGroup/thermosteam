@@ -276,8 +276,7 @@ for i, j in [('ω', 'omega')]:
         chemical_units_of_measure[i] = chemical_units_of_measure[j]
 
 # Phase properties
-for var in ('Cn', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
-    units = chemical_units_of_measure[var]
+for var in ('mu', 'Cn', 'H', 'S', 'V', 'kappa', 'H_excess', 'S_excess'):
     definition = definitions[var].lower()
     for tag, phase in zip(('s', 'l', 'g'), ('Solid ', 'Liquid ', 'Gas ')):
         phase_var = var + '.' + tag

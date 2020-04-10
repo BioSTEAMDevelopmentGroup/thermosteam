@@ -713,7 +713,7 @@ def VDI_PPDS(T, Tc, A, B, C, D, E):
     tau = 1. - T/Tc
     return R*Tc*(A*tau**(1/3.) + B*tau**(2/3.) + C*tau + D*tau**2 + E*tau**6)
 
-@TDependentHandleBuilder
+@TDependentHandleBuilder('Hvap')
 def EnthalpyVaporization(handle, CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V):
     # if has_CoolProp and self.CASRN in coolprop_dict:
     #     methods.append(COOLPROP)

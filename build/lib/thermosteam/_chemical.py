@@ -26,7 +26,8 @@ from .properties.free_energy import \
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas, \
     ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
 from .base import PhaseProperty, PhaseTProperty, PhaseTPProperty, \
-                  display_asfunctor, TDependentModelHandle, TPDependentModelHandle
+                  ThermoModelHandle, TDependentModelHandle, TPDependentModelHandle, \
+                  display_asfunctor
 from .base.units_of_measure import chemical_units_of_measure
 from .properties.dipole import dipole_moment as dipole
 from . import functional as fn 
@@ -291,7 +292,7 @@ class Chemical:
     >>> Water.Psat(373.15)
     101284.55179999319
     >>> # Water.Psat(1000.0) ->
-    >>> # ValueError: no valid model at T=1000.00 K
+    >>> # ValueError: Water has no valid saturated vapor pressure model at T=1000.00 K
     
     Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.
     
@@ -604,6 +605,15 @@ class Chemical:
     def __reduce__(self):
         return unpickle_chemical, (get_chemical_data(self),)
 
+    def __setattr__(self, name, value):
+        isa = isinstance
+        if isa(value, ThermoModelHandle):
+            value.chemical = self
+        elif isa(value, PhaseProperty):
+            for phase in (value.s, value.l, value.g):
+                if isa(phase, ThermoModelHandle): phase.chemical = self
+        super().__setattr__(name, value)
+
     @property
     def ID(self):
         """[str] Identification of chemical."""
@@ -733,7 +743,7 @@ class Chemical:
         self.V = V = Volume(sdata, ldata, gdata)
         
         # Heat capacity
-        Cn = PhaseTProperty(var='Cn')
+        Cn = PhaseTProperty('Cn')
         sdata = (CAS, similarity_variable, MW)
         ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cn)
         gdata = (CAS, MW, similarity_variable, iscyclic_aliphatic)
@@ -1020,11 +1030,11 @@ class Chemical:
             getfield = getattr
             single_phase = isinstance(Cn, TDependentModelHandle)
             if single_phase:
-                Cn.add_model(4.18*MW, var='Cn')
+                Cn.add_model(4.18*MW)
                 Cn_phase = Cn
             else:
                 Cn_phase = getfield(Cn, phase_ref)
-                Cn_phase.add_model(4.18*MW, var='Cn')
+                Cn_phase.add_model(4.18*MW)
             self.load_free_energies()
         if not self.H:
             self.load_free_energies()
@@ -1150,14 +1160,14 @@ class Chemical:
         for i in _free_energies: setfield(self, i, None)
         if phase:
             for i in ('kappa', 'mu', 'V'):
-                setfield(self, i, TPDependentModelHandle())
-            self.Cn = TDependentModelHandle()
+                setfield(self, i, TPDependentModelHandle(i))
+            self.Cn = TDependentModelHandle('Cn')
         else:
             for i in ('kappa', 'mu', 'V'):
-                setfield(self, i, PhaseTPProperty())
-            self.Cn = PhaseTProperty()
+                setfield(self, i, PhaseTPProperty(i))
+            self.Cn = PhaseTProperty('Cn')
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
-            setfield(self, i, TDependentModelHandle())
+            setfield(self, i, TDependentModelHandle(i))
         self._locked_state = phase
         self._ID = ID
         self.phase_ref = phase_ref or phase

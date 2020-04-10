@@ -581,7 +581,7 @@ def Costald_Compressed(T, P, Psat, Tc, Pc, omega, Vs):
     B = Pc*(-1 + a*tau**(1/3.) + b*tau**(2/3.) + d*tau + e*tau**(4/3.))
     return Vs(T, P)*(1 - C*log((B + P)/(B + Psat(T))))
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('V.l')
 def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, has_hydroxyl):
     Tmin = 50
     Tmax = 1000
@@ -590,7 +590,7 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
     if CAS in _CRC_inorg_l:
         _, MW, rho, k, Tm, Tmax = _CRC_inorg_l[CAS]
         data = (MW, rho, k, Tm)
-        add_model(CRC_Inorganic.from_args(data), Tm, Tmax, var='V.l')
+        add_model(CRC_Inorganic.from_args(data), Tm, Tmax)
     if CAS in _Perry_l:
         _, C1, C2, C3, C4, Tmin, Tmax = _Perry_l[CAS]
         data = (C1, C2, C3, C4, True)
@@ -598,8 +598,7 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
     if CAS in _VDISaturationDict:
         Ts, Vls = VDI_tabular_data(CAS, 'Volume (l)')
         model = InterpolatedTDependentModel(Ts, Vls,
-                                            Tmin=Ts[0], Tmax=Ts[-1],
-                                            var='V.l')
+                                            Tmin=Ts[0], Tmax=Ts[-1])
         add_model(model)
     data = (Tc, Vc, Zc)
     if all_(data):
@@ -622,7 +621,7 @@ def VolumeLiquid(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, 
             add_model(SNM0.from_args(data), 0, Tc)
     if CAS in _CRC_inorg_l_const:
         Vl = float(_CRC_inorg_l_const.at[CAS, 'Vm'])
-        add_model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant", var='V.l')
+        add_model(Vl, Tmin, Tmax, name="CRC_inorganic_liquid_constant")
     if Tc and Pc and CAS in _COSTALD:
         Zc_ = _COSTALD.at[CAS, 'Z_RA']
         if not np.isnan(Zc_): Zc_ = float(Zc_)
@@ -677,7 +676,7 @@ def CRCVirial(T, P, a1, a2, a3, a4, a5):
     t = 298.15/T - 1.
     return ideal_gas(T, P) + (a1 + a2*t + a3*t**2 + a4*t**3 + a5*t**4)/1e6
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('V.g')
 def VolumeGas(handle, CAS, Tc, Pc, omega, eos):
     add_model = handle.add_model
     # no point in getting Tmin, Tmax
@@ -720,12 +719,12 @@ def Goodman(T, Tt, V_l):
     '''
     return (1.28 - 0.16*(T/Tt))*V_l
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('V.s')
 def VolumeSolid(handle, CAS):
     if CAS in _CRC_inorg_s_const:
         CRC_INORG_S_Vm = float(_CRC_inorg_s_const.at[CAS, 'Vm'])
         handle.add_model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
 
 
-Volume = PhaseTPPropertyBuilder(VolumeSolid, VolumeLiquid, VolumeGas, 'V')
+Volume = PhaseTPPropertyBuilder('V', VolumeSolid, VolumeLiquid, VolumeGas)
 

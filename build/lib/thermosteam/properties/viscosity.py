@@ -78,7 +78,7 @@ def Lucas(T, P, Tc, Pc, omega, P_sat, mu):
     if dPr < 0: dPr = 0
     return (1. + D*(dPr/2.118)**A)/(1. + C*omega*dPr)*mu.l(T)
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('mu.l')
 def ViscosityLiquid(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
     add_model = handle.add_model
     if CAS in _VDISaturationDict:
@@ -180,7 +180,7 @@ STIEL_THODOS = 'STIEL_THODOS'
 LUCAS_GAS = 'LUCAS_GAS'
 
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('mu.g')
 def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
     add_model = handle.add_model
     if CAS in _Perrys2_312:
@@ -210,7 +210,7 @@ def ViscosityGas(handle, CAS, MW, Tc, Pc, Zc, dipole):
         Tmax = Ts[-1]
         add_model(InterpolatedTDependentModel(Ts, Ys, Tmin, Tmax))
 
-Viscosity = PhaseTPPropertyBuilder(None, ViscosityLiquid, ViscosityGas, 'mu')
+Viscosity = PhaseTPPropertyBuilder('mu', None, ViscosityLiquid, ViscosityGas)
 
 # %% Other
 

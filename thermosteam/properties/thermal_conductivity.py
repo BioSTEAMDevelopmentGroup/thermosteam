@@ -86,7 +86,35 @@ def Mersmann_Kind_thermal_conductivity_liquid(T, MW, Tc, Vc, atoms):
     kl = lambda_star*(k*Tc)**1.5*N_A2**(7/6.)*Vc**(-2/3.)/Tc*MW**-0.5
     return kl
 
-@TPDependentHandleBuilder
+### Thermal Conductivity of Dense Liquids
+
+@kappa.l
+def DIPPR9G(T, P, Tc, Pc, kl_models):
+    Tr = T/Tc
+    Pr = P/Pc
+    for kl in kl_models:
+        if isinstance(kl, TDependentModel): break
+    return kl.evaluate(T)*(0.98 + 0.0079*Pr*Tr**1.4 + 0.63*Tr**1.2*(Pr/(30. + Pr)))
+
+
+Trs_Missenard = [0.8, 0.7, 0.6, 0.5]
+Prs_Missenard = [1, 5, 10, 50, 100, 200]
+Qs_Missenard = np.array([[0.036, 0.038, 0.038, 0.038, 0.038, 0.038],
+                         [0.018, 0.025, 0.027, 0.031, 0.032, 0.032],
+                         [0.015, 0.020, 0.022, 0.024, 0.025, 0.025],
+                         [0.012, 0.0165, 0.017, 0.019, 0.020, 0.020]])
+Qfunc_Missenard = interp2d(Prs_Missenard, Trs_Missenard, Qs_Missenard)
+
+@kappa.l
+def Missenard(T, P, Tc, Pc, kl_models):
+    Tr = T/Tc
+    Pr = P/Pc
+    Q = float(Qfunc_Missenard(Pr, Tr))
+    for kl in kl_models:
+        if isinstance(kl, TDependentModel): break
+    return kl.evaluate(T)*(1. + Q*Pr**0.7)
+
+@TPDependentHandleBuilder('kappa.l')
 def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
     add_model = handle.add_model
     if CAS in _Perrys2_315:
@@ -125,36 +153,6 @@ def ThermalConductivityLiquid(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Hfus):
     if MW:
         add_model(Lakshmi_Prasad.from_args(data))
         add_model(Bahadori_liquid.from_args(data))
-
-
-### Thermal Conductivity of Dense Liquids
-
-@kappa.l
-def DIPPR9G(T, P, Tc, Pc, kl_models):
-    Tr = T/Tc
-    Pr = P/Pc
-    for kl in kl_models:
-        if isinstance(kl, TDependentModel): break
-    return kl.evaluate(T)*(0.98 + 0.0079*Pr*Tr**1.4 + 0.63*Tr**1.2*(Pr/(30. + Pr)))
-
-
-Trs_Missenard = [0.8, 0.7, 0.6, 0.5]
-Prs_Missenard = [1, 5, 10, 50, 100, 200]
-Qs_Missenard = np.array([[0.036, 0.038, 0.038, 0.038, 0.038, 0.038],
-                         [0.018, 0.025, 0.027, 0.031, 0.032, 0.032],
-                         [0.015, 0.020, 0.022, 0.024, 0.025, 0.025],
-                         [0.012, 0.0165, 0.017, 0.019, 0.020, 0.020]])
-Qfunc_Missenard = interp2d(Prs_Missenard, Trs_Missenard, Qs_Missenard)
-
-@kappa.l
-def Missenard(T, P, Tc, Pc, kl_models):
-    Tr = T/Tc
-    Pr = P/Pc
-    Q = float(Qfunc_Missenard(Pr, Tr))
-    for kl in kl_models:
-        if isinstance(kl, TDependentModel): break
-    return kl.evaluate(T)*(1. + Q*Pr**0.7)
-
 
 ### Thermal Conductivity of Gases
 
@@ -382,7 +380,7 @@ def Chung_dense(T, P, MW, Tc, Vc, omega, Cp, Vg, mug, dipole, association=0):
     return 31.2*mu*psi/(MW/1000.)*(G2**-1 + B6*y) + q*B7*y**2*Tr**0.5*G2
 
 
-@TPDependentHandleBuilder
+@TPDependentHandleBuilder('kappa.g')
 def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, Vg, Cp, mug):
     data = (MW, Tb, Pc, omega)
     add_model = handle.add_model
@@ -422,5 +420,5 @@ def ThermalConductivityGas(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V
     #     _, *data, Tmin, Tmax = _Perrys2_314[CAS]
     #     add_model(DIPPR9B_linear(data), Tmin, Tmax)
 
-ThermalConductivity = PhaseTPPropertyBuilder(None, ThermalConductivityLiquid, ThermalConductivityGas, 'kappa')
+ThermalConductivity = PhaseTPPropertyBuilder('kappa', None, ThermalConductivityLiquid, ThermalConductivityGas)
 
