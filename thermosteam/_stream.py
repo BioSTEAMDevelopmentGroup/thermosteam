@@ -8,7 +8,7 @@ import numpy as np
 from . import indexer
 from . import equilibrium as eq
 from . import functional as fn
-from .base import units_of_measure as thermo_units, convert
+from .base import units_of_measure as thermo_units
 from .exceptions import DimensionError
 from ._thermal_condition import ThermalCondition
 from .utils import Cache, assert_same_chemicals, thermo_user, registered
@@ -412,17 +412,12 @@ class Stream:
 
         """
         value = getattr(self, name)
-        if name == 'T':
-            value = convert(value, 'K', units)
+        units_dct = thermo_units.stream_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
         else:
-            units_dct = thermo_units.stream_units_of_measure
-            if name in units_dct:
-                original_units = units_dct[name]
-            else:
-                raise ValueError(f"no property with name '{name}'")
-            factor = original_units.conversion_factor(units)
-            value *= factor
-        return value
+            raise ValueError(f"no property with name '{name}'")
+        return original_units.convert(value, units)
     
     def set_property(self, name, value, units):
         """
@@ -447,16 +442,12 @@ class Stream:
         202650.0
 
         """
-        if name == 'T':
-            value = convert(value, units, 'K')
+        units_dct = thermo_units.stream_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
         else:
-            units_dct = thermo_units.stream_units_of_measure
-            if name in units_dct:
-                original_units = units_dct[name]
-            else:
-                raise ValueError(f"no property with name '{name}'")
-            factor = original_units.conversion_factor(units)
-            value /= factor
+            raise ValueError(f"no property with name '{name}'")
+        value = original_units.unconvert(value, units)
         setattr(self, name, value)
     
     ### Stream data ###
@@ -855,8 +846,27 @@ class Stream:
         self._imol.copy_like(other._imol)
         self._TP.copy_like(other._TP)
     
+    def copy_thermal_condition(self, other):
+        """
+        Copy thermal conditions (T and P) of another stream.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+        >>> s1 = tmo.Stream('s1', Water=2, units='kg/hr')
+        >>> s2 = tmo.Stream('s2', Water=1, units='kg/hr', T=300.00)
+        >>> s1.copy_thermal_condition(s2)
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 300.00 K, P: 101325 Pa
+         flow (kg/hr): Water  2
+        """
+        self._TP.copy_like(other._TP)
+    
     def copy_flow(self, stream, IDs=..., *, remove=False, exclude=False):
-        """Copy flow rates of stream to self.
+        """
+        Copy flow rates of stream to self.
         
         Parameters
         ----------

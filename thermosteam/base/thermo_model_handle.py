@@ -94,37 +94,37 @@ class ThermoModelHandle:
         return self.__class__(self.var, self.models.copy())
     __copy__ = copy
     
-    def set_model_priority(self, model, priority=0):
+    def set_model_priority(self, key, priority=0):
         models = self.models
         isa = isinstance
-        if isa(model, int):
-            index = model
+        if isa(key, int):
+            index = key
             model = models[index]
-        elif isa(model, str):
-            name = model
+        elif isa(key, str):
+            name = key
             model = find_model_by_name(models, name)
-        elif isa(model, ThermoModel):
-            pass
+        elif isa(key, ThermoModel):
+            model = key
         else:
             raise ValueError(
-                '`model` must be either the index [int], name [str], '
+                '`key` must be either the index [int], name [str], '
                 'or the model itself [ThermoModel]')
         models.remove(model)
         models.insert(priority, model)
     
-    def move_up_model_priority(self, model, priority=0):
+    def move_up_model_priority(self, key, priority=0):
         models = self.models
         isa = isinstance
-        if isa(model, int):
-            index = model
-        elif isa(model, str):
-            name = model
+        if isa(key, int):
+            index = key
+        elif isa(key, str):
+            name = key
             index = find_model_index_by_name(models, name)
-        elif isa(model, ThermoModel):
-            index = models.index(model)
+        elif isa(key, ThermoModel):
+            index = models.index(key)
         else:
             raise ValueError(
-                '`model` must be either the index [int], name [str], '
+                '`key` must be either the index [int], name [str], '
                 'or the model itself [ThermoModel]')
         models.rotate(priority - index)
     

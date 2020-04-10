@@ -745,8 +745,13 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
         add_model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        add_model(Rowlinson_Bondi.from_args(args), name=ROWLINSON_BONDI)
-        add_model(Rowlinson_Poling.from_args(args), name=ROWLINSON_POLING)
+        add_model(Rowlinson_Bondi.from_args(args), Tmin=0, Tmax=Tc, name=ROWLINSON_BONDI)
+        add_model(Rowlinson_Poling.from_args(args),Tmin=0, Tmax=Tc, name=ROWLINSON_POLING)
+    # Other
+    if MW and similarity_variable:
+        add_model(CnHSModel(*Dadgostar_Shaw_Functors,
+                               data=(similarity_variable, MW),
+                               name=DADGOSTAR_SHAW))
     # Constant models
     if CAS in _Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = _Poling[CAS]
@@ -756,11 +761,6 @@ def HeatCapacityLiquid(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
         Cn_l = _CRC_standard[CAS][-5]
         if not np.isnan(Cn_l):
             add_model(Cn_l, 0, Tc, name=CRCSTD)
-    # Other
-    if MW and similarity_variable:
-        add_model(CnHSModel(*Dadgostar_Shaw_Functors,
-                               data=(similarity_variable, MW),
-                               name=DADGOSTAR_SHAW))
 
 # %% Heat Capacity Solid
 

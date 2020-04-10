@@ -5,7 +5,7 @@ Created on Mon Dec  2 01:41:50 2019
 @author: yoelr
 """
 
-from .base import UnitsOfMeasure
+from .base import AbsoluteUnitsOfMeasure
 from .utils import repr_IDs_data, repr_couples, chemicals_user
 from ._settings import settings
 from .exceptions import UndefinedPhase, UndefinedChemical
@@ -512,7 +512,7 @@ def _new_Indexer(name, units):
     MaterialIndexerSubclass.__slots__ = ()
     
     ChemicalIndexerSubclass.units = \
-    MaterialIndexerSubclass.units = UnitsOfMeasure(units)
+    MaterialIndexerSubclass.units = AbsoluteUnitsOfMeasure(units)
     
     MaterialIndexerSubclass._ChemicalIndexer = ChemicalIndexerSubclass
     ChemicalIndexerSubclass._MaterialIndexer = MaterialIndexerSubclass
