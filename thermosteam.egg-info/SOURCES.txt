@@ -36,6 +36,7 @@ thermosteam/equilibrium/dew_point.py
 thermosteam/equilibrium/fugacities.py
 thermosteam/equilibrium/fugacity_coefficients.py
 thermosteam/equilibrium/lle.py
+thermosteam/equilibrium/plot_equilibrium.py
 thermosteam/equilibrium/poyinting_correction_factors.py
 thermosteam/equilibrium/solve_vle_composition.py
 thermosteam/equilibrium/unifac_data.py
@@ -199,6 +200,7 @@ thermosteam/utils/colors.py
 thermosteam/utils/define_from.py
 thermosteam/utils/other_utils.py
 thermosteam/utils/pickle_utils.py
+thermosteam/utils/plot_utils.py
 thermosteam/utils/registry.py
 thermosteam/utils/repr_utils.py
 thermosteam/utils/var_utils.py

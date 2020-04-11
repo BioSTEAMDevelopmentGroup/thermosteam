@@ -1234,7 +1234,7 @@ class Chemical:
                  Tb: 77.355 K
                  Tt: 63.15 K
                  Tc: 126.2 K
-                 Pt: 12527 K
+                 Pt: 12527 Pa
                  Pc: 3.3944e+06 Pa
                  Vc: 8.95e-05 m^3/mol
                  Zc: 0.28953

@@ -479,7 +479,7 @@ class MaterialIndexer(Indexer):
     def __format__(self, tabs="1"):
         IDs = self._chemicals.IDs
         phase_data = []
-        for phase, data in self.iter_data():
+        for phase, data in self:
             ID_data = repr_couples(", ", IDs, data)
             if ID_data:
                 phase_data.append(f"{phase}=[{ID_data}]")

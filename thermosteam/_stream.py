@@ -873,7 +873,7 @@ class Stream:
         >>> s1.copy_thermal_condition(s2)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 300.00 K, P: 101325 Pa
+         phase: 'l', T: 300 K, P: 101325 Pa
          flow (kg/hr): Water  2
         """
         self._TP.copy_like(other._TP)
