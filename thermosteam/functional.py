@@ -6,7 +6,7 @@ Created on Wed Nov 27 19:11:28 2019
 """
 from fluids.core import thermal_diffusivity
 from cmath import sqrt as csqrt
-from numba import njit
+from .utils import njitable
 from .base import functor
 from ._constants import R
 import numpy as np
@@ -1283,7 +1283,7 @@ polylog2._pqoffset2 = ((8.548256176424551e+34, 1.8485781239087334e+35,
                         -7015.799744041691, 1.0),
                        0.999)
 
-@njit
+@njitable
 def normalize(array, minimum=1e-12):
     """
     Return a normalized array to a magnitude of 1.
@@ -1297,7 +1297,7 @@ def normalize(array, minimum=1e-12):
     else:
         return array/sum_array
 
-@njit
+@njitable
 def mixing_simple(fracs, props):
     r'''
     Simple function calculates a property based on weighted averages of
@@ -1329,7 +1329,7 @@ def mixing_simple(fracs, props):
     props = np.asarray(props)
     return (fracs * props).sum()
 
-@njit
+@njitable
 def mixing_logarithmic(fracs, props):
     r'''
     Simple function calculates a property based on weighted averages of

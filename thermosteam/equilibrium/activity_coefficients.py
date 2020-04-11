@@ -51,6 +51,16 @@ def get_interaction(all_interactions, i, j, no_interaction):
     except:
         return no_interaction
 
+def get_chemgroups(chemicals, field):
+    getfield = getattr
+    chemgroups = []
+    for chemical in chemicals: 
+        group = getfield(chemical, field)
+        if not group:
+            raise RuntimeError(f"{chemical} has no defined {field} UNIFAC groups")
+        chemgroups.append(group)
+    return chemgroups
+
 @njitable
 def loggammacs_UNIFAC(qs, rs, x):
     r_net = (x*rs).sum()
@@ -143,9 +153,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
             return cls._cached[chemicals]
         else:
             self = super().__new__(cls)
-        getfield = getattr
-        field = self.group_name
-        chemgroups = [getfield(s, field) for s in chemicals]
+        chemgroups = get_chemgroups(chemicals, self.group_name)
         all_groups = set()
         for groups in chemgroups: all_groups.update(groups)
         index = {group:i for i,group in enumerate(all_groups)}
@@ -243,7 +251,7 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     all_subgroups = DOUFSG
     all_interactions = DOUFIP2016
     group_name = 'Dortmund'
-    _no_interaction = (0., 0., 0.)
+    _no_interaction = np.array([0., 0., 0.])
     _cached = {}
     
     @staticmethod

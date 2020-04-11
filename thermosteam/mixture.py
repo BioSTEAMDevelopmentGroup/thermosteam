@@ -338,6 +338,7 @@ class Mixture:
     def xsolve_T(self, phase_data, H, T_guess, P):
         """Solve for temperature in Kelvin"""
         # First approximation
+        phase_data = tuple(phase_data)
         H_guess = self.xH(phase_data, T_guess, P)
         if (H - H_guess) < 1e-3: return T_guess
         Cn = self.xCn(phase_data, T_guess)

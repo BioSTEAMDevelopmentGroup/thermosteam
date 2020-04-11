@@ -7,6 +7,7 @@ Created on Sun Jul 21 21:30:33 2019
 from numpy import asarray, array
 from flexsolve import aitken_secant, IQ_interpolation
 from .solve_vle_composition import solve_y
+from ..functional import normalize
 from ..utils import fill_like
 from .._settings import settings
 
@@ -152,7 +153,7 @@ class BubblePoint:
             self.T = IQ_interpolation(f, Tmin, Tmax,
                                       f(Tmin), f(Tmax),
                                       T, 0., 1e-6, 5e-8)
-        self.y /= self.y.sum()
+        self.y = normalize(self.y)
         return self.T, self.y.copy()
     
     def solve_Py(self, z, T):
@@ -196,7 +197,7 @@ class BubblePoint:
             P = (z * Psat).sum()
             self.P = self.rootsolver(self._P_error, P, P-1,
                                      1e-2, 5e-8, args)
-        self.y /= self.y.sum()
+        self.y = normalize(self.y)
         return self.P, self.y.copy()
     
     def __repr__(self):

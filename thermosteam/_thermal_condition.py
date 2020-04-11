@@ -8,7 +8,8 @@ Created on Mon Dec  2 07:45:30 2019
 __all__ = ('ThermalCondition',)
 
 class ThermalCondition:
-    """Create a ThermalCondition object that contains temperature and pressure values.
+    """
+    Create a ThermalCondition object that contains temperature and pressure values.
     
     Parameters
     ----------
@@ -23,6 +24,11 @@ class ThermalCondition:
     def __init__(self, T, P):
         self.T = T #: [float] Temperature in Kelvin
         self.P = P #: [float] Pressure in Pascal
+    
+    def in_equilibrium(self, other):
+        """Return whether thermal condition is in equilibrium with another
+        (i. e. same temperature and pressure)."""
+        return abs(self.T - other.T) < 1e-12 and abs(self.P - other.P) < 1e-12
     
     def copy(self):
         """Return a copy."""

@@ -11,7 +11,7 @@ from . import functional as fn
 from .base import units_of_measure as thermo_units
 from .exceptions import DimensionError
 from ._thermal_condition import ThermalCondition
-from .utils import Cache, assert_same_chemicals, thermo_user, registered
+from .utils import Cache, all_same_chemicals, thermo_user, registered
 
 __all__ = ('Stream', )
 
@@ -696,6 +696,23 @@ class Stream:
     
     ### Stream methods ###
     
+    def in_thermal_equilibrium(self, other):
+        """
+        Return whether or not stream is in thermal equilibrium with
+        another stream.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
+        >>> stream = Stream(Water=1, T=300)
+        >>> other = Stream(Water=1, T=300)
+        >>> stream.in_thermal_equilibrium(other)
+        True
+        
+        """
+        return self._TP.in_equilibrium(other._TP)
+    
     def mix_from(self, others):
         """
         Mix all other streams into this one, ignoring its initial contents.
@@ -721,10 +738,7 @@ class Stream:
         elif N_others == 1:
             self.copy_like(others[0])
         else:
-            assert_same_chemicals(self, others)
-            phase = others[0].phase
-            self.phase = phase
-            self.mol[:] = sum([i.mol for i in others])
+            self._imol.mix_from([i._imol for i in others])
             self.H = sum([i.H for i in others])
     
     def split_to(self, s1, s2, split):
@@ -1040,7 +1054,7 @@ class Stream:
         0.0
         
         """
-        self._imol._data[:] = 0
+        self._imol.empty()
     
     ### Equilibrium ###
 
@@ -1410,8 +1424,8 @@ class Stream:
     
     @property
     def phases(self):
-        """tuple[str] All phases that may be present."""
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute 'phases'")
+        """tuple[str] All phases present."""
+        return (self.phase,)
     @phases.setter
     def phases(self, phases):
         self.__class__ = ms.MultiStream

@@ -6,7 +6,11 @@ Created on Mon Dec  2 01:41:50 2019
 """
 
 from .base import AbsoluteUnitsOfMeasure
-from .utils import repr_IDs_data, repr_couples, chemicals_user
+from .utils import (repr_IDs_data, repr_couples,
+                    chemicals_user,
+                    same_chemicals, same_phases,
+                    all_same_chemicals,
+)
 from ._settings import settings
 from .exceptions import UndefinedPhase, UndefinedChemical
 from ._phase import Phase, LockedPhase, NoPhase
@@ -28,6 +32,16 @@ __all__ = ('ChemicalIndexer',
 
 isa = isinstance
 _new = object.__new__
+
+def main_phase(chemical_indexers):
+    max_flow = 0
+    phase = None
+    for i in chemical_indexers:
+        flow = i._data.sum()
+        if flow > max_flow:
+            max_flow = flow
+            phase = i.phase
+    return phase
 
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
@@ -84,7 +98,9 @@ class Indexer:
 
 @chemicals_user
 class ChemicalIndexer(Indexer):
-    """Create a ChemicalIndexer that can index a single-phase, 1d-array given chemical IDs.
+    """
+    Create a ChemicalIndexer that can index a single-phase, 1d-array given
+    chemical IDs.
     
     Parameters
     ----------
@@ -99,8 +115,9 @@ class ChemicalIndexer(Indexer):
     
     Notes
     -----
-    A ChemicalIndexer does not have any units defined. To use units of measure, use the 
-    `ChemicalMolarIndexer`, `ChemicalMassIndexer`, or `ChemicalVolumetricIndexer`.
+    A ChemicalIndexer does not have any units defined. To use units of
+    measure, use the  `ChemicalMolarIndexer`, `ChemicalMassIndexer`, or
+    `ChemicalVolumetricIndexer`.
     
     """
     __slots__ = ('_chemicals', '_phase', '_data_cache')
@@ -122,9 +139,20 @@ class ChemicalIndexer(Indexer):
     def __setitem__(self, key, data):
         self._data[self.get_index(key)] = data
     
+    def sum_across_phases(self):
+        return self._data
+    
     @property
     def get_index(self):
         return self._chemicals.get_index
+    
+    def empty(self):
+        self._data[:] = 0
+    
+    def mix_from(self, others):
+        all_same_chemicals(self, others)
+        self.phase = main_phase(others) or self.phase
+        self._data[:] = sum([i.sum_across_phases() for i in others])
     
     def to_material_indexer(self, phases=()):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -132,7 +160,7 @@ class ChemicalIndexer(Indexer):
         return material_array
     
     def copy_like(self, other):
-        assert self._chemicals is other._chemicals, "chemicals must match"
+        same_chemicals(self, other)
         self._data[:] = other._data
         self.phase = other.phase
     
@@ -234,7 +262,9 @@ class ChemicalIndexer(Indexer):
       
 @chemicals_user
 class MaterialIndexer(Indexer):
-    """Create a MaterialIndexer that can index a multi-phase, 2d-array given the phase and chemical IDs.
+    """
+    Create a MaterialIndexer that can index a multi-phase, 2d-array given
+    the phase and chemical IDs.
     
     Parameters
     ----------
@@ -275,12 +305,34 @@ class MaterialIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)
     
+    @property
+    def sum_across_phases(self):
+        return self._data.sum(0)
+    
+    def empty(self):
+        self._data[:] = 0
+    
     def copy_like(self, other):
+        same_chemicals(self, other)
         if isa(other, ChemicalIndexer):
-            self._data[:] = 0
+            self.empty()
             self[other.phase] = other._data
         else:
+            same_phases(self, other)
             self._data[:] = other._data
+    
+    def mix_from(self, others):
+        all_same_chemicals(self, others)
+        self.empty()
+        isa = isinstance
+        for i in others:
+            if isa(i, MaterialIndexer):
+                same_phases(self, i)
+                self._data[:] += i._data
+            elif isa(i, ChemicalIndexer):
+                self[i.phase] += i._data
+            else:
+                raise ValueError("can only mix from chemical or material indexers")
     
     def _set_phases(self, phases):
         self._phases = phases = tuple(sorted(phases))
@@ -414,7 +466,7 @@ class MaterialIndexer(Indexer):
         except:
             raise UndefinedPhase(phase)
     
-    def iter_data(self):
+    def __iter__(self):
         """Iterate over phase-data pairs."""
         return zip(self._phases, self._data)
     

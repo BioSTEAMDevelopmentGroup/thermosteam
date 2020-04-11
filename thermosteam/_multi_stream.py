@@ -9,7 +9,7 @@ from ._thermal_condition import ThermalCondition
 from .indexer import MolarFlowIndexer
 from ._settings import settings
 from .equilibrium import VLE, LLE
-from .utils import Cache, assert_same_chemicals
+from .utils import Cache, all_same_chemicals
 import numpy as np
 
 __all__ = ('MultiStream', )
@@ -314,23 +314,23 @@ class MultiStream(Stream):
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        return self.mixture.xH_at_TP(self._imol.iter_data(), self._TP)
+        return self.mixture.xH_at_TP(self._imol, self._TP)
     @H.setter
     def H(self, H):
-        self.T = self.mixture.xsolve_T(self._imol.iter_data(), H, self.T, self.P)
+        self.T = self.mixture.xsolve_T(self._imol, H, self.T, self.P)
 
     @property
     def S(self):
         """[float] Entropy flow rate in kJ/hr."""
-        return self.mixture.xS_at_TP(self._imol.iter_data(), self._TP)
+        return self.mixture.xS_at_TP(self._imol, self._TP)
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        return self.mixture.xCn_at_TP(self._imol.iter_data(), self._TP)
+        return self.mixture.xCn_at_TP(self._imol, self._TP)
     @property
     def F_vol(self):
         """[float] Total volumetric flow rate in m3/hr."""
-        return 1000. * self.mixture.xV_at_TP(self._imol.iter_data(), self._TP)
+        return 1000. * self.mixture.xV_at_TP(self._imol, self._TP)
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol
@@ -382,9 +382,10 @@ class MultiStream(Stream):
         return self.mixture.epsilon_at_TP(mol / mol.sum(), self._TP)
         
     ### Methods ###
-        
+    
     def copy_flow(self, stream, phase=..., IDs=..., *, remove=False, exclude=False):
-        """Copy flow rates of stream to self.
+        """
+        Copy flow rates of stream to self.
         
         Parameters
         ----------
@@ -455,21 +456,6 @@ class MultiStream(Stream):
     
     def get_concentration(self, phase, IDs):
         return self.imol[phase, IDs]/self.F_vol
-    
-    def mix_from(self, others):
-        if settings._debug: assert_same_chemicals(self, others)
-        multi = []; single = []; isa = isinstance
-        for i in others:
-            if i: (multi if isa(i, MultiStream) else single).append(i)
-        self.empty()
-        for i in single:
-            self._imol[i.phase] += i.mol    
-        self._imol._data[:] += sum([i._imol._data for i in multi])
-        T = others[0].T
-        if all([T==i.T for i in others[1:]]):
-            self.T = T
-        else:
-            self.H = sum([i.H for i in others])
         
     def link_with(self, other):
         if settings._debug:
@@ -574,7 +560,7 @@ class MultiStream(Stream):
         from .utils import repr_kwarg, repr_couples
         IDs = self.chemicals.IDs
         phase_data = []
-        for phase, data in self.imol.iter_data():
+        for phase, data in self.imol:
             IDdata = repr_couples(", ", IDs, data)
             if IDdata:
                 phase_data.append(f"{phase}=[{IDdata}]")

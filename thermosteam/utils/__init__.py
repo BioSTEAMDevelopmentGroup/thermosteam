@@ -15,6 +15,7 @@ from . import assert_utils
 from . import var_utils
 from . import registry
 from . import colors
+from . import plot_utils
 
 __all__ = (*pickle_utils.__all__,
            *repr_utils.__all__,
@@ -25,7 +26,8 @@ __all__ = (*pickle_utils.__all__,
            *assert_utils.__all__,
            *var_utils.__all__,
            *registry.__all__,
-           *colors.__all__)
+           *colors.__all__,
+           *plot_utils.__all__)
 
 from .pickle_utils import *
 from .repr_utils import *
@@ -37,3 +39,4 @@ from .assert_utils import *
 from .var_utils import *
 from .registry import *
 from .colors import *
+from .plot_utils import *
