@@ -1,0 +1,33 @@
+Installation
+============
+
+Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`__. If you have an installation of Python with pip, simple install it with:
+
+.. code-block:: bash
+
+   $ pip install thermosteam
+
+
+To get the git version, run:
+
+.. code-block:: bash
+   
+   $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+
+
+Common Issues
+-------------
+
+* **Cannot install/update Thermosteam:**
+
+  If you are having trouble installing or updating Thermosteam, it may be due to dependency issues. You can bypass these using:
+  
+  .. code-block:: bash
+
+     $ pip install --user --ignore-installed thermosteam
+
+  You can make sure you install the right version by including the version number:
+
+  .. code-block:: bash
+
+     $ pip install thermosteam==<version>
