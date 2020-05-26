@@ -80,7 +80,9 @@ industrially and academically relevant.
 
 I would like to thank Dr. Yalin Li, Dr. Rui Shi, Sarang Bhagwat, Brent 
 Scheidemantle, and Dimitri Bachin for testing thermosteam and reporting in 
-detail any issues with the software. This material is based upon work supported
+detail any issues with the software. I would also like to thank Dr. Caleb Bell for 
+developing the open-source `thermo` package in Python, which has served as both groundwork
+and inspiration for developing `thermosteam`. This material is based upon work supported
 by the National Science Foundation Graduate Research Fellowship Program under 
 Grant No. DGE—1746047. Any opinions, findings, and conclusions or 
 recommendations expressed in this publication are those of the authors and do 

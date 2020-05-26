@@ -34,7 +34,7 @@ def chemicals_from_data(data):
                 new_chemicals[ID] = tmo.Chemical(ID, **kwargs)
         else:
             new_chemicals[ID] = tmo.Chemical(ID)
-    for ID, kwargs in chemical_copies:
+    for ID, kwargs in chemical_copies.items():
         copied_ID = kwargs.pop('Copy of')
         try:
             copied_chemical = new_chemicals[copied_ID]

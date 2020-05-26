@@ -5,7 +5,7 @@ Created on Sun Jul 21 22:15:30 2019
 @author: yoelr
 """
 from numpy import asarray, array
-from flexsolve import aitken_secant, IQ_interpolation
+import flexsolve as flx
 from .solve_vle_composition import solve_x
 from ..utils import fill_like, Cache
 from .._settings import settings
@@ -62,7 +62,6 @@ class DewPoint:
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
-    rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -84,6 +83,7 @@ class DewPoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
+        if T < 0: raise flx.InfeasibleRegion('negative pressure')
         Psats = [i(T) for i in self.Psats]
         # Remove small values to prevent floating point error
         Psats = array([i if i > 1e-16 else 1e-16 for i in Psats])
@@ -93,6 +93,7 @@ class DewPoint:
         return 1 - self.x.sum()
     
     def _P_error(self, P, T, z_norm, z_over_Psats):
+        if P < 0: raise flx.InfeasibleRegion('negative pressure')
         x_gamma_pcf = z_over_Psats * P *self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
@@ -143,17 +144,16 @@ class DewPoint:
         self.P = P
         T = self.T or (z * self.Tbs).sum()
         try:
-            self.T = self.rootsolver(self._T_error, T, T-0.01,
-                                     1e-6, 5e-9, args)
+            self.T = flx.aitken_secant(self._T_error, T, T-0.01,
+                                       1e-6, 5e-9, args)
         except:
             self.x = z.copy()
             T = (z * self.Tbs).sum()
             Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
             Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
-            if Tmin < 10: Tmin = 10
-            self.T = IQ_interpolation(self._T_error, Tmin, Tmax,
-                                      x=T, args=args, xtol=1e-6, ytol=5e-9)
-                
+            if Tmin < 50: Tmin = 50
+            self.T = flx.IQ_interpolation(self._T_error, Tmin, Tmax,
+                                          x=T, args=args, xtol=1e-6, ytol=5e-9)
         self.x /= self.x.sum()
         return self.T, self.x.copy()
     
@@ -193,13 +193,16 @@ class DewPoint:
         self.T = T
         P = self.P or (z * Psats).sum()
         try:
-            self.P = self.rootsolver(self._P_error, P, P+1,
-                                     1e-3, 5e-9, args)
+            self.P = flx.aitken_secant(self._P_error, P, P+1,
+                                       1e-3, 5e-9, args)
         except:
-            P = (z * Psats).sum()
             self.x = z.copy()
-            self.P = self.rootsolver(self._P_error, P, P+1, 
-                                     1e-3, 5e-9, args)
+            P = (z * Psats).sum()
+            Pmin = max([i(i.Tmin + 1e-5 if i.Tmin > 50 else 50) for i in self.Psats])
+            Pmax = min([i(i.Tmax - 1e-5) for i in self.Psats])
+            if Pmin < 10: Pmin = 10
+            self.P = flx.IQ_interpolation(self._P_error, Pmin, Pmax,
+                                          x=P, args=args, xtol=1e-3, ytol=5e-9)
         self.x /= self.x.sum()
         return self.P, self.x.copy()
     

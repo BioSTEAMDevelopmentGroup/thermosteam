@@ -24,22 +24,35 @@ __all__ = ('heat_of_formation',
            'heat_of_formation_liquid',
            'heat_of_formation_gas',
 )
-           
-from .data import (Cn_data_TRC_gas, 
-                   Hf_data_ATcT_g,
-                   heat_of_formation_sources,
+
+from ..exceptions import UndefinedPhase, InvalidMethod
+from .data import (heat_of_formation_sources,
+                   heat_of_formation_gas_sources,
                    heat_of_formation_liquid_sources,
                    get_from_data_sources
 )
 
+# TODO: Add the rest of the metals, and fix graphite in data base.
+# Currently, graphite points to methane.
+elemental_gas_standard_states = {'1333-74-0', '7727-37-9',
+                                 '7782-44-7', '7782-41-4', 
+                                 '7782-50-5', '7440-59-7'
+}
+elemental_liquid_standard_states = {'7726-95-6', '7439-97-6'
+}
+elemental_solid_standard_states = {'100320-09-0', '7553-56-2',
+                                   '7440-21-3'
+}
+standard_elemental_states = (elemental_gas_standard_states 
+                             | elemental_liquid_standard_states 
+                             | elemental_solid_standard_states)
 
-
-def heat_of_formation(CASRN, phase_ref=None, method='Any'):
+def heat_of_formation(CASRN, phase_ref,
+                      Hvap_298K=None, Hfus=None,
+                      method='Any'):
     r'''
     Return a chemical's standard-phase heat of formation.
-    The lookup is based on CASRNs. Selects the only
-    data source available ('API TDB') if the chemical is in it.
-    Return None if the data is not available.
+    The lookup is based on CASRNs. Return None if the data is not available.
 
     Function has data for 571 chemicals.
 
@@ -55,20 +68,28 @@ def heat_of_formation(CASRN, phase_ref=None, method='Any'):
 
     Other Parameters
     ----------------
-    phase_ref : {'s', 'l', 'g'}
-        Reference phase.
     method : string, optional
         The method name to use. If method is "Any", the first available
         value from these methods will returned. If method is "All",
         a dictionary of method results will be returned.
+    phase_ref : {'s', 'l', 'g'}
+        Reference phase.
+    Hvap_298K=None : float, optional
+        Heat of vaporization [J/mol].
+    Hfus=None : float, optional
+        Heat of fusion [J/mol].
 
     Notes
     -----
-    Only one source of information is available to this function. it is:
+    Multiple sources of information are available for this function:
 
         * 'API_TDB', a compilation of heats of formation of unspecified phase.
           Not the original data, but as reproduced in [1]_. Some chemicals with
           duplicated CAS numbers were removed.
+        * 'ATCT_L', the Active Thermochemical Tables version 1.112. [2]_
+        * 'ATCT_G', the Active Thermochemical Tables version 1.112. [2]_
+        * 'TRC', from a 1994 compilation. [3]_
+        * 'Other', from NIST or calculated by Joback method. 
 
     Examples
     --------
@@ -77,12 +98,43 @@ def heat_of_formation(CASRN, phase_ref=None, method='Any'):
 
     '''
     if phase_ref == 'l':
-        Hf = heat_of_formation_liquid(CASRN, method)
+        if CASRN in elemental_liquid_standard_states: return 0.
     elif phase_ref == 'g':
-        Hf = heat_of_formation_gas(CASRN, method)
-    else:
-        Hf = None
-    return Hf or get_from_data_sources(heat_of_formation_sources, CASRN, 'Hf', method)
+        if CASRN in elemental_gas_standard_states: return 0. 
+    elif phase_ref == 's':
+        if CASRN in elemental_solid_standard_states: return 0.
+    try: Hf = heat_of_formation_gas(CASRN, method)
+    except InvalidMethod: pass
+    if Hf:
+        Hf = Hf_at_phase_ref(Hf, 'g', phase_ref, Hvap_298K, Hfus)
+        if Hf: return Hf
+    try: Hf = heat_of_formation_liquid(CASRN, method)
+    except InvalidMethod: pass
+    if Hf:
+        Hf = Hf_at_phase_ref(Hf, 'l', phase_ref, Hvap_298K, Hfus)
+        if Hf: return Hf        
+    try: Hf, phase = get_from_data_sources(heat_of_formation_sources, CASRN,
+                                           ['Hf_298K', 'phase'], method)     
+    except InvalidMethod: pass
+    if Hf:
+        Hf = Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus)
+        if Hf: return Hf        
+        
+def Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus):
+    if phase == phase_ref: return Hf
+    elif phase == 'g' and phase_ref == 'l':
+        if Hvap_298K: return Hf - Hvap_298K
+    elif phase == 'g' and phase_ref == 's':
+        if Hvap_298K and Hfus: return Hf - Hvap_298K - Hfus
+    elif phase == 'l' and phase_ref == 'g':
+        if Hvap_298K: return Hf + Hvap_298K
+    elif phase == 'l' and phase_ref == 's':
+        if Hfus: return Hf - Hfus
+    elif phase == 's' and phase_ref == 'l':
+        if Hfus: return Hf + Hfus
+    elif phase == 's' and phase_ref == 'g':
+        if Hvap_298K and Hfus: return Hf + Hvap_298K + Hfus
+    else: raise UndefinedPhase(phase)
 
 def heat_of_formation_liquid(CASRN, method='Any'):
     r'''
@@ -166,20 +218,6 @@ def heat_of_formation_gas(CASRN, method='Any'):
     -200700.0
 
     '''
-    if method == 'All':
-        Hf_g = {'ATCT_G': Hf_data_ATcT_g.retrieve(CASRN, 'Hf_298K'),
-              'TRC': Cn_data_TRC_gas.retrieve(CASRN, 'Hf'),
-              }
-    elif method == 'Any':
-        Hf_g = Hf_data_ATcT_g.retrieve(CASRN, 'Hf_298K')
-        if Hf_g is None:
-            Hf_g = Cn_data_TRC_gas.retrieve(CASRN, 'Hf')
-    elif method == 'ATCT_G':
-        Hf_g = Hf_data_ATcT_g.retrieve(CASRN, 'Hf_298K')
-    elif method == 'TRC':
-        Hf_g = Cn_data_TRC_gas.retrieve(CASRN, 'Hf')
-    else:
-        raise ValueError("invalid method; method must be one of the following: "
-                         "'TRC', or 'ATCT_G'.")
-    return Hf_g
+    return get_from_data_sources(heat_of_formation_gas_sources,
+                                 CASRN, 'Hf_298K', method)
    

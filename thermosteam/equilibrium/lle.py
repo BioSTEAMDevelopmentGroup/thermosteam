@@ -13,24 +13,24 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
-def liquid_activities(mol_l, T, f_gamma):
-    total_mol_l = mol_l.sum()
-    if total_mol_l:
-        x = mol_l / total_mol_l
+def liquid_activities(mol_L, T, f_gamma):
+    total_mol_L = mol_L.sum()
+    if total_mol_L:
+        x = mol_L / total_mol_L
         gamma = f_gamma(x, T)
         xgamma = x * gamma
     else:
-        xgamma = np.ones_like(mol_l)
+        xgamma = np.ones_like(mol_L)
     return xgamma
 
 @njitable
-def gibbs_free_energy_of_liquid(mol_l, xgamma):
+def gibbs_free_energy_of_liquid(mol_L, xgamma):
     xgamma[xgamma <= 0] = 1
-    g_mix = (mol_l * np.log(xgamma)).sum()
+    g_mix = (mol_L * np.log(xgamma)).sum()
     return g_mix
 
-def lle_objective_function(mol_l, mol, T, f_gamma):
-    mol_L = mol - mol_l
+def lle_objective_function(mol_L, mol, T, f_gamma):
+    mol_l = mol - mol_L
     xgamma_l = liquid_activities(mol_l, T, f_gamma)
     xgamma_L = liquid_activities(mol_L, T, f_gamma)
     g_mix_l = gibbs_free_energy_of_liquid(mol_l, xgamma_l)
@@ -112,16 +112,16 @@ class LLE:
         total_mol = mol.sum()
         if total_mol:
             gamma = self.thermo.Gamma(lle_chemicals)
-            mol_l = solve_lle_liquid_mol(mol, T, gamma,
+            mol_L = solve_lle_liquid_mol(mol, T, gamma,
                                          **self.differential_evolution_options)
-            imol['l'][index] = mol_l
-            imol['L'][index] = mol - mol_l
+            imol['l'][index] = mol - mol_L
+            imol['L'][index] = mol_L
     
     def get_liquid_mol_data(self):
         # Get flow rates
         imol = self._imol
-        imol['l'] = mol =  imol['l'] + imol['L']
-        imol['L'] = 0
+        imol['L'] = mol =  imol['l'] + imol['L']
+        imol['l'] = 0
         index = self.chemicals.get_lle_indices(mol > 0)
         mol = mol[index]
         chemicals = self.chemicals.tuple

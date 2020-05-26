@@ -6,6 +6,8 @@ Created on Mon May 11 17:03:14 2020
 """
 import os
 import numpy as np
+from collections.abc import Iterable
+from ..exceptions import InvalidMethod
 from typing import Dict
 import pandas as pd
 import json
@@ -39,14 +41,23 @@ class CASDataSource:
         self.index = df.index
         self.values = df.values
     
-    def retriever(self, var):
-        return CASDataRetriever(self.df, var)
+    def retriever(self, key):
+        return CASDataRetriever(self.df, key)
     
-    def retrieve(self, CASRN, var):
+    def retrieve(self, CASRN, key):
+        if isinstance(key, str):
+            return self.retrieve_value(CASRN, key)
+        elif isinstance(key, Iterable):    
+            return [self.retrieve_value(CASRN, i) for i in key]
+        else:
+            raise ValueError('key must be a string or an iterable of strings')
+    
+    def retrieve_value(self, CASRN, key):
         df = self.df
         if CASRN in df.index:
-            value = df.at[CASRN, var]
-            return None if np.isnan(value) else float(value)
+            value = df.at[CASRN, key]
+            try: return None if np.isnan(value) else float(value)
+            except: return value
         else:
             return None    
     
@@ -62,17 +73,18 @@ class CASDataSource:
     
 
 class CASDataRetriever:
-    __slots__ = ('df', 'var')
+    __slots__ = ('df', 'key')
     
-    def __init__(self, df, var):
+    def __init__(self, df, key):
         self.df = df
-        self.var = var
+        self.key = key
         
     def __call__(self, CASRN):
         df = self.df
         if CASRN in df.index:
-            value = df.at[CASRN, self.var]
-            return None if np.isnan(value) else float(value)
+            value = df.at[CASRN, self.key]
+            try: return None if np.isnan(value) else float(value)
+            except: return value
         else:
             return None
 
@@ -94,8 +106,7 @@ def get_from_retrievers(retrievers: CASDataRetrievers, CASRN: str, method:str):
         try:
             retriever = retrievers[method]
         except:
-            raise ValueError("invalid method; method must be one of the following: "
-                            f"{', '.join(retrievers)}.")
+            raise InvalidMethod(method)
         value = retriever(CASRN)
     return value
 
@@ -110,8 +121,7 @@ def get_from_data_sources(sources: CASDataSources, CASRN: str, var: str, method:
         try:
             source = sources[method]
         except:
-            raise ValueError("invalid method; method must be one of the following: "
-                            f"{', '.join(sources)}.")
+            raise InvalidMethod(method)
         value = source.retrieve(CASRN, var)
     return value
 

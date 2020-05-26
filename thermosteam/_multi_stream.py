@@ -287,9 +287,11 @@ class MultiStream(Stream):
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
+        if len(phases) == 1:
+            self.phase = phases[0]
         phases = sorted(phases)
         if phases != self.phases:
-            self._imol = self._imol.to_material_array(phases)
+            self._imol = self._imol.to_material_indexer(phases)
             self._init_cache()
     
     ### Flow properties ###

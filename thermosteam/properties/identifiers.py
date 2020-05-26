@@ -231,7 +231,6 @@ class ChemicalMetadataDB:
                                    InChI=ele.InChI, InChI_key=ele.InChI_key,
                                    iupac_name=name, 
                                    common_name=name)
-            
             InChI_key_index[ele.InChI_key] = obj
             CAS_index[CAS] = obj
             pubchem_index[ele.PubChem] = obj
@@ -336,8 +335,7 @@ def chemical_metadata_from_any(ID):
 
     Returns
     -------
-    CASRN : string
-        A three-piece, dash-separated set of numbers
+    metadata : ChemicalMetadata
 
     Notes
     -----
@@ -391,6 +389,12 @@ def chemical_metadata_from_any(ID):
             if smiles_lookup: return smiles_lookup
             raise LookupError('A SMILES identifier was recognized, but it is not in the database.')
     
+    # Permutate through various name options
+    ID_search = spaceout_words(ID).lower()
+    for name in (ID_lower, ID_search):
+        name_lookup = pubchem_db.search_name(name)
+        if name_lookup: return name_lookup
+    
     if checkCAS(ID):
         CAS_lookup = pubchem_db.search_CAS(ID)
         if CAS_lookup: return CAS_lookup
@@ -401,14 +405,11 @@ def chemical_metadata_from_any(ID):
         
         raise LookupError('a valid CAS number was recognized, but its not in the database')
     
-    # Permutate through various name options
-    ID_search = spaceout_words(ID).lower()
-    for name in (ID_lower, ID_search):
-        name_lookup = pubchem_db.search_name(name)
-        if name_lookup: return name_lookup
-        
-    formula_query = pubchem_db.search_formula(serialize_formula(ID))
-    if formula_query: return formula_query
+    try: formula = serialize_formula(ID)
+    except: pass
+    else:
+        formula_query = pubchem_db.search_formula(formula)
+        if formula_query: return formula_query
     
     raise LookupError(f'chemical {repr(ID)} not recognized')
 
