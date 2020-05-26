@@ -20,9 +20,9 @@ def x_iter(x, x_gamma_poyinting, gamma, poyinting, T):
     try:
         x = x_gamma_poyinting / denominator
     except FloatingPointError: 
-        raise flx.InfeasibleRegion('liquid phase composition is infeasible')
-    if not np.isfinite(x).all():
-        raise flx.InfeasibleRegion('liquid phase composition is infeasible')
+        raise flx.InfeasibleRegion('liquid phase composition')
+    if (np.abs(x) > 1e16).any():
+        raise flx.InfeasibleRegion('liquid phase composition')
     return x
 
 def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):

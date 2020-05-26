@@ -5,6 +5,7 @@ Created on Fri Jun 28 19:23:52 2019
 @author: yoelr
 """
 import thermosteam as tmo
+import flexsolve as flx
 from . import _parse as prs
 from ..utils import chemicals_user
 from .._phase import NoPhase
@@ -69,8 +70,11 @@ class Reaction:
     
     Other Parameters
     ----------------
-    check_material_balance=False: bool
+    check_mass_balance=False: bool
         Whether to assert that mass is not created or destroyed.
+    correct_mass_balance=False: bool
+        Whether to make sure mass is not created or destroyed by varying the 
+        reactant stoichiometric coefficient.
     check_atomic_balance=False: bool
         Whether to assert that stoichiometric balance by atoms cancel out.
     correct_atomic_balance=False: bool
@@ -148,9 +152,10 @@ class Reaction:
     
     def __init__(self, reaction, reactant, X, 
                  chemicals=None, basis='mol', *,
-                 check_material_balance=False,
+                 check_mass_balance=False,
                  check_atomic_balance=False,
-                 correct_atomic_balance=False):
+                 correct_atomic_balance=False,
+                 correct_mass_balance=False):
         if basis in ('wt', 'mol'):
             self._basis = basis
         else:
@@ -164,10 +169,12 @@ class Reaction:
             if correct_atomic_balance:
                 self.correct_atomic_balance()
             else:
+                if correct_mass_balance:
+                    self.correct_mass_balance()
+                elif check_mass_balance:
+                    self.check_mass_balance()
                 if check_atomic_balance:
                     self.check_atomic_balance()
-                elif check_material_balance:
-                    self.check_material_balance()
         else:
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
@@ -271,18 +278,6 @@ class Reaction:
                                            self._basis,
                                            self._chemicals)
         self._reaction(material_array)
-
-    def adiabatic_reaction(self, material):
-        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
-        if isinstance(material, np.ndarray):
-            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
-                or adiabatic_reaction(stream.wt)")
-        Hnet_0 = material.Hf + material.H
-        material_array = as_material_array(material,
-                                           self._basis,
-                                           self._chemicals)
-        self._reaction(material_array)
-        material.H = Hnet_0 - material.Hf
     
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
@@ -351,7 +346,7 @@ class Reaction:
             stoichiometry_by_mol = self._stoichiometry
         return stoichiometry_by_mol
     
-    def check_material_balance(self, tol=1e-3):
+    def check_mass_balance(self, tol=1e-3):
         """Assert that stoichiometric mass balance is correct."""
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
         error = abs(stoichiometry_by_wt.sum())
@@ -360,7 +355,7 @@ class Reaction:
         )
     
     def check_atomic_balance(self, tol=1e-3):
-        """Assert that stoichiometric mass balance is correct."""
+        """Assert that stoichiometric atomic balance is correct."""
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
         formula_array = self.chemicals.formula_array
         unbalanced_array = formula_array @ stoichiometry_by_mol
@@ -369,6 +364,26 @@ class Reaction:
             f"atomic stoichiometry is unbalanced by the following molar stoichiometric coefficients:\n "
             + "\n ".join([f"{symbol}: {value}" for symbol, value in atoms.items()])
         )
+    
+    def correct_mass_balance(self, variable=None):
+        """
+        Make sure mass is not created or destroyed by varying the 
+        reactant stoichiometric coefficient.
+        """
+        if variable:
+            index = self.chemicals.get_index(variable)
+        else:
+            index = self._X_index
+        stoichiometry_by_wt = self._get_stoichiometry_by_wt()
+        
+        def f(x):
+            stoichiometry_by_wt[index] = x
+            return stoichiometry_by_wt.sum()
+        
+        flx.aitken_secant(f, 1)
+        if self._basis == 'mol': 
+            self._stoichiometry[:] = stoichiometry_by_wt / self.MWs
+        self._rescale()
     
     def correct_atomic_balance(self, constants=None):
         """Correct stoichiometry coffecients to satisfy atomic balance."""
@@ -606,18 +621,6 @@ class ParallelReaction(ReactionSet):
         material_array = as_material_array(material, self._basis, self._chemicals)
         self._reaction(material_array)
 
-    def adiabatic_reaction(self, material):
-        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
-        if isinstance(material, np.ndarray):
-            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
-                or adiabatic_reaction(stream.wt)")
-        Hnet_0 = material.Hf + material.H
-        material_array = as_material_array(material,
-                                           self._basis,
-                                           self._chemicals)
-        self._reaction(material_array)
-        material.H = Hnet_0 - material.Hf
-
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X @ self._stoichiometry
 
@@ -675,18 +678,6 @@ class SeriesReaction(ReactionSet):
         array = as_material_array(material, self._basis, self._chemicals)
         self._reaction(array)
 
-    def adiabatic_reaction(self, material):
-        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
-        if isinstance(material, np.ndarray):
-            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
-                or adiabatic_reaction(stream.wt)")
-        Hnet_0 = material.Hf + material.H
-        material_array = as_material_array(material,
-                                           self._basis,
-                                           self._chemicals)
-        self._reaction(material_array)
-        material.H = Hnet_0 - material.Hf
-
     def reduce(self):
         raise TypeError('cannot reduce a SeriesReation object, only '
                         'ParallelReaction objects are reducible')
@@ -714,4 +705,3 @@ class SeriesReaction(ReactionSet):
 # RxnS = ReactionSet
 # PRxn = ParallelReaction
 # SRxn = SeriesReaction
-

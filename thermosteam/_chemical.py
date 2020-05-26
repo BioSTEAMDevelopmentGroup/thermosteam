@@ -267,7 +267,7 @@ class Chemical:
              Pt: 610.88 Pa
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
-             Hf: -2.8582e+05 J/mol
+             Hf: -2.857e+05 J/mol
              LHV: 44011 J/mol
              HHV: 0 J/mol
              Hfus: 6010 J/mol
@@ -559,7 +559,8 @@ class Chemical:
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
               formula=None, **data):
         """
-        Return a new Chemical object without any thermodynamic models or data (unless provided).
+        Return a new Chemical object without any thermodynamic models or data 
+        (unless provided).
 
         Parameters
         ----------
@@ -1266,7 +1267,11 @@ class Chemical:
         self._iscyclic_aliphatic = iscyclic_aliphatic or False
 
     def _init_reactions(self, Hf, LHV, HHV, combustion, atoms):
-        self._Hf = heat_of_formation(self._CAS, self._phase_ref) if Hf is None else Hf
+        if Hf is None:
+            Hf = heat_of_formation(self._CAS, self._phase_ref,
+                                   self.Hvap.try_out(298.15),
+                                   self.Hfus) 
+        self._Hf = Hf
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
             CD = CombustionData.from_chemical_data(
@@ -1386,21 +1391,19 @@ class Chemical:
             Cn_s = Cn_l = Cn_g = Cn
         else:
             has_Cns = has_Cnl = has_Cng = False
-        
+        if phase_ref: phase_ref = phase_ref[0]
+        self._phase_ref = phase_ref
         if any((has_Cns, has_Cnl, has_Cng)):
-            if phase_ref:
-                self._phase_ref = phase_ref
-            else:
+            if not phase_ref:
                 if Tm and T_ref <= Tm:
                     self._phase_ref = phase_ref = 's'
                 elif Tb and T_ref >= Tb:
                     self._phase_ref = phase_ref = 'g'
                 else:
                     self._phase_ref = phase_ref = 'l'
-
             if Hvap:
-                Hvap_Tb = Hvap(Tb) if Tb else None
-                Svap_Tb = Hvap_Tb / Tb if Tb else None
+                Hvap_Tb = Hvap.try_out(Tb) if Tb else None
+                Svap_Tb = Hvap_Tb / Tb if Hvap_Tb else None
             else:
                 Hvap_Tb = Svap_Tb = None
             

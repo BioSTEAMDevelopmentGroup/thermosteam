@@ -169,7 +169,7 @@ class ChemicalIndexer(Indexer):
         self.phase = find_main_phase(others[1:], others[0])
         self._data[:] = sum([i.sum_across_phases() for i in others])
     
-    def to_material_indexer(self, phases=()):
+    def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
         material_array[self.phase] = self._data
         return material_array
@@ -412,6 +412,11 @@ class MaterialIndexer(Indexer):
     def to_chemical_indexer(self, phase=NoPhase):
         return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals, False)
     
+    def to_material_indexer(self, phases):
+        material_indexer = self.__class__.blank(phases, self._chemicals)
+        for phase, data in self: material_indexer[phase] = data
+        return material_indexer
+    
     def get_phase(self, phase):
         return self._ChemicalIndexer.from_data(self._data[self._get_phase_index(phase)],
                                                LockedPhase(phase), self._chemicals, False)
@@ -419,7 +424,7 @@ class MaterialIndexer(Indexer):
     def __getitem__(self, key):
         index = self.get_index(key)
         if isa(index, ChemicalIndex):
-            values = self._data[..., index.value].sum(0)
+            values = self._data[:, index.value].sum(0)
         else:
             values = self._data[index]
         return values
