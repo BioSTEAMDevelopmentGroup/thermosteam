@@ -271,6 +271,18 @@ class Reaction:
                                            self._basis,
                                            self._chemicals)
         self._reaction(material_array)
+
+    def adiabatic_reaction(self, material):
+        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
+        if isinstance(material, np.ndarray):
+            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
+                or adiabatic_reaction(stream.wt)")
+        Hnet_0 = material.Hf + material.H
+        material_array = as_material_array(material,
+                                           self._basis,
+                                           self._chemicals)
+        self._reaction(material_array)
+        material.H = Hnet_0 - material.Hf
     
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
@@ -594,6 +606,18 @@ class ParallelReaction(ReactionSet):
         material_array = as_material_array(material, self._basis, self._chemicals)
         self._reaction(material_array)
 
+    def adiabatic_reaction(self, material):
+        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
+        if isinstance(material, np.ndarray):
+            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
+                or adiabatic_reaction(stream.wt)")
+        Hnet_0 = material.Hf + material.H
+        material_array = as_material_array(material,
+                                           self._basis,
+                                           self._chemicals)
+        self._reaction(material_array)
+        material.H = Hnet_0 - material.Hf
+
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X @ self._stoichiometry
 
@@ -650,6 +674,18 @@ class SeriesReaction(ReactionSet):
         """React material ignoring feasibility checks."""
         array = as_material_array(material, self._basis, self._chemicals)
         self._reaction(array)
+
+    def adiabatic_reaction(self, material):
+        """Adjust product enthalpy based on calculated H_rxn for adiabatic reactions."""
+        if isinstance(material, np.ndarray):
+            raise ValueError("Please use adiabatic_reaction(stream), not adiabatic_reaction(stream.mol) \
+                or adiabatic_reaction(stream.wt)")
+        Hnet_0 = material.Hf + material.H
+        material_array = as_material_array(material,
+                                           self._basis,
+                                           self._chemicals)
+        self._reaction(material_array)
+        material.H = Hnet_0 - material.Hf
 
     def reduce(self):
         raise TypeError('cannot reduce a SeriesReation object, only '
