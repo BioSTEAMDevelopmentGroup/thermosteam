@@ -616,7 +616,7 @@ class Stream:
     
     @property
     def C(self):
-        """[float] Heat capacity flow rate in kJ/hr."""
+        """[float] Heat capacity flow rate in kJ/K/hr."""
         return self.mixture.Cn(self.phase, self.mol, self.T)
     
     ### Composition properties ###
@@ -700,6 +700,11 @@ class Stream:
         return fn.Pr(self.Cp, self.mu, self.k)
     
     ### Stream methods ###
+    
+    @property
+    def available_chemicals(self):
+        """list[Chemical] All chemicals with nonzero flow."""
+        return [i for i, j in zip(self.chemicals, self.mol) if j]
     
     def in_thermal_equilibrium(self, other):
         """
@@ -1244,8 +1249,9 @@ class Stream:
 
         """
         z = self.imol[IDs]
-        z /= z.sum()
-        return z
+        z_sum = z.sum()
+        if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
+        return z / z_sum
     
     def get_normalized_mass(self, IDs):
         """
@@ -1266,7 +1272,9 @@ class Stream:
 
         """
         z = self.imass[IDs]
-        return z / z.sum()
+        z_sum = z.sum()
+        if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
+        return z / z_sum
     
     def get_normalized_vol(self, IDs):
         """
@@ -1287,7 +1295,9 @@ class Stream:
 
         """
         z = self.ivol[IDs]
-        return z / z.sum()
+        z_sum = z.sum()
+        if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
+        return z / z_sum
     
     def get_molar_composition(self, IDs):
         """
@@ -1307,7 +1317,9 @@ class Stream:
         array([0.5 , 0.25])
 
         """
-        return self.imol[IDs]/self.F_mol
+        F_mol = self.F_mol
+        if not F_mol: raise RuntimeError(f'{repr(self)} is empty')
+        return self.imol[IDs] / F_mol
     
     def get_mass_composition(self, IDs):
         """
@@ -1327,7 +1339,9 @@ class Stream:
         array([0.5 , 0.25])
 
         """
-        return self.imass[IDs]/self.F_mass
+        F_mass = self.F_mass
+        if not F_mass: raise RuntimeError(f'{repr(self)} is empty')
+        return self.imass[IDs] / F_mass
     
     def get_volumetric_composition(self, IDs):
         """
@@ -1347,7 +1361,9 @@ class Stream:
         array([0.5 , 0.25])
 
         """
-        return self.ivol[IDs]/self.F_vol
+        F_vol = self.F_vol
+        if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
+        return self.ivol[IDs] / F_vol
     
     def get_concentration(self, IDs):
         """
@@ -1367,7 +1383,9 @@ class Stream:
         array([27.671,  4.266])
 
         """
-        return self.imol[IDs]/self.F_vol
+        F_vol = self.F_vol
+        if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
+        return self.imol[IDs] / F_vol
     
     @property
     def P_vapor(self):
@@ -1376,6 +1394,7 @@ class Stream:
         F_l = eq.LiquidFugacities(chemicals, self.thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = self.get_molar_composition(IDs)
+        if x.sum() < 1e-12: return 0
         T = self.T
         return F_l(x, T).sum()
     
@@ -1440,17 +1459,20 @@ class Stream:
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
-        self.__class__ = tmo.MultiStream
-        self._imol = self._imol.to_material_indexer(phases)
-        self._streams = {}
-        self._vle_cache = eq.VLECache(self._imol,
-                                      self._thermal_condition,
-                                      self._thermo, 
-                                      self._bubble_point_cache,
-                                      self._dew_point_cache)
-        self._lle_cache = eq.LLECache(self._imol,
-                                      self._thermal_condition,
-                                      self._thermo)
+        if len(phases) == 1:
+            self.phase = phases[0]
+        else:
+            self.__class__ = tmo.MultiStream
+            self._imol = self._imol.to_material_indexer(phases)
+            self._streams = {}
+            self._vle_cache = eq.VLECache(self._imol,
+                                          self._thermal_condition,
+                                          self._thermo, 
+                                          self._bubble_point_cache,
+                                          self._dew_point_cache)
+            self._lle_cache = eq.LLECache(self._imol,
+                                          self._thermal_condition,
+                                          self._thermo)
     
     ### Representation ###
     

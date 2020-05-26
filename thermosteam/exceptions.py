@@ -8,6 +8,7 @@ __all__ = (*flx.exceptions.__all__,
            'UndefinedPhase',
            'DimensionError',
            'DomainError',
+           'InvalidMethod',
            'message_with_object_stamp',
            'try_method_with_object_stamp',
            'raise_error_with_object_stamp')
@@ -26,6 +27,11 @@ class DimensionError(ValueError):
 class DomainError(ValueError):
     """ValueError regarding an attempt to evaluate a model out of its domain."""
 
+class InvalidMethod(ValueError):
+    """ValueError regarding an attempt to evaluate an invalid method."""
+    def __init__(self, method):
+        super().__init__(self, repr(method))
+
 def message_with_object_stamp(object, msg):
     object_name = str(repr(object))
     if object_name in msg:
@@ -41,5 +47,7 @@ def raise_error_with_object_stamp(object, error):
 def try_method_with_object_stamp(object, method, args=()):
     try:
         return method(*args)
+    except KeyError as error:
+        raise error
     except Exception as error:
         raise_error_with_object_stamp(object, error)

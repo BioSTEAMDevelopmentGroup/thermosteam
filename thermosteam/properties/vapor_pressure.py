@@ -525,7 +525,7 @@ def vapor_pressure_handle(handle, CAS, Tb, Tc, Pc, omega):
         add_model(Wagner_McGraw.from_args(data), Tmin, Tmax)
     if CAS in Psat_data_AntoineExtended:
         _, a, b, c, Tc, to, n, e, f, Tmin, Tmax = Psat_data_AntoineExtended[CAS]
-        data = (a, b, c, Tc, to, n, e, f)
+        data = (Tc, to, a, b, c, n, e, f)
         add_model(TRC_Extended_Antoine.from_args(data), Tmin, Tmax)
     if CAS in Psat_data_Antoine:
         _, a, b, c, Tmin, Tmax = Psat_data_Antoine[CAS]

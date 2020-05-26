@@ -50,7 +50,11 @@ def solve_phase_fraction(zs, Ks, guess):
 @flx.njitable
 def phase_fraction_objective_function(V, zs, Ks):
     """Phase fraction objective function."""
-    return (zs*(Ks-1.)/(1.+V*(Ks-1.))).sum()
+    Kterm = Ks - 1.
+    numerator = zs * Kterm
+    denominator = 1. + V * Kterm
+    denominator[denominator < 1e-16] = 1e-16
+    return (numerator / denominator).sum()    
 
 @flx.njitable
 def compute_phase_fraction_2N(zs, Ks):

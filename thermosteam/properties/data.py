@@ -297,17 +297,20 @@ with open(os.path.join(read.folder, 'Zabransky.tsv'), encoding='utf-8') as f:
 # %% Heat of formation
 
 read = CASDataReader("Reactions")
-Hf_data_API_TDB = read('API TDB Albahri Hf.tsv')
+Hf_data_API_TDB = read('API TDB Albahri Hf (g).tsv')
 Hf_data_ATcT_l = read('ATcT 1.112 (l).tsv')
 Hf_data_ATcT_g = read('ATcT 1.112 (g).tsv')
+Hf_data_user = read('Example User Hf.tsv')
 
 heat_of_formation_sources = {
-    'API_TDB': Hf_data_API_TDB
+    'Other': Hf_data_user
 }
+
 heat_of_formation_liquid_sources = {
     'ATCT_L': Hf_data_ATcT_l
 }
 heat_of_formation_gas_sources = {
+    'APO TDB Albahri': Hf_data_API_TDB,
     'ATCT_G': Hf_data_ATcT_g,
     'TRC': Cn_data_TRC_gas,
 }

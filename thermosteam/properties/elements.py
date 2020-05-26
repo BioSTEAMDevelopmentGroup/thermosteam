@@ -283,7 +283,7 @@ def compute_mass_fractions(atoms, MW=None):
         if i in periodic_table:
             mfracs[i] = periodic_table[i].MW*atoms[i]/MW
         else:
-            raise Exception('Molecule includes unknown atoms')
+            raise ValueError('invalid atom {i}')
     return mfracs
 
 
@@ -514,7 +514,7 @@ def parse_nested_formula(formula, check=True):
     # The set of letters in the tokens should match the set of letters
     if check:
         token_letters = set([j for i in tokens for j in i if j in letter_set])
-        formula_letters = set(i for i in formula if i in letter_set)
+        formula_letters = set([i for i in formula if i in letter_set])
         if formula_letters != token_letters:
             raise Exception('Input may not be a formula; extra letters were detected')
     

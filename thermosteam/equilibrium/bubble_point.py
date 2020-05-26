@@ -5,7 +5,7 @@ Created on Sun Jul 21 21:30:33 2019
 @author: yoelr
 """
 from numpy import asarray, array
-from flexsolve import aitken_secant, IQ_interpolation
+import flexsolve as flx
 from .solve_vle_composition import solve_y
 from ..functional import normalize
 from ..utils import fill_like, Cache
@@ -62,7 +62,6 @@ class BubblePoint:
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'P', 'T', 'y', 'Psats', 'Tbs')
-    rootsolver = staticmethod(aitken_secant)
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -141,8 +140,8 @@ class BubblePoint:
         args = (P, z_norm/P, z_norm)
         T = self.T or (z * self.Tbs).sum()
         try:
-            self.T = self.rootsolver(self._T_error, T, T+0.01,
-                                     1e-6, 5e-9, args)
+            self.T = flx.aitken_secant(self._T_error, T, T+0.01,
+                                       1e-6, 5e-9, args)
         except:
             self.y = z.copy()
             T = (z * self.Tbs).sum()
@@ -150,9 +149,9 @@ class BubblePoint:
             Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
             Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
             if Tmin < 10: Tmin = 10
-            self.T = IQ_interpolation(f, Tmin, Tmax,
-                                      f(Tmin), f(Tmax),
-                                      T, 0., 1e-6, 5e-9)
+            self.T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                          f(Tmin), f(Tmax),
+                                          T, 0., 1e-6, 5e-9)
         self.y = normalize(self.y)
         return self.T, self.y.copy()
     
@@ -185,19 +184,24 @@ class BubblePoint:
         (91830.97988957874, array([0.419, 0.581]))
         
         """
-        Psat = array([i(T) for i in self.Psats])
+        Psats = array([i(T) for i in self.Psats])
         z_norm = z / z.sum()
-        y_phi = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
+        y_phi = z * Psats * self.gamma(z_norm, T) * self.pcf(z_norm, T)
         self.T = T
         args = (T, y_phi)
-        P = self.P or (z * Psat).sum()
+        P = self.P or (z * Psats).sum()
         try:
-            self.P = self.rootsolver(self._P_error, P, P-1,
-                                     1e-3, 1e-9, args)
+            self.P = flx.aitken_secant(self._P_error, P, P-1,
+                                       1e-3, 1e-9, args)
         except:
-            P = (z * Psat).sum()
-            self.P = self.rootsolver(self._P_error, P, P-1,
-                                     1e-3, 5e-9, args)
+            self.x = z.copy()
+            P = (z * Psats).sum()
+            Pmin = min([i(i.Tmin + 1e-5 if i.Tmin > 10 else 10) for i in self.Psats])
+            Pmax = max([i(i.Tmax - 1e-5) for i in self.Psats])
+            if Pmin < 10: Pmin = 10
+            self.P = flx.IQ_interpolation(self._P_error, Pmin, Pmax,
+                                          x=P, args=args, xtol=1e-3, ytol=5e-9)
+            
         self.y = normalize(self.y)
         return self.P, self.y.copy()
     

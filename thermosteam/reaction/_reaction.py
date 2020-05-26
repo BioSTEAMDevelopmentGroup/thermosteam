@@ -714,4 +714,3 @@ class SeriesReaction(ReactionSet):
 # RxnS = ReactionSet
 # PRxn = ParallelReaction
 # SRxn = SeriesReaction
-
