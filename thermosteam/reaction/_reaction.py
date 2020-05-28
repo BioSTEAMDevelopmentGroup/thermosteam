@@ -18,6 +18,13 @@ import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
 
+def react_stream_adiabatically(stream, reaction):
+    if not isinstance(stream, tmo.Stream):
+            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
+    Hnet = stream.Hnet
+    reaction(stream)
+    stream.H = Hnet - stream.Hf
+
 def check_material_feasibility(material: np.ndarray):
     if (material < 0.).any(): raise InfeasibleRegion('not enough reactants; reaction conversion')
 
@@ -327,11 +334,7 @@ class Reaction:
                          O2   16.5
                          H2O  1.01e+03
         """
-        if not isinstance(stream, tmo.Stream):
-            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-        Hnet_0 = stream.Hf + stream.H
-        self(stream)
-        stream.H = Hnet_0 - stream.Hf
+        react_stream_adiabatically(stream, self)
     
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
@@ -729,11 +732,7 @@ class ParallelReaction(ReactionSet):
                          CO2  0.5
                          H2O  1.01e+03
         """
-        if not isinstance(stream, tmo.Stream):
-            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-        Hnet_0 = stream.Hf + stream.H
-        self(stream)
-        stream.H = Hnet_0 - stream.Hf
+        react_stream_adiabatically(stream, self)
 
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X @ self._stoichiometry
@@ -846,11 +845,7 @@ class SeriesReaction(ReactionSet):
                          CO2  0.35
                          H2O  1.01e+03
         """
-        if not isinstance(stream, tmo.Stream):
-            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-        Hnet_0 = stream.Hf + stream.H
-        self(stream)
-        stream.H = Hnet_0 - stream.Hf
+        react_stream_adiabatically(stream, self)
 
     def reduce(self):
         raise TypeError('cannot reduce a SeriesReation object, only '
