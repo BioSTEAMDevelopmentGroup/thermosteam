@@ -1,4 +1,18 @@
 # -*- coding: utf-8 -*-
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# 
+# A significant portion of this module originates from:
+# Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+# Copyright (C) 2020 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+# 
+# This module is under a dual license:
+# 1. The UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
+# 
+# 2. The MIT open-source license. See
+# https://github.com/CalebBell/thermo/blob/master/LICENSE.txt for details.
 """
 All data and methods for the internal retrieval of data from CAS numbers.
 
@@ -41,6 +55,7 @@ __all__ = ('get_from_data_sources',
            'Hf_data_ATcT_l',
            'Hf_data_ATcT_g',
            'heat_of_formation_sources',
+           'heat_of_formation_solid_sources',
            'heat_of_formation_liquid_sources',
            'heat_of_formation_gas_sources',
            'sigma_data_Mulero_Cachadina',
@@ -300,19 +315,25 @@ read = CASDataReader("Reactions")
 Hf_data_API_TDB = read('API TDB Albahri Hf (g).tsv')
 Hf_data_ATcT_l = read('ATcT 1.112 (l).tsv')
 Hf_data_ATcT_g = read('ATcT 1.112 (g).tsv')
+Hf_data_Yaws_g = read('Yaws Hf S0 (g).tsv')
 Hf_data_user = read('Example User Hf.tsv')
 
 heat_of_formation_sources = {
     'Other': Hf_data_user
 }
-
+heat_of_formation_solid_sources = {    
+    'CRC': Cn_data_CRC_standard,
+}
 heat_of_formation_liquid_sources = {
-    'ATCT_L': Hf_data_ATcT_l
+    'ATCT_L': Hf_data_ATcT_l,
+    'CRC': Cn_data_CRC_standard,
 }
 heat_of_formation_gas_sources = {
     'APO TDB Albahri': Hf_data_API_TDB,
     'ATCT_G': Hf_data_ATcT_g,
     'TRC': Cn_data_TRC_gas,
+    'CRC': Cn_data_CRC_standard,
+    'YAWS': Hf_data_Yaws_g,
 }
 
 # %% Surface tension

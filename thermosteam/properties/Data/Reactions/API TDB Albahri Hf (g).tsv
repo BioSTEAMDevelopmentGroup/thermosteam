@@ -1,6 +1,6 @@
-CASRN	Compound	Hf_298K
+CASRN	Compound	Hfg
 75-73-0	Carbon Tetrafluoride	-933160
-112-60-7	Tetraethylene Glycol	-909570
+112-60-7	Tetraethylene Glycol	-882340
 420-46-2	1,1,1-Trifluoroethane	-745580
 7664-93-9	Sulfuric Acid	-735120
 75-72-9	Chlorotrifluoromethane	-707950
@@ -17,15 +17,15 @@ CASRN	Compound	Hf_298K
 638-67-5	n-Tricosane	-519280
 503-74-2	3-Methylbutyric Acid	-514690
 142-62-1	n-Hexanoic Acid	-513610
-628-63-7	n-Pentyl Acetate	-432610
+628-63-7	n-Pentyl Acetate	-505520
 629-97-0	n-Docosane	-498580
 116-53-0	2-Methylbutyric Acid	-497990
 75-37-6	1,1-Difluoroethane	-493720
 109-52-4	n-Pentanoic Acid	-490360
-123-86-4	n-Butyl Acetate	-566000
-79-31-2	2-Methylpropionic Acid	-395980
+123-86-4	n-Butyl Acetate	-485310
+79-31-2	2-Methylpropionic Acid	-484160
 108-21-4	Isopropyl Acetate	-481690
-75-37-6	Chlorodifluoromethane	-481590
+75-45-6	Chlorodifluoromethane	-481590
 107-92-6	n-Butyric Acid	-470310
 109-60-4	n-Propyl Acetate	-464790
 6812-38-0	n-Hexadecylcyclohexane	-460490
@@ -38,7 +38,7 @@ CASRN	Compound	Hf_298K
 629-94-7	n-Heneicosane	-435690
 629-92-5	n-Nonadecane	-435210
 64-19-7	Acetic Acid	-432240
-1795-18-2	n-Tetradecylcyclohexane	-419280
+4445-06-1	n-Tetradecylcyclohexane	-419280
 22349-03-7	n-Nonadecylcyclohexane	-416480
 6812-39-1	n-Hexadecylcyclopentane	-415600
 593-45-3	n-Octadecane	-414580
@@ -47,12 +47,7 @@ CASRN	Compound	Hf_298K
 79-20-9	Methyl Acetate	-409150
 110-74-7	n-Propyl Formate	-404410
 6006-33-3	n-Tridecylcyclohexane	-398650
-111-27-3	1-Hexanol	-325800
 111-42-2	Diethanolamine	-396900
-111-87-5	1-Octanol	-362200
-112-30-1	1-Decanol	-404600
-112-72-1	1-Tetradecanol	-476200
-36653-82-4	1-Hexadecanol	-513700
 629-78-7	n-Heptadecane	-393940
 124-38-9	Carbon Dioxide	-393530
 126-33-0	Sulfolane	-390020
@@ -74,10 +69,10 @@ CASRN	Compound	Hf_298K
 1795-16-0	n-Decylcyclohexane	-336850
 5634-30-0	n-Dodecylcyclopentane	-333170
 629-59-4	n-Tetradecane	-332050
-7/1/3452	1-Eicosene	-330240
-75-85-4	2-Methyl-2-Butanol	-379500
+3452-07-1	1-Eicosene	-330240
+75-85-4	2-Methyl-2-Butanol	-329710
 75-84-3	2,2-Dimethy-1-Propanol	-319080
-2/5/2883	n-Nonylcyclohexane	-316230
+2883-02-5	n-Nonylcyclohexane	-316230
 108-05-4	Vinyl Acetate	-315730
 598-75-4	3-Methyl-2-Butanol	-314220
 6032-29-7	2-Pentanol	-313800
@@ -87,13 +82,12 @@ CASRN	Compound	Hf_298K
 18435-45-5	1-Nonadecene	-310040
 137-32-6	2-Methyl-1-Butanol	-302090
 71-41-0	1-Pentanol	-298740
-9/5/7446	Sulfur Dioxide	-296850
+7446-09-5	Sulfur Dioxide	-296850
 1795-15-9	n-Octylcyclohexane	-295600
 1634-04-4	Methyl-tert-Butyl Ether	-292880
 78-92-2	sec-Butanol	-292870
 1795-21-7	n-Decylcyclopentane	-291960
-112-40-3	n-Dodecane	-290900
-112-53-8	1-Dodecanol	-436500
+112-40-3	n-Dodecane	-290790
 112-88-9	1-Octadecene	-289030
 75-69-4	Trichlorofluoromethane	-288700
 108-10-1	Methyl Isobutyl Ketone	-288490
@@ -122,7 +116,7 @@ CASRN	Compound	Hf_298K
 15869-85-9	5-Methylnonane	-254720
 17301-94-9	4-Methylnonane	-254720
 4292-75-5	n-Hexylcyclohexane	-254390
-4/6/5911	3-Methylnonane	-254390
+5911-04-6	3-Methylnonane	-254390
 3522-94-9	2,2,5-Trimethylhexane	-253300
 60-29-7	Diethyl Ether	-252120
 1795-20-6	n-Octylcyclopentane	-250700
@@ -134,7 +128,7 @@ CASRN	Compound	Hf_298K
 1072-05-5	2,6-Dimethylheptane	-242800
 1069-53-0	2,3,5-Trimethylhexane	-242550
 1070-87-7	2,2,4,4-Tetramethylpentane	-242260
-7732-18-5	Water	-241830
+7732-18-5	Water	-241820
 16747-25-4	2,2,3-Trimethylhexane	-241420
 2131-18-2	n-Pentadecylbenzene	-241210
 16747-30-1	2,4,4-Trimethylhexane	-239960
@@ -148,7 +142,7 @@ CASRN	Compound	Hf_298K
 16747-31-2	3,3,4-Trimethylhexane	-235390
 2216-34-4	4-Methyloctane	-235210
 1186-53-4	2,2,3,4-Tetramethylpentane	-234970
-64-17-5	Ethanol	-235300
+64-17-5	Ethanol	-234440
 4292-92-6	n-pentylcyclohexane	-233800
 2216-33-3	3-Methyloctane	-233700
 1067-20-5	3,3-Diethylpentane	-232840
@@ -182,13 +176,13 @@ CASRN	Compound	Hf_298K
 141-43-5	Monoethanolamine	-210180
 4457-00-5	n-Hexylcyclopentane	-209490
 67-68-5	Dimethyl Sulfoxide	-209160
-111-65-9	n-Octane	-208400
+111-65-9	n-Octane	-208820
 1120-36-1	1-Tetradecene	-206520
 123-72-8	n-Butyraldehyde	-206070
 590-35-2	2,2-Dimethylpentane	-205810
 464-06-2	2,2,3-Trimethylbutane (Triptane)	-204430
 108-08-7	2,4-Dimethylpentane	-201670
-67-56-1	Methanol	-200600
+67-56-1	Methanol	-200660
 562-49-2	3,3-Dimethylpentane	-199790
 123-02-4	n-Tridecylbenzene	-199700
 1310-73-2	Sodium Hydroxide	-197770
@@ -205,7 +199,7 @@ CASRN	Compound	Hf_298K
 123-38-6	n-Propionaldehyde	-186000
 2437-56-1	1-Tridecene	-185980
 75-83-2	2,2-Dimethylbutane (neohexane)	-184680
-4/7/2207	trans-1,4-Dimethylcyclohexane	-184600
+2207-04-7	trans-1,4-Dimethylcyclohexane	-184600
 109-99-9	Tetrahydrofuran	-184190
 115-10-6	Dimethy Ether	-184060
 590-66-9	1,1-Dimethylcyclohexane	-181000
@@ -213,10 +207,10 @@ CASRN	Compound	Hf_298K
 123-01-3	n-Dodecylbenzene	-179000
 79-29-8	2,3-Dimethylbutane	-176800
 624-29-3	cis-1,4-Dimethylcyclohexane	-176650
-3/6/2207	trans-1,3-Dimethylcyclohexane	-176560
+2207-03-6	trans-1,3-Dimethylcyclohexane	-176560
 107-83-5	2-Methylpentane	-174690
 33425-49-9	1-n-Nonyl-[1,2,3,4-Tetrahydronaphthalene]	-173890
-1/4/2207	cis-1,2-Dimethylcyclohexane	-172170
+2207-01-4	cis-1,2-Dimethylcyclohexane	-172170
 96-14-0	3-Methylpentane	-172060
 1678-91-7	Ethylcyclohexane	-171750
 493-01-6	Cis-Decahydronaphthalene (cis-decalin)	-169240
@@ -253,7 +247,7 @@ CASRN	Compound	Hf_298K
 75-34-3	1,1-Dichloroethane	-130120
 107-06-2	1,2-Dichloroethane	-129790
 1192-18-3	cis-1,2-Dimethylcyclopentane	-129540
-9/7/4810	3-Methyl-1-Heptene	-128700
+4810-09-7	3-Methyl-1-Heptene	-128700
 95-48-7	o-Cresol	-128570
 1638-26-2	1,1-Dimethylcyclopentane	-127070
 1640-89-7	Ethylcyclopentane	-127070
@@ -269,7 +263,7 @@ CASRN	Compound	Hf_298K
 7300-03-0	trans-3-Methyl-3-heptene	-118340
 1081-77-2	n-Nonylbenzene	-116800
 50-00-0	Formaldehyde	-115910
-1/7/7058	sec-butylcyclohexane	-114520
+7058-01-7	sec-butylcyclohexane	-114520
 78-85-3	Methacrolein	-112720
 75-00-3	Ethyl Chloride	-112250
 107-39-1	2,4,4-Trimethyl-1-pentene	-110400
@@ -316,7 +310,7 @@ CASRN	Compound	Hf_298K
 690-08-4	trans-4,4-Dimethyl-2-pentene	-94730
 14850-23-8	trans-4-Octene	-94600
 14919-01-8	trans-3-Octene	-94600
-4/8/7642	cis-2-Octene	-94510
+7642-04-8	cis-2-Octene	-94510
 696-29-7	Isopropylcyclohexane	-93810
 7642-15-1	cis-4-Octene	-93720
 14850-22-7	cis-3-Octene	-93710
@@ -354,7 +348,7 @@ CASRN	Compound	Hf_298K
 7385-78-6	3,4-Dimethyl-1-pentene	-78530
 3404-73-7	3,3-Dimethyl-1-pentene	-78080
 287-92-3	Cyclopentane	-77240
-2/6/6094	2-Methyl-1-hexene	-76230
+6094-02-6	2-Methyl-1-hexene	-76230
 66324-83-2	1-n-Propyl-[1,2,3,4-Tetrahydronaphthalene]	-75730
 3404-71-5	2-Ethyl-1-Pentene	-75440
 1078-71-3	n-Heptylbenzene	-75300
@@ -366,9 +360,9 @@ CASRN	Compound	Hf_298K
 107-10-8	n-Propylamine	-72380
 3524-73-0	5-Methyl-1-hexene	-70670
 3769-23-1	4-Methyl-1-hexene	-70670
-4/4/4038	3-Ethyl-1-Pentene	-69830
+4038-04-4	3-Ethyl-1-Pentene	-69830
 6443-92-1	cis-2-Heptene	-69200
-10/6/7642	cis-3-Heptene	-68700
+7642-10-6	cis-3-Heptene	-68700
 26438-27-7	1-n-Decylnaphthalene	-68200
 563-79-1	2,3-Dimethyl-2-Butene	-66570
 3875-51-2	Isopropylcyclopentane	-65940
@@ -389,7 +383,7 @@ CASRN	Compound	Hf_298K
 13269-52-8	trans-3-Hexene	-52550
 592-43-8	trans-2-Hexene	-52550
 691-37-2	4-Methyl-1-pentene	-48780
-9/3/7642	cis-3-Hexene	-48370
+7642-09-3	cis-3-Hexene	-48370
 7688-21-3	cis-2-Hexene	-48370
 26438-26-6	1-n-Nonylnaphthalene	-47500
 1076-61-5	6,7-Dimethyl-[1,2,3,4-Tetrahydronaphthalene]	-46690
@@ -420,7 +414,7 @@ CASRN	Compound	Hf_298K
 535-77-3	m-Cymene	-28700
 627-20-3	cis-2-Pentene	-28070
 99-87-6	p-Cymene	-27740
-4/4/2870	1,3-Dimethyl-2-Ethylbenzene	-26230
+2870-04-4	1,3-Dimethyl-2-Ethylbenzene	-26230
 933-98-2	1,2-Dimethyl-3-ethylbenzene	-25650
 1074-43-7	1-Methyl-3-n-propylbenzene	-24140
 624-92-0	2,3-Dithiabutane	-23600
@@ -487,7 +481,7 @@ CASRN	Compound	Hf_298K
 75-19-4	Cyclopropane	53450
 2765-18-6	1-n-Propylnaphthalene	61210
 571-58-4	1,4-Dimethylnaphthalene	61210
-9/3/3452	1-Nonyne	61800
+3452-09-3	1-Nonyne	61800
 28823-41-8	2-Methyl-2,4-Hexadiene	62720
 7417-48-3	3-Methyl-1,2-Pentadiene	68540
 594-11-6	Methylcyclopropane	73310
@@ -572,7 +566,7 @@ CASRN	Compound	Hf_298K
 260-94-6	Acridine	291040
 689-97-4	Vinylacetylene	304630
 1127-76-0	1-Ethylnaphthalene	323890
-1/6/4669	n-Pentadecylcyclopentane	395010
+4669-01-6	n-Pentadecylcyclopentane	395010
 501-65-5	Diphenylacetylene	430110
 75-71-8	Dichlorodifluoromethane	491610
 2189-60-8	n-Octylbenzene	538810

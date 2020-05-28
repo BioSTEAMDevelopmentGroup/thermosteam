@@ -1,9 +1,21 @@
 # -*- coding: utf-8 -*-
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# 
+# This module is under the UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
 """
 """
+from flexsolve import InfeasibleRegion
 
 __all__ = ('Mixture',)
 
+def iter_temperature(T, H, H_guess, Cn):
+    # Used to solve for ethalpy at given temperature
+    T += (H - H_guess) / Cn
+    if T < 0.: raise InfeasibleRegion('enthalpy')
+    return T
 
 # %% Ideal mixture
 
@@ -127,7 +139,7 @@ class Mixture:
         H_guess = self.H(phase, mol, T_guess, P)
         if abs(H - H_guess) < 1e-3: return T_guess
         Cn = self.Cn(phase, mol, T_guess)
-        T = T_guess + (H - H_guess) / Cn
+        T = iter_temperature(T_guess, H, H_guess, Cn)
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it = 3
@@ -141,7 +153,7 @@ class Mixture:
                     Cn = self.Cn(phase, mol, T)
                 else:
                     it += 1
-                T += (H - self.H(phase, mol, T, P))/Cn
+                T = iter_temperature(T_guess, H, self.H(phase, mol, T, P), Cn)
         return T
                 
     def xsolve_T(self, phase_mol, H, T_guess, P):
@@ -151,7 +163,7 @@ class Mixture:
         H_guess = self.xH(phase_mol, T_guess, P)
         if abs(H - H_guess) < 1e-3: return T_guess
         Cn = self.xCn(phase_mol, T_guess)
-        T = T_guess + (H - H_guess)/Cn
+        T = iter_temperature(T_guess, H, H_guess, Cn)
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it = 3
@@ -165,7 +177,7 @@ class Mixture:
                     Cn = self.xCn(phase_mol, T)
                 else:
                     it += 1
-                T += (H - self.xH(phase_mol, T, P))/Cn
+                T = iter_temperature(T_guess, H, self.xH(phase_mol, T, P), Cn)
         return T
     
     def xCn(self, phase_mol, T):

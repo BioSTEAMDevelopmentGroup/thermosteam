@@ -1,4 +1,18 @@
 # -*- coding: utf-8 -*-
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# 
+# A significant portion of this module originates from:
+# Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+# Copyright (C) 2020 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+# 
+# This module is under a dual license:
+# 1. The UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
+# 
+# 2. The MIT open-source license. See
+# https://github.com/CalebBell/thermo/blob/master/LICENSE.txt for details.
 '''
 All data and methods for estimating a chemical's heat of formation.
 
@@ -27,6 +41,7 @@ __all__ = ('heat_of_formation',
 
 from ..exceptions import UndefinedPhase, InvalidMethod
 from .data import (heat_of_formation_sources,
+                   heat_of_formation_solid_sources,
                    heat_of_formation_gas_sources,
                    heat_of_formation_liquid_sources,
                    get_from_data_sources
@@ -103,18 +118,27 @@ def heat_of_formation(CASRN, phase_ref,
         if CASRN in elemental_gas_standard_states: return 0. 
     elif phase_ref == 's':
         if CASRN in elemental_solid_standard_states: return 0.
+    
     try: Hf = heat_of_formation_gas(CASRN, method)
     except InvalidMethod: pass
     if Hf:
         Hf = Hf_at_phase_ref(Hf, 'g', phase_ref, Hvap_298K, Hfus)
         if Hf: return Hf
+    
     try: Hf = heat_of_formation_liquid(CASRN, method)
     except InvalidMethod: pass
     if Hf:
         Hf = Hf_at_phase_ref(Hf, 'l', phase_ref, Hvap_298K, Hfus)
         if Hf: return Hf        
+    
+    try: Hf = heat_of_formation_solid(CASRN, method)
+    except InvalidMethod: pass
+    if Hf:
+        Hf = Hf_at_phase_ref(Hf, 's', phase_ref, Hvap_298K, Hfus)
+        if Hf: return Hf     
+    
     try: Hf, phase = get_from_data_sources(heat_of_formation_sources, CASRN,
-                                           ['Hf_298K', 'phase'], method)     
+                                           ['Hf', 'phase'], method)     
     except InvalidMethod: pass
     if Hf:
         Hf = Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus)
@@ -135,6 +159,10 @@ def Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus):
     elif phase == 's' and phase_ref == 'g':
         if Hvap_298K and Hfus: return Hf + Hvap_298K + Hfus
     else: raise UndefinedPhase(phase)
+
+def heat_of_formation_solid(CASRN, method='Any'):
+    return get_from_data_sources(heat_of_formation_solid_sources,
+                                 CASRN, 'Hfs', method)
 
 def heat_of_formation_liquid(CASRN, method='Any'):
     r'''
@@ -175,7 +203,7 @@ def heat_of_formation_liquid(CASRN, method='Any'):
 
     '''
     return get_from_data_sources(heat_of_formation_liquid_sources,
-                                 CASRN, 'Hf_298K', method)
+                                 CASRN, 'Hfl', method)
 
 
 def heat_of_formation_gas(CASRN, method='Any'):
@@ -219,5 +247,5 @@ def heat_of_formation_gas(CASRN, method='Any'):
 
     '''
     return get_from_data_sources(heat_of_formation_gas_sources,
-                                 CASRN, 'Hf_298K', method)
+                                 CASRN, 'Hfg', method)
    

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena and contributors <yoelcortes@gmail.com>
+# 
+# This module is under the UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
 """
-Created on Fri Jun 28 19:23:52 2019
-
-@author: yoelr
 """
 import thermosteam as tmo
 import flexsolve as flx
@@ -406,8 +409,7 @@ class Reaction:
             raise RuntimeError(
                  'to solve atomic balance, number of atoms '
                 f'({M_atoms} available) must be equal to the number of '
-                 'chemicals, not including the reactant '
-                f'({N_chemicals} available)'
+                f'varied chemicals ({N_chemicals} available)'
             )
         x = np.linalg.solve(A, b)
         stoichiometry_by_mol[chemical_index] = x.flatten()

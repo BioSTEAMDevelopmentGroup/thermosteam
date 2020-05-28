@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# 
+# This module is under the UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
 """
-Created on Wed Mar 20 18:40:05 2019
-
-@author: yoelr
 """
 import flexsolve as flx
 from ..exceptions import InfeasibleRegion
@@ -275,6 +278,7 @@ class VLE:
         H_dew = mixture.xH(phase_data, T, P)
         if H >= H_dew:
             self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+            return
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -282,6 +286,7 @@ class VLE:
         H_bubble = mixture.xH(phase_data, T, P)
         if H <= H_bubble:
             self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+            return
         
         # Adjust vapor fraction accordingly
         V = (H - H_bubble)/(H_dew - H_bubble)
@@ -360,6 +365,7 @@ class VLE:
         thermal_condition = self._thermal_condition
         self._T = thermal_condition.T = T
         self._P = thermal_condition.P = P
+        if self._N == 0: return
         if self._N == 1: return self._set_thermal_condition_chemical(T, P)
         # Setup bounderies
         P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
@@ -393,6 +399,7 @@ class VLE:
         mol = self._mol
         thermal_condition = self._thermal_condition
         thermal_condition.T = self._T = T
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
         if self._N == 1: return self._set_TV_chemical(T, V)
         P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
@@ -446,6 +453,7 @@ class VLE:
 
     def set_TH(self, T, H):
         self._setup()
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
         if self._N == 1: return self._set_TH_chemical(T, H)
         self._T = T
         
@@ -503,6 +511,7 @@ class VLE:
     def set_PV(self, P, V):
         self._setup()
         self._thermal_condition.P = self._P = P
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
         if self._N == 1: return self._set_PV_chemical(P, V)
         
         # Setup bounderies
@@ -564,7 +573,12 @@ class VLE:
     
     def set_PH(self, P, H):
         self._setup()
-        self._thermal_condition.P = self._P = P
+        thermal_condition = self._thermal_condition
+        thermal_condition.P = self._P = P
+        if self._N == 0: 
+            thermal_condition.T = self.mixture.xsolve_T(
+                self._phase_data, H, thermal_condition.T, P)
+            return
         if self._N == 1: return self._set_PH_chemical(P, H)
         
         # Setup bounderies
@@ -582,7 +596,7 @@ class VLE:
         H_dew = self.mixture.xH(self._phase_data, T_dew, P)
         dH_dew = H - H_dew
         if dH_dew >= 0:
-            self._thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_dew, P)
+            thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_dew, P)
 
         # Check if subcooled liquid
         vapor_mol[index] = 0
@@ -590,7 +604,7 @@ class VLE:
         H_bubble = self.mixture.xH(self._phase_data, T_dew, P)
         dH_bubble = H - H_bubble
         if dH_bubble <= 0:
-            self._thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_bubble, P)
+            thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_bubble, P)
         
         # Guess T, overall vapor fraction, and vapor flow rates
         self._V = V = self._V or dH_bubble/(H_dew - H_bubble)
@@ -598,7 +612,7 @@ class VLE:
         
         F_mass = self._F_mass
         self._H_hat = H/F_mass
-        self._T = self._thermal_condition.T = flx.IQ_interpolation(
+        self._T = thermal_condition.T = flx.IQ_interpolation(
                                            self._H_hat_at_T,
                                            T_bubble, T_dew, 
                                            H_bubble/F_mass, H_dew/F_mass,
