@@ -1264,7 +1264,7 @@ class Chemical:
         self._Tt = Tt or triple_point_temperature(CAS)
 
         # Energy
-        self._Hfus = heat_of_fusion(CAS) if Hfus is None else Hfus
+        self._Hfus = heat_of_fusion(CAS) or 0. if Hfus is None else Hfus
         
         # Other
         self._dipole = dipole or dipole_moment(CAS)

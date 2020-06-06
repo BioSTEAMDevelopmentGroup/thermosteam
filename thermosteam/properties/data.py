@@ -329,11 +329,11 @@ heat_of_formation_liquid_sources = {
     'CRC': Cn_data_CRC_standard,
 }
 heat_of_formation_gas_sources = {
-    'APO TDB Albahri': Hf_data_API_TDB,
     'ATCT_G': Hf_data_ATcT_g,
-    'TRC': Cn_data_TRC_gas,
     'CRC': Cn_data_CRC_standard,
     'YAWS': Hf_data_Yaws_g,
+    'TRC': Cn_data_TRC_gas,
+    'APO TDB Albahri': Hf_data_API_TDB,
 }
 
 # %% Surface tension

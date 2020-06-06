@@ -512,7 +512,8 @@ class MultiStream(Stream):
         T_units = T or display_units.T
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
-        N_max = N or display_units.N
+        N_max = display_units.N if N is None else N
+        if composition is None: composition = display_units.composition
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
         N_all_IDs = len(all_IDs)
         if N_all_IDs == 0:

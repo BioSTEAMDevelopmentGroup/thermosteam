@@ -95,7 +95,7 @@ class LLE:
         self._thermal_condition = thermal_condition or ThermalCondition(298.15, 101325.)
         self._imol = imol
     
-    def __call__(self, T, P=None):
+    def __call__(self, T, P=None, top_chemical=None):
         """
         Perform liquid-liquid equilibrium.
 
@@ -105,6 +105,8 @@ class LLE:
             Operating temperature [K].
         P : float, optional
             Operating pressure [Pa].
+        top_chemical : str, optional
+            Identifier of chemical that will be favored in the "liquid" phase.
             
         """
         thermal_condition = self._thermal_condition
@@ -117,7 +119,17 @@ class LLE:
             gamma = self.thermo.Gamma(lle_chemicals)
             mol_L = solve_lle_liquid_mol(mol, T, gamma,
                                          **self.differential_evolution_options)
-            imol['l'][index] = mol - mol_L
+            mol_l = mol - mol_L
+            if top_chemical:
+                MW = self.chemicals.MW[index]
+                mass_L = mol_L * MW
+                mass_l = mol_l * MW
+                top_chemical_index = self.chemicals.index(top_chemical)
+                C_L = mass_L[top_chemical_index] / mass_L.sum()
+                C_l = mass_l[top_chemical_index] / mass_l.sum()
+                top_L = C_L > C_l
+                if top_L: mol_l, mol_L = mol_L, mol_l
+            imol['l'][index] = mol_l
             imol['L'][index] = mol_L
     
     def get_liquid_mol_data(self):

@@ -149,15 +149,15 @@ def Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus):
     elif phase == 'g' and phase_ref == 'l':
         if Hvap_298K: return Hf - Hvap_298K
     elif phase == 'g' and phase_ref == 's':
-        if Hvap_298K and Hfus: return Hf - Hvap_298K - Hfus
+        if Hvap_298K and Hfus is not None: return Hf - Hvap_298K - Hfus
     elif phase == 'l' and phase_ref == 'g':
         if Hvap_298K: return Hf + Hvap_298K
     elif phase == 'l' and phase_ref == 's':
-        if Hfus: return Hf - Hfus
+        if Hfus is not None: return Hf - Hfus
     elif phase == 's' and phase_ref == 'l':
-        if Hfus: return Hf + Hfus
+        if Hfus is not None: return Hf + Hfus
     elif phase == 's' and phase_ref == 'g':
-        if Hvap_298K and Hfus: return Hf + Hvap_298K + Hfus
+        if Hvap_298K and Hfus is not None: return Hf + Hvap_298K + Hfus
     else: raise UndefinedPhase(phase)
 
 def heat_of_formation_solid(CASRN, method='Any'):

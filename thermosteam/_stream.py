@@ -213,6 +213,7 @@ class Stream:
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
     display_units = thermo_units.DisplayUnits(T='K', P='Pa',
                                               flow=('kmol/hr', 'kg/hr', 'm3/hr'),
+                                              composition=False,
                                               N=7)
 
     _flow_cache = {}
@@ -232,6 +233,7 @@ class Stream:
         self._register(ID)
 
     def isempty(self):
+        """Return whether or not stream is empty."""
         return (self._imol._data == 0.).all()
 
     @property
@@ -1507,7 +1509,8 @@ class Stream:
         T_units = T or display_units.T
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
-        N_max = N or display_units.N
+        N_max = display_units.N if N is None else N
+        composition = display_units.composition if composition is None else composition 
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
         N_IDs = len(IDs)
         if N_IDs == 0:
@@ -1544,7 +1547,7 @@ class Stream:
               + beginning
               + flow_rates)
 
-    def show(self, T=None, P=None, flow=None, composition=False, N=None):
+    def show(self, T=None, P=None, flow=None, composition=None, N=None):
         """Print all specifications.
         
         Parameters

@@ -13,9 +13,7 @@ __all__ = ('Mixture',)
 
 def iter_temperature(T, H, H_guess, Cn):
     # Used to solve for ethalpy at given temperature
-    T += (H - H_guess) / Cn
-    if T < 0.: raise InfeasibleRegion('enthalpy')
-    return T
+    return T + (H - H_guess) / Cn
 
 # %% Ideal mixture
 
