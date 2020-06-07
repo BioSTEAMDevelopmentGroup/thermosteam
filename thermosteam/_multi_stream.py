@@ -68,7 +68,7 @@ class MultiStream(Stream):
     The temperature and pressure are stored as attributes:
     
     >>> (s1.T, s1.P)
-    (298.15, 101325)
+    (298.15, 101325.0)
     
     Unlike Stream objects, the `mol` attribute does not store data, it simply
     returns the total flow rate of each chemical. Setting an element of the

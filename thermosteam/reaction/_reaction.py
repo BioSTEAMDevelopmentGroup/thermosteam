@@ -20,7 +20,7 @@ __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
 
 def react_stream_adiabatically(stream, reaction):
     if not isinstance(stream, tmo.Stream):
-            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
+        raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
     Hnet = stream.Hnet
     reaction(stream)
     stream.H = Hnet - stream.Hf

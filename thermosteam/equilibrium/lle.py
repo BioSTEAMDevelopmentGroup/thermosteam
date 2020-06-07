@@ -78,7 +78,7 @@ class LLE:
     >>> lle
     LLE(imol=MolarFlowIndexer(
             L=[('Water', 2.671), ('Ethanol', 2.284), ('Octane', 39.92), ('Hexane', 0.9885)],
-            l=[('Water', 301.3), ('Ethanol', 27.72), ('Octane', 0.07885), ('Hexane', 0.01154)]),
+            l=[('Water', 301.3), ('Ethanol', 27.72), ('Octane', 0.07884), ('Hexane', 0.01153)]),
         thermal_condition=ThermalCondition(T=360.00, P=101325))
     
     """

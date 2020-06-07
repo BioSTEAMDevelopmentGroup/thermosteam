@@ -275,7 +275,7 @@ class Chemical:
              Pt: 610.88 Pa
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
-             Hf: -2.857e+05 J/mol
+             Hf: -2.8569e+05 J/mol
              LHV: 44011 J/mol
              HHV: 0 J/mol
              Hfus: 6010 J/mol
