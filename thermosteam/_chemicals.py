@@ -556,6 +556,70 @@ class CompiledChemicals(Chemicals):
         array = self.kwarray(ID_data)
         return ChemicalIndexer.from_data(array, chemicals=self)
 
+    def isplit(self, split, order=None):
+        """
+        Create a chemical indexer that represents chemical splits.
+    
+        Parameters
+        ----------   
+        split : Should be one of the following
+                * [float] Split fraction
+                * [array_like] Componentwise split 
+                * [dict] ID-split pairs
+        order=None : Iterable[str], options
+            Chemical order of split. Defaults to biosteam.settings.chemicals.IDs
+           
+        Examples
+        --------
+        From a dictionary:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemical_indexer = chemicals.isplit(dict(Water=0.5, Ethanol=1.))
+        >>> chemical_indexer.show()
+        ChemicalIndexer:
+         Water    0.5
+         Ethanol  1
+        
+        From iterable given the order:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemical_indexer = chemicals.isplit([0.5, 1], ['Water', 'Ethanol'])
+        >>> chemical_indexer.show()
+        ChemicalIndexer:
+         Water    0.5
+         Ethanol  1
+           
+        From a fraction:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemical_indexer = chemicals.isplit(0.75)
+        >>> chemical_indexer.show()
+        ChemicalIndexer:
+         Water     0.75
+         Methanol  0.75
+         Ethanol   0.75
+            
+        """
+        if isinstance(split, dict):
+            assert not order, "cannot pass 'order' key word argument when split is a dictionary"
+            order, split = zip(*split.items())
+        
+        if order:
+            isplit = self.iarray(order, split)
+        elif hasattr(split, '__len__'):
+            isplit = ChemicalIndexer.from_data(np.asarray(split),
+                                               phase=None,
+                                               chemicals=self)
+        else:
+            split = split * np.ones(self.size)
+            isplit = ChemicalIndexer.from_data(split,
+                                               phase=None,
+                                               chemicals=self)
+        return isplit
+
     def index(self, ID):
         """
         Return index of specified chemical.

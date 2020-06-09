@@ -48,8 +48,10 @@ def message_with_object_stamp(object, msg):
         return colors.violet(object_name) + ' ' + msg
 
 def raise_error_with_object_stamp(object, error):
-    msg, *args = error.args
-    error.args = (message_with_object_stamp(object, msg), *args)
+    try: 
+        msg, *args = error.args
+        error.args = (message_with_object_stamp(object, msg), *args)
+    except: pass
     raise error
 
 def try_method_with_object_stamp(object, method, args=()):
