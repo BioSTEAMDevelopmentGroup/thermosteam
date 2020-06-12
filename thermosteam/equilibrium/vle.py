@@ -619,6 +619,11 @@ class VLE:
                                            H_bubble/F_mass, H_dew/F_mass,
                                            self._T , self._H_hat,
                                            self.T_tol, self.H_hat_tol)
+        
+        # Make sure enthalpy balance is correct
+        self._T = thermal_condition.T = self.mixture.xsolve_T(
+            self._phase_data, H, (T_bubble + T_dew)/2, P
+        )
     
     def _estimate_v(self, V, y_bubble):
         return (V*self._z + (1-V)*y_bubble) * V * self._F_mol_vle

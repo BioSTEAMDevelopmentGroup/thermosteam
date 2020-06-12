@@ -13,6 +13,7 @@ from .solve_vle_composition import solve_y
 from ..functional import normalize
 from ..utils import fill_like, Cache
 from .._settings import settings
+from .activity_coefficients import IdealActivityCoefficients
 
 __all__ = ('BubblePoint', 'BubblePointValues', 'BubblePointCache')
 
@@ -157,6 +158,16 @@ class BubblePoint:
             self.T = flx.IQ_interpolation(f, Tmin, Tmax,
                                           f(Tmin), f(Tmax),
                                           T, 0., 1e-6, 5e-9)
+            if Tmin < 51:
+                # Couldn't solve; so ignore activity coefficients
+                gamma_old = self.gamma
+                self.gamma = IdealActivityCoefficients(gamma_old.chemicals)
+                try:
+                    self.T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                                  f(Tmin), f(Tmax),
+                                                  T, 0., 1e-6, 5e-9)
+                finally: self.gamma = gamma_old
+                
         self.y = normalize(self.y)
         return self.T, self.y.copy()
     
@@ -199,7 +210,7 @@ class BubblePoint:
             self.P = flx.aitken_secant(self._P_error, P, P-1,
                                        1e-3, 1e-9, args)
         except:
-            self.x = z.copy()
+            self.y = z.copy()
             P = (z * Psats).sum()
             Pmin = min([i(i.Tmin + 1e-5 if i.Tmin > 10 else 10) for i in self.Psats])
             Pmax = max([i(i.Tmax - 1e-5) for i in self.Psats])
