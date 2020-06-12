@@ -34,6 +34,9 @@ class DimensionError(ValueError):
 
 class DomainError(ValueError):
     """ValueError regarding an attempt to evaluate a model out of its domain."""
+    def __init__(self, msg, **data):
+        super().__init__(self, msg)
+        self.__dict__.update(data)
 
 class InvalidMethod(ValueError):
     """ValueError regarding an attempt to evaluate an invalid method."""

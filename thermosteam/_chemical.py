@@ -1117,16 +1117,17 @@ class Chemical:
         if not Tmin: Tmin = Psat.Tmin 
         if not Tmax: Tmax = Psat.Tmax
         if Tb:
-            if P == 101325:
-                return Tb
-            elif not Tguess:
-                Tguess = Tb * (P / 101325)
+            if P == 101325: return Tb
+            else: Tguess = Tb
         elif not Tguess:
-            Tguess = (Tmin + Tmax)/2
-        try:
-            return IQ_interpolation(Psat, Tmin, Tmax, 0, Psat(Tmax-1e-4), Tguess, P, 1e-3, 1e-1)
-        except DomainError:
-            return None    
+            Tguess = (Tmin + Tmax)/2.0
+        return IQ_interpolation(Psat, Tmin, Tmax-1,
+                                    0, Psat(Tmax-1),
+                                    Tguess, P, 1e-3, 1e-1)
+        try: return IQ_interpolation(Psat, Tmin, Tmax-1,
+                                    0, Psat(Tmax-1),
+                                    Tguess, P, 1e-3, 1e-1)
+        except DomainError: pass
 
     ### Reinitializers ###
     

@@ -86,7 +86,7 @@ class DewPoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
-        if T < 0: raise flx.InfeasibleRegion('negative pressure')
+        if T < 0: raise flx.InfeasibleRegion('negative temperature')
         Psats = [i(T) for i in self.Psats]
         # Remove small values to prevent floating point error
         Psats = array([i if i > 1e-16 else 1e-16 for i in Psats])

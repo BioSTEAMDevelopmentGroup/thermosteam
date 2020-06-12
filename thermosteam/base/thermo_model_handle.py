@@ -281,7 +281,7 @@ class TDependentModelHandle(ThermoModelHandle):
         for model in self._models:
             if model.indomain(T): return model.evaluate(T)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                         f"at T={T:.2f} K")
+                         f"at T={T:.2f} K", T=T, Tmin=self.Tmin, Tmax=self.Tmax)
     
     at_T = __call__
     
@@ -293,7 +293,7 @@ class TDependentModelHandle(ThermoModelHandle):
         for model in self._models:
             if model.indomain(T): return model.differentiate_by_T(T, dT=dT)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                         f"at T={T:.2f} K")
+                         f"at T={T:.2f} K", T=T, Tmin=self.Tmin, Tmax=self.Tmax)
         
     def differentiate_by_P(self, T, P=None, dP=1e-12):
         return 0
@@ -317,7 +317,8 @@ class TDependentModelHandle(ThermoModelHandle):
                 integral += model.integrate_by_T(Tmin, Tb)
                 Tb = Tmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                         f"between T={Ta:.2f} to {Tb:.2f} K")
+                         f"between T={Ta:.2f} to {Tb:.2f} K", Ta=Ta, Tb=Tb,
+                         Tmin=self.Tmin, Tmax=self.Tmax)
     
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
@@ -341,7 +342,8 @@ class TDependentModelHandle(ThermoModelHandle):
                 integral += model.integrate_by_T_over_T(Tmin, Tb)
                 Tb = Tmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                         f"between T={Ta:.2f} to {Tb:.2f} K")
+                         f"between T={Ta:.2f} to {Tb:.2f} K", Ta=Ta, Tb=Tb,
+                         Tmin=self.Tmin, Tmax=self.Tmax)
     
     
 class TPDependentModelHandle(ThermoModelHandle):
@@ -364,7 +366,9 @@ class TPDependentModelHandle(ThermoModelHandle):
         for model in self._models:
             if model.indomain(T, P): return model.evaluate(T, P)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"at T={T:.2f} K and P={P:.0f} Pa")
+                          f"at T={T:.2f} K and P={P:.0f} Pa", T=T, P=P,
+                          Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
 
     def at_T(self, T):
         isa = isinstance
@@ -372,7 +376,8 @@ class TPDependentModelHandle(ThermoModelHandle):
             if isa(model, TDependentModel) and model.indomain(T):
                 return model.evaluate(T)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"at T={T:.2f} K")
+                          f"at T={T:.2f} K", T=T,
+                          Tmin=self.Tmin, Tmax=self.Tmax)
 
     def try_out(self, T, P):
         for model in self._models:
@@ -382,13 +387,17 @@ class TPDependentModelHandle(ThermoModelHandle):
         for model in self._models:
             if model.indomain(T, P): return model.differentiate_by_T(T, P)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"at T={T:.2f} K and P={P:.0f} Pa")
+                          f"at T={T:.2f} K and P={P:.0f} Pa", T=T, P=P,
+                          Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
             
     def differentiate_by_P(self, T, P):
         for model in self._models:
              if model.indomain(T, P): return model.differentiate_by_P(T, P)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"at T={T:.2f} K and P={P:.0f} Pa")
+                          f"at T={T:.2f} K and P={P:.0f} Pa", T=T, P=P,
+                          Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
 
     def integrate_by_T(self, Ta, Tb, P):
         integral = 0
@@ -409,7 +418,9 @@ class TPDependentModelHandle(ThermoModelHandle):
                 integral += model.integrate_by_T(Tmin, Tb, P)
                 Tb = Tmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"between T={Ta:.2f} to {Tb:.2f} K at P={P:.0f} Pa")
+                          f"between T={Ta:.2f} to {Tb:.2f} K at P={P:.0f} Pa",
+                          Ta=Ta, Tb=Tb, P=P, Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
     
     def integrate_by_P(self, Pa, Pb, T):
         integral = 0
@@ -431,7 +442,9 @@ class TPDependentModelHandle(ThermoModelHandle):
                 integral += model.integrate_by_P(Pmin, Pb, T)
                 Pb = Pmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}")
+                          f"between P={Pa:5g} to {Pb:5g} Pa ast T={T:.2f}",
+                          Pa=Pa, Pb=Pb, T=T, Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
     
     def integrate_by_T_over_T(self, Ta, Tb, P):
         integral = 0
@@ -453,7 +466,9 @@ class TPDependentModelHandle(ThermoModelHandle):
                 integral += model.integrate_by_T_over_T(Tmin, Tb, P)
                 Tb = Tmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                          f"between T={Ta:.2f} to {Tb:.2f} K")
+                          f"between T={Ta:.2f} to {Tb:.2f} K",
+                          Ta=Ta, Tb=Tb, P=P, Tmin=self.Tmin, Tmax=self.Tmax, 
+                          Pmin=self.Pmin, Pmax=self.Pmax)
         
             
     

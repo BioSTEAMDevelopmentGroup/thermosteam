@@ -36,7 +36,7 @@ class ThermalCondition:
     @T.setter
     def T(self, T):
         T = float(T)
-        if T < 0.: raise InfeasibleRegion('temperature')
+        if T < 0.: raise InfeasibleRegion('negative temperature')
         self._T = T
     
     @property
@@ -46,7 +46,7 @@ class ThermalCondition:
     @P.setter
     def P(self, P):
         P = float(P)
-        if P < 0.: raise InfeasibleRegion('pressure')
+        if P < 0.: raise InfeasibleRegion('negative pressure')
         self._P = P
     
     def in_equilibrium(self, other):

@@ -86,6 +86,7 @@ class BubblePoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_over_P, z_norm,):
+        if T <= 0: raise flx.InfeasibleRegion('negative temperature')
         y_phi =  (z_over_P
                   * array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
@@ -94,6 +95,7 @@ class BubblePoint:
         return 1. - self.y.sum()
     
     def _P_error(self, P, T, z_Psat_gamma_pcf):
+        if P <= 0: raise flx.InfeasibleRegion('negative temperature')
         y_phi = z_Psat_gamma_pcf / P
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
@@ -151,7 +153,7 @@ class BubblePoint:
             f = lambda T: self._T_error(T, *args)
             Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
             Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
-            if Tmin < 10: Tmin = 10
+            if Tmin < 50: Tmin = 50
             self.T = flx.IQ_interpolation(f, Tmin, Tmax,
                                           f(Tmin), f(Tmax),
                                           T, 0., 1e-6, 5e-9)

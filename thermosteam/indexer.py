@@ -31,25 +31,11 @@ __all__ = ('ChemicalIndexer',
 isa = isinstance
 _new = object.__new__
 
-def all_same_phase(indexers, phase):
-    for i in indexers:
-        if phase != i.phase: return False
-    return True
-
-def find_main_indexer(indexers, main_indexer):
-    max_total = main_indexer._data.sum()
-    for indexer in indexers:
-        total = indexer._data.sum()
-        if total > max_total:
-            max_total = total
-            main_indexer = indexer
-    return main_indexer
-
-def find_main_phase(chemical_indexers, main_indexer):
+def find_main_phase(indexers, default):
+    main_indexer, *indexers = indexers
     phase = main_indexer.phase
-    if not all_same_phase(chemical_indexers, phase):
-        main_indexer = find_main_indexer(chemical_indexers, main_indexer)
-        phase = main_indexer.phase
+    for i in indexers:
+        if phase != i.phase: return default
     return phase
 
 def nonzeros(IDs, data):
@@ -169,7 +155,7 @@ class ChemicalIndexer(Indexer):
     
     def mix_from(self, others):
         utils.all_same_chemicals(self, others)
-        self.phase = find_main_phase(others[1:], others[0])
+        self.phase = find_main_phase(others, self.phase)
         self._data[:] = sum([i.sum_across_phases() for i in others])
     
     def to_material_indexer(self, phases):

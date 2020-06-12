@@ -13,7 +13,7 @@ from . import indexer
 from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
-from .exceptions import DimensionError
+from .exceptions import DimensionError, DomainError, InfeasibleRegion
 from . import utils
 
 __all__ = ('Stream', )
@@ -754,7 +754,30 @@ class Stream:
             self.copy_like(others[0])
         else:
             self._imol.mix_from([i._imol for i in others])
-            self.H = sum([i.H for i in others])
+            H = sum([i.H for i in others])
+            try: self.H = H
+            except DomainError as error: 
+                if hasattr(error, 'T'):
+                    # Temperature outside domain of heat capacity model
+                    if error.T <= error.Tmin:
+                        # Too little heat, liquid must be present
+                        self.phase = 'l'
+                    elif error.T >= error.Tmax:
+                        # Too much heat, gas must be present
+                        self.phase = 'g'
+                    else:
+                        raise error # Problem with domain
+                    self.H = H
+            except InfeasibleRegion as error: 
+                if error.region == 'negative temperature': 
+                    self.phase = 'g'
+                    self.H = H
+                else:
+                    raise error
+            else: pass
+            
+                        
+                    
     
     def split_to(self, s1, s2, split):
         """
