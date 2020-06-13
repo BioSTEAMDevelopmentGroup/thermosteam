@@ -8,14 +8,14 @@
 """
 """
 import flexsolve as flx
-from ..functional import normalize
+from .. import functional as fn
 from .fugacity_coefficients import IdealFugacityCoefficients
 import numpy as np
 
 __all__ = ('solve_x', 'solve_y')
 
 def x_iter(x, x_gamma_poyinting, gamma, poyinting, T):
-    x = normalize(x)
+    x = fn.normalize(x)
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-16
     x[mask] = 1e-16
@@ -41,7 +41,7 @@ def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):
     return x
         
 def y_iter(y, y_phi, phi, T, P):
-    y = normalize(y)
+    y = fn.normalize(y)
     return y_phi / phi(y, T, P)
 
 def solve_y(y_phi, phi, T, P, y_guess):

@@ -17,6 +17,7 @@ __all__ = (*flx.exceptions.__all__,
            'DimensionError',
            'DomainError',
            'InvalidMethod',
+           'TargetUnsuccessful',
            'message_with_object_stamp',
            'try_method_with_object_stamp',
            'raise_error_with_object_stamp')
@@ -35,14 +36,22 @@ class DimensionError(ValueError):
 class DomainError(ValueError):
     """ValueError regarding an attempt to evaluate a model out of its domain."""
     def __init__(self, msg, **data):
-        super().__init__(self, msg)
+        super().__init__(msg)
         self.__dict__.update(data)
 
 class InvalidMethod(ValueError):
     """ValueError regarding an attempt to evaluate an invalid method."""
     def __init__(self, method):
-        super().__init__(self, repr(method))
+        super().__init__(repr(method))
 
+class TargetUnsuccessful(RuntimeError):
+    """RuntimeError regarding an algorithm not being able to reach a target specification."""
+    def __init__(self, name, target, value):
+        super().__init__(f"{name} target, {target}, could not be reached; value is {value}")
+        self.name = name
+        self.target = target
+        self.value = value
+    
 def message_with_object_stamp(object, msg):
     object_name = str(repr(object))
     if object_name in msg:

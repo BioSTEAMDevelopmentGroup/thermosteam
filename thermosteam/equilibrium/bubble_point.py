@@ -9,11 +9,11 @@
 """
 from numpy import asarray, array
 import flexsolve as flx
+from ..exceptions import DomainError
 from .solve_vle_composition import solve_y
-from ..functional import normalize
-from ..utils import fill_like, Cache
+from .. import functional as fn
+from ..utils import fill_like, Cache, Chaperone
 from .._settings import settings
-from .activity_coefficients import IdealActivityCoefficients
 
 __all__ = ('BubblePoint', 'BubblePointValues', 'BubblePointCache')
 
@@ -55,17 +55,17 @@ class BubblePoint:
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
     >>> bp
-    BubblePointValues(T=355, P=109755.45319869413, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    BubblePointValues(T=355, P=109755.45319869411, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
     >>> (bp.T, bp.P, bp.IDs, bp.z, bp.y)
-    (355, 109755.45319869413, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    (355, 109755.45319869411, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
     >>> # Solve bubble point at constant pressure
     >>> BP(z=molar_composition, P=101325)
-    BubblePointValues(T=352.95030269946596, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
+    BubblePointValues(T=352.9503026994659, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
-                 'P', 'T', 'y', 'Psats', 'Tbs')
+                 'P', 'T', 'y', 'Psats', 'Tmin', 'Tmax')
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -80,14 +80,15 @@ class BubblePoint:
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
-            self.Psats = [i.Psat for i in chemicals]
-            self.Tbs = array([s.Tb for s in chemicals])
+            self.Psats = Psats = [i.Psat for i in chemicals]
+            self.Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, 200)
+            self.Tmax = min([i.Tmax for i in Psats]) - 1e-3
             self.chemicals = chemicals
             self.P = self.T = self.y = None
             cached[key] = self
     
-    def _T_error(self, T, P, z_over_P, z_norm,):
-        if T <= 0: raise flx.InfeasibleRegion('negative temperature')
+    def _T_error(self, T, P, z_over_P, z_norm):
+        if T <= 0: 1 - T
         y_phi =  (z_over_P
                   * array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
@@ -96,10 +97,31 @@ class BubblePoint:
         return 1. - self.y.sum()
     
     def _P_error(self, P, T, z_Psat_gamma_pcf):
-        if P <= 0: raise flx.InfeasibleRegion('negative temperature')
+        if P <= 0: - 0.1 + P
         y_phi = z_Psat_gamma_pcf / P
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
+        
+    def _T_error_ideal(self, T, z_over_P):
+        self.y = y = z_over_P * array([i(T) for i in self.Psats])
+        return 1 - y.sum()
+    
+    def _T_ideal(self, z_over_P):
+        f = self._T_error_ideal
+        args = (z_over_P,)
+        Tmin = self.Tmin
+        Tmax = self.Tmax
+        fmin = f(Tmin, *args)
+        fmax = f(Tmax, *args)
+        T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax,
+                                 None, 0., 1e-6, 5e-9, args)
+        T = flx.utils.pick_best_solution([(fmin, Tmin),
+                                          (f(T, *args), T),
+                                          (fmax, Tmax)])
+        return T
+    
+    def _P_ideal(self, z_Psat_gamma_pcf):
+        return z_Psat_gamma_pcf.sum()
     
     def __call__(self, z, *, T=None, P=None):
         z = asarray(z, float)
@@ -114,7 +136,7 @@ class BubblePoint:
     
     def solve_Ty(self, z, P):
         """
-        Bubble point at given composition and pressure
+        Bubble point at given composition and pressure.
 
         Parameters
         ----------
@@ -138,38 +160,34 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
-        (353.7543445955407, array([0.381, 0.619]))
+        (353.75434459554066, array([0.381, 0.619]))
         
         """
-        z_norm = z / z.sum()
         self.P = P
-        args = (P, z_norm/P, z_norm)
-        T = self.T or (z * self.Tbs).sum()
+        f = self._T_error
+        z_norm = z / z.sum()
+        z_over_P = z_norm/P
+        args = (P, z_over_P, z_norm)
+        T_guess = self.T or self._T_ideal(z_over_P) 
+        Tmin = self.Tmin
+        Tmax = self.Tmax
         try:
-            self.T = flx.aitken_secant(self._T_error, T, T+0.01,
-                                       1e-6, 5e-9, args)
-        except:
-            self.y = z.copy()
-            T = (z * self.Tbs).sum()
-            f = lambda T: self._T_error(T, *args)
-            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
-            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
-            if Tmin < 50: Tmin = 50
-            self.T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                          f(Tmin), f(Tmax),
-                                          T, 0., 1e-6, 5e-9)
-            if Tmin < 51:
-                # Couldn't solve; so ignore activity coefficients
-                gamma_old = self.gamma
-                self.gamma = IdealActivityCoefficients(gamma_old.chemicals)
-                try:
-                    self.T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                                  f(Tmin), f(Tmax),
-                                                  T, 0., 1e-6, 5e-9)
-                finally: self.gamma = gamma_old
-                
-        self.y = normalize(self.y)
-        return self.T, self.y.copy()
+            T = flx.aitken_secant(f, T_guess, T_guess+0.1,
+                                  1e-6, 5e-9, args)
+        except (flx.InfeasibleRegion, DomainError):
+            fmin = f(Tmin, *args)
+            ymin = self.y
+            fmax = f(Tmax, *args)
+            ymax = self.y
+            T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, T_guess, 
+                                     0., 1e-6, 5e-9, args)
+            T, self.y = flx.utils.pick_best_solution([(fmin, (Tmin, ymin)),
+                                                      (f(T, *args), (T, self.y)),
+                                                      (fmax, (Tmax, ymax))])
+        except flx.SolverError as error:
+            T = error.x
+        self.y = fn.normalize(self.y)
+        return T, self.y.copy()
     
     def solve_Py(self, z, T):
         """
@@ -197,29 +215,35 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)
-        (91830.9798895787, array([0.419, 0.581]))
+        (91830.97988957871, array([0.419, 0.581]))
         
         """
-        Psats = array([i(T) for i in self.Psats])
-        z_norm = z / z.sum()
-        y_phi = z * Psats * self.gamma(z_norm, T) * self.pcf(z_norm, T)
         self.T = T
-        args = (T, y_phi)
-        P = self.P or (z * Psats).sum()
+        Psat = array([i(T) for i in self.Psats])
+        z_norm = z / z.sum()
+        z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
+        f = self._P_error
+        args = (T, z_Psat_gamma_pcf)
+        P_guess = self.P or self._P_ideal(z_Psat_gamma_pcf)
         try:
-            self.P = flx.aitken_secant(self._P_error, P, P-1,
-                                       1e-3, 1e-9, args)
-        except:
-            self.y = z.copy()
-            P = (z * Psats).sum()
-            Pmin = min([i(i.Tmin + 1e-5 if i.Tmin > 10 else 10) for i in self.Psats])
-            Pmax = max([i(i.Tmax - 1e-5) for i in self.Psats])
-            if Pmin < 10: Pmin = 10
-            self.P = flx.IQ_interpolation(self._P_error, Pmin, Pmax,
-                                          x=P, args=args, xtol=1e-3, ytol=5e-9)
-            
-        self.y = normalize(self.y)
-        return self.P, self.y.copy()
+            P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 1e-9, args)
+        except (flx.InfeasibleRegion, DomainError):
+            Tmax = self.Tmax
+            Pmin = 10
+            fmin = f(Pmin, *args)
+            ymin = self.y
+            Pmax = max([i(Tmax) for i in self.Psats])
+            fmax = f(Pmax, *args)
+            ymax = self.y
+            P = flx.IQ_interpolation(f, Pmin, Pmax, fmin, fmax,
+                                     P_guess, 0., 1e-3, 5e-9, args)
+            P, self.y = flx.utils.pick_best_solution([(fmin, (Pmin, ymin)),
+                                                      (f(P, *args), (P, self.y)),
+                                                      (fmax, (Pmax, ymax))])
+        except flx.SolverError as error:
+            P = error.x
+        self.y = fn.normalize(self.y)
+        return P, self.y.copy()
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

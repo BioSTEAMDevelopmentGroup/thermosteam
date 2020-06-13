@@ -1424,8 +1424,7 @@ class Stream:
         IDs = tuple([i.ID for i in chemicals])
         x = self.get_molar_composition(IDs)
         if x.sum() < 1e-12: return 0
-        T = self.T
-        return F_l(x, T).sum()
+        return F_l(x, self.T).sum()
     
     def receive_vent(self, other, accumulate=False, fraction=1.0):
         """

@@ -9,8 +9,10 @@
 """
 from numpy import asarray, array
 import flexsolve as flx
+from .. import functional as fn
+from ..exceptions import DomainError
 from .solve_vle_composition import solve_x
-from ..utils import fill_like, Cache
+from ..utils import fill_like, Cache, Chaperone
 from .._settings import settings
 
 __all__ = ('DewPoint', 'DewPointCache')
@@ -64,7 +66,8 @@ class DewPoint:
 
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
-                 'pcf', 'Psats', 'Tbs', 'P', 'T', 'x')
+                 'pcf', 'Psats', 'P', 'T', 'x',
+                 'Tmin', 'Tmax')
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -79,27 +82,50 @@ class DewPoint:
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
-            self.Psats = [i.Psat for i in chemicals]
-            self.Tbs = array([s.Tb for s in chemicals])
+            self.Psats = Psats = [i.Psat for i in chemicals]
+            self.Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, 100)
+            self.Tmax = min([i.Tmax for i in Psats]) - 1e-3
             self.chemicals = chemicals
             self.P = self.T = self.x = None
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
-        if T < 0: raise flx.InfeasibleRegion('negative temperature')
-        Psats = [i(T) for i in self.Psats]
-        # Remove small values to prevent floating point error
-        Psats = array([i if i > 1e-16 else 1e-16 for i in Psats])
+        if T <= 0: return - 0.1 + T
+        Psats = array([i(T) for i in self.Psats])
+        Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
         x_gamma_pcf = phi * zP / Psats
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
+    def _T_error_ideal(self, T, zP):
+        Psats = array([i(T) for i in self.Psats])
+        Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
+        self.x = zP / Psats
+        return 1 - self.x.sum()
+    
     def _P_error(self, P, T, z_norm, z_over_Psats):
-        if P < 0: raise flx.InfeasibleRegion('negative pressure')
-        x_gamma_pcf = z_over_Psats * P *self.phi(z_norm, T, P)
+        if P <= 0: return 1. - P
+        x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
+    
+    def _T_ideal(self, zP):
+        f = self._T_error_ideal
+        args = (zP,)
+        Tmin = self.Tmin
+        Tmax = self.Tmax
+        fmin = f(Tmin, *args)
+        fmax = f(Tmax, *args)
+        T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax,
+                                 None, 0., 1e-6, 5e-9, args)
+        T = flx.utils.pick_best_solution([(fmin, Tmin),
+                                          (f(T, *args), T),
+                                          (fmax, Tmax)])
+        return T
+    
+    def _P_ideal(self, z_over_Psats):
+        return 1. / z_over_Psats.sum()
     
     def __call__(self, z, *, T=None, P=None):
         z = asarray(z, float)
@@ -138,27 +164,34 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
-        (357.4518474332535, array([0.849, 0.151]))
+        (357.45184743325336, array([0.849, 0.151]))
         
         """
+        f = self._T_error
         z_norm = z/z.sum()
         zP = z * P
         args = (P, z_norm, zP)
         self.P = P
-        T = self.T or (z * self.Tbs).sum()
+        T_guess = self.T or self._T_ideal(zP) 
+        Tmin = self.Tmin
+        Tmax = self.Tmax
         try:
-            self.T = flx.aitken_secant(self._T_error, T, T-0.01,
-                                       1e-6, 5e-9, args)
-        except:
-            self.x = z.copy()
-            T = (z * self.Tbs).sum()
-            Tmin = max([i.Tmin for i in self.Psats]) + 1e-5
-            Tmax = min([i.Tmax for i in self.Psats]) - 1e-5
-            if Tmin < 50: Tmin = 50
-            self.T = flx.IQ_interpolation(self._T_error, Tmin, Tmax,
-                                          x=T, args=args, xtol=1e-6, ytol=5e-9)
-        self.x /= self.x.sum()
-        return self.T, self.x.copy()
+            T = flx.aitken_secant(f, T_guess, T_guess+0.1,
+                                  1e-6, 5e-9, args)
+        except (flx.InfeasibleRegion, DomainError):
+            fmin = f(Tmin, *args)
+            xmin = self.x
+            fmax = f(Tmax, *args)
+            xmax = self.x
+            T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, T_guess, 
+                                     0., 1e-6, 5e-9, args)
+            T, self.x = flx.utils.pick_best_solution([(fmin, (Tmin, xmin)),
+                                                      (f(T, *args), (T, self.x)),
+                                                      (fmax, (Tmax, xmax))])
+        except flx.SolverError as error:
+            T = error.x
+        self.x = fn.normalize(self.x)
+        return T, self.x.copy()
     
     def solve_Px(self, z, T):
         """
@@ -194,20 +227,27 @@ class DewPoint:
         z_over_Psats = z/Psats
         args = (T, z_norm, z_over_Psats)
         self.T = T
-        P = self.P or (z * Psats).sum()
+        f = self._P_error
+        P_guess = self.P or self._P_ideal(z_over_Psats)
         try:
-            self.P = flx.aitken_secant(self._P_error, P, P+1,
-                                       1e-3, 5e-9, args)
-        except:
-            self.x = z.copy()
-            P = (z * Psats).sum()
-            Pmin = max([i(i.Tmin + 1e-5 if i.Tmin > 50 else 50) for i in self.Psats])
-            Pmax = min([i(i.Tmax - 1e-5) for i in self.Psats])
-            if Pmin < 10: Pmin = 10
-            self.P = flx.IQ_interpolation(self._P_error, Pmin, Pmax,
-                                          x=P, args=args, xtol=1e-3, ytol=5e-9)
-        self.x /= self.x.sum()
-        return self.P, self.x.copy()
+            P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 1e-9, args)
+        except (flx.InfeasibleRegion, DomainError):
+            Tmax = self.Tmax
+            Pmin = 10
+            fmin = f(Pmin, *args)
+            xmin = self.x
+            Pmax = max([i(Tmax) for i in self.Psats])
+            fmax = f(Pmax, *args)
+            xmax = self.x
+            P = flx.IQ_interpolation(f, Pmin, Pmax, fmin, fmax,
+                                     P_guess, 0., 1e-3, 5e-9, args)
+            P, self.x = flx.utils.pick_best_solution([(fmin, (Pmin, xmin)),
+                                                      (f(P, *args), (P, self.x)),
+                                                      (fmax, (Pmax, xmax))])
+        except flx.SolverError as error:
+            P = error.x
+        self.x = fn.normalize(self.x)
+        return P, self.x.copy()
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

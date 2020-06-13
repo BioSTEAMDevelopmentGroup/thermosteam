@@ -56,7 +56,8 @@ class Thermo:
         Class for computing poynting correction factors.
     
     """
-    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
+    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF',
+                 'ideal_equilibrium_thermo') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
@@ -77,12 +78,30 @@ class Thermo:
                 f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
             assert issubtype(PCF, eq.PoyintingCorrectionFactors), (
                 f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
+        
         setattr = object.__setattr__
+        if (Gamma is eq.IdealActivityCoefficients
+            and Phi is eq.IdealFugacityCoefficients
+            and PCF is eq.IdealPoyintingCorrectionFactors):
+            ideal = self
+        else:
+            cls = self.__class__
+            ideal = cls.__new__(cls)
+            setattr(ideal, 'chemicals', chemicals)
+            setattr(ideal, 'mixture', mixture)
+            setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
+            setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
+            setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
+            setattr(ideal, 'ideal_equilibrium_thermo', ideal)
         setattr(self, 'chemicals', chemicals)
         setattr(self, 'mixture', mixture)
         setattr(self, 'Gamma', Gamma)
         setattr(self, 'Phi', Phi)
-        setattr(self, 'PCF', PCF)    
+        setattr(self, 'PCF', PCF)
+        setattr(self, 'ideal_equilibrium_thermo', ideal)
+    
+    def Raoults_law(self):
+        return self.ideal_equilibrium_thermo is self
     
     def as_chemical(self, chemical):
         isa = isinstance
