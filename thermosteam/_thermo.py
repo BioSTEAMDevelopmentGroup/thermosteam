@@ -100,8 +100,13 @@ class Thermo:
         setattr(self, 'PCF', PCF)
         setattr(self, 'ideal_equilibrium_thermo', ideal)
     
-    def Raoults_law(self):
-        return self.ideal_equilibrium_thermo is self
+    def equilibrium_model(self):
+        if self.ideal_equilibrium_thermo is self:
+            return "Raoult's law"
+        elif self.Gamma in (eq.UNIFACActivityCoefficients, eq.DortmundActivityCoefficients):
+            return "modified Raoult's law"
+        else:
+            return "unknown"
     
     def as_chemical(self, chemical):
         isa = isinstance

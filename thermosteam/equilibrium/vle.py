@@ -667,9 +667,11 @@ class VLE:
                              self._x, 1e-12,
                              args=(Psat_over_P_phi,))
         except flx.SolverError as solver_error:
-            x = flx.aitken(self._x_iter,
-                           solver_error.x, 1e-6,
-                           args=(Psat_over_P_phi,))
+            try: x = flx.aitken(self._x_iter,
+                                solver_error.x, 1e-6,
+                                args=(Psat_over_P_phi,))
+            except flx.SolverError as solver_error:
+                x = solver_error.x
         self._x = x
         v = self._F_mol_vle * self._V * x * self._Ks     
         return fn.normalize(v)

@@ -12,7 +12,7 @@ import flexsolve as flx
 from .. import functional as fn
 from ..exceptions import DomainError
 from .solve_vle_composition import solve_x
-from ..utils import fill_like, Cache, Chaperone
+from ..utils import fill_like, Cache
 from .._settings import settings
 
 __all__ = ('DewPoint', 'DewPointCache')
