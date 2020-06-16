@@ -414,18 +414,11 @@ class VLE:
             P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
             self._V = V 
             self._refresh_v(V, y_bubble)
-            try:
-                P = flx.IQ_interpolation(self._V_at_P,
-                                         P_bubble, P_dew, 0, 1,
-                                         self._P, self._V,
-                                         self.P_tol, self.V_tol)
-            except:
-                self._V = V
-                self._v = self._estimate_v(V, y_bubble)
-                P = flx.IQ_interpolation(self._V_at_P,
-                                         P_bubble, P_dew, 0, 1,
-                                         self._P, V,
-                                         self.P_tol, self.V_tol)
+            P = flx.IQ_interpolation(self._V_at_P,
+                                     P_bubble, P_dew, 0, 1,
+                                     self._P, self._V,
+                                     self.P_tol, self.V_tol)
+             
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the
             # vapor fraction.
@@ -443,11 +436,11 @@ class VLE:
                 P = P_dew
             else:
                 v = self._v
-            v = self._v
+            
             self._P = thermal_condition.P = P
             self._vapor_mol[self._index] = v
             self._liquid_mol[self._index] = mol - v
-            self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
+            self._H_hat = self.mixture.xH(self._phase_data, T, P) / self._F_mass
 
     def set_TH(self, T, H):
         self._setup()
@@ -484,26 +477,16 @@ class VLE:
 
         # Guess overall vapor fraction, and vapor flow rates
         V = self._V or dH_bubble/(H_dew - H_bubble)
+        
         # Guess composition in the vapor is a weighted average of boiling points
         self._refresh_v(V, y_bubble)
         F_mass = self._F_mass
         H_hat = H/F_mass
-        try:
-            P = flx.IQ_interpolation(self._H_hat_at_P,
-                            P_bubble, P_dew,
-                            H_bubble/F_mass, H_dew/F_mass,
-                            self._P, H_hat,
-                            self.P_tol, self.H_hat_tol) 
-        except:
-            self._v = self._estimate_v(V, y_bubble)
-            P = flx.IQ_interpolation(self._H_hat_at_P,
-                            P_bubble, P_dew,
-                            H_bubble/F_mass, H_dew/F_mass,
-                            self._P, H_hat,
-                            self.P_tol, self.H_hat_tol) 
-        if abs((self._H_hat - H_hat) / H_hat) > 0.01:
-            raise TargetUnsuccessful('specific enthalpy [J/g]', 
-                                     H_hat, self._H_hat)
+        P = flx.IQ_interpolation(self._H_hat_at_P,
+                        P_bubble, P_dew,
+                        H_bubble/F_mass, H_dew/F_mass,
+                        self._P, H_hat,
+                        self.P_tol, self.H_hat_tol)
         self._P = self._thermal_condition.P = P   
         self._thermal_condition.T = T
     
@@ -534,17 +517,11 @@ class VLE:
             T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
             self._refresh_v(V, y_bubble)
             self._V = V 
-            try:
-                T = flx.IQ_interpolation(self._V_at_T,
-                                T_bubble, T_dew, 0, 1,
-                                self._T , V,
-                                self.T_tol, self.V_tol)
-            except:
-                self._v = self._estimate_v(V, y_bubble)
-                T = flx.IQ_interpolation(self._V_at_T,
-                                T_bubble, T_dew, 0, 1,
-                                self._T , V,
-                                self.T_tol, self.V_tol)
+            T = flx.IQ_interpolation(self._V_at_T,
+                                     T_bubble, T_dew, 0, 1,
+                                     self._T , V,
+                                     self.T_tol, self.V_tol)
+            
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the
             # vapor fraction.
@@ -562,7 +539,7 @@ class VLE:
                 T = T_dew
             else:
                 v = self._v
-            v = self._v
+            
             self._T = thermal_condition.T = T
             vapor_mol[index] = v
             liquid_mol[index] = mol - v
@@ -611,9 +588,11 @@ class VLE:
         
         F_mass = self._F_mass
         H_hat = H/F_mass
+        H_hat_bubble = H_bubble/F_mass
+        H_hat_dew = H_dew/F_mass
         T = flx.IQ_interpolation(self._H_hat_at_T,
                                  T_bubble, T_dew, 
-                                 H_bubble/F_mass, H_dew/F_mass,
+                                 H_hat_bubble, H_hat_dew,
                                  self._T , H_hat,
                                  self.T_tol, self.H_hat_tol)
         

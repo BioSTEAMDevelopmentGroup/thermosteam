@@ -759,10 +759,10 @@ class Stream:
             except DomainError as error: 
                 if hasattr(error, 'T'):
                     # Temperature outside domain of heat capacity model
-                    if error.T <= error.Tmin:
+                    if error.T <= error.Tmin and self.phase == 'g':
                         # Too little heat, liquid must be present
                         self.phase = 'l'
-                    elif error.T >= error.Tmax:
+                    elif error.T >= error.Tmax and self.phase.lower() == 'l':
                         # Too much heat, gas must be present
                         self.phase = 'g'
                     else:
@@ -770,15 +770,21 @@ class Stream:
                     self.H = H
             except InfeasibleRegion as error: 
                 if error.region == 'negative temperature': 
-                    self.phase = 'g'
+                    self.phase = 'l'
                     self.H = H
                 else:
                     raise error
+            except Exception as error:
+                # Try changing phases anyways
+                if self.phase == 'g':
+                    self.phase = 'l'
+                elif self.phase.lower() == 'l':
+                    self.phase = 'g'
+                else:
+                    raise error
+                self.H = H
             else: pass
             
-                        
-                    
-    
     def split_to(self, s1, s2, split):
         """
         Split molar flow rate from this stream to two others given

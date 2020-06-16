@@ -68,6 +68,7 @@ class DewPoint:
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'P', 'T', 'x',
                  'Tmin', 'Tmax')
+    Tmin_default = 200.
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -83,14 +84,14 @@ class DewPoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, 100)
+            self.Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
             self.Tmax = min([i.Tmax for i in Psats]) - 1e-3
             self.chemicals = chemicals
             self.P = self.T = self.x = None
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
-        if T <= 0: return - 0.1 + T
+        if T <= 0: raise flx.InfeasibleRegion('negative temperature')
         Psats = array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
@@ -105,23 +106,19 @@ class DewPoint:
         return 1 - self.x.sum()
     
     def _P_error(self, P, T, z_norm, z_over_Psats):
-        if P <= 0: return 1. - P
+        if P <= 0: raise flx.InfeasibleRegion('negative pressure')
         x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
     
     def _T_ideal(self, zP):
         f = self._T_error_ideal
-        args = (zP,)
         Tmin = self.Tmin
         Tmax = self.Tmax
-        fmin = f(Tmin, *args)
-        fmax = f(Tmax, *args)
-        T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax,
+        args = (zP,)
+        T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                 f(Tmin, *args), f(Tmax, *args),
                                  None, 0., 1e-6, 5e-9, args)
-        T = flx.utils.pick_best_solution([(fmin, Tmin),
-                                          (f(T, *args), T),
-                                          (fmax, Tmax)])
         return T
     
     def _P_ideal(self, z_over_Psats):
@@ -179,15 +176,9 @@ class DewPoint:
             T = flx.aitken_secant(f, T_guess, T_guess+0.1,
                                   1e-6, 5e-9, args)
         except (flx.InfeasibleRegion, DomainError):
-            fmin = f(Tmin, *args)
-            xmin = self.x
-            fmax = f(Tmax, *args)
-            xmax = self.x
-            T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, T_guess, 
-                                     0., 1e-6, 5e-9, args)
-            T, self.x = flx.utils.pick_best_solution([(fmin, (Tmin, xmin)),
-                                                      (f(T, *args), (T, self.x)),
-                                                      (fmax, (Tmax, xmax))])
+            T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                     f(Tmin, *args), f(Tmax, *args),
+                                     T_guess, 0., 1e-6, 5e-9, args)
         except flx.SolverError as error:
             T = error.x
         self.x = fn.normalize(self.x)
@@ -234,16 +225,10 @@ class DewPoint:
         except (flx.InfeasibleRegion, DomainError):
             Tmax = self.Tmax
             Pmin = 10
-            fmin = f(Pmin, *args)
-            xmin = self.x
             Pmax = max([i(Tmax) for i in self.Psats])
-            fmax = f(Pmax, *args)
-            xmax = self.x
-            P = flx.IQ_interpolation(f, Pmin, Pmax, fmin, fmax,
+            P = flx.IQ_interpolation(f, Pmin, Pmax, 
+                                     f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 0., 1e-3, 5e-9, args)
-            P, self.x = flx.utils.pick_best_solution([(fmin, (Pmin, xmin)),
-                                                      (f(P, *args), (P, self.x)),
-                                                      (fmax, (Pmax, xmax))])
         except flx.SolverError as error:
             P = error.x
         self.x = fn.normalize(self.x)

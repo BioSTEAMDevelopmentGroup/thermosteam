@@ -100,6 +100,7 @@ class Thermo:
         setattr(self, 'PCF', PCF)
         setattr(self, 'ideal_equilibrium_thermo', ideal)
     
+    @property
     def equilibrium_model(self):
         if self.ideal_equilibrium_thermo is self:
             return "Raoult's law"
