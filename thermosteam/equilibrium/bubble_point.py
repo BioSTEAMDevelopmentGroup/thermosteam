@@ -9,7 +9,7 @@
 """
 from numpy import asarray, array
 import flexsolve as flx
-from ..exceptions import DomainError
+from ..exceptions import InfeasibleRegion, DomainError
 from .solve_vle_composition import solve_y
 from .. import functional as fn
 from ..utils import fill_like, Cache
@@ -89,7 +89,7 @@ class BubblePoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_over_P, z_norm):
-        if T <= 0: raise flx.InfeasibleRegion('negative temperature')
+        if T <= 0: raise InfeasibleRegion('negative temperature')
         y_phi =  (z_over_P
                   * array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
@@ -98,7 +98,7 @@ class BubblePoint:
         return 1. - self.y.sum()
     
     def _P_error(self, P, T, z_Psat_gamma_pcf):
-        if P <= 0: raise flx.InfeasibleRegion('negative pressure')
+        if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psat_gamma_pcf / P
         self.y = solve_y(y_phi, self.phi, T, P, self.y)
         return 1. - self.y.sum()
@@ -171,12 +171,10 @@ class BubblePoint:
         try:
             T = flx.aitken_secant(f, T_guess, T_guess+0.1,
                                   1e-6, 5e-9, args)
-        except (flx.InfeasibleRegion, DomainError):
+        except (InfeasibleRegion, DomainError):
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 0., 1e-6, 5e-9, args)
-        except flx.SolverError as error:
-            T = error.x
         self.y = fn.normalize(self.y)
         return T, self.y.copy()
     
@@ -218,15 +216,13 @@ class BubblePoint:
         P_guess = self.P or self._P_ideal(z_Psat_gamma_pcf)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 1e-9, args)
-        except (flx.InfeasibleRegion, DomainError):
+        except (InfeasibleRegion, DomainError):
             Tmax = self.Tmax
             Pmin = 10
             Pmax = max([i(Tmax) for i in self.Psats])
             P = flx.IQ_interpolation(f, Pmin, Pmax,
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 0., 1e-3, 5e-9, args)
-        except flx.SolverError as error:
-            P = error.x
         self.y = fn.normalize(self.y)
         return P, self.y.copy()
     

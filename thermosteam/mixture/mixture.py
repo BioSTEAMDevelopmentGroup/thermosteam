@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from flexsolve import InfeasibleRegion
+from ..exceptions import InfeasibleRegion
 
 __all__ = ('Mixture',)
 

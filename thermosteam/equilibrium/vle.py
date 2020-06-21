@@ -8,7 +8,7 @@
 """
 """
 import flexsolve as flx
-from ..exceptions import InfeasibleRegion, TargetUnsuccessful
+from ..exceptions import InfeasibleRegion
 from ..utils.decorator_utils import thermo_user
 from . import binary_phase_fraction as binary
 from .dew_point import DewPointCache
@@ -170,9 +170,9 @@ class VLE:
                 return self.set_Py(P, np.asarray(y))
         elif H_spec:
             if y_spec:
-                raise NotImplementedError('specification H and y not implemented')
+                raise NotImplementedError('specification H and y is invalid')
             elif x_spec:
-                raise NotImplementedError('specification H and x not implemented')
+                raise NotImplementedError('specification H and x is invalid')
             else: # V_spec
                 raise NotImplementedError('specification V and H not implemented')
         elif V_spec:
@@ -641,16 +641,12 @@ class VLE:
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
         Psat_over_P_phi = Psats_over_P / phi
-        try:
-            x = flx.wegstein(self._x_iter,
-                             self._x, 1e-12,
-                             args=(Psat_over_P_phi,))
-        except flx.SolverError as solver_error:
-            try: x = flx.aitken(self._x_iter,
-                                solver_error.x, 1e-6,
-                                args=(Psat_over_P_phi,))
-            except flx.SolverError as solver_error:
-                x = solver_error.x
+        f = self._x_iter
+        args = (Psat_over_P_phi,)
+        x = flx.wegstein(f, self._x, 1e-12, args)
+        self._x = f(x, *args)
+        if (np.abs(self._x - x) > 1e-6).any():
+            x = flx.aitken(self._x_iter, self._x, 1e-6, args)
         self._x = x
         v = self._F_mol_vle * self._V * x * self._Ks     
         return fn.normalize(v)

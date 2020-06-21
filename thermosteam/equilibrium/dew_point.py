@@ -10,7 +10,7 @@
 from numpy import asarray, array
 import flexsolve as flx
 from .. import functional as fn
-from ..exceptions import DomainError
+from ..exceptions import DomainError, InfeasibleRegion
 from .solve_vle_composition import solve_x
 from ..utils import fill_like, Cache
 from .._settings import settings
@@ -91,7 +91,7 @@ class DewPoint:
             cached[key] = self
     
     def _T_error(self, T, P, z_norm, zP):
-        if T <= 0: raise flx.InfeasibleRegion('negative temperature')
+        if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
@@ -106,7 +106,7 @@ class DewPoint:
         return 1 - self.x.sum()
     
     def _P_error(self, P, T, z_norm, z_over_Psats):
-        if P <= 0: raise flx.InfeasibleRegion('negative pressure')
+        if P <= 0: raise InfeasibleRegion('negative pressure')
         x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
         self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
         return 1 - self.x.sum()
@@ -162,7 +162,7 @@ class DewPoint:
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
         (357.45184743325336, array([0.849, 0.151]))
-        
+        z
         """
         f = self._T_error
         z_norm = z/z.sum()
@@ -175,12 +175,10 @@ class DewPoint:
         try:
             T = flx.aitken_secant(f, T_guess, T_guess+0.1,
                                   1e-6, 5e-9, args)
-        except (flx.InfeasibleRegion, DomainError):
+        except (InfeasibleRegion, DomainError):
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 0., 1e-6, 5e-9, args)
-        except flx.SolverError as error:
-            T = error.x
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
     
@@ -222,15 +220,13 @@ class DewPoint:
         P_guess = self.P or self._P_ideal(z_over_Psats)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 1e-9, args)
-        except (flx.InfeasibleRegion, DomainError):
+        except (InfeasibleRegion, DomainError):
             Tmax = self.Tmax
             Pmin = 10
             Pmax = max([i(Tmax) for i in self.Psats])
             P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 0., 1e-3, 5e-9, args)
-        except flx.SolverError as error:
-            P = error.x
         self.x = fn.normalize(self.x)
         return P, self.x.copy()
     

@@ -33,9 +33,6 @@ def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):
     args = (x_gamma_poyinting, gamma, poyinting, T)
     try:
         x = flx.aitken(x_iter, x_guess, 1e-8, args=args)
-    except flx.SolverError as solver_error:
-        try: x = flx.fixed_point(x_iter, solver_error.x, 1e-8, args=args)
-        except: x = x_gamma_poyinting
     except flx.InfeasibleRegion:
         x = x_gamma_poyinting
     return x
@@ -46,5 +43,5 @@ def y_iter(y, y_phi, phi, T, P):
 
 def solve_y(y_phi, phi, T, P, y_guess):
     if isinstance(phi, IdealFugacityCoefficients): return y_phi
-    if y_guess is None: y_guess = y_phi
+    elif y_guess is None: y_guess = y_phi
     return flx.aitken(y_iter, y_phi, 1e-8, args=(y_phi, phi, T, P))
