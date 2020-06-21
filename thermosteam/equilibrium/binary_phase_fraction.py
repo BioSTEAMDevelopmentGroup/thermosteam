@@ -20,7 +20,7 @@ import flexsolve as flx
 __all__ = ('phase_fraction', 'solve_phase_fraction',
            'compute_phase_fraction_2N', 'compute_phase_fraction_3N')
 
-@flx.njitable
+@flx.njitable(cache=True)
 def as_valid_fraction(x):
     if x < 0.:
         x = 0.
@@ -28,7 +28,6 @@ def as_valid_fraction(x):
         x = 1.
     return x
 
-@flx.njitable
 def phase_fraction(zs, Ks, guess=None):
     """Return phase fraction for binary equilibrium."""
     N = zs.size
@@ -40,25 +39,23 @@ def phase_fraction(zs, Ks, guess=None):
         phase_fraction = solve_phase_fraction(zs, Ks, guess)
     return as_valid_fraction(phase_fraction)
 
-@flx.njitable
 def solve_phase_fraction(zs, Ks, guess):
     """
     Return phase fraction for N-component binary equilibrium through
     numerically solving an objective function.
     """
-    f = phase_fraction_objective_function    
     args = (zs, Ks)
+    f = phase_fraction_objective_function
     f_min = f(0., *args)
     f_max = f(1., *args)
     if f_min > f_max > 0.: return 1.
     if f_max < f_min < 0.: return 0.
     return flx.fast.IQ_interpolation(f, 0., 1.,
-                                     f_min,
-                                     f_max,
+                                     f_min, f_max,
                                      guess, 0.,
                                      1e-4, 1e-9, args)
 
-@flx.njitable
+@flx.njitable(cache=True)
 def phase_fraction_objective_function(V, zs, Ks):
     """Phase fraction objective function."""
     Kterm = Ks - 1.
@@ -67,7 +64,7 @@ def phase_fraction_objective_function(V, zs, Ks):
     denominator[denominator < 1e-16] = 1e-16
     return (numerator / denominator).sum()    
 
-@flx.njitable
+@flx.njitable(cache=True)
 def compute_phase_fraction_2N(zs, Ks):
     """Return phase fraction for 2-component binary equilibrium."""
     z1, z2 = zs
@@ -83,7 +80,7 @@ def compute_phase_fraction_2N(zs, Ks):
     K1z1_K2z2 = K1z1 + K2z2
     return (-K1z1_K2z2 + z1_z2)/(K1K2z1 + K1K2z2 - K1z2 - K1z1_K2z2 - K2z1 + z1_z2)
 
-@flx.njitable    
+@flx.njitable(cache=True)
 def compute_phase_fraction_3N(zs, Ks):
     """Return phase fraction for 3-component binary equilibrium."""
     z1, z2, z3 = zs

@@ -36,7 +36,7 @@ def chemgroup_array(chemgroups, index):
             array[i, index[group]] = count
     return array
 
-@njitable
+@njitable(cache=True)
 def group_activity_coefficients(x, chemgroups, loggammacs,
                                 Qs, psis, cQfs, gpsis):
     weighted_counts = chemgroups.transpose() @ x
@@ -72,7 +72,7 @@ def get_chemgroups(chemicals, field):
         chemgroups.append(group)
     return chemgroups
 
-@njitable
+@njitable(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
     r_net = (x*rs).sum()
     q_net = (x*qs).sum()  
@@ -81,7 +81,7 @@ def loggammacs_UNIFAC(qs, rs, x):
     Vs_over_Fs = Vs/Fs
     return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
-@njitable
+@njitable(cache=True)
 def loggammacs_Dortmund(qs, rs, x):
     r_net = (x*rs).sum()
     q_net = (x*qs).sum()
@@ -93,13 +93,13 @@ def loggammacs_Dortmund(qs, rs, x):
     Vs_p = rs_p/r_pnet
     return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
-@njitable
+@njitable(cache=True)
 def psi_Dortmund(T, abc):
     abc[:, :, 0] /= T
     abc[:, :, 2] *= T
     return np.exp(-abc.sum(2)) 
 
-@njitable
+@njitable(cache=True)
 def psi_UNIFAC(T, a):
     return np.exp(-a/T)
 

@@ -22,8 +22,8 @@ def group_handles_by_phase(phase_handles):
     getfield = getattr
     iscallable = callable
     handles_by_phase = {'s': [],
-                           'l': [],
-                           'g': []}
+                        'l': [],
+                        'g': []}
     for phase, handles in handles_by_phase.items():
         for phase_handle in phase_handles:
             if iscallable(phase_handle) and hasfield(phase_handle, phase):

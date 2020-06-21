@@ -26,7 +26,7 @@ def liquid_activities(mol_L, T, f_gamma):
         xgamma = np.ones_like(mol_L)
     return xgamma
 
-@njitable
+@njitable(cache=True)
 def gibbs_free_energy_of_liquid(mol_L, xgamma):
     xgamma[xgamma <= 0] = 1
     g_mix = (mol_L * np.log(xgamma)).sum()
