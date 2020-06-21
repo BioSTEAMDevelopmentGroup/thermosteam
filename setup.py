@@ -17,7 +17,7 @@ setup(
     author='Yoel Cortes-Pena',
     install_requires=['pint>=0.9',
                       'scipy>=1.3.1', 'IPython>=7.9.0', 
-                      'colorpalette>=0.3.0', 'biosteam>=2.19.16',
+                      'colorpalette>=0.3.0', 'biosteam>=2.19.17',
                       'pandas>=0.25.2', 'matplotlib>=3.1.1',
                       'numpy>=1.18.1', 'xlrd==1.2.0',
                       'openpyxl>=3.0.0', 'free_properties>=0.2.4',
