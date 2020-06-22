@@ -1291,13 +1291,12 @@ polylog2._pqoffset2 = ((8.548256176424551e+34, 1.8485781239087334e+35,
                         -7015.799744041691, 1.0),
                        0.999)
 
-@njitable
+@njitable(cache=True)
 def normalize(array, minimum=1e-16):
     """
     Return a normalized array to a magnitude of 1.
     If magnitude is zero, all fractions will have equal value.
     """
-    array = np.asarray(array)
     sum_array = array.sum()
     if sum_array < minimum:
         size = array.size
@@ -1305,20 +1304,21 @@ def normalize(array, minimum=1e-16):
     else:
         return array/sum_array
 
-@njitable
+@njitable(cache=True)
 def mixing_simple(z, y):
     r'''
     Return a weighted average of `y` given the weights, `z`.
 
     Examples
     --------
-    >>> mixing_simple([0.1, 0.9], [0.01, 0.02])
+    >>> import numpy as np
+    >>> mixing_simple(np.array([0.1, 0.9]), np.array([0.01, 0.02]))
     0.019000000000000003
     
     '''
-    return (np.asarray(z, float) * np.asarray(y, float)).sum()
+    return (z * y).sum()
 
-@njitable
+@njitable(cache=True)
 def mixing_logarithmic(z, y):
     r'''
     Return the logarithmic weighted average `y` given weights, `z`.
@@ -1332,7 +1332,8 @@ def mixing_logarithmic(z, y):
 
     Examples
     --------
-    >>> mixing_logarithmic([0.1, 0.9], [0.01, 0.02])
+    >>> import numpy as np
+    >>> mixing_logarithmic(np.array([0.1, 0.9]), np.array([0.01, 0.02]))
     0.01866065983073615
     
     '''

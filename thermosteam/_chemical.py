@@ -1121,13 +1121,9 @@ class Chemical:
             else: Tguess = Tb
         elif not Tguess:
             Tguess = (Tmin + Tmax)/2.0
-        return IQ_interpolation(Psat, Tmin, Tmax-1,
-                                    0, Psat(Tmax-1),
-                                    Tguess, P, 1e-3, 1e-1)
-        try: return IQ_interpolation(Psat, Tmin, Tmax-1,
-                                    0, Psat(Tmax-1),
-                                    Tguess, P, 1e-3, 1e-1)
-        except DomainError: pass
+        return IQ_interpolation(lambda T: Psat(T) - P,
+                                Tmin, Tmax-1, 0., Psat(Tmax-1),
+                                Tguess, 1e-3, 1e-1)
 
     ### Reinitializers ###
     

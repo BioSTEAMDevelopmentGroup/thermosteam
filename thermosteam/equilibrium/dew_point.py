@@ -56,10 +56,10 @@ class DewPoint:
     >>> molar_composition = (0.5, 0.5)
     >>> dp = DP(z=molar_composition, T=355)
     >>> dp
-    DewPointValues(T=355, P=91970.14968399628, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
+    DewPointValues(T=355, P=91970.14968399623, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
     >>> # Note that the result is a DewPointValues object which contain all results as attibutes
     >>> (dp.T, dp.P, dp.IDs, dp.z, dp.x)
-    (355, 91970.14968399628, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
+    (355, 91970.14968399623, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
     >>> # Solve for dew point at constant pressure
     >>> DP(z=molar_composition, P=2*101324)
     DewPointValues(T=376.2616600249248, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
@@ -67,7 +67,7 @@ class DewPoint:
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
                  'pcf', 'Psats', 'P', 'T', 'x',
-                 'Tmin', 'Tmax')
+                 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     Tmin_default = 200.
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
@@ -84,8 +84,10 @@ class DewPoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
-            self.Tmax = min([i.Tmax for i in Psats]) - 1e-3
+            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
+            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-3
+            self.Pmin = min([i(Tmin) for i in Psats])
+            self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
             self.P = self.T = self.x = None
             cached[key] = self
@@ -118,7 +120,7 @@ class DewPoint:
         args = (zP,)
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 0., 1e-6, 5e-9, args)
+                                 None, 1e-6, 5e-9, args)
         return T
     
     def _P_ideal(self, z_over_Psats):
@@ -162,7 +164,6 @@ class DewPoint:
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
         (357.45184743325336, array([0.849, 0.151]))
-        z
         """
         f = self._T_error
         z_norm = z/z.sum()
@@ -170,15 +171,15 @@ class DewPoint:
         args = (P, z_norm, zP)
         self.P = P
         T_guess = self.T or self._T_ideal(zP) 
-        Tmin = self.Tmin
-        Tmax = self.Tmax
         try:
             T = flx.aitken_secant(f, T_guess, T_guess+0.1,
                                   1e-6, 5e-9, args)
         except (InfeasibleRegion, DomainError):
+            Tmin = self.Tmin
+            Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
-                                     T_guess, 0., 1e-6, 5e-9, args)
+                                     T_guess, 1e-6, 5e-9, args)
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
     
@@ -208,7 +209,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28)
-        (82444.29876047901, array([0.853, 0.147]))
+        (82444.29876047897, array([0.853, 0.147]))
  
        """
         z_norm = z/z.sum()
@@ -221,12 +222,11 @@ class DewPoint:
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 1e-9, args)
         except (InfeasibleRegion, DomainError):
-            Tmax = self.Tmax
-            Pmin = 10
-            Pmax = max([i(Tmax) for i in self.Psats])
+            Pmin = self.Pmin
+            Pmax = self.Pmax
             P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                      f(Pmin, *args), f(Pmax, *args),
-                                     P_guess, 0., 1e-3, 5e-9, args)
+                                     P_guess, 1e-3, 5e-9, args)
         self.x = fn.normalize(self.x)
         return P, self.x.copy()
     
