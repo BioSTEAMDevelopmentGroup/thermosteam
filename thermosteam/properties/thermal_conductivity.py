@@ -235,7 +235,8 @@ def Tmax_Lakshmi_Prasad(MW):
     Returns the maximum temperature at which the Lakshmi Prasad method is
     valid.
     """
-    T_max = flx.aitken_secant(Lakshmi_Prasad.function, 298.15, args=(MW,))
+    T_max = flx.aitken_secant(Lakshmi_Prasad.function, 298.15, args=(MW,),
+                              checkroot=False)
     return T_max - 10 # As an extra precaution
 
 @functor(var='kappa.l')

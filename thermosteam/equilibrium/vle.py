@@ -417,7 +417,7 @@ class VLE:
             P = flx.IQ_interpolation(self._V_err_at_P,
                                      P_bubble, P_dew, 0, 1,
                                      self._P, self.P_tol, self.V_tol,
-                                     (self._V,))
+                                     (self._V,), checkroot=False)
              
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the
@@ -486,7 +486,7 @@ class VLE:
                         P_bubble, P_dew,
                         H_bubble/F_mass, H_dew/F_mass,
                         self._P, self.P_tol, self.H_hat_tol,
-                        (H_hat,))
+                        (H_hat,), checkroot=False)
         self._P = self._thermal_condition.P = P   
         self._thermal_condition.T = T
     
@@ -520,7 +520,7 @@ class VLE:
             T = flx.IQ_interpolation(self._V_err_at_T,
                                      T_bubble, T_dew, 0, 1,
                                      self._T, self.T_tol, self.V_tol,
-                                     (V,))
+                                     (V,), checkroot=False)
             
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the
@@ -594,7 +594,7 @@ class VLE:
                                  T_bubble, T_dew, 
                                  H_hat_bubble, H_hat_dew,
                                  self._T, self.T_tol, self.H_hat_tol,
-                                 (H_hat,))
+                                 (H_hat,), checkroot=False)
         
         # Make sure enthalpy balance is correct
         self._T = thermal_condition.T = self.mixture.xsolve_T(
@@ -642,10 +642,10 @@ class VLE:
         Psat_over_P_phi = Psats_over_P / phi
         f = self._x_iter
         args = (Psat_over_P_phi,)
-        x = flx.wegstein(f, self._x, 1e-12, args)
+        x = flx.wegstein(f, self._x, 1e-12, args, checkroot=False)
         self._x = f(x, *args)
         if (np.abs(self._x - x) > 1e-6).any():
-            x = flx.aitken(self._x_iter, self._x, 1e-6, args)
+            x = flx.aitken(self._x_iter, self._x, 1e-6, args, checkroot=False)
         self._x = x
         v = self._F_mol_vle * self._V * x * self._Ks     
         return fn.normalize(v)
@@ -663,7 +663,8 @@ class VLE:
             self._y = self._y_iter(y, Psats_over_P, T, P)
         else:
             self._y = flx.wegstein(self._y_iter, v/v.sum(), 1e-6,
-                                   args=(Psats_over_P, T, P))
+                                   args=(Psats_over_P, T, P),
+                                   checkroot=False)
         self._v = self._F_mol_vle * self._V * self._y
         return self._v
 

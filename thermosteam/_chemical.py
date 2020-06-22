@@ -1123,7 +1123,7 @@ class Chemical:
             Tguess = (Tmin + Tmax)/2.0
         return IQ_interpolation(lambda T: Psat(T) - P,
                                 Tmin, Tmax-1, 0., Psat(Tmax-1),
-                                Tguess, 1e-3, 1e-1)
+                                Tguess, 1e-3, 1e-1, checkroot=False)
 
     ### Reinitializers ###
     
