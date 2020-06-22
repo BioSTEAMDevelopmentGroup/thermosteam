@@ -50,10 +50,10 @@ def solve_phase_fraction(zs, Ks, guess):
     f_max = f(1., *args)
     if f_min > f_max > 0.: return 1.
     if f_max < f_min < 0.: return 0.
-    return flx.fast.IQ_interpolation(f, 0., 1.,
-                                     f_min, f_max,
-                                     guess, 1e-4, 1e-9,
-                                     args, checkroot=False)
+    return flx.IQ_interpolation(f, 0., 1.,
+                                f_min, f_max,
+                                guess, 1e-4, 1e-9,
+                                args, checkroot=False)
 
 @flx.njitable(cache=True)
 def phase_fraction_objective_function(V, zs, Ks):
