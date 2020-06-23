@@ -17,8 +17,8 @@ __all__ = ('solve_x', 'solve_y')
 def x_iter(x, x_gamma_poyinting, gamma, poyinting, T):
     x = fn.normalize(x)
     # Add back trace amounts for activity coefficients at infinite dilution
-    mask = x < 1e-16
-    x[mask] = 1e-16
+    mask = x < 1e-32
+    x[mask] = 1e-32
     denominator = gamma(x, T) * poyinting(x, T)
     try:
         x = x_gamma_poyinting / denominator
@@ -32,7 +32,7 @@ def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):
     if x_guess is None: x_guess = x_gamma_poyinting
     args = (x_gamma_poyinting, gamma, poyinting, T)
     try:
-        x = flx.aitken(x_iter, x_guess, 1e-8, args=args, checkroot=False)
+        x = flx.aitken(x_iter, x_guess, 1e-12, args=args, checkroot=False)
     except flx.InfeasibleRegion:
         x = x_gamma_poyinting
     return x
@@ -44,5 +44,5 @@ def y_iter(y, y_phi, phi, T, P):
 def solve_y(y_phi, phi, T, P, y_guess):
     if isinstance(phi, IdealFugacityCoefficients): return y_phi
     elif y_guess is None: y_guess = y_phi
-    return flx.aitken(y_iter, y_phi, 1e-8, args=(y_phi, phi, T, P),
+    return flx.aitken(y_iter, y_phi, 1e-12, args=(y_phi, phi, T, P),
                       checkroot=False)

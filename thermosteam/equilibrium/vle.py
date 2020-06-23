@@ -90,10 +90,10 @@ class VLE:
                  '_F_mol_vle', # [float] Total moles in equilibrium.
                  '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
                  '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
-    T_tol = 0.00001
-    P_tol = 0.1
-    H_hat_tol = 0.1
-    V_tol = 0.00001
+    T_tol = 1e-9
+    P_tol = 1e-3
+    H_hat_tol = 1e-3
+    V_tol = 1e-9
     
     def __init__(self, imol, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
@@ -633,7 +633,7 @@ class VLE:
     
     def _x_iter(self, x, Psat_over_P_phi):
         x = x/x.sum()
-        x[x < 1e-16] = 1e-16
+        x[x < 1e-32] = 1e-32
         self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
         self._V = V = binary.phase_fraction(self._z, self._Ks, self._V)
         return self._z/(1. + V * (self._Ks - 1.))
@@ -663,7 +663,7 @@ class VLE:
         if isinstance(self._phi, IdealFugacityCoefficients):
             self._y = self._y_iter(y, Psats_over_P, T, P)
         else:
-            self._y = flx.wegstein(self._y_iter, v/v.sum(), 1e-6,
+            self._y = flx.wegstein(self._y_iter, v/v.sum(), 1e-12,
                                    args=(Psats_over_P, T, P),
                                    checkroot=False)
         self._v = self._F_mol_vle * self._V * self._y

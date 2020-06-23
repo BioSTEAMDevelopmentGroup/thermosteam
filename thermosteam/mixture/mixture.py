@@ -135,19 +135,20 @@ class Mixture:
         """Solve for temperature in Kelvin."""
         # First approximation
         H_guess = self.H(phase, mol, T_guess, P)
-        if abs(H - H_guess) < 1e-3: return T_guess
+        abs_ = abs
+        if abs_(H - H_guess) < 1e-3: return T_guess
         Cn = self.Cn(phase, mol, T_guess)
         T = iter_temperature(T_guess, H, H_guess, Cn)
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it = 3
             it2 = 0
-            while abs(T - T_guess) > 0.05:
+            while abs_(T - T_guess) > 1e-9:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    if it2 > 5: break # Its good enough, no need to find exact solution
+                    if it2 > 10: break # Its good enough, no need to find exact solution
                     Cn = self.Cn(phase, mol, T)
                 else:
                     it += 1
@@ -159,19 +160,20 @@ class Mixture:
         # First approximation
         phase_mol = tuple(phase_mol)
         H_guess = self.xH(phase_mol, T_guess, P)
-        if abs(H - H_guess) < 1e-3: return T_guess
+        abs_ = abs
+        if abs_(H - H_guess) < 1e-3: return T_guess
         Cn = self.xCn(phase_mol, T_guess)
         T = iter_temperature(T_guess, H, H_guess, Cn)
         if self.rigorous_energy_balance:
             # Solve enthalpy by iteration
             it = 3
             it2 = 0
-            while abs(T - T_guess) > 0.05:
+            while abs_(T - T_guess) > 1e-9:
                 T_guess = T
                 if it == 3:
                     it = 0
                     it2 += 1
-                    if it2 > 5: break # Its good enough, no need to find exact solution
+                    if it2 > 10: break # Its good enough, no need to find exact solution
                     Cn = self.xCn(phase_mol, T)
                 else:
                     it += 1
