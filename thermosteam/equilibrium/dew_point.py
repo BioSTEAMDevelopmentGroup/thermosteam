@@ -120,7 +120,7 @@ class DewPoint:
         args = (zP,)
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 1e-6, 5e-9, args,
+                                 (Tmin + Tmax)/2., 1e-6, 5e-9, args,
                                  checkroot=False, checkbounds=False)
         return T
     

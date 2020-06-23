@@ -415,7 +415,7 @@ class VLE:
             self._V = V 
             self._refresh_v(V, y_bubble)
             P = flx.IQ_interpolation(self._V_err_at_P,
-                                     P_bubble, P_dew, 0, 1,
+                                     P_bubble, P_dew, 0 - V, 1 - V,
                                      self._P, self.P_tol, self.V_tol,
                                      (self._V,), checkroot=False,
                                      checkbounds=False)
@@ -485,7 +485,7 @@ class VLE:
         H_hat = H/F_mass
         P = flx.IQ_interpolation(self._H_hat_err_at_P,
                         P_bubble, P_dew,
-                        H_bubble/F_mass, H_dew/F_mass,
+                        H_bubble/F_mass - H_hat, H_dew/F_mass - H_hat,
                         self._P, self.P_tol, self.H_hat_tol,
                         (H_hat,), checkroot=False, checkbounds=False)
         self._P = self._thermal_condition.P = P   
@@ -519,7 +519,7 @@ class VLE:
             self._refresh_v(V, y_bubble)
             self._V = V 
             T = flx.IQ_interpolation(self._V_err_at_T,
-                                     T_bubble, T_dew, 0, 1,
+                                     T_bubble, T_dew, 0 - V, 1 - V,
                                      self._T, self.T_tol, self.V_tol,
                                      (V,), checkroot=False, checkbounds=False)
             
@@ -593,7 +593,7 @@ class VLE:
         H_hat_dew = H_dew/F_mass
         T = flx.IQ_interpolation(self._H_hat_err_at_T,
                                  T_bubble, T_dew, 
-                                 H_hat_bubble, H_hat_dew,
+                                 H_hat_bubble - H_hat, H_hat_dew - H_hat,
                                  self._T, self.T_tol, self.H_hat_tol,
                                  (H_hat,), checkroot=False, checkbounds=False)
         

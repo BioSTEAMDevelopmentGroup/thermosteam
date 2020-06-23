@@ -116,7 +116,8 @@ class BubblePoint:
         Tmax = self.Tmax
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 1e-6, 5e-9, args, checkbounds=False)
+                                 (Tmin + Tmax)/2., 1e-6, 5e-9,
+                                 args, checkbounds=False)
         return T
     
     def _P_ideal(self, z_Psat_gamma_pcf):
