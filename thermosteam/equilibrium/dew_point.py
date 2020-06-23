@@ -84,8 +84,8 @@ class DewPoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-6, self.Tmin_default)
-            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-6
+            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
+            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-3
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
@@ -120,7 +120,7 @@ class DewPoint:
         args = (zP,)
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 1e-12, 5e-12, args,
+                                 None, 1e-9, 5e-12, args,
                                  checkroot=False, checkbounds=False)
         return T
     
@@ -173,15 +173,15 @@ class DewPoint:
         self.P = P
         T_guess = self.T or self._T_ideal(zP) 
         try:
-            T = flx.aitken_secant(f, T_guess, T_guess + 1e-6,
-                                  1e-12, 5e-12, args,
+            T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                                  1e-9, 5e-12, args,
                                   checkroot=False)
         except (InfeasibleRegion, DomainError):
             Tmin = self.Tmin
             Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
-                                     T_guess, 1e-12, 5e-12, args,
+                                     T_guess, 1e-9, 5e-12, args,
                                      checkroot=False, checkbounds=False)
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
@@ -223,14 +223,14 @@ class DewPoint:
         f = self._P_error
         P_guess = self.P or self._P_ideal(z_over_Psats)
         try:
-            P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-6, 1e-12, args,
+            P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 5e-12, args,
                                   checkroot=False)
         except (InfeasibleRegion, DomainError):
             Pmin = self.Pmin
             Pmax = self.Pmax
             P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                      f(Pmin, *args), f(Pmax, *args),
-                                     P_guess, 1e-6, 5e-12, args,
+                                     P_guess, 1e-3, 5e-12, args,
                                      checkroot=False, checkbounds=False)
         self.x = fn.normalize(self.x)
         return P, self.x.copy()

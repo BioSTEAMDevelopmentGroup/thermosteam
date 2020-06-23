@@ -82,8 +82,8 @@ class BubblePoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-6, self.Tmin_default)
-            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-6
+            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
+            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-3
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
@@ -116,7 +116,7 @@ class BubblePoint:
         Tmax = self.Tmax
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 1e-12, 5e-12,
+                                 None, 1e-9, 5e-12,
                                  args, checkbounds=False)
         return T
     
@@ -170,14 +170,14 @@ class BubblePoint:
         args = (P, z_over_P, z_norm)
         T_guess = self.T or self._T_ideal(z_over_P) 
         try:
-            T = flx.aitken_secant(f, T_guess, T_guess + 1e-6,
-                                  1e-12, 5e-12, args,
+            T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                                  1e-9, 5e-12, args,
                                   checkroot=False)
         except (InfeasibleRegion, DomainError):
             Tmin = self.Tmin; Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
-                                     T_guess, 1e-12, 5e-12, args, 
+                                     T_guess, 1e-9, 5e-12, args, 
                                      checkroot=False, checkbounds=False)
         self.y = fn.normalize(self.y)
         return T, self.y.copy()
@@ -219,13 +219,13 @@ class BubblePoint:
         args = (T, z_Psat_gamma_pcf)
         P_guess = self.P or self._P_ideal(z_Psat_gamma_pcf)
         try:
-            P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-6, 1e-12,
+            P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
                                   args, checkroot=False)
         except (InfeasibleRegion, DomainError):
             Pmin = self.Pmin; Pmax = self.Pmax
             P = flx.IQ_interpolation(f, Pmin, Pmax,
                                      f(Pmin, *args), f(Pmax, *args),
-                                     P_guess, 1e-6, 5e-12, args,
+                                     P_guess, 1e-3, 5e-12, args,
                                      checkroot=False, checkbounds=False)
         self.y = fn.normalize(self.y)
         return P, self.y.copy()

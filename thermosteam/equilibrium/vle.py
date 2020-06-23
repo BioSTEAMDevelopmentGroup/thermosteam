@@ -90,10 +90,10 @@ class VLE:
                  '_F_mol_vle', # [float] Total moles in equilibrium.
                  '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
                  '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
-    T_tol = 1e-9
-    P_tol = 1e-3
+    T_tol = 1e-6
+    P_tol = 1.
     H_hat_tol = 1e-3
-    V_tol = 1e-9
+    V_tol = 1e-6
     
     def __init__(self, imol, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
