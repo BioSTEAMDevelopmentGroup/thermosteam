@@ -1114,16 +1114,19 @@ class Chemical:
         Tb = self._Tb
         Psat = self._Psat
         if not Psat: return None
-        if not Tmin: Tmin = Psat.Tmin 
-        if not Tmax: Tmax = Psat.Tmax
+        if not Tmin: Tmin = Psat.Tmin + 1.
+        if not Tmax: Tmax = Psat.Tmax - 1.
         if Tb:
             if P == 101325: return Tb
             else: Tguess = Tb
         elif not Tguess:
             Tguess = (Tmin + Tmax)/2.0
-        return IQ_interpolation(lambda T: Psat(T) - P,
-                                Tmin, Tmax-1, 0., Psat(Tmax-1),
-                                Tguess, 1e-3, 1e-1, checkroot=False)
+        try:
+            T = IQ_interpolation(lambda T: Psat(T) - P,
+                                 Tmin, Tmax, Psat(Tmin) - P, Psat(Tmax) - P,
+                                 Tguess, 1e-3, 1e-1, checkroot=False)
+        except: return None
+        return T
 
     ### Reinitializers ###
     

@@ -486,7 +486,7 @@ class VLE:
                         P_bubble, P_dew,
                         H_bubble/F_mass, H_dew/F_mass,
                         self._P, self.P_tol, self.H_hat_tol,
-                        (H_hat,), checkroot=False)
+                        (H_hat,), checkroot=False, checkbounds=False)
         self._P = self._thermal_condition.P = P   
         self._thermal_condition.T = T
     
@@ -594,7 +594,7 @@ class VLE:
                                  T_bubble, T_dew, 
                                  H_hat_bubble, H_hat_dew,
                                  self._T, self.T_tol, self.H_hat_tol,
-                                 (H_hat,), checkroot=False)
+                                 (H_hat,), checkroot=False, checkbounds=False)
         
         # Make sure enthalpy balance is correct
         self._T = thermal_condition.T = self.mixture.xsolve_T(

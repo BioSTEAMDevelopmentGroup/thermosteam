@@ -121,7 +121,7 @@ class DewPoint:
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
                                  None, 1e-6, 5e-9, args,
-                                 checkroot=False)
+                                 checkroot=False, checkbounds=False)
         return T
     
     def _P_ideal(self, z_over_Psats):
@@ -182,7 +182,7 @@ class DewPoint:
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-6, 5e-9, args,
-                                     checkroot=False)
+                                     checkroot=False, checkbounds=False)
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
     
@@ -231,7 +231,7 @@ class DewPoint:
             P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-9, args,
-                                     checkroot=False)
+                                     checkroot=False, checkbounds=False)
         self.x = fn.normalize(self.x)
         return P, self.x.copy()
     
