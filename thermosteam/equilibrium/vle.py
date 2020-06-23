@@ -417,7 +417,8 @@ class VLE:
             P = flx.IQ_interpolation(self._V_err_at_P,
                                      P_bubble, P_dew, 0, 1,
                                      self._P, self.P_tol, self.V_tol,
-                                     (self._V,), checkroot=False)
+                                     (self._V,), checkroot=False,
+                                     checkbounds=False)
              
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the
@@ -520,7 +521,7 @@ class VLE:
             T = flx.IQ_interpolation(self._V_err_at_T,
                                      T_bubble, T_dew, 0, 1,
                                      self._T, self.T_tol, self.V_tol,
-                                     (V,), checkroot=False)
+                                     (V,), checkroot=False, checkbounds=False)
             
             # In case solver cannot reach the vapor fraction because
             # the composition does not converge at values that meets the

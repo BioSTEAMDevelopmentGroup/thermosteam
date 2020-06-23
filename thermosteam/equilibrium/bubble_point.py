@@ -225,7 +225,7 @@ class BubblePoint:
             P = flx.IQ_interpolation(f, Pmin, Pmax,
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-9, args,
-                                     checkroot=False)
+                                     checkroot=False, checkbounds=False)
         self.y = fn.normalize(self.y)
         return P, self.y.copy()
     
