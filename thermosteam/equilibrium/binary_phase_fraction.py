@@ -53,7 +53,7 @@ def solve_phase_fraction(zs, Ks, guess):
     return flx.IQ_interpolation(f, 0., 1.,
                                 f_min, f_max,
                                 guess, 1e-16, 1e-16,
-                                args, checkroot=False)
+                                args, checkiter=False)
 
 @flx.njitable(cache=True)
 def phase_fraction_objective_function(V, zs, Ks):

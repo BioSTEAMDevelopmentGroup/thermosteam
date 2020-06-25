@@ -8,12 +8,17 @@
 """
 """
 from ..exceptions import InfeasibleRegion
+import flexsolve as flx
 
 __all__ = ('Mixture',)
 
-def iter_temperature(T, H, H_guess, Cn):
+def iter_temperature(T, H, H_model, phase, mol, P, Cn):
     # Used to solve for ethalpy at given temperature
-    return T + (H - H_guess) / Cn
+    return T + (H - H_model(phase, mol, T, P)) / Cn
+
+def xiter_temperature(T, H, H_model, phase_mol, P, Cn):
+    # Used to solve for ethalpy at given temperature
+    return T + (H - H_model(phase_mol, T, P)) / Cn
 
 # %% Ideal mixture
 
@@ -138,21 +143,10 @@ class Mixture:
         abs_ = abs
         if abs_(H - H_guess) < 1e-3: return T_guess
         Cn = self.Cn(phase, mol, T_guess)
-        T = iter_temperature(T_guess, H, H_guess, Cn)
+        args = (H, self.H, phase, mol, P, Cn)
+        T = iter_temperature(T_guess, *args)
         if self.rigorous_energy_balance:
-            # Solve enthalpy by iteration
-            it = 3
-            it2 = 0
-            while abs_(T - T_guess) > 1e-9:
-                T_guess = T
-                if it == 3:
-                    it = 0
-                    it2 += 1
-                    if it2 > 10: break # Its good enough, no need to find exact solution
-                    Cn = self.Cn(phase, mol, T)
-                else:
-                    it += 1
-                T = iter_temperature(T_guess, H, self.H(phase, mol, T, P), Cn)
+            T = flx.wegstein(iter_temperature, T, 1e-6, args, 10, checkiter=False)
         return T
                 
     def xsolve_T(self, phase_mol, H, T_guess, P):
@@ -163,21 +157,10 @@ class Mixture:
         abs_ = abs
         if abs_(H - H_guess) < 1e-3: return T_guess
         Cn = self.xCn(phase_mol, T_guess)
-        T = iter_temperature(T_guess, H, H_guess, Cn)
+        args = (H, self.xH, phase_mol, P, Cn)
+        T = xiter_temperature(T_guess, *args)
         if self.rigorous_energy_balance:
-            # Solve enthalpy by iteration
-            it = 3
-            it2 = 0
-            while abs_(T - T_guess) > 1e-9:
-                T_guess = T
-                if it == 3:
-                    it = 0
-                    it2 += 1
-                    if it2 > 10: break # Its good enough, no need to find exact solution
-                    Cn = self.xCn(phase_mol, T)
-                else:
-                    it += 1
-                T = iter_temperature(T_guess, H, self.xH(phase_mol, T, P), Cn)
+            T = flx.wegstein(xiter_temperature, T, 1e-6, args, 10, checkiter=False)
         return T
     
     def xCn(self, phase_mol, T):

@@ -172,13 +172,13 @@ class BubblePoint:
         try:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
-                                  checkroot=False)
+                                  checkiter=False)
         except (InfeasibleRegion, DomainError):
             Tmin = self.Tmin; Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args, 
-                                     checkroot=False, checkbounds=False)
+                                     checkiter=False, checkbounds=False)
         self.y = fn.normalize(self.y)
         return T, self.y.copy()
     
@@ -220,13 +220,13 @@ class BubblePoint:
         P_guess = self.P or self._P_ideal(z_Psat_gamma_pcf)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
-                                  args, checkroot=False)
+                                  args, checkiter=False)
         except (InfeasibleRegion, DomainError):
             Pmin = self.Pmin; Pmax = self.Pmax
             P = flx.IQ_interpolation(f, Pmin, Pmax,
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
-                                     checkroot=False, checkbounds=False)
+                                     checkiter=False, checkbounds=False)
         self.y = fn.normalize(self.y)
         return P, self.y.copy()
     
