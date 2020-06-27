@@ -46,7 +46,6 @@ def build_ideal_PhaseMixtureHandle(chemicals, var):
 # %% Ideal mixture model builder 
 
 def ideal_mixture(chemicals,
-                  rigorous_energy_balance=True,
                   include_excess_energies=False):
     """
     Create a Mixture object that computes mixture properties using ideal mixing rules.
@@ -55,8 +54,6 @@ def ideal_mixture(chemicals,
     ----------
     chemicals : Chemicals
         For retrieving pure component chemical data.
-    rigorous_energy_balance=True : bool
-        Whether to rigorously solve for temperature in energy balance or simply approximate.
     include_excess_energies=False : bool
         Whether to include excess energies in enthalpy and entropy calculations.
 
@@ -90,5 +87,4 @@ def ideal_mixture(chemicals,
     sigma = IdealMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
     epsilon = IdealMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
     return Mixture('ideal mixing', Cn, H, S, H_excess, S_excess,
-                   mu, V, kappa, Hvap, sigma, epsilon,
-                   rigorous_energy_balance, include_excess_energies)
+                   mu, V, kappa, Hvap, sigma, epsilon, include_excess_energies)

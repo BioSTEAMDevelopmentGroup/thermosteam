@@ -7,7 +7,6 @@
 # for license details.
 """
 """
-from ..exceptions import InfeasibleRegion
 import flexsolve as flx
 
 __all__ = ('Mixture',)
@@ -52,9 +51,6 @@ class Mixture:
         Surface tension mixture model [N/m].
     epsilon : function(mol, T, P)
         Relative permitivity mixture model [-]
-    rigorous_energy_balance=True : bool
-        Whether to rigorously solve for temperature
-        in energy balance or simply approximate.
     include_excess_energies=False : bool
         Whether to include excess energies
         in enthalpy and entropy calculations.
@@ -72,9 +68,6 @@ class Mixture:
     ----------
     rule : str
         Description of mixing rules used.
-    rigorous_energy_balance : bool
-        Whether to rigorously solve for temperature
-        in energy balance or simply approximate.
     include_excess_energies : bool
         Whether to include excess energies
         in enthalpy and entropy calculations.
@@ -105,10 +98,8 @@ class Mixture:
     
     def __init__(self, rule, Cn, H, S, H_excess, S_excess,
                  mu, V, kappa, Hvap, sigma, epsilon,
-                 rigorous_energy_balance=True,
                  include_excess_energies=False):
         self.rule = rule
-        self.rigorous_energy_balance = rigorous_energy_balance
         self.include_excess_energies = include_excess_energies
         self.Cn = Cn
         self.mu = mu
@@ -138,30 +129,13 @@ class Mixture:
     
     def solve_T(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
-        # First approximation
-        H_guess = self.H(phase, mol, T_guess, P)
-        abs_ = abs
-        if abs_(H - H_guess) < 1e-3: return T_guess
-        Cn = self.Cn(phase, mol, T_guess)
-        args = (H, self.H, phase, mol, P, Cn)
-        T = iter_temperature(T_guess, *args)
-        if self.rigorous_energy_balance:
-            T = flx.wegstein(iter_temperature, T, 1e-6, args, 10, checkiter=False)
-        return T
+        args = (H, self.H, phase, mol, P, self.Cn(phase, mol, T_guess))
+        return flx.aitken(iter_temperature, T_guess, 1e-6, args, 10, checkiter=False)
                 
     def xsolve_T(self, phase_mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
-        # First approximation
-        phase_mol = tuple(phase_mol)
-        H_guess = self.xH(phase_mol, T_guess, P)
-        abs_ = abs
-        if abs_(H - H_guess) < 1e-3: return T_guess
-        Cn = self.xCn(phase_mol, T_guess)
-        args = (H, self.xH, phase_mol, P, Cn)
-        T = xiter_temperature(T_guess, *args)
-        if self.rigorous_energy_balance:
-            T = flx.wegstein(xiter_temperature, T, 1e-6, args, 10, checkiter=False)
-        return T
+        args = (H, self.xH, tuple(phase_mol), P, self.xCn(phase_mol, T_guess))
+        return flx.aitken(xiter_temperature, T_guess, 1e-6, args, 10, checkiter=False)
     
     def xCn(self, phase_mol, T):
         """Multi-phase mixture heat capacity [J/mol/K]."""
@@ -202,12 +176,11 @@ class Mixture:
         return sum([kappa(phase, mol, T, P) for phase, mol in phase_mol])
     
     def __repr__(self):
-        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., rigorous_energy_balance={self.rigorous_energy_balance}, include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"
     
     def _info(self):
         return (f"{type(self).__name__}(\n"
                 f"    rule={repr(self.rule)}, ...\n"
-                f"    rigorous_energy_balance={self.rigorous_energy_balance},\n"
                 f"    include_excess_energies={self.include_excess_energies}\n"
                  ")")
     

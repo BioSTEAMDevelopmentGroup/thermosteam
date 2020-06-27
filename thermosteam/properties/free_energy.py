@@ -13,6 +13,14 @@ from .._constants import R
 from ..base import functor, PhaseTFunctorBuilder, PhaseTPFunctorBuilder
 from math import log
     
+@functor(var='H')
+def Enthalpy(T, Cn, T_ref, H_ref):
+    return H_ref + Cn.integrate_by_T(T_ref, T)
+
+@functor(var='S')
+def Entropy(T, Cn, T_ref, S_ref):
+    return S_ref + Cn.integrate_by_T_over_T(T_ref, T)
+
 @functor(var='H.l')
 def Liquid_Enthalpy_Ref_Liquid(T, Cn_l, T_ref, H_ref):
     """Enthapy (kJ/kmol) disregarding pressure and assuming the specified phase."""

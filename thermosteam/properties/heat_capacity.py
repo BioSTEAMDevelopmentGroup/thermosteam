@@ -800,8 +800,7 @@ zabransky_model_builders[2].many = True
 zabransky_model_builders[4].many = True
 
 @TDependentHandleBuilder('Cn.l')
-def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn):
-    Cn_g = Cn.g
+def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_variable, Cn_g):
     for i in zabransky_model_builders: i.add_model(CAS, handle.models)        
     add_model = handle.add_model
     if CAS in VDI_saturation_dict:

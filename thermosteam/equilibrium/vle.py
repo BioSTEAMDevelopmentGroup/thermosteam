@@ -643,11 +643,8 @@ class VLE:
         Psat_over_P_phi = Psats_over_P / phi
         f = self._x_iter
         args = (Psat_over_P_phi,)
-        x = flx.wegstein(f, self._x, 1e-12, args, checkiter=False)
+        x = flx.aitken(f, self._x, 1e-12, args, checkiter=False)
         self._x = f(x, *args)
-        if (np.abs(self._x - x) > 1e-6).any():
-            x = flx.aitken(self._x_iter, self._x, 1e-6, args, checkiter=False)
-        self._x = x
         v = self._F_mol_vle * self._V * x * self._Ks     
         return fn.normalize(v)
     
@@ -663,7 +660,7 @@ class VLE:
         if isinstance(self._phi, IdealFugacityCoefficients):
             self._y = self._y_iter(y, Psats_over_P, T, P)
         else:
-            self._y = flx.wegstein(self._y_iter, v/v.sum(), 1e-12,
+            self._y = flx.aitken(self._y_iter, v/v.sum(), 1e-12,
                                    args=(Psats_over_P, T, P),
                                    checkiter=False)
         self._v = self._F_mol_vle * self._V * self._y
