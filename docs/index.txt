@@ -53,6 +53,20 @@ Key Features & Capabilities
    properties/properties_module
    mixture/mixture_module
 
+Related Projects
+----------------
+
+There are many third party open-source Python libraries that may provide additional
+resources for designing and modeling chemical processes:
+
+* `chempy <https://pythonhosted.org/chempy/>`_: A package useful for chemistry written in Python.
+* `fluids <https://fluids.readthedocs.io/>`_: Fluid dynamics component of Chemical Engineering Design Library (ChEDL) 
+* `thermo <https://thermo.readthedocs.io/en/latest/>`_: Chemical properties component of Chemical Engineering Design Library.
+* `thermochem <https://thermochem.readthedocs.io/en/latest/>`_: Useful Python modules for Thermodynamics and Thermochemistry.
+* `chemics <https://chemics.github.io/>`_: A Python package for chemical reactor engineering.
+* `ase <https://gitlab.com/ase/ase>`_: The Atomic Simulation Environment.
+* `pMuTT <https://vlachosgroup.github.io/pMuTT/includeme.html>`_: The Python Multiscale Thermochemistry Toolbox.
+
 Indices and tables
 ==================
 
