@@ -7,8 +7,6 @@
 # for license details.
 """
 """
-from .repr_utils import repr_args
-from inspect import signature
 
 __all__ = ('Cache', 'cached_method')
 

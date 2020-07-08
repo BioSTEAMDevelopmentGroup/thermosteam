@@ -154,9 +154,15 @@ class ChemicalIndexer(Indexer):
         self._data[:] = 0
     
     def mix_from(self, others):
-        utils.all_same_chemicals(self, others)
         self.phase = find_main_phase(others, self.phase)
-        self._data[:] = sum([i.sum_across_phases() for i in others])
+        chemicals = self.chemicals
+        data = self._data
+        data[:] = 0
+        for i in others:
+            if chemicals is i.chemicals:
+                data[:] += i.sum_across_phases()
+            else:
+                self[i.chemicals.IDs] += i.sum_across_phases()
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -324,17 +330,31 @@ class MaterialIndexer(Indexer):
             self._data[:] = other._data
     
     def mix_from(self, others):
-        utils.all_same_chemicals(self, others)
         isa = isinstance
         data = self._data
         data[:] = 0
         get_phase_index = self._get_phase_index
+        chemicals = self.chemicals
+        phases = self.phases
         for i in others:
             if isa(i, MaterialIndexer):
-                utils.same_phases(self, i)
-                data[:] += i._data
+                if phases == i.phases:
+                    if chemicals is i.chemicals:
+                        data[:] += i._data
+                    else:
+                        self[i.chemicals.IDs] += i._data
+                else:
+                    for phase, idata in i:
+                        if chemicals is i.chemicals:
+                            data[get_phase_index(phase), :] += i._data
+                        else:
+                            self[phase, i.chemicals.IDs] += i._data
             elif isa(i, ChemicalIndexer):
-                data[get_phase_index(i.phase)] += i._data
+                phase_index = get_phase_index(i.phase)
+                if chemicals is i.chemicals:
+                    data[phase_index, :] += i._data
+                else:
+                    self[phase_index, i.chemicals.IDs] += i._data
             else:
                 raise ValueError("can only mix from chemical or material indexers")
     

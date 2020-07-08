@@ -8,7 +8,7 @@
 """
 """
 from .._settings import settings
-from ..utils import colors, fix_axis_style
+from ..utils import colors, style_axis
 from ..properties.identifiers import to_searchable_format
 from .bubble_point import BubblePoint
 from .lle import LLE
@@ -108,7 +108,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo
     plt.legend()
     plt.xlabel(f'{chemical_a} molar fraction')
     plt.ylabel(ylabel)
-    fix_axis_style(xticks=np.linspace(0, 1, 5),
+    style_axis(xticks=np.linspace(0, 1, 5),
                    yticks=np.linspace(ms.min(), ms.max(), 5))
     
 def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None, color=None,

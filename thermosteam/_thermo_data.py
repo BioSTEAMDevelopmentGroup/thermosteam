@@ -16,9 +16,7 @@ __all__ = ('ThermoData',)
 
 def as_IDs(IDs):
     isa = isinstance
-    if isa(IDs, str):
-        IDs = [IDs]
-    elif isa(IDs, Iterable):
+    if isa(IDs, Iterable):
         for i in IDs: 
             if not isa(i, str):
                 raise ValueError('IDs must be an iterable of strings')
@@ -177,13 +175,26 @@ class ThermoData:
         except KeyError: raise AttributeError('no synonym data available')
         return data
     
+    def create_stream(self, ID):
+        """
+        Create stream from data. 
+        
+        Parameters
+        ----------
+        ID=None : str
+            ID of stream to create.
+        
+        """
+        data = self.stream_data[ID]
+        return tmo.Stream(ID, **data) if data else tmo.Stream(ID)
+    
     def create_streams(self, IDs=None):
         """
         Create streams from data. 
         
         Parameters
         ----------
-        IDs=None : Iterable[str] or str, optional
+        IDs=None : Iterable[str], optional
             IDs of streams to create. Defaults to all streams.
         
         """
@@ -193,7 +204,7 @@ class ThermoData:
     
     def create_chemicals(self, IDs=None):
         """
-        Create streams from data. 
+        Create chemicals from data. 
         
         Parameters
         ----------
@@ -216,10 +227,14 @@ class ThermoData:
         chemicals : CompiledChemicals
         
         """
-        assert isinstance(chemicals, tmo.CompiledChemicals), "chemicals must be a CompiledChemicals object"
+        isa = isinstance
+        assert isa(chemicals, tmo.CompiledChemicals), "chemicals must be a CompiledChemicals object"
         synonym_data = self.synonym_data
         set_synonym = chemicals.set_synonym
         for ID, synonyms in synonym_data.items(): 
-            for synonym in as_IDs(synonyms): set_synonym(ID, synonym)
+            if isa(synonyms, str):
+                set_synonym(ID, synonyms)
+            else:
+                for synonym in as_IDs(synonyms): set_synonym(ID, synonym)
 
         

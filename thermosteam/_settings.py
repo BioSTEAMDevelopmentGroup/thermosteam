@@ -11,6 +11,10 @@ import thermosteam as tmo
 
 __all__ = ('settings',)
 
+def raise_no_thermo_error():
+    raise RuntimeError("no available 'Thermo' object; "
+                       "use settings.set_thermo")
+
 class Settings:
     __slots__ = ('_thermo',
                  '_phase_names',
@@ -57,7 +61,7 @@ class Settings:
             chemicals.compile()
         elif not chemicals:
             thermo = settings._thermo
-            assert thermo, "no available 'Chemicals' object"
+            if not thermo: raise_no_thermo_error()
             chemicals = thermo.chemicals
         else:
             raise ValueError("chemicals must be a 'Chemicals' object")
@@ -70,16 +74,14 @@ class Settings:
         """
         if not mixture:
             thermo = settings.thermo
-            assert thermo, ("no available 'Thermo' object; "
-                            "set settings.thermo first")
+            if not thermo: raise_no_thermo_error()
             mixture = thermo.mixture
         return mixture
     
     def get_thermo(self):
         """Return a default Thermo object."""
         thermo = self._thermo
-        assert thermo, ("no available 'Thermo' object; "
-                        "use settings.set_thermo")
+        if not thermo: raise_no_thermo_error()
         return thermo
     
     def set_thermo(self, thermo):
@@ -88,6 +90,11 @@ class Settings:
         if not isinstance(thermo, tmo.Thermo):
             thermo = tmo.Thermo(thermo)
         self._thermo = thermo
+    
+    def get_chemicals(self):
+        """Return a default Chemicals object."""
+        thermo = self.get_thermo()
+        return thermo.chemicals
     
     def __repr__(self):
         return "<Settings>"

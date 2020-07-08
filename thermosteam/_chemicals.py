@@ -165,7 +165,12 @@ class Chemicals:
         return len(self.__dict__)
     
     def __contains__(self, chemical):
-        return chemical in self.__dict__.values()
+        if isinstance(chemical, str):
+            return chemical in self.__dict__
+        elif isinstance(chemical, Chemical):
+            return chemical in self.__dict__.values()
+        else:
+            return False
     
     def __iter__(self):
         yield from self.__dict__.values()
@@ -731,7 +736,12 @@ class CompiledChemicals(Chemicals):
         return self.size
     
     def __contains__(self, chemical):
-        return chemical in self.tuple
+        if isinstance(chemical, str):
+            return chemical in self.__dict__
+        elif isinstance(chemical, Chemical):
+            return chemical in self.tuple
+        else:
+            return False
     
     def __iter__(self):
         return iter(self.tuple)

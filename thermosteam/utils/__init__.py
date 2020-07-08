@@ -7,40 +7,36 @@
 # for license details.
 """
 """
-
-from . import pickle_utils
-from . import repr_utils
-from . import decorator_utils
-from . import other_utils
-from . import define_from
+from . import pickle
+from . import representation
+from . import decorators
+from . import other
 from . import cache
-from . import assert_utils
-from . import var_utils
+from . import assertions
+from . import model_variables
 from . import registry
 from . import colors
-from . import plot_utils
+from . import plots
 
-__all__ = (*pickle_utils.__all__,
-           *repr_utils.__all__,
-           *decorator_utils.__all__,
-           *other_utils.__all__,
-           *define_from.__all__,
+__all__ = (*pickle.__all__,
+           *representation.__all__,
+           *decorators.__all__,
+           *other.__all__,
            *cache.__all__,
-           *assert_utils.__all__,
-           *var_utils.__all__,
+           *assertions.__all__,
+           *model_variables.__all__,
            *registry.__all__,
            *colors.__all__,
-           *plot_utils.__all__,
+           *plots.__all__,
 )
 
-from .pickle_utils import *
-from .repr_utils import *
-from .decorator_utils import *
-from .other_utils import *
-from .define_from import *
+from .pickle import *
+from .representation import *
+from .decorators import *
+from .other import *
 from .cache import *
-from .assert_utils import *
-from .var_utils import *
+from .assertions import *
+from .model_variables import *
 from .registry import *
 from .colors import *
-from .plot_utils import *
+from .plots import *

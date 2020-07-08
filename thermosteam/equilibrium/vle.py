@@ -9,7 +9,7 @@
 """
 import flexsolve as flx
 from ..exceptions import InfeasibleRegion
-from ..utils.decorator_utils import thermo_user
+from ..utils.decorators import thermo_user
 from . import binary_phase_fraction as binary
 from .dew_point import DewPointCache
 from .bubble_point import BubblePointCache

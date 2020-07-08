@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 18 16:17:00 2017
-
-@author: Yoel Cortes-Pena
-"""
+# BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
+# Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# 
+# This module is under the UIUC open-source license. See 
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
+# for license details.
 from setuptools import setup
 #import numpy
 
@@ -11,13 +12,13 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.19.24',
+    version='0.20.1',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
     install_requires=['pint>=0.9',
                       'scipy>=1.3.1', 'IPython>=7.9.0', 
-                      'colorpalette>=0.3.0', 'biosteam==2.19.30',
+                      'colorpalette>=0.3.0', 'biosteam==2.20.1',
                       'pandas>=0.25.2', 'matplotlib>=3.1.1',
                       'numpy>=1.18.1', 'xlrd==1.2.0',
                       'openpyxl>=3.0.0', 'free_properties>=0.2.4',

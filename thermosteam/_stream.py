@@ -223,7 +223,7 @@ class Stream:
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
-        self.price = price 
+        self.price = price
         if units != 'kmol/hr':
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, name)
@@ -232,6 +232,14 @@ class Stream:
         self._init_cache()
         self._register(ID)
 
+    @property
+    def price(self):
+        """[float] Price of stream per unit mass [USD/kg."""
+        return self._price
+    @price.setter
+    def price(self, price):
+        self._price = float(price)
+    
     def isempty(self):
         """Return whether or not stream is empty."""
         return (self._imol._data == 0.).all()
@@ -239,7 +247,7 @@ class Stream:
     @property
     def vapor_fraction(self):
         """Molar vapor fraction."""
-        return 1.0 if self.phase == 'g' else 0.0
+        return 1.0 if self.phase.lower() == 'g' else 0.0
 
     def disconnect(self):
         sink = self._sink
@@ -458,14 +466,6 @@ class Stream:
     ### Stream data ###
 
     @property
-    def price(self):
-        return self._price
-    @price.setter
-    def price(self, price):
-        """Price of stream per unit mass [USD/kg]"""
-        self._price = float(price)
-
-    @property
     def source(self):
         """[Unit] Outlet location."""
         return self._source
@@ -554,7 +554,7 @@ class Stream:
     @property
     def cost(self):
         """[float] Total cost of stream in USD/hr."""
-        return self._price * self.F_mass
+        return self.price * self.F_mass
     
     @property
     def F_mol(self):
@@ -728,6 +728,31 @@ class Stream:
         """
         return self._thermal_condition.in_equilibrium(other._thermal_condition)
     
+    @classmethod
+    def sum(cls, streams):
+        """
+        Return a new Stream object that represents the sum of all given streams.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> tmo.Stream.sum([s1, s1])
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+                       Ethanol  20
+        
+        """
+        if streams:
+            new = streams[0].copy()
+            new.mix_from(streams)
+        else:
+            new = cls()
+        return new
+    
     def mix_from(self, others):
         """
         Mix all other streams into this one, ignoring its initial contents.
@@ -757,10 +782,11 @@ class Stream:
             H = sum([i.H for i in others])
             try: self.H = H
             except Exception as error:
-                if self.phase == 'g':
-                     # Maybe much heat, gas must be present
+                phase = self.phase.lower()
+                if phase == 'g':
+                     # Maybe too much heat, gas must be present
                     self.phase = 'l'
-                elif self.phase.lower() == 'l':
+                elif phase == 'l':
                     # Maybe too little heat, liquid must be present
                     self.phase = 'g'
                 else:

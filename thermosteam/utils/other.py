@@ -9,7 +9,7 @@
 """
 __all__ = ('fill_like', 'getfields', 'setfields', 'any_isinstance',
            'copy_maybe', 'get_dct_values', 'get_obj_values',
-           'Chaperone')
+           'get_instance', 'define_from', 'Chaperone')
 
 class Chaperone:
     __slots__ = ('item',)
@@ -48,3 +48,24 @@ def get_dct_values(dct, params):
 def get_obj_values(obj, params):
     attr = getattr
     return [attr(obj, key) for key in params]
+
+def _define_from(cls, other, names):
+    getfield = getattr
+    setfield = setattr
+    for name in names: setfield(cls, name, getfield(other, name))
+    return cls
+
+def define_from(other, names):
+    return lambda cls: _define_from(cls, other, names)
+
+def get_instance(iterable, cls):
+    """Return object that is an instance of given class."""
+    isa = isinstance
+    objs = [i for i in iterable if isa(i, cls)]
+    N = len(objs)
+    if N == 1:
+        return objs[0]
+    elif N == 0:
+        raise ValueError('instance not found')
+    else:
+        raise ValueError('multiple instances')
