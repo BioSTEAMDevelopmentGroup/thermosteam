@@ -157,12 +157,13 @@ class ChemicalIndexer(Indexer):
         self.phase = find_main_phase(others, self.phase)
         chemicals = self.chemicals
         data = self._data
-        data[:] = 0
-        for i in others:
-            if chemicals is i.chemicals:
-                data[:] += i.sum_across_phases()
+        chemicals_material = [(i.chemicals, i.sum_across_phases()) for i in others]
+        data[:] = 0.
+        for ichemicals, material in chemicals_material:
+            if chemicals is ichemicals:
+                data[:] += material
             else:
-                self[i.chemicals.IDs] += i.sum_across_phases()
+                self[ichemicals.IDs] += material
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -332,11 +333,11 @@ class MaterialIndexer(Indexer):
     def mix_from(self, others):
         isa = isinstance
         data = self._data
-        data[:] = 0
+        data[:] = 0.
         get_phase_index = self._get_phase_index
         chemicals = self.chemicals
         phases = self.phases
-        for i in others:
+        for i, idata in [(i, i.data) for i in others]:
             if isa(i, MaterialIndexer):
                 if phases == i.phases:
                     if chemicals is i.chemicals:
