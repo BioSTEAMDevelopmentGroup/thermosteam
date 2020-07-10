@@ -151,10 +151,11 @@ class ChemicalIndexer(Indexer):
         return self._chemicals.get_index
     
     def empty(self):
-        self._data[:] = 0
+        self._data[:] = 0.
     
     def mix_from(self, others):
-        self.phase = find_main_phase(others, self.phase)
+        try: self.phase = find_main_phase(others, self.phase)
+        except: pass
         chemicals = self.chemicals
         data = self._data
         chemicals_data = [(i.chemicals, i._data.copy() if i is self else i.sum_across_phases())
@@ -164,7 +165,10 @@ class ChemicalIndexer(Indexer):
             if chemicals is ichemicals:
                 data[:] += idata
             else:
-                self[ichemicals.IDs] += idata
+                other_index, = np.where(idata)
+                IDs = ichemicals.IDs
+                self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                data[self_index] += idata[other_index]
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -172,8 +176,14 @@ class ChemicalIndexer(Indexer):
         return material_array
     
     def copy_like(self, other):
-        utils.same_chemicals(self, other)
-        self._data[:] = other._data
+        if self.chemicals is other.chemicals:
+            self._data[:] = other._data
+        else:
+            self.empty()
+            other_index, = np.where(other._data)
+            IDs = other.chemicals.IDs
+            self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+            self._data[self_index] = other._data[other_index]
         self.phase = other.phase
     
     def _copy_without_data(self):
@@ -315,7 +325,6 @@ class MaterialIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)
     
-    @property
     def sum_across_phases(self):
         return self._data.sum(0)
     
@@ -323,18 +332,31 @@ class MaterialIndexer(Indexer):
         self._data[:] = 0
     
     def copy_like(self, other):
-        utils.same_chemicals(self, other)
         if isa(other, ChemicalIndexer):
             self.empty()
-            self[other.phase] = other._data
+            other_data = other._data
+            phase_index = self._get_phase_index(other.phase)
+            if self.chemicals is other.chemicals:
+                self._data[phase_index, :] = other_data
+            else:
+                other_index, = np.where(other_data)
+                IDs = other.chemicals.IDs
+                self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self._data[phase_index, self_index] += other._data[other_index]
         else:
-            utils.same_phases(self, other)
-            self._data[:] = other._data
+            if self.chemicals is other.chemicals:
+                self._data[:] = other._data
+            else:
+                self.empty()
+                other_data = other._data
+                other_index, = np.where(other_data.any(0))
+                IDs = other.chemicals.IDs
+                self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self._data[:, self_index] = other_data[:, other_index]
     
     def mix_from(self, others):
         isa = isinstance
         data = self._data
-        
         get_phase_index = self._get_phase_index
         chemicals = self.chemicals
         phases = self.phases
@@ -346,19 +368,31 @@ class MaterialIndexer(Indexer):
                     if chemicals is i.chemicals:
                         data[:] += idata
                     else:
-                        self[i.chemicals.IDs] += idata
+                        idata = i._data
+                        other_index, = np.where(idata.any(0))
+                        IDs = i.chemicals.IDs
+                        self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                        data[:, self_index] += idata[:, other_index]
                 else:
-                    for phase, idata in i:
-                        if chemicals is i.chemicals:
+                    if chemicals is i.chemicals:
+                        for phase, idata in zip(i.phases, idata):
+                            if not idata.any(): continue
                             data[get_phase_index(phase), :] += idata
-                        else:
-                            self[phase, i.chemicals.IDs] += idata
+                    else:
+                        for phase, idata in zip(i.phases, idata):
+                            if not idata.any(): continue
+                            other_index, = np.where(idata)
+                            IDs = i.chemicals.IDs
+                            self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                            data[get_phase_index(phase), self_index] += idata[other_index]
             elif isa(i, ChemicalIndexer):
-                phase_index = get_phase_index(i.phase)
                 if chemicals is i.chemicals:
-                    data[phase_index, :] += idata
+                    data[get_phase_index(i.phase), :] += idata
                 else:
-                    self[phase_index, i.chemicals.IDs] += idata
+                    other_index, = np.where(idata != 0.)
+                    IDs = i.chemicals.IDs
+                    self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                    data[get_phase_index(i.phase), self_index] += idata[other_index]
             else:
                 raise ValueError("can only mix from chemical or material indexers")
     
@@ -427,7 +461,8 @@ class MaterialIndexer(Indexer):
     
     def to_material_indexer(self, phases):
         material_indexer = self.__class__.blank(phases, self._chemicals)
-        for phase, data in self: material_indexer[phase] = data
+        for phase, data in self:
+            if data.any(): material_indexer[phase] = data
         return material_indexer
     
     def get_phase(self, phase):
