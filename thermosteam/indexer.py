@@ -706,7 +706,7 @@ def VolumetricFlowProperty(self):
     f_mol = self.mol[self.index] 
     phase = self.phase or self.phase_container.phase
     V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
-    return 1000. * f_mol * V(*self.TP) if f_mol else 0
+    return 1000. * f_mol * V(*self.TP) if f_mol else 0.
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
@@ -715,7 +715,7 @@ def VolumetricFlowProperty(self, value):
         V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
         self.mol[self.index] = value / V(*self.TP) / 1000.
     else:
-        self.mol[self.index] = 0
+        self.mol[self.index] = 0.
 
 def by_volume(self, TP):
     """Return a ChemicalVolumetricFlowIndexer that references this object's molar data.

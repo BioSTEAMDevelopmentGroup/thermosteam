@@ -609,7 +609,7 @@ def CRC_Inorganic(T, rho0, k, Tm, MW):
 
 @functor(var='V.l')
 def VDI_PPDS(T, Tc, rhoc, MW, a, b, c, d):
-    tau = 1. - T/Tc
+    tau = 1. - T/Tc if T < Tc else 0.
     rho = rhoc + a*tau**0.35 + b*tau**(2/3.) + c*tau + d*tau**(4/3.)
     return fn.rho_to_V(rho, MW)
    
@@ -669,7 +669,7 @@ def Costald_Compressed(T, P, Psat, Tc, Pc, omega, V):
     k = 0.0344483
     e = exp(f + g*omega + h*omega**2)
     C = j + k*omega
-    tau = 1 - T/Tc
+    tau = 1. - T/Tc if T < Tc else 0.
     B = Pc*(-1 + a*tau**(1/3.) + b*tau**(2/3.) + d*tau + e*tau**(4/3.))
     if isinstance(Psat, ThermoModelHandle): Psat = Psat.at_T(T)
     if isinstance(V, ThermoModelHandle): V = V.at_T(T)
@@ -685,7 +685,7 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
     if CAS in V_data_VDI_PPDS_2:
         _, MW, Tc_, rhoc, A, B, C, D = V_data_VDI_PPDS_2[CAS]
         data = (Tc, rhoc, MW, A, B, C, D)
-        add_model(VDI_PPDS.from_args(data), 0., Tc_)
+        add_model(VDI_PPDS.from_args(data), 0., Tc)
     if CAS in V_data_Perry_l:
         _, C1, C2, C3, C4, Tmin, Tmax = V_data_Perry_l[CAS]
         data = (C1, C2, C3, C4, True)

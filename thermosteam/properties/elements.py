@@ -203,9 +203,11 @@ class Element:
     def __repr__(self):
         return f"<{type(self).__name__}: {self.name}>"
 
-#: Single instance of the PeriodicTable class
+#: [PeriodicTable] Single instance of the PeriodicTable class.
 periodic_table = PeriodicTable(
     [Element(name, **data) for name, data in load_json(folder, 'elements.json').items()])
+#: Dict[str, int] String - index pairs for atomic arrays.
+atomic_index = {e.symbol: e.number - 1 for e in periodic_table}
 
 def compute_molecular_weight(atoms):
     r"""
@@ -658,11 +660,10 @@ def serialize_formula(formula):
     return base
 
 def atoms_to_array(atoms: dict) -> np.ndarray:
-    symbol_index = periodic_table.symbol_index
+    index = atomic_index
     array = np.zeros(118)
     for symbol, value in atoms.items():
-        index = symbol_index[symbol].number - 1
-        array[index] = value
+        array[index[symbol]] = value
     return array
 
 def array_to_atoms(array: np.ndarray) -> dict:

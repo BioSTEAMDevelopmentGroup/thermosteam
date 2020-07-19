@@ -9,6 +9,7 @@
 """
 import flexsolve as flx
 from .. import functional as fn
+from ..exceptions import InfeasibleRegion
 from .fugacity_coefficients import IdealFugacityCoefficients
 import numpy as np
 
@@ -23,9 +24,9 @@ def x_iter(x, x_gamma_poyinting, gamma, poyinting, T):
     try:
         x = x_gamma_poyinting / denominator
     except FloatingPointError: 
-        raise flx.InfeasibleRegion('liquid phase composition')
+        raise InfeasibleRegion('liquid phase composition')
     if (np.abs(x) > 1e16).any():
-        raise flx.InfeasibleRegion('liquid phase composition')
+        raise InfeasibleRegion('liquid phase composition')
     return x
 
 def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):
@@ -33,7 +34,7 @@ def solve_x(x_gamma_poyinting, gamma, poyinting, T, x_guess):
     args = (x_gamma_poyinting, gamma, poyinting, T)
     try:
         x = flx.aitken(x_iter, x_guess, 1e-10, args=args, checkiter=False)
-    except flx.InfeasibleRegion:
+    except InfeasibleRegion:
         x = x_gamma_poyinting
     return x
         

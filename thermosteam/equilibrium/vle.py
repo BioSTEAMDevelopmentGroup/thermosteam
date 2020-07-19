@@ -11,10 +11,10 @@ import flexsolve as flx
 from ..exceptions import InfeasibleRegion
 from ..utils.decorators import thermo_user
 from . import binary_phase_fraction as binary
+from .equilibrium import Equilibrium
 from .dew_point import DewPointCache
 from .bubble_point import BubblePointCache
 from .fugacity_coefficients import IdealFugacityCoefficients
-from .._thermal_condition import ThermalCondition
 from .. import functional as fn
 from ..utils import Cache
 import numpy as np
@@ -22,14 +22,14 @@ import numpy as np
 __all__ = ('VLE', 'VLECache')
 
 @thermo_user
-class VLE:
+class VLE(Equilibrium, phases='lg'):
     """
     Create a VLE object that performs vapor-liquid equilibrium when called.
         
     Parameters
     ----------
-    imol : MaterialIndexer
-        Chemical phase data is stored here.
+    imol=None : MaterialIndexer, optional
+        Molar chemical phase data is stored here.
     thermal_condition=None : ThermalCondition, optional
         Temperature and pressure results are stored here.
     thermo=None : Thermo, optional
@@ -65,8 +65,6 @@ class VLE:
                  '_P', # [float] Pressure [Pa].
                  '_H_hat', # [float] Specific enthalpy [kJ/kg].
                  '_V', # [float] Molar vapor fraction.
-                 '_thermo', # [float] Thermo object for estimating mixture properties.
-                 '_thermal_condition', # [ThermalCondition] T and P results are stored here.
                  '_y', # [1d array] Molar vapor composition in equilibrium.
                  '_dew_point', # [DewPoint] Solves for dew point.
                  '_bubble_point', # [BubblePoint] Solves for bubble point.
@@ -74,7 +72,6 @@ class VLE:
                  '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
                  '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
                  '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
-                 '_imol', # [MaterialIndexer] Stores vapor and liquid molar data.
                  '_liquid_mol', # [1d array] Liquid molar data.
                  '_vapor_mol', # [1d array] Vapor molar data.
                  '_phase_data', # tuple[str, 1d array] Phase-data pairs.
@@ -95,14 +92,13 @@ class VLE:
     H_hat_tol = 1e-3
     V_tol = 1e-6
     
-    def __init__(self, imol, thermal_condition=None,
+    def __init__(self, imol=None, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
         self._T = self._P = self._H_hat = self._V = 0
         self._dew_point_cache = dew_point_cache or DewPointCache()
         self._bubble_point_cache = bubble_point_cache or BubblePointCache()
-        self._load_thermo(thermo)
-        self._imol = imol
-        self._thermal_condition = thermal_condition or ThermalCondition(298.15, 101325.)
+        super().__init__(imol, thermal_condition, thermo)
+        imol = self._imol
         self._phase_data = tuple(imol)
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = imol['g']
@@ -215,7 +211,7 @@ class VLE:
         # Get overall composition
         self._F_mass = (chemicals.MW * mol).sum()
         F_mol = mol.sum()
-        assert F_mol != 0, 'empty stream cannot perform equilibrium'
+        if not F_mol: raise RuntimeError('no chemicals to perform equilibrium')
         self._mol = mol[index]
 
         # Set light and heavy keys
@@ -666,20 +662,5 @@ class VLE:
         self._v = self._F_mol_vle * self._V * self._y
         return self._v
 
-    def __format__(self, tabs=""):
-        if not tabs: tabs = 1
-        tabs = int(tabs)
-        tab = tabs * 4 * " "
-        imol = format(self.imol, str(2*tabs))
-        if tabs:
-            dlim = "\n" + tab
-        else:
-            dlim = ", "
-        return (f"{type(self).__name__}(imol={imol},{dlim}"
-                f"thermal_condition={self.thermal_condition})")
-    
-    def __repr__(self):
-        return self.__format__("1")
-
 class VLECache(Cache): load = VLE
-del Cache    
+del Cache, Equilibrium

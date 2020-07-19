@@ -8,10 +8,9 @@
 """
 """
 from flexsolve import njitable
-from ..utils import thermo_user, Cache
+from ..utils import Cache
 from scipy.optimize import differential_evolution
-from .._thermal_condition import ThermalCondition
-from .vle import VLE
+from .equilibrium import Equilibrium
 import numpy as np
 
 __all__ = ('LLE', 'LLECache')
@@ -49,8 +48,7 @@ def solve_lle_liquid_mol(mol, T, f_gamma, **differential_evolution_options):
                                     **differential_evolution_options)
     return result.x
 
-@thermo_user
-class LLE:
+class LLE(Equilibrium, phases='lL'):
     """
     Create a LLE object that performs liquid-liquid equilibrium when called.
     Differential evolution is used to find the solution that globally minimizes
@@ -58,8 +56,8 @@ class LLE:
         
     Parameters
     ----------
-    imol : MaterialIndexer
-        Chemical phase data is stored here.
+    imol=None : MaterialIndexer, optional
+        Molar chemical phase data is stored here.
     thermal_condition=None : ThermalCondition, optional
         The temperature and pressure used in calculations are stored here.
     thermo=None : Thermo, optional
@@ -82,18 +80,10 @@ class LLE:
         thermal_condition=ThermalCondition(T=360.00, P=101325))
     
     """
-    __slots__ = ('_thermo', # [float] Thermo object for estimating mixture properties.
-                 '_imol', # [MaterialIndexer] Stores vapor and liquid molar data.
-                 '_thermal_condition', # [ThermalCondition] T and P values are stored here.
-)
+    __slots__ = ()
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
                                       'tol': 0.002}
-    
-    def __init__(self, imol, thermal_condition=None, thermo=None):
-        self._load_thermo(thermo)
-        self._thermal_condition = thermal_condition or ThermalCondition(298.15, 101325.)
-        self._imol = imol
     
     def __call__(self, T, P=None, top_chemical=None):
         """
@@ -142,11 +132,6 @@ class LLE:
         chemicals = self.chemicals.tuple
         lle_chemicals = [chemicals[i] for i in index]
         return mol, index, lle_chemicals
-    
-    imol = VLE.imol
-    thermal_condition = VLE.thermal_condition
-    __format__ = VLE.__format__
-    __repr__ = VLE.__repr__
 
 class LLECache(Cache): load = LLE
-del Cache    
+del Cache, njitable, Equilibrium

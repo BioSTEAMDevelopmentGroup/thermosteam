@@ -64,9 +64,11 @@ colors.brown_shade = colors.brown.shade(25)
 colors.grey = Color('grey', 255*np.array([0.565, 0.569, 0.557]))
 colors.grey_tint = colors.grey.tint(25)
 colors.grey_shade = colors.grey.shade(25)
+colors.grey_dark = colors.grey.shade(50)
 colors.neutral = Color('neutral', 255*np.array([0.4824, 0.5216, 0.502]))
 colors.neutral_tint = colors.neutral.tint(50)
 colors.neutral_shade = colors.neutral.shade(50)
+colors.neutral_dark = colors.neutral.shade(75)
 
 # CABBI
 colors.CABBI_blue_light = Color('CABBI_blue_light', '#b2e0e5')

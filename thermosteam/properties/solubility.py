@@ -34,7 +34,8 @@ solubility_parameter_methods = [DEFINITION]
 
 def solubility_parameter(T=298.15, Hvapm=None, Vml=None,
                          CASRN='', AvailableMethods=False, Method=None):
-    r'''This function handles the calculation of a chemical's solubility
+    r'''
+    This function handles the calculation of a chemical's solubility
     parameter. Calculation is a function of temperature, but is not always
     presented as such. No lookup values are available; either `Hvapm`, `Vml`,
     and `T` are provided or the calculation cannot be performed.
@@ -120,7 +121,8 @@ def solubility_parameter(T=298.15, Hvapm=None, Vml=None,
 
 
 def solubility_eutectic(T, Tm, Hm, Cpl=0, Cps=0, gamma=1):
-    r'''Returns the maximum solubility of a solute in a solvent.
+    r'''
+    Returns the maximum solubility of a solute in a solvent.
 
     .. math::
         \ln x_i^L \gamma_i^L = \frac{\Delta H_{m,i}}{RT}\left(

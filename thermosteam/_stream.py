@@ -14,6 +14,7 @@ from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
 from .exceptions import DimensionError
+from .properties.elements import array_to_atoms, atomic_index
 from . import utils
 
 __all__ = ('Stream', )
@@ -306,6 +307,20 @@ class Stream:
         return name, factor
 
     ### Property getters ###
+
+    def get_atomic_flow(self, symbol):
+        """
+        Return flow rate of atom in kmol / hr.
+        
+        """
+        return (self.chemicals.formula_array[atomic_index[symbol], :] * self.mol).sum()
+
+    def get_atomic_flows(self):
+        """
+        Return dictionary of atomic flow rates in kmol / hr.
+        
+        """
+        return array_to_atoms(self.chemicals.formula_array @ self.mol)
 
     def get_flow(self, units, key= ...):
         """
@@ -729,7 +744,7 @@ class Stream:
         return self._thermal_condition.in_equilibrium(other._thermal_condition)
     
     @classmethod
-    def sum(cls, streams):
+    def sum(cls, streams, ID=None, thermo=None):
         """
         Return a new Stream object that represents the sum of all given streams.
         
@@ -750,7 +765,7 @@ class Stream:
             new = streams[0].copy()
             new.mix_from(streams)
         else:
-            new = cls()
+            new = cls(ID, thermo=thermo)
         return new
     
     def mix_from(self, others):
