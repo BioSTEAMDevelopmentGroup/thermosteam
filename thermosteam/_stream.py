@@ -250,7 +250,16 @@ class Stream:
         """Molar vapor fraction."""
         return 1.0 if self.phase.lower() == 'g' else 0.0
 
+    def isfeed(self):
+        """Return whether stream has a sink but no source."""
+        return bool(self._sink and not self._source)
+
+    def isproduct(self):
+        """Return whether stream has a source but no sink."""
+        return bool(self._source and not self._sink)
+
     def disconnect(self):
+        """Disconnect stream from unit operations."""
         sink = self._sink
         source = self._source
         if sink:
@@ -264,7 +273,7 @@ class Stream:
     
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
-        if flow is ():
+        if flow == ():
             if chemical_flows:
                 imol = indexer.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
             else:

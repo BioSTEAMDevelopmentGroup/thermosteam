@@ -685,7 +685,7 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
     if CAS in V_data_VDI_PPDS_2:
         _, MW, Tc_, rhoc, A, B, C, D = V_data_VDI_PPDS_2[CAS]
         data = (Tc, rhoc, MW, A, B, C, D)
-        add_model(VDI_PPDS.from_args(data), 0., Tc)
+        add_model(VDI_PPDS.from_args(data), 0., Tc_)
     if CAS in V_data_Perry_l:
         _, C1, C2, C3, C4, Tmin, Tmax = V_data_Perry_l[CAS]
         data = (C1, C2, C3, C4, True)
