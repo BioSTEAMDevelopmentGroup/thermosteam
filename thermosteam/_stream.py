@@ -1066,7 +1066,7 @@ class Stream:
         return new
     __copy__ = copy
     
-    def flow_proxy(self):
+    def flow_proxy(self, ID=None):
         """
         Return a new stream that shares flow rate data with this one.
         
@@ -1082,7 +1082,8 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._sink = new._source = new._ID = None
+        new.ID = None
+        new._sink = new._source = None
         new.price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data()
@@ -1091,7 +1092,7 @@ class Stream:
         new._init_cache()
         return new
     
-    def proxy(self):
+    def proxy(self, ID=None):
         """
         Return a new stream that shares all data with this one.
         
@@ -1107,7 +1108,8 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._sink = new._source = new._ID = None
+        new.ID = None
+        new._sink = new._source = None
         new.price = self.price
         new._thermo = self._thermo
         new._imol = self._imol

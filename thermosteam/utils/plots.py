@@ -17,7 +17,9 @@ __all__ = ('style_axis',
            'set_axes_ylabels',
 )
 
-def style_axis(ax=None, xticks=None, yticks=None, xticklabels=True, yticklabels=True):
+def style_axis(ax=None, xticks=None, yticks=None, 
+               xticklabels=True, yticklabels=True,
+               top=True, right=True):
     if ax is None:
         ax = plt.gca()
     if xticks is None:
@@ -31,18 +33,20 @@ def style_axis(ax=None, xticks=None, yticks=None, xticklabels=True, yticklabels=
     ax.tick_params(axis="x", top=False, direction="inout", length=4)
     ax.tick_params(axis="y", right=False, direction="inout", length=4)
     ax.zorder = 1
-    x_twin = ax.twinx()
-    plt.sca(x_twin)
-    x_twin.tick_params(axis='y', right=True, direction="in", length=4)
-    x_twin.zorder = 2
-    plt.ylim(ylim)
-    plt.yticks(yticks, ())
-    y_twin = ax.twiny()
-    plt.sca(y_twin)
-    y_twin.tick_params(axis='x', top=True, direction="in", length=4)
-    y_twin.zorder = 2
-    plt.xlim(xlim)
-    plt.xticks(xticks, ())
+    if right:
+        x_twin = ax.twinx()
+        plt.sca(x_twin)
+        x_twin.tick_params(axis='y', right=True, direction="in", length=4)
+        x_twin.zorder = 2
+        plt.ylim(ylim)
+        plt.yticks(yticks, ())
+    if top:
+        y_twin = ax.twiny()
+        plt.sca(y_twin)
+        y_twin.tick_params(axis='x', top=True, direction="in", length=4)
+        y_twin.zorder = 2
+        plt.xlim(xlim)
+        plt.xticks(xticks, ())
     
 def style_plot_limits(xticks, yticks):
     plt.xlim([xticks[0], xticks[-1]])
