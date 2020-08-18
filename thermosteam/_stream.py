@@ -273,7 +273,7 @@ class Stream:
     
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
-        if flow == ():
+        if len(flow) == 0:
             if chemical_flows:
                 imol = indexer.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
             else:

@@ -16,6 +16,7 @@ from . import vle
 from . import dew_point
 from . import bubble_point
 from . import poyinting_correction_factors
+from . import binary_phase_fraction
 from . import fugacities
 from . import lle
 from . import plot_equilibrium
@@ -27,11 +28,13 @@ __all__ = (*activity_coefficients.__all__,
            *bubble_point.__all__,
            *fugacity_coefficients.__all__,
            *poyinting_correction_factors.__all__,
+           *binary_phase_fraction.__all__,
            *fugacities.__all__,
            *plot_equilibrium.__all__)
 
 from .vle import *
 from .lle import *
+from .binary_phase_fraction import *
 from .activity_coefficients import *
 from .fugacity_coefficients import *
 from .poyinting_correction_factors import *

@@ -170,7 +170,7 @@ class Reaction:
             self._basis = basis
         else:
             raise ValueError("basis must be either by 'wt' or by 'mol'")
-        self._X = X #: [float] Reactant conversion
+        self.X = X
         chemicals = self._load_chemicals(chemicals)
         if reaction:            
             self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
@@ -377,7 +377,7 @@ class Reaction:
         return self._X
     @X.setter
     def X(self, X):
-        self._X = X
+        self._X = float(X)
     
     @property
     def stoichiometry(self):
@@ -438,7 +438,7 @@ class Reaction:
         unbalanced_array = formula_array @ stoichiometry_by_mol
         atoms = tmo.properties.elements.array_to_atoms(unbalanced_array)
         assert abs(sum(atoms.values())) < tol, (
-            f"atomic stoichiometry is unbalanced by the following molar stoichiometric coefficients:\n "
+            "atomic stoichiometry is unbalanced by the following molar stoichiometric coefficients:\n "
             + "\n ".join([f"{symbol}: {value}" for symbol, value in atoms.items()])
         )
     
@@ -660,7 +660,7 @@ class ReactionSet:
         Xs = self.X
         N = len(Xs)
         maxnumspace = max(len(str(N)) + 1, 5)
-        info += f"\nindex" + " "*(max(2, maxnumspace-3)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
+        info += "\nindex" + " "*(max(2, maxnumspace-3)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
         for N, rxn, cmp, X in zip(range(N), rxns, cmps, Xs):
             rxn_spaces = " "*(maxrxnlen - len(rxn))
             cmp_spaces = " "*(maxcmplen - len(cmp))

@@ -453,6 +453,34 @@ class CompiledChemicals(Chemicals):
             self._index[synonym] = self._index[ID]
             dct[synonym] = chemical
     
+    def zeros(self):
+        """
+        Return an array of zeros with entries that correspond to the orded chemical IDs.
+        
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals.zeros()
+        array([0., 0.])
+        
+        """
+        return np.zeros(self.size) 
+    
+    def ones(self):
+        """
+        Return an array of ones with entries that correspond to the orded chemical IDs.
+        
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals.ones()
+        array([1., 1.])
+        
+        """
+        return np.ones(self.size) 
+    
     def kwarray(self, ID_data):
         """
         Return an array with entries that correspond to the orded chemical IDs.
@@ -491,7 +519,7 @@ class CompiledChemicals(Chemicals):
         array([2., 0.])
         
         """
-        array = np.zeros(len(self))
+        array = self.zeros()
         array[self.get_index(tuple(IDs))] = data
         return array
 

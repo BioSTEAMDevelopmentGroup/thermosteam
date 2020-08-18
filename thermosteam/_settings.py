@@ -32,7 +32,7 @@ class Settings:
                              'G': 'GAS'}
     @property
     def debug(self):
-        """[bool] If True, preventive assertions are run at runtime."""
+        """[bool] If True, additional checks may raise errors at runtime."""
         return self._debug
     @debug.setter
     def debug(self, debug):

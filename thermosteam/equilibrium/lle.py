@@ -11,6 +11,7 @@ from flexsolve import njitable
 from ..utils import Cache
 from scipy.optimize import differential_evolution
 from .equilibrium import Equilibrium
+from .binary_phase_fraction import phase_fraction
 import numpy as np
 
 __all__ = ('LLE', 'LLECache')
@@ -80,10 +81,26 @@ class LLE(Equilibrium, phases='lL'):
         thermal_condition=ThermalCondition(T=360.00, P=101325))
     
     """
-    __slots__ = ()
+    __slots__ = ('composition_cache_tolerance',
+                 'temperature_cache_tolerance',
+                 '_z_mol',
+                 '_T',
+                 '_lle_chemicals',
+                 '_IDs',
+                 '_K',
+                 '_L_over_F'
+    )
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
                                       'tol': 0.002}
+    
+    def __init__(self, imol=None, thermal_condition=None, thermo=None,
+                 composition_cache_tolerance=1e-6,
+                 temperature_cache_tolerance=1e-6):
+        super().__init__(imol, thermal_condition, thermo)
+        self.composition_cache_tolerance = composition_cache_tolerance
+        self.temperature_cache_tolerance = temperature_cache_tolerance
+        self._lle_chemicals = None
     
     def __call__(self, T, P=None, top_chemical=None):
         """
@@ -104,24 +121,45 @@ class LLE(Equilibrium, phases='lL'):
         if P: thermal_condition.P = P
         imol = self._imol
         mol, index, lle_chemicals = self.get_liquid_mol_data()
-        total_mol = mol.sum()
-        if total_mol:
-            gamma = self.thermo.Gamma(lle_chemicals)
-            mol_L = solve_lle_liquid_mol(mol, T, gamma,
-                                         **self.differential_evolution_options)
-            mol_l = mol - mol_L
-            if top_chemical:
-                MW = self.chemicals.MW[index]
-                mass_L = mol_L * MW
-                mass_l = mol_l * MW
-                top_chemical_index = self.chemicals.index(top_chemical)
-                C_L = mass_L[top_chemical_index] / mass_L.sum()
-                C_l = mass_l[top_chemical_index] / mass_l.sum()
-                top_L = C_L > C_l
-                if top_L: mol_l, mol_L = mol_L, mol_l
+        F_mol = mol.sum()
+        if F_mol:
+            z_mol = mol / F_mol
+            if (self._lle_chemicals == lle_chemicals 
+                and T - self._T < self.temperature_cache_tolerance 
+                and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
+                K = self._K 
+                phi = phase_fraction(z_mol, K, self._L_over_F)
+                y = z_mol * K / (phi * K + (1 - phi))
+                mol_l = y * phi * F_mol
+                mol_L = mol - mol_l
+            else:
+                gamma = self.thermo.Gamma(lle_chemicals)
+                mol_L = solve_lle_liquid_mol(mol, T, gamma,
+                                             **self.differential_evolution_options)
+                mol_l = mol - mol_L
+                if top_chemical:
+                    MW = self.chemicals.MW[index]
+                    mass_L = mol_L * MW
+                    mass_l = mol_l * MW
+                    top_chemical_index = self.chemicals.index(top_chemical)
+                    C_L = mass_L[top_chemical_index] / mass_L.sum()
+                    C_l = mass_l[top_chemical_index] / mass_l.sum()
+                    top_L = C_L > C_l
+                    if top_L: mol_l, mol_L = mol_L, mol_l
+                F_mol_l = mol_l.sum()
+                z_mol_l = mol_l / F_mol_l
+                F_mol_L = mol_L.sum()
+                z_mol_L = mol_L / F_mol_L
+                z_mol_L[z_mol_L < 1e-16] = 1e-16
+                K = z_mol_l / z_mol_L
+                self._K = K
+                self._L_over_F = F_mol_l / F_mol_L
+                self._lle_chemicals = lle_chemicals
+                self._z_mol = z_mol
+                self._T = T
             imol['l'][index] = mol_l
             imol['L'][index] = mol_L
-    
+        
     def get_liquid_mol_data(self):
         # Get flow rates
         imol = self._imol
