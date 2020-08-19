@@ -52,6 +52,7 @@ Key Features & Capabilities
    indexer/indexer_module
    properties/properties_module
    mixture/mixture_module
+   separations
 
 Related Projects
 ----------------
