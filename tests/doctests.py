@@ -19,7 +19,6 @@ __all__ = ('test_chemical',
            'test_multi_stream',
            'test_reaction',
            'test_equilibrium',
-           'test_thermosteam',
 )
 
 def test_chemical():
@@ -52,7 +51,10 @@ def test_equilibrium():
     testmod(tmo.equilibrium.vle)
     testmod(tmo.equilibrium.lle)
     
-def test_thermosteam():
+def test_separations():
+    testmod(tmo.separations)
+    
+if __name__ == '__main__':
     test_chemical()
     test_chemicals()
     test_thermo_data()
@@ -61,3 +63,4 @@ def test_thermosteam():
     test_multi_stream()
     test_reaction()
     test_equilibrium()
+    test_separations()
