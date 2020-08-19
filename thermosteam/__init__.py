@@ -13,6 +13,7 @@ from . import (base,
                exceptions,
                functional,
                units_of_measure,
+               separations,
 )
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals
@@ -34,7 +35,7 @@ __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture', 'ThermoData',
            'settings', 'functor', 'properties', 'base', 'equilibrium',
            'units_of_measure', 'exceptions', 'functional', 'reaction',
-           'utils', 'speed_up')
+           'utils', 'separations', 'speed_up')
 
 # Set number of digits displayed
 import numpy as np
