@@ -88,7 +88,7 @@ class LLE(Equilibrium, phases='lL'):
                  '_lle_chemicals',
                  '_IDs',
                  '_K',
-                 '_L_over_F'
+                 '_phi'
     )
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
@@ -128,7 +128,7 @@ class LLE(Equilibrium, phases='lL'):
                 and T - self._T < self.temperature_cache_tolerance 
                 and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
                 K = self._K 
-                phi = phase_fraction(z_mol, K, self._L_over_F)
+                phi = phase_fraction(z_mol, K, self._phi)
                 y = z_mol * K / (phi * K + (1 - phi))
                 mol_l = y * phi * F_mol
                 mol_L = mol - mol_l
@@ -153,7 +153,7 @@ class LLE(Equilibrium, phases='lL'):
                 z_mol_L[z_mol_L < 1e-16] = 1e-16
                 K = z_mol_l / z_mol_L
                 self._K = K
-                self._L_over_F = F_mol_l / F_mol_L
+                self._phi = F_mol_l / (F_mol_l + F_mol_L)
                 self._lle_chemicals = lle_chemicals
                 self._z_mol = z_mol
                 self._T = T

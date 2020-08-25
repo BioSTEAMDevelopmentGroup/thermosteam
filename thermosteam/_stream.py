@@ -258,6 +258,11 @@ class Stream:
         """Return whether stream has a source but no sink."""
         return bool(self._source and not self._sink)
 
+    @property
+    def carrier(self):
+        """[str] ID of chemical with the largest mol fraction in stream."""
+        return self.chemicals.tuple[self.mol.argmax()].ID
+
     def disconnect(self):
         """Disconnect stream from unit operations."""
         sink = self._sink

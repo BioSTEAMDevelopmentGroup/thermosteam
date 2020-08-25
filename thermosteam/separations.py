@@ -9,18 +9,29 @@
 This module contains functions for modeling separations in unit operations.
 
 """
+import thermosteam as tmo
+import flexsolve as flx
 import numpy as np
+from .utils import thermo_user
 from .exceptions import InfeasibleRegion
 from .equilibrium import phase_fraction
 
-__all__ = ('split', 'mix_and_split',
-           'adjust_moisture_content', 
-           'mix_and_split_with_moisture_content',
-           'partition_coefficients',
-           'vle_partition_coefficients',
-           'lle_partition_coefficients',
-           'partition', 'lle', 'vle', 
-           'material_balance')
+__all__ = (
+    'split', 'mix_and_split',
+    'adjust_moisture_content', 
+    'mix_and_split_with_moisture_content',
+    'partition_coefficients',
+    'vle_partition_coefficients',
+    'lle_partition_coefficients',
+    'partition', 'lle', 'vle', 
+    'material_balance',
+    'StageLLE',
+    'MultiStageLLE',
+    'single_component_flow_rates_for_multi_stage_lle_without_side_draws',
+    'flow_rates_for_multi_stage_extration_without_side_draws',
+)
+
+# %% Mixing, splitting, and moisture content
 
 def mix_and_split_with_moisture_content(ins, retentate, permeate,
                                         split, moisture_content):
@@ -191,6 +202,8 @@ def split(feed, top, bottom, split):
     top_mol[:] *= split
     bottom.mol[:] -= top_mol
 
+# %% Single stage equilibrium
+
 def partition_coefficients(IDs, top, bottom):
     """
     Return partition coefficients given streams in equilibrium.
@@ -343,15 +356,15 @@ def partition(feed, top, bottom, IDs, K, phi=None):
                      Ethanol  7.72
 
     """
+    feed_mol = feed.mol
     mol = feed.imol[IDs]
     F_mol = mol.sum()
     z_mol = mol / F_mol
     phi = phase_fraction(z_mol, K, phi)
     x = z_mol / (phi * K + (1 - phi))
-    mol = x * (1 - phi) * F_mol
     bottom.empty()
-    bottom.imol[IDs] = mol
-    top.mol[:] = feed.mol - bottom.mol
+    bottom.imol[IDs] = x * (1 - phi) * F_mol
+    top.mol[:] = feed_mol - bottom.mol
     return phi
 
 def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None):
@@ -601,3 +614,267 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     
     else:
         raise ValueError( "balance must be one of the following: 'flow', 'composition'")
+        
+# %% General functional algorithms based on MESH equations to solve multi-stage 
+# liquid-liquid equilibrium.
+
+@thermo_user
+class StageLLE:
+    __slots__ = ('feed', 'raffinate', 'solvent', 'extract', 'multi_stream',
+                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs')
+    
+    def __init__(self, T=298.15, P=101325, feed=None,
+                 solvent=None, thermo=None, carrier_chemical=None):
+        self.feed = feed
+        self.solvent = solvent
+        thermo = self._load_thermo(thermo)
+        self.multi_stream = multi_stream = tmo.MultiStream(
+            None, T=T, P=P, phases=('l', 'L'), thermo=thermo
+        )
+        self.raffinate = multi_stream['l']
+        self.extract = multi_stream['L']
+        self.carrier_chemical = carrier_chemical
+        
+    @property
+    def T(self):
+        return self.multi_stream.T
+    @T.setter
+    def T(self, T):
+        self.multi_stream.T = T
+        
+    @property
+    def P(self):
+        return self.multi_stream.P
+    @P.setter
+    def P(self, P):
+        self.multi_stream.P = P
+        
+    def partition(self, partition_data=None):
+        multi_stream = self.multi_stream
+        multi_stream.mix_from([self.feed, self.solvent])
+        lle = multi_stream.lle
+        if partition_data:
+            top = multi_stream['l']
+            bottom = multi_stream['L']
+            lle = multi_stream.lle
+            phi = partition_data['phi']
+            self._K = K = partition_data['K']
+            self._IDs = IDs = partition_data['IDs']
+            self._phi = partition(multi_stream, top, bottom, IDs, K, phi)
+        else:
+            lle(self.T, top_chemical=self.carrier_chemical or self.feed.carrier)
+            self._IDs = tuple([i.ID for i in lle._lle_chemicals])
+            self._phi = lle._phi
+            self._K = lle._K 
+        
+    def balance_raffinate_flows(self):
+        total_mol = self.feed.mol + self.solvent.mol
+        extract_mol = self.extract.mol
+        self.raffinate.mol[:] = total_mol - extract_mol
+        
+    @property
+    def IDs(self):
+        return self._IDs
+    @property
+    def phi(self):
+        return self._phi
+    @property
+    def K(self):
+        return self._K 
+    
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T}, P={self.P})"
+    
+@thermo_user
+class MultiStageLLE:
+    __slots__ = ('stages', 'index', 'multi_stream', 
+                 'carrier_chemical', 'extract_flow_rates', 
+                 'partition_data', '_thermo')
+    
+    def __init__(self, N_stages, feed, solvent, carrier_chemical=None,
+                 thermo=None, partition_data=None):
+        thermo = self._load_thermo(thermo)
+        self.multi_stream = tmo.MultiStream(None, phases=('l', 'L'), thermo=thermo)
+        self.stages = stages = [StageLLE(thermo=thermo) for i in range(N_stages)]
+        self.carrier_chemical = carrier_chemical
+        self.partition_data = partition_data
+        for i in range(N_stages-1):
+            stage = stages[i]
+            next_stage = stages[i + 1]
+            next_stage.feed = stage.raffinate
+            stage.solvent = next_stage.extract
+        stages[0].feed = feed
+        stages[-1].solvent = solvent
+        
+    def __len__(self):
+        return len(self.stages)
+    def __iter__(self):
+        return iter(self.stages)
+    def __getitem__(self, key):
+        return self.stages[key]
+    
+    @property
+    def feed(self):
+        return self.stages[0].feed
+    @property
+    def extract(self):
+        return self.stages[0].extract    
+    @property
+    def solvent(self):
+        return self.stages[-1].solvent
+    @property
+    def raffinate(self):
+        return self.stages[-1].raffinate
+    
+    def update_multi_stage_lle_without_side_draws(self, extract_flow_rates):
+        if (extract_flow_rates < 0.).any(): raise RuntimeError('negative flow rate')
+        index = self.index
+        for stage, extract_flow in zip(self.stages, extract_flow_rates):
+            stage.extract.mol[index] = extract_flow
+            stage.balance_raffinate_flows()
+    
+    def simulate_multi_stage_lle_without_side_draws(self):
+        f = self.multi_stage_lle_without_side_draws_iter
+        if hasattr(self, 'extract_flow_rates'):
+            extract_flow_rates = self.extract_flow_rates
+        else:
+            extract_flow_rates = self.initialize_multi_stage_lle_without_side_draws()
+        extract_flow_rates = flx.wegstein(f, extract_flow_rates, xtol=0.1, maxiter=10)
+        self.extract_flow_rates = extract_flow_rates
+        self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
+    
+    def initialize_multi_stage_lle_without_side_draws(self):
+        feed = self.feed
+        solvent = self.solvent
+        multi_stream = self.multi_stream
+        multi_stream.mix_from([feed, solvent]) 
+        stages = self.stages
+        N_stages = len(stages)
+        if self.partition_data:
+            data = self.partition_data
+            top = multi_stream['l']
+            bottom = multi_stream['L']
+            IDs = data['IDs']
+            K = data['K']
+            phi = data['phi']
+            data['phi'] = phi = partition(multi_stream, top, bottom, IDs, K, phi)
+        else:
+            lle = multi_stream.lle
+            lle(multi_stream.T, top_chemical=self.carrier_chemical or feed.carrier)
+            IDs = tuple([i.ID for i in lle._lle_chemicals])
+            K = lle._K
+            phi = lle._phi
+        index = multi_stream.chemicals.get_index(IDs)
+        phase_fractions = np.ones(N_stages) * phi
+        partition_coefficients = np.ones([K.size, N_stages]) * K[:, np.newaxis]
+        extract_flow_rates = flow_rates_for_multi_stage_extration_without_side_draws(
+            N_stages, phase_fractions, partition_coefficients, feed.mol[index], solvent.mol[index]
+        )
+        self.index = index 
+        return extract_flow_rates
+    
+    def multi_stage_lle_without_side_draws_iter(self, extract_flow_rates):
+        self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
+        stages = self.stages
+        for i in stages: i.partition(self.partition_data)
+        K = np.transpose([i.K for i in stages]) 
+        phi = np.array([i.phi for i in stages])
+        index = self.index
+        stages = self.stages
+        N_stages = len(stages)
+        extract_flow_rates = flow_rates_for_multi_stage_extration_without_side_draws(
+            N_stages, phi, K, self.feed.mol[index], self.solvent.mol[index]
+        )
+        return extract_flow_rates
+        
+@flx.njitable
+def single_component_flow_rates_for_multi_stage_lle_without_side_draws(
+        N_stages,
+        phase_ratios,
+        partition_coefficients, 
+        feed, 
+        solvent
+    ):
+    """
+    Solve flow rates for a single component across a multi stage liquid-liquid
+    extraction operation without side draws. 
+
+    Parameters
+    ----------
+    N_stages : int
+        Number of stages.
+    phase_ratios : 1d array
+        Phase ratios by stage. The phase ratio for a given stage is 
+        defined as F_l / F_L; where F_l and F_L are the flow rates 
+        of phase l (raffinate) and L (extract) leaving the stage respectively.
+    partition_coefficients : 1d array
+        Partition coefficients by stage. The partition coefficient for a given
+        stage is defined as x_l / x_L; where x_l and x_L are the fraction of
+        the component in phase l (raffinate) and L (extract) leaving the stage.
+    feed : float
+        Component flow rate in feed entering stage 1.
+    solvent : float
+        Component flow rate in solvent entering stage N.
+
+    Returns
+    -------
+    extract_flow_rates : 1d array
+        Extract component flow rates by stage.
+
+    """
+    component_ratios = phase_ratios * partition_coefficients
+    A = np.eye(N_stages) * (1 + component_ratios) 
+    for i in range(N_stages-1):
+        i_next = i + 1
+        A[i, i_next] = -1
+        A[i_next, i] = -component_ratios[i]
+    b = np.zeros(N_stages)
+    b[0] = feed
+    b[-1] += solvent
+    return np.linalg.solve(A, b)
+
+@flx.njitable
+def flow_rates_for_multi_stage_extration_without_side_draws(
+        N_stages,
+        phase_fractions,
+        partition_coefficients, 
+        feed, 
+        solvent
+    ):
+    """
+    Solve flow rates for a single component across a multi stage liquid-liquid
+    extraction without side draws. 
+
+    Parameters
+    ----------
+    N_stages : int
+        Number of stages.
+    phase_fractions : 1d array
+        Phase fractions by stage. The phase fraction for a given stage is 
+        defined as F_l / (F_l + F_L); where F_l and F_L are the flow rates 
+        of phase l (raffinate) and L (extract) leaving the stage respectively.
+    partition_coefficients : Iterable[1d array]
+        Partition coefficients with components by row and stages by column.
+        The partition coefficient for a component in a given stage is defined 
+        as x_l / x_L; where x_l and x_L are the fraction of the component in 
+        phase l (raffinate) and L (extract) leaving the stage.
+    feed : Iterable[float]
+        Flow rates of all components in feed entering stage 1.
+    solvent : Iterable[float]
+        Flow rates of all components in solvent entering stage N.
+
+    Returns
+    -------
+    extract_flow_rates : 2d array]
+        Extract flow rates with stages by row and components by column.
+
+    """
+    phase_ratios = phase_fractions / (1. - phase_fractions)
+    N_chemicals = feed.size
+    extract_flow_rates = np.zeros((N_stages, N_chemicals))
+    for i in range(N_chemicals):
+        flows_by_stage = single_component_flow_rates_for_multi_stage_lle_without_side_draws(
+                N_stages, phase_ratios, partition_coefficients[i], feed[i], solvent[i]
+        ) 
+        extract_flow_rates[:, i] = flows_by_stage
+    return extract_flow_rates

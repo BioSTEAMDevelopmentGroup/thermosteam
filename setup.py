@@ -21,8 +21,8 @@ setup(
                       'colorpalette>=0.3.1', 'biosteam>=2.20.16',
                       'pandas>=0.25.2', 'matplotlib>=3.1.1',
                       'numpy>=1.18.1', 'xlrd==1.2.0',
-                      'openpyxl>=3.0.0', 'free_properties>=0.2.4',
-                      'flexsolve==0.3.28', 'pyglet', 'ternary'],
+                      'openpyxl>=3.0.0', 'free_properties>=0.2.5',
+                      'flexsolve==0.3.29', 'pyglet', 'ternary'],
     python_requires=">=3.6",
     package_data=
         {'thermosteam': ('base/*', 
