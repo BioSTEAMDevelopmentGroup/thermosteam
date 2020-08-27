@@ -259,7 +259,7 @@ class Stream:
         return bool(self._source and not self._sink)
 
     @property
-    def carrier(self):
+    def main_chemical(self):
         """[str] ID of chemical with the largest mol fraction in stream."""
         return self.chemicals.tuple[self.mol.argmax()].ID
 

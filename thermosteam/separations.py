@@ -662,7 +662,7 @@ class StageLLE:
             self._IDs = IDs = partition_data['IDs']
             self._phi = partition(multi_stream, top, bottom, IDs, K, phi)
         else:
-            lle(self.T, top_chemical=self.carrier_chemical or self.feed.carrier)
+            lle(self.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
             self._IDs = tuple([i.ID for i in lle._lle_chemicals])
             self._phi = lle._phi
             self._K = lle._K 
@@ -739,7 +739,7 @@ class MultiStageLLE:
             extract_flow_rates = self.extract_flow_rates
         else:
             extract_flow_rates = self.initialize_multi_stage_lle_without_side_draws()
-        extract_flow_rates = flx.wegstein(f, extract_flow_rates, xtol=0.1, maxiter=10)
+        extract_flow_rates = flx.wegstein(f, extract_flow_rates, xtol=0.1, maxiter=10, checkiter=False)
         self.extract_flow_rates = extract_flow_rates
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
     
@@ -760,7 +760,7 @@ class MultiStageLLE:
             data['phi'] = phi = partition(multi_stream, top, bottom, IDs, K, phi)
         else:
             lle = multi_stream.lle
-            lle(multi_stream.T, top_chemical=self.carrier_chemical or feed.carrier)
+            lle(multi_stream.T, top_chemical=self.carrier_chemical or feed.main_chemical)
             IDs = tuple([i.ID for i in lle._lle_chemicals])
             K = lle._K
             phi = lle._phi
