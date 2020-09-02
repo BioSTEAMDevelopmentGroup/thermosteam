@@ -28,7 +28,9 @@ from ..base import (InterpolatedTDependentModel,
                     functor)
 from chemicals.heat_capacity import (
     Cp_data_Poling,
+    Cp_values_Poling,
     TRC_gas_data,
+    TRC_gas_values,
     CRC_standard_data,
     Cp_dict_PerryI,
     zabransky_dict_sat_s,
@@ -73,6 +75,10 @@ hc.__all__.extend([
     'Perry_151_definite_integral_over_T'
 ])
 
+
+Cp_data_Poling = RowData(Cp_data_Poling.index, Cp_values_Poling)
+TRC_gas_data = RowData(TRC_gas_data.index, TRC_gas_values)
+CRC_standard_data = RowData(CRC_standard_data)
 
 # %% Utilities
 
@@ -155,12 +161,6 @@ def Poling_definite_integral_over_T(Ta, Tb, a, b, c, d, e):
               + a*log(Tb/Ta))
 
 # Heat capacity gas methods
-TRCIG = 'TRC Thermodynamics of Organic Compounds in the Gas State (1994)'
-POLING = 'Poling et al. (2001)'
-POLING_CONST = 'Poling et al. (2001) constant'
-CRCSTD = 'CRC Standard Thermodynamic Properties of Chemical Substances'
-VDI_TABULAR = 'VDI Heat Atlas'
-LASTOVKA_SHAW = 'Lastovka and Shaw (2013)'
 
 TRCCp_functors = (TRCCp.functor,
                   TRCCp_definite_integral.functor,
@@ -169,37 +169,33 @@ Poling_functors = (Poling.functor,
                    Poling_definite_integral.functor, 
                    Poling_definite_integral_over_T.functor)
 
-Cp_row_data_Poling = RowData(Cp_data_Poling)
-TRC_gas_row_data = RowData(TRC_gas_data)
-CRC_standard_row_data = RowData(CRC_standard_data)
-
 @TDependentHandleBuilder('Cn.g')
 def heat_capacity_gas_handle(handle, CAS, MW, similarity_variable, cyclic_aliphatic):
     add_model = handle.add_model
-    if CAS in TRC_gas_row_data:
-        _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, _, _, _ = TRC_gas_row_data[CAS]
+    if CAS in TRC_gas_data:
+        Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, _, _, _ = TRC_gas_data[CAS]
         funcs = CnHS(*TRCCp_functors, (a0, a1, a2, a3, a4, a5, a6, a7))
-        add_model(Tmin=Tmin, Tmax=Tmax, name=TRCIG, **funcs)
-    if CAS in Cp_row_data_Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cn_g, _ = Cp_row_data_Poling[CAS]
+        add_model(Tmin=Tmin, Tmax=Tmax, name=hc.TRCIG, **funcs)
+    if CAS in Cp_data_Poling:
+        Tmin, Tmax, a, b, c, d, e, Cn_g, _ = Cp_data_Poling[CAS]
         if not np.isnan(a):
             funcs = CnHS(*Poling_functors, (a, b, c, d, e))
-            add_model(Tmin=Tmin, Tmax=Tmax, **funcs, name=POLING)
+            add_model(Tmin=Tmin, Tmax=Tmax, **funcs, name=hc.POLING)
         if not np.isnan(Cn_g):
-            add_model(Cn_g, Tmin, Tmax, name=POLING_CONST)
-    if CAS in CRC_standard_row_data:
-        Cn_g = CRC_standard_row_data[CAS][-1]
+            add_model(Cn_g, Tmin, Tmax, name=hc.POLING_CONST)
+    if CAS in CRC_standard_data:
+        Cn_g = CRC_standard_data[CAS][-1]
         if not np.isnan(Cn_g):
-            add_model(Cn_g, name=CRCSTD)
+            add_model(Cn_g, name=hc.CRCSTD)
     if MW and similarity_variable:
         data = (MW, similarity_variable, cyclic_aliphatic)
-        add_model(Lastovka_Shaw.functor.from_args(data), name=LASTOVKA_SHAW)
+        add_model(Lastovka_Shaw.functor.from_args(data), name=hc.LASTOVKA_SHAW)
     if CAS in VDI_saturation_dict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
         # pressure; it is normally substantially higher than the ideal gas
         # value
         Ts, Cn_gs = lookup_VDI_tabular_data(CAS, 'Cp (g)')
-        add_model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=VDI_TABULAR))
+        add_model(InterpolatedTDependentModel(Ts, Cn_gs, Tmin=Ts[0], Tmax=Ts[-1], name=hc.VDI_TABULAR))
 hc.heat_capacity_gas_handle = heat_capacity_gas_handle
     
 ### Heat capacities of liquids
@@ -212,16 +208,16 @@ Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, var='Cn.l')
 @functor(var='H.l')
 def Dadgostar_Shaw_definite_integral(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral(Tb, *terms)
-               - hc.Dadgostar_Shaw_integral(Ta, *terms))
+    return MW*(hc.Dadgostar_Shaw_integral(Tb, MW, terms)
+               - hc.Dadgostar_Shaw_integral(Ta, MW, terms))
 hc.Dadgostar_Shaw_definite_integral = Dadgostar_Shaw_definite_integral
 
 @forward(hc)
 @functor(var='S.l')
 def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral_over_T(Tb, *terms)
-               - hc.Dadgostar_Shaw_integral_over_T(Ta, *terms))
+    return MW*(hc.Dadgostar_Shaw_integral_over_T(Tb, MW, terms)
+               - hc.Dadgostar_Shaw_integral_over_T(Ta, MW, terms))
 hc.Dadgostar_Shaw_definite_integral_over_T = Dadgostar_Shaw_definite_integral_over_T
 
 Zabransky_quasi_polynomial = functor(hc.Zabransky_quasi_polynomial, var='Cn.l')
@@ -255,16 +251,6 @@ def Zabransky_cubic_definite_integral_over_T(Ta, Tb, a1, a2, a3, a4):
             - hc.Zabransky_cubic_integral_over_T(Ta, a1, a2, a3, a4))
     
 # Heat capacity liquid methods:
-ZABRANSKY_SPLINE = 'Zabransky spline, averaged heat capacity'
-ZABRANSKY_QUASIPOLYNOMIAL = 'Zabransky quasipolynomial, averaged heat capacity'
-ZABRANSKY_SPLINE_C = 'Zabransky spline, constant-pressure'
-ZABRANSKY_QUASIPOLYNOMIAL_C = 'Zabransky quasipolynomial, constant-pressure'
-ZABRANSKY_SPLINE_SAT = 'Zabransky spline, saturation'
-ZABRANSKY_QUASIPOLYNOMIAL_SAT = 'Zabransky quasipolynomial, saturation'
-ROWLINSON_POLING = 'Rowlinson and Poling (2001)'
-ROWLINSON_BONDI = 'Rowlinson and Bondi (1969)'
-DADGOSTAR_SHAW = 'Dadgostar and Shaw (2011)'
-
 Zabransky_cubic_functors = (Zabransky_cubic,
                             Zabransky_cubic_definite_integral,
                             Zabransky_cubic_definite_integral_over_T)
@@ -275,22 +261,22 @@ Dadgostar_Shaw_functors = (Dadgostar_Shaw,
                            Dadgostar_Shaw_definite_integral,
                            Dadgostar_Shaw_definite_integral_over_T)
 
-zabransky_model_data = ((ZABRANSKY_SPLINE,
+zabransky_model_data = ((hc.ZABRANSKY_SPLINE,
                          zabransky_dict_const_s,
                          Zabransky_cubic_functors),
-                        (ZABRANSKY_QUASIPOLYNOMIAL,
+                        (hc.ZABRANSKY_QUASIPOLYNOMIAL,
                          zabransky_dict_const_p,
                          Zabransky_quasi_polynomial_functors),
-                        (ZABRANSKY_SPLINE_C,
+                        (hc.ZABRANSKY_SPLINE_C,
                          zabransky_dict_iso_s, 
                          Zabransky_cubic_functors),
-                        (ZABRANSKY_QUASIPOLYNOMIAL_C, 
+                        (hc.ZABRANSKY_QUASIPOLYNOMIAL_C, 
                          zabransky_dict_iso_p,
                          Zabransky_quasi_polynomial_functors),
-                        (ZABRANSKY_SPLINE_SAT,
+                        (hc.ZABRANSKY_SPLINE_SAT,
                          zabransky_dict_sat_s,
                          Zabransky_cubic_functors),
-                        (ZABRANSKY_QUASIPOLYNOMIAL_SAT, 
+                        (hc.ZABRANSKY_QUASIPOLYNOMIAL_SAT, 
                          zabransky_dict_sat_p,
                          Zabransky_quasi_polynomial_functors))
 
@@ -308,25 +294,25 @@ def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_varia
         # pressure; it is normally substantially higher than the ideal gas
         # value
         Ts, Cn_ls = lookup_VDI_tabular_data(CAS, 'Cp (l)')
-        add_model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=VDI_TABULAR))
+        add_model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=hc.VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        add_model(Rowlinson_Bondi.functor.from_args(args), Tmin=0, Tmax=Tc, name=ROWLINSON_BONDI)
-        add_model(Rowlinson_Poling.functor.from_args(args),Tmin=0, Tmax=Tc, name=ROWLINSON_POLING)
+        add_model(Rowlinson_Bondi.functor.from_args(args), Tmin=0, Tmax=Tc, name=hc.ROWLINSON_BONDI)
+        add_model(Rowlinson_Poling.functor.from_args(args),Tmin=0, Tmax=Tc, name=hc.ROWLINSON_POLING)
     # Other
     if MW and similarity_variable:
         add_model(CnHSModel(*Dadgostar_Shaw_functors,
                                data=(MW, similarity_variable),
-                               name=DADGOSTAR_SHAW))
+                               name=hc.DADGOSTAR_SHAW))
     # Constant models
     if CAS in Cp_data_Poling:
         _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = Cp_data_Poling[CAS]
         if not np.isnan(Cn_g):
-            add_model(Cn_l, Tmin, Tmax, name=POLING_CONST)
+            add_model(Cn_l, Tmin, Tmax, name=hc.POLING_CONST)
     if CAS in CRC_standard_data:
         Cn_l = CRC_standard_data[CAS][-5]
         if not np.isnan(Cn_l):
-            add_model(Cn_l, 0, Tc, name=CRCSTD)
+            add_model(Cn_l, 0, Tc, name=hc.CRCSTD)
 hc.heat_capacity_liquid_handle = heat_capacity_liquid_handle
 
 # %% Heat Capacity Solid
@@ -369,8 +355,6 @@ Perry_151_functors = (Perry_151.functor,
                       Perry_151_definite_integral_over_T.functor)
 
 # Heat capacity solid methods
-LASTOVKA_S = 'Lastovka, Fulem, Becerra and Shaw (2008)'
-PERRY151 = "Perry's Table 2-151"
 
 @TDependentHandleBuilder('Cn.s')
 def heat_capacity_solid_handle(handle, CAS, similarity_variable, MW):
@@ -385,7 +369,7 @@ def heat_capacity_solid_handle(handle, CAS, similarity_variable, MW):
             Tmax = c['Tmax']
             data = (c['Const'], c['Lin'], c['Quad'], c['Quadinv'])
             add_model(CnHSModel(*Perry_151_functors, data), Tmin, Tmax,
-                      name=PERRY151)
+                      name=hc.PERRY151)
     if CAS in CRC_standard_data:
         Cnc = CRC_standard_data[CAS][3]
         if not np.isnan(Cnc):
@@ -393,7 +377,7 @@ def heat_capacity_solid_handle(handle, CAS, similarity_variable, MW):
     if similarity_variable and MW:
         data = (similarity_variable, MW)
         add_model(CnHSModel(*Lastovka_solid_functors, data), Tmin, Tmax,
-                  name=LASTOVKA_S)
+                  name=hc.LASTOVKA_S)
 hc.heat_capacity_solid_handle = heat_capacity_solid_handle
 
 hc.heat_capacity_handle = PhaseTHandleBuilder(
