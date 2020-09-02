@@ -35,12 +35,12 @@ __all__ = ('isobaric_expansion', 'isothermal_compressibility',
 )
 
 @functor
-def horner_polynomial(T, coeffs):
+def horner(T, coeffs):
     tot = 0
     for c in coeffs: tot = tot * T + c
-    return tot 
+    return tot   
 
-horner = horner_polynomial.function  
+horner_polynomial = horner.functor
 
 def Pr(Cp, mu, k):
     return Cp * mu / k

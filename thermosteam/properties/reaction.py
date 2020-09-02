@@ -2,250 +2,125 @@
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
 # Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
-# A significant portion of this module originates from:
-# Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+# This module is an extension of the reaction module from the chemicals's library:
+# https://github.com/CalebBell/chemicals
 # Copyright (C) 2020 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
-# 
+#
 # This module is under a dual license:
 # 1. The UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
 # 
 # 2. The MIT open-source license. See
-# https://github.com/CalebBell/thermo/blob/master/LICENSE.txt for details.
-'''
-All data and methods for estimating a chemical's heat of formation.
+# https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
 
-References
-----------
-.. [1] Albahri, Tareq A., and Abdulla F. Aljasmi. "SGC Method for
-   Predicting the Standard Enthalpy of Formation of Pure Compounds from
-   Their Molecular Structures." Thermochimica Acta 568
-   (September 20, 2013): 46-60. doi:10.1016/j.tca.2013.06.020.
-.. [2] Ruscic, Branko, Reinhardt E. Pinzon, Gregor von Laszewski, Deepti
-    Kodeboyina, Alexander Burcat, David Leahy, David Montoy, and Albert F.
-    Wagner. "Active Thermochemical Tables: Thermochemistry for the 21st
-    Century." Journal of Physics: Conference Series 16, no. 1
-    (January 1, 2005): 561. doi:10.1088/1742-6596/16/1/078.
-.. [3] Frenkelʹ, M. L, Texas Engineering Experiment Station, and
-    Thermodynamics Research Center. Thermodynamics of Organic Compounds in
-    the Gas State. College Station, Tex.: Thermodynamics Research Center,
-    1994.   
-    
-'''
+from chemicals import reaction
 
-__all__ = ('heat_of_formation', 
-           'heat_of_formation_liquid',
-           'heat_of_formation_gas',
-)
+__all__ = reaction.__all__
+__all__.extend([
+    'Hf', 'Hf_at_phase'
+])
 
-from ..exceptions import UndefinedPhase, InvalidMethod
-from .data import (heat_of_formation_sources,
-                   heat_of_formation_solid_sources,
-                   heat_of_formation_gas_sources,
-                   heat_of_formation_liquid_sources,
-                   get_from_data_sources
-)
-
-# TODO: Add the rest of the metals, and fix graphite in data base.
-# Currently, graphite points to methane.
-elemental_gas_standard_states = {'1333-74-0', '7727-37-9',
-                                 '7782-44-7', '7782-41-4', 
-                                 '7782-50-5', '7440-59-7'
-}
-elemental_liquid_standard_states = {'7726-95-6', '7439-97-6'
-}
-elemental_solid_standard_states = {'100320-09-0', '7553-56-2',
-                                   '7440-21-3'
-}
-standard_elemental_states = (elemental_gas_standard_states 
-                             | elemental_liquid_standard_states 
-                             | elemental_solid_standard_states)
-
-def heat_of_formation(CASRN, phase_ref,
-                      Hvap_298K=None, Hfus=None,
-                      method='Any'):
+def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     r'''
-    Return a chemical's standard-phase heat of formation.
-    The lookup is based on CASRNs. Return None if the data is not available.
-
-    Function has data for 571 chemicals.
-
+    Return a chemical's heat of formation at given phase. If no phase given,
+    return the standard-state heat of formation. Return None if the data is 
+    not available. 
+    
     Parameters
     ----------
     CASRN : string
         CASRN [-].
-
+    
     Returns
     -------
     Hf : float
         Standard-state heat of formation [J/mol].
-
+    
     Other Parameters
     ----------------
-    method : string, optional
-        The method name to use. If method is "Any", the first available
-        value from these methods will returned. If method is "All",
-        a dictionary of method results will be returned.
-    phase_ref : {'s', 'l', 'g'}
-        Reference phase.
-    Hvap_298K=None : float, optional
+    phase : 's', 'l', or 'g', optional
+        Phase.
+    Hvap=None : float, optional
         Heat of vaporization [J/mol].
     Hfus=None : float, optional
         Heat of fusion [J/mol].
-
+    
     Notes
     -----
-    Multiple sources of information are available for this function:
-
-        * 'API_TDB', a compilation of heats of formation of unspecified phase.
-          Not the original data, but as reproduced in [1]_. Some chemicals with
-          duplicated CAS numbers were removed.
-        * 'ATCT_L', the Active Thermochemical Tables version 1.112. [2]_
-        * 'ATCT_G', the Active Thermochemical Tables version 1.112. [2]_
-        * 'TRC', from a 1994 compilation. [3]_
-        * 'Other', from NIST or calculated by Joback method. 
-
+    This is a wrapper around :func:`~chemicals.reaction.Hfs`,
+    :func:`~chemicals.reaction.Hfl`, and :func:`~chemicals.reaction.Hfg`.
+    
     Examples
     --------
     >>> Hf(CASRN='7732-18-5')
     -241820.0
-
+    
     '''
-    if phase_ref == 'l':
-        if CASRN in elemental_liquid_standard_states: return 0.
-    elif phase_ref == 'g':
-        if CASRN in elemental_gas_standard_states: return 0. 
-    elif phase_ref == 's':
-        if CASRN in elemental_solid_standard_states: return 0.
+    if not phase:
+        for f in (reaction.Hfg, reaction.Hfl, reaction.Hfs):
+            Hf = f(CASRN)
+            if Hf: break 
+    elif phase == 'g':
+        Hf = reaction.Hfg(CASRN)
+    elif phase == 'l':
+        Hf = reaction.Hfl(CASRN)
+    elif phase == 's':
+        Hf = reaction.Hfs(CASRN)
+    else:
+        raise ValueError("phase must be either 's', 'l', or 'g'; not '%s'" %phase)
+    if Hf is None:
+        if phase != 'g':
+            Hf = Hf_at_phase(reaction.Hfg(CASRN), 'g', phase, Hvap, Hfus)
+        elif phase != 'l':
+            Hf = Hf_at_phase(reaction.Hfl(CASRN), 'l', phase, Hvap, Hfus)
+        elif phase != 's':
+            Hf = Hf_at_phase(reaction.Hfs(CASRN), 's', phase, Hvap, Hfus)
+    return Hf
+
+def Hf_at_phase(Hf, phase_ref, phase, Hvap, Hfus):
+    r"""
+    Return a chemical's heat of formation at given phase.
+    Return None if value cannot be computed.
     
-    try: Hf = heat_of_formation_gas(CASRN, method)
-    except InvalidMethod: pass
-    if Hf:
-        Hf = Hf_at_phase_ref(Hf, 'g', phase_ref, Hvap_298K, Hfus)
-        if Hf: return Hf
+    Parameters
+    ----------
+    Hf : float
+        Standard-state heat of formation [J/mol].
+    phase : 's', 'l', or 'g'
+        Phase.
+    Hvap=None : float, optional
+        Heat of vaporization [J/mol].
+    Hfus=None : float, optional
+        Heat of fusion [J/mol].
     
-    try: Hf = heat_of_formation_liquid(CASRN, method)
-    except InvalidMethod: pass
-    if Hf:
-        Hf = Hf_at_phase_ref(Hf, 'l', phase_ref, Hvap_298K, Hfus)
-        if Hf: return Hf        
+    Returns
+    -------
+    Hf : float
+        Heat of formation at given phase [J/mol].
     
-    try: Hf = heat_of_formation_solid(CASRN, method)
-    except InvalidMethod: pass
-    if Hf:
-        Hf = Hf_at_phase_ref(Hf, 's', phase_ref, Hvap_298K, Hfus)
-        if Hf: return Hf     
-    
-    try: Hf, phase = get_from_data_sources(heat_of_formation_sources, CASRN,
-                                           ['Hf', 'phase'], method)     
-    except InvalidMethod: pass
-    if Hf:
-        Hf = Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus)
-        if Hf: return Hf        
-        
-def Hf_at_phase_ref(Hf, phase, phase_ref, Hvap_298K, Hfus):
-    if phase == phase_ref: return Hf
-    elif phase == 'g' and phase_ref == 'l':
-        if Hvap_298K: return Hf - Hvap_298K
-    elif phase == 'g' and phase_ref == 's':
-        if Hvap_298K and Hfus is not None: return Hf - Hvap_298K - Hfus
-    elif phase == 'l' and phase_ref == 'g':
-        if Hvap_298K: return Hf + Hvap_298K
-    elif phase == 'l' and phase_ref == 's':
+    """
+    if Hf is None: return Hf
+    elif phase_ref == phase:
+        return Hf
+    elif phase_ref == 'g' and phase == 'l':
+        if Hvap: return Hf - Hvap
+    elif phase_ref == 'g' and phase == 's':
+        if Hvap and Hfus is not None: return Hf - Hvap - Hfus
+    elif phase_ref == 'l' and phase == 'g':
+        if Hvap: return Hf + Hvap
+    elif phase_ref == 'l' and phase == 's':
         if Hfus is not None: return Hf - Hfus
-    elif phase == 's' and phase_ref == 'l':
+    elif phase_ref == 's' and phase == 'l':
         if Hfus is not None: return Hf + Hfus
-    elif phase == 's' and phase_ref == 'g':
-        if Hvap_298K and Hfus is not None: return Hf + Hvap_298K + Hfus
-    else: raise UndefinedPhase(phase)
-
-def heat_of_formation_solid(CASRN, method='Any'):
-    return get_from_data_sources(heat_of_formation_solid_sources,
-                                 CASRN, 'Hfs', method)
-
-def heat_of_formation_liquid(CASRN, method='Any'):
-    r'''
-    Return a chemical's liquid standard phase heat of formation. 
-    The lookup is based on CASRNs. Selects the only data source available,
-    Active Thermochemical Tables (l), if the chemical is in it.
-    Return None if the data is not available.
-
-    Function has data for 34 chemicals.
-
-    Parameters
-    ----------
-    CASRN : string
-        CASRN [-]
-
-    Returns
-    -------
-    Hf_l : float
-        Liquid standard-state heat of formation, [J/mol]
-
-    Other Parameters
-    ----------------
-    method : string, optional
-        The method name to use. If method is "Any", the first available
-        value from these methods will returned. If method is "All",
-        a dictionary of method results will be returned.
-
-    Notes
-    -----
-    Only one source of information is available to this function. It is:
-
-        * 'ATCT_L', the Active Thermochemical Tables version 1.112. [2]_
-
-    Examples
-    --------
-    >>> heat_of_formation_liquid('67-56-1')
-    -238400.0
-
-    '''
-    return get_from_data_sources(heat_of_formation_liquid_sources,
-                                 CASRN, 'Hfl', method)
-
-
-def heat_of_formation_gas(CASRN, method='Any'):
-    r'''
-    Retrieve a chemical's gas heat of formation. Lookup is based on CASRNs. 
-    Automatically select a data source to use if no Method is provided.
-    Return None if the data is not available.
-
-    Prefered sources are 'Active Thermochemical Tables (g)' for high accuracy,
-    and 'TRC' for less accuracy but more chemicals.
-    Function has data for approximately 2000 chemicals.
-
-    Parameters
-    ----------
-    CASRN : string
-        CASRN [-]
-
-    Returns
-    -------
-    Hf_g : float
-        Gas phase heat of formation, [J/mol]
-
-    Other Parameters
-    ----------------
-    method : string, optional
-        The method name to use. If method is "Any", the first available
-        value from these methods will returned. If method is "All",
-        a dictionary of method results will be returned.
-    
-    Notes
-    -----
-    Sources are:
-
-        * 'ATCT_G', the Active Thermochemical Tables version 1.112. [2]_
-        * 'TRC', from a 1994 compilation. [3]_
-
-    Examples
-    --------
-    >>> Hf_g('67-56-1')
-    -200700.0
-
-    '''
-    return get_from_data_sources(heat_of_formation_gas_sources,
-                                 CASRN, 'Hfg', method)
-   
+    elif phase_ref == 's' and phase == 'g':
+        if Hvap and Hfus is not None: return Hf + Hvap + Hfus
+    else: 
+        raise ValueError("phase must be either 's', 'l', or 'g'; not '%s'" %phase)
+        
+import sys
+module = sys.modules[__name__]
+sys.modules[__name__] = reaction
+reaction.Hf = Hf
+reaction.Hf_at_phase = Hf_at_phase
+del sys

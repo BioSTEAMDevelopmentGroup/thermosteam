@@ -129,13 +129,15 @@ class ThermoModelHandle:
         self._models = deque(models) if models else deque()
     
     def __getitem__(self, index):
-        return self._models[index]
+        models = self._models
+        return models[as_model_index(models, index)]
     
     def __setitem__(self, index, model):
         assert isinstance(model, ThermoModel), (
             "a 'ThermoModelHandle' object may only "
             "contain 'ThermoModel' objects")
-        self._models[index] = model
+        models = self._models
+        models[as_model_index(models, index)] = model
 	
     def __iter__(self):
         return iter(self._models)

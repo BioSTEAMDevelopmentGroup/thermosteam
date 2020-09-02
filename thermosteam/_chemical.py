@@ -17,21 +17,22 @@ from .properties.phase_change import (normal_boiling_point_temperature,
                                       heat_of_fusion,
                                       heat_of_vaporization_handle)
 from .properties.critical import (Ihmels,
-                                  critical_point_temperature,
-                                  critical_point_pressure,
-                                  critical_point_volume)
-from .properties.acentric import (acentric_factor,
-                                  compute_acentric_factor,
-                                  estimate_acentric_factor_LK,
-                                  compute_Stiel_Polar)
-from .properties.triple import triple_point_temperature, triple_point_pressure
+                                  Tc as critical_point_temperature,
+                                  Pc as critical_point_pressure,
+                                  Vc as critical_point_volume)
+from .properties.acentric import (omega as acentric_factor,
+                                  omega_definition as acentric_factor_definition,
+                                  LK_omega as acentric_factor_LK,
+                                  Stiel_polar_factor as compute_Stiel_Polar)
+from .properties.triple import (Tt as triple_point_temperature,
+                                Pt as triple_point_pressure)
 from .properties.volume import volume_handle
-from .properties.heat_capacity import heat_capacity_handle
-from .properties.reaction import heat_of_formation
-from .properties.combustion import CombustionData
-from .properties.elements import (compute_similarity_variable, 
-                                  parse_simple_formula as get_atoms,
-                                  compute_molecular_weight)
+from chemicals.heat_capacity import heat_capacity_handle
+from .properties.reaction import Hf as heat_of_formation
+from .properties.combustion import combustion_data
+from .properties.elements import (similarity_variable as compute_similarity_variable, 
+                                  simple_formula_parser as get_atoms,
+                                  molecular_weight as compute_molecular_weight)
 from .properties.eos import GCEOS_DUMMY, PR
 from .properties.viscosity import viscosity_handle
 from .properties.thermal_conductivity import thermal_conductivity_handle
@@ -55,7 +56,6 @@ from .properties.unifac import (DDBST_UNIFAC_assignments,
                                 UNIFACGroupCounts, 
                                 DortmundGroupCounts, 
                                 PSRKGroupCounts)
-from .exceptions import DomainError
 # from .solubility import SolubilityParameter
 # from .lennard_jones import Stockmayer, MolecularDiameter
 # from .environment import GWP, ODP, logP
@@ -276,7 +276,7 @@ class Chemical:
              Pt: 610.88 Pa
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
-             Hf: -2.8569e+05 J/mol
+             Hf: -2.8582e+05 J/mol
              LHV: 44011 J/mol
              HHV: 0 J/mol
              Hfus: 6010 J/mol
@@ -284,7 +284,7 @@ class Chemical:
              dipole: 1.85 Debye
              similarity_variable: 0.16653
              iscyclic_aliphatic: 0
-             combustion: {}
+             combustion: {'H2O': 1.0}
 
     All fields shown are accessible:
     
@@ -1058,7 +1058,7 @@ class Chemical:
         if all([Psat, omega, Tc, Pc]):
             P_at_Tr_sixtenths = Psat.try_out(0.6 * Tc)
             if P_at_Tr_sixtenths:
-                Stiel_Polar = compute_Stiel_Polar(P_at_Tr_sixtenths, omega, Pc)
+                Stiel_Polar = compute_Stiel_Polar(P_at_Tr_sixtenths, Pc, omega)
             else:
                 Stiel_Polar = None
         else:
@@ -1207,12 +1207,11 @@ class Chemical:
     def reset_combustion_data(self, method="Stoichiometry"):
         """Reset combustion data (LHV, HHV, and combution attributes)
         based on the molecular formula and the heat of formation."""
-        CD = CombustionData.from_chemical_data(self.atoms, self._CAS,
-                                               self._MW, self._Hf, method)
-        if not self._MW: self._MW = CD.MW
-        self._LHV = CD.LHV
-        self._HHV = CD.HHV
-        self._combustion = CD.stoichiometry
+        cd = combustion_data(self.atoms, Hf=self._Hf, MW=self._MW, method=method)
+        if not self._MW: self._MW = cd.MW
+        self._LHV = cd.LHV
+        self._HHV = cd.HHV
+        self._combustion = cd.stoichiometry
     
     def reset_free_energies(self):
         """Reset the `H`, `S`, `H_excess`, and `S_excess` functors."""
@@ -1259,7 +1258,7 @@ class Chemical:
         self._Tc = Tc = Tc or critical_point_temperature(CAS)
         self._Pc = Pc = Pc or critical_point_pressure(CAS)
         self._Vc = Vc or critical_point_volume(CAS)
-        self._omega = omega or acentric_factor(CAS, Tb, Tc, Pc)
+        self._omega = omega or acentric_factor(CAS) or acentric_factor_LK(Tb, Tc, Pc)
 
         # Triple point
         self._Pt = Pt or triple_point_pressure(CAS)
@@ -1284,11 +1283,10 @@ class Chemical:
         self._Hf = Hf
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
-            CD = CombustionData.from_chemical_data(
-                 atoms, self._CAS, self._MW, self._Hf)
-            LHV = CD.LHV
-            HHV = CD.HHV
-            combustion = CD.stoichiometry
+            cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW)
+            LHV = cd.LHV
+            HHV = cd.HHV
+            combustion = cd.stoichiometry
         self._LHV = LHV
         self._HHV = HHV
         self._combustion = combustion
@@ -1374,9 +1372,9 @@ class Chemical:
         if not omega and Pc and Tc:
             P_at_Tr_seventenths = self._Psat.try_out(0.7 * Tc)
             if P_at_Tr_seventenths:
-                omega = compute_acentric_factor(P_at_Tr_seventenths, Pc)
+                omega = acentric_factor_definition(P_at_Tr_seventenths, Pc)
             if not omega and Tb:
-                omega = estimate_acentric_factor_LK(Tb, Tc, Pc)
+                omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
 
     def _init_energies(self, Cn, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm,
@@ -1604,16 +1602,15 @@ class Chemical:
                     method = 'Dulong'
                 else:
                     method = 'Stoichiometry'
-                CD = CombustionData.from_chemical_data(self.atoms, self._CAS,
-                                                       MW, self._Hf, method)
+                cd = combustion_data(self.atoms, Hf=self._Hf, MW=MW, method=method)
                 if 'Hf' in properties:
-                    self._Hf = CD.Hf
+                    self._Hf = cd.Hf
                 if 'HHV' in properties:
-                    self._HHV = CD.HHV
+                    self._HHV = cd.HHV
                 if 'LHV' in properties:
-                    self._LHV = CD.LHV
+                    self._LHV = cd.LHV
                 if 'combustion' in properties:
-                    self._combustion = CD.stoichiometry
+                    self._combustion = cd.stoichiometry
         else:
             if 'LHV' in properties:
                 self._LHV = 0

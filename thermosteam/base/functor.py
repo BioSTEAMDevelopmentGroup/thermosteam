@@ -12,8 +12,8 @@ from .. import utils
 from inspect import signature
 
 __all__ = ("functor", "Functor",  "TFunctor", "TPFunctor", "TIntegralFunctor",
-           'display_asfunctor', 'functor_lookalike',
-           'functor_matching_params')
+           'display_asfunctor', 'functor_lookalike', 'functor_matching_params', 
+           'parse_var', 'get_units', 'var_with_units')
 
 REGISTERED_ARGS = set()
 REGISTERED_FUNCTORS = []
@@ -26,14 +26,14 @@ def functor_name(functor):
 def display_asfunctor(functor, var=None, name=None, show_var=True):
     name = name or functor_name(functor)
     info = f"{name}{str(signature(functor)).replace('self, ', '')}"
+    units = functor.units if hasattr(functor, 'units') else None
     var = var or (functor.var if hasattr(functor, 'var') else None)
     if var:
         if show_var:
-            info += f" -> " + utils.var_with_units(var, chemical_units_of_measure)
+            info += " -> " + var_with_units(var, units)
         else:
-            name, *_ = var.split('.')
-            u = chemical_units_of_measure.get(name)
-            if u: info += f" -> {u}"
+            units = get_units(var, units)
+            if units: info += f" -> {units}"
     return info
 
 def functor_lookalike(cls):
@@ -52,12 +52,30 @@ def functor_arguments(params):
     base = functor_matching_params(params)
     return base, params[base._N_args:]
 
+def parse_var(var):
+    return var.split(".") if '.' in var else (var, "")
+
+def get_units(var, units=None):
+    name, phase = parse_var(var)
+    if isinstance(units, dict):
+        units = units.get(name)
+    if not units:
+        units = chemical_units_of_measure.get(name)
+    return units
+
+def var_with_units(var, units=None):
+    name, _ = parse_var(var)
+    units = get_units(name)
+    if units: var += f' [{units}]'
+    return var
+
 
 # %% Decorator
   
-def functor(f=None, var=None):
+def functor(f=None, var=None, units=None):
     """
-    Decorate a function of temperature, or both temperature and pressure as a Functor subclass.
+    Decorate a function of temperature, or both temperature and pressure 
+    to have an attribute, `functor`, that serves to create its functor counterpart.
     
     Parameters
     ----------
@@ -66,6 +84,14 @@ def functor(f=None, var=None):
         or both temperature and pressure.
     var : str, optional
         Name of variable returned (useful for bookkeeping).
+    units : dict, optional
+        Units of measure for functor signature.
+    
+    Returns
+    -------
+    f : function(T, *args) or function(T, P, *args)
+        Same function, but with an attribute `functor` that can create 
+        its `Functor` counterpart.
     
     Notes
     -----
@@ -82,7 +108,9 @@ def functor(f=None, var=None):
     >>> @functor(var='Psat')
     ... def Antoine(T, a, b, c):
     ...     return 10.0**(a - b / (T + c))
-    >>> f = Antoine(a=10.116, b=1687.5, c=-42.98)
+    >>> f(T=373.15, a=10.116, b=1687.5, c=-42.98) # functional
+    101047.25357066597
+    >>> f = Antoine.functor(a=10.116, b=1687.5, c=-42.98) # as functor object
     >>> f
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 10.116
@@ -91,7 +119,6 @@ def functor(f=None, var=None):
     >>> f(T=373.15)
     101047.25357066597
     
-    
     """
     if f:
         params = tuple(signature(f).parameters)
@@ -99,12 +126,13 @@ def functor(f=None, var=None):
         dct = {'__slots__': (),
                'function': staticmethod(f),
                'params': params,
+               'units': units,
                'var': var}
-        cls = type(f.__name__, (base,), dct)
-        cls.__module__ = f.__module__
+        name = f.__name__
+        f.functor = type(name, (base,), dct)
     else:
         return lambda f: functor(f, var)
-    return cls
+    return f
 
 
 # %% Functors
@@ -168,7 +196,7 @@ class Functor:
         return f"<{self}>"
     
     def show(self):
-        info = f"Functor: {display_asfunctor(self)}"
+        info = f"Functor: {self}"
         data = self.__dict__
         for key, value in data.items():
             if callable(value):
@@ -181,7 +209,7 @@ class Functor:
                 info += f"\n {key}: {value}"
             else:
                 key, *_ = key.split('_')
-                u = chemical_units_of_measure.get(key)
+                u = get_units(key, self.units)
                 if u: info += ' ' + str(u)
         print(info)
         

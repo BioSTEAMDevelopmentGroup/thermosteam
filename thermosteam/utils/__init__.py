@@ -13,7 +13,6 @@ from . import decorators
 from . import other
 from . import cache
 from . import assertions
-from . import model_variables
 from . import registry
 from . import colors
 from . import plots
@@ -24,7 +23,6 @@ __all__ = (*pickle.__all__,
            *other.__all__,
            *cache.__all__,
            *assertions.__all__,
-           *model_variables.__all__,
            *registry.__all__,
            *colors.__all__,
            *plots.__all__,
@@ -36,7 +34,6 @@ from .decorators import *
 from .other import *
 from .cache import *
 from .assertions import *
-from .model_variables import *
 from .registry import *
 from .colors import *
 from .plots import *

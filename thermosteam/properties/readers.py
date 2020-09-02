@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 11 17:03:14 2020
-
 @author: yoelr
 """
 import os
@@ -129,17 +128,14 @@ def to_nums(values):
     r'''Legacy function to turn a list of strings into either floats
     (if numeric), stripped strings (if not) or None if the string is empty.
     Accepts any numeric formatting the float function does.
-
     Parameters
     ----------
     values : list
         list of strings
-
     Returns
     -------
     values : list
         list of floats, strings, and None values [-]
-
     Examples
     --------
     >>> to_num(['1', '1.1', '1E5', '0xB4', ''])

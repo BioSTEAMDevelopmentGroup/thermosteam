@@ -448,7 +448,6 @@ def DIPPR_EQ107_integral_by_T_over_T(T, a=0, b=0, c=0, d=0, e=0):
     return (a*log(T) + b*c/tanh(c/T)/T - b*log(sinh(c/T)) 
                 - d*e*tanh(e/T)/T + d*log(cosh(e/T)))
 
-
 @functor
 def DIPPR_EQ114(T, Tc, a, b, c, d):
     r"""
