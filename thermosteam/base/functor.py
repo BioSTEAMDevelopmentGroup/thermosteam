@@ -11,8 +11,9 @@ from ..units_of_measure import chemical_units_of_measure
 from .. import utils
 from inspect import signature
 
-__all__ = ("functor", "Functor",  "TFunctor", "TPFunctor", "TIntegralFunctor",
-           'display_asfunctor', 'functor_lookalike', 'functor_matching_params', 
+__all__ = ("functor", "Functor",  "TFunctor", 
+           "TPFunctor", "TIntegralFunctor", 'display_asfunctor', 
+           'functor_lookalike', 'functor_matching_params', 
            'parse_var', 'get_units', 'var_with_units')
 
 REGISTERED_ARGS = set()
@@ -21,7 +22,7 @@ REGISTERED_FUNCTORS = []
 # %% Utilities
 
 def functor_name(functor):
-    return functor.__name__ if hasattr(functor, "__name__") else type(functor).__name__
+    return functor.__name__ if hasattr(functor, "__name__") else type(functor).__name__    
 
 def display_asfunctor(functor, var=None, name=None, show_var=True):
     name = name or functor_name(functor)
@@ -131,7 +132,7 @@ def functor(f=None, var=None, units=None):
         name = f.__name__
         f.functor = type(name, (base,), dct)
     else:
-        return lambda f: functor(f, var)
+        return lambda f: functor(f, var, units)
     return f
 
 

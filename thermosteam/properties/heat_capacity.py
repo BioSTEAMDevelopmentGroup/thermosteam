@@ -2,7 +2,7 @@
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
 # Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
-# This module is an extension of the acentric module from the chemicals's library:
+# This module extends the heat_capacity module from the chemicals's library:
 # https://github.com/CalebBell/chemicals
 # Copyright (C) 2020 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 #
@@ -20,6 +20,7 @@ sys.modules[__name__] = hc
 del sys
 from math import log
 import numpy as np
+from ..utils import forward
 from ..base import (InterpolatedTDependentModel,
                     TDependentHandleBuilder, 
                     PhaseTHandleBuilder, 
@@ -109,48 +110,49 @@ class ZabranskyModelBuilder:
 
 Lastovka_Shaw = functor(hc.Lastovka_Shaw, var='Cn.g')
 
+@forward(hc)
 @functor(var='H.g')
 def Lastovka_Shaw_definite_integral(Ta, Tb, MW, similarity_variable, cyclic_aliphatic=False):
     term = hc.Lastovka_Shaw_term_A(similarity_variable, cyclic_aliphatic)
     return (hc.Lastovka_Shaw_integral(Tb, similarity_variable, cyclic_aliphatic, MW, term)
             - hc.Lastovka_Shaw_integral(Ta, similarity_variable, cyclic_aliphatic, MW, term))
-    
+
+@forward(hc)    
 @functor(var='S.g')
 def Lastovka_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable,
                                   cyclic_aliphatic=False):
     term = hc.Lastovka_Shaw_term_A(similarity_variable, cyclic_aliphatic)
     return (hc.Lastovka_Shaw_integral_over_T(Tb, similarity_variable, cyclic_aliphatic, MW, term)
             - hc.Lastovka_Shaw_integral_over_T(Ta, similarity_variable, cyclic_aliphatic, MW, term))
-hc.Lastovka_Shaw_definite_integral_over_T = Lastovka_Shaw_definite_integral_over_T
 
 TRCCp = functor(hc.TRCCp, var='Cn.g')
 
+@forward(hc)
 @functor(var='H.g')
 def TRCCp_definite_integral(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
     return (hc.TRCCp_integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
             - hc.TRCCp_integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
-hc.TRCCp_definite_integral = TRCCp_definite_integral
 
+@forward(hc)
 @functor(var='S.g')
 def TRCCp_definite_integral_over_T(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
     return R*(hc.TRCCp_over_T_integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
               - hc.TRCCp_over_T_integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
-hc.TRCCp_definite_integral_over_T = TRCCp_definite_integral_over_T
 
 Poling = functor(hc.Poling, var='Cn.g')
 
+@forward(hc)
 @functor(var='H.g')
 def Poling_definite_integral(Ta, Tb, a, b, c, d, e):
     return R*(hc.Poling_integral(Tb, a, b, c, d, e)
               - hc.Poling_integral(Ta, a, b, c, d, e))
-hc.Poling_definite_integral = Poling_definite_integral
-    
+
+@forward(hc)    
 @functor(var='S.g')
 def Poling_definite_integral_over_T(Ta, Tb, a, b, c, d, e):
     return R*(hc.Poling_over_T_integral(Tb, a, b, c, d, e)
               - hc.Poling_over_T_integral(Ta, a, b, c, d, e)
               + a*log(Tb/Ta))
-hc.Poling_definite_integral_over_T = Poling_definite_integral_over_T
 
 # Heat capacity gas methods
 TRCIG = 'TRC Thermodynamics of Organic Compounds in the Gas State (1994)'
@@ -206,6 +208,7 @@ Rowlinson_Poling = functor(hc.Rowlinson_Poling, var='Cn.l')
 Rowlinson_Bondi = functor(hc.Rowlinson_Bondi, var='Cn.l')
 Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, var='Cn.l')
 
+@forward(hc)
 @functor(var='H.l')
 def Dadgostar_Shaw_definite_integral(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
@@ -213,6 +216,7 @@ def Dadgostar_Shaw_definite_integral(Ta, Tb, MW, similarity_variable):
                - hc.Dadgostar_Shaw_integral(Ta, *terms))
 hc.Dadgostar_Shaw_definite_integral = Dadgostar_Shaw_definite_integral
 
+@forward(hc)
 @functor(var='S.l')
 def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
@@ -222,12 +226,14 @@ hc.Dadgostar_Shaw_definite_integral_over_T = Dadgostar_Shaw_definite_integral_ov
 
 Zabransky_quasi_polynomial = functor(hc.Zabransky_quasi_polynomial, var='Cn.l')
  
+@forward(hc)
 @functor(var='H.l')
 def Zabransky_quasi_polynomial_definite_integral(Ta, Tb, Tc, a1, a2, a3, a4, a5, a6):
     return (hc.Zabransky_quasi_polynomial_integral(Tb, Tc, a1, a2, a3, a4, a5, a6)
             - hc.Zabransky_quasi_polynomial_integral(Ta, Tc, a1, a2, a3, a4, a5, a6))
 hc.Zabransky_quasi_polynomial_definite_integral = Zabransky_quasi_polynomial_definite_integral
 
+@forward(hc)
 @functor(var='S.l')
 def Zabransky_quasi_polynomial_definite_integral_over_T(Ta, Tb, Tc, a1, a2, a3, a4, a5, a6):
     return (hc.Zabransky_quasi_polynomial_integral_over_T(Tb, Tc, a1, a2, a3, a4, a5, a6)
@@ -236,17 +242,17 @@ hc.Zabransky_quasi_polynomial_definite_integral_over_T = Zabransky_quasi_polynom
 
 Zabransky_cubic = functor(hc.Zabransky_cubic, var='Cn.l')
 
+@forward(hc)
 @functor(var='H.l')
 def Zabransky_cubic_definite_integral(Ta, Tb, a1, a2, a3, a4):
     return (hc.Zabransky_cubic_integral(Tb, a1, a2, a3, a4)
             - hc.Zabransky_cubic_integral(Ta, a1, a2, a3, a4))
-hc.Zabransky_cubic_definite_integral = Zabransky_cubic_definite_integral
 
+@forward(hc)
 @functor(var='S.l')
 def Zabransky_cubic_definite_integral_over_T(Ta, Tb, a1, a2, a3, a4):
     return (hc.Zabransky_cubic_integral_over_T(Tb, a1, a2, a3, a4)
             - hc.Zabransky_cubic_integral_over_T(Ta, a1, a2, a3, a4))
-hc.Zabransky_cubic_definite_integral_over_T = Zabransky_cubic_definite_integral_over_T
     
 # Heat capacity liquid methods:
 ZABRANSKY_SPLINE = 'Zabransky spline, averaged heat capacity'
@@ -327,33 +333,33 @@ hc.heat_capacity_liquid_handle = heat_capacity_liquid_handle
 
 Lastovka_solid = functor(hc.Lastovka_solid, var='Cn.s')
 
+@forward(hc)
 @functor(var='H.s')
 def Lastovka_solid_definite_integral(Ta, Tb, similarity_variable, MW):
     return (hc.Lastovka_solid_integral(Tb, similarity_variable, MW)
             - hc.Lastovka_solid_integral(Ta, similarity_variable, MW))
-hc.Lastovka_solid_definite_integral = Lastovka_solid_definite_integral
- 
+
+@forward(hc)
 @functor(var='S.s')
 def Lastovka_solid_definite_integral_over_T(Ta, Tb, similarity_variable, MW):
     return (hc.Lastovka_solid_integral_over_T(Tb, similarity_variable, MW)
             - hc.Lastovka_solid_integral_over_T(Ta, similarity_variable, MW))
-hc.Lastovka_solid_definite_integral_over_T = Lastovka_solid_definite_integral_over_T
     
 Perry_151 = functor(hc.Perry_151, var='Cn.s')
 
+@forward(hc)
 @functor(var='H.s')
 def Perry_151_definite_integral(Ta, Tb, a, b, c, d):
     H1 = (a*Ta + 0.5*b*Ta**2 - d/Ta + c*Ta**3/3.)
     H2 = (a*Tb + 0.5*b*Tb**2 - d/Tb + c*Tb**3/3.)
     return (H2 - H1)*calorie
-hc.Perry_151_definite_integral = Perry_151_definite_integral
 
+@forward(hc)
 @functor(var='S.s')
 def Perry_151_definite_integral_over_T(Ta, Tb, a, b, c, d):
     S1 = a*log(Ta) + b*Ta - d/(2.*Ta**2) + 0.5*c*Ta**2
     S2 = a*log(Tb) + b*Tb - d/(2.*Tb**2) + 0.5*c*Tb**2
     return (S2 - S1)*calorie
-hc.Perry_151_definite_integral_over_T = Perry_151_definite_integral_over_T
 
 Lastovka_solid_functors = (Lastovka_solid.functor,
                            Lastovka_solid_definite_integral.functor,
@@ -390,4 +396,6 @@ def heat_capacity_solid_handle(handle, CAS, similarity_variable, MW):
                   name=LASTOVKA_S)
 hc.heat_capacity_solid_handle = heat_capacity_solid_handle
 
-hc.heat_capacity_handle = PhaseTHandleBuilder('Cn', heat_capacity_solid_handle, heat_capacity_liquid_handle, heat_capacity_gas_handle)
+hc.heat_capacity_handle = PhaseTHandleBuilder(
+    'Cn', heat_capacity_solid_handle, heat_capacity_liquid_handle, heat_capacity_gas_handle
+)

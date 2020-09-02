@@ -2,7 +2,7 @@
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
 # Copyright (C) 2020, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
-# This module is an extension of the triple module from the chemicals's library:
+# This module extends the triple module from the chemicals's library:
 # https://github.com/CalebBell/chemicals
 # Copyright (C) 2020 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 #
