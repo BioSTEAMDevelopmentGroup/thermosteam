@@ -11,25 +11,25 @@ import thermosteam as tmo
 from flexsolve import IQ_interpolation
 from .utils import copy_maybe
 from .properties.identifiers import chemical_metadata_from_any, pubchem_db
-from .properties.vapor_pressure import vapor_pressure_handle
+from chemicals.vapor_pressure import vapor_pressure_handle
 from .properties.phase_change import (normal_boiling_point_temperature,
                                       normal_melting_point_temperature,
                                       heat_of_fusion,
                                       heat_of_vaporization_handle)
-from .properties.critical import (Ihmels,
-                                  Tc as critical_point_temperature,
-                                  Pc as critical_point_pressure,
-                                  Vc as critical_point_volume)
-from .properties.acentric import (omega as acentric_factor,
-                                  omega_definition as acentric_factor_definition,
-                                  LK_omega as acentric_factor_LK,
-                                  Stiel_polar_factor as compute_Stiel_Polar)
-from .properties.triple import (Tt as triple_point_temperature,
-                                Pt as triple_point_pressure)
+from chemicals.critical import (Ihmels,
+                                Tc as critical_point_temperature,
+                                Pc as critical_point_pressure,
+                                Vc as critical_point_volume)
+from chemicals.acentric import (omega as acentric_factor,
+                                omega_definition as acentric_factor_definition,
+                                LK_omega as acentric_factor_LK,
+                                Stiel_polar_factor as compute_Stiel_Polar)
+from chemicals.triple import (Tt as triple_point_temperature,
+                              Pt as triple_point_pressure)
+from chemicals.combustion import combustion_data
 from .properties.volume import volume_handle
 from chemicals.heat_capacity import heat_capacity_handle
 from .properties.reaction import Hf as heat_of_formation
-from .properties.combustion import combustion_data
 from .properties.elements import (similarity_variable as compute_similarity_variable, 
                                   simple_formula_parser as get_atoms,
                                   molecular_weight as compute_molecular_weight)

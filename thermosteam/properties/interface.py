@@ -58,13 +58,16 @@ References
 from math import log, exp
 from ..base import functor, TDependentHandleBuilder, InterpolatedTDependentModel
 from .._constants import N_A, k
-from .data import (VDI_saturation_dict,
-                   VDI_tabular_data,
-                   sigma_data_Mulero_Cachadina,
-                   sigma_data_Jasper_Lange,
-                   sigma_data_Somayajulu,
-                   sigma_data_Somayajulu_2,
-                   sigma_data_VDI_PPDS_11,
+from chemicals.interface import (
+    sigma_data_Mulero_Cachadina,
+    sigma_data_Jasper_Lange,
+    sigma_data_Somayajulu,
+    sigma_data_Somayajulu_2,
+    sigma_data_VDI_PPDS_11,
+)
+from chemicals.miscdata import (
+    VDI_saturation_dict,
+    lookup_VDI_tabular_data,
 )
 from .dippr import DIPPR_EQ106
 
@@ -569,7 +572,7 @@ def surface_tension_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, StielPola
         Tmin = Tt; Tmax = Tc
         add_model(Somayajulu.from_args(SOMAYAJULU_coeffs), Tmin, Tmax)
     if CAS in VDI_saturation_dict:
-        Ts, Ys = VDI_tabular_data(CAS, 'sigma')
+        Ts, Ys = lookup_VDI_tabular_data(CAS, 'sigma')
         Tmin = Ts[0]
         *Ts, Tmax = Ts
         Ys = Ys[:-1]
