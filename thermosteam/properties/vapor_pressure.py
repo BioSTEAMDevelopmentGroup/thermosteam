@@ -36,15 +36,15 @@ vp.__all__.extend([
     'vapor_pressure_handle',
 ])
 
-Antoine = functor(vp.Antoine, var='Psat')
-TRC_Antoine_extended = functor(vp.TRC_Antoine_extended, var='Psat')
-Wagner_original = functor(vp.Wagner_original, var='Psat')
-Wagner = functor(vp.Wagner, var='Psat')
-boiling_critical_relation = functor(vp.boiling_critical_relation , var='Psat')
-Lee_Kesler = functor(vp.Lee_Kesler, var='Psat')
-Ambrose_Walton = functor(vp.Ambrose_Walton, var='Psat')
-Sanjari = functor(vp.Sanjari, var='Psat')
-Edalat = functor(vp.Edalat, var='Psat')
+Antoine = functor(vp.Antoine, 'Psat')
+TRC_Antoine_extended = functor(vp.TRC_Antoine_extended, 'Psat')
+Wagner_original = functor(vp.Wagner_original, 'Psat')
+Wagner = functor(vp.Wagner, 'Psat')
+boiling_critical_relation = functor(vp.boiling_critical_relation , 'Psat')
+Lee_Kesler = functor(vp.Lee_Kesler, 'Psat')
+Ambrose_Walton = functor(vp.Ambrose_Walton, 'Psat')
+Sanjari = functor(vp.Sanjari, 'Psat')
+Edalat = functor(vp.Edalat, 'Psat')
 
 @TDependentHandleBuilder('Psat')
 def vapor_pressure_handle(handle, CAS, Tb, Tc, Pc, omega):

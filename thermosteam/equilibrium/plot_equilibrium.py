@@ -9,7 +9,7 @@
 """
 from .._settings import settings
 from ..utils import colors, style_axis
-from ..properties.identifiers import to_searchable_format
+from chemicals.identifiers import to_searchable_format
 from .bubble_point import BubblePoint
 from .lle import LLE
 from ..indexer import MaterialIndexer

@@ -21,7 +21,7 @@ from chemicals.elements import (
     homonuclear_elemental_gases,  
     serialize_formula
 )
-from chemicals import (
+from chemicals.identifiers import (
     CAS_to_int,
     ChemicalMetadata,
     check_CAS,
@@ -34,9 +34,11 @@ folder = identifiers.folder
 searchable_format = re.compile(r"\B([A-Z])")
 del re, sys
 
+@forward(identifiers)
 def spaceout_words(ID):
     return searchable_format.sub(r" \1", ID)
 
+@forward(identifiers)
 def to_searchable_format(ID):    
     return spaceout_words(ID).replace('_', ' ')
 
@@ -52,11 +54,12 @@ class ChemicalMetadataDB:
                  'unloaded_files',
     )
     def __init__(self, 
-                 files=[os.path.join(folder, 'Anion db.tsv'),
+                 files=[os.path.join(folder, 'Inorganic db.tsv'),
+                        os.path.join(folder, 'Anion db.tsv'),
                         os.path.join(folder, 'Cation db.tsv'),
-                        os.path.join(folder, 'Inorganic db.tsv'),
                         os.path.join(folder, 'chemical identifiers example user db.tsv'),
-                        os.path.join(folder, 'chemical identifiers.tsv')]):                
+                        os.path.join(folder, 'chemical identifiers pubchem small.tsv'),   
+                        os.path.join(folder, 'chemical identifiers pubchem large.tsv')]):                
         self.pubchem_index = {}
         self.smiles_index = {}
         self.InChI_index = {}
@@ -82,7 +85,8 @@ class ChemicalMetadataDB:
                                    formula=ele.symbol, MW=ele.MW, smiles=ele.smiles,
                                    InChI=ele.InChI, InChI_key=ele.InChI_key,
                                    iupac_name=name, 
-                                   common_name=name)
+                                   common_name=name,
+                                   synonyms=())
             InChI_key_index[ele.InChI_key] = obj
             CAS_index[CAS] = obj
             pubchem_index[ele.PubChem] = obj
@@ -108,20 +112,20 @@ class ChemicalMetadataDB:
             values = line.rstrip('\n').split('\t')
             (pubchemid, CAS, formula, MW, smiles, InChI, InChI_key, iupac_name, common_name) = values[0:9]
             CAS = int(CAS.replace('-', '')) # Store as int for easier lookup
-            all_names = values[7:]
+            synonyms = values[7:]
             pubchemid = int(pubchemid)
             if CAS in CAS_index:
                 obj = CAS_index[CAS]
             else:
                 obj = ChemicalMetadata(pubchemid, CAS, formula, float(MW), smiles,
-                                       InChI, InChI_key, iupac_name, common_name)
+                                       InChI, InChI_key, iupac_name, common_name, synonyms)
                 CAS_index[CAS] = obj
                 pubchem_index[pubchemid] = obj
                 smiles_index[smiles] = obj
                 InChI_index[InChI] = obj
                 InChI_key_index[InChI_key] = obj
                 formula_index[formula] = obj
-            for name in all_names: 
+            for name in synonyms: 
                 name = name.lower()
                 if name not in name_index: name_index[name] = obj
         f.close()

@@ -10,7 +10,7 @@
 import thermosteam as tmo
 from flexsolve import IQ_interpolation
 from .utils import copy_maybe
-from .properties.identifiers import chemical_metadata_from_any, pubchem_db
+from .properties.identifiers import pubchem_db, pubchem_db
 from chemicals.vapor_pressure import vapor_pressure_handle
 from .properties.phase_change import (normal_boiling_point_temperature,
                                       normal_melting_point_temperature,
@@ -530,7 +530,7 @@ class Chemical:
             phase = phase[0].lower()
             assert phase in ('s', 'l', 'g'), "phase must be either 's', 'l', or 'g'"
         if search_db:
-            metadata = chemical_metadata_from_any(search_ID)
+            metadata = pubchem_db.search(search_ID)
             data['metadata'] = metadata
             self = cls.new(ID, metadata.CASs, eos, phase_ref, phase,
                            **data)

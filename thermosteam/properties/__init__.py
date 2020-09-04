@@ -23,7 +23,6 @@ from . import (
     dipole,
     triple,
     reaction,
-    electrolyte_conductivity,
     dippr,
     electrolytes,
     elements,
@@ -46,7 +45,6 @@ from . import (
 __all__ = (
     'acentric', 
     'combustion', 
-    'electrolyte_conductivity', 
     'critical', 
     'dipole',
     'electrolytes', 

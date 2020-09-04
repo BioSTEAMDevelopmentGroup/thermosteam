@@ -114,7 +114,7 @@ class ZabranskyModelBuilder:
 
 # %% Heat Capacities Gas
 
-Lastovka_Shaw = functor(hc.Lastovka_Shaw, var='Cn.g')
+Lastovka_Shaw = functor(hc.Lastovka_Shaw, 'Cn.g')
 
 @forward(hc)
 @functor(var='H.g')
@@ -131,7 +131,7 @@ def Lastovka_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable,
     return (hc.Lastovka_Shaw_integral_over_T(Tb, similarity_variable, cyclic_aliphatic, MW, term)
             - hc.Lastovka_Shaw_integral_over_T(Ta, similarity_variable, cyclic_aliphatic, MW, term))
 
-TRCCp = functor(hc.TRCCp, var='Cn.g')
+TRCCp = functor(hc.TRCCp, 'Cn.g')
 
 @forward(hc)
 @functor(var='H.g')
@@ -145,7 +145,7 @@ def TRCCp_definite_integral_over_T(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
     return R*(hc.TRCCp_over_T_integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
               - hc.TRCCp_over_T_integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
 
-Poling = functor(hc.Poling, var='Cn.g')
+Poling = functor(hc.Poling, 'Cn.g')
 
 @forward(hc)
 @functor(var='H.g')
@@ -200,9 +200,9 @@ hc.heat_capacity_gas_handle = heat_capacity_gas_handle
     
 ### Heat capacities of liquids
 
-Rowlinson_Poling = functor(hc.Rowlinson_Poling, var='Cn.l')
-Rowlinson_Bondi = functor(hc.Rowlinson_Bondi, var='Cn.l')
-Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, var='Cn.l')
+Rowlinson_Poling = functor(hc.Rowlinson_Poling, 'Cn.l')
+Rowlinson_Bondi = functor(hc.Rowlinson_Bondi, 'Cn.l')
+Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, 'Cn.l')
 
 @forward(hc)
 @functor(var='H.l')
@@ -220,7 +220,7 @@ def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable):
                - hc.Dadgostar_Shaw_integral_over_T(Ta, MW, terms))
 hc.Dadgostar_Shaw_definite_integral_over_T = Dadgostar_Shaw_definite_integral_over_T
 
-Zabransky_quasi_polynomial = functor(hc.Zabransky_quasi_polynomial, var='Cn.l')
+Zabransky_quasi_polynomial = functor(hc.Zabransky_quasi_polynomial, 'Cn.l')
  
 @forward(hc)
 @functor(var='H.l')
@@ -236,7 +236,7 @@ def Zabransky_quasi_polynomial_definite_integral_over_T(Ta, Tb, Tc, a1, a2, a3, 
             - hc.Zabransky_quasi_polynomial_integral_over_T(Ta, Tc, a1, a2, a3, a4, a5, a6))
 hc.Zabransky_quasi_polynomial_definite_integral_over_T = Zabransky_quasi_polynomial_definite_integral_over_T
 
-Zabransky_cubic = functor(hc.Zabransky_cubic, var='Cn.l')
+Zabransky_cubic = functor(hc.Zabransky_cubic, 'Cn.l')
 
 @forward(hc)
 @functor(var='H.l')
@@ -317,7 +317,7 @@ hc.heat_capacity_liquid_handle = heat_capacity_liquid_handle
 
 # %% Heat Capacity Solid
 
-Lastovka_solid = functor(hc.Lastovka_solid, var='Cn.s')
+Lastovka_solid = functor(hc.Lastovka_solid, 'Cn.s')
 
 @forward(hc)
 @functor(var='H.s')
@@ -331,7 +331,7 @@ def Lastovka_solid_definite_integral_over_T(Ta, Tb, similarity_variable, MW):
     return (hc.Lastovka_solid_integral_over_T(Tb, similarity_variable, MW)
             - hc.Lastovka_solid_integral_over_T(Ta, similarity_variable, MW))
     
-Perry_151 = functor(hc.Perry_151, var='Cn.s')
+Perry_151 = functor(hc.Perry_151, 'Cn.s')
 
 @forward(hc)
 @functor(var='H.s')
