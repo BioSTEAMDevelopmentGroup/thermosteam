@@ -17,10 +17,6 @@ import numpy as np
 from .row_data import RowData
 from ..utils import forward
 from chemicals import volume as vol
-import sys
-module = sys.modules[__name__]
-sys.modules[__name__] = vol
-del sys
 from .virial import (
     BVirial_Pitzer_Curl, 
     BVirial_Abbott, 
@@ -32,7 +28,9 @@ from .dippr import DIPPR_EQ105
 from ..base import (functor, InterpolatedTDependentModel, 
                     TPDependentModel, TPDependentHandleBuilder,
                     PhaseTPHandleBuilder)
-from chemicals.volume import (
+from .data import (
+    VDI_saturation_dict,
+    lookup_VDI_tabular_data,    
     rho_data_COSTALD, 
     rho_data_SNM0,
     rho_data_Perry_8E_105_l, rho_values_Perry_8E_105_l,
@@ -42,17 +40,12 @@ from chemicals.volume import (
     rho_data_CRC_inorg_s_const, 
     rho_data_CRC_virial, rho_values_CRC_virial,
 )
-from chemicals.miscdata import (
-    VDI_saturation_dict,
-    lookup_VDI_tabular_data,    
-)
 
 vol.__all__.extend([
     'volume_handle',
     'volume_solid_handle',
     'volume_liquid_handle',
     'volume_gas_handle',
-    'COSTALD_compressed_2'
 ])
 
 rho_data_COSTALD = RowData(rho_data_COSTALD.index, 
@@ -90,12 +83,14 @@ CRC_inorganic = functor(vol.CRC_inorganic, 'V.l')
 volume_VDI_PPDS = functor(vol.volume_VDI_PPDS , 'V.l')
 COSTALD_compressed = functor(vol.COSTALD_compressed , 'V.l')
 
-@forward(vol)
-@functor(var='V.l')
-def COSTALD_compressed_2(T, P, Psat, Tc, Pc, omega, V):
-    if callable(Psat): Psat = Psat(T)
-    if callable(V): V = V(T)
-    return COSTALD_compressed(T, P, Psat, Tc, Pc, omega, V)
+@COSTALD_compressed.functor.set_hook
+def COSTALD_compressed_hook(f, T, P, kwargs):
+    kwargs = kwargs.copy()
+    Psat = kwargs['Psat']
+    Vs = kwargs['Vs']
+    if callable(Psat): kwargs['Psat'] = Psat(T)
+    if callable(Vs): kwargs['Vs'] = Vs(T, P)
+    return f(T, P, **kwargs)
 
 @TPDependentHandleBuilder('V.l')
 def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
@@ -156,7 +151,7 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
     data = (Tc, Pc, omega)
     if all_(data):
         data = (Psat, Tc, Pc, omega, handle)
-        add_model(COSTALD_compressed_2.functor.from_args(data), 50, 500)
+        add_model(COSTALD_compressed.functor.from_args(data), 50, 500)
 vol.volume_liquid_handle = volume_liquid_handle
 
 # %% Gases

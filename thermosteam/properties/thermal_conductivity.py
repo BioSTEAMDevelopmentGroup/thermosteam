@@ -83,9 +83,9 @@ from ..base import (InterpolatedTDependentModel,
                     functor)
 from .._constants import R, N_A, k
 from math import log, exp
-from ..functional import horner_polynomial
+from ..functional import horner
 from .data import (VDI_saturation_dict,
-                   VDI_tabular_data,
+                   lookup_VDI_tabular_data,
                    # kappa_data_Perrys2_314,
                    kappa_data_Perrys2_315,
                    kappa_data_VDI_PPDS_9,
@@ -546,9 +546,9 @@ def thermal_conductivity_liquid_handle(handle, CAS, MW, Tm, Tb, Tc, Pc, omega):
         add_model(DIPPR_EQ100.from_args(data), Tmin, Tmax)
     if CAS in kappa_data_VDI_PPDS_9:
         _,  A, B, C, D, E = kappa_data_VDI_PPDS_9[CAS]
-        add_model(horner_polynomial.from_kwargs({'coeffs':(E, D, C, B, A)}))
+        add_model(horner.functor.from_kwargs({'coeffs':(E, D, C, B, A)}))
     if CAS in VDI_saturation_dict:
-        Ts, Ys = VDI_tabular_data(CAS, 'K (l)')
+        Ts, Ys = lookup_VDI_tabular_data(CAS, 'K (l)')
         Tmin = Ts[0]
         Tmax = Ts[-1]
         add_model(InterpolatedTDependentModel(Ts, Ys, Tmin=Tmin, Tmax=Tmax))

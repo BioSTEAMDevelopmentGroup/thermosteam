@@ -13,20 +13,14 @@
 # 
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
-import sys
 from chemicals import interface
-module = sys.modules[__name__]
-sys.modules[__name__] = interface
-del sys
 from ..base import functor, TDependentHandleBuilder, InterpolatedTDependentModel
-from .row_data import RowData
-from chemicals.interface import (
-    sigma_data_Mulero_Cachadina, sigma_values_Mulero_Cachadina,
-    sigma_data_Jasper_Lange, sigma_values_Jasper_Lange,
-    sigma_data_Somayajulu, sigma_values_Somayajulu, sigma_data_Somayajulu2,
-    sigma_values_Somayajulu2, sigma_data_VDI_PPDS_11, sigma_values_VDI_PPDS_11
-)
-from chemicals.miscdata import (
+from .data import (
+    sigma_data_Mulero_Cachadina,
+    sigma_data_Jasper_Lange,
+    sigma_data_Somayajulu,
+    sigma_data_Somayajulu2,
+    sigma_data_VDI_PPDS_11,
     VDI_saturation_dict,
     lookup_VDI_tabular_data,
 )
@@ -36,11 +30,6 @@ interface.__all__.extend([
     'surface_tension_handle',
 ])
 
-sigma_data_Mulero_Cachadina = RowData(sigma_data_Mulero_Cachadina.index, sigma_values_Mulero_Cachadina)
-sigma_data_Jasper_Lange = RowData(sigma_data_Jasper_Lange.index, sigma_values_Jasper_Lange,)
-sigma_data_Somayajulu = RowData(sigma_data_Somayajulu.index, sigma_values_Somayajulu)
-sigma_data_Somayajulu2 = RowData(sigma_data_Somayajulu2.index, sigma_values_Somayajulu2)
-sigma_data_VDI_PPDS_11 = RowData(sigma_data_VDI_PPDS_11.index, sigma_values_VDI_PPDS_11)
 
 ### Regressed coefficient-based functions
 

@@ -140,6 +140,7 @@ def functor(f=None, var=None, units=None):
 
 class Functor:
     __slots__ = ('__dict__',)
+    hook = None
 
     def __init_subclass__(cls, args=None):
         if args:
@@ -190,6 +191,11 @@ class Functor:
         self.__dict__ = dict(zip(self.params, utils.get_obj_values(data, self.params)))
         return self
     
+    @classmethod
+    def set_hook(cls, hook):
+        cls.hook = hook
+        return hook
+    
     def __str__(self):
         return display_asfunctor(self)
     
@@ -221,19 +227,19 @@ class TFunctor(Functor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
     def __call__(self, T, P=None):
-        return self.function(T, **self.__dict__)
+        return self.hook(self.function, T, self.__dict__) if self.hook else self.function(T, **self.__dict__)
 
 class TPFunctor(Functor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
     def __call__(self, T, P):
-        return self.function(T, P, **self.__dict__)
+        return self.hook(self.function, T, P, self.__dict__) if self.hook else self.function(T, P, **self.__dict__)
 
 class TIntegralFunctor(Functor, args=('Ta', 'Tb')):
     __slots__ = ()
     kind = "temperature integral functor (Ta to Tb; in K)"
     def __call__(self, Ta, Tb, P=None):
-        return self.function(Ta, Tb, **self.__dict__)
+        return self.hook(self.function, Ta, Tb, self.__dict__) if self.hook else self.function(Ta, Tb, **self.__dict__)
 
 
 

@@ -35,11 +35,7 @@ def array_to_atoms(array: np.ndarray) -> dict:
     elements = periodic_table.elements
     symbols = [elements[i].symbol for i in index]
     return dict(zip(symbols, values))
-        
-import sys
-module = sys.modules[__name__]
-sys.modules[__name__] = elements
+
 elements.atoms_to_array = atoms_to_array
 elements.array_to_atoms = array_to_atoms
 elements.atomic_index = atomic_index
-del sys

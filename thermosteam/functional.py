@@ -40,8 +40,6 @@ def horner(T, coeffs):
     for c in coeffs: tot = tot * T + c
     return tot   
 
-horner_polynomial = horner.functor
-
 def Pr(Cp, mu, k):
     return Cp * mu / k
 

@@ -14,10 +14,6 @@
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
 from chemicals import heat_capacity as hc
-import sys
-module = sys.modules[__name__]
-sys.modules[__name__] = hc
-del sys
 from math import log
 import numpy as np
 from ..utils import forward
@@ -26,11 +22,11 @@ from ..base import (InterpolatedTDependentModel,
                     PhaseTHandleBuilder, 
                     thermo_model, 
                     functor)
-from chemicals.heat_capacity import (
+from .data import (
+    VDI_saturation_dict, 
+    lookup_VDI_tabular_data,
     Cp_data_Poling,
-    Cp_values_Poling,
     TRC_gas_data,
-    TRC_gas_values,
     CRC_standard_data,
     Cp_dict_PerryI,
     zabransky_dict_sat_s,
@@ -40,12 +36,7 @@ from chemicals.heat_capacity import (
     zabransky_dict_iso_s,
     zabransky_dict_iso_p,
 )
-from chemicals.miscdata import (
-    VDI_saturation_dict, 
-    lookup_VDI_tabular_data
-)
-from .row_data import RowData
-from .._constants import R, calorie
+from .._constants import calorie
 
 hc.__all__.extend([
     'heat_capacity_handle',
@@ -75,10 +66,6 @@ hc.__all__.extend([
     'Perry_151_definite_integral_over_T'
 ])
 
-
-Cp_data_Poling = RowData(Cp_data_Poling.index, Cp_values_Poling)
-TRC_gas_data = RowData(TRC_gas_data.index, TRC_gas_values)
-CRC_standard_data = RowData(CRC_standard_data)
 
 # %% Utilities
 
@@ -142,23 +129,22 @@ def TRCCp_definite_integral(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
 @forward(hc)
 @functor(var='S.g')
 def TRCCp_definite_integral_over_T(Ta, Tb, a0, a1, a2, a3, a4, a5, a6, a7):
-    return R*(hc.TRCCp_over_T_integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
-              - hc.TRCCp_over_T_integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
+    return (hc.TRCCp_over_T_integral(Tb, a0, a1, a2, a3, a4, a5, a6, a7)
+            - hc.TRCCp_over_T_integral(Ta, a0, a1, a2, a3, a4, a5, a6, a7))
 
 Poling = functor(hc.Poling, 'Cn.g')
 
 @forward(hc)
 @functor(var='H.g')
 def Poling_definite_integral(Ta, Tb, a, b, c, d, e):
-    return R*(hc.Poling_integral(Tb, a, b, c, d, e)
-              - hc.Poling_integral(Ta, a, b, c, d, e))
+    return (hc.Poling_integral(Tb, a, b, c, d, e)
+            - hc.Poling_integral(Ta, a, b, c, d, e))
 
 @forward(hc)    
 @functor(var='S.g')
 def Poling_definite_integral_over_T(Ta, Tb, a, b, c, d, e):
-    return R*(hc.Poling_over_T_integral(Tb, a, b, c, d, e)
-              - hc.Poling_over_T_integral(Ta, a, b, c, d, e)
-              + a*log(Tb/Ta))
+    return (hc.Poling_over_T_integral(Tb, a, b, c, d, e)
+            - hc.Poling_over_T_integral(Ta, a, b, c, d, e))
 
 # Heat capacity gas methods
 
@@ -201,7 +187,20 @@ hc.heat_capacity_gas_handle = heat_capacity_gas_handle
 ### Heat capacities of liquids
 
 Rowlinson_Poling = functor(hc.Rowlinson_Poling, 'Cn.l')
-Rowlinson_Bondi = functor(hc.Rowlinson_Bondi, 'Cn.l')
+
+@Rowlinson_Poling.functor.set_hook
+def Rowlinson_Poling_hook(T, kwargs):
+    kwargs = kwargs.copy()
+    Cpgm = kwargs['Cpgm']
+    if callable(Cpgm): kwargs['Cpgm'] = Cpgm(T)
+    return kwargs
+
+# # This method is less accurate than Rowlinson Poling; so we don't include it
+# @forward(hc)
+# @functor(var='Cn.l')
+# def Rowlinson_Bondi_2(T, Tc, omega, Cpgm):
+#     return hc.Rowlinson_Bondi(T, Tc, omega, Cpgm(T) if callable(Cpgm) else Cpgm)
+
 Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, 'Cn.l')
 
 @forward(hc)
@@ -297,7 +296,6 @@ def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_varia
         add_model(InterpolatedTDependentModel(Ts, Cn_ls, Ts[0], Ts[-1], name=hc.VDI_TABULAR))
     if Tc and omega and Cn_g:
         args = (Tc, omega, Cn_g, 200, Tc)
-        add_model(Rowlinson_Bondi.functor.from_args(args), Tmin=0, Tmax=Tc, name=hc.ROWLINSON_BONDI)
         add_model(Rowlinson_Poling.functor.from_args(args),Tmin=0, Tmax=Tc, name=hc.ROWLINSON_POLING)
     # Other
     if MW and similarity_variable:

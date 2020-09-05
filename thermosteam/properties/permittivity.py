@@ -14,35 +14,31 @@
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
 import numpy as np
-from .row_data import RowData
+from .data import (
+    permittivity_data_CRC,
+)
 from ..base import TDependentHandleBuilder, functor
-from ..utils import forward
 from chemicals import permittivity
-import sys
-module = sys.modules[__name__]
-sys.modules[__name__] = permittivity
-del sys
 
 permittivity_CRC = functor(permittivity.permittivity_CRC, 'epsilon')
 permittivity_IAPWS = functor(permittivity.permittivity_IAPWS, 'epsilon')
-permittivity_data_CRC = RowData(permittivity.permittivity_data_CRC.index,
-                                permittivity.permittivity_values_CRC)
 
-@forward(permittivity)
-@functor(var='epsilon')
-def permittivity_IAPWS_2(T, Vl):
-    if callable(Vl): molar_volume = Vl(T)
-    rho = 0.018015268 / molar_volume
-    return permittivity_IAPWS(T, rho)
+@permittivity_IAPWS.functor.set_hook
+def hook(f, T, kwargs):
+    kwargs = kwargs.copy()
+    rho = kwargs['rho']
+    if callable(rho): # Assume its a liquid molar volume handle
+        kwargs['rho'] = 0.018015268 / rho(T)
+    return f(T, **kwargs)
 
 @TDependentHandleBuilder('epsilon')
 def permitivity_handle(handle, CAS, Vl):
     add_model = handle.add_model
     if Vl and CAS == '7732-18-5':
-        add_model(permittivity_IAPWS_2.functor.from_args((Vl,)))
+        add_model(permittivity_IAPWS.functor.from_args((Vl,)))
     if CAS in permittivity_data_CRC:
         CRC_CONSTANT_T, CRC_permittivity, *coeffs, Tmin, Tmax = permittivity_data_CRC[CAS]
-        args = tuple(0 if np.isnan(x) else x for x in coeffs)
+        args = [0 if np.isnan(x) else x for x in coeffs]
         Tmin = 0 if np.isnan(Tmin) else Tmin
         Tmax = 1e6 if np.isnan(Tmax) else Tmax
         add_model(permittivity_CRC.functor.from_args(args), Tmin, Tmax, name='CRC')
