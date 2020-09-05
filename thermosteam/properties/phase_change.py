@@ -701,7 +701,7 @@ def heat_of_vaporization_handle(handle, CAS, Tb, Tc, Pc, omega,
     if CAS in vaporization_data_Perrys2_150:
         _, Tc, C1, C2, C3, C4, Tmin, Tmax = vaporization_data_Perrys2_150[CAS]
         data = (Tc, C1, C2, C3, C4)
-        add_model(DIPPR_EQ106.from_args(data), Tmin, Tmax)
+        add_model(DIPPR_EQ106.functor.from_args(data), Tmin, Tmax)
     if CAS in vaporization_data_VDI_PPDS_4:
         _,  MW, Tc, A, B, C, D, E = vaporization_data_VDI_PPDS_4[CAS]
         add_model(VDI_PPDS.from_args(data=(Tc, A, B, C, D, E)), 0, Tc)

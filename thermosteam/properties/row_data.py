@@ -19,11 +19,17 @@ class RowData:
     Create a RowData object for fast data frame lookups by row.
     
     """
-    __slots__ = ('index', 'values')
+    __slots__ = ('index', 'values', 'columns')
     
-    def __init__(self, index, values=None):
+    def __init__(self, index, values=None, columns=None):
         self.index = {key: i for i, key in enumerate(index)}
         self.values = values
+        self.columns = columns if columns is None else {key: i for i, key in enumerate(columns)} 
+    
+    def get(self, row, col):
+        columns = self.columns
+        if not columns: raise RuntimeError('no columns implemented')
+        return self.values[self.index[row], columns[col]]
     
     def __getitem__(self, row):
         return self.values[self.index[row]]

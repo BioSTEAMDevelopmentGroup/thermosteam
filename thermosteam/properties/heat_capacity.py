@@ -251,15 +251,15 @@ def Zabransky_cubic_definite_integral_over_T(Ta, Tb, a1, a2, a3, a4):
             - hc.Zabransky_cubic_integral_over_T(Ta, a1, a2, a3, a4))
     
 # Heat capacity liquid methods:
-Zabransky_cubic_functors = (Zabransky_cubic,
-                            Zabransky_cubic_definite_integral,
-                            Zabransky_cubic_definite_integral_over_T)
-Zabransky_quasi_polynomial_functors = (Zabransky_quasi_polynomial,
-                                       Zabransky_quasi_polynomial_definite_integral, 
-                                       Zabransky_quasi_polynomial_definite_integral_over_T)
-Dadgostar_Shaw_functors = (Dadgostar_Shaw,
-                           Dadgostar_Shaw_definite_integral,
-                           Dadgostar_Shaw_definite_integral_over_T)
+Zabransky_cubic_functors = (Zabransky_cubic.functor,
+                            Zabransky_cubic_definite_integral.functor,
+                            Zabransky_cubic_definite_integral_over_T.functor)
+Zabransky_quasi_polynomial_functors = (Zabransky_quasi_polynomial.functor,
+                                       Zabransky_quasi_polynomial_definite_integral.functor, 
+                                       Zabransky_quasi_polynomial_definite_integral_over_T.functor)
+Dadgostar_Shaw_functors = (Dadgostar_Shaw.functor,
+                           Dadgostar_Shaw_definite_integral.functor,
+                           Dadgostar_Shaw_definite_integral_over_T.functor)
 
 zabransky_model_data = ((hc.ZABRANSKY_SPLINE,
                          zabransky_dict_const_s,
@@ -306,7 +306,7 @@ def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_varia
                                name=hc.DADGOSTAR_SHAW))
     # Constant models
     if CAS in Cp_data_Poling:
-        _, Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = Cp_data_Poling[CAS]
+        Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = Cp_data_Poling[CAS]
         if not np.isnan(Cn_g):
             add_model(Cn_l, Tmin, Tmax, name=hc.POLING_CONST)
     if CAS in CRC_standard_data:
