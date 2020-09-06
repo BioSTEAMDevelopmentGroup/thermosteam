@@ -53,7 +53,7 @@ def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     Examples
     --------
     >>> Hf(CASRN='7732-18-5')
-    -241820.0
+    -241822.0
     
     '''
     if not phase:

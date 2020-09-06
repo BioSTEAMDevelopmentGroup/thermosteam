@@ -108,7 +108,7 @@ class Stream:
     The temperature, pressure and phase are attributes as well:
     
     >>> (s1.T, s1.P, s1.phase)
-    (298.15, 101325, 'l')
+    (298.15, 101325.0, 'l')
     
     The most convinient way to get and set flow rates is through
     the `get_flow` and `set_flow` methods:
@@ -145,17 +145,17 @@ class Stream:
     
     >>> s1.T += 10
     >>> s1.H
-    1083.4675869330183
+    1083.467954...
     
     Other thermodynamic properties are temperature and pressure dependent as well:
     
     >>> s1.rho # Density [kg/m3]
-    908.8914226175468
+    908.8914226...
     
     It may be more convinient to get properties with different units:
         
     >>> s1.get_property('rho', 'g/cm3')
-    0.9088914226175471
+    0.90889142...
     
     It is also possible to set some of the properties in different units:
         
@@ -167,12 +167,12 @@ class Stream:
         
     >>> bp = s1.bubble_point_at_P() # Bubble point at constant pressure
     >>> bp
-    BubblePointValues(T=357.0881141715846, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
+    BubblePointValues(T=357.09, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
     
     The bubble point results contain all results as attributes:
     
     >>> bp.T # Temperature [K]
-    357.0881141715846
+    357.088...
     >>> bp.y # Vapor composition
     array([0.49, 0.51])
     
@@ -450,7 +450,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_property('sigma', 'N/m') # Surface tension
-        0.06384967976396348
+        0.063780393
 
         """
         value = getattr(self, name)
@@ -767,16 +767,16 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> tmo.Stream.sum([s1, s1])
-        >>> s1.show(flow='kg/hr')
-        Stream: s1
+        >>> s_sum = tmo.Stream.sum([s1, s1], 's_sum')
+        >>> s_sum.show(flow='kg/hr')
+        Stream: s_sum
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Water    40
                        Ethanol  20
         
         """
         if streams:
-            new = streams[0].copy()
+            new = streams[0].copy(ID)
             new.mix_from(streams)
         else:
             new = cls(ID, thermo=thermo)
@@ -1227,7 +1227,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_T()
-        BubblePointValues(T=350, P=76621.54388128179, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
+        BubblePointValues(T=350.00, P=76622, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
         
         """
         bp = self.get_bubble_point(IDs)
@@ -1249,7 +1249,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_P()
-        BubblePointValues(T=357.0881141715846, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
+        BubblePointValues(T=357.09, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
         
         """
         bp = self.get_bubble_point(IDs)
@@ -1273,7 +1273,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_T()
-        DewPointValues(T=350, P=48990.56398459762, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        DewPointValues(T=350.00, P=48991, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
         
         """
         dp = self.get_dew_point(IDs)
@@ -1297,7 +1297,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol']) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_P()
-        DewPointValues(T=368.6573659718087, P=101325.0, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        DewPointValues(T=368.66, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
         
         """
         dp = self.get_dew_point(IDs)

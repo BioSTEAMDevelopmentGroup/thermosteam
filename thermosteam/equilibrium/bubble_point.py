@@ -30,7 +30,7 @@ class BubblePointValues:
         self.y = y
         
     def __repr__(self):
-        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, y={self.y})"
+        return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
 
 
 # %% Bubble point calculation
@@ -55,13 +55,13 @@ class BubblePoint:
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
     >>> bp
-    BubblePointValues(T=355, P=109755.45319869411, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    BubblePointValues(T=355.00, P=109755, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
-    >>> (bp.T, bp.P, bp.IDs, bp.z, bp.y)
-    (355, 109755.45319869411, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
+    (355, 109755, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
     >>> # Solve bubble point at constant pressure
     >>> BP(z=molar_composition, P=101325)
-    BubblePointValues(T=352.950302699425, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
+    BubblePointValues(T=352.95, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',

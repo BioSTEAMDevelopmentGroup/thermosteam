@@ -1262,7 +1262,8 @@ class Chemical:
         self._Tc = Tc = Tc or critical_point_temperature(CAS)
         self._Pc = Pc = Pc or critical_point_pressure(CAS)
         self._Vc = Vc or critical_point_volume(CAS)
-        self._omega = omega or acentric_factor(CAS) or acentric_factor_LK(Tb, Tc, Pc)
+        data = (Tb, Tc, Pc)
+        self._omega = omega or acentric_factor(CAS) or (acentric_factor_LK(*data) if all(data) else None)
 
         # Triple point
         self._Pt = Pt or triple_point_pressure(CAS)
@@ -1399,8 +1400,8 @@ class Chemical:
             has_Cng = bool(Cn_g)
         elif Cn and single_phase:
             self._phase_ref = single_phase
-            self._H = Enthalpy(Cn, T_ref, H_ref)
-            self._S = Entropy(Cn, T_ref, S_ref)
+            self._H = Enthalpy.functor(Cn, T_ref, H_ref)
+            self._S = Entropy.functor(Cn, T_ref, S_ref)
             Cn_s = Cn_l = Cn_g = Cn
             has_Cns = has_Cnl = has_Cng = True
         else:

@@ -96,8 +96,8 @@ def V_to_rho(V, MW):
         Density, [kg/m^3]
     Examples
     --------
-    >>> rho(0.000132, 86.18)
-    652.8787878787879
+    >>> V_to_rho(0.000132, 86.18)
+    652.878...
     '''
     return MW/V/1000.
 
@@ -120,8 +120,8 @@ def rho_to_V(rho, MW):
         Molar volume, [m^3/mol]
     Examples
     --------
-    >>> V(652.9, 86.18)
-    0.00013199571144126206
+    >>> rho_to_V(652.9, 86.18)
+    0.0001319957...
     '''
     return MW/rho/1000.
 

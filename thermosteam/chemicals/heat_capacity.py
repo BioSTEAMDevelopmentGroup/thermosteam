@@ -96,7 +96,11 @@ class ZabranskyModelBuilder:
                 models.append(self.build_model(self.casdata[CAS]))
     
     def build_model(self, data):
-        return CnHSModel(*self.funcs, data.coeffs, data.Tmin, data.Tmax, self.name)
+        try:
+            coeffs = (data.Tc, *data.coeffs)
+        except:
+            coeffs = data.coeffs
+        return CnHSModel(*self.funcs, coeffs, data.Tmin, data.Tmax, self.name)
 
 
 # %% Heat Capacities Gas
@@ -208,16 +212,16 @@ Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, 'Cn.l')
 @functor(var='H.l')
 def Dadgostar_Shaw_definite_integral(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral(Tb, MW, terms)
-               - hc.Dadgostar_Shaw_integral(Ta, MW, terms))
+    return MW*(hc.Dadgostar_Shaw_integral(Tb, similarity_variable, MW, terms)
+               - hc.Dadgostar_Shaw_integral(Ta, similarity_variable, MW, terms))
 hc.Dadgostar_Shaw_definite_integral = Dadgostar_Shaw_definite_integral
 
 @forward(hc)
 @functor(var='S.l')
 def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral_over_T(Tb, MW, terms)
-               - hc.Dadgostar_Shaw_integral_over_T(Ta, MW, terms))
+    return MW*(hc.Dadgostar_Shaw_integral_over_T(Tb, similarity_variable, MW, terms)
+               - hc.Dadgostar_Shaw_integral_over_T(Ta, similarity_variable, MW, terms))
 hc.Dadgostar_Shaw_definite_integral_over_T = Dadgostar_Shaw_definite_integral_over_T
 
 Zabransky_quasi_polynomial = functor(hc.Zabransky_quasi_polynomial, 'Cn.l')

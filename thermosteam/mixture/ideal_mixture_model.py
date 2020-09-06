@@ -43,7 +43,7 @@ class IdealMixtureModel:
     >>> mixture_model
     <IdealMixtureModel(mol, T, P=None) -> Psat [Pa]>
     >>> mixture_model([0.2, 0.8], 350)
-    84902.48775001227
+    84902.48775
     
     """
     __slots__ = ('var', 'models',)

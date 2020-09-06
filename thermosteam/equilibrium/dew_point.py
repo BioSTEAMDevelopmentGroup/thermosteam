@@ -30,7 +30,7 @@ class DewPointValues:
         self.x = x
         
     def __repr__(self):
-        return f"{type(self).__name__}(T={self.T}, P={self.P}, IDs={self.IDs}, z={self.z}, x={self.x})"
+        return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, x={self.x})"
 
 
 # %% Dew point calculation
@@ -56,13 +56,13 @@ class DewPoint:
     >>> molar_composition = (0.5, 0.5)
     >>> dp = DP(z=molar_composition, T=355)
     >>> dp
-    DewPointValues(T=355, P=91970.1496840849, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
+    DewPointValues(T=355.00, P=91970, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.851 0.149])
     >>> # Note that the result is a DewPointValues object which contain all results as attibutes
-    >>> (dp.T, dp.P, dp.IDs, dp.z, dp.x)
-    (355, 91970.1496840849, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
+    >>> (dp.T, round(dp.P), dp.IDs, dp.z, dp.x)
+    (355, 91970, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.851, 0.149]))
     >>> # Solve for dew point at constant pressure
     >>> DP(z=molar_composition, P=2*101324)
-    DewPointValues(T=376.26166002492494, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
+    DewPointValues(T=376.26, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
 
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',

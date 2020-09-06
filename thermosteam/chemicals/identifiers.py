@@ -50,12 +50,12 @@ class ChemicalMetadataDB:
                  'unloaded_files',
     )
     def __init__(self, 
-                 files=[os.path.join(folder, 'Inorganic db.tsv'),
+                 files=[os.path.join(folder, 'chemical identifiers pubchem large.tsv'),
+                        os.path.join(folder, 'Inorganic db.tsv'),
                         os.path.join(folder, 'Anion db.tsv'),
                         os.path.join(folder, 'Cation db.tsv'),
                         os.path.join(folder, 'chemical identifiers example user db.tsv'),
-                        os.path.join(folder, 'chemical identifiers pubchem small.tsv'),   
-                        os.path.join(folder, 'chemical identifiers pubchem large.tsv')]):                
+                        os.path.join(folder, 'chemical identifiers pubchem small.tsv')]):                
         self.pubchem_index = {}
         self.smiles_index = {}
         self.InChI_index = {}
@@ -156,55 +156,6 @@ class ChemicalMetadataDB:
         return self.search_index(self.formula_index, formula)
 
     def search(self, ID):
-        """
-        Looks up metadata of a chemical by searching and testing for the
-        string being any of the following types of chemical identifiers:
-        
-        * Name, in IUPAC form or common form or a synonym registered in PubChem
-        * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
-        * InChI key, prefixed by 'InChIKey='
-        * PubChem CID, prefixed by 'PubChem='
-        * SMILES (prefix with 'SMILES=' to ensure smiles parsing; ex.
-          'C' will return Carbon as it is an element whereas the SMILES 
-          interpretation for 'C' is methane)
-        * CAS number (obsolete numbers may point to the current number)    
-    
-        If the input is an ID representing an element, the following additional 
-        inputs may be specified as 
-        
-        * Atomic symbol (ex 'Na')
-        * Atomic number (as a string)
-    
-        Parameters
-        ----------
-        ID : str
-            One of the name formats described above
-    
-        Returns
-        -------
-        metadata : ChemicalMetadata
-    
-        Notes
-        -----
-        A LookupError is raised if the name cannot be identified. The PubChem 
-        database includes a wide variety of other synonyms, but these may not be
-        present for all chemcials.
-    
-        Examples
-        --------
-        >>> chemical_metadata_from_any('water')
-        <ChemicalMetadata: 7732-18-5>
-        >>> chemical_metadata_from_any('InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3')
-        <ChemicalMetadata: 64-17-5>
-        >>> chemical_metadata_from_any('CCCCCCCCCC')
-        <ChemicalMetadata: 124-18-5>
-        >>> chemical_metadata_from_any('InChIKey=LFQSCWFLJHTTHZ-UHFFFAOYSA-N')
-        <ChemicalMetadata: 64-17-5>
-        >>> chemical_metadata_from_any('pubchem=702')
-        <ChemicalMetadata: 64-17-5>
-        >>> chemical_metadata_from_any('O') # only elements can be specified by symbol
-        <ChemicalMetadata: 17778-80-2>
-        """
         if not ID: raise ValueError('ID cannot be empty')
         ID = ID.replace('_', ' ')
         ID_lower = ID.lower()

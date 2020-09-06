@@ -109,16 +109,16 @@ def functor(f=None, var=None, units=None):
     >>> @functor(var='Psat')
     ... def Antoine(T, a, b, c):
     ...     return 10.0**(a - b / (T + c))
-    >>> f(T=373.15, a=10.116, b=1687.5, c=-42.98) # functional
-    101047.25357066597
+    >>> Antoine(T=373.15, a=10.116, b=1687.5, c=-42.98) # functional
+    101157.148
     >>> f = Antoine.functor(a=10.116, b=1687.5, c=-42.98) # as functor object
-    >>> f
+    >>> f.show()
     Functor: Antoine(T, P=None) -> Psat [Pa]
      a: 10.116
      b: 1687.5
      c: -42.98
     >>> f(T=373.15)
-    101047.25357066597
+    101157.148
     
     """
     if f:

@@ -40,7 +40,7 @@ class Thermo:
     --------
     >>> from thermosteam import Thermo
     >>> Thermo(['Ethanol', 'Water'])
-    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal mixing', ..., rigorous_energy_balance=True, include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
+    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal mixing', ..., include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
     
     Attributes
     ----------
