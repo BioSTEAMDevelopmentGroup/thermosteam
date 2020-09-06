@@ -26,7 +26,7 @@ from chemicals.acentric import (omega as acentric_factor,
                                 Stiel_polar_factor as compute_Stiel_Polar)
 from chemicals.triple import (Tt as triple_point_temperature,
                               Pt as triple_point_pressure)
-from chemicals.combustion import combustion_data
+from chemicals.combustion import combustion_data, combustion_stoichiometry
 from chemicals.volume import volume_handle
 from chemicals.heat_capacity import heat_capacity_handle
 from chemicals.reaction import Hf as heat_of_formation
@@ -1607,15 +1607,27 @@ class Chemical:
                     method = 'Dulong'
                 else:
                     method = 'Stoichiometry'
-                cd = combustion_data(self.atoms, Hf=self._Hf, MW=MW, method=method)
-                if 'Hf' in properties:
-                    self._Hf = cd.Hf
-                if 'HHV' in properties:
-                    self._HHV = cd.HHV
-                if 'LHV' in properties:
-                    self._LHV = cd.LHV
-                if 'combustion' in properties:
-                    self._combustion = cd.stoichiometry
+                stoichiometry = combustion_stoichiometry(self.atoms, MW=MW, missing_handling='Ash')
+                try:
+                    cd = combustion_data(self.atoms, Hf=self._Hf, MW=MW, stoichiometry=stoichiometry, method=method)
+                except:
+                    if 'Hf' in properties:
+                        self._Hf = None
+                    if 'HHV' in properties:
+                        self._HHV = None
+                    if 'LHV' in properties:
+                        self._LHV = None
+                    if 'combustion' in properties:
+                        self._combustion = stoichiometry
+                else:
+                    if 'Hf' in properties:
+                        self._Hf = cd.Hf
+                    if 'HHV' in properties:
+                        self._HHV = cd.HHV
+                    if 'LHV' in properties:
+                        self._LHV = cd.LHV
+                    if 'combustion' in properties:
+                        self._combustion = stoichiometry
         else:
             if 'LHV' in properties:
                 self._LHV = 0

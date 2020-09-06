@@ -14,11 +14,20 @@
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
 
+import os
 from chemicals import reaction
+from chemicals.data_reader import (
+    register_df_source,
+    data_source,
+)
 
 reaction.__all__.extend([
     'Hf', 'Hf_at_phase'
 ])
+
+folder = os.path.join(os.path.dirname(__file__), 'Reaction')
+register_df_source(folder, 'Biochemicals.csv')
+Hf_biochemicals = data_source('Biochemicals.csv')
 
 def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     r'''
@@ -56,6 +65,12 @@ def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     -241822.0
     
     '''
+    if CASRN in Hf_biochemicals.index:
+        Hf = Hf_biochemicals.at[CASRN, 'Hf']
+        phase_found = Hf_biochemicals.at[CASRN, 'phase']
+        if phase_found != phase: 
+            Hf = Hf_at_phase(Hf, phase_found, phase, Hvap, Hfus)
+        return Hf
     if not phase:
         for f in (reaction.Hfg, reaction.Hfl, reaction.Hfs):
             Hf = f(CASRN)
