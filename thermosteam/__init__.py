@@ -9,7 +9,7 @@
 """
 from . import (base,
                utils,
-               properties,
+               chemicals,
                exceptions,
                functional,
                units_of_measure,
@@ -33,7 +33,7 @@ from flexsolve import speed_up
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture', 'ThermoData',
-           'settings', 'functor', 'properties', 'base', 'equilibrium',
+           'settings', 'functor', 'chemicals', 'base', 'equilibrium',
            'units_of_measure', 'exceptions', 'functional', 'reaction',
            'utils', 'separations', 'speed_up')
 

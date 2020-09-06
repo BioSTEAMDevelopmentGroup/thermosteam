@@ -10,12 +10,12 @@
 import thermosteam as tmo
 from flexsolve import IQ_interpolation
 from .utils import copy_maybe
-from .properties.identifiers import pubchem_db, pubchem_db
+from chemicals.identifiers import pubchem_db
 from chemicals.vapor_pressure import vapor_pressure_handle
-from .properties.phase_change import (normal_boiling_point_temperature,
-                                      normal_melting_point_temperature,
-                                      heat_of_fusion,
-                                      heat_of_vaporization_handle)
+from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
+                                    Tm as normal_melting_point_temperature,
+                                    Hfus as heat_of_fusion,
+                                    heat_of_vaporization_handle)
 from chemicals.critical import (Ihmels,
                                 Tc as critical_point_temperature,
                                 Pc as critical_point_pressure,
@@ -27,35 +27,39 @@ from chemicals.acentric import (omega as acentric_factor,
 from chemicals.triple import (Tt as triple_point_temperature,
                               Pt as triple_point_pressure)
 from chemicals.combustion import combustion_data
-from .properties.volume import volume_handle
+from chemicals.volume import volume_handle
 from chemicals.heat_capacity import heat_capacity_handle
-from .properties.reaction import Hf as heat_of_formation
-from .properties.elements import (similarity_variable as compute_similarity_variable, 
-                                  simple_formula_parser as get_atoms,
-                                  molecular_weight as compute_molecular_weight)
-from .properties.eos import GCEOS_DUMMY, PR
-from .properties.viscosity import viscosity_handle
-from .properties.thermal_conductivity import thermal_conductivity_handle
-from .properties.free_energy import (
+from chemicals.reaction import Hf as heat_of_formation
+from chemicals.elements import (similarity_variable as compute_similarity_variable, 
+                                simple_formula_parser as get_atoms,
+                                molecular_weight as compute_molecular_weight)
+from chemicals.viscosity import viscosity_handle
+from chemicals.thermal_conductivity import thermal_conductivity_handle
+from chemicals.permittivity import permitivity_handle
+from chemicals.interface import surface_tension_handle
+from chemicals.dipole import dipole_moment
+from .free_energy import (
     Enthalpy, Entropy,
     EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas,
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas,
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas,
-    ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas)
+    ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
+)
+from .eos import GCEOS_DUMMY, PR
+from .equilibrium.unifac import (
+    DDBST_UNIFAC_assignments, 
+    DDBST_MODIFIED_UNIFAC_assignments,
+    DDBST_PSRK_assignments,
+    UNIFACGroupCounts, 
+    DortmundGroupCounts, 
+    PSRKGroupCounts
+)
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    ThermoModelHandle, TDependentModelHandle,
                    TPDependentModelHandle, display_asfunctor)
 from .units_of_measure import chemical_units_of_measure
-from .properties.dipole import dipole_moment
 from . import functional as fn 
-from .properties.permittivity import permitivity_handle
-from .properties.interface import surface_tension_handle
-from .properties.unifac import (DDBST_UNIFAC_assignments, 
-                                DDBST_MODIFIED_UNIFAC_assignments,
-                                DDBST_PSRK_assignments,
-                                UNIFACGroupCounts, 
-                                DortmundGroupCounts, 
-                                PSRKGroupCounts)
+
 # from .solubility import SolubilityParameter
 # from .lennard_jones import Stockmayer, MolecularDiameter
 # from .environment import GWP, ODP, logP
@@ -300,13 +304,13 @@ class Chemical:
         
     >>> # Vapor pressure (Pa)
     >>> Water.Psat(T=373.15)
-    101284.55179999319
+    101284.55...
     >>> # Surface tension (N/m)
     >>> Water.sigma(T=298.15)
-    0.07205503890847455
+    0.07197220523...
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
-    1.806920448788909e-05
+    1.80692...e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
@@ -329,11 +333,11 @@ class Chemical:
     
     >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner McGraw
+    [0] Wagner original
     [1] Antoine
-    [2] DIPPR EQ101
+    [2] EQ101
     [3] Wagner
-    [4] Boiling Critical Relation
+    [4] boiling critical relation
     [5] Lee Kesler
     [6] Ambrose Walton
     [7] Sanjari
@@ -350,7 +354,7 @@ class Chemical:
     
     >>> Water.Psat[0].show()
     TDependentModel(T, P=None) -> Psat [Pa]
-     name: Wagner McGraw
+     name: Wagner original
      Tmin: 275 K
      Tmax: 647.35 K
 
@@ -376,7 +380,7 @@ class Chemical:
         
     >>> functor = Water.Psat[0].evaluate
     >>> functor.show()
-    Functor: Wagner_McGraw(T, P=None) -> Psat [Pa]
+    Functor: Wagner_original(T, P=None) -> Psat [Pa]
      Tc: 647.35 K
      Pc: 2.2122e+07 Pa
      a: -7.7645
@@ -396,11 +400,11 @@ class Chemical:
     >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] User antoine model
-    [1] Wagner McGraw
+    [1] Wagner original
     [2] Antoine
-    [3] DIPPR EQ101
+    [3] EQ101
     [4] Wagner
-    [5] Boiling Critical Relation
+    [5] boiling critical relation
     [6] Lee Kesler
     [7] Ambrose Walton
     [8] Sanjari
@@ -427,14 +431,14 @@ class Chemical:
     
     >>> # Note: In this case, we pass the model name, but its
     >>> # also possible to pass the current index, or the model itself.
-    >>> Water.Psat.move_up_model_priority('Wagner McGraw')
+    >>> Water.Psat.move_up_model_priority('Wagner original')
     >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner McGraw
+    [0] Wagner original
     [1] Antoine
-    [2] DIPPR EQ101
+    [2] EQ101
     [3] Wagner
-    [4] Boiling Critical Relation
+    [4] boiling critical relation
     [5] Lee Kesler
     [6] Ambrose Walton
     [7] Sanjari
@@ -445,10 +449,10 @@ class Chemical:
     >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
     [0] Antoine
-    [1] Wagner McGraw
-    [2] DIPPR EQ101
+    [1] Wagner original
+    [2] EQ101
     [3] Wagner
-    [4] Boiling Critical Relation
+    [4] boiling critical relation
     [5] Lee Kesler
     [6] Ambrose Walton
     [7] Sanjari
@@ -460,11 +464,11 @@ class Chemical:
     >>> Water.Psat.set_model_priority('Antoine', 1)
     >>> Water.Psat.show()
     TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner McGraw
+    [0] Wagner original
     [1] Antoine
-    [2] DIPPR EQ101
+    [2] EQ101
     [3] Wagner
-    [4] Boiling Critical Relation
+    [4] boiling critical relation
     [5] Lee Kesler
     [6] Ambrose Walton
     [7] Sanjari
@@ -1325,7 +1329,7 @@ class Chemical:
         self._mu = mu = viscosity_handle(None, ldata, gdata)
         
         # Conductivity
-        ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega)
+        ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega, V.l)
         gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cn.g, mu.g)
         self._kappa = thermal_conductivity_handle(None, ldata, gdata)
         

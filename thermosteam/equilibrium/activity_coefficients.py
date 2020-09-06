@@ -16,7 +16,7 @@
 """
 """
 import numpy as np
-from ..properties.unifac import DOUFSG, DOUFIP2016, UFIP, UFSG
+from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG
 from flexsolve import njitable
 
 __all__ = ('ActivityCoefficients',

@@ -14,7 +14,7 @@ from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
 from .exceptions import DimensionError
-from .properties.elements import array_to_atoms, atomic_index
+from chemicals.elements import array_to_atoms, atomic_index
 from . import utils
 
 __all__ = ('Stream', )
