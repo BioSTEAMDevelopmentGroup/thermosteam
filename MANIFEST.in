@@ -1,7 +1,7 @@
 include LICENSE.txt AUTHORS README.rst pytest.ini 
 recursive-include thermosteam *
-recursive-include tests *
-recursive-include docs *
+recursive-exclude tests *
+recursive-exclude docs *
 global-exclude .spyproject
 global-exclude tests/.spyproject/*
 global-exclude tests/.spyproject

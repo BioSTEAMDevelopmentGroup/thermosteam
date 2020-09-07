@@ -12,7 +12,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.20.13',
+    version='0.20.14',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -24,18 +24,20 @@ setup(
                       'openpyxl>=3.0.0', 'free_properties>=0.2.5',
                       'flexsolve==0.3.29', 'pyglet', 'ternary',
                       'numba>=0.46.0'],
-    package_data=
-        {'thermosteam': ('base/*', 
-                         'equilibrium/*', 
-                         'reaction/*',
-                         'utils/*',
-                         'utils/decorators/*', 
-                         'mixture/*',
-                         'chemicals/*',
-                         'chemicals/Reaction/*'
-                         'equilibrium/UNIFAC/*',
-                         'units_of_measure.txt', 
-                      )},
+    package_data={
+        'thermosteam': [
+            'base/*', 
+            'equilibrium/*', 
+            'reaction/*',
+            'utils/*',
+            'utils/decorators/*', 
+            'mixture/*',
+            'chemicals/*',
+            'chemicals/Reaction/*'
+            'equilibrium/UNIFAC/*',
+            'units_of_measure.txt', 
+        ]
+    },
     platforms=['Windows', 'Mac', 'Linux'],
     author_email='yoelcortes@gmail.com',
     url='https://github.com/BioSTEAMDevelopmentGroup/thermosteam',
@@ -64,5 +66,5 @@ setup(
                  'Programming Language :: Python :: 3.8',
                  'Programming Language :: Python :: Implementation :: CPython',
                  'Topic :: Education'],
-    keywords='thermodynamics chemical engineering mass energy balance material properties phase equilibrium',
+    keywords=['thermodynamics', 'chemical engineering', 'mass and energy balance', 'material properties', 'phase equilibrium'],
 )
