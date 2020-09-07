@@ -22,7 +22,7 @@ install:
   - cmd: conda install -yq numpy scipy pip pytest pandas matplotlib
   - cmd: pip install -r requirements_test.txt
   - cmd: python setup.py install
-  - cmd: rmdir /Q /S chemicals
+  - cmd: rmdir /Q /S thermosteam
 
 test_script:
   - cmd: py.test --cov-report html --cov=thermosteam -m "not slow and not online"
