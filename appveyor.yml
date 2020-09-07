@@ -19,7 +19,7 @@ init:
 
 install:
   - cmd: activate condaenv
-  - cmd: conda install -yq numpy scipy pip pytest pandas matplotlib
+  - cmd: conda install -yq numpy scipy pip pytest pandas matplotlib simpy
   - cmd: pip install -r requirements_test.txt
   - cmd: python setup.py install
   - cmd: rmdir /Q /S thermosteam
