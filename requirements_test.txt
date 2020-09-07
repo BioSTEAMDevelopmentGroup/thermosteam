@@ -2,7 +2,6 @@ pytest-cov
 coveralls
 pint>=0.9
 chemicals>=0.1.4
-IPython>=7.9.0
 colorpalette>=0.3.1 
 matplotlib>=3.1.1
 numpy>=1.18.1
