@@ -88,8 +88,7 @@ def viscosity_liquid_handle(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         data = (C1, C2, C3, C4, C5)
         add_model(EQ101.functor.from_args(data), Tmin, Tmax)
     if CAS in mu_data_VDI_PPDS_7:
-        coef = mu_data_VDI_PPDS_7[CAS][2:]
-        add_model(PPDS9.functor.from_args(coef))
+        add_model(PPDS9.functor.from_args(mu_data_VDI_PPDS_7[CAS]))
     data = (MW, Tc, Pc, omega)
     if all(data):
         add_model(Letsou_Stiel.functor.from_args(data), Tc/4, Tc)

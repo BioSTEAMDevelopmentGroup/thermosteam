@@ -315,7 +315,7 @@ class TDependentModelHandle(ThermoModelHandle):
                 elif Ta < Tmax:
                     integral += model.integrate_by_T(Ta, Tmax)
                     Ta = Tmax
-            elif ub_satisfied and Tmin < Tb:
+            elif ub_satisfied and Tb > Tmin:
                 integral += model.integrate_by_T(Tmin, Tb)
                 Tb = Tmin
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "

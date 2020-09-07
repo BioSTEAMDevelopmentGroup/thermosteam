@@ -182,8 +182,7 @@ def volume_gas_handle(handle, CAS, Tc, Pc, omega, eos):
         add_model(Abbott.functor.from_args(data))
         add_model(Pitzer_Curl.functor.from_args(data))
     if CAS in rho_data_CRC_virial:
-        _, *data = rho_data_CRC_virial[CAS]
-        add_model(CRCVirial.functor.from_args(data))
+        add_model(CRCVirial.functor.from_args(rho_data_CRC_virial[CAS]))
     add_model(ideal_gas_model)
 vol.volume_gas_handle = volume_gas_handle
 

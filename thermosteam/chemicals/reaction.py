@@ -26,8 +26,8 @@ reaction.__all__.extend([
 ])
 
 folder = os.path.join(os.path.dirname(__file__), 'Reaction')
-register_df_source(folder, 'Biochemicals.csv')
-Hf_biochemicals = data_source('Biochemicals.csv')
+register_df_source(folder, 'Biochemicals Hf.tsv')
+Hf_biochemicals = data_source('Biochemicals Hf.tsv')
 
 def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     r'''

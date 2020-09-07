@@ -1288,7 +1288,7 @@ class Chemical:
         self._Hf = Hf
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
-            cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW)
+            cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW, missing_handling='Ash')
             LHV = cd.LHV
             HHV = cd.HHV
             combustion = cd.stoichiometry
@@ -1612,11 +1612,11 @@ class Chemical:
                     cd = combustion_data(self.atoms, Hf=self._Hf, MW=MW, stoichiometry=stoichiometry, method=method)
                 except:
                     if 'Hf' in properties:
-                        self._Hf = None
+                        self._Hf = 0.
                     if 'HHV' in properties:
-                        self._HHV = None
+                        self._HHV = 0.
                     if 'LHV' in properties:
-                        self._LHV = None
+                        self._LHV = 0.
                     if 'combustion' in properties:
                         self._combustion = stoichiometry
                 else:
@@ -1797,6 +1797,10 @@ def lock_phase(chemical, phase):
         if hasfield(phase_property, phase):
             functor = getfield(phase_property, phase)
             setfield(chemical, field, functor)
+    Cn = chemical.Cn
+    chemical._phase_ref = phase
+    chemical._H = Enthalpy.functor(Cn, chemical.T_ref, chemical.H_ref)
+    chemical._S = Entropy.functor(Cn, chemical.T_ref, chemical.S_ref)
     chemical._locked_state = phase
 
 # # Fire Safety Limits
