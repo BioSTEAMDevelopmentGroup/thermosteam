@@ -212,7 +212,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28)
-        (82444.29876052079, array([0.853, 0.147]))
+        (82444.29876, array([0.853, 0.147]))
  
        """
         z_norm = z/z.sum()

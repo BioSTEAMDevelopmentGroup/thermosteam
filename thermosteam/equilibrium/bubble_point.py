@@ -160,7 +160,7 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
-        (353.7543..., array([0.381, 0.619]))
+        (353.7543, array([0.381, 0.619]))
         
         """
         self.P = P
@@ -208,7 +208,7 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)
-        (91830.97988957872, array([0.419, 0.581]))
+        (91830.9798, array([0.419, 0.581]))
         
         """
         self.T = T
