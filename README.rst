@@ -11,6 +11,9 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 .. image:: http://img.shields.io/badge/license-UIUC-blue.svg?style=flat
    :target: https://github.com/BioSTEAMDevelopmentGroup/thermosteam/blob/master/LICENSE.txt
    :alt: license
+.. image:: https://img.shields.io/coveralls/BioSTEAMDevelopmentGroup/thermosteam.svg
+   :target: https://coveralls.io/github/BioSTEAMDevelopmentGroup/thermosteam
+   :alt: Coverage
 .. image:: https://zenodo.org/badge/219133879.svg
    :target: https://zenodo.org/badge/latestdoi/219133879
 
