@@ -16,18 +16,14 @@
 
 import os
 from chemicals import reaction
-from chemicals.data_reader import (
-    register_df_source,
-    data_source,
-)
+import pandas as pd
 
 reaction.__all__.extend([
     'Hf', 'Hf_at_phase'
 ])
 
 folder = os.path.join(os.path.dirname(__file__), 'Reaction')
-register_df_source(folder, 'Biochemicals Hf.tsv')
-Hf_biochemicals = data_source('Biochemicals Hf.tsv')
+Hf_biochemicals = pd.read_csv(os.path.join(folder, 'Biochemicals Hf.tsv'), sep='\t', index_col=0)
 
 def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     r'''
@@ -68,7 +64,7 @@ def Hf(CASRN, phase=None, Hvap=None, Hfus=None):
     if CASRN in Hf_biochemicals.index:
         Hf = Hf_biochemicals.at[CASRN, 'Hf']
         phase_found = Hf_biochemicals.at[CASRN, 'phase']
-        if phase_found != phase: 
+        if phase and phase_found != phase: 
             Hf = Hf_at_phase(Hf, phase_found, phase, Hvap, Hfus)
         return Hf
     if not phase:

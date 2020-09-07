@@ -56,13 +56,3 @@ def test_equilibrium():
     
 def test_separations():
     testmod(tmo.separations, **kwargs)
-    
-if __name__ == '__main__':
-    test_chemical()
-    test_chemicals()
-    test_thermo_data()
-    test_stream()
-    test_multi_stream()
-    test_reaction()
-    test_equilibrium()
-    test_separations()
