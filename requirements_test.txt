@@ -1,6 +1,6 @@
 pytest-cov
 coveralls
-simpy
+sympy
 pint>=0.9
 chemicals>=0.1.4
 colorpalette>=0.3.1 
