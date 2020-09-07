@@ -1,6 +1,5 @@
 language: c
 os:
-  - osx
   - linux
 compiler:
   - "3.6"
