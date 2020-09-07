@@ -11,7 +11,7 @@ platform:
 
 install:
   - cmd: pip install --user --upgrade pip
-  - cmd: pip install requirements_test
+  - cmd: pip install -r requirements_test.txt
   - cmd: python setup.py install
   - cmd: rmdir /Q /S thermosteam
 
