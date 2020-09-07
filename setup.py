@@ -45,8 +45,6 @@ setup(
     classifiers=['Development Status :: 3 - Alpha',
                  'Environment :: Console',
                  'License :: OSI Approved :: MIT License',
-                 'Programming Language :: Python :: 3.6',
-                 'Programming Language :: Python :: 3.7',
                  'Topic :: Scientific/Engineering',
                  'Topic :: Scientific/Engineering :: Chemistry',
                  'Topic :: Scientific/Engineering :: Mathematics',
