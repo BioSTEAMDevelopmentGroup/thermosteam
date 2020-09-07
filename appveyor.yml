@@ -25,4 +25,4 @@ install:
   - cmd: rmdir /Q /S thermosteam
 
 test_script:
-  - cmd: py.test --cov-report html --cov=thermosteam -m "not slow and not online"
+  - cmd: pytest --cov-report html --cov=thermosteam -m "not slow and not online"
