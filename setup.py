@@ -6,13 +6,12 @@
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
 from distutils.core import setup
-#import numpy
 
 setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.20.17',
+    version='0.20.18',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -44,6 +43,7 @@ setup(
     download_url='https://github.com/BioSTEAMDevelopmentGroup/thermosteam.git',
     classifiers=['Development Status :: 3 - Alpha',
                  'Environment :: Console',
+                 'License :: OSI Approved :: University of Illinois/NCSA Open Source License',
                  'License :: OSI Approved :: MIT License',
                  'Topic :: Scientific/Engineering',
                  'Topic :: Scientific/Engineering :: Chemistry',
