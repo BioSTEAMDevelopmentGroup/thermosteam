@@ -1,5 +1,0 @@
-thermal_conductivity
-====================
-
-.. automodule:: thermosteam.properties.thermal_conductivity
-   :members:

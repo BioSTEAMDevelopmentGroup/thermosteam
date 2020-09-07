@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.6" 
+  - "3.7"
+  - "3.8"
+before_install:
+  - python --version
+install:
+  - pip install -r requirements_test.txt
+script:
+  - py.test . -v --cov-report html --cov=thermosteam
+after_success:
+  - coveralls

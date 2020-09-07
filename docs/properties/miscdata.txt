@@ -1,5 +1,0 @@
-miscdata
-========
-
-.. automodule:: thermosteam.properties.miscdata
-   :members:

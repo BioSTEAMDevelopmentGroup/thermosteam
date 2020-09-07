@@ -1,5 +1,0 @@
-interface
-=========
-
-.. automodule:: thermosteam.properties.interface
-   :members:

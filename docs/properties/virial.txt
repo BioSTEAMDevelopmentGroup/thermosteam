@@ -1,5 +1,0 @@
-virial
-======
-
-.. automodule:: thermosteam.properties.virial
-   :members:

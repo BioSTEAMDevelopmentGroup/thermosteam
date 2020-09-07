@@ -18,7 +18,6 @@ from math import floor
 from flexsolve import speed_up
 import thermosteam as tmo
 import numpy as np
-import ternary
 
 __all__ = ('plot_vle_binary_phase_envelope',
            'plot_lle_ternary_diagram',
@@ -149,6 +148,7 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
     .. figure:: ../images/water_ethanol_ethyl_acetate_ternary_diagram.png
 
     """
+    import ternary
     speed_up()
     chemicals = [carrier, solvent, solute]
     thermo = as_thermo(thermo, chemicals)

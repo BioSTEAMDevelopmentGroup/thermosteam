@@ -5,24 +5,25 @@
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
-from setuptools import setup
+from distutils.core import setup
 #import numpy
 
 setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.20.12',
+    version='0.20.13',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
-    install_requires=['pint>=0.9',
+    install_requires=['pint>=0.9', 'chemicals>=0.1.4',
                       'scipy>=1.3.1', 'IPython>=7.9.0', 
                       'colorpalette>=0.3.1', 'biosteam>=2.20.17',
                       'pandas>=0.25.2', 'matplotlib>=3.1.1',
                       'numpy>=1.18.1', 'xlrd==1.2.0',
                       'openpyxl>=3.0.0', 'free_properties>=0.2.5',
-                      'flexsolve==0.3.29', 'pyglet', 'ternary'],
+                      'flexsolve==0.3.29', 'pyglet', 'ternary',
+                      'numba>=0.46.0'],
     python_requires=">=3.6",
     package_data=
         {'thermosteam': ('base/*', 
@@ -31,27 +32,9 @@ setup(
                          'utils/*',
                          'utils/decorators/*', 
                          'mixture/*',
-                         'properties/*',
-                         'properties/Data/*', 
-                         'properties/Data/Critical Properties/*',
-                         'properties/Data/Density/*', 
-                         'properties/Data/Electrolytes/*', 
-                         'properties/Data/Environment/*', 
-                         'properties/Data/Heat Capacity/*', 
-                         'properties/Data/Identifiers/*',
-                         'properties/Data/Law/*', 
-                         'properties/Data/Misc/*', 
-                         'properties/Data/Misc/element.txt',
-                         'properties/Data/Phase Change/*', 
-                         'properties/Data/Reactions/*', 
-                         'properties/Data/Safety/*', 
-                         'properties/Data/Solubility/*', 
-                         'properties/Data/Interface/*', 
-                         'properties/Data/Triple Properties/*', 
-                         'properties/Data/Thermal Conductivity/*', 
-                         'properties/Data/Vapor Pressure/*', 
-                         'properties/Data/Viscosity/*',
-                         'properties/Data/UNIFAC/*',
+                         'chemicals/*',
+                         'chemicals/Reaction/*'
+                         'equilibrium/UNIFAC/*',
                          'units_of_measure.txt', 
                       )},
     platforms=['Windows', 'Mac', 'Linux'],

@@ -1,5 +1,0 @@
-permitivity
-===========
-
-.. automodule:: thermosteam.properties.permittivity
-   :members:
