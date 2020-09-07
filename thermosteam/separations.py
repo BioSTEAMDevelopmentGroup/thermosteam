@@ -296,7 +296,7 @@ def lle_partition_coefficients(top, bottom):
     >>> IDs
     ('Water', 'Ethanol', 'Octanol')
     >>> K
-    array([6.821e+00, 2.380e-01, 3.005e-04])
+    array([6.82e+00, 2.38e-01, 3.00e-04])
 
     """
     IDs = tuple([i.ID for i in bottom.lle_chemicals])

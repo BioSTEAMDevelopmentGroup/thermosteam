@@ -905,10 +905,10 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
         >>> chemicals.get_vle_indices(data!=0)
-        array([0, 2], dtype=int64)
+        [0, 2]
         
         """
-        return np.where(self._has_vle & nonzeros)[0]
+        return [i for i, j in enumerate(self._has_vle & nonzeros) if j]
     
     def get_lle_indices(self, nonzeros):
         """
@@ -921,10 +921,10 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
         >>> chemicals.get_lle_indices(data!=0)
-        array([0, 2], dtype=int64)
+        [0, 2]
         
         """
-        return np.where(self._has_lle & nonzeros)[0]
+        return [i for i, j in enumerate(self._has_lle & nonzeros) if j]
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"
