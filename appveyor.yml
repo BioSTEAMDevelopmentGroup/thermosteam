@@ -10,7 +10,7 @@ platform:
   - x64
 
 install:
-  - cmd: pip install -U pip
+  - cmd: pip install --user --upgrade pip
   - cmd: pip install requirements_test
   - cmd: python setup.py install
   - cmd: rmdir /Q /S thermosteam
