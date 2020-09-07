@@ -7,11 +7,22 @@ environment:
     - PYTHON: 3.8
 
 platform:
+  - x86
   - x64
 
+init:
+  - "ECHO %PYTHON%"
+  - cmd: SET PATH=C:\Miniconda3\Scripts;C:\Miniconda\Scripts;%PATH%
+  - cmd: conda update -yq conda
+  - cmd: conda install -yq conda-env conda-build 
+  - cmd: conda create -yq -n condaenv python=%PYTHON%
+
 install:
-  - cmd: pip install --user --upgrade pip
+  - cmd: activate condaenv
+  - cmd: conda install -yq numpy scipy pip pytest pandas matplotlib
+  - cmd: pip install -r requirements_test.txt
   - cmd: python setup.py install
+  - cmd: rmdir /Q /S thermosteam
 
 test_script:
   - cmd: py.test --cov-report html --cov=thermosteam -m "not slow and not online"
