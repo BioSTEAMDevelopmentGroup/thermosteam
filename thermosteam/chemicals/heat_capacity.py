@@ -178,7 +178,7 @@ def heat_capacity_gas_handle(handle, CAS, MW, similarity_variable, cyclic_alipha
         if not np.isnan(Cn_g):
             add_model(Cn_g, name=hc.CRCSTD)
     if MW and similarity_variable:
-        data = (MW, similarity_variable, cyclic_aliphatic)
+        data = (similarity_variable, cyclic_aliphatic, MW)
         add_model(Lastovka_Shaw.functor.from_args(data), name=hc.LASTOVKA_SHAW)
     if CAS in VDI_saturation_dict:
         # NOTE: VDI data is for the saturation curve, i.e. at increasing
@@ -210,17 +210,17 @@ Dadgostar_Shaw = functor(hc.Dadgostar_Shaw, 'Cn.l')
 
 @forward(hc)
 @functor(var='H.l')
-def Dadgostar_Shaw_definite_integral(Ta, Tb, MW, similarity_variable):
+def Dadgostar_Shaw_definite_integral(Ta, Tb, similarity_variable, MW):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral(Tb, similarity_variable, MW, terms)
+    return (hc.Dadgostar_Shaw_integral(Tb, similarity_variable, MW, terms)
                - hc.Dadgostar_Shaw_integral(Ta, similarity_variable, MW, terms))
 hc.Dadgostar_Shaw_definite_integral = Dadgostar_Shaw_definite_integral
 
 @forward(hc)
 @functor(var='S.l')
-def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, MW, similarity_variable):
+def Dadgostar_Shaw_definite_integral_over_T(Ta, Tb, similarity_variable, MW):
     terms = hc.Dadgostar_Shaw_terms(similarity_variable)
-    return MW*(hc.Dadgostar_Shaw_integral_over_T(Tb, similarity_variable, MW, terms)
+    return (hc.Dadgostar_Shaw_integral_over_T(Tb, similarity_variable, MW, terms)
                - hc.Dadgostar_Shaw_integral_over_T(Ta, similarity_variable, MW, terms))
 hc.Dadgostar_Shaw_definite_integral_over_T = Dadgostar_Shaw_definite_integral_over_T
 
@@ -303,10 +303,10 @@ def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_varia
         args = (Tc, omega, Cn_g, 200, Tc)
         add_model(Rowlinson_Poling.functor.from_args(args),Tmin=0, Tmax=Tc, name=hc.ROWLINSON_POLING)
     # Other
-    # if MW and similarity_variable:
-    #     add_model(CnHSModel(*Dadgostar_Shaw_functors,
-    #                            data=(MW, similarity_variable),
-    #                            name=hc.DADGOSTAR_SHAW))
+    if similarity_variable and MW:
+        add_model(CnHSModel(*Dadgostar_Shaw_functors,
+                                data=(similarity_variable, MW),
+                                name=hc.DADGOSTAR_SHAW))
     # Constant models
     if CAS in Cp_data_Poling:
         Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = Cp_data_Poling[CAS]

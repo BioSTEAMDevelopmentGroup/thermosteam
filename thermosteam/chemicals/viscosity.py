@@ -44,15 +44,15 @@ Przedziecki_Sridhar = functor(viscosity.Przedziecki_Sridhar, mul)
 PPDS9 = functor(viscosity.PPDS9, mul)
 Lucas = functor(viscosity.Lucas, mul)
 
-def Przedziecki_Sridhar_hook(f, T, kwargs):
+def Przedziecki_Sridhar_hook(self, T, kwargs):
     Vm = kwargs['Vm']
     if callable(Vm):
         kwargs = kwargs.copy()
         kwargs['Vm'] = Vm.at_T(T)
-    return f(T, **kwargs)
+    return self.function(T, **kwargs)
 Przedziecki_Sridhar.functor.hook = Przedziecki_Sridhar_hook
 
-def Lucas_hook(f, T, P, kwargs):
+def Lucas_hook(self, T, P, kwargs):
     kwargs = kwargs.copy()
     Psat = kwargs['Psat']
     mu_l = kwargs['mu_l']
@@ -60,8 +60,8 @@ def Lucas_hook(f, T, P, kwargs):
         kwargs['Psat'] = Psat(T)
     if callable(mu_l):
         kwargs['mu_l'] = mu_l.at_T(T)
-    return kwargs
-Lucas.hook = Lucas_hook
+    return self.function(T, P, **kwargs)
+Lucas.functor.hook = Lucas_hook
 
 @TPDependentHandleBuilder('mu.l')
 def viscosity_liquid_handle(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
@@ -77,7 +77,7 @@ def viscosity_liquid_handle(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         add_model(Viswanath_Natarajan_3.functor.from_args(data), Tmin, Tmax)
     if CAS in mu_data_VN3:
         A, B, C, Tmin, Tmax = mu_data_VN3[CAS]
-        data = (A, B, C)
+        data = (A - 3.0, B, C)
         add_model(Viswanath_Natarajan_3.functor.from_args(data), Tmin, Tmax)
     if CAS in mu_data_VN2:
         A, B, Tmin, Tmax = mu_data_VN2[CAS]
@@ -92,14 +92,13 @@ def viscosity_liquid_handle(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
     data = (MW, Tc, Pc, omega)
     if all(data):
         add_model(Letsou_Stiel.functor.from_args(data), Tc/4, Tc)
-    data = (MW, Tm, Tc, Pc, Vc, omega, Vl)
-    if all(data):
-        add_model(Przedziecki_Sridhar.functor.from_args(data), Tm, Tc)
+    # data = (Tm, Tc, Pc, Vc, Vl, omega, MW)
+    # if all(data):
+    #     # Pretty bad model; so do not use
+    #     add_model(Przedziecki_Sridhar.functor.from_args(data), Tm, Tc)
     data = (Tc, Pc, omega)
     if all(data):
-        for mu_l in handle.models:
-            if isinstance(mu_l, TDependentModel): break
-        data = (Tc, Pc, omega, Psat, mu_l)
+        data = (Tc, Pc, omega, Psat, handle)
         add_model(Lucas.functor.from_args(data), Tm, Tc,
                   name='Lucas')
 viscosity.viscosity_liquid_handle = viscosity_liquid_handle

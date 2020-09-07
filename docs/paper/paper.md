@@ -33,25 +33,28 @@ and fluid viscosities, densities, and surface tension are required to design a
 distillation column that can achieve a specified recovery of chemicals 
 [@Perry]. The overarching goal of thermosteam is to enable the rigorous design 
 and simulation of unit operations by creating thermodynamic property packages 
-from both user-defined chemicals and thermosteam's local chemical databank. 
-Thermosteam builds upon `thermo` [@thermo] with a robust and flexible framework
-that facilitates the creation of property packages. Its extendable framework 
-allows for easy integration of new models for estimating pure component 
+from both user-defined chemicals and databanks from the `chemicals` library [@chemicals]. 
+The `chemicals` library is an open-source compilation of data and functions for
+the estimation of thermodynamic and transport properties for both pure chemicals and mixtures.
+Roughly 20,000 chemicals with temperature- and pressure-dependent property data are
+included in the `chemicals`. Thermosteam builds upon `chemicals` with a robust and
+flexible framework that facilitates the creation of property packages. Its extendable
+framework allows for easy integration of new models for estimating pure component 
 properties, thermodynamic equilibrium coefficients, and mixture properties. 
 The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) 
 has adopted thermosteam as its premier thermodynamic engine [@BioSTEAM].
-Currently, two biorefinery designs modeled in BioSTEAM, a cornstover 
-biorefinery for the production of cellulosic ethanol and a lipid-cane 
-biorefinery for the co-production of ethanol and biodiesel, implement property 
-packages created with thermosteam [@Bioindustrial-Park].
+Currently, three biorefinery designs modeled in BioSTEAM implement property 
+packages created with thermosteam [@Bioindustrial-Park], including a cornstover 
+biorefinery for the production of cellulosic ethanol, a lipid-cane biorefinery 
+for the co-production of ethanol and biodiesel, and a sugarcane biorefinery
+for the production of bioethanol.
 
-Thermosteam includes roughly 20,000 chemicals with temperature- and
-pressure-dependent properties. Peng Robinson is the default equation of state 
+In `thermosteam`, Peng Robinson is the default equation of state 
 of all pure components. However, the estimation of pure component chemical 
-properties are not limited to solving the equation of state. In thermosteam, 
-several models for thermodynamic properties (e.g. density, heat capacity, vapor 
-pressure, heat of vaporization, etc.) may rely on fitted coefficients and key 
-chemical properties (e.g. critical temperature and pressure). To facilitate the 
+properties are not limited to solving the equation of state. Several models 
+for thermodynamic properties (e.g. density, heat capacity, vapor pressure, 
+heat of vaporization, etc.) may rely on fitted coefficients and key chemical 
+properties (e.g. critical temperature and pressure). To facilitate the 
 calculation of mixture properties, thermosteam's default mixing rule estimates 
 mixture properties by assuming a molar weighted average of the pure chemical 
 properties.
@@ -78,14 +81,11 @@ industrially and academically relevant.
 
 # Acknowledgements
 
-I would like to thank Dr. Yalin Li, Dr. Rui Shi, Sarang Bhagwat, Brent 
-Scheidemantle, and Dimitri Bachin for testing thermosteam and reporting in 
-detail any issues with the software. I would also like to thank Dr. Caleb Bell for 
-developing the open-source `thermo` package in Python, which has served as both groundwork
-and inspiration for developing `thermosteam`. This material is based upon work supported
-by the National Science Foundation Graduate Research Fellowship Program under 
-Grant No. DGE—1746047. Any opinions, findings, and conclusions or 
-recommendations expressed in this publication are those of the authors and do 
+I would like to thank Dr. Caleb Bell for developing the open-source `chemicals` library
+in Python, which has served as both groundwork and inspiration for developing `thermosteam`. 
+This material is based upon work supported by the National Science Foundation Graduate 
+Research Fellowship Program under Grant No. DGE—1746047. Any opinions, findings, and 
+conclusions or recommendations expressed in this publication are those of the authors and do 
 not necessarily reflect the views of the National Science Foundation.
 
 # References
