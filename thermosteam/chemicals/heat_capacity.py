@@ -303,10 +303,10 @@ def heat_capacity_liquid_handle(handle, CAS, Tb, Tc, omega, MW, similarity_varia
         args = (Tc, omega, Cn_g, 200, Tc)
         add_model(Rowlinson_Poling.functor.from_args(args),Tmin=0, Tmax=Tc, name=hc.ROWLINSON_POLING)
     # Other
-    if MW and similarity_variable:
-        add_model(CnHSModel(*Dadgostar_Shaw_functors,
-                               data=(MW, similarity_variable),
-                               name=hc.DADGOSTAR_SHAW))
+    # if MW and similarity_variable:
+    #     add_model(CnHSModel(*Dadgostar_Shaw_functors,
+    #                            data=(MW, similarity_variable),
+    #                            name=hc.DADGOSTAR_SHAW))
     # Constant models
     if CAS in Cp_data_Poling:
         Tmin, Tmax, a, b, c, d, e, Cn_g, Cn_l = Cp_data_Poling[CAS]

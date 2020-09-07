@@ -1095,8 +1095,9 @@ class Chemical:
         If no combustion stoichiometry is available, return None."""
         combustion = self._combustion
         if not combustion: return None
-        combustion = combustion.copy()
+        if len(combustion) == 1: return None
         ID = self._ID
+        combustion = combustion.copy()
         combustion[ID] = -1
         return tmo.reaction.Reaction(combustion, ID, 1.0, chemicals)
     

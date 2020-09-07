@@ -289,9 +289,8 @@ class CompiledChemicals(Chemicals):
 
     def get_combustion_reactions(self):
         """Return a ParallelReactions object with all defined combustion reactions."""
-        reactions = [i.get_combustion_reaction(self)
-                     for i in self if i.combustion]
-        return tmo.reaction.ParallelReaction(reactions)
+        reactions = [i.get_combustion_reaction(self) for i in self]
+        return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
     def _compile(self):
         dct = self.__dict__

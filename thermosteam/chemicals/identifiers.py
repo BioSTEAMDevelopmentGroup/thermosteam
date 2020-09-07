@@ -49,6 +49,9 @@ class ChemicalMetadataDB:
                  'formula_index',
                  'unloaded_files',
     )
+    
+    cache = {}
+    
     def __init__(self, 
                  files=[os.path.join(folder, 'chemical identifiers pubchem large.tsv'),
                         os.path.join(folder, 'Inorganic db.tsv'),
@@ -156,6 +159,15 @@ class ChemicalMetadataDB:
         return self.search_index(self.formula_index, formula)
 
     def search(self, ID):
+        cache = self.cache
+        if ID in cache:
+            return cache[ID]
+        else:
+            if len(cache) > 100: cache.clear()
+            cache[ID] = obj = self._search(ID)
+            return obj
+
+    def _search(self, ID):
         if not ID: raise ValueError('ID cannot be empty')
         ID = ID.replace('_', ' ')
         ID_lower = ID.lower()
