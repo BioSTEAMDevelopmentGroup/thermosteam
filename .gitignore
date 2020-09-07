@@ -9,6 +9,7 @@ thermosteam.egg-info
 dist
 MANIFEST
 .coverage
+.coveralls.yml
 htmlcov
 _build
 .cache

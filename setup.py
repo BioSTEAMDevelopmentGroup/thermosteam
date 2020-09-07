@@ -23,7 +23,7 @@ setup(
                       'numpy>=1.18.1', 'xlrd==1.2.0',
                       'openpyxl>=3.0.0', 'free_properties>=0.2.5',
                       'flexsolve==0.3.29', 'pyglet',
-                      'numba>=0.46.0'],
+                      'numba>=0.50.0'],
     package_data={
         'thermosteam': [
             'base/*', 
