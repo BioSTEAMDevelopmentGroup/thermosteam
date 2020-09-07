@@ -33,7 +33,7 @@ setup(
             'utils/decorators/*', 
             'mixture/*',
             'chemicals/*',
-            'chemicals/Reaction/*'
+            'chemicals/Reaction/*',
             'equilibrium/UNIFAC/*',
             'units_of_measure.txt', 
         ]
