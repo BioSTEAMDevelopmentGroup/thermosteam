@@ -8,6 +8,9 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 .. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
    :target: https://thermosteam.readthedocs.io/en/latest/
    :alt: Documentation
+.. image:: https://img.shields.io/pypi/pyversions/thermosteam.svg
+   :target: https://pypi.python.org/pypi/thermosteam
+   :alt: Supported_versions
 .. image:: http://img.shields.io/badge/license-UIUC-blue.svg?style=flat
    :target: https://github.com/BioSTEAMDevelopmentGroup/thermosteam/blob/master/LICENSE.txt
    :alt: license
