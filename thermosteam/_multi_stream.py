@@ -163,8 +163,9 @@ class MultiStream(Stream):
     
     Note that the phase cannot be changed:
     
-    >>> # s1['g'].phase = 'l'
-    >>> # -> AttributeError: phase is locked
+    >>> s1['g'].phase = 'l'
+    Traceback (most recent call last):
+    AttributeError: phase is locked
     
     """
     __slots__ = ()
@@ -801,6 +802,20 @@ class MultiStream(Stream):
         return basic_info + phases_flow_rates_info.rstrip('\n')
     
     def print(self):
+        """
+        Print in a format that you can use recreate the stream.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.MultiStream(ID='s1',T=298.15, P=101325,
+        ...                      l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> s1.print()
+        MultiStream(ID='s1', phases=('g', 'l'), T=298.15, P=101325, l=[('Water', 1.11), ('Ethanol', 0.2171)])
+        
+        """
+        
         IDs = self.chemicals.IDs
         phase_data = []
         for phase, data in self.imol:

@@ -63,13 +63,24 @@ CRC_inorganic = functor(vol.CRC_inorganic, 'V.l')
 volume_VDI_PPDS = functor(vol.volume_VDI_PPDS , 'V.l')
 COSTALD_compressed = functor(vol.COSTALD_compressed , 'V.l')
 
-def COSTALD_compressed_hook(f, T, P, kwargs):
+def EQ105_hook(self, T, kwargs):
+    if kwargs.get('molar_volume'):
+        del kwargs['molar_volume']
+        V_inv = self.function(T, **kwargs)
+        value = 1. / V_inv
+        kwargs['molar_volume'] = True
+    else:
+        value = self.function(T, **kwargs)
+    return value
+EQ105.functor.hook = EQ105_hook
+
+def COSTALD_compressed_hook(self, T, P, kwargs):
     kwargs = kwargs.copy()
     Psat = kwargs['Psat']
     Vs = kwargs['Vs']
     if callable(Psat): kwargs['Psat'] = Psat(T)
     if callable(Vs): kwargs['Vs'] = Vs(T, P)
-    return f(T, P, **kwargs)
+    return self.function(T, P, **kwargs)
 COSTALD_compressed.functor.hook = COSTALD_compressed_hook
 
 @TPDependentHandleBuilder('V.l')
@@ -86,7 +97,9 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
     if CAS in rho_data_Perry_8E_105_l:
         C1, C2, C3, C4, Tmin, Tmax = rho_data_Perry_8E_105_l[CAS]
         data = (C1, C2, C3, C4, True)
-        add_model(EQ105.functor.from_args(data), Tmin, Tmax)
+        f = EQ105.functor.from_args(data)
+        f.molar_volume = True
+        add_model(f, Tmin, Tmax)
     if CAS in VDI_saturation_dict:
         Ts, Vls = lookup_VDI_tabular_data(CAS, 'Volume (l)')
         model = InterpolatedTDependentModel(Ts, Vls,

@@ -9,6 +9,7 @@
 """
 import thermosteam as tmo
 import flexsolve as flx
+from chemicals import elements
 from . import _parse as prs
 from ..utils import chemicals_user
 from .._phase import NoPhase
@@ -436,7 +437,7 @@ class Reaction:
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
         formula_array = self.chemicals.formula_array
         unbalanced_array = formula_array @ stoichiometry_by_mol
-        atoms = tmo.properties.elements.array_to_atoms(unbalanced_array)
+        atoms = elements.array_to_atoms(unbalanced_array)
         assert abs(sum(atoms.values())) < tol, (
             "atomic stoichiometry is unbalanced by the following molar stoichiometric coefficients:\n "
             + "\n ".join([f"{symbol}: {value}" for symbol, value in atoms.items()])

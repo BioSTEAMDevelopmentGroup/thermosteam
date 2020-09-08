@@ -1666,6 +1666,20 @@ class Stream:
     _ipython_display_ = show
     
     def print(self):
+        """
+        Print in a format that you can use recreate the stream.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream(ID='s1',
+        ...                 Water=20, Ethanol=10, units='kg/hr',
+        ...                 T=298.15, P=101325, phase='l')
+        >>> s1.print()
+        Stream(ID='s1', phase='l', T=298.15, P=101325, Water=1.11, Ethanol=0.2171)
+        
+        """
         chemical_flows = utils.repr_IDs_data(self.chemicals.IDs, self.mol)
         price = utils.repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
