@@ -68,7 +68,7 @@ class LLE(Equilibrium, phases='lL'):
     Examples
     --------
     >>> from thermosteam import indexer, equilibrium, settings
-    >>> settings.set_thermo(['Water', 'Ethanol', 'Octane', 'Hexane'])
+    >>> settings.set_thermo(['Water', 'Ethanol', 'Octane', 'Hexane'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30)],
     ...             L=[('Octane', 40), ('Hexane', 1)])

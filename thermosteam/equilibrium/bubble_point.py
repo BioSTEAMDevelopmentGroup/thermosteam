@@ -48,7 +48,7 @@ class BubblePoint:
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
     >>> BP = tmo.equilibrium.BubblePoint(chemicals)
     >>> molar_composition = (0.5, 0.5)
@@ -156,7 +156,7 @@ class BubblePoint:
         --------
         >>> import thermosteam as tmo
         >>> import numpy as np
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
@@ -204,7 +204,7 @@ class BubblePoint:
         --------
         >>> import thermosteam as tmo
         >>> import numpy as np
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)

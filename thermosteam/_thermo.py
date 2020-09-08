@@ -35,6 +35,8 @@ class Thermo:
         Class for computing fugacity coefficients.
     PCF : PoyntingCorrectionFactor subclass, optional
         Class for computing poynting correction factors.
+    cache : optional
+        Whether or not to use cached chemicals.
     
     Examples
     --------
@@ -62,22 +64,23 @@ class Thermo:
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
                  Phi=eq.IdealFugacityCoefficients,
-                 PCF=eq.IdealPoyintingCorrectionFactors):
-        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
+                 PCF=eq.IdealPoyintingCorrectionFactors,
+                 cache=None):
+        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if mixture:
-            assert isinstance(mixture, Mixture), (
-                f"mixture must be a '{Mixture.__name__}' object")
+            if not isinstance(mixture, Mixture): 
+                raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         else:
             mixture = ideal_mixture(chemicals)
         chemicals.compile()
         if settings._debug:
             issubtype = issubclass
-            assert issubtype(Gamma, eq.ActivityCoefficients), (
-                f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
-            assert issubtype(Phi, eq.FugacityCoefficients), (
-                f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
-            assert issubtype(PCF, eq.PoyintingCorrectionFactors), (
-                f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
+            if not issubtype(Gamma, eq.ActivityCoefficients):
+                raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
+            if not issubtype(Phi, eq.FugacityCoefficients):
+                raise ValueError(f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
+            if not issubtype(PCF, eq.PoyintingCorrectionFactors):
+                raise ValueError(f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
         
         setattr = object.__setattr__
         if (Gamma is eq.IdealActivityCoefficients

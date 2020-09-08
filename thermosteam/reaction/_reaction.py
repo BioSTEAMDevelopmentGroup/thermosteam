@@ -101,7 +101,7 @@ class Reaction:
     --------
     >>> import thermosteam as tmo
     >>> import thermosteam.reaction as rxn
-    >>> chemicals = tmo.Chemicals(['H2O', 'H2', 'O2'])
+    >>> chemicals = tmo.Chemicals(['H2O', 'H2', 'O2'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
     >>> reaction = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
     >>> reaction.show() # Note that the default basis is by 'mol'
@@ -320,7 +320,7 @@ class Reaction:
         
         >>> import thermosteam as tmo
         >>> import thermosteam.reaction as rxn
-        >>> chemicals = tmo.Chemicals(['H2', 'O2', 'H2O'])
+        >>> chemicals = tmo.Chemicals(['H2', 'O2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> reaction = rxn.Reaction('2H2 + O2 -> 2H2O', reactant='H2', X=0.7)
         >>> s1 = tmo.Stream('s1', H2=10, O2=20, H2O=1000)
@@ -708,7 +708,7 @@ class ParallelReaction(ReactionSet):
             
         >>> import thermosteam as tmo
         >>> import thermosteam.reaction as rxn
-        >>> chemicals = tmo.Chemicals(['H2', 'CH4', 'O2', 'CO2', 'H2O'])
+        >>> chemicals = tmo.Chemicals(['H2', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> reaction = rxn.ParallelReaction([
         ...    #            Reaction definition          Reactant    Conversion
@@ -822,7 +822,7 @@ class SeriesReaction(ReactionSet):
         
         >>> import thermosteam as tmo
         >>> import thermosteam.reaction as rxn
-        >>> chemicals = tmo.Chemicals(['CH4', 'CO','O2', 'CO2', 'H2O'])
+        >>> chemicals = tmo.Chemicals(['CH4', 'CO','O2', 'CO2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> reaction = rxn.SeriesReaction([
         ...     #            Reaction definition                 Reactant       Conversion

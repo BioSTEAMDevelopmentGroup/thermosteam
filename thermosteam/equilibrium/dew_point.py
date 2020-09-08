@@ -49,7 +49,7 @@ class DewPoint:
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
     >>> DP = tmo.equilibrium.DewPoint(chemicals)
     >>> # Solve for dew point at constant temperautre
@@ -160,7 +160,7 @@ class DewPoint:
         --------
         >>> import thermosteam as tmo
         >>> import numpy as np
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
@@ -208,7 +208,7 @@ class DewPoint:
         --------
         >>> import thermosteam as tmo
         >>> import numpy as np
-        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28)

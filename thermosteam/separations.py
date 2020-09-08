@@ -135,7 +135,7 @@ def mix_and_split(ins, top, bottom, split):
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed_a = tmo.Stream(Water=20, Ethanol=5)
     >>> feed_b = tmo.Stream(Water=15, Ethanol=5)
     >>> split = 0.8
@@ -178,7 +178,7 @@ def split(feed, top, bottom, split):
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = tmo.Stream(Water=35, Ethanol=10)
     >>> split = 0.8
     >>> effluent_a = tmo.Stream('effluent_a')
@@ -225,7 +225,7 @@ def partition_coefficients(IDs, top, bottom):
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')], cache=True)
     >>> s = tmo.Stream('s', Water=20, Ethanol=20, O2=0.1)
     >>> s.vle(V=0.5, P=101325)
     >>> tmo.separations.partition_coefficients(('Water', 'Ethanol'), s['g'], s['l'])
@@ -255,7 +255,7 @@ def vle_partition_coefficients(top, bottom):
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')], cache=True)
     >>> s = tmo.Stream('s', Water=20, Ethanol=20, O2=0.1)
     >>> s.vle(V=0.5, P=101325)
     >>> IDs, K = tmo.separations.vle_partition_coefficients(s['g'], s['l'])
@@ -289,7 +289,7 @@ def lle_partition_coefficients(top, bottom):
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'], cache=True)
     >>> s = tmo.Stream('s', Water=20, Octanol=20, Ethanol=1)
     >>> s.lle(T=298.15, P=101325)
     >>> IDs, K = tmo.separations.lle_partition_coefficients(s['l'], s['L'])
@@ -335,7 +335,7 @@ def partition(feed, top, bottom, IDs, K, phi=None):
     --------
     >>> import numpy as np
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')], cache=True)
     >>> IDs = ('Water', 'Ethanol')
     >>> K = np.array([0.629, 1.59])
     >>> feed = tmo.Stream('feed', Water=20, Ethanol=20, O2=0.1)
@@ -390,7 +390,7 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'], cache=True)
     >>> feed = tmo.Stream('feed', Water=20, Octanol=20, Ethanol=1)
     >>> top = tmo.Stream('top')
     >>> bottom = tmo.Stream('bottom')
@@ -466,7 +466,7 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     Examples
     --------
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = tmo.Stream('feed', Water=20, Ethanol=20)
     >>> vapor = tmo.Stream('top')
     >>> liquid = tmo.Stream('bottom')
@@ -526,7 +526,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     --------
     Satisfy outlet flows:
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> in_a = tmo.Stream('in_a', Water=1)
     >>> in_b = tmo.Stream('in_b', Ethanol=1)
     >>> variable_inlets = [in_a, in_b]

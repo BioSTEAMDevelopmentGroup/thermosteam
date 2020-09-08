@@ -52,7 +52,7 @@ class MultiStream(Stream):
     Before creating streams, first set the chemicals:
         
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     
     Create a multi phase stream, defining the thermodynamic condition and
     flow rates:
@@ -184,7 +184,7 @@ class MultiStream(Stream):
         self._register(ID)
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
-        if flow is ():
+        if flow == ():
             if phase_flows:
                 imol = MolarFlowIndexer(phases, chemicals=chemicals, **phase_flows)
             else:
@@ -244,7 +244,7 @@ class MultiStream(Stream):
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
         >>> s1.get_flow('kg/hr', ('l', 'Water'))
         20.0
@@ -271,7 +271,7 @@ class MultiStream(Stream):
         Examples
         --------
         >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'])
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
         >>> s1.set_flow(10, 'kg/hr', ('l', 'Water'))
         >>> s1.get_flow('kg/hr', ('l', 'Water'))

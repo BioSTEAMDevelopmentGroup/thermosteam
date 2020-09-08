@@ -16,6 +16,8 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
    :alt: Coverage
 .. image:: https://zenodo.org/badge/219133879.svg
    :target: https://zenodo.org/badge/latestdoi/219133879
+.. image:: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam.svg?branch=master
+   :target: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam
 
 
 .. contents::

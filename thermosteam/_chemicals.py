@@ -46,6 +46,8 @@ class Chemicals:
            * PubChem CID, prefixed by 'PubChem='
            * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
            * CAS number
+    cache : bool, optional
+        Wheather or not to use cached chemicals.
     
     Examples
     --------
@@ -63,13 +65,13 @@ class Chemicals:
     
         
     """
-    def __init__(self, chemicals):
+    def __init__(self, chemicals, cache=False):
         isa = isinstance
         for chem in chemicals:
             if isa(chem, Chemical):
                 setattr(self, chem.ID, chem)
             else:
-                setattr(self, chem, Chemical(chem))
+                setattr(self, chem, Chemical(chem, cache=None))
     
     def __getnewargs__(self):
         return (tuple(self),)
@@ -194,6 +196,8 @@ class CompiledChemicals(Chemicals):
               * PubChem CID, prefixed by 'PubChem='
               * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
               * CAS number
+    cache : optional
+        Whether or not to use cached chemicals.
         
     Attributes
     ----------
@@ -225,7 +229,7 @@ class CompiledChemicals(Chemicals):
     Create a CompiledChemicals object from chemical identifiers
     
     >>> from thermosteam import CompiledChemicals, Chemical
-    >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+    >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
     >>> chemicals
     CompiledChemicals([Water, Ethanol])
     
@@ -236,17 +240,16 @@ class CompiledChemicals(Chemicals):
     
     Note that because they are compiled, the append and extend methods do not work:
         
-    >>> # Propane = Chemical('Propane')
+    >>> # Propane = Chemical('Propane', cache=True)
     >>> # chemicals.append(Propane)
     >>> # TypeError: 'CompiledChemicals' object is read-only
-        
     
     """  
     _cache = {}
     
-    def __new__(cls, chemicals):
+    def __new__(cls, chemicals, cache=None):
         isa = isinstance
-        chemicals = tuple([chem if isa(chem, Chemical) else Chemical(chem)
+        chemicals = tuple([chem if isa(chem, Chemical) else Chemical(chem, cache)
                            for chem in chemicals])        
         cache = cls._cache
         if chemicals in cache:
@@ -364,7 +367,7 @@ class CompiledChemicals(Chemicals):
         
         Examples
         --------
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'], cache=True)
         >>> chemicals.formula_array
         array([[2., 6., 8.],
                [0., 0., 0.],
@@ -505,7 +508,7 @@ class CompiledChemicals(Chemicals):
               
         Examples
         --------
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'], cache=True)
         >>> chemicals.subgroup(['Propane', 'Water'])
         CompiledChemicals([Propane, Water])
         
@@ -533,7 +536,7 @@ class CompiledChemicals(Chemicals):
         Get all synonyms of water:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water'])
+        >>> chemicals = CompiledChemicals(['Water'], cache=True)
         >>> chemicals.get_synonyms('Water')
         ['7732-18-5', 'Water']
         
@@ -558,7 +561,7 @@ class CompiledChemicals(Chemicals):
         Set new synonym for water:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water'])
+        >>> chemicals = CompiledChemicals(['Water'], cache=True)
         >>> chemicals.set_synonym('Water', 'H2O')
         >>> chemicals.H2O is chemicals.Water
         True
@@ -580,7 +583,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> chemicals.zeros()
         array([0., 0.])
         
@@ -594,7 +597,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> chemicals.ones()
         array([1., 1.])
         
@@ -613,7 +616,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> chemicals.kwarray(dict(Water=2))
         array([2., 0.])
         
@@ -634,7 +637,7 @@ class CompiledChemicals(Chemicals):
         Examples
         --------
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> chemicals.array(['Water'], [2])
         array([2., 0.])
         
@@ -659,7 +662,7 @@ class CompiledChemicals(Chemicals):
         Create a chemical indexer from chemical IDs and data:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemical_indexer = chemicals.iarray(['Water', 'Ethanol'], [2., 1.])
         >>> chemical_indexer.show()
         ChemicalIndexer:
@@ -691,7 +694,7 @@ class CompiledChemicals(Chemicals):
         Create a chemical indexer from chemical IDs and data:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemical_indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))
         >>> chemical_indexer.show()
         ChemicalIndexer:
@@ -727,7 +730,7 @@ class CompiledChemicals(Chemicals):
         From a dictionary:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemical_indexer = chemicals.isplit(dict(Water=0.5, Ethanol=1.))
         >>> chemical_indexer.show()
         ChemicalIndexer:
@@ -736,8 +739,6 @@ class CompiledChemicals(Chemicals):
         
         From iterable given the order:
         
-        >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> chemical_indexer = chemicals.isplit([0.5, 1], ['Water', 'Ethanol'])
         >>> chemical_indexer.show()
         ChemicalIndexer:
@@ -746,8 +747,6 @@ class CompiledChemicals(Chemicals):
            
         From a fraction:
         
-        >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> chemical_indexer = chemicals.isplit(0.75)
         >>> chemical_indexer.show()
         ChemicalIndexer:

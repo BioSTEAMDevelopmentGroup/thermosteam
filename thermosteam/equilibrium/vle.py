@@ -43,7 +43,7 @@ class VLE(Equilibrium, phases='lg'):
     Examples
     --------
     >>> from thermosteam import indexer, equilibrium, settings
-    >>> settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
+    >>> settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30)],
     ...             g=[('Methanol', 40), ('Propanol', 1)])

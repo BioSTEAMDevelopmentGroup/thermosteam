@@ -8,8 +8,8 @@
 """
 """
 import thermosteam as tmo
+from warnings import warn
 from flexsolve import IQ_interpolation
-from .utils import copy_maybe
 from chemicals.identifiers import pubchem_db
 from chemicals.vapor_pressure import vapor_pressure_handle
 from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
@@ -45,7 +45,6 @@ from .free_energy import (
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas,
     ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
 )
-from .eos import GCEOS_DUMMY, PR
 from .equilibrium.unifac import (
     DDBST_UNIFAC_assignments, 
     DDBST_MODIFIED_UNIFAC_assignments,
@@ -58,6 +57,8 @@ from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    ThermoModelHandle, TDependentModelHandle,
                    TPDependentModelHandle, display_asfunctor)
 from .units_of_measure import chemical_units_of_measure
+from .eos import GCEOS_DUMMY, PR
+from .utils import copy_maybe
 from . import functional as fn 
 
 # from .solubility import SolubilityParameter
@@ -206,43 +207,45 @@ class Chemical:
             * PubChem CID, prefixed by 'PubChem='
             * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
             * CAS number
+    cache : optional
+        Whether or not to use cached chemicals and cache new chemicals.
     
     Other Parameters
     ----------------
-    search_ID=None : str, optional
+    search_ID : str, optional
         ID to search through database. Pass this key-word argument
         when you'd like to give a custom name to the chemical, but
         cannot find the chemical with that name.
-    eos=PengRobinson : GCEOS subclass, optional
+    eos : GCEOS subclass, optional
         Equation of state class for solving thermodynamic properties.
         Defaults to Peng-Robinson.
-    phase_ref=None : {'s', 'l', 'g'}, optional
+    phase_ref : {'s', 'l', 'g'}, optional
         Reference phase of chemical.
-    CAS=None : str, optional
+    CAS : str, optional
         CAS number of chemical.
-    phase=None: {'s', 'l' or 'g'}, optional
+    phase: {'s', 'l' or 'g'}, optional
         Phase to set state of chemical.
     search_db=True: bool, optional
         Whether to search the data base for chemical.
-    Cn=None : float or function(T), optional
+    Cn : float or function(T), optional
         Molar heat capacity model [J/mol] as a function of temperature [K].
-    sigma=None : float or function(T), optional
+    sigma : float or function(T), optional
         Surface tension model [N/m] as a function of temperature [K].
-    epsilon=None : float or function(T), optional
+    epsilon : float or function(T), optional
         Relative permitivity model [-] as a function of temperature [K].
-    Psat=None : float or function(T), optional
+    Psat : float or function(T), optional
         Vapor pressure model [N/m] as a function of temperature [K].
-    Hvap=None : float or function(T), optional
+    Hvap : float or function(T), optional
         Heat of vaporization model [J/mol] as a function of temperature [K].
-    V=None : float or function(T, P), optional
+    V : float or function(T, P), optional
         Molar volume model [mol/m3] as a function of temperature [K] and pressure [Pa].
-    mu=None : float or function(T, P), optional
+    mu : float or function(T, P), optional
         Dynamic viscosity model [Pa*s] as a function of temperature [K] and pressure [Pa].
-    kappa=None : float or function(T, P), optional
+    kappa : float or function(T, P), optional
         Thermal conductivity model [W/m/K] as a function of temperature [K] and pressure [Pa].
-    Cp=None : float, optional
+    Cp : float, optional
         Constant heat capacity model [J/g].
-    rho=None : float, optional
+    rho : float, optional
         Constant density model [kg/m3].
     default=False : bool, optional
         Whether to default any missing chemical properties such as molar volume,
@@ -520,16 +523,27 @@ class Chemical:
     H_ref = 0.
     #: [float] Reference entropy in J/mol
     S_ref = 0.
+    #: dict[str, Chemical] Cached chemicals
+    chemical_cache = {}
+    #: [bool] Wheather or not to search cache by default
+    cache = False
     
     ### Creators ###
     
-    def __new__(cls, ID, *, search_ID=None,
-                eos=PR, phase_ref=None, CAS=None,
+    def __new__(cls, ID, cache=None, *, search_ID=None,
+                eos=None, phase_ref=None, CAS=None,
                 default=False, phase=None, search_db=True, 
                 V=None, Cn=None, mu=None, Cp=None, rho=None,
                 sigma=None, kappa=None, epsilon=None, Psat=None,
                 Hvap=None, **data):
         search_ID = search_ID or ID
+        if not eos: eos = PR
+        chemical_cache = cls.chemical_cache
+        if (cache or cls.cache) and ID in chemical_cache:
+            if any([search_ID, eos, phase_ref, CAS, default, phase, search_db, 
+                    V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap, data]):
+                warn('cached chemical returned; additional parameters disregarded')
+            return chemical_cache[ID]
         if phase: 
             phase = phase[0].lower()
             assert phase in ('s', 'l', 'g'), "phase must be either 's', 'l', or 'g'"
@@ -561,6 +575,12 @@ class Chemical:
         if Psat: self.Psat.add_model(Psat, top_priority=True)
         if Hvap: self.Hvap.add_model(Hvap, top_priority=True)
         if default: self.default()
+        if cache:
+            chemical_cache[ID] = self
+            if len(chemical_cache) > 100:
+                for i in chemical_cache:
+                    del chemical_cache[i]
+                    break
         return self
 
     @classmethod
@@ -1107,7 +1127,7 @@ class Chemical:
         Examples
         --------
         >>> from thermosteam import Chemical
-        >>> Water = Chemical('Water')
+        >>> Water = Chemical('Water', cache=True)
         >>> Water.get_phase(T=400, P=101325)
         'g'
         """
