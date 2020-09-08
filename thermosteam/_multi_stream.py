@@ -392,13 +392,13 @@ class MultiStream(Stream):
         
     ### Methods ###
     
-    def copy_flow(self, stream, phase=..., IDs=..., *, remove=False, exclude=False):
+    def copy_flow(self, other, phase=..., IDs=..., *, remove=False, exclude=False):
         """
-        Copy flow rates of stream to self.
+        Copy flow rates of another stream to self.
         
         Parameters
         ----------
-        stream : Stream
+        other : Stream
             Flow rates will be copied from here.
         phase : str or Ellipsis
         IDs=None : iterable[str], defaults to all chemicals.
@@ -412,58 +412,292 @@ class MultiStream(Stream):
         -----
         Works just like <Stream>.copy_flow, but the phase must be specified.
         
+        Examples
+        --------
+        Initialize streams:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> s2 = tmo.MultiStream('s2')
+        
+        Copy all flows:
+        
+        >>> s2.copy_flow(s1)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    20
+                           Ethanol  10
+        
+        Reset and copy just water flow:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, IDs='Water')
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water  20
+        
+        Reset and copy all flows except water:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, IDs='Water', exclude=True)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Ethanol  10
+        
+        Cut and paste flows:
+        
+        >>> s2.copy_flow(s1, remove=True)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    20
+                           Ethanol  10
+        >>> s1.show()
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow: 0
+         
+        The other stream can also be a single phase stream (doesn't have to be a MultiStream object):
+                                                            
+        Initialize streams:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.MultiStream('s2')
+        
+        Copy all flows:
+        
+        >>> s2.copy_flow(s1)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    20
+                           Ethanol  10
+        
+        Reset and copy just water flow:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, IDs='Water')
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water  20
+        
+        Reset and copy all flows except water:
+        
+        >>> s2.empty()
+        >>> s2.copy_flow(s1, IDs='Water', exclude=True)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Ethanol  10
+        
+        Cut and paste flows:
+        
+        >>> s2.copy_flow(s1, remove=True)
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    20
+                           Ethanol  10
+        >>> s1.show()
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow: 0
+        
         """
-        chemicals = self.chemicals
+        if self.chemicals is not other.chemicals:
+            raise ValueError('other stream must have the same chemicals defined to copy flow')
+        IDs_index = self.chemicals.get_index(IDs)
+        phase_index = self.imol.get_phase_index(phase)
+        data = self.imol.data
+        other_data = other.imol.data
         if exclude:
-            not_index = chemicals.get_index(IDs)
-            index = np.ones(chemicals.size, dtype=bool)
-            index[not_index] = False
+            data = self.imol.data
+            other_data = other.imol.data
+            original_data = data.copy()
+            if isinstance(other, MultiStream):
+                if self.phases != other.phases:
+                    raise ValueError('other stream must have the same phases defined to copy flow')
+                data[:] = other_data
+                data[phase_index, IDs_index] = original_data[phase_index, IDs_index]
+                if remove:
+                    excluded_data = other_data[phase_index, IDs_index]
+                    other_data[:] = 0.
+                    other_data[phase_index, IDs_index] = excluded_data
+            else:
+                other_phase_index = self.imol.get_phase_index(other.phase)
+                data[other_phase_index, :] = other_data
+                data[phase_index, IDs_index] = original_data[phase_index, IDs_index]
+                if remove:
+                    if phase is ... or phase_index == other_phase_index:
+                        excluded_data = other_data[IDs_index]
+                        other_data[:] = 0.
+                        other_data[IDs_index] = excluded_data   
         else:
-            index = chemicals.get_index(IDs)
-        if isinstance(stream, MultiStream):
-            stream_phase_mol = stream.imol[phase]
-            self_phase_mol = self.imol[phase]
-            self_phase_mol[index] = stream_phase_mol[index]
-            if remove: 
-                stream_phase_mol[index] = 0
-        else:
-            if phase is Ellipsis:
-                phase = stream.phase
-                self_imol = self.imol
-                for i in self.phases:
-                    if i != phase: self_imol[i] = 0.
-            if stream.phase == phase:
-                stream_mol = stream.mol
-                self_phase_mol = self.imol[phase]
-                self_phase_mol[index] = stream_mol[index]
-                if remove: 
-                    stream_mol[index] = 0
+            if isinstance(other, MultiStream):
+                if self.phases != other.phases:
+                    raise ValueError('other stream must have the same phases defined to copy flow')
+                data[phase_index, IDs_index] = other_data[phase_index, IDs_index]
+                if remove:
+                    other_data[phase_index, IDs_index] = 0.
+            else:
+                data[:] = 0.
+                other_phase_index = self.imol.get_phase_index(other.phase)
+                if phase is ... or phase_index == other_phase_index:
+                    data[other_phase_index, IDs_index] = other_data[IDs_index]
+                    if remove:
+                        other_data[IDs_index] = 0.
     
     def get_normalized_mol(self, IDs):
+        """
+        Return normalized molar fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='kmol/hr')
+        >>> s1.get_normalized_mol(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.imol[..., IDs].sum(0)
         z /= z.sum()
         return z
     
     def get_normalized_vol(self, IDs):
+        """
+        Return normalized mass fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='m3/hr')
+        >>> s1.get_normalized_vol(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.ivol[..., IDs].sum(0)
         z /= z.sum()
         return z
     
     def get_normalized_mass(self, IDs):
+        """
+        Return normalized mass fractions of given chemicals. The sum of the result is always 1.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals to be normalized.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='kg/hr')
+        >>> s1.get_normalized_mass(('Water', 'Ethanol'))
+        array([0.667, 0.333])
+
+        """
         z = self.imass[..., IDs].sum(0)
         z /= z.sum()
         return z
     
     def get_molar_composition(self, IDs):
+        """
+        Return molar composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='kmol/hr')
+        >>> s1.get_molar_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.imol[..., IDs].sum(0)/self.F_mol
     
     def get_mass_composition(self, IDs):
+        """
+        Return mass composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='kg/hr')
+        >>> s1.get_mass_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.imass[..., IDs].sum(0)/self.F_mass
     
     def get_volumetric_composition(self, IDs):
+        """
+        Return volumetric composition of given chemicals.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='m3/hr')
+        >>> s1.get_volumetric_composition(('Water', 'Ethanol'))
+        array([0.5 , 0.25])
+
+        """
         return self.ivol[..., IDs].sum(0)/self.F_vol
     
     def get_concentration(self, phase, IDs):
+        """
+        Return concentration of given chemicals in kmol/m3.
+
+        Parameters
+        ----------
+        IDs : tuple[str]
+            IDs of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='m3/hr')
+        >>> s1.get_concentration('l', ('Water', 'Ethanol'))
+        array([27.671,  4.266])
+
+        """
         return self.imol[phase, IDs]/self.F_vol
         
     def link_with(self, other):

@@ -14,7 +14,7 @@ from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
 from .exceptions import DimensionError
-from chemicals.elements import array_to_atoms, atomic_index
+from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
 
 __all__ = ('Stream', )
@@ -242,7 +242,18 @@ class Stream:
         self._price = float(price)
     
     def isempty(self):
-        """Return whether or not stream is empty."""
+        """
+        Return whether or not stream is empty.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> stream = tmo.Stream()
+        >>> stream.isempty()
+        True
+        
+        """
         return (self._imol._data == 0.).all()
 
     @property
@@ -324,14 +335,30 @@ class Stream:
 
     def get_atomic_flow(self, symbol):
         """
-        Return flow rate of atom in kmol / hr.
+        Return flow rate of atom in kmol / hr given the atomic symbol.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> stream = tmo.Stream(Water=1)
+        >>> stream.get_atomic_flow('H') # kmol/hr of H
+        2.0
+        >>> stream.get_atomic_flow('O') # kmol/hr of O
+        1.0
         
         """
-        return (self.chemicals.formula_array[atomic_index[symbol], :] * self.mol).sum()
+        return (self.chemicals.formula_array[symbol_to_index[symbol], :] * self.mol).sum()
 
     def get_atomic_flows(self):
         """
         Return dictionary of atomic flow rates in kmol / hr.
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> stream = tmo.Stream(Water=1)
+        >>> stream.get_atomic_flows()
+        {'H': 2.0, 'O': 1.0}
         
         """
         return array_to_atoms(self.chemicals.formula_array @ self.mol)
@@ -1548,7 +1575,7 @@ class Stream:
     
     ### Representation ###
     
-    def diagram(self, file=None, format='png'):
+    def diagram(self, file=None, format='png'): # pragma: no cover
         from biosteam._digraph import make_digraph, save_digraph
         units = [i for i in (self.source, self.sink) if i]
         streams = sum([i.ins + i.outs for i in units], [])

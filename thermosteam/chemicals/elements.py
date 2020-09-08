@@ -20,22 +20,24 @@ elements.__all__.extend([
     'atoms_to_array', 'array_to_atoms', 'atomic_index',
 ])
 
+#: Dict[str, int] Symbol - index pairs for atomic arrays.
+symbol_to_index = {e.symbol: e.number - 1 for e in periodic_table}
+
+#: tuple[str] Symbols for atomic arrays.
+symbols = tuple(symbol_to_index)
+
 def atoms_to_array(atoms: dict) -> np.ndarray:
-    index = atomic_index
+    index = symbol_to_index
     array = np.zeros(118)
     for symbol, value in atoms.items():
         array[index[symbol]] = value
     return array
 
-#: Dict[str, int] String - index pairs for atomic arrays.
-atomic_index = {e.symbol: e.number - 1 for e in periodic_table}
 def array_to_atoms(array: np.ndarray) -> dict:
     index, = np.where(array != 0.)
-    values = array[index]
-    elements = periodic_table.elements
-    symbols = [elements[i].symbol for i in index]
-    return dict(zip(symbols, values))
+    return dict(zip([symbols[i] for i in index], array[index]))
 
 elements.atoms_to_array = atoms_to_array
 elements.array_to_atoms = array_to_atoms
-elements.atomic_index = atomic_index
+elements.symbol_to_index = symbol_to_index
+elements.symbols = symbols

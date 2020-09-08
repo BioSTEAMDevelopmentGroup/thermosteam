@@ -315,7 +315,7 @@ class MaterialIndexer(Indexer):
         if phase_data:
             data = self._data
             get_index = self._chemicals.get_index
-            phase_index = self._get_phase_index
+            phase_index = self.get_phase_index
             for phase, ID_data in phase_data.items():
                 IDs, row = zip(*ID_data)
                 data[phase_index(phase), get_index(IDs)] = row
@@ -335,7 +335,7 @@ class MaterialIndexer(Indexer):
         if isa(other, ChemicalIndexer):
             self.empty()
             other_data = other._data
-            phase_index = self._get_phase_index(other.phase)
+            phase_index = self.get_phase_index(other.phase)
             if self.chemicals is other.chemicals:
                 self._data[phase_index, :] = other_data
             else:
@@ -357,7 +357,7 @@ class MaterialIndexer(Indexer):
     def mix_from(self, others):
         isa = isinstance
         data = self._data
-        get_phase_index = self._get_phase_index
+        get_phase_index = self.get_phase_index
         chemicals = self.chemicals
         phases = self.phases
         indexer_data = [(i, i._data.copy() if i is self else i._data) for i in others]
@@ -402,7 +402,8 @@ class MaterialIndexer(Indexer):
         if phases in cache:
             self._phase_index = cache[phases]
         else:
-            self._phase_index = cache[phases] = {j:i for i,j in enumerate(phases)}
+            self._phase_index = cache[phases] = phase_index = {j:i for i,j in enumerate(phases)}
+            phase_index[...] = slice(None) 
             
     def _set_cache(self):
         caches = self._index_caches
@@ -466,7 +467,7 @@ class MaterialIndexer(Indexer):
         return material_indexer
     
     def get_phase(self, phase):
-        return self._ChemicalIndexer.from_data(self._data[self._get_phase_index(phase)],
+        return self._ChemicalIndexer.from_data(self._data[self.get_phase_index(phase)],
                                                LockedPhase(phase), self._chemicals, False)
     
     def __getitem__(self, key):
@@ -494,8 +495,11 @@ class MaterialIndexer(Indexer):
             except UndefinedChemical:
                 index = self._get_index(key)
             else:
-                index = ChemicalIndex(index)
-            if len(cache) > 1000: cache.clear()
+                if key is not ...: index = ChemicalIndex(index)
+            if len(cache) > 1000:
+                for i in cache:
+                    del cache[i]
+                    break
             cache[key] = index
         except TypeError:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
@@ -503,9 +507,9 @@ class MaterialIndexer(Indexer):
     
     def _get_index(self, phase_IDs):
         if isa(phase_IDs, str):
-            index = self._get_phase_index(phase_IDs)
+            index = self.get_phase_index(phase_IDs)
         elif phase_IDs is ...:
-            index = phase_IDs 
+            index = slice(None) 
         else:
             try:
                 phase, IDs = phase_IDs
@@ -520,7 +524,7 @@ class MaterialIndexer(Indexer):
             else:
                 raise TypeError("only strings, tuples, and ellipsis are valid index keys")
             if isa(phase, str):
-                index = (self._get_phase_index(phase), IDs_index)
+                index = (self.get_phase_index(phase), IDs_index)
             elif phase is ...:
                 index = (phase, IDs_index)
             else:
@@ -529,7 +533,7 @@ class MaterialIndexer(Indexer):
                                  "(str, tuple(str), ellipisis, or missing)")
         return index
     
-    def _get_phase_index(self, phase):
+    def get_phase_index(self, phase):
         try:
             return self._phase_index[phase]
         except:

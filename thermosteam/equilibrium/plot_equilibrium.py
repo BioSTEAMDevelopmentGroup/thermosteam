@@ -27,7 +27,7 @@ __all__ = ('plot_vle_binary_phase_envelope',
 
 # %% Utilities
 
-def ternary_composition_grid(N, grid=None):
+def ternary_composition_grid(N, grid=None): # pragma: no cover
     grid = grid or []
     for z in np.linspace(0, 1 - 1/N, N):
         xs = np.linspace(0, 1-z, N)
@@ -39,7 +39,7 @@ def ternary_composition_grid(N, grid=None):
     grid.append(mesh)
     return np.hstack(grid).transpose()
 
-def as_thermo(thermo, chemicals):
+def as_thermo(thermo, chemicals): # pragma: no cover
     try:
         thermo = settings.get_default_thermo(thermo)
     except:
@@ -53,7 +53,7 @@ def as_thermo(thermo, chemicals):
 
 # %% Plot functions
 
-def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo=None):
+def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo=None): # pragma: no cover
     """
     Plot the binary phase envelope of two chemicals at a given temperature or pressure.
 
@@ -114,7 +114,7 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
                              tie_line_points=None,
                              tie_color=None,
                              N_tie_lines=15,
-                             N_equilibrium_grids=15):
+                             N_equilibrium_grids=15): # pragma: no cover
     """
     Plot the ternary phase diagram of chemicals in liquid-liquid equilibrium.
 

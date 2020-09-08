@@ -857,13 +857,21 @@ class CompiledChemicals(Chemicals):
         
         >>> chemicals.get_index('Ethanol')
         1
+        
+        Ellipsis returns a slice:
+        
+        >>> chemicals.get_index(...)
+        slice(None, None, None)
 
         """
         cache = self._index_cache
         try: 
             index = cache[IDs]
         except KeyError: 
-            if len(cache) > 1000: cache.clear()
+            if len(cache) > 1000:
+                for i in cache:
+                    del cache[i]
+                    break
             cache[IDs] = index = self._get_index(IDs)
         except TypeError:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
@@ -875,7 +883,7 @@ class CompiledChemicals(Chemicals):
         elif isinstance(IDs, tuple):
             return self.indices(IDs)
         elif IDs is ...:
-            return IDs
+            return slice(None)
         else:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")    
     
