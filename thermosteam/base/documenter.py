@@ -13,7 +13,7 @@ __all__ = ('Documenter', 'autodoc_functor')
 
 # %% Utilities
 
-class Documenter:
+class Documenter: # pragma: no cover
     __slots__ = ('units_of_measure', 'definitions', 'types')
     
     def __init__(self, units_of_measure, definitions, types):
@@ -102,7 +102,7 @@ class Documenter:
         if info:
             units = self.get_units(var)
             if units: info += f" [{units}]"
-            else: info += f" [-]"
+            else: info += " [-]"
         return info
 
 
@@ -110,7 +110,7 @@ class Documenter:
 
 def autodoc_functor(functor, doc='auto-merge', method=None, ref=None, tabs=1,
                     units_of_measure=None, definitions=None, types=None,
-                    other_params=None):
+                    other_params=None): # pragma: no cover
     auto = merge = header = param = False
     if doc == 'auto-doc':
         auto = True
@@ -148,7 +148,7 @@ def autodoc_functor(functor, doc='auto-merge', method=None, ref=None, tabs=1,
     elif param:
         functor.__doc__ = function.__doc__.replace('[Parameters]\n', parameters + "\n")
     
-def _join_sections(header, parameters, new_line):
+def _join_sections(header, parameters, new_line): # pragma: no cover
     doc = header + new_line 
     if parameters:
         doc += new_line + parameters
