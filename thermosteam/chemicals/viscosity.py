@@ -73,7 +73,7 @@ def viscosity_liquid_handle(handle, CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, Vl):
         add_model(model)
     if CAS in mu_data_Dutt_Prasad:
         A, B, C, Tmin, Tmax = mu_data_Dutt_Prasad[CAS]
-        data = (A, B, C)
+        data = (A - 3.0, B, C)
         add_model(Viswanath_Natarajan_3.functor.from_args(data), Tmin, Tmax)
     if CAS in mu_data_VN3:
         A, B, C, Tmin, Tmax = mu_data_VN3[CAS]
