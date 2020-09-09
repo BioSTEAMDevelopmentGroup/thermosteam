@@ -63,29 +63,8 @@ class ThermalCondition:
         self._T = other._T
         self._P = other._P
     
-    @property
-    def tuple(self):
-        """tuple[float, float] Temperature and pressure"""
-        return (self._T, self._P)
-    
-    def __getitem__(self, index):
-        if index == 0:
-            return self._T
-        elif index == 1:
-            return self._P
-        else:
-            raise IndexError('index out of range')
-    
-    def __setitem__(self, index, value):
-        if index == 0:
-            self.T = value
-        elif index == 1:
-            self.P = value
-        else:
-            raise IndexError('index out of range')
-    
     def __iter__(self):
-        return iter(self.tuple)
+        return iter((self._T, self._P))
         
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.6g})"

@@ -495,7 +495,7 @@ class MaterialIndexer(Indexer):
             except UndefinedChemical:
                 index = self._get_index(key)
             else:
-                if key is not ...: index = ChemicalIndex(index)
+                index = ChemicalIndex(index)
             if len(cache) > 1000:
                 for i in cache:
                     del cache[i]

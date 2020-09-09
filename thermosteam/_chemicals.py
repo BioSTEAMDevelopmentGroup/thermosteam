@@ -19,7 +19,7 @@ setattr = object.__setattr__
 
 # %% Functions
 
-def must_compile(*args, **kwargs):
+def must_compile(*args, **kwargs): # pragma: no cover
     raise TypeError("method valid only for compiled chemicals; "
                     "run <Chemicals>.compile() to compile")
 
@@ -54,7 +54,7 @@ class Chemicals:
     Create a Chemicals object from chemical identifiers:
     
     >>> from thermosteam import Chemicals
-    >>> chemicals = Chemicals(['Water', 'Ethanol'])
+    >>> chemicals = Chemicals(['Water', 'Ethanol'], cache=True)
     >>> chemicals
     Chemicals([Water, Ethanol])
     
@@ -63,15 +63,67 @@ class Chemicals:
     >>> chemicals.Water, chemicals.Ethanol
     (Chemical('Water'), Chemical('Ethanol'))
     
+    Chemicals can also be accessed as items:
+    
+    >>> chemicals = Chemicals(['Water', 'Ethanol', 'Propane'], cache=True)
+    >>> chemicals['Ethanol']
+    Chemical('Ethanol')
+    >>> chemicals['Propane', 'Water']
+    [Chemical('Propane'), Chemical('Water')]
+    
+    A Chemicals object can be extended with more chemicals:
         
+    >>> from thermosteam import Chemical
+    >>> Methanol = Chemical('Methanol')
+    >>> chemicals.append(Methanol)
+    >>> chemicals
+    Chemicals([Water, Ethanol, Propane, Methanol])
+    >>> new_chemicals = Chemicals(['Hexane', 'Octanol'], cache=True)
+    >>> chemicals.extend(new_chemicals)
+    >>> chemicals
+    Chemicals([Water, Ethanol, Propane, Methanol, Hexane, Octanol])
+    
+    Chemical objects cannot be repeated:
+    
+    >>> chemicals.append(chemicals.Water)
+    Traceback (most recent call last):
+    ValueError: Water already defined in chemicals
+    >>> chemicals.extend(chemicals['Ethanol', 'Octanol'])
+    Traceback (most recent call last):
+    ValueError: Ethanol already defined in chemicals
+    
+    A Chemicals object can only contain Chemical objects:
+        
+    >>> chemicals.append(10)
+    Traceback (most recent call last):
+    TypeError: only 'Chemical' objects can be appended, not 'int'
+    
+    You can check whether a Chemicals object contains a given chemical:
+        
+    >>> 'Water' in chemicals
+    True
+    >>> chemicals.Water in chemicals
+    True
+    >>> 'Butane' in chemicals
+    False
+    
+    An attempt to access a non-existent chemical raises an UndefinedChemical error:
+    
+    >>> chemicals['Butane']
+    Traceback (most recent call last):
+    UndefinedChemical: 'Butane'
+    
     """
-    def __init__(self, chemicals, cache=False):
+    def __new__(cls, chemicals, cache=False):
+        self = super().__new__(cls)
         isa = isinstance
+        setfield = setattr
         for chem in chemicals:
             if isa(chem, Chemical):
-                setattr(self, chem.ID, chem)
+                setfield(self, chem.ID, chem)
             else:
-                setattr(self, chem, Chemical(chem, cache=None))
+                setfield(self, chem, Chemical(chem, cache=None))
+        return self
     
     def __getnewargs__(self):
         return (tuple(self),)
@@ -90,13 +142,6 @@ class Chemicals:
         ----------
         key : Iterable[str] or str
               Chemical identifiers.
-              
-        Examples
-        --------
-        
-        >>> chemicals = Chemicals(['Water', 'Ethanol', 'Propane'])
-        >>> chemicals['Propane', 'Water']
-        [Chemical('Propane'), Chemical('Water')]
         
         """
         dct = self.__dict__
@@ -110,10 +155,12 @@ class Chemicals:
     
     def append(self, chemical):
         """Append a Chemical."""
-        assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
-                                               f"not '{type(chemical).__name__}'")
+        if not isinstance(chemical, Chemical):
+            raise TypeError("only 'Chemical' objects can be appended, "
+                           f"not '{type(chemical).__name__}'")
         ID = chemical.ID
-        assert ID not in self.__dict__, f"{ID} already defined in chemicals"
+        if ID in self.__dict__:
+            raise ValueError(f"{ID} already defined in chemicals")
         setattr(self, ID, chemical)
     
     def extend(self, chemicals):
@@ -121,10 +168,7 @@ class Chemicals:
         if isinstance(chemicals, Chemicals):
             self.__dict__.update(chemicals.__dict__)
         else:
-            for chemical in chemicals:
-                assert isinstance(chemical, Chemical), ("only 'Chemical' objects are allowed, "
-                                                        f"not '{type(chemical).__name__}'")
-                setattr(self, chemical.ID, chemical)
+            for chemical in chemicals: self.append(chemical)
     
     def subgroup(self, IDs):
         """
@@ -171,7 +215,7 @@ class Chemicals:
             return chemical in self.__dict__
         elif isinstance(chemical, Chemical):
             return chemical in self.__dict__.values()
-        else:
+        else: # pragma: no cover
             return False
     
     def __iter__(self):
@@ -240,9 +284,19 @@ class CompiledChemicals(Chemicals):
     
     Note that because they are compiled, the append and extend methods do not work:
         
-    >>> # Propane = Chemical('Propane', cache=True)
-    >>> # chemicals.append(Propane)
-    >>> # TypeError: 'CompiledChemicals' object is read-only
+    >>> Propane = Chemical('Propane', cache=True)
+    >>> chemicals.append(Propane)
+    Traceback (most recent call last):
+    TypeError: 'CompiledChemicals' object is read-only
+    
+    You can check whether a Chemicals object contains a given chemical:
+        
+    >>> 'Water' in chemicals
+    True
+    >>> chemicals.Water in chemicals
+    True
+    >>> 'Butane' in chemicals
+    False
     
     """  
     _cache = {}
@@ -255,11 +309,12 @@ class CompiledChemicals(Chemicals):
         if chemicals in cache:
             self = cache[chemicals]
         else:
-            self = super().__new__(cls)
+            self = object.__new__(cls)
             setfield = setattr
             for chem in chemicals:
                 setfield(self, chem.ID, chem)
             self._compile()
+            cache[chemicals] = self
         return self
     
     def __dir__(self):
@@ -291,7 +346,20 @@ class CompiledChemicals(Chemicals):
         dct['HHV'] = chemical_data_array([i.HHV for i in chemicals])
 
     def get_combustion_reactions(self):
-        """Return a ParallelReactions object with all defined combustion reactions."""
+        """
+        Return a ParallelReactions object with all defined combustion reactions.
+        
+        Examples
+        --------
+        >>> chemicals = CompiledChemicals(['H2O', 'Methanol', 'Ethanol', 'CO2', 'O2'], cache=True)
+        >>> rxns = chemicals.get_combustion_reactions()
+        >>> rxns.show()
+        ParallelReaction (by mol):
+        index  stoichiometry                     reactant    X[%]
+        [0]    Methanol + 1.5 O2 -> 2 H2O + CO2  Methanol  100.00
+        [1]    Ethanol + 3 O2 -> 3 H2O + 2 CO2   Ethanol   100.00
+        
+        """
         reactions = [i.get_combustion_reaction(self) for i in self]
         return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
@@ -561,11 +629,16 @@ class CompiledChemicals(Chemicals):
         Set new synonym for water:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water'], cache=True)
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> chemicals.set_synonym('Water', 'H2O')
         >>> chemicals.H2O is chemicals.Water
         True
         
+        Note that you cannot use one synonym for two chemicals:
+        
+        >>> chemicals.set_synonym('Ethanol', 'H2O')
+        Traceback (most recent call last):
+        ValueError: synonym 'H2O' already in use by Chemical('Water')
         
         """
         chemical = getattr(self, ID)
@@ -754,6 +827,14 @@ class CompiledChemicals(Chemicals):
          Methanol  0.75
          Ethanol   0.75
             
+        From an iterable (assuming same order as the Chemicals object):
+        
+        >>> chemical_indexer = chemicals.isplit([0.5, 0, 1])
+        >>> chemical_indexer.show()
+        ChemicalIndexer:
+         Water    0.5
+         Ethanol  1
+            
         """
         if isinstance(split, dict):
             assert not order, "cannot pass 'order' key word argument when split is a dictionary"
@@ -845,30 +926,36 @@ class CompiledChemicals(Chemicals):
 
         Examples
         --------
-        Get multiple indices:
+        Get multiple indices with a tuple of IDs:
         
         >>> from thermosteam import CompiledChemicals
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'])
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
         >>> IDs = ('Water', 'Ethanol')
         >>> chemicals.get_index(IDs)
         [0, 1]
         
-        Get a single index:
+        Get a single index with a string:
         
         >>> chemicals.get_index('Ethanol')
         1
         
-        Ellipsis returns a slice:
+        An Ellipsis returns a slice:
         
         >>> chemicals.get_index(...)
         slice(None, None, None)
+
+        Anything else returns an error:
+        
+        >>> chemicals.get_index(['Water', 'Ethanol'])
+        Traceback (most recent call last):
+        TypeError: only strings, tuples, and ellipsis are valid index keys
 
         """
         cache = self._index_cache
         try: 
             index = cache[IDs]
         except KeyError: 
-            if len(cache) > 1000:
+            if len(cache) > 1000: # pragma: no cover
                 for i in cache:
                     del cache[i]
                     break
@@ -884,7 +971,7 @@ class CompiledChemicals(Chemicals):
             return self.indices(IDs)
         elif IDs is ...:
             return slice(None)
-        else:
+        else: # pragma: no cover
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")    
     
     def __len__(self):
@@ -895,7 +982,7 @@ class CompiledChemicals(Chemicals):
             return chemical in self.__dict__
         elif isinstance(chemical, Chemical):
             return chemical in self.tuple
-        else:
+        else: # pragma: no cover
             return False
     
     def __iter__(self):

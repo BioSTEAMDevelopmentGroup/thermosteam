@@ -649,7 +649,7 @@ class ReactionSet:
         self._stoichiometry /= new_scale
     
     def __repr__(self):
-        return f"{type(self).__name__}([', '.join([repr(i) for i in self])])"
+        return f"{type(self).__name__}({[', '.join([repr(i) for i in self])]})"
     
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"

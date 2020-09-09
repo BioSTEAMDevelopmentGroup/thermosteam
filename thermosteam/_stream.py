@@ -363,7 +363,7 @@ class Stream:
         """
         return array_to_atoms(self.chemicals.formula_array @ self.mol)
 
-    def get_flow(self, units, key= ...):
+    def get_flow(self, units, key=...):
         """
         Return an flow rates in requested units.
         
@@ -387,7 +387,7 @@ class Stream:
         indexer = getattr(self, 'i' + name)
         return factor * indexer[key]
     
-    def set_flow(self, data, units, key= ...):
+    def set_flow(self, data, units, key=...):
         """
         Set flow rates in given units.
 
