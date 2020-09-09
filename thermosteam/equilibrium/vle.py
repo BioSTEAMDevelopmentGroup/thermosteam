@@ -42,6 +42,8 @@ class VLE(Equilibrium, phases='lg'):
     
     Examples
     --------
+    First create a VLE object:
+    
     >>> from thermosteam import indexer, equilibrium, settings
     >>> settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(
@@ -53,11 +55,51 @@ class VLE(Equilibrium, phases='lg'):
             g=[('Methanol', 40), ('Propanol', 1)],
             l=[('Water', 304), ('Ethanol', 30)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
+    
+    Equilibrium given vapor fraction and pressure:
+    
     >>> vle(V=0.5, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.896)],
             l=[('Water', 177.3), ('Ethanol', 3.598), ('Methanol', 6.509), ('Propanol', 0.104)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
+    
+    Equilibrium given temperature and pressure:
+    
+    >>> vle(T=363.88, P=101325)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.8959)],
+            l=[('Water', 177.3), ('Ethanol', 3.601), ('Methanol', 6.513), ('Propanol', 0.1041)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
+    
+    Equilibrium given enthalpy and pressure:
+    
+    >>> H = vle.thermo.mixture.xH(vle.imol, T=363.88, P=101325)
+    >>> vle(H=H, P=101325)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.8959)],
+            l=[('Water', 177.3), ('Ethanol', 3.601), ('Methanol', 6.513), ('Propanol', 0.1041)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
+    
+    Equilibrium given vapor fraction and temperature:
+    
+    >>> vle(V=0.5, T=363.88)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.896)],
+            l=[('Water', 177.3), ('Ethanol', 3.598), ('Methanol', 6.509), ('Propanol', 0.104)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101317))
+    
+    Equilibrium given enthalpy and temperature:
+    
+    >>> vle(H=H, T=363.88)
+    >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.49), ('Propanol', 0.8959)],
+            l=[('Water', 177.3), ('Ethanol', 3.601), ('Methanol', 6.513), ('Propanol', 0.1041)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     """
@@ -164,19 +206,19 @@ class VLE(Equilibrium, phases='lg'):
                 return self.set_Px(P, np.asarray(x))
             else: # y_spec
                 return self.set_Py(P, np.asarray(y))
-        elif H_spec:
+        elif H_spec: # pragma: no cover
             if y_spec:
                 raise NotImplementedError('specification H and y is invalid')
             elif x_spec:
                 raise NotImplementedError('specification H and x is invalid')
             else: # V_spec
                 raise NotImplementedError('specification V and H not implemented')
-        elif V_spec:
+        elif V_spec: # pragma: no cover
             if y_spec:
                 raise ValueError("specification V and y is invalid")
             else: # x_spec
                 raise ValueError("specification V and x is invalid")
-        else: # x_spec and y_spec
+        else: # pragma: no cover
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
     
     def _setup(self):

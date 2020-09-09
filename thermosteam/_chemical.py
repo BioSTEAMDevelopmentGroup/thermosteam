@@ -537,13 +537,13 @@ class Chemical:
                 sigma=None, kappa=None, epsilon=None, Psat=None,
                 Hvap=None, **data):
         search_ID = search_ID or ID
-        if not eos: eos = PR
         chemical_cache = cls.chemical_cache
         if (cache or cls.cache) and ID in chemical_cache:
             if any([search_ID, eos, phase_ref, CAS, default, phase, search_db, 
                     V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap, data]):
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
+        if not eos: eos = PR
         if phase: 
             phase = phase[0].lower()
             assert phase in ('s', 'l', 'g'), "phase must be either 's', 'l', or 'g'"
@@ -681,7 +681,46 @@ class Chemical:
         return self
 
     def copy(self, ID, CAS=None, **data):
-        """Return a copy of the chemical with a new ID."""
+        """
+        Return a copy of the chemical with a new ID.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Glucose = tmo.Chemical('Glucose')
+        >>> Mannose = Glucose.copy('Mannose')
+        >>> Mannose.show()
+        Chemical: Mannose (phase_ref='l')
+        [Names]  CAS: Mannose
+                 InChI: C6H12O6/c7-1-3(9)5(1...
+                 InChI_key: GZCGUPFRVQAUEE-S...
+                 common_name: D-Glucose
+                 iupac_name: ('(2R,3S,4R,5R)...
+                 pubchemid: 1.0753e+05
+                 smiles: O=C[C@H](O)[C@@H](O...
+                 formula: C6H12O6
+        [Groups] Dortmund: {2: 1, 3: 4, 14: ...
+                 UNIFAC: {2: 1, 3: 4, 14: 5,...
+                 PSRK: {2: 1, 3: 4, 14: 5, 2...
+        [Data]   MW: 180.16 g/mol
+                 Tm: None
+                 Tb: 616.29 K
+                 Tt: None
+                 Tc: 755 K
+                 Pt: None
+                 Pc: 4.82e+06 Pa
+                 Vc: 0.000414 m^3/mol
+                 Hf: -1.2711e+06 J/mol
+                 LHV: -2.5406e+06 J/mol
+                 HHV: -2.8047e+06 J/mol
+                 Hfus: 0 J/mol
+                 omega: 2.387
+                 dipole: None
+                 similarity_variable: 0.13322
+                 iscyclic_aliphatic: 0
+                 combustion: {'CO2': 6, 'O2'...
+        
+        """
         new = super().__new__(self.__class__)
         getfield = getattr
         setfield = setattr

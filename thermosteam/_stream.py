@@ -815,13 +815,32 @@ class Stream:
         
         Examples
         --------
+        Mix two streams with the same thermodynamic property package:
+        
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s2 = s1.copy()
+        >>> s2 = s1.copy('s2')
         >>> s1.mix_from([s1, s2])
         >>> s1.show(flow='kg/hr')
         Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+                       Ethanol  20
+        
+        It's also possible to mix streams with different property packages
+        so long as all chemicals are defined in the mixed stream's property 
+        package:
+        
+        >>> tmo.settings.set_thermo(['Water'], cache=True) 
+        >>> s1 = tmo.Stream('s1', Water=40, units='kg/hr')
+        >>> tmo.settings.set_thermo(['Ethanol'], cache=True) 
+        >>> s2 = tmo.Stream('s2', Ethanol=20, units='kg/hr')
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s_mix = tmo.Stream('s_mix')
+        >>> s_mix.mix_from([s1, s2])
+        >>> s_mix.show(flow='kg/hr')
+        Stream: s_mix
          phase: 'l', T: 298.15 K, P: 101325 Pa
          flow (kg/hr): Water    40
                        Ethanol  20
@@ -954,9 +973,24 @@ class Stream:
 
         Examples
         --------
+        Copy data from another stream with the same property package:
+        
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
+        >>> s1.copy_like(s2)
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water  2
+         
+        Copy data from another stream with a different property package:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
         >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
         >>> s1.copy_like(s2)
         >>> s1.show(flow='kg/hr')

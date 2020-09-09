@@ -73,7 +73,7 @@ class DewPoint:
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
-        key = (chemicals, thermo)
+        key = (chemicals, thermo.Gamma, thermo.Phi, thermo.PCF)
         cached = self._cached
         if key in cached:
             other = cached[key]

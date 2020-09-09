@@ -46,7 +46,7 @@ class ChemicalIndex:
     __slots__ = ('value')
     def __init__(self, value):
         self.value = value
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return f"{type(self).__name__}({self.value})"
 
 
@@ -154,8 +154,7 @@ class ChemicalIndexer(Indexer):
         self._data[:] = 0.
     
     def mix_from(self, others):
-        try: self.phase = find_main_phase(others, self.phase)
-        except: pass
+        self.phase = find_main_phase(others, self.phase)
         chemicals = self.chemicals
         data = self._data
         chemicals_data = [(i.chemicals, i._data.copy() if i is self else i.sum_across_phases())
@@ -497,7 +496,7 @@ class MaterialIndexer(Indexer):
             else:
                 index = ChemicalIndex(index)
             if len(cache) > 1000:
-                for i in cache:
+                for i in cache: # pragma: no cover
                     del cache[i]
                     break
             cache[key] = index

@@ -122,7 +122,7 @@ class Chemicals:
             if isa(chem, Chemical):
                 setfield(self, chem.ID, chem)
             else:
-                setfield(self, chem, Chemical(chem, cache=None))
+                setfield(self, chem, Chemical(chem, cache=cache))
         return self
     
     def __getnewargs__(self):

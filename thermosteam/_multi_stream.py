@@ -77,8 +77,9 @@ class MultiStream(Stream):
     
     >>> s1.mol
     array([1.11 , 0.217])
-    >>> # s1.mol[0] = 1
-    >>> # -> ValueError: assignment destination is read-only
+    >>> s1.mol[0] = 1
+    Traceback (most recent call last):
+    ValueError: assignment destination is read-only
     
     All flow rates are stored in the `imol` attribute:
     
@@ -103,8 +104,8 @@ class MultiStream(Stream):
     with Stream objects:
         
     >>> # s1.imol['Ethanol', 'Water'] = [1, 0]
-    >>> # -> IndexError: multiple phases present; must include phase key to
-    set chemical data
+    Traceback (most recent call last):
+    IndexError: multiple phases present; must include phase key to set chemical data
     
     Chemical flows must be set by phase:
 
@@ -132,8 +133,9 @@ class MultiStream(Stream):
     
     However, setting chemical data requires the phase to be specified:
         
-    >>> # s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
-    >>> # -> IndexError: multiple phases present; must include phase key to set chemical data
+    >>> s1.set_flow([10, 20], 'kg/hr', ('Ethanol', 'Water'))
+    Traceback (most recent call last):
+    IndexError: multiple phases present; must include phase key to set chemical data
     
     Note that for both Stream and MultiStream objects, `mol`, `imol`, 
     and `get_flow` return chemical flows across all phases when given only 

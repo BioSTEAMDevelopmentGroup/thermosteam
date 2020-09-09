@@ -48,8 +48,13 @@ def solve_phase_fraction(zs, Ks, guess):
     f = phase_fraction_objective_function
     if Ks.max() < 1.0: return 0.
     if Ks.min() > 1.0: return 1.
-    return flx.IQ_interpolation(f, 0., 1.,
-                                f(0., *args), f(1., *args),
+    y0 = f(0., *args)
+    y1 = f(1., *args)
+    if y0 > y1 > 0.: return 1
+    if y1 > y0 > 0.: return 0.
+    if y0 < y1 < 0.: return 1.
+    if y1 < y0 < 0.: return 0.
+    return flx.IQ_interpolation(f, 0., 1., y0, y1,
                                 guess, 1e-16, 1e-16,
                                 args, checkiter=False)
 

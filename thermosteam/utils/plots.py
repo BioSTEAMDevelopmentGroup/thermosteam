@@ -19,13 +19,17 @@ __all__ = ('style_axis',
 
 def style_axis(ax=None, xticks=None, yticks=None, 
                xticklabels=True, yticklabels=True,
-               top=True, right=True):
+               top=True, right=True, trim_to_limits=False): # pragma: no cover
     if ax is None:
         ax = plt.gca()
     if xticks is None:
         xticks, _ = plt.xticks()
     if yticks is None:
         yticks, _ = plt.yticks()
+    if trim_to_limits:
+        style_plot_limits(xticks, yticks)
+        if yticks[0] == 0.:
+            yticks = yticks[1:]
     plt.xticks(xticks) if xticklabels else plt.xticks(xticks, ())
     plt.yticks(yticks) if yticklabels else plt.yticks(yticks, ())
     xlim = plt.xlim()
@@ -48,22 +52,22 @@ def style_axis(ax=None, xticks=None, yticks=None,
         plt.xlim(xlim)
         plt.xticks(xticks, ())
     
-def style_plot_limits(xticks, yticks):
+def style_plot_limits(xticks, yticks): # pragma: no cover
     plt.xlim([xticks[0], xticks[-1]])
     plt.ylim([yticks[0], yticks[-1]])
     
-def fill_plot(color='k'):
+def fill_plot(color='k'): # pragma: no cover
     y_lb, y_ub = plt.ylim()
     plt.fill_between(plt.xlim(), [y_lb], [y_ub], color='k')
    
-def set_axes_labels(axes, xlabel, ylabel):
+def set_axes_labels(axes, xlabel, ylabel): # pragma: no cover
     set_axes_xlabels(axes, xlabel)
     set_axes_ylabels(axes, ylabel)
    
-def set_axes_xlabels(axes, xlabel):
+def set_axes_xlabels(axes, xlabel): # pragma: no cover
     assert axes.ndim == 2
     for ax in axes[-1]: ax.set_xlabel(xlabel)
     
-def set_axes_ylabels(axes, ylabel):
+def set_axes_ylabels(axes, ylabel): # pragma: no cover
     assert axes.ndim == 2
     for ax in axes[:, 0]: ax.set_ylabel(ylabel)

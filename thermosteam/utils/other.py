@@ -9,18 +9,7 @@
 """
 __all__ = ('fill_like', 'getfields', 'setfields', 'any_isinstance',
            'copy_maybe', 'get_dct_values', 'get_obj_values',
-           'get_instance', 'define_from', 'Chaperone')
-
-class Chaperone:
-    __slots__ = ('item',)
-    def __init__(self, item):
-        self.item = item
-    def get_item(self, item):
-        return self.item
-    def set_item(self, item):
-        self.item = item
-    def __rerp__(self):
-        return f"{type(self).__name__}(item={self.item})"
+           'get_instance', 'define_from')
 
 def fill_like(A, B, fields):
     setfield = setattr
