@@ -8,7 +8,7 @@
 """
 """
 
-__all__ = ('Cache', 'cached_method')
+__all__ = ('Cache', 'trim_cache') 
 
 class Cache:
     __slots__ = ('args', 'value')
@@ -36,7 +36,6 @@ class Cache:
             self.value = value = self.load(*self.args)
         return value
     
-def cached_method(f):
-    return type(f.__name__, (Cache,), {'load': staticmethod(f),
-                                       '__module__': f.__module__})
-    
+def trim_cache(cache, size=100): # pragma: no cover
+    if cache.__len__() > size: 
+        del cache[cache.__iter__().__next__()]

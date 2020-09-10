@@ -23,19 +23,20 @@ from chemicals import permittivity
 permittivity_CRC = functor(permittivity.permittivity_CRC, 'epsilon')
 permittivity_IAPWS = functor(permittivity.permittivity_IAPWS, 'epsilon')
 
-def IAPWS_hook(f, T, kwargs):
-    kwargs = kwargs.copy()
-    rho = kwargs['rho']
-    if callable(rho): # Assume its a liquid molar volume handle
-        kwargs['rho'] = 0.018015268 / rho(T)
-    return f(T, **kwargs)
+def IAPWS_hook(self, T, kwargs):
+    if 'Vl' in kwargs:
+        kwargs = kwargs.copy()
+        Vl = kwargs.pop('Vl')
+        # Assume its a liquid molar volume handle
+        kwargs['rho'] = 0.018015268 / Vl(T, 101325.)
+    return self.function(T, **kwargs)
 permittivity_IAPWS.functor.hook = IAPWS_hook
 
 @TDependentHandleBuilder('epsilon')
 def permitivity_handle(handle, CAS, Vl):
     add_model = handle.add_model
     if Vl and CAS == '7732-18-5':
-        add_model(permittivity_IAPWS.functor.from_args((Vl,)))
+        add_model(permittivity_IAPWS.functor(Vl=Vl))
     if CAS in permittivity_data_CRC:
         CRC_CONSTANT_T, CRC_permittivity, *coeffs, Tmin, Tmax = permittivity_data_CRC[CAS]
         args = [0 if np.isnan(x) else x for x in coeffs]

@@ -80,7 +80,7 @@ def mix_and_split_with_moisture_content(ins, retentate, permeate,
 
 def adjust_moisture_content(retentate, permeate, moisture_content):
     """
-    Adjust retentate moisture content with water from permeate.
+    Remove water from permate to adjust retentate moisture content.
     
     Parameters
     ----------
@@ -109,6 +109,13 @@ def adjust_moisture_content(retentate, permeate, moisture_content):
      flow (kg/hr): Water   30
                    Solids  0.1
     
+    Note that if not enough water is available, an InfeasibleRegion error is raised:
+        
+    >>> permeate.imol['Water'] = 0
+    >>> tmo.separations.adjust_moisture_content(retentate, permeate, moisture_content)
+    Traceback (most recent call last):
+    InfeasibleRegion: not enough water; permeate moisture content is infeasible
+
     """
     F_mass = retentate.F_mass
     mc = moisture_content

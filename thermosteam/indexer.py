@@ -495,11 +495,8 @@ class MaterialIndexer(Indexer):
                 index = self._get_index(key)
             else:
                 index = ChemicalIndex(index)
-            if len(cache) > 1000:
-                for i in cache: # pragma: no cover
-                    del cache[i]
-                    break
             cache[key] = index
+            utils.trim_cache(cache)
         except TypeError:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
         return index

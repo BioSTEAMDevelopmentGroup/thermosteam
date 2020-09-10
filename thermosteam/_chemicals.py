@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from .utils import read_only, repr_listed_values
+from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer
@@ -225,7 +225,7 @@ class Chemicals:
         return f"{type(self).__name__}([{', '.join(self.__dict__)}])"
 
 
-@read_only(methods=('append', 'extend', '__setitem__'))
+@utils.read_only(methods=('append', 'extend', '__setitem__'))
 class CompiledChemicals(Chemicals):
     """
     Create a CompiledChemicals object that contains Chemical objects as attributes.
@@ -374,7 +374,7 @@ class CompiledChemicals(Chemicals):
             key_properties = chemical.get_key_property_names()
             missing_properties = chemical.get_missing_properties(key_properties)
             if not missing_properties: continue
-            missing = repr_listed_values(missing_properties)
+            missing = utils.repr_listed_values(missing_properties)
             raise RuntimeError(
                 f"{chemical} is missing key thermodynamic properties ({missing}); "
                 "use the `<Chemical>.get_missing_properties()` to check "
@@ -955,11 +955,8 @@ class CompiledChemicals(Chemicals):
         try: 
             index = cache[IDs]
         except KeyError: 
-            if len(cache) > 1000: # pragma: no cover
-                for i in cache:
-                    del cache[i]
-                    break
             cache[IDs] = index = self._get_index(IDs)
+            utils.trim_cache(cache)
         except TypeError:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
         return index

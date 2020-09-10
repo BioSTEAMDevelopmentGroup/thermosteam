@@ -8,6 +8,7 @@
 """
 """
 from chemicals import *
+from fluids.core import Pr, alpha
 from flexsolve import njitable
 from thermosteam.base import functor
 import numpy as np

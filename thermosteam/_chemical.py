@@ -536,13 +536,13 @@ class Chemical:
                 V=None, Cn=None, mu=None, Cp=None, rho=None,
                 sigma=None, kappa=None, epsilon=None, Psat=None,
                 Hvap=None, **data):
-        search_ID = search_ID or ID
         chemical_cache = cls.chemical_cache
         if (cache or cls.cache) and ID in chemical_cache:
-            if any([search_ID, eos, phase_ref, CAS, default, phase, search_db, 
+            if any([search_ID, eos, phase_ref, CAS, default, phase, 
                     V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap, data]):
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
+        search_ID = search_ID or ID
         if not eos: eos = PR
         if phase: 
             phase = phase[0].lower()

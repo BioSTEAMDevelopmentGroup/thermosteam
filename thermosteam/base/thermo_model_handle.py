@@ -79,7 +79,7 @@ def as_model(models, key):
 
 @functor_lookalike
 class ThermoModelHandle:
-    __slots__ = ('_chemical', '_var', '_models',)
+    __slots__ = ('_chemical', '_var', '_models')
     
     @property
     def chemical(self):
@@ -283,11 +283,11 @@ class TDependentModelHandle(ThermoModelHandle):
         for model in self._models:
             if model.indomain(T): return model.evaluate(T)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
-                         f"at T={T:.2f} K", chemical=self._chemical)
+                          f"at T={T:.2f} K", chemical=self._chemical)
     
     at_T = __call__
     
-    def try_out(self, T, P=None):
+    def try_out(self, T):
         for model in self._models:
             if model.indomain(T): return model.evaluate(T)
     
@@ -300,7 +300,7 @@ class TDependentModelHandle(ThermoModelHandle):
     def differentiate_by_P(self, T, P=None, dP=1e-12):
         return 0
         
-    def integrate_by_T(self, Ta, Tb, P=None):
+    def integrate_by_T(self, Ta, Tb):
         integral = 0.
         defined = hasattr
         for model in self._models:
@@ -324,7 +324,7 @@ class TDependentModelHandle(ThermoModelHandle):
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
     
-    def integrate_by_T_over_T(self, Ta, Tb, P=None):
+    def integrate_by_T_over_T(self, Ta, Tb):
         integral = 0.
         defined = hasattr
         for model in self._models:
@@ -347,7 +347,7 @@ class TDependentModelHandle(ThermoModelHandle):
     
     
 class TPDependentModelHandle(ThermoModelHandle):
-    __slots__ = ()
+    __slots__ = ('_integrate_by_T_cache', '_integrate_by_T_over_T_cache')
     
     Tmin = TDependentModelHandle.Tmin
     Tmax = TDependentModelHandle.Tmax
@@ -391,7 +391,7 @@ class TPDependentModelHandle(ThermoModelHandle):
              if model.indomain(T, P): return model.differentiate_by_P(T, P)
         raise DomainError(f"{no_valid_model(self._chemical, self._var)} "
                           f"at T={T:.2f} K and P={P:.0f} Pa", chemical=self._chemical)
-
+        
     def integrate_by_T(self, Ta, Tb, P):
         integral = 0
         defined = hasattr

@@ -485,7 +485,7 @@ class Stream:
         if name in units_dct:
             original_units = units_dct[name]
         else:
-            raise ValueError(f"no property with name '{name}'")
+            raise ValueError(f"'{name}' is not thermodynamic property")
         return original_units.convert(value, units)
     
     def set_property(self, name, value, units):
@@ -746,7 +746,7 @@ class Stream:
     @property
     def alpha(self):
         """[float] Thermal diffusivity [m^2/s]."""
-        return fn.thermal_diffusivity(self.kappa, self.rho, self.Cp)
+        return fn.alpha(self.kappa, self.rho, self.Cp * 1000.)
     @property
     def rho(self):
         """[float] Density [kg/m^3]."""
@@ -758,7 +758,7 @@ class Stream:
     @property
     def Pr(self):
         """[float] Prandtl number [-]."""
-        return fn.Pr(self.Cp, self.mu, self.k)
+        return fn.Pr(self.Cp * 1000, self.kappa, self.mu)
     
     ### Stream methods ###
     

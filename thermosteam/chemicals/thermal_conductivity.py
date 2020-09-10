@@ -45,12 +45,12 @@ kl_Mersmann_Kind = functor(tc.kl_Mersmann_Kind, kl)
 DIPPR9G = functor(tc.DIPPR9G, kl)
 Missenard = functor(tc.Missenard, kl)
 
-def IAPWS_rho_hook(f, T, kwargs):
+def IAPWS_rho_hook(self, T, kwargs):
     if 'Vl' in kwargs:
         kwargs = kwargs.copy()
         Vl = kwargs.pop('Vl')
         kwargs['rho'] = 0.01801528 / Vl.at_T(T)
-    return f(T, **kwargs)
+    return self.function(T, **kwargs)
 k_IAPWS.functor.hook = IAPWS_rho_hook
 
 def Tmax_Lakshmi_Prasad(MW):
@@ -62,13 +62,13 @@ def Tmax_Lakshmi_Prasad(MW):
                               checkroot=False)
     return T_max - 10 # As an extra precaution
 
-def kl_hook(f, T, P, kwargs):
+def kl_hook(self, T, P, kwargs):
     kl = kwargs['kl']
     if isinstance(kl, ThermoModelHandle): 
         kl = kl.at_T(T)
         kwargs = kwargs.copy()
         kwargs['kl'] = kl
-    return f(T, P, **kwargs)
+    return self.function(T, P, **kwargs)
 DIPPR9G.functor.hook = kl_hook
 Missenard.functor.hook = kl_hook
 
@@ -76,7 +76,7 @@ Missenard.functor.hook = kl_hook
 def thermal_conductivity_liquid_handle(handle, CAS, MW, Tm, Tb, Tc, Pc, omega, Vl):
     add_model = handle.add_model
     if CAS == '7732-18-5':
-        add_model(k_IAPWS.functor.from_args((Vl,)))
+        add_model(k_IAPWS.functor(Vl=Vl))
     if all((Tc, Pc)):
         data = (Tc, Pc, handle)
         add_model(DIPPR9G.functor.from_args(data))
