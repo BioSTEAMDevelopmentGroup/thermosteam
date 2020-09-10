@@ -1,6 +1,7 @@
 pytest-cov
 coveralls
 biosteam
+biorefineries>=2.15.12
 sympy
 pint>=0.9
 chemicals>=0.1.4
