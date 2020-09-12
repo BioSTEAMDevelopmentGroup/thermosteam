@@ -40,9 +40,62 @@ class Thermo:
     
     Examples
     --------
-    >>> from thermosteam import Thermo
-    >>> Thermo(['Ethanol', 'Water'])
+    Create a property package for water and ethanol:
+    
+    >>> import thermosteam as tmo
+    >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
+    >>> thermo
     Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal mixing', ..., include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
+    >>> thermo.show() # May be easier to read
+    Thermo(
+        chemicals=CompiledChemicals([Ethanol, Water]),
+        mixture=Mixture(
+            rule='ideal mixing', ...
+            include_excess_energies=False
+        ),
+        Gamma=DortmundActivityCoefficients,
+        Phi=IdealFugacityCoefficients,
+        PCF=IdealPoyintingCorrectionFactors
+    )
+    
+    Note that the Dortmund-UNIFAC is the default activity coefficient model. 
+    The ideal-equilibrium property package (which assumes a value of 1 for all
+    activity coefficients) is also available:
+        
+    >>> thermo.ideal.show()
+    Thermo(
+        chemicals=CompiledChemicals([Ethanol, Water]),
+        mixture=Mixture(
+            rule='ideal mixing', ...
+            include_excess_energies=False
+        ),
+        Gamma=IdealActivityCoefficients,
+        Phi=IdealFugacityCoefficients,
+        PCF=IdealPoyintingCorrectionFactors
+    )
+    
+    Thermodynamic equilibrium results are affected by the choice of property package:
+        
+    >>> # Ideal
+    >>> tmo.settings.set_thermo(thermo.ideal)
+    >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
+    >>> stream.vle(T=361, P=101325)
+    >>> stream.show()
+    MultiStream: stream
+     phases: ('g', 'l'), T: 361 K, P: 101325 Pa
+     flow (kmol/hr): (g) Ethanol  32.19
+                         Water    17.33
+                     (l) Ethanol  67.81
+                         Water    82.67
+    >>> # Modified Roult's law:                 
+    >>> tmo.settings.set_thermo(thermo)
+    >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
+    >>> stream.vle(T=360, P=101325) 
+    >>> stream.show()
+    MultiStream: stream
+     phases: ('g', 'l'), T: 360 K, P: 101325 Pa
+     flow (kmol/hr): (g) Ethanol  100
+                         Water    100
     
     Attributes
     ----------
@@ -59,7 +112,7 @@ class Thermo:
     
     """
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF',
-                 'ideal_equilibrium_thermo') 
+                 'ideal') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
@@ -67,20 +120,18 @@ class Thermo:
                  PCF=eq.IdealPoyintingCorrectionFactors,
                  cache=None):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
-        if mixture:
-            if not isinstance(mixture, Mixture): 
-                raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
-        else:
+        if not mixture:
             mixture = ideal_mixture(chemicals)
+        elif not isinstance(mixture, Mixture): # pragma: no cover
+            raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         chemicals.compile()
-        if settings._debug:
-            issubtype = issubclass
-            if not issubtype(Gamma, eq.ActivityCoefficients):
-                raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
-            if not issubtype(Phi, eq.FugacityCoefficients):
-                raise ValueError(f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
-            if not issubtype(PCF, eq.PoyintingCorrectionFactors):
-                raise ValueError(f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
+        issubtype = issubclass
+        if not issubtype(Gamma, eq.ActivityCoefficients): # pragma: no cover
+            raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
+        if not issubtype(Phi, eq.FugacityCoefficients): # pragma: no cover
+            raise ValueError(f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
+        if not issubtype(PCF, eq.PoyintingCorrectionFactors): # pragma: no cover
+            raise ValueError(f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
         
         setattr = object.__setattr__
         if (Gamma is eq.IdealActivityCoefficients
@@ -95,35 +146,75 @@ class Thermo:
             setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
             setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
             setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
-            setattr(ideal, 'ideal_equilibrium_thermo', ideal)
+            setattr(ideal, 'ideal', ideal)
         setattr(self, 'chemicals', chemicals)
         setattr(self, 'mixture', mixture)
         setattr(self, 'Gamma', Gamma)
         setattr(self, 'Phi', Phi)
         setattr(self, 'PCF', PCF)
-        setattr(self, 'ideal_equilibrium_thermo', ideal)
+        setattr(self, 'ideal', ideal)
     
     @property
-    def equilibrium_model(self):
-        if self.ideal_equilibrium_thermo is self:
-            return "Raoult's law"
-        elif self.Gamma in (eq.UNIFACActivityCoefficients, eq.DortmundActivityCoefficients):
-            return "modified Raoult's law"
-        else:
-            return "unknown"
+    def isideal(self):
+        """Whether or not the equilibrium model is an ideal model."""
+        return self.ideal is self
     
     def as_chemical(self, chemical):
+        """
+        Return chemical as a Chemical object.
+
+        Parameters
+        ----------
+        chemical : str or Chemical
+            Name of chemical being retrieved.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
+        >>> thermo.as_chemical('Water') is thermo.chemicals.Water
+        True
+        >>> thermo.as_chemical('Octanol') # Chemical not defined, so it will be created
+        Chemical('Octanol')
+        
+        """
         isa = isinstance
         if isa(chemical, str):
             try: 
-                chemical = self.chemicals.retrieve(chemical)
+                chemical = self.chemicals[chemical]
             except:
                 chemical = Chemical(chemical)
-        elif not isa(chemical, Chemical):
-            raise ValueError('can only convert string to chemical')
+        elif not isa(chemical, Chemical): # pragma: no cover
+            raise ValueError(f"can only convert '{type(chemical).__name__}' object to chemical")
         return chemical
     
     def subgroup(self, IDs):
+        """
+        Create a Thermo object from a subset of chemicals.
+
+        Parameters
+        ----------
+        IDs : Iterable[str]
+            Names of chemicals.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
+        >>> thermo_water = thermo.subgroup(['Water'])
+        >>> thermo_water.show()
+        Thermo(
+            chemicals=CompiledChemicals([Water]),
+            mixture=Mixture(
+                rule='ideal mixing', ...
+                include_excess_energies=False
+            ),
+            Gamma=DortmundActivityCoefficients,
+            Phi=IdealFugacityCoefficients,
+            PCF=IdealPoyintingCorrectionFactors
+        )
+        
+        """
         chemicals = self.chemicals.subgroup(IDs)
         return type(self)(chemicals, None, self.Gamma, self.Phi, self.PCF)
     
@@ -133,7 +224,7 @@ class Thermo:
     def show(self):
         try:
             mixture_info = self.mixture._info().replace('\n', '\n    ')
-        except:
+        except: # pragma: no cover
             mixture_info = str(self.mixture)
         print(f"{type(self).__name__}(\n"
               f"    chemicals={self.chemicals},\n"
