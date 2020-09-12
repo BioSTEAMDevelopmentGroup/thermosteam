@@ -37,8 +37,12 @@ def style_axis(ax=None, xticks=None, yticks=None,
     ax.tick_params(axis="x", top=False, direction="inout", length=4)
     ax.tick_params(axis="y", right=False, direction="inout", length=4)
     ax.zorder = 1
+    
+    axes = {'ax': ax}
+    
     if right:
         x_twin = ax.twinx()
+        axes['twinx'] = x_twin 
         plt.sca(x_twin)
         x_twin.tick_params(axis='y', right=True, direction="in", length=4)
         x_twin.zorder = 2
@@ -46,11 +50,14 @@ def style_axis(ax=None, xticks=None, yticks=None,
         plt.yticks(yticks, ())
     if top:
         y_twin = ax.twiny()
+        axes['twiny'] = y_twin 
         plt.sca(y_twin)
         y_twin.tick_params(axis='x', top=True, direction="in", length=4)
         y_twin.zorder = 2
         plt.xlim(xlim)
         plt.xticks(xticks, ())
+    
+    return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
     plt.xlim([xticks[0], xticks[-1]])
