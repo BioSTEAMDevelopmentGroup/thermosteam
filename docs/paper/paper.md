@@ -36,10 +36,7 @@ and simulation of unit operations by creating thermodynamic property packages
 from both user-defined chemicals and databanks from the `chemicals` library [@chemicals], an open-source compilation of data and functions for the estimation of thermodynamic and transport properties for both pure chemicals and mixtures.
 
 Roughly 20,000 chemicals with temperature- and pressure-dependent property data are
-included in the `chemicals`. Thermosteam builds upon `chemicals` with a robust and
-flexible framework that facilitates the creation of property packages. Its extendable
-framework allows for easy integration of new models for estimating pure component 
-properties, thermodynamic equilibrium coefficients, and mixture properties. 
+included in the `chemicals` library. Thermosteam builds upon `chemicals` with a robust and flexible framework that facilitates the creation of property packages. Its extendable framework allows for easy integration of new models for estimating pure component properties, thermodynamic equilibrium coefficients, and mixture properties. 
 The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) 
 has adopted thermosteam as its premier thermodynamic engine [@BioSTEAM].
 Published biorefinery designs modeled in BioSTEAM implement property 
