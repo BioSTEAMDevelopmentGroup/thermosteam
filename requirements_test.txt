@@ -1,3 +1,4 @@
+pyyaml
 pytest-cov
 coveralls
 biosteam
