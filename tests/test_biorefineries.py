@@ -61,7 +61,7 @@ def test_LAOs():
     assert np.allclose(MPSP, 1226.0016718824597, rtol=1e-2)
     assert np.allclose(laos.LAOs_tea.sales, 168789574.412942, rtol=1e-2)
     assert np.allclose(laos.LAOs_tea.material_cost, 135661583.58974993, rtol=1e-2)
-    assert np.allclose(laos.LAOs_tea.installed_equipment_cost, 76661769.51734665, rtol=1e-2)
+    assert np.allclose(laos.LAOs_tea.installed_equipment_cost, 76661769.51734665, rtol=0.05)
     assert np.allclose(laos.LAOs_tea.utility_cost, 3811246.803774001, rtol=1e-2)
     assert np.allclose(units.get_heating_duty(), 59.19501587183199, rtol=1e-2)
     assert np.allclose(units.get_cooling_duty(), 134.66774238880174, rtol=1e-2)
