@@ -29,13 +29,12 @@ requires the estimation of mixture properties and phase equilibrium (e.g.
 vapor-liquid and liquid-liquid equilibrium) to correctly estimate material and 
 energy balances, as well as the unit operation design requirements to achieve 
 a set of design specifications. For example, estimating both phase equilibrium
-and fluid viscosities, densities, and surface tension are required to design a 
+and fluid viscosities, densities, and surface tensions are required to design a 
 distillation column that can achieve a specified recovery of chemicals 
 [@Perry]. The overarching goal of thermosteam is to enable the rigorous design 
-and simulation of unit operations by creating thermodynamic property packages 
-from both user-defined chemicals and databanks from the `chemicals` library [@chemicals]. 
-The `chemicals` library is an open-source compilation of data and functions for
-the estimation of thermodynamic and transport properties for both pure chemicals and mixtures.
+and simulation of unit operations by creating thermodynamic property packages
+from both user-defined chemicals and databanks from the `chemicals` library [@chemicals], an open-source compilation of data and functions for the estimation of thermodynamic and transport properties for both pure chemicals and mixtures.
+
 Roughly 20,000 chemicals with temperature- and pressure-dependent property data are
 included in the `chemicals`. Thermosteam builds upon `chemicals` with a robust and
 flexible framework that facilitates the creation of property packages. Its extendable
@@ -43,7 +42,7 @@ framework allows for easy integration of new models for estimating pure componen
 properties, thermodynamic equilibrium coefficients, and mixture properties. 
 The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) 
 has adopted thermosteam as its premier thermodynamic engine [@BioSTEAM].
-Currently, three biorefinery designs modeled in BioSTEAM implement property 
+Published biorefinery designs modeled in BioSTEAM implement property 
 packages created with thermosteam [@Bioindustrial-Park], including a cornstover 
 biorefinery for the production of cellulosic ethanol, a lipid-cane biorefinery 
 for the co-production of ethanol and biodiesel, and a sugarcane biorefinery
@@ -73,19 +72,12 @@ mixtures.
 
 All of thermosteam's application program interface (API) is documented with 
 examples. These examples also serve as preliminary tests that must pass before
-accepting any changes to the software. Additionally, the online documentation 
-includes a full tutorial that concludes with the creation of a property package.
-Thermosteam’s powerful features and extensive documentation encourage its users 
-to become a part of its community-driven platform and help it become more 
-industrially and academically relevant. 
+accepting any changes to the software via continuous integration on Github. Additionally, the online documentation includes a full tutorial that concludes with the creation of a property package. Thermosteam’s powerful features and extensive documentation encourage its users to become a part of its community-driven platform 
+and help it become more industrially and academically relevant. 
 
 # Acknowledgements
 
 I would like to thank Dr. Caleb Bell for developing the open-source `chemicals` library
-in Python, which has served as both groundwork and inspiration for developing `thermosteam`. 
-This material is based upon work supported by the National Science Foundation Graduate 
-Research Fellowship Program under Grant No. DGE—1746047. Any opinions, findings, and 
-conclusions or recommendations expressed in this publication are those of the authors and do 
-not necessarily reflect the views of the National Science Foundation.
+in Python, which has served as both groundwork and inspiration for developing `thermosteam`. This material is based upon work supported by the National Science Foundation Graduate Research Fellowship Program under Grant No. DGE—1746047. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the authors and do not necessarily reflect the views of the National Science Foundation.
 
 # References
