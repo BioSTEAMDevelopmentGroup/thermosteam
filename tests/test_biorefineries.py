@@ -52,3 +52,18 @@ def test_cornstover():
     assert np.allclose(units.get_cooling_duty(), 365.67806026618115, rtol=1e-2)
     assert np.allclose(units.get_electricity_consumption(), 22.371322764496814, rtol=1e-2)
     assert np.allclose(units.get_electricity_production(), 45.33827889984683, rtol=1e-2)
+    
+def test_LAOs():
+    from biorefineries import LAOs as laos
+    laos.load()
+    MPSP = laos.get_LAOs_MPSP()
+    units = UnitGroup('Biorefinery', laos.LAOs_tea.units)
+    assert np.allclose(MPSP, 1226.0016718824597, rtol=1e-2)
+    assert np.allclose(laos.LAOs_tea.sales, 168789574.412942, rtol=1e-2)
+    assert np.allclose(laos.LAOs_tea.material_cost, 135661583.58974993, rtol=1e-2)
+    assert np.allclose(laos.LAOs_tea.installed_equipment_cost, 76661769.51734665, rtol=1e-2)
+    assert np.allclose(laos.LAOs_tea.utility_cost, 3811246.803774001, rtol=1e-2)
+    assert np.allclose(units.get_heating_duty(), 59.19501587183199, rtol=1e-2)
+    assert np.allclose(units.get_cooling_duty(), 134.66774238880174, rtol=1e-2)
+    assert np.allclose(units.get_electricity_consumption(), 3.689496361470118, rtol=1e-2)
+    assert np.allclose(units.get_electricity_production(), 3.6894963614701215, rtol=1e-2)   
