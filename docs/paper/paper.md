@@ -63,7 +63,7 @@ hundreds of microseconds through the smart use of cache and Numba just-in-time
 (JIT) compiled functions [@numba]. The main vapor-liquid equilibrium (VLE) 
 algorithm solves the modified Raoult’s law equation with activity coefficients
 estimated through UNIQUAC Functional-group Activity Coefficients (UNIFAC) 
-interaction parameters [@McBride]. Modified Raoult’s law is suitable to 
+interaction parameters [@Gmehling]. Modified Raoult’s law is suitable to 
 estimate VLE of nonideal mixtures under low to moderate pressures. At high to 
 near-critical pressures, gaseous nonidealities become more significant. In a 
 near future, thermosteam may also implement the Predictive Soave–Redlich–Kwong
