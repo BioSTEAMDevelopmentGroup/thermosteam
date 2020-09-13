@@ -19,8 +19,9 @@ def load(file):
     with open(file, "rb") as f: return pickle.load(f)
     
 def get_state(obj):
-    slots = obj._pickle_recipe if hasattr(obj, '_pickle_recipe') else obj.__slots__
-    return (obj.__class__, slots, getfields(obj, slots))
+    cls = obj.__class__
+    slots = obj._pickle_recipe if hasattr(obj, '_pickle_recipe') else sum([i.__slots__ for i in cls.mro()[:-1]], ())
+    return (cls, slots, getfields(obj, slots))
     
 def new_from_state(cls, slots, values):
     obj = object.__new__(cls)

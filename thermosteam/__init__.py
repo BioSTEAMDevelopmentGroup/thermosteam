@@ -14,6 +14,7 @@ from . import (base,
                functional,
                units_of_measure,
                separations,
+               functors,
 )
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals
@@ -33,7 +34,7 @@ from flexsolve import speed_up
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture', 'ThermoData',
-           'settings', 'functor', 'chemicals', 'base', 'equilibrium',
+           'settings', 'functor', 'functors', 'chemicals', 'base', 'equilibrium',
            'units_of_measure', 'exceptions', 'functional', 'reaction',
            'utils', 'separations', 'speed_up')
 

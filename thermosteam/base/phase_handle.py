@@ -9,7 +9,7 @@
 """
 from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
-from ..utils import read_only
+from ..utils import read_only, cucumber
 
 __all__ = ('PhaseHandle', #'PhaseHandleBuilder', 
            'PhaseTHandle', 'PhaseTPHandle',
@@ -22,6 +22,7 @@ __all__ = ('PhaseHandle', #'PhaseHandleBuilder',
 
 # %% Abstract class    
 
+@cucumber
 @read_only
 @functor_lookalike
 class PhaseHandle:

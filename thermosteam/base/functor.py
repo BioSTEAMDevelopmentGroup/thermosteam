@@ -9,6 +9,7 @@
 """
 from ..units_of_measure import chemical_units_of_measure
 from .. import utils
+from .. import functors
 from inspect import signature
 
 __all__ = ("functor", "Functor",  "TFunctor", 
@@ -106,7 +107,8 @@ def functor(f=None, var=None, units=None):
 	
     >>> # Describe the return value with `var`.
     >>> # Thermosteam's chemical units of measure are always assumed.
-    >>> @functor(var='Psat')
+    >>> import thermosteam as tmo
+    >>> @tmo.functor(var='Psat')
     ... def Antoine(T, a, b, c):
     ...     return 10.0**(a - b / (T + c))
     >>> Antoine(T=373.15, a=10.116, b=1687.5, c=-42.98) # functional
@@ -120,6 +122,11 @@ def functor(f=None, var=None, units=None):
     >>> f(T=373.15)
     101157.148
     
+    All functors are saved in the `functors` module:
+    
+    >>> tmo.functors.Antoine
+    <class 'thermosteam.functors.Antoine'>
+    
     """
     if f:
         params = tuple(signature(f).parameters)
@@ -130,7 +137,9 @@ def functor(f=None, var=None, units=None):
                'units': units,
                'var': var}
         name = f.__name__
-        f.functor = type(name, (base,), dct)
+        f.functor = cls = type(name, (base,), dct)
+        cls.__module__ = functors.__name__
+        setattr(functors, name, cls)
     else:
         return lambda f: functor(f, var, units)
     return f

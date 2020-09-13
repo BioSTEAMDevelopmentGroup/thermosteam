@@ -12,7 +12,6 @@ from ._chemical import Chemical
 from ._chemicals import Chemicals
 from .mixture import Mixture, ideal_mixture
 from .utils import read_only, cucumber
-from ._settings import settings
 
 __all__ = ('Thermo',)
 
@@ -62,7 +61,8 @@ class Thermo:
     The ideal-equilibrium property package (which assumes a value of 1 for all
     activity coefficients) is also available:
         
-    >>> thermo.ideal.show()
+    >>> ideal = thermo.ideal()
+    >>> ideal.show()
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
         mixture=Mixture(
@@ -77,7 +77,7 @@ class Thermo:
     Thermodynamic equilibrium results are affected by the choice of property package:
         
     >>> # Ideal
-    >>> tmo.settings.set_thermo(thermo.ideal)
+    >>> tmo.settings.set_thermo(ideal)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
     >>> stream.vle(T=361, P=101325)
     >>> stream.show()
@@ -97,6 +97,22 @@ class Thermo:
      flow (kmol/hr): (g) Ethanol  100
                          Water    100
     
+    Thermodynamic property packages are pickleable:
+        
+    >>> tmo.utils.save(thermo, "Ethanol-Water Property Package")
+    >>> thermo = tmo.utils.load("Ethanol-Water Property Package")
+    >>> thermo.show()
+    Thermo(
+        chemicals=CompiledChemicals([Ethanol, Water]),
+        mixture=Mixture(
+            rule='ideal mixing', ...
+            include_excess_energies=False
+        ),
+        Gamma=DortmundActivityCoefficients,
+        Phi=IdealFugacityCoefficients,
+        PCF=IdealPoyintingCorrectionFactors
+    )
+    
     Attributes
     ----------
     chemicals : Chemicals or Iterable[str]
@@ -111,8 +127,7 @@ class Thermo:
         Class for computing poynting correction factors.
     
     """
-    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF',
-                 'ideal') 
+    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
@@ -134,30 +149,23 @@ class Thermo:
             raise ValueError(f"PCF must be a '{eq.PoyintingCorrectionFactors.__name__}' subclass")
         
         setattr = object.__setattr__
-        if (Gamma is eq.IdealActivityCoefficients
-            and Phi is eq.IdealFugacityCoefficients
-            and PCF is eq.IdealPoyintingCorrectionFactors):
-            ideal = self
-        else:
-            cls = self.__class__
-            ideal = cls.__new__(cls)
-            setattr(ideal, 'chemicals', chemicals)
-            setattr(ideal, 'mixture', mixture)
-            setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
-            setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
-            setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
-            setattr(ideal, 'ideal', ideal)
         setattr(self, 'chemicals', chemicals)
         setattr(self, 'mixture', mixture)
         setattr(self, 'Gamma', Gamma)
         setattr(self, 'Phi', Phi)
         setattr(self, 'PCF', PCF)
-        setattr(self, 'ideal', ideal)
     
-    @property
-    def isideal(self):
-        """Whether or not the equilibrium model is an ideal model."""
-        return self.ideal is self
+    def ideal(self):
+        """Ideal thermodynamic property package."""
+        cls = self.__class__
+        ideal = cls.__new__(cls)
+        setattr = object.__setattr__
+        setattr(ideal, 'chemicals', self.chemicals)
+        setattr(ideal, 'mixture', self.mixture)
+        setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
+        setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
+        setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
+        return ideal
     
     def as_chemical(self, chemical):
         """

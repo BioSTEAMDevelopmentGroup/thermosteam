@@ -54,7 +54,7 @@ def get_instance(iterable, cls):
     N = len(objs)
     if N == 1:
         return objs[0]
-    elif N == 0:
+    elif N == 0: # pragma: no cover
         raise ValueError('instance not found')
-    else:
-        raise ValueError('multiple instances')
+    else: # pragma: no cover
+        raise ValueError('multiple instances found')
