@@ -11,7 +11,7 @@ __all__ = ('chemical_units_of_measure',
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
            'DisplayUnits', 'AbsoluteUnitsOfMeasure', 'convert',
-           'Quantity', 'format_plot_units')
+           'Quantity', 'format_units', 'format_plot_units')
 
 from .exceptions import DimensionError
 
@@ -32,22 +32,51 @@ del os, UnitRegistry
 # %% Functions
 
 def format_degrees(units):
+    r"""
+    Format units of measure to have a latex degree symbol, if needed.
+
+    Examples
+    --------
+    >>> format_degrees('degC')
+    '^\\circ C'
+    
+    """
     if units.startswith('deg'):
         units = '^\circ ' + units[3:]
     return units
 
-def format_units(units, isnumerator=True):
+def format_units_power(units, isnumerator=True):
+    r"""
+    Format units of measure power sign to have a latex friendly format.
+
+    Examples
+    --------
+    >>> format_units_power('m^3')
+    '\\mathrm{m}^{3}'
+    >>> format_units_power('m^3', isnumerator=False)
+    '\\mathrm{m}^{-3}'
+    
+    """
     if '^' in units:
         units, power = units.split('^')
         units = format_degrees(units)
         units = '\mathrm{' + units + '}'
-        units += '^{' + (power if isnumerator else -power) + '}'
+        units += '^{' + (power if isnumerator else '-' + power) + '}'
     else:
         units = format_degrees(units)
         units = '\mathrm{' + units + '}'
     return units
 
-def format_plot_units(units):
+def format_units(units):
+    r"""
+    Format units of measure to have a latex friendly format.
+
+    Examples
+    --------
+    >>> format_units('USD/m^3')
+    '$\\mathrm{USD} \\cdot \\mathrm{m}^{-3}$'
+    
+    """
     units = str(units)
     all_numerators = []
     all_denominators = []
@@ -60,9 +89,11 @@ def format_plot_units(units):
             all_denominators.append(term)
         term_is_numerator = not term_is_numerator
         all_numerators.extend(numerators)
-    all_numerators = [format_units(i) for i in all_numerators]
-    all_denominators = [format_units(i, False) for i in all_denominators]
+    all_numerators = [format_units_power(i) for i in all_numerators]
+    all_denominators = [format_units_power(i, False) for i in all_denominators]
     return '$' + ' \cdot '.join(all_numerators + all_denominators) + '$'
+
+format_plot_units = format_units
 
 def get_dimensionality(units, cache={}):
     if units in cache:
@@ -158,7 +189,26 @@ class RelativeUnitsOfMeasure(UnitsOfMeasure):
 # %% Manage display units
 
 class DisplayUnits:
-    """Create a DisplayUnits object where default units for representation are stored."""
+    """
+    Create a DisplayUnits object where default units for representation are stored.
+    
+    Examples
+    --------
+    Its possible to change the default units of measure for the Stream show method:
+        
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water'], cache=True)
+    >>> tmo.Stream.display_units.flow = 'kg/hr'
+    >>> stream = tmo.Stream('stream', Water=1, units='kg/hr')
+    >>> stream.show()
+    Stream: stream
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kg/hr): Water  1
+    
+    >>> # Change back to kmol/hr
+    >>> tmo.Stream.display_units.flow = 'kmol/hr'
+    
+    """
     def __init__(self, **display_units):
         dct = self.__dict__
         dct.update(display_units)

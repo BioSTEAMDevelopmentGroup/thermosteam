@@ -10,7 +10,7 @@
 
 __all__ = ('Registry',)
 
-class Registry:
+class Registry: # pragma: no cover
     
     def search(self, ID):
         return self.__dict__.get(ID)
@@ -51,7 +51,7 @@ class Registry:
     
     def __repr__(self):
         if self.__dict__:
-            return f'Register:\n ' + '\n '.join([repr(i) for i in self.__dict__.values()])
+            return 'Register:\n ' + '\n '.join([repr(i) for i in self.__dict__.values()])
         else:
-            return f'Register: (Empty)'
+            return 'Register: (Empty)'
 

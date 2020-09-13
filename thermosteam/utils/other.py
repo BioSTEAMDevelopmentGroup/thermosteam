@@ -7,9 +7,13 @@
 # for license details.
 """
 """
-__all__ = ('fill_like', 'getfields', 'setfields', 'any_isinstance',
-           'copy_maybe', 'get_dct_values', 'get_obj_values',
-           'get_instance', 'define_from')
+__all__ = (
+    'fill_like', 
+    'getfields', 
+    'setfields', 
+    'copy_maybe', 
+    'get_instance'
+)
 
 def fill_like(A, B, fields):
     setfield = setattr
@@ -22,30 +26,8 @@ def getfields(obj, fields, getfield=getattr):
 def setfields(obj, names, fields, setfield=setattr):
     for i,j in zip(names, fields): setfield(obj, i, j)
 
-def any_isinstance(objs, cls):
-    isa = isinstance
-    for i in objs:
-        if isa(i, cls): return True
-    return False
-
 def copy_maybe(obj):
     return obj.copy() if hasattr(obj, 'copy') else obj
-
-def get_dct_values(dct, params):
-    return [dct[key] for key in params]
-
-def get_obj_values(obj, params):
-    attr = getattr
-    return [attr(obj, key) for key in params]
-
-def _define_from(cls, other, names):
-    getfield = getattr
-    setfield = setattr
-    for name in names: setfield(cls, name, getfield(other, name))
-    return cls
-
-def define_from(other, names):
-    return lambda cls: _define_from(cls, other, names)
 
 def get_instance(iterable, cls):
     """Return object that is an instance of given class."""
