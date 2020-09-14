@@ -43,7 +43,8 @@ Published biorefinery designs modeled in BioSTEAM implement property
 packages created with thermosteam [@Bioindustrial-Park], including a cornstover 
 biorefinery for the production of cellulosic ethanol, a lipid-cane biorefinery 
 for the co-production of ethanol and biodiesel, a sugarcane biorefinery
-for the production of bioethanol, and a wheatstraw biorefinery for the production of cellulosic ethanol [@BioSTEAM, @Sanchins].
+for the production of bioethanol, and a wheatstraw biorefinery for the production
+of cellulosic ethanol [@BioSTEAM, @Sanchis].
 
 In `thermosteam`, Peng Robinson is the default equation of state 
 of all pure components. However, the estimation of pure component chemical 
