@@ -74,7 +74,7 @@ and help it become more industrially and academically relevant.
 
 # Acknowledgements
 
-I would like to thank Dr. Caleb Bell for developing the open-source `chemicals` library
+I would like to thank Caleb Bell for developing the open-source `chemicals` library
 in Python, which has served as both groundwork and inspiration for developing `thermosteam`. This material is based upon work supported by the National Science Foundation Graduate Research Fellowship Program under Grant No. DGE—1746047. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the authors and do not necessarily reflect the views of the National Science Foundation. This work was also funded through the Center for Advanced Bioenergy and Bioproducts Innovation (CABBI), a U.S. Department of Energy (DOE) Bioenergy Research Center (U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research under Award Number DE-SC0018420). Any opinions, findings, and conclusions or recommendations expressed in this publication are of the authors and do not necessarily reflect the views of the U.S. Department of Energy.
 
 # References
