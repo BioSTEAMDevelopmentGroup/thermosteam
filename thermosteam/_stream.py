@@ -78,6 +78,13 @@ class Stream:
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kg/hr): Water    20
                    Ethanol  10
+    >>> s1.show(composition=True, flow='kg/hr') # Its also possible to show by composition
+    Stream: s1
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     composition: Water    0.667
+                  Ethanol  0.333
+                  -------  30 kg/hr
+    
     
     All flow rates are stored as an array in the `mol` attribute:
     
@@ -189,7 +196,7 @@ class Stream:
                      (l) Water    0.6381
                          Ethanol  0.02552
     
-    Note that the stream is a now a MultiStream to manage multiple phases.
+    Note that the stream is a now a MultiStream object to manage multiple phases.
     Each phase can be accessed separately too:
     
     >>> s1['l'].show()
@@ -203,6 +210,15 @@ class Stream:
      phase: 'g', T: 364.8 K, P: 101325 Pa
      flow (kmol/hr): Water    0.472
                      Ethanol  0.192
+    
+    We can convert a MultiStream object back to a Stream object by setting the phase:
+        
+    >>> s1.phase = 'l'
+    >>> s1.show(flow='kg/hr')
+    Stream: s1
+     phase: 'l', T: 364.8 K, P: 101325 Pa
+     flow (kg/hr): Water    20
+                   Ethanol  10
     
     """
     __slots__ = ('_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
@@ -282,7 +298,7 @@ class Stream:
             ins = sink.ins
             index = ins.index(self)
             ins[index] = None
-        else:
+        if source:
             outs = source.outs
             index = outs.index(self)
             outs[index] = None
@@ -699,7 +715,7 @@ class Stream:
     @property
     def z_vol(self):
         """[1d array] Volumetric composition."""
-        vol = self.vol.value
+        vol = 1. * self.vol
         z = vol / vol.sum()
         z.setflags(0)
         return z
@@ -791,6 +807,8 @@ class Stream:
         
         Examples
         --------
+        Sum two streams:
+        
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
@@ -801,6 +819,15 @@ class Stream:
          flow (kg/hr): Water    40
                        Ethanol  20
         
+        Sum two streams with new property package:
+            
+        >>> thermo = tmo.Thermo(['Water', 'Ethanol', 'Methanol'], cache=True)
+        >>> s_sum = tmo.Stream.sum([s1, s1], 's_sum', thermo)
+        >>> s_sum.show(flow='kg/hr')
+        Stream: s_sum
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+                       Ethanol  20
         """
         if streams:
             new = streams[0].copy(ID)
@@ -856,7 +883,7 @@ class Stream:
             self._imol.mix_from([i._imol for i in others])
             H = sum([i.H for i in others])
             try: self.H = H
-            except Exception as error:
+            except Exception as error: # pragma: no cover
                 phase = self.phase.lower()
                 if phase == 'g':
                      # Maybe too much heat, gas must be present
@@ -1075,9 +1102,29 @@ class Stream:
         Cut and paste flows:
         
         >>> s2.copy_flow(s1, remove=True)
+        >>> s2.show(flow='kg/hr')
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    20
+                       Ethanol  10
+        
         >>> s1.show()
         Stream: s1
          phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow: 0
+         
+        Its also possible to copy flows from a multistream:
+        
+        >>> s1.phases = ('g', 'l')
+        >>> s1.imol['g', 'Water'] = 10
+        >>> s2.copy_flow(s1, remove=True)
+        >>> s2.show()
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kmol/hr): Water  10
+        >>> s1.show()
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
          flow: 0
          
         """
@@ -1093,7 +1140,7 @@ class Stream:
         self.mol[index] = mol[index]
         if remove: 
             if isinstance(stream, tmo.MultiStream):
-                mol[..., index] = 0
+                stream.imol.data[:, index] = 0
             else:
                 mol[index] = 0
     
