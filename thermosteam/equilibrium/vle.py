@@ -9,7 +9,6 @@
 """
 import flexsolve as flx
 from ..exceptions import InfeasibleRegion
-from ..utils.decorators import thermo_user
 from . import binary_phase_fraction as binary
 from .equilibrium import Equilibrium
 from .dew_point import DewPointCache
@@ -21,7 +20,6 @@ import numpy as np
 
 __all__ = ('VLE', 'VLECache')
 
-@thermo_user
 class VLE(Equilibrium, phases='lg'):
     """
     Create a VLE object that performs vapor-liquid equilibrium when called.

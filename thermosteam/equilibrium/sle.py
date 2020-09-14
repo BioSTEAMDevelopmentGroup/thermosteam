@@ -8,22 +8,61 @@
 """
 """
 import flexsolve as flx
-from ..exceptions import InfeasibleRegion
-from ..utils.decorators import thermo_user
-from . import binary_phase_fraction as binary
-from .dew_point import DewPointCache
-from .bubble_point import BubblePointCache
-from .fugacity_coefficients import IdealFugacityCoefficients
-from .._thermal_condition import ThermalCondition
-from ..indexer import MolarFlowIndexer
-from .. import functional as fn
 from ..utils import Cache
+from .equilibrium import Equilibrium
+from chemicals import solubility_eutectic
 import numpy as np
 
-__all__ = ('SLE',)
+__all__ = ('SLE', 'SLECache')
 
-@thermo_user
-class SLE:
+class SLE(Equilibrium, phases='ls'):
+    """
+    Create an SLE object that performs solid-liquid equilibrium for a given solute
+    when called with a temperature and pressure.
+        
+    Parameters
+    ----------
+    imol=None : MaterialIndexer, optional
+        Molar chemical phase data is stored here.
+    thermal_condition=None : ThermalCondition, optional
+        The temperature and pressure used in calculations are stored here.
+    thermo=None : Thermo, optional
+        Themodynamic property package for equilibrium calculations.
+        Defaults to `thermosteam.settings.get_thermo()`.
+    
+    Examples
+    --------
+    Solve SLE of tetradecanol in octanol:
+        
+    >>> from thermosteam import indexer, equilibrium, settings
+    >>> settings.set_thermo(['Octanol', 'Tetradecanol'], cache=True)
+    >>> imol = indexer.MolarFlowIndexer(l=[('Octanol', 304), ('Tetradecanol', 30)], phases=('s', 'l'))
+    >>> sle = equilibrium.SLE(imol)
+    >>> sle('Tetradecanol', T=300)
+    >>> sle
+    SLE(imol=MolarFlowIndexer(
+            l=[('Octanol', 304), ('Tetradecanol', 21.86)],
+            s=[('Tetradecanol', 8.144)]),
+        thermal_condition=ThermalCondition(T=300.00, P=101325))
+    
+    Solve SLE of pure tetradecanol:
+    
+    >>> from thermosteam import indexer, equilibrium, settings
+    >>> settings.set_thermo(['Octanol', 'Tetradecanol'], cache=True)
+    >>> imol = indexer.MolarFlowIndexer(l=[('Tetradecanol', 30)], phases=('s', 'l'))
+    >>> sle = equilibrium.SLE(imol)
+    >>> sle('Tetradecanol', T=300) # Under melting point
+    >>> sle
+    SLE(imol=MolarFlowIndexer(phases=('l', 's'),
+            s=[('Tetradecanol', 30)]),
+        thermal_condition=ThermalCondition(T=300.00, P=101325))
+    >>> sle('Tetradecanol', T=320) # Over melting point
+    >>> sle
+    SLE(imol=MolarFlowIndexer(phases=('l', 's'),
+            l=[('Tetradecanol', 30)]),
+        thermal_condition=ThermalCondition(T=320.00, P=101325))
+        
+    """
     __slots__ = ('_x', # [float] Fraction of solute as a solid.
                  '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
                  '_liquid_mol', # [1d array] Liquid molar data.
@@ -33,6 +72,7 @@ class SLE:
                  '_chemical', # [Chemical] Single chemical in equilibrium.
                  '_nonzero', # [1d array(bool)] Chemicals present in the mixture
                  '_mol_solute', # [float] Solute molar data.
+                 '_solute_index', # [int] Solute index
     )
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None):
@@ -46,25 +86,26 @@ class SLE:
         self._chemical = None
         self._x = None
     
-    def _setup(self, solute):
+    def _setup(self):
         # Get flow rates
         liquid_mol = self._liquid_mol
-        vapor_mol = self._vapor_mol
-        mol = liquid_mol + vapor_mol
-        nonzero = mol > 0
-        chemicals = self.chemicals
-        solute_index = chemicals.get_index(solute)
-        self._mol_solute = mol_solute = nonzero[solute_index]
+        solid_mol = self._solid_mol
+        mol = liquid_mol + solid_mol
+        solute_index = self._solute_index
+        self._mol_solute = mol_solute = mol[solute_index]
         if not mol_solute:
             raise RuntimeError('no solute available')
+        nonzero = mol > 0
         if (self._nonzero == nonzero).all():
             index = self._index
         else:
+            chemicals = self.chemicals
             # Set up indices for both equilibrium and non-equilibrium species
             index = chemicals.get_lle_indices(nonzero)   
             N = len(index)
-            if N < 2:
-                raise RuntimeError('at least 2 chemicals are required for SLE')
+            if N == 1:
+                assert solute_index == index[0], "solute is not valid"
+                self._chemical = chemicals.tuple[solute_index]
             else:
                 # Set equilibrium objects
                 eq_chems = chemicals.tuple
@@ -73,8 +114,63 @@ class SLE:
                 self._index = index
                 thermo = self._thermo
                 self._gamma = thermo.Gamma(eq_chems)
-        if mol.sum() != 0: 
-            raise RuntimeError('no chemicals to perform equilibrium')
-        self._mol = mol[index]
+        
+    def __call__(self, solute, T, P=None):
+        thermal_condition = self.thermal_condition
+        if P: thermal_condition.P = P
+        thermal_condition.T = T
+        chemicals = self.chemicals
+        self._solute_index = solute_index = chemicals.get_index(solute)
+        self._setup()
+        liquid_mol = self._liquid_mol
+        solid_mol = self._solid_mol
+        if self._chemical:
+            Tm = self._chemical.Tm
+            if T > Tm:
+                liquid_mol[solute_index] = self._mol_solute
+                solid_mol[solute_index] = 0.
+            else:
+                liquid_mol[solute_index] = 0.
+                solid_mol[solute_index] = self._mol_solute
+        else:
+            x = self._solve_x(T)
+            self._update_solubility(x)
+    
+    def _update_solubility(self, x):
+        solute_index = self._solute_index
+        liquid_mol = self._liquid_mol
+        solid_mol = self._solid_mol
+        F_mol_liquid = liquid_mol[self._index].sum() - liquid_mol[solute_index]
+        mol_solute = self._mol_solute
+        x_max = mol_solute / (F_mol_liquid + mol_solute)
+        if x_max <= x:
+            liquid_mol[solute_index] = mol_solute
+            solid_mol[solute_index] = 0.
+        else:
+            liquid_mol[solute_index] = mol_solute_liquid = x * F_mol_liquid
+            solid_mol[solute_index] = mol_solute - mol_solute_liquid 
+    
+    def _solve_x(self, T):
+        solute_chemical = self.chemicals.tuple[self._solute_index]
+        Tm = solute_chemical.Tm
+        if Tm is None: raise RuntimeError(f"solute {solute_chemical} does not have a melting temperature, Tm")
+        Cpl = solute_chemical.Cn.l(T)
+        Cps = solute_chemical.Cn.s(T)
+        Hm = solute_chemical.Hfus
+        if Tm is None: raise RuntimeError(f"solute {solute_chemical} does not have a heat of fusion, Hfus")
+        gamma = 1.
+        x = solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma) # Initial guess
+        args = (T, Tm, Cpl, Cps, Hm)
+        return flx.wegstein(self._x_iter, x, xtol=1e-6, args=args)
+        
+    def _x_iter(self, x, T, Tm, Hm, Cpl, Cps):
+        self._update_solubility(x)
+        liquid_mol = self._liquid_mol[self._index]
+        F_mol_liquid = liquid_mol.sum()
+        x_l = liquid_mol / F_mol_liquid
+        gamma = self._gamma(x_l, T)
+        return solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma[self._solute_index])
         
         
+class SLECache(Cache): load = SLE
+del Cache, Equilibrium     

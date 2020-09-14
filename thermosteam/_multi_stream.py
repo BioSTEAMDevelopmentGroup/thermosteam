@@ -212,6 +212,9 @@ class MultiStream(Stream):
         self._lle_cache = eq.LLECache(self._imol,
                                       self._thermal_condition, 
                                       self._thermo)
+        self._sle_cache = eq.SLECache(self._imol,
+                                      self._thermal_condition, 
+                                      self._thermo)
         
     def __getitem__(self, phase):
         streams = self._streams
@@ -724,6 +727,10 @@ class MultiStream(Stream):
     def lle(self):
         """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
         return self._lle_cache.retrieve()
+    @property
+    def sle(self):
+        """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
+        return self._sle_cache.retrieve()
     
     ### Casting ###
     

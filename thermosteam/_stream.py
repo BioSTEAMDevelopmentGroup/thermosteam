@@ -207,7 +207,7 @@ class Stream:
     """
     __slots__ = ('_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_lle_cache',
+                 '_vle_cache', '_lle_cache', '_sle_cache',
                  '_sink', '_source', '_price')
     line = 'Stream'
     
@@ -1212,6 +1212,12 @@ class Stream:
         """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
         self.phases = ('L', 'l')
         return self.lle
+    
+    @property
+    def sle(self):
+        """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
+        self.phases = ('s', 'l')
+        return self.sle
 
     @property
     def vle_chemicals(self):
@@ -1604,6 +1610,9 @@ class Stream:
                                           self._bubble_point_cache,
                                           self._dew_point_cache)
             self._lle_cache = eq.LLECache(self._imol,
+                                          self._thermal_condition,
+                                          self._thermo)
+            self._sle_cache = eq.SLECache(self._imol,
                                           self._thermal_condition,
                                           self._thermo)
     
