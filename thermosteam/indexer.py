@@ -33,9 +33,12 @@ _new = object.__new__
 
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
-    phase = main_indexer.phase
-    for i in indexers:
-        if phase != i.phase: return default
+    try:
+        phase = main_indexer.phase
+        for i in indexers:
+            if phase != i.phase: return default
+    except:
+        return default
     return phase
 
 def nonzeros(IDs, data):
