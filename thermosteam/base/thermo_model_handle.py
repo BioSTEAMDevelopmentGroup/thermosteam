@@ -289,7 +289,9 @@ class TDependentModelHandle(ThermoModelHandle):
     
     def try_out(self, T):
         for model in self._models:
-            if model.indomain(T): return model.evaluate(T)
+            if model.indomain(T):
+                try: return model.evaluate(T)
+                except: pass
     
     def differentiate_by_T(self, T, P=None, dT=1e-12):
         for model in self._models:
