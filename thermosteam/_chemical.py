@@ -1427,8 +1427,10 @@ class Chemical:
         critical_point = (Tc, Pc, Vc)
         N_values = sum([bool(i) for i in critical_point])
         if N_values == 2:
-            self._Tc, self._Pc, self._Vc = Tc, Pc, Vc = Ihmels(*critical_point)
-            
+            third_property = Ihmels(*critical_point)
+            if not Tc: self._Tc = third_property
+            elif not Pc: self._Pc = third_property
+            elif not Vc: self._Vc = third_property
         Tb = self._Tb
         if not Tb:
             self._Tb = Tb = self.Tsat(101325)
@@ -1532,12 +1534,16 @@ class Chemical:
                     H_dep_T_ref_Pb = eos_T_ref_Pb.H_dep_l
                     S_dep_T_ref_Pb = eos_T_ref_Pb.S_dep_l
                 if Tb:
-                    eos_Tb = eos.to_TP(Tb, 101325)
-                    eos_Tb_P_ref = eos.to_TP(Tb, P_ref)
-                    H_dep_Tb_Pb_g = eos_Tb.H_dep_g
-                    H_dep_Tb_P_ref_g = eos_Tb_P_ref.H_dep_g
-                    S_dep_Tb_P_ref_g = eos_Tb_P_ref.S_dep_g
-                    S_dep_Tb_Pb_g = eos_Tb.S_dep_g
+                    try:
+                        eos_Tb = eos.to_TP(Tb, 101325)
+                        eos_Tb_P_ref = eos.to_TP(Tb, P_ref)
+                        H_dep_Tb_Pb_g = eos_Tb.H_dep_g
+                        H_dep_Tb_P_ref_g = eos_Tb_P_ref.H_dep_g
+                        S_dep_Tb_P_ref_g = eos_Tb_P_ref.S_dep_g
+                        S_dep_Tb_Pb_g = eos_Tb.S_dep_g
+                    except:
+                        S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
+                        H_dep_Tb_Pb_g = 0.
                 else:
                     S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
                     H_dep_Tb_Pb_g = 0.

@@ -169,6 +169,17 @@ class ChemicalMetadataDB:
 
     def _search(self, ID):
         if not ID: raise ValueError('ID cannot be empty')
+        
+        if check_CAS(ID):
+            CAS_lookup = self.search_CAS(ID)
+            if CAS_lookup: return CAS_lookup
+            
+            # Handle the case of synonyms
+            CAS_alternate_loopup = self.search_name(ID)
+            if CAS_alternate_loopup: return CAS_alternate_loopup
+            
+            raise LookupError('a valid CAS number was recognized, but its not in the database')
+        
         ID = ID.replace('_', ' ')
         ID_lower = ID.lower()
         
@@ -204,16 +215,6 @@ class ChemicalMetadataDB:
         for name in (ID_lower, ID_search):
             name_lookup = self.search_name(name)
             if name_lookup: return name_lookup
-        
-        if check_CAS(ID):
-            CAS_lookup = self.search_CAS(ID)
-            if CAS_lookup: return CAS_lookup
-            
-            # Handle the case of synonyms
-            CAS_alternate_loopup = self.search_name(ID)
-            if CAS_alternate_loopup: return CAS_alternate_loopup
-            
-            raise LookupError('a valid CAS number was recognized, but its not in the database')
         
         try: formula = serialize_formula(ID)
         except: pass

@@ -94,7 +94,7 @@ def heat_of_vaporization_handle(handle, CAS, Tb, Tc, Pc, omega,
             data = dict(Hvap_ref=Hvap, T_ref=298., Tc=Tc, exponent=0.38)
             add_model(Watson.functor.from_kwargs(data), 0, Tc)
     data = (Tb, Tc, Pc)
-    if all(data):
+    if all(data) and Tc > Tb:
         for f in (pc.Riedel, pc.Chen, pc.Vetere, pc.Liu):
             add_model(f(*data), 0, Tc)
 pc.heat_of_vaporization_handle = heat_of_vaporization_handle
