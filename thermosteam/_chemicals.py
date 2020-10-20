@@ -153,6 +153,12 @@ class Chemicals:
         except KeyError as key_error:
             raise UndefinedChemical(key_error.args[0])
     
+    def copy(self):
+        """Return a copy."""
+        copy = object.__new__(Chemicals)
+        for chem in self: setattr(copy, chem.ID, chem)
+        return copy
+    
     def append(self, chemical):
         """Append a Chemical."""
         if not isinstance(chemical, Chemical):
