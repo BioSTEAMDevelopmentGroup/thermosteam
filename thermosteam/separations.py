@@ -31,7 +31,10 @@ __all__ = (
     'flow_rates_for_multi_stage_extration_without_side_draws',
 )
 
+
 # %% Mixing, splitting, and moisture content
+
+CAS_water = '7732-18-5'
 
 def mix_and_split_with_moisture_content(ins, retentate, permeate,
                                         split, moisture_content):
@@ -111,7 +114,7 @@ def adjust_moisture_content(retentate, permeate, moisture_content):
     
     Note that if not enough water is available, an InfeasibleRegion error is raised:
         
-    >>> permeate.imol['Water'] = 0
+    >>> retentate.imol['Water'] = permeate.imol['Water'] = 0
     >>> tmo.separations.adjust_moisture_content(retentate, permeate, moisture_content)
     Traceback (most recent call last):
     InfeasibleRegion: not enough water; permeate moisture content is infeasible
@@ -119,9 +122,10 @@ def adjust_moisture_content(retentate, permeate, moisture_content):
     """
     F_mass = retentate.F_mass
     mc = moisture_content
-    retentate.imol['7732-18-5'] = water = (F_mass * mc/(1-mc))/18.01528
-    permeate.imol['7732-18-5'] -= water
-    if permeate.imol['7732-18-5'] < 0:
+    retentate_water = retentate.imol[CAS_water]
+    retentate.imol[CAS_water] = water = (F_mass * mc/(1-mc))/18.01528
+    permeate.imol[CAS_water] -= (water - retentate_water)
+    if permeate.imol[CAS_water] < 0:
         raise InfeasibleRegion('not enough water; permeate moisture content')
 
 def mix_and_split(ins, top, bottom, split):
