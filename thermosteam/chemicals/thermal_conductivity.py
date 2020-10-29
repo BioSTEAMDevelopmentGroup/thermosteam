@@ -22,7 +22,7 @@ from ..base import (InterpolatedTDependentModel,
                     TPDependentHandleBuilder, 
                     PhaseTPHandleBuilder, 
                     functor)
-from .._constants import R, N_A, k
+from ..constants import R
 from math import log, exp
 from ..functional import horner
 from .data import (

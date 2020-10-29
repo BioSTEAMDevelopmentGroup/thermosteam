@@ -15,6 +15,7 @@
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
 import re
 import os
+import chemicals
 from chemicals.elements import (
     periodic_table, 
     homonuclear_elemental_gases,  
@@ -37,6 +38,10 @@ def spaceout_words(ID):
 @forward(identifiers)
 def to_searchable_format(ID):    
     return spaceout_words(ID).replace('_', ' ')
+
+@forward(identifiers)
+def CAS_from_any(ID):
+    return pubchem_db.search(ID).CASs
 
 @forward(identifiers)
 class ChemicalMetadataDB:
@@ -224,5 +229,6 @@ class ChemicalMetadataDB:
         
         raise LookupError(f'chemical {repr(ID)} not recognized')
 
-identifiers.pubchem_db = pubchem_db = ChemicalMetadataDB()
+chemicals.CAS_from_any = CAS_from_any
+chemicals.pubchem_db = identifiers.pubchem_db = pubchem_db = ChemicalMetadataDB()
 identifiers._pubchem_db_loaded = True

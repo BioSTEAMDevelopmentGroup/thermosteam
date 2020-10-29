@@ -7,7 +7,8 @@
 # for license details.
 """
 """
-from . import (base,
+from . import (constants,
+               base,
                utils,
                chemicals,
                exceptions,
@@ -35,7 +36,7 @@ from flexsolve import speed_up
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Thermo', 'indexer',
            'Stream', 'MultiStream', 'ThermalCondition', 'mixture', 'ThermoData',
            'settings', 'functor', 'functors', 'chemicals', 'base', 'equilibrium',
-           'units_of_measure', 'exceptions', 'functional', 'reaction',
+           'units_of_measure', 'exceptions', 'functional', 'reaction', 'constants',
            'utils', 'separations', 'speed_up')
 
 # Set number of digits displayed
@@ -49,4 +50,4 @@ pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 del np, pd
 
-__version__ = "0.20.29"
+__version__ = "0.20.30"

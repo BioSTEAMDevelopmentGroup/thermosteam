@@ -36,7 +36,7 @@ from .data import (
     zabransky_dict_iso_s,
     zabransky_dict_iso_p,
 )
-from .._constants import calorie
+from ..constants import calorie
 
 hc.__all__.extend([
     'heat_capacity_handle',

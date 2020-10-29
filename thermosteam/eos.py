@@ -25,7 +25,7 @@ __all__ = ['GCEOS', 'PR', 'SRK', 'PR78', 'PRSV', 'PRSV2', 'VDW', 'RK',
 from cmath import atanh as catanh
 from scipy.optimize import newton
 from .functional import horner
-from ._constants import R
+from .constants import R
 from math import log, exp, sqrt, copysign
 
 
