@@ -124,6 +124,7 @@ class UnitsOfMeasure:
     def __repr__(self):
         return f"{type(self).__name__}({repr(self._units)})"
 
+
 class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
     __slots__ = ('_factor_cache',)
     _cache = {}
@@ -154,8 +155,8 @@ class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
     def convert(self, value, to_units):
         return value * self.conversion_factor(to_units)
     
-    def unconvert(self, value, to_units):
-        return value / self.conversion_factor(to_units)
+    def unconvert(self, value, from_units):
+        return value / self.conversion_factor(from_units)
 
 
 class RelativeUnitsOfMeasure(UnitsOfMeasure):
@@ -182,8 +183,8 @@ class RelativeUnitsOfMeasure(UnitsOfMeasure):
     def convert(self, value, to_units):
         return ureg.convert(value, self._units_container, to_units)
     
-    def unconvert(self, value, to_units):
-        return ureg.convert(value, to_units, self._units_container)
+    def unconvert(self, value, from_units):
+        return ureg.convert(value, from_units, self._units_container)
 
 
 # %% Manage display units
@@ -282,7 +283,8 @@ chemical_units_of_measure = {'MW': AbsoluteUnitsOfMeasure('g/mol'),
                              'Hsub': AbsoluteUnitsOfMeasure('J/mol'),
                              'HHV': AbsoluteUnitsOfMeasure('J/mol'),
                              'LHV': AbsoluteUnitsOfMeasure('J/mol'),
-                             'S': AbsoluteUnitsOfMeasure('J/mol'), 
+                             'S': AbsoluteUnitsOfMeasure('J/K/mol'),
+                             'S0': AbsoluteUnitsOfMeasure('J/K/mol'),
                              'G': AbsoluteUnitsOfMeasure('J/mol'), 
                              'U': AbsoluteUnitsOfMeasure('J/mol'),
                              'H_excess': AbsoluteUnitsOfMeasure('J/mol'), 
@@ -300,9 +302,10 @@ stream_units_of_measure = {'mol': AbsoluteUnitsOfMeasure('kmol/hr'),
                            'cost': AbsoluteUnitsOfMeasure('USD/hr'),
                            'Hvap': AbsoluteUnitsOfMeasure('kJ/hr'),
                            'Hf': AbsoluteUnitsOfMeasure('kJ/hr'), 
+                           'S0': AbsoluteUnitsOfMeasure('kJ/K/hr'), 
                            'Hc': AbsoluteUnitsOfMeasure('kJ/hr'), 
                            'H': AbsoluteUnitsOfMeasure('kJ/hr'),
-                           'S': AbsoluteUnitsOfMeasure('kJ/hr'),
+                           'S': AbsoluteUnitsOfMeasure('kJ/K/hr'),
                            'G': AbsoluteUnitsOfMeasure('kJ/hr'),
                            'U': AbsoluteUnitsOfMeasure('kJ/hr'),
                            'C': AbsoluteUnitsOfMeasure('kJ/hr/K'),
@@ -343,6 +346,7 @@ definitions = {'MW': 'Molecular weight',
                'Hfus': 'Heat of fusion',
                'Hsub': 'Heat of sublimation',
                'S': 'Entropy',
+               'S0': 'Absolute entropy of formation',
                'G': 'Gibbs free energy',
                'U': 'Internal energy',
                'H_excess': 'Excess enthalpy',
