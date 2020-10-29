@@ -16,7 +16,7 @@ class Cache:
         try:
             cls.load
         except: # pragma: no cover
-            raise NotImplementedError('Cache subclass must implement as `load` method')
+            raise NotImplementedError('Cache subclass must implement a `load` method')
     
     def __init__(self, *args):
         self.args = args
