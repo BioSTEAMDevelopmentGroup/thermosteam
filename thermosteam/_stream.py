@@ -85,7 +85,6 @@ class Stream:
                   Ethanol  0.333
                   -------  30 kg/hr
     
-    
     All flow rates are stored as an array in the `mol` attribute:
     
     >>> s1.mol # Molar flow rates [kmol/hr]
@@ -342,8 +341,9 @@ class Stream:
                 name = 'vol'
                 factor = vol_units.conversion_factor(units)
             else:
-                raise DimensionError(f"dimensions for flow units must be in molar, "
-                                     f"mass or volumetric flow rates, not '{dimensionality}'")
+                raise DimensionError("dimensions for flow units must be in molar, "
+                                     "mass or volumetric flow rates, not "
+                                    f"'{dimensionality}'")
             cache[units] = name, factor
         return name, factor
 
@@ -666,7 +666,7 @@ class Stream:
 
     @property
     def S(self):
-        """[float] Entropy flow rate in kJ/hr."""
+        """[float] Absolute entropy flow rate in kJ/hr."""
         return self.mixture.S(self.phase, self.mol, *self._thermal_condition)
     
     @property
@@ -1755,9 +1755,14 @@ class Stream:
         print(self._info(T, P, flow, composition, N))
     _ipython_display_ = show
     
-    def print(self):
+    def print(self, units=None):
         """
         Print in a format that you can use recreate the stream.
+        
+        Parameters
+        ----------
+        units : str, optional
+            Units of measure for material flow rates. Defaults to 'kmol/hr'
         
         Examples
         --------
@@ -1766,11 +1771,18 @@ class Stream:
         >>> s1 = tmo.Stream(ID='s1',
         ...                 Water=20, Ethanol=10, units='kg/hr',
         ...                 T=298.15, P=101325, phase='l')
-        >>> s1.print()
-        Stream(ID='s1', phase='l', T=298.15, P=101325, Water=1.11, Ethanol=0.2171)
+        >>> s1.print(units='kg/hr')
+        Stream(ID='s1', phase='l', T=298.15, P=101325, Water=20, Ethanol=10, units='kg/hr')
+        >>> s1.print() # Units default to kmol/hr
+        Stream(ID='s1', phase='l', T=298.15, P=101325, Water=1.11, Ethanol=0.2171, units='kmol/hr')
         
         """
-        chemical_flows = utils.repr_IDs_data(self.chemicals.IDs, self.mol)
+        if not units:
+            units = 'kmol/hr'
+            flow = self.mol
+        else:
+            flow = self.get_flow(units)
+        chemical_flows = utils.repr_IDs_data(self.chemicals.IDs, flow)
         price = utils.repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
-              f"P={self.P:.6g}{price}{chemical_flows})")
+              f"P={self.P:.6g}{price}{chemical_flows}, units={repr(units)})")

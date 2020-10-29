@@ -227,6 +227,8 @@ class MultiStream(Stream):
             stream._ID = None
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo
+            stream._bubble_point_cache =  self._bubble_point_cache
+            stream._dew_point_cache = self._dew_point_cache
             streams[phase] = stream
         return stream
     
@@ -336,7 +338,7 @@ class MultiStream(Stream):
 
     @property
     def S(self):
-        """[float] Entropy flow rate in kJ/hr."""
+        """[float] Absolute entropy flow rate in kJ/hr."""
         return self.mixture.xS(self._imol, *self._thermal_condition)
     @property
     def C(self):

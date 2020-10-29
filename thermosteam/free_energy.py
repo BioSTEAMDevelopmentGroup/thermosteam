@@ -9,7 +9,7 @@
 Free energy functors for Chemical objects.
 
 """
-from ._constants import R
+from .constants import R
 from .base import functor, PhaseTFunctorBuilder, PhaseTPFunctorBuilder
 from math import log
     
@@ -18,8 +18,8 @@ def Enthalpy(T, Cn, T_ref, H_ref):
     return H_ref + Cn.integrate_by_T(T_ref, T)
 
 @functor(var='S')
-def Entropy(T, Cn, T_ref, S_ref):
-    return S_ref + Cn.integrate_by_T_over_T(T_ref, T)
+def Entropy(T, Cn, T_ref, S0):
+    return S0 + Cn.integrate_by_T_over_T(T_ref, T)
 
 @functor(var='H.l')
 def Liquid_Enthalpy_Ref_Liquid(T, Cn_l, T_ref, H_ref):
@@ -78,44 +78,44 @@ EnthalpyRefGas = PhaseTFunctorBuilder('H',
                                      Gas_Enthalpy_Ref_Gas.functor)
 
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Liquid(T, Cn_l, T_ref, S_ref):
+def Liquid_Entropy_Ref_Liquid(T, Cn_l, T_ref, S0):
     """Enthapy (kJ/kmol) disregarding pressure and assuming the specified phase."""
-    return S_ref + Cn_l.integrate_by_T_over_T(T_ref, T)
+    return S0 + Cn_l.integrate_by_T_over_T(T_ref, T)
 
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Gas(T, Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref):
-    return S_ref - S_int_Tb_to_T_ref_g - Svap_Tb + Cn_l.integrate_by_T_over_T(Tb, T)
+def Liquid_Entropy_Ref_Gas(T, Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S0):
+    return S0 - S_int_Tb_to_T_ref_g - Svap_Tb + Cn_l.integrate_by_T_over_T(Tb, T)
     
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Solid(T, Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref):
-    return S_ref + S_int_T_ref_to_Tm_s + Sfus + Cn_l.integrate_by_T_over_T(Tm, T)
+def Liquid_Entropy_Ref_Solid(T, Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S0):
+    return S0 + S_int_T_ref_to_Tm_s + Sfus + Cn_l.integrate_by_T_over_T(Tm, T)
     
 @functor(var='S.s')
-def Solid_Entropy_Ref_Solid(T, Cn_s, T_ref, S_ref):
-    return S_ref + Cn_s.integrate_by_T_over_T(T_ref, T)
+def Solid_Entropy_Ref_Solid(T, Cn_s, T_ref, S0):
+    return S0 + Cn_s.integrate_by_T_over_T(T_ref, T)
 
 @functor(var='S.s')
-def Solid_Entropy_Ref_Liquid(T, Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref):
-    return S_ref - S_int_Tm_to_T_ref_l - Sfus + Cn_s.integrate_by_T_over_T(Tm, T)
+def Solid_Entropy_Ref_Liquid(T, Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0):
+    return S0 - S_int_Tm_to_T_ref_l - Sfus + Cn_s.integrate_by_T_over_T(Tm, T)
 
 @functor(var='S.s')
 def Solid_Entropy_Ref_Gas(T, Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, 
-                          S_int_Tm_to_Tb_l, Sfus, Tm, S_ref):
-    return S_ref - S_int_Tb_to_T_ref_g - Svap_Tb - S_int_Tm_to_Tb_l - Sfus + Cn_s.integrate_by_T_over_T(Tm, T)
+                          S_int_Tm_to_Tb_l, Sfus, Tm, S0):
+    return S0 - S_int_Tb_to_T_ref_g - Svap_Tb - S_int_Tm_to_Tb_l - Sfus + Cn_s.integrate_by_T_over_T(Tm, T)
     
 @functor(var='S.g')
-def Gas_Entropy_Ref_Gas(T, P, Cn_g, T_ref, P_ref, S_ref):
-    return S_ref + Cn_g.integrate_by_T_over_T(T_ref, T) - R*log(P/P_ref)
+def Gas_Entropy_Ref_Gas(T, P, Cn_g, T_ref, P_ref, S0):
+    return S0 + Cn_g.integrate_by_T_over_T(T_ref, T) - R*log(P/P_ref)
 
 @functor(var='S.g')
 def Gas_Entropy_Ref_Liquid(T, P, Cn_g, S_int_T_ref_to_Tb_l, Svap_Tb,
-                           T_ref, P_ref, S_ref):
-    return S_ref + S_int_T_ref_to_Tb_l + Svap_Tb + Cn_g.integrate_by_T_over_T(T_ref, T) - R*log(P/P_ref)
+                           T_ref, P_ref, S0):
+    return S0 + S_int_T_ref_to_Tb_l + Svap_Tb + Cn_g.integrate_by_T_over_T(T_ref, T) - R*log(P/P_ref)
 
 @functor(var='S.g')
 def Gas_Entropy_Ref_Solid(T, P, Cn_g, S_int_T_ref_to_Tm_s, Sfus,
-                          S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref):
-    return S_ref + S_int_T_ref_to_Tm_s + Sfus + S_int_Tm_to_Tb_l + Svap_Tb + Cn_g.integrate_by_T_over_T(Tb, T) - R*log(P/P_ref)
+                          S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S0):
+    return S0 + S_int_T_ref_to_Tm_s + Sfus + S_int_Tm_to_Tb_l + Svap_Tb + Cn_g.integrate_by_T_over_T(Tb, T) - R*log(P/P_ref)
 
 
 EntropyRefLiquid = PhaseTPFunctorBuilder('S',

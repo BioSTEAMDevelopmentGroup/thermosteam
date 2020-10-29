@@ -29,10 +29,15 @@ from chemicals.triple import (Tt as triple_point_temperature,
 from chemicals.combustion import combustion_data, combustion_stoichiometry
 from chemicals.volume import volume_handle
 from chemicals.heat_capacity import heat_capacity_handle
-from chemicals.reaction import Hf as heat_of_formation
-from chemicals.elements import (similarity_variable as compute_similarity_variable, 
-                                simple_formula_parser as get_atoms,
-                                molecular_weight as compute_molecular_weight)
+from chemicals.reaction import (
+    Hf as heat_of_formation,
+    S0 as absolute_entropy_of_formation
+)
+from chemicals.elements import (
+    similarity_variable as compute_similarity_variable, 
+    simple_formula_parser as get_atoms,
+    molecular_weight as compute_molecular_weight
+)
 from chemicals.viscosity import viscosity_handle
 from chemicals.thermal_conductivity import thermal_conductivity_handle
 from chemicals.permittivity import permitivity_handle
@@ -171,11 +176,11 @@ _model_and_phase_properties = ('Psat', 'Hvap', 'sigma', 'epsilon',
 _handles = _model_and_phase_handles + _energy_handles
 
 _data = ('_MW', '_Tm', '_Tb', '_Tt', '_Tc', '_Pt', '_Pc', '_Vc',
-         '_Hf', '_LHV', '_HHV', '_Hfus', '_omega', '_dipole',
+         '_Hf', '_S0', '_LHV', '_HHV', '_Hfus', '_Sfus', '_omega', '_dipole',
          '_similarity_variable', '_iscyclic_aliphatic', '_combustion')
 
 _functor_data = {'MW', 'Tm', 'Tb', 'Tt', 'Pt', 'Tc', 'Pc', 'Vc',
-                 'Hfus', 'omega', 'dipole',
+                 'Hfus', 'Sfus', 'omega', 'dipole',
                  'similarity_variable', 'iscyclic_aliphatic'}
 
 _checked_properties = ('phase_ref', 'eos', 'eos_1atm',
@@ -284,9 +289,11 @@ class Chemical:
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
              Hf: -2.8582e+05 J/mol
+             S0: 70 J/K/mol
              LHV: 44011 J/mol
              HHV: 0 J/mol
              Hfus: 6010 J/mol
+             Sfus: None
              omega: 0.344
              dipole: 1.85 Debye
              similarity_variable: 0.16653
@@ -521,8 +528,6 @@ class Chemical:
     P_ref = 101325.
     #: [float] Reference enthalpy in J/mol
     H_ref = 0.
-    #: [float] Reference entropy in J/mol
-    S_ref = 0.
     #: dict[str, Chemical] Cached chemicals
     chemical_cache = {}
     #: [bool] Wheather or not to search cache by default
@@ -638,9 +643,11 @@ class Chemical:
                  Pc: None
                  Vc: None
                  Hf: None
+                 S0: None
                  LHV: None
                  HHV: None
                  Hfus: None
+                 Sfus: None
                  omega: None
                  dipole: None
                  similarity_variable: None
@@ -711,9 +718,11 @@ class Chemical:
                  Pc: 4.82e+06 Pa
                  Vc: 0.000414 m^3/mol
                  Hf: -1.2711e+06 J/mol
+                 S0: 0 J/K/mol
                  LHV: -2.5406e+06 J/mol
                  HHV: -2.8047e+06 J/mol
                  Hfus: 0 J/mol
+                 Sfus: None
                  omega: 2.387
                  dipole: None
                  similarity_variable: 0.13322
@@ -730,7 +739,7 @@ class Chemical:
         new._ID = ID
         new._CAS = CAS or ID
         new._locked_state = new._locked_state
-        new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Tm,
+        new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
                            new.Tb, new.eos, new.eos_1atm, new.phase_ref)
         new._label_handles()
         for i,j in data.items(): setfield(new, i , j)
@@ -1042,6 +1051,15 @@ class Chemical:
         reset_energy_constant(self, 'Hfus', float(Hfus))
     
     @property
+    def Sfus(self):
+        """Entropy of fusion [J/mol]."""
+        return self._Hfus
+    @Sfus.setter
+    def Sfus(self, Sfus):
+        reset_energy_constant(self, 'Sfus', float(Sfus))
+    
+    
+    @property
     def omega(self):
         """Accentric factor [-]."""
         return self._omega
@@ -1084,6 +1102,13 @@ class Chemical:
     def Hf(self, Hf):
         self._Hf = float(Hf)
         if self._formula: self.reset_combustion_data()
+    
+    @property
+    def S0(self):
+        return self._S0
+    @S0.setter
+    def S0(self, S0):
+        reset_energy_constant(self, 'S0', float(S0))
     
     @property
     def LHV(self):
@@ -1203,7 +1228,7 @@ class Chemical:
               pubchemid=None, iupac_name=None, common_name=None,
               formula=None, MW=None, Tm=None,
               Tb=None, Tc=None, Pc=None, Vc=None, omega=None,
-              Tt=None, Pt=None, Hf=None, LHV=None, combustion=None,
+              Tt=None, Pt=None, Hf=None, S0=None, LHV=None, combustion=None,
               HHV=None, Hfus=None, dipole=None,
               similarity_variable=None, iscyclic_aliphatic=None,
               *, metadata=None, phase=None):
@@ -1262,10 +1287,10 @@ class Chemical:
         self._locked_state = None
         if phase: self.at_state(phase)
         self._estimate_missing_properties()
-        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus,
+        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, self._eos_1atm,
                             phase_ref)
-        self._init_reactions(Hf, LHV, HHV, combustion, atoms)
+        self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
 
     def reset_combustion_data(self, method="Stoichiometry"):
@@ -1282,8 +1307,8 @@ class Chemical:
         if not self._eos:
             self._eos = GCEOS_DUMMY(T=298.15, P=101325.)
             self._eos_1atm = self._eos.to_TP(298.15, 101325)
-        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Tm,
-                            self._Tb, self._eos, self._eos_1atm, self._phase_ref)
+        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
+                            self._Tm, self._Tb, self._eos, self._eos_1atm, self._phase_ref)
 
     ### Initializers ###
     
@@ -1331,6 +1356,7 @@ class Chemical:
 
         # Energy
         self._Hfus = heat_of_fusion(CAS) or 0. if Hfus is None else Hfus
+        self._Sfus = None if Hfus is None or Tm is None else Hfus / Tm 
         
         # Other
         self._dipole = dipole or dipole_moment(CAS)
@@ -1340,12 +1366,19 @@ class Chemical:
         self._similarity_variable = similarity_variable
         self._iscyclic_aliphatic = iscyclic_aliphatic or False
 
-    def _init_reactions(self, Hf, LHV, HHV, combustion, atoms):
+    def _init_reactions(self, Hf, S0, LHV, HHV, combustion, atoms):
+        Hvap_298K = None
         if Hf is None:
+            Hvap_298K = self.Hvap.try_out(298.15)
             Hf = heat_of_formation(self._CAS, self._phase_ref,
-                                   self.Hvap.try_out(298.15),
-                                   self.Hfus) 
+                                   Hvap_298K, self.Hfus) 
+        if S0 is None:
+            Hvap_298K = self.Hvap.try_out(298.15) if Hvap_298K is None else Hvap_298K
+            Svap_298K = None if Hvap_298K is None else Hvap_298K / 298.15
+            S0 = absolute_entropy_of_formation(self._CAS, self._phase_ref,
+                                               Svap_298K, self.Sfus) or 0.
         self._Hf = Hf
+        self.S0 = S0
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
             cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW, missing_handling='Ash')
@@ -1444,14 +1477,13 @@ class Chemical:
                 omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
 
-    def _init_energies(self, Cn, Hvap, Psat, Hfus, Tm, Tb, eos, eos_1atm,
+    def _init_energies(self, Cn, Hvap, Psat, Hfus, Sfus, Tm, Tb, eos, eos_1atm,
                        phase_ref=None):        
         # Reference
         P_ref = self.P_ref
         T_ref = self.T_ref
         H_ref = self.H_ref
-        S_ref = self.S_ref
-        Sfus = Hfus / Tm if Hfus and Tm else None
+        S0 = 0. # Replaced later in _init_reactions method
         single_phase = self._locked_state
         if isinstance(Cn, PhaseHandle):
             Cn_s = Cn.s
@@ -1463,7 +1495,7 @@ class Chemical:
         elif Cn and single_phase:
             self._phase_ref = single_phase
             self._H = Enthalpy.functor(Cn, T_ref, H_ref)
-            self._S = Entropy.functor(Cn, T_ref, S_ref)
+            self._S = Entropy.functor(Cn, T_ref, S0)
             Cn_s = Cn_l = Cn_g = Cn
             has_Cns = has_Cnl = has_Cng = True
         else:
@@ -1555,27 +1587,27 @@ class Chemical:
                     ldata = (Cn_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
                     gdata = (Cn_g, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref)
                     self._H = EnthalpyRefSolid(sdata, ldata, gdata)
-                    sdata = (Cn_s, T_ref, S_ref)
-                    ldata = (Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S_ref)
-                    gdata = (Cn_g, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S_ref)
+                    sdata = (Cn_s, T_ref, S0)
+                    ldata = (Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S0)
+                    gdata = (Cn_g, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S0)
                     self._S = EntropyRefSolid(sdata, ldata, gdata)
                 elif phase_ref == 'l':
                     sdata = (Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
                     ldata = (Cn_l, T_ref, H_ref)
                     gdata = (Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref)
                     self._H = EnthalpyRefLiquid(sdata, ldata, gdata)
-                    sdata = (Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S_ref)
-                    ldata = (Cn_l, T_ref, S_ref)
-                    gdata = (Cn_g, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S_ref)
+                    sdata = (Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0)
+                    ldata = (Cn_l, T_ref, S0)
+                    gdata = (Cn_g, S_int_T_ref_to_Tb_l, Svap_Tb, T_ref, P_ref, S0)
                     self._S = EntropyRefLiquid(sdata, ldata, gdata)
                 elif phase_ref == 'g':
                     sdata = (Cn_s, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref)
                     ldata = (Cn_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref)
                     gdata = (Cn_g, T_ref, H_ref)
                     self._H = EnthalpyRefGas(sdata, ldata, gdata)
-                    sdata = (Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S_ref)
-                    ldata = (Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S_ref)
-                    gdata = (Cn_g, T_ref, P_ref, S_ref)
+                    sdata = (Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S0)
+                    ldata = (Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S0)
+                    gdata = (Cn_g, T_ref, P_ref, S0)
                     self._S = EntropyRefGas(sdata, ldata, gdata)
             
             # Excess energies
@@ -1633,7 +1665,7 @@ class Chemical:
         >>> Substance = Chemical.blank('Substance')
         >>> missing_properties = Substance.default()
         >>> sorted(missing_properties)
-        ['Dortmund', 'Hfus', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
+        ['Dortmund', 'Hfus', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
         
         Note that missing properties does not include essential properties volume, heat capacity, and conductivity.
         
@@ -1741,7 +1773,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> sorted(Substance.get_missing_properties())
-        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
+        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
         
         """
         getfield = getattr
@@ -1866,7 +1898,8 @@ def lock_phase(chemical, phase):
     Cn = chemical.Cn
     chemical._phase_ref = phase
     chemical._H = Enthalpy.functor(Cn, chemical.T_ref, chemical.H_ref)
-    chemical._S = Entropy.functor(Cn, chemical.T_ref, chemical.S_ref)
+    S0 = chemical._S0 if hasfield(chemical, '_S0') else 0.
+    chemical._S = Entropy.functor(Cn, chemical.T_ref, S0)
     chemical._locked_state = phase
 
 # # Fire Safety Limits
