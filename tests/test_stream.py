@@ -28,7 +28,7 @@ def test_stream():
     assert_allclose(stream.rho, 996.2679390499142)
     assert_allclose(stream.V, 1.808276598480142e-05)
     assert_allclose(stream.H, 139.3139852692184)
-    assert_allclose(stream.S, 0.4658177637668395)
+    assert_allclose(stream.S, 70.465818)
     assert_allclose(stream.sigma, 0.07168596252716256)
     assert_allclose(stream.z_mol, [1.0])
     assert_allclose(stream.z_mass, [1.0])
@@ -75,7 +75,7 @@ def test_multistream():
     assert_allclose(stream.rho, 996.2679390499142)
     assert_allclose(stream.V, 1.808276598480142e-05)
     assert_allclose(stream.H, 139.3139852692184)
-    assert_allclose(stream.S, 0.4658177637668395)
+    assert_allclose(stream.S, 70.465818)
     assert_allclose(stream.sigma, 0.07168596252716256)
     assert_allclose(stream.z_mol, [1.0])
     assert_allclose(stream.z_mass, [1.0])
@@ -108,3 +108,6 @@ def test_multistream():
     with pytest.raises(AttributeError):
         stream.F_vol = 1.
     
+if __name__ == '__main__':
+    test_stream()
+    test_multistream()
