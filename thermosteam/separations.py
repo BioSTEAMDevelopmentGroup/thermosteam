@@ -29,6 +29,7 @@ __all__ = (
     'MultiStageLLE',
     'single_component_flow_rates_for_multi_stage_lle_without_side_draws',
     'flow_rates_for_multi_stage_extration_without_side_draws',
+    'chemical_splits'
 )
 
 
@@ -213,6 +214,48 @@ def split(feed, top, bottom, split):
     top_mol[:] *= split
     bottom.mol[:] -= top_mol
 
+def phase_split(feed, outlets):
+    """
+    Split the feed to outlets by phase.
+    
+    Parameters
+    ----------
+    feed : stream
+    outlets : streams
+        
+    Notes
+    -----
+    Phases allocate to outlets in alphabetical order. For example,
+    if the feed.phases is 'gls' (i.e. gas, liquid, and solid), the phases
+    of the outlets will be 'g', 'l', and 's'.
+        
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    >>> feed = tmo.Stream('feed', Water=10, Ethanol=10)
+    >>> feed.vle(V=0.5, P=101325)
+    >>> vapor = tmo.Stream('vapor')
+    >>> liquid = tmo.Stream('liquid')
+    >>> outlets = [vapor, liquid]
+    >>> tmo.separations.phase_split(feed, outlets)
+    >>> vapor.show()
+    Stream: vapor
+     phase: 'g', T: 353.88 K, P: 101325 Pa
+     flow (kmol/hr): Water    3.86
+                     Ethanol  6.14
+    >>> liquid.show()
+    Stream: liquid
+     phase: 'l', T: 353.88 K, P: 101325 Pa
+     flow (kmol/hr): Water    6.14
+                     Ethanol  3.86
+    
+    """
+    phases = feed.phases
+    if len(outlets) != len(phases):
+        raise RuntimeError('number of phases in feed must be equal to the number of outlets')
+    for i,j in zip(feed, outlets): j.copy_like(i)
+
 # %% Single stage equilibrium
 
 def partition_coefficients(IDs, top, bottom):
@@ -244,6 +287,32 @@ def partition_coefficients(IDs, top, bottom):
 
     """
     return top.get_normalized_mol(IDs) / bottom.get_normalized_mol(IDs)
+
+def chemical_splits(a, b=None, mixed=None):
+    """
+    Return a ChemicalIndexer with splits for all chemicals to stream `a`.
+    
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    >>> stream = tmo.Stream('stream', Water=10, Ethanol=10)
+    >>> stream.vle(V=0.5, P=101325)
+    >>> isplits = tmo.separations.chemical_splits(stream['g'], stream['l'])
+    >>> isplits.show()
+    ChemicalIndexer:
+     Water    0.3861
+     Ethanol  0.6139
+    >>> isplits = tmo.separations.chemical_splits(stream['g'], mixed=stream)
+    >>> isplits.show()
+    ChemicalIndexer:
+     Water    0.3861
+     Ethanol  0.6139
+     
+    """
+    mixed_mol = mixed.mol.copy() if mixed else a.mol + b.mol
+    mixed_mol[mixed_mol==0.] = 1.
+    return tmo.indexer.ChemicalIndexer.from_data(a.mol / mixed_mol)
 
 def vle_partition_coefficients(top, bottom):
     """
