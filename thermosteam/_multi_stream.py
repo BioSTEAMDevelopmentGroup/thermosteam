@@ -17,6 +17,18 @@ import numpy as np
 
 __all__ = ('MultiStream', )
 
+def get_phase_fraction(stream, phases):
+    all_phases = stream.phases
+    phase_fraction = 0.
+    F_mol = stream.F_mol
+    imol = stream.imol
+    if not F_mol: return 0.
+    for phase in phases:
+        if phase in all_phases:
+            phase_fraction += imol[phase].sum() / F_mol
+    return phase_fraction
+
+
 class MultiStream(Stream):
     """
     Create a MultiStream object that defines material flow rates for multiple
@@ -364,11 +376,15 @@ class MultiStream(Stream):
     @property
     def vapor_fraction(self):
         """Molar vapor fraction."""
-        if 'g' in self.phases:
-            vapor_fraction = self.imol['g'].sum() / self.F_mol
-        else:
-            vapor_fraction = 0.
-        return vapor_fraction
+        return get_phase_fraction(self, 'gG')
+    @property
+    def liquid_fraction(self):
+        """Molar liquid fraction."""
+        return get_phase_fraction(self, 'lL')
+    @property
+    def solid_fraction(self):
+        """Molar solid fraction."""
+        return get_phase_fraction(self, 'sS')
     
     @property
     def V(self):
@@ -741,9 +757,8 @@ class MultiStream(Stream):
         return "".join(self._imol._phases)
     @phase.setter
     def phase(self, phase):
-        assert len(phase) == 1, f'invalid phase {repr(phase)}'
-        self.__class__ = Stream
         self._imol = self._imol.to_chemical_indexer(phase)
+        self.__class__ = Stream
     
     ### Representation ###
     

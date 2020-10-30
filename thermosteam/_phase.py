@@ -12,9 +12,10 @@ __all__ = ('Phase', 'LockedPhase', 'NoPhase')
 isa = isinstance
 new = object.__new__
 setfield = object.__setattr__
+valid_phases = {'s', 'l', 'g', 'S', 'L', 'G'}
 
 class Phase:
-    __slots__ = ('phase',)
+    __slots__ = ('_phase',)
     
     @classmethod
     def convert(cls, phase):
@@ -22,11 +23,23 @@ class Phase:
     
     def __new__(cls, phase):
         self = new(cls)
-        self.phase = phase
+        self._phase = phase
         return self
     
     def __reduce__(self):
         return Phase, (self.phase,)
+    
+    @property
+    def phase(self):
+        return self._phase
+    @phase.setter
+    def phase(self, phase):
+        if phase not in valid_phases:
+            raise AttributeError(
+                f"invalid phase {repr(phase)}; valid phases are "
+                "'s', 'l', 'g', 'S', 'L', and 'G'"
+        )
+        self._phase = phase
     
     def copy(self):
         return self.__class__(self.phase)
@@ -46,7 +59,7 @@ class LockedPhase(Phase):
             self = cache[phase]
         else:
             cache[phase] = self = new(cls)
-            setfield(self, 'phase', phase)
+            setfield(self, '_phase', phase)
         return self
     
     def __reduce__(self):

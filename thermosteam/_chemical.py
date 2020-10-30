@@ -134,7 +134,7 @@ def raise_helpful_handle_error(handle):
     else:
         raise Exception(
             'expected a either a PhaseHandle or a ThermoModelHandle object; '
-           f'got a {type(handle).__name__} instead')
+           f'got a {type(handle).__name__} object instead')
 
 def raise_helpful_energy_functor_error(energy_functor):
     var = energy_functor.var

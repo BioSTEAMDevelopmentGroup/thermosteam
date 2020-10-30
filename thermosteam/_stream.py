@@ -274,7 +274,15 @@ class Stream:
     @property
     def vapor_fraction(self):
         """Molar vapor fraction."""
-        return 1.0 if self.phase.lower() == 'g' else 0.0
+        return 1.0 if self.phase in 'gG' else 0.0
+    @property
+    def liquid_fraction(self):
+        """Molar liquid fraction."""
+        return 1.0 if self.phase in 'lL' else 0.0
+    @property
+    def solid_fraction(self):
+        """Molar solid fraction."""
+        return 1.0 if self.phase in 'sS' else 0.0
 
     def isfeed(self):
         """Return whether stream has a sink but no source."""
