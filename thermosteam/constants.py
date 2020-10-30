@@ -18,7 +18,7 @@ __all__ = ('R', 'k', 'g', 'pi', 'N_A', 'calorie', 'epsilon_0')
 #: Universal gas constant [J/mol/K]
 R = 8.3144598
 
-#: Boltzman constant [m^2 * kg * s^-2 *K^-1]
+#: Boltzman constant [m^2 * kg * s^-2 * K^-1]
 k = 1.38064852e-23
 
 #: Avogadro's number
@@ -32,3 +32,9 @@ epsilon_0 = 8.854187817620389e-12
 
 #: Acceleration due to gravity [m/s^2]
 g = 9.80665
+
+#: Planck's constant [m^2 * kg / s]
+h = 6.62607004e-34
+
+#: Speed of light in a vacuum [m /2]
+c = 299792458

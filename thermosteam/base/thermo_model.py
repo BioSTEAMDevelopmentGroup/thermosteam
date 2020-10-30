@@ -40,7 +40,7 @@ def describe_parameter(var, units):
         units = units or chemical_units_of_measure.get(var)
         units = format_plot_units(units)
         if units: info += f" [{units}]"
-        else: info += f" [-]"
+        else: info += " [-]"
         return info
 
 def default_Tmax(Tmin, Tmax):
