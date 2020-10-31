@@ -223,7 +223,7 @@ class Stream:
     __slots__ = ('_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
                  '_vle_cache', '_lle_cache', '_sle_cache',
-                 '_sink', '_source', '_price')
+                 '_sink', '_source', '_price', '_link')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -247,6 +247,10 @@ class Stream:
         self._sink = self._source = None # For BioSTEAM
         self._init_cache()
         self._register(ID)
+        self._link = None
+
+    def as_stream(self):
+        """Does nothing."""
 
     @property
     def price(self):
@@ -892,16 +896,19 @@ class Stream:
             H = sum([i.H for i in others])
             try: self.H = H
             except Exception as error: # pragma: no cover
-                phase = self.phase.lower()
-                if phase == 'g':
-                     # Maybe too much heat, gas must be present
-                    self.phase = 'l'
-                elif phase == 'l':
-                    # Maybe too little heat, liquid must be present
-                    self.phase = 'g'
+                if self.isempty():
+                    self.T = np.mean([i.T for i in others])
                 else:
-                    raise error
-                self.H = H
+                    phase = self.phase.lower()
+                    if phase == 'g':
+                         # Maybe too much heat, gas must be present
+                        self.phase = 'l'
+                    elif phase == 'l':
+                        # Maybe too little heat, liquid must be present
+                        self.phase = 'g'
+                    else:
+                        raise error
+                    self.H = H
             
     def split_to(self, s1, s2, split):
         """
@@ -966,8 +973,14 @@ class Stream:
         'g'
         
         """
-        assert isinstance(other._imol, self._imol.__class__), "other must be of same type to link with"
-        
+        if not isinstance(other._imol, self._imol.__class__):
+            at_unit = f"at unit {self.source}" if self.source is other.sink else ""
+            raise RuntimeError(f"stream {self} cannot link with stream {other} " + at_unit
+                               + "; streams must have the same class to link")
+        if self._link and not (self.source is other.sink or self.sink is other.source):
+            at_unit = f"at unit {self.source}" if self.source is other.sink else ""
+            raise RuntimeError(f"stream {self} cannot link with stream {other} " + at_unit
+                               + f"; {self} already linked with {self._link}")
         if TP and flow and phase:
             self._imol._data_cache = other._imol._data_cache
         else:
@@ -979,6 +992,9 @@ class Stream:
             self._imol._data = other._imol._data
         if phase:
             self._imol._phase = other._imol._phase
+        
+        self._link = other
+        other._link = self
             
     def unlink(self):
         """
@@ -1001,6 +1017,7 @@ class Stream:
         self._imol._data = self._imol._data.copy()
         self._imol._phase = self._imol._phase.copy()
         self._init_cache()
+        self._link = None
     
     def copy_like(self, other):
         """
@@ -1177,7 +1194,7 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._sink = new._source = None
+        new._link = new._sink = new._source = None
         new._thermo = self._thermo
         new._imol = self._imol.copy()
         new._thermal_condition = self._thermal_condition.copy()
@@ -1203,14 +1220,14 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new.ID = None
-        new._sink = new._source = None
+        new.ID = new._sink = new._source = None
         new.price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data()
         imol._data = self._imol._data
         new._thermal_condition = self._thermal_condition.copy()
         new._init_cache()
+        new._link = self
         return new
     
     def proxy(self, ID=None):
@@ -1648,11 +1665,20 @@ class Stream:
     ### Casting ###
     
     @property
+    def link(self):
+        """
+        [Stream] Data on the thermal condition and material flow rates may 
+        be shared with this stream.
+        """
+        return self._link
+    
+    @property
     def phases(self):
         """tuple[str] All phases present."""
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
+        if self._link: raise RuntimeError('cannot convert linked stream')
         if len(phases) == 1:
             self.phase = phases[0]
         else:

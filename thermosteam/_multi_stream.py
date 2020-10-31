@@ -17,10 +17,10 @@ import numpy as np
 
 __all__ = ('MultiStream', )
 
-def get_phase_fraction(stream, phases):
+def get_phase_fraction(stream, phases, F_mol=None):
     all_phases = stream.phases
     phase_fraction = 0.
-    F_mol = stream.F_mol
+    if F_mol is None: F_mol = stream.F_mol
     imol = stream.imol
     if not F_mol: return 0.
     for phase in phases:
@@ -197,6 +197,19 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self._init_cache()
         self._register(ID)
+        self._link = None
+        
+    def as_stream(self):
+        """Convert MultiStream to Stream."""
+        F_mol = self.F_mol
+        if F_mol:
+            for phases in ('gG', 'lL', 'sS'):
+                if get_phase_fraction(self, phases, F_mol) == 1.:
+                    self.phase = phases[0]
+                    break
+        else:
+            self.phase = self.phases[0]
+        raise RuntimeError('multiple phases present; cannot convert to single phase stream')
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
@@ -234,9 +247,8 @@ class MultiStream(Stream):
             stream = streams[phase]
         else:
             stream = Stream.__new__(Stream)
-            stream._sink = stream._source = None
+            stream._ID = stream._link = stream._sink = stream._source = None
             stream._imol = self._imol.get_phase(phase)
-            stream._ID = None
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo
             stream._bubble_point_cache =  self._bubble_point_cache
@@ -314,6 +326,7 @@ class MultiStream(Stream):
             self.phase = phases[0]
         phases = sorted(phases)
         if phases != self.phases:
+            if self._link: raise RuntimeError('cannot convert linked stream')
             self._imol = self._imol.to_material_indexer(phases)
             self._init_cache()
     
@@ -757,6 +770,7 @@ class MultiStream(Stream):
         return "".join(self._imol._phases)
     @phase.setter
     def phase(self, phase):
+        if self._link: raise RuntimeError('cannot convert linked stream')
         self._imol = self._imol.to_chemical_indexer(phase)
         self.__class__ = Stream
     
