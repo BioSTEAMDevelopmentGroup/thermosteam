@@ -1053,7 +1053,7 @@ class Chemical:
     @property
     def Sfus(self):
         """Entropy of fusion [J/mol]."""
-        return self._Hfus
+        return self._Sfus
     @Sfus.setter
     def Sfus(self, Sfus):
         reset_energy_constant(self, 'Sfus', float(Sfus))
