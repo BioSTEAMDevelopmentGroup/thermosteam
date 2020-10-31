@@ -1254,6 +1254,7 @@ class Stream:
         new._thermal_condition = self._thermal_condition
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
+        new._link = self
         return new
     
     def empty(self):
