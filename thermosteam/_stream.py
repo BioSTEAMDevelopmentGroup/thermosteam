@@ -1051,8 +1051,16 @@ class Stream:
          flow (kg/hr): Water  2
 
         """
-        if isinstance(other, tmo.MultiStream): self.phases = other.phases
-        self._imol.copy_like(other._imol)
+        if isinstance(other, tmo.MultiStream):
+            phase = other.phase
+            if len(phase) == 1:
+                imol = other._imol.to_chemical_indexer(phase)
+            else:
+                self.phases = other.phases
+                imol = other._imol
+        else:
+            imol = other._imol
+        self._imol.copy_like(imol)
         self._thermal_condition.copy_like(other._thermal_condition)
     
     def copy_thermal_condition(self, other):

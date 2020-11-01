@@ -17,17 +17,23 @@ import numpy as np
 
 __all__ = ('MultiStream', )
 
-def get_phase_fraction(stream, phases, F_mol=None):
+def get_phase_fraction(stream, phases):
     all_phases = stream.phases
     phase_fraction = 0.
-    if F_mol is None: F_mol = stream.F_mol
+    F_mol = stream.F_mol
     imol = stream.imol
     if not F_mol: return 0.
     for phase in phases:
         if phase in all_phases:
-            phase_fraction += imol[phase].sum() / F_mol
-    return phase_fraction
+            phase_fraction += imol[phase].sum() 
+    return phase_fraction / F_mol
 
+def phase_is_present(stream, phases):
+    all_phases = stream.phases
+    imol = stream.imol
+    for phase in phases:
+        if phase in all_phases and imol[phase].any(): return True
+    return False
 
 class MultiStream(Stream):
     """
@@ -198,19 +204,7 @@ class MultiStream(Stream):
         self._init_cache()
         self._register(ID)
         self._link = None
-        
-    def as_stream(self):
-        """Convert MultiStream to Stream."""
-        F_mol = self.F_mol
-        if F_mol:
-            for phases in ('gG', 'lL', 'sS'):
-                if get_phase_fraction(self, phases, F_mol) == 1.:
-                    self.phase = phases[0]
-                    break
-        else:
-            self.phase = self.phases[0]
-        raise RuntimeError('multiple phases present; cannot convert to single phase stream')
-        
+            
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
             if phase_flows:
@@ -765,9 +759,17 @@ class MultiStream(Stream):
     
     ### Casting ###
     
+    def as_stream(self):
+        """Convert MultiStream to Stream."""
+        phase = self.phase
+        if len(phase) == 1:
+            self.phase = phase
+        else:
+            raise RuntimeError('multiple phases present; cannot convert to single phase stream')
+    
     @property
     def phase(self):
-        return "".join(self._imol._phases)
+        return [phases[0] for phases in ('gG', 'lL', 'sS')  if phase_is_present(self, phases)]
     @phase.setter
     def phase(self, phase):
         if self._link: raise RuntimeError('cannot convert linked stream')
