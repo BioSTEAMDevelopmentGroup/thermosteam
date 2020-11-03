@@ -894,21 +894,28 @@ class Stream:
         else:
             self._imol.mix_from([i._imol for i in others])
             H = sum([i.H for i in others])
-            try: self.H = H
+            if self.isempty():
+                self.T = np.mean([i.T for i in others])
+            try: 
+                self.H = H
             except Exception as error: # pragma: no cover
-                if self.isempty():
-                    self.T = np.mean([i.T for i in others])
+                phase = self.phase.lower()
+                if phase == 'g':
+                    # Maybe too little heat, liquid must be present
+                    self.phase = 'l'
+                elif phase == 'l':
+                    # Maybe too much heat, gas must be present
+                    self.phase = 'g'
                 else:
-                    phase = self.phase.lower()
-                    if phase == 'g':
-                         # Maybe too much heat, gas must be present
-                        self.phase = 'l'
-                    elif phase == 'l':
-                        # Maybe too little heat, liquid must be present
-                        self.phase = 'g'
-                    else:
-                        raise error
+                    raise error
+                try: 
                     self.H = H
+                except:
+                    phases = ''.join([i.phase for i in others])
+                    self.phases = tuple(set(phases))
+                    self._imol.mix_from([i._imol for i in others])
+                    self.H = H
+                
             
     def split_to(self, s1, s2, split):
         """

@@ -57,6 +57,21 @@ def test_stream():
     with pytest.raises(AttributeError):
         stream.F_vol = 1.
         
+    # Make sure energy balance is working correctly with mix_from and vle
+    chemicals = tmo.Chemicals(['Water', 'Ethanol'])
+    thermo = tmo.Thermo(chemicals)
+    tmo.settings.set_thermo(thermo)
+    s3 = tmo.Stream('s3', T=300, P=1e5, Water=10, units='kg/hr')
+    s4 = tmo.Stream('s4', phase='g', T=400, P=1e5, Water=10, units='kg/hr')
+    s_eq = tmo.Stream('s34_mixture')
+    s_eq.mix_from([s3, s4])
+    s_eq.vle(H=s_eq.H, P=1e5)
+    H_sum = s3.H + s4.H
+    H_eq = s_eq.H
+    assert_allclose(H_eq, H_sum, rtol=1e-3)
+    s_eq.vle(H=s3.H + s4.H, P=1e5)
+    assert_allclose(s_eq.H, H_sum, rtol=1e-3)    
+        
 def test_multistream():
     import thermosteam as tmo
     tmo.settings.set_thermo(['Water'], cache=True)

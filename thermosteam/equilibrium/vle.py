@@ -129,7 +129,7 @@ class VLE(Equilibrium, phases='lg'):
                  '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
     T_tol = 1e-6
     P_tol = 1.
-    H_hat_tol = 1e-3
+    H_hat_tol = 1e-6
     V_tol = 1e-6
     
     def __init__(self, imol=None, thermal_condition=None,
