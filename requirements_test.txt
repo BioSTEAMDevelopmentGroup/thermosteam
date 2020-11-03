@@ -5,7 +5,7 @@ biosteam
 biorefineries>=2.15.17
 sympy
 pint>=0.9
-chemicals>=0.1.4
+chemicals>=0.1.5
 colorpalette>=0.3.1 
 matplotlib>=3.1.1
 numpy>=1.18.1

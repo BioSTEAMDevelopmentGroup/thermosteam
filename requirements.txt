@@ -1,5 +1,5 @@
 pint>=0.9
-chemicals>=0.1.4
+chemicals>=0.1.5
 ipython>=7.12.0
 colorpalette>=0.3.1
 pandas>=0.25.2
