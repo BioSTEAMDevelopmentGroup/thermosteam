@@ -898,7 +898,7 @@ class Stream:
                 self.T = np.mean([i.T for i in others])
             try: 
                 self.H = H
-            except Exception as error: # pragma: no cover
+            except: # pragma: no cover
                 phase = self.phase.lower()
                 if phase == 'g':
                     # Maybe too little heat, liquid must be present
@@ -907,7 +907,9 @@ class Stream:
                     # Maybe too much heat, gas must be present
                     self.phase = 'g'
                 else:
-                    raise error
+                    phases = ''.join([i.phase for i in others])
+                    self.phases = tuple(set(phases))
+                    self._imol.mix_from([i._imol for i in others])
                 try: 
                     self.H = H
                 except:
