@@ -9,7 +9,6 @@
 """
 from flexsolve import njitable
 from ..utils import Cache
-from scipy.optimize import differential_evolution
 from .equilibrium import Equilibrium
 from .binary_phase_fraction import phase_fraction
 import numpy as np
@@ -42,6 +41,7 @@ def lle_objective_function(mol_L, mol, T, f_gamma):
     return g_mix
 
 def solve_lle_liquid_mol(mol, T, f_gamma, **differential_evolution_options):
+    from scipy.optimize import differential_evolution
     args = (mol, T, f_gamma)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol

@@ -23,7 +23,7 @@ for p in new_path:
 project = 'Thermosteam'
 copyright = '2020, Yoel Cortes-Pena'
 author = 'Yoel Cortes-Pena'
-
+autodoc_mock_imports = ["scipy"]
 nbsphinx_execute = 'never'
 
 # The full version, including alpha/beta/rc tags
