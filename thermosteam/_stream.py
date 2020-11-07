@@ -917,7 +917,6 @@ class Stream:
                     self.phases = tuple(set(phases))
                     self._imol.mix_from([i._imol for i in others])
                     self.H = H
-                
             
     def split_to(self, s1, s2, split):
         """
@@ -983,13 +982,12 @@ class Stream:
         
         """
         if not isinstance(other._imol, self._imol.__class__):
-            at_unit = f"at unit {self.source}" if self.source is other.sink else ""
-            raise RuntimeError(f"stream {self} cannot link with stream {other} " + at_unit
+            at_unit = f" at unit {self.source}" if self.source is other.sink else ""
+            raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
         if self._link and not (self.source is other.sink or self.sink is other.source):
-            at_unit = f"at unit {self.source}" if self.source is other.sink else ""
-            raise RuntimeError(f"stream {self} cannot link with stream {other} " + at_unit
-                               + f"; {self} already linked with {self._link}")
+            raise RuntimeError(f"stream {self} cannot link with stream {other};"
+                               f" {self} already linked with {self._link}")
         if TP and flow and phase:
             self._imol._data_cache = other._imol._data_cache
         else:

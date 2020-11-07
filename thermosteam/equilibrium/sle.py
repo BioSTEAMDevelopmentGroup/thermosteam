@@ -35,14 +35,14 @@ class SLE(Equilibrium, phases='ls'):
     Solve SLE of tetradecanol in octanol:
         
     >>> from thermosteam import indexer, equilibrium, settings
-    >>> settings.set_thermo(['Octanol', 'Tetradecanol'], cache=True)
-    >>> imol = indexer.MolarFlowIndexer(l=[('Octanol', 304), ('Tetradecanol', 30)], phases=('s', 'l'))
+    >>> settings.set_thermo(['Methanol', 'Tetradecanol'], cache=True)
+    >>> imol = indexer.MolarFlowIndexer(l=[('Methanol', 10), ('Tetradecanol', 30)], phases=('s', 'l'))
     >>> sle = equilibrium.SLE(imol)
     >>> sle('Tetradecanol', T=300)
     >>> sle
     SLE(imol=MolarFlowIndexer(
-            l=[('Octanol', 304), ('Tetradecanol', 21.86)],
-            s=[('Tetradecanol', 8.144)]),
+            l=[('Methanol', 10), ('Tetradecanol', 5.721)],
+            s=[('Tetradecanol', 24.28)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
     
     Solve SLE of pure tetradecanol:
@@ -61,7 +61,8 @@ class SLE(Equilibrium, phases='ls'):
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             l=[('Tetradecanol', 30)]),
         thermal_condition=ThermalCondition(T=320.00, P=101325))
-        
+    
+    
     """
     __slots__ = ('_x', # [float] Fraction of solute as a solid.
                  '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
@@ -73,6 +74,7 @@ class SLE(Equilibrium, phases='ls'):
                  '_nonzero', # [1d array(bool)] Chemicals present in the mixture
                  '_mol_solute', # [float] Solute molar data.
                  '_solute_index', # [int] Solute index
+                 '_solute_gamma_index', # [int] Solute index for activity coefficients
     )
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None):
@@ -114,6 +116,7 @@ class SLE(Equilibrium, phases='ls'):
                 self._index = index
                 thermo = self._thermo
                 self._gamma = thermo.Gamma(eq_chems)
+                self._solute_gamma_index = self._index.index(solute_index)
         
     def __call__(self, solute, T, P=None):
         thermal_condition = self.thermal_condition
@@ -143,7 +146,10 @@ class SLE(Equilibrium, phases='ls'):
         F_mol_liquid = liquid_mol[self._index].sum() - liquid_mol[solute_index]
         mol_solute = self._mol_solute
         x_max = mol_solute / (F_mol_liquid + mol_solute)
-        if x_max <= x:
+        if x < 0.:
+            liquid_mol[solute_index] = 0.
+            solid_mol[solute_index] = mol_solute
+        elif x >= x_max:
             liquid_mol[solute_index] = mol_solute
             solid_mol[solute_index] = 0.
         else:
@@ -160,7 +166,7 @@ class SLE(Equilibrium, phases='ls'):
         if Tm is None: raise RuntimeError(f"solute {solute_chemical} does not have a heat of fusion, Hfus")
         gamma = 1.
         x = solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma) # Initial guess
-        args = (T, Tm, Cpl, Cps, Hm)
+        args = (T, Tm, Hm, Cpl, Cps)
         return flx.wegstein(self._x_iter, x, xtol=1e-6, args=args)
         
     def _x_iter(self, x, T, Tm, Hm, Cpl, Cps):
@@ -169,7 +175,7 @@ class SLE(Equilibrium, phases='ls'):
         F_mol_liquid = liquid_mol.sum()
         x_l = liquid_mol / F_mol_liquid
         gamma = self._gamma(x_l, T)
-        return solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma[self._solute_index])
+        return solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma[self._solute_gamma_index])
         
         
 class SLECache(Cache): load = SLE
