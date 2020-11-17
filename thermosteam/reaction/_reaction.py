@@ -325,12 +325,12 @@ class Reaction:
         >>> chemicals = tmo.Chemicals(['H2', 'O2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> reaction = rxn.Reaction('2H2 + O2 -> 2H2O', reactant='H2', X=0.7)
-        >>> s1 = tmo.Stream('s1', H2=10, O2=20, H2O=1000)
+        >>> s1 = tmo.Stream('s1', H2=10, O2=20, H2O=1000, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_like(s1) # s1 and s2 are the same
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   10
                          O2   20
                          H2O  1e+03
@@ -343,7 +343,7 @@ class Reaction:
         >>> reaction(s1) 
         >>> s1.show() # After non-adiabatic reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          O2   16.5
                          H2O  1.01e+03
@@ -351,7 +351,7 @@ class Reaction:
         >>> reaction.adiabatic_reaction(s2)
         >>> s2.show() # After adiabatic reaction
         Stream: s2
-         phase: 'l', T: 323.97 K, P: 101325 Pa
+         phase: 'g', T: 421.1 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          O2   16.5
                          H2O  1.01e+03
@@ -782,12 +782,12 @@ class ParallelReaction(ReactionSet):
         ...    rxn.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
         ...    rxn.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
         ...    ])
-        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=1000)
+        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=1000, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_like(s1) # s1 and s2 are the same
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   10
                          CH4  5
                          O2   100
@@ -802,7 +802,7 @@ class ParallelReaction(ReactionSet):
         >>> reaction(s1)
         >>> s1.show() # After non-adiabatic reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          CH4  4.5
                          O2   96
@@ -812,7 +812,7 @@ class ParallelReaction(ReactionSet):
         >>> reaction.adiabatic_reaction(s2)
         >>> s2.show() # After adiabatic reaction
         Stream: s2
-         phase: 'l', T: 328.82 K, P: 101325 Pa
+         phase: 'g', T: 428.24 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          CH4  4.5
                          O2   96
@@ -896,12 +896,12 @@ class SeriesReaction(ReactionSet):
         ...     rxn.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
         ...     rxn.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
         ...     ])
-        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=1000)
+        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=1000, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_like(s1) # s1 and s2 are the same
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): CH4  5
                          O2   100
                          H2O  1e+03
@@ -915,7 +915,7 @@ class SeriesReaction(ReactionSet):
         >>> reaction(s1)
         >>> s1.show() # After non-adiabatic reaction
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
+         phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): CH4  1.5
                          CO   3.15
                          O2   94.6
@@ -925,7 +925,7 @@ class SeriesReaction(ReactionSet):
         >>> reaction.adiabatic_reaction(s2)
         >>> s2.show() # After adiabatic reaction
         Stream: s2
-         phase: 'l', T: 326.13 K, P: 101325 Pa
+         phase: 'g', T: 423.73 K, P: 101325 Pa
          flow (kmol/hr): CH4  1.5
                          CO   3.15
                          O2   94.6
