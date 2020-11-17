@@ -32,6 +32,7 @@ setup(
                       'numba>=0.50.0'],
     extras_require={ # Not in current PyPI version, but will be available in the next
         'dev': [
+            'sympy',
             'sphinx', 
             'sphinx_rtd_theme', 
             'pyyaml',
