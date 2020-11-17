@@ -10,6 +10,7 @@
 import thermosteam as tmo
 import flexsolve as flx
 from chemicals import elements
+from warnings import warn
 from . import _parse as prs
 from ..utils import chemicals_user
 from .._phase import NoPhase
@@ -464,10 +465,57 @@ class Reaction:
         self._rescale()
     
     def correct_atomic_balance(self, constants=None):
-        """Correct stoichiometry coffecients to satisfy atomic balance."""
+        """
+        Correct stoichiometry coffecients to satisfy atomic balance.
+        
+        Parameters
+        ----------
+        constants : str, optional
+            IDs of chemicals for which stoichiometric coefficients are held constant.
+        
+        Examples
+        --------
+        Balance glucose fermentation to ethanol:
+        
+        >>> import thermosteam as tmo
+        >>> from thermosteam import reaction as rxn
+        >>> from biorefineries import lipidcane as lc
+        >>> tmo.settings.set_thermo(lc.chemicals)
+        >>> fermentation = rxn.Reaction('Glucose + O2 -> Ethanol + CO2',
+        ...                             reactant='Glucose',  X=0.9)
+        >>> fermentation.correct_atomic_balance()
+        >>> fermentation.show()
+        Reaction (by mol):
+         stoichiometry                 reactant    X[%]
+         Glucose -> 2 Ethanol + 2 CO2  Glucose    90.00
+        
+        Note that if the reaction is underspecified, there are infinite
+        ways to balance the reaction and a runtime error is raised:
+            
+        >>> rxn_underspecified = rxn.Reaction('Glucose + O2 + Methanol -> Ethanol + CO2',
+        ...                                   reactant='Glucose',  X=0.9)
+        >>> rxn_underspecified.correct_atomic_balance()
+        Traceback (most recent call last):
+        RuntimeError: reaction stoichiometry is underspecified; pass the 
+        `constants` argument to the `<Reaction>.correct_atomic_balance` method 
+        to specify which stoichiometric coefficients to hold constant
+        
+        Chemical coefficients can be held constant to prevent this error:
+        
+        >>> rxn_underspecified = rxn.Reaction('Glucose + O2 + Methanol -> Ethanol + CO2',
+        ...                                   reactant='Glucose',  X=0.9)
+        >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'Methanol'])
+        >>> rxn_underspecified.show()
+        Reaction (by mol):
+         stoichiometry                                           reactant    X[%]
+         Glucose + Methanol -> 2.67 Ethanol + 1.67 CO2 + 0.5 O2  Glucose    90.00
+        
+        """
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
         chemicals = self.chemicals
         if constants:
+            if isinstance(constants, str): constants = [constants]
+            constants = set(constants)
             constant_index = chemicals.indices(constants)
         else:
             constant_index = [self._X_index]
@@ -476,17 +524,25 @@ class Reaction:
         formula_array = chemicals.formula_array
         b = - (formula_array[:, constant_index]
                * stoichiometry_by_mol[constant_index]).sum(1, keepdims=True)
-        atomic_index, _ = np.where(b != 0)
+        atomic_bool_index = np.any(formula_array * stoichiometry_by_mol, axis=1)
+        atomic_index, = np.where(atomic_bool_index)
         b = b[atomic_index, :]
         A = formula_array[atomic_index, :][:, chemical_index]
         M_atoms, N_chemicals = A.shape
         if M_atoms != N_chemicals:
-            raise RuntimeError(
-                 'to solve atomic balance, number of atoms '
-                f'({M_atoms} available) must be equal to the number of '
-                f'varied chemicals ({N_chemicals} available)'
-            )
-        x = np.linalg.solve(A, b)
+            x, _, rank, *_ = np.linalg.lstsq(A, b, rcond=None)
+            if N_chemicals > rank:
+                raise RuntimeError(
+                     "reaction stoichiometry is underspecified (i.e. there are "
+                     "infinite ways to balance the reaction); pass the "
+                     "`constants` argument to the `<Reaction>.correct_atomic_balance` "
+                     "method to specify which stoichiometric coefficients to hold constant"
+                )
+            residual_mass = ((A @ x - b) * self.MWs).sum()
+            if residual_mass > 1e-6:
+                warn(f'atomic balance was solved with a residual mass error of {residual_mass} g / mol of reactant')
+        else:
+            x = np.linalg.solve(A, b)
         stoichiometry_by_mol[chemical_index] = x.flatten()
         if self._basis == 'wt': 
             self._stoichiometry[:] = stoichiometry_by_mol * self.MWs
