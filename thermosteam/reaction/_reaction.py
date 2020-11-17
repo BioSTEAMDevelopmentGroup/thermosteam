@@ -475,12 +475,22 @@ class Reaction:
         
         Examples
         --------
-        Balance glucose fermentation to ethanol:
-        
+        Balance methane combustion:
+            
         >>> import thermosteam as tmo
         >>> from thermosteam import reaction as rxn
         >>> from biorefineries import lipidcane as lc
         >>> tmo.settings.set_thermo(lc.chemicals)
+        >>> combustion = rxn.Reaction('CH4 + O2 -> Water + CO2',
+        ...                        reactant='CH4', X=1,
+        ...                        correct_atomic_balance=True)
+        >>> combustion.show()
+        Reaction (by mol):
+         stoichiometry                reactant    X[%]
+         2 O2 + CH4 -> 2 Water + CO2  CH4       100.00
+        
+        Balance glucose fermentation to ethanol:
+        
         >>> fermentation = rxn.Reaction('Glucose + O2 -> Ethanol + CO2',
         ...                             reactant='Glucose',  X=0.9)
         >>> fermentation.correct_atomic_balance()
