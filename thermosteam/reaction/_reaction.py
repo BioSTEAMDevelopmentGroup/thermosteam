@@ -475,22 +475,12 @@ class Reaction:
         
         Examples
         --------
-        Balance methane combustion:
-            
+        Balance glucose fermentation to ethanol:
+        
         >>> import thermosteam as tmo
         >>> from thermosteam import reaction as rxn
         >>> from biorefineries import lipidcane as lc
         >>> tmo.settings.set_thermo(lc.chemicals)
-        >>> combustion = rxn.Reaction('CH4 + O2 -> Water + CO2',
-        ...                        reactant='CH4', X=1,
-        ...                        correct_atomic_balance=True)
-        >>> combustion.show()
-        Reaction (by mol):
-         stoichiometry                reactant    X[%]
-         2 O2 + CH4 -> 2 Water + CO2  CH4       100.00
-        
-        Balance glucose fermentation to ethanol:
-        
         >>> fermentation = rxn.Reaction('Glucose + O2 -> Ethanol + CO2',
         ...                             reactant='Glucose',  X=0.9)
         >>> fermentation.correct_atomic_balance()
@@ -499,11 +489,22 @@ class Reaction:
          stoichiometry                 reactant    X[%]
          Glucose -> 2 Ethanol + 2 CO2  Glucose    90.00
         
+        Balance methane combustion:
+            
+        >>> combustion = rxn.Reaction('CH4 + O2 -> Water + CO2',
+        ...                        reactant='CH4', X=1,
+        ...                        correct_atomic_balance=True)
+        >>> combustion.show()
+        Reaction (by mol):
+         stoichiometry                reactant    X[%]
+         2 O2 + CH4 -> 2 Water + CO2  CH4       100.00
+        
         Note that if the reaction is underspecified, there are infinite
         ways to balance the reaction and a runtime error is raised:
-            
-        >>> rxn_underspecified = rxn.Reaction('Glucose + O2 + Methanol -> Ethanol + CO2',
-        ...                                   reactant='Glucose',  X=0.9)
+        
+        >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
+        ...                        reactant='CH4', X=1,
+        ...                        correct_atomic_balance=True)
         >>> rxn_underspecified.correct_atomic_balance()
         Traceback (most recent call last):
         RuntimeError: reaction stoichiometry is underspecified; pass the 
@@ -512,13 +513,13 @@ class Reaction:
         
         Chemical coefficients can be held constant to prevent this error:
         
-        >>> rxn_underspecified = rxn.Reaction('Glucose + O2 + Methanol -> Ethanol + CO2',
-        ...                                   reactant='Glucose',  X=0.9)
-        >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'Methanol'])
+        >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
+        ...                        reactant='CH4', X=1)
+        >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'CH4'])
         >>> rxn_underspecified.show()
         Reaction (by mol):
-         stoichiometry                                           reactant    X[%]
-         Glucose + Methanol -> 2.67 Ethanol + 1.67 CO2 + 0.5 O2  Glucose    90.00
+         stoichiometry                            reactant    X[%]
+         Glucose + 8 O2 + CH4 -> 8 Water + 7 CO2  CH4       100.00
         
         """
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
