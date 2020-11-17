@@ -492,8 +492,8 @@ class Reaction:
         Balance methane combustion:
             
         >>> combustion = rxn.Reaction('CH4 + O2 -> Water + CO2',
-        ...                        reactant='CH4', X=1,
-        ...                        correct_atomic_balance=True)
+        ...                           reactant='CH4', X=1)
+        >>> combustion.correct_atomic_balance()
         >>> combustion.show()
         Reaction (by mol):
          stoichiometry                reactant    X[%]
@@ -503,8 +503,7 @@ class Reaction:
         ways to balance the reaction and a runtime error is raised:
         
         >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
-        ...                        reactant='CH4', X=1,
-        ...                        correct_atomic_balance=True)
+        ...                                   reactant='CH4', X=1)
         >>> rxn_underspecified.correct_atomic_balance()
         Traceback (most recent call last):
         RuntimeError: reaction stoichiometry is underspecified; pass the 
@@ -514,7 +513,7 @@ class Reaction:
         Chemical coefficients can be held constant to prevent this error:
         
         >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
-        ...                        reactant='CH4', X=1)
+        ...                                   reactant='CH4', X=1)
         >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'CH4'])
         >>> rxn_underspecified.show()
         Reaction (by mol):
