@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.21.6',
+    version='0.21.7',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -30,6 +30,15 @@ setup(
                       'flexsolve==0.3.32', 
                       'pyglet',
                       'numba>=0.50.0'],
+    extras_require={ # Not in current PyPI version, but will be available in the next
+        'dev': [
+            'sphinx', 
+            'sphinx_rtd_theme', 
+            'pyyaml',
+            'pytest-cov',
+            'coveralls',
+        ]
+    }, 
     package_data={
         'thermosteam': [
             'base/*', 
