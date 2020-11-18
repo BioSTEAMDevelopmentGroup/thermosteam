@@ -205,26 +205,29 @@ class Reaction:
     def has_reaction(self):
         return bool(self.X and self.stoichiometry.any())
     
+    def _math_compatible_reaction(self, rxn, copy=True):
+        basis = self.basis
+        if copy or basis != rxn._basis: rxn = rxn.copy(basis)
+        if self._chemicals is not rxn._chemicals:
+            raise ValueError('working chemicals must be the same to add/substract reactions')
+        if self._X_index != rxn._X_index:
+            raise ValueError('reactants must be the same to add/substract reactions')
+        return rxn
+    
     def __radd__(self, rxn):
         return self + rxn
     
     def __add__(self, rxn):
         if rxn == 0 or not rxn.has_reaction(): return self.copy()
-        assert self._basis == rxn._basis, 'basis must be the same to add reactions'
-        assert self._chemicals is rxn._chemicals, 'working chemicals must be the same to add reactions'
-        assert self._X_index == rxn._X_index, 'reactants must be the same to add reactions'
-        new = self.copy()
+        rxn = self._math_compatible_reaction(rxn)
         stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
-        new._stoichiometry = stoichiometry/-(stoichiometry[new._X_index])
-        new.X = self.X + rxn.X
-        return new
+        rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._X_index])
+        rxn.X = self.X + rxn.X
+        return rxn
     
     def __iadd__(self, rxn):
-        if rxn == 0 or not rxn.has_reaction(): return self
-        basis = self.basis
-        if basis != rxn._basis: rxn = rxn.copy(basis)
-        assert self._chemicals is rxn._chemicals, 'working chemicals must be the same to add reactions'
-        assert self._X_index == rxn._X_index, 'reactants must be the same to add reactions'
+        if not rxn.has_reaction(): return self
+        rxn = self._math_compatible_reaction(rxn, copy=False)
         stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
         self._stoichiometry = stoichiometry/-(stoichiometry[self._X_index])
         self.X = self.X + rxn.X
@@ -257,24 +260,20 @@ class Reaction:
         return new
     
     def __sub__(self, rxn):
-        assert self._basis == rxn._basis, 'basis must be the same to substract reactions'
-        assert self._chemicals is rxn._chemicals, 'working chemicals must be the same to substract reactions'
-        assert self._X_index == rxn._X_index, 'reactants must be the same to substract reactions'
-        new = self.copy()
+        if not rxn.has_reaction(): return self
+        rxn = self._math_compatible_reaction(rxn)
         stoichiometry = self._stoichiometry*self.X - rxn._stoichiometry*rxn.X
-        new._stoichiometry = stoichiometry/-(stoichiometry[new._X_index])
-        new.X = self.X - rxn.X
-        return new
+        rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._X_index])
+        rxn.X = self.X - rxn.X
+        return rxn
     
     def __isub__(self, rxn):
-        basis = self.basis
-        if basis != rxn._basis: rxn = rxn.to_basis(basis)
-        assert self._chemicals is rxn._chemicals, 'working chemicals must be the same to substract reactions'
-        assert self._X_index == rxn._X_index, 'reactants must be the same to substract reactions'
+        if not rxn.has_reaction(): return self
+        rxn = self._math_compatible_reaction(rxn, copy=False)
         stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
         self._stoichiometry = stoichiometry/-(stoichiometry[self._X_index])
         self.X = self.X - rxn.X
-        return 
+        return self
     
     def __call__(self, material):
         material_array = as_material_array(material,
@@ -398,7 +397,7 @@ class Reaction:
 
     @property
     def MWs(self):
-        """[1d array] Molecular weights of all chemicals [mol/g]."""
+        """[1d array] Molecular weights of all chemicals [g/mol]."""
         return self._chemicals.MW
 
     @property
@@ -430,7 +429,7 @@ class Reaction:
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
         error = abs(stoichiometry_by_wt.sum())
         assert error <= tol, (
-            f"material stoichiometry is unbalanced by {error} in weight"
+            f"material stoichiometry is unbalanced by {error} g / mol-reactant"
         )
     
     def check_atomic_balance(self, tol=1e-3):
