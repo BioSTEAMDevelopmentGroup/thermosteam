@@ -604,7 +604,8 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     
     Examples
     --------
-    Satisfy outlet flows:
+    Vary inlet flow rates to satisfy outlet flow rates:
+        
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> in_a = tmo.Stream('in_a', Water=1)

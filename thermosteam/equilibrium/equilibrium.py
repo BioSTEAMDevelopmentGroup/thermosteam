@@ -62,6 +62,10 @@ class Equilibrium:
         """[ThermalCondition] Temperature and pressure data."""
         return self._thermal_condition
     
+    def show(self):
+        print(self)
+    _ipython_console_ = show
+    
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs)

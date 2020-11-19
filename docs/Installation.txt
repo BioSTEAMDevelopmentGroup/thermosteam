@@ -8,11 +8,13 @@ Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/t
    $ pip install thermosteam
 
 
-To get the git version, run:
+To get the git version and install it, run:
 
 .. code-block:: bash
    
    $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+   $ cd thermosteam
+   $ pip install .
 
 
 Common Issues

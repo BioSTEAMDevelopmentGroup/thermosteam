@@ -1,0 +1,15 @@
+Thermosteam 2.22
+================
+
+2.22.1
+------
+
+New features:
+
+* :attr:`thermosteam.Stream.S` now returns absolute entropy instead of relative entropy.
+
+* :meth:`thermosteam.reaction.Reaction.correct_atomic_balance` can now balance equations where the number of atoms balanced is greater than the number varied chemical coefficients.
+
+* :class:`thermosteam.reaction.Reaction` objects can now be imported directly from the thermosteam module (e.g. "from thermosteam import Reaction").
+
+

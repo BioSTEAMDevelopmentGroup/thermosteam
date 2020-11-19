@@ -66,6 +66,10 @@ class PhaseHandle:
                               self.l.copy(),
                               self.g.copy())
     __copy__ = copy
+    
+    def show(self):
+        print(self)
+    _ipython_display_ = show
 
 
 # %% Pure component

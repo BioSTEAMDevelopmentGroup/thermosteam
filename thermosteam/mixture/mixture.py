@@ -57,7 +57,9 @@ class Mixture:
     
     Notes
     -----
-    Although the mixture models are on a molar basis, this is only if the molar data is normalized before the calculation (i. e. the `mol` parameter is normalized before being passed to the model).
+    Although the mixture models are on a molar basis, this is only if the molar
+    data is normalized before the calculation (i.e. the `mol` parameter is 
+    normalized before being passed to the model).
     
     See also
     --------

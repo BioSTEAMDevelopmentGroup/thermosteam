@@ -36,6 +36,7 @@ def normalize(array, minimum=1e-16):
 def mixing_simple(z, y):
     r'''
     Return a weighted average of `y` given the weights, `z`.
+    
     Examples
     --------
     >>> import numpy as np
@@ -49,8 +50,11 @@ def mixing_simple(z, y):
 def mixing_logarithmic(z, y):
     r'''
     Return the logarithmic weighted average `y` given weights, `z`.
+    
     .. math::
+    
         y = \sum_i z_i \cdot \log(y_i)
+    
     Notes
     -----
     Does not work on negative values.
@@ -68,12 +72,16 @@ def mu_to_nu(mu, rho):
     r"""
     Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and 
     density (rho).
+    
     .. math::
+    
         \nu = \frac{\mu}{\rho}
+    
     Examples
     --------
     >>> mu_to_nu(0.000998, 998.)
     1.0e-06
+    
     """
     return mu/rho
 
@@ -82,6 +90,7 @@ def V_to_rho(V, MW):
     r'''
     Return the density (rho) in kg/m^3 given the molar volume (V) in
     m^3/mol and molecular weight (MW) in g/mol.
+    
     .. math::
         \rho = \frac{MW}{1000\cdot V}
     
@@ -91,14 +100,17 @@ def V_to_rho(V, MW):
         Molar volume, [m^3/mol]
     MW : float
         Molecular weight, [g/mol]
+    
     Returns
     -------
     rho : float
         Density, [kg/m^3]
+    
     Examples
     --------
     >>> V_to_rho(0.000132, 86.18)
     652.878...
+    
     '''
     return MW/V/1000.
 
@@ -107,22 +119,27 @@ def rho_to_V(rho, MW):
     r'''
     Return the molar volume (V) in m^3/mol given the density (rho) in
     kg/m^3 and molecular weight (MW) in g/mol.
+    
     .. math::
         V = \left(\frac{1000 \rho}{MW}\right)^{-1}
+    
     Parameters
     ----------
     rho : float
         Density, [kg/m^3]
     MW : float
         Molecular weight, [g/mol]
+    
     Returns
     -------
     V : float
         Molar volume, [m^3/mol]
+    
     Examples
     --------
     >>> rho_to_V(652.9, 86.18)
     0.0001319957...
+    
     '''
     return MW/rho/1000.
 

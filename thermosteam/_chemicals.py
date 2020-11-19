@@ -213,6 +213,10 @@ class Chemicals:
     
     kwarray = array = index = indices = must_compile
         
+    def show(self):
+        print(self)
+    _ipython_display_ = show
+    
     def __len__(self):
         return len(self.__dict__)
     

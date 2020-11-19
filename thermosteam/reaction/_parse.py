@@ -5,11 +5,7 @@
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
-"""
-Created on Sat Jun 29 20:47:24 2019
 
-@author: yoelr
-"""
 from numpy import ndarray
 
 __all__ = ('get_stoichiometric_array',

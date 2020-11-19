@@ -377,12 +377,16 @@ class Chemical:
     
     Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.
     
+    >>> # import matplotlib.pyplot as plt
     >>> # Water.Psat.plot_vs_T([Water.Tm, Water.Tb], 'degC', 'atm', label="Water")
+    >>> # plt.show()
     
     .. figure:: ./images/Water_Psat_vs_T.png
     
     >>> # Plot all models
+    
     >>> # Water.Psat.plot_models_vs_T([Water.Tm, Water.Tb], 'degC', 'atm')
+    >>> # plt.show()
     
     .. figure:: ./images/Water_all_models_Psat_vs_T.png
     
@@ -487,7 +491,7 @@ class Chemical:
     
     .. note::
     
-        All models are stored as a `deque <https://docs.python.org/3.8/library/collections.html#collections.deque>`_ in the `models` attribute (e.g. Water.Psat.models).
+        All models are stored as a :py:class:`deque` in the `models` attribute (e.g. Water.Psat.models).
     
     Attributes
     ----------

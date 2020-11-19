@@ -161,10 +161,11 @@ class MultiStream(Stream):
     
     Vapor-liquid equilibrium can be performed by setting 2 degrees of freedom
     from the following list:
-    * T [Temperature; in K]
-    * P [Pressure; in K]
-    * V [Vapor fraction]
-    * H [Enthalpy; in kJ/hr]:
+    
+    * T - Temperature [K]
+    * P - Pressure [Pa]
+    * V - Vapor fraction
+    * H - Enthalpy [kJ/hr]
         
     >>> s1.vle(P=101325, T=365)
     

@@ -62,8 +62,8 @@ def as_material_array(material, basis, chemicals):
 class Reaction:
     """
     Create a Reaction object which defines a stoichiometric reaction and
-    conversion. When called, it elements of a material array due to the
-    reaction.
+    conversion. A Reaction object is capable of reacting the material
+    flow rates of a :class:`thermosteam.Stream` object.
     
     Parameters
     ----------
@@ -564,7 +564,7 @@ class Reaction:
     
     def __repr__(self):
         stoichiometry = prs.get_stoichiometric_string(self._stoichiometry, self._chemicals)
-        return f"{type(self).__name__}('{stoichiometry}', reactant='{self.reactant}', X={self.X:.3g}, basis={self.basis})"
+        return f"{type(self).__name__}('{stoichiometry}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
     
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
@@ -714,7 +714,7 @@ class ReactionSet:
         self._stoichiometry /= new_scale
     
     def __repr__(self):
-        return f"{type(self).__name__}({[', '.join([repr(i) for i in self])]})"
+        return f"{type(self).__name__}([{', '.join([repr(i) for i in self])}])"
     
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
