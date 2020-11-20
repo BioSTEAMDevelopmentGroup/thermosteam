@@ -24,6 +24,7 @@ def get_phases(reaction):
             else: continue
             if phase not in valid_phases:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
+            phases.append(phase)
     elif isa(reaction, str):
         phases = []
         for i, x in enumerate(reaction):

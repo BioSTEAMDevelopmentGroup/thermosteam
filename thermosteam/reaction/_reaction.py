@@ -114,59 +114,68 @@ class Reaction:
     
     Examples
     --------
+    Electrolysis of water to molecular hydrogen and oxygen:
+    
     >>> import thermosteam as tmo
     >>> import thermosteam.reaction as rxn
     >>> chemicals = tmo.Chemicals(['H2O', 'H2', 'O2'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
-    >>> reaction = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
+    >>> reaction = rxn.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=0.7)
     >>> reaction.show() # Note that the default basis is by 'mol'
     Reaction (by mol):
-     stoichiometry       reactant    X[%]
-     H2O -> H2 + 0.5 O2  H2O        70.00
-    >>> feed = tmo.Stream('feed', H2O=200)
+     stoichiometry             reactant    X[%]
+     H2O,l -> H2,g + 0.5 O2,g  H2O        70.00
+    >>> feed = tmo.Stream('feed', H2O=100)
+    >>> feed.phases = ('g', 'l') # Gas and liquid phases must be available
     >>> reaction(feed) # Call to run reaction on molar flow
     >>> feed.show() # Notice how 70% of water was converted to product
-    Stream: feed
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): H2O  60
-                     H2   140
-                     O2   70
-    
-    Alternatively, its also possible to react an array (instead of a stream):
-    
-    >>> import numpy as np
-    >>> array = np.array([200., 0. , 0.])
-    >>> reaction(array)
-    >>> array
-    array([ 60., 140.,  70.])
+    MultiStream: feed
+     phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): (g) H2   70
+                         O2   35
+                     (l) H2O  30
     
     Let's change to a per 'wt' basis:
         
     >>> reaction.basis = 'wt'
     >>> reaction.show()
     Reaction (by wt):
-     stoichiometry               reactant    X[%]
-     H2O -> 0.112 H2 + 0.888 O2  H2O        70.00
+     stoichiometry                     reactant    X[%]
+     H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O        70.00
     
     Although we changed the basis, the end result is the same if we pass a 
     stream:
     
-    >>> feed = tmo.Stream('feed', H2O=200)
+    >>> feed = tmo.Stream('feed', H2O=100)
+    >>> feed.phases = ('g', 'l')
     >>> reaction(feed) # Call to run reaction on mass flow
     >>> feed.show() # Notice how 70% of water was converted to product
-    Stream: feed
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): H2O  60
-                     H2   140
-                     O2   70
+    MultiStream: feed
+     phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): (g) H2   70
+                         O2   35
+                     (l) H2O  30
     
-    If we pass an array, however, the Reaction object assumes the
-    array data is by weight:
-        
-    >>> array = np.array([200., 0. , 0.])
+    If you don't specify the phase of your chemicals, Reaction object can 
+    react a any single phase Stream object (regardless of phase):
+    
+    >>> reaction = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
+    >>> feed = tmo.Stream('feed', H2O=100, phase='g')
+    >>> reaction(feed) 
+    >>> feed.show() 
+    Stream: feed
+     phase: 'g', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): H2O  30
+                     H2   70
+                     O2   35
+    
+    Alternatively, it's also possible to react an array (instead of a stream):
+    
+    >>> import numpy as np
+    >>> array = np.array([100., 0. , 0.])
     >>> reaction(array)
     >>> array
-    array([ 60.   ,  15.666, 124.334])
+    array([30., 70., 35.])
     
     """
     phases = MaterialIndexer.phases
@@ -192,7 +201,7 @@ class Reaction:
         if reaction:
             phases = xprs.get_phases(reaction)
             if phases:
-                self._phases = phases = tuple(set(phases))
+                self._phases = phases = phases
                 self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
                 reactant_index = self._chemicals.index(reactant)
                 for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
