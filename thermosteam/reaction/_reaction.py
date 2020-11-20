@@ -16,7 +16,7 @@ from . import (
     _xparse as xprs,
 )
 from ..utils import chemicals_user
-from .._phase import NoPhase, AnyPhase
+from .._phase import NoPhase
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
@@ -58,7 +58,7 @@ def as_material_array(material, basis, phases, chemicals):
     if isa(material, np.ndarray):
         return material
     elif isa(material, tmo.Stream):
-        if material.phases != phases:
+        if (phases or len(material.phases) != 1) and material.phases != phases:
             raise ValueError("reaction and stream phases do not match")
         if material.chemicals is not chemicals:
             raise ValueError("reaction and stream chemicals do not match")
@@ -199,7 +199,7 @@ class Reaction:
                     if x: break
                 self._X_index = (phase_index, reactant_index)
             else:
-                self._phases = (AnyPhase,)
+                self._phases = phases
                 self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
                 self._X_index = self._chemicals.index(reactant)
             self._rescale()
