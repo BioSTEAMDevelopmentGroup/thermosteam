@@ -1288,7 +1288,7 @@ class Stream:
         self._imol.empty()
     
     ### Equilibrium ###
-
+    
     @property
     def vle(self):
         """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""

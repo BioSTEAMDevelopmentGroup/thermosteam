@@ -11,14 +11,26 @@ import thermosteam as tmo
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
-from . import _parse as prs
+from . import (
+    _parse as prs,
+    _xparse as xprs,
+)
 from ..utils import chemicals_user
-from .._phase import NoPhase
-from ..indexer import ChemicalIndexer
+from .._phase import NoPhase, AnyPhase
+from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
+
+def get_stoichiometric_string(reaction):
+    if reaction.any_phase:
+        return prs.get_stoichiometric_string(reaction._stoichiometry, 
+                                             reaction._chemicals)
+    else:
+        return xprs.get_stoichiometric_string(reaction._stoichiometry,
+                                              reaction._phases,
+                                              reaction._chemicals)
 
 def react_stream_adiabatically(stream, reaction):
     if not isinstance(stream, tmo.Stream):
@@ -41,18 +53,19 @@ def set_reaction_basis(rxn, basis):
         rxn._rescale()
         rxn._basis = basis
 
-def as_material_array(material, basis, chemicals):
+def as_material_array(material, basis, phases, chemicals):
     isa = isinstance
     if isa(material, np.ndarray):
         return material
-    elif isa(material, tmo.MultiStream):
-        raise ValueError('reacting a stream with multiple phases is underdetermined')
     elif isa(material, tmo.Stream):
-        assert material.chemicals is chemicals, "reaction and stream chemicals do not match"
+        if material.phases != phases:
+            raise ValueError("reaction and stream phases do not match")
+        if material.chemicals is not chemicals:
+            raise ValueError("reaction and stream chemicals do not match")
         if basis == 'mol':
-            return material.mol
+            return material.imol.data 
         elif basis == 'wt':
-            return material.mass
+            return material.mass.data
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
@@ -83,12 +96,12 @@ class Reaction:
     Other Parameters
     ----------------
     check_mass_balance=False: bool
-        Whether to assert that mass is not created or destroyed.
+        Whether to check if mass is not created or destroyed.
     correct_mass_balance=False: bool
         Whether to make sure mass is not created or destroyed by varying the 
         reactant stoichiometric coefficient.
     check_atomic_balance=False: bool
-        Whether to assert that stoichiometric balance by atoms cancel out.
+        Whether to check if stoichiometric balance by atoms cancel out.
     correct_atomic_balance=False: bool
         Whether to correct the stoichiometry according to the atomic balance.
     
@@ -156,7 +169,9 @@ class Reaction:
     array([ 60.   ,  15.666, 124.334])
     
     """
+    phases = MaterialIndexer.phases
     __slots__ = ('_basis',
+                 '_phases',
                  '_chemicals',
                  '_X_index', 
                  '_stoichiometry', 
@@ -174,9 +189,19 @@ class Reaction:
             raise ValueError("basis must be either by 'wt' or by 'mol'")
         self.X = X
         chemicals = self._load_chemicals(chemicals)
-        if reaction:            
-            self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
-            self._X_index = self._chemicals.index(reactant)
+        if reaction:
+            phases = xprs.get_phases(reaction)
+            if phases:
+                self._phases = phases = tuple(set(phases))
+                self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
+                reactant_index = self._chemicals.index(reactant)
+                for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
+                    if x: break
+                self._X_index = (phase_index, reactant_index)
+            else:
+                self._phases = (AnyPhase,)
+                self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
+                self._X_index = self._chemicals.index(reactant)
             self._rescale()
             if correct_atomic_balance:
                 self.correct_atomic_balance()
@@ -191,10 +216,16 @@ class Reaction:
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
     
+    @property
+    def any_phase(self):
+        """Return whether Reaction object is capable of reacting any single phase."""
+        return self._stoichiometry.ndim == 1
+    
     def copy(self, basis=None):
         """Return copy of Reaction object."""
         copy = self.__new__(self.__class__)
         copy._basis = self._basis
+        copy._phases = self._phases
         copy._stoichiometry = self._stoichiometry.copy()
         copy._X_index = self._X_index
         copy._chemicals = self._chemicals
@@ -209,7 +240,9 @@ class Reaction:
         basis = self.basis
         if copy or basis != rxn._basis: rxn = rxn.copy(basis)
         if self._chemicals is not rxn._chemicals:
-            raise ValueError('working chemicals must be the same to add/substract reactions')
+            raise ValueError('chemicals must be the same to add/substract reactions')
+        if self._phases is not rxn._phases:
+            raise ValueError('phases must be the same to add/substract reactions')
         if self._X_index != rxn._X_index:
             raise ValueError('reactants must be the same to add/substract reactions')
         return rxn
@@ -278,6 +311,7 @@ class Reaction:
     def __call__(self, material):
         material_array = as_material_array(material,
                                            self._basis,
+                                           self._phases,
                                            self._chemicals)
         self._reaction(material_array)
         if tmo.reaction.CHECK_FEASIBILITY:
@@ -287,6 +321,7 @@ class Reaction:
         """React material ignoring feasibility checks."""
         material_array = as_material_array(material,
                                            self._basis,
+                                           self._phases,
                                            self._chemicals)
         self._reaction(material_array)
     
@@ -387,13 +422,25 @@ class Reaction:
     @property
     def istoichiometry(self):
         """[ChemicalIndexer] Stoichiometry coefficients."""
-        return tmo.indexer.ChemicalIndexer.from_data(self._stoichiometry,
-                                                     chemicals=self._chemicals,
-                                                     check_data=False)
+        stoichiometry = self._stoichiometry
+        if stoichiometry.ndim == 1:
+            return tmo.indexer.ChemicalIndexer.from_data(self._stoichiometry,
+                                                         chemicals=self._chemicals,
+                                                         check_data=False)
+        else:
+            return tmo.indexer.MaterialIndexer.from_data(self._stoichiometry,
+                                                         phases=self._phases,
+                                                         chemicals=self._chemicals,
+                                                         check_data=False)
+    
     @property
     def reactant(self):
         """[str] Reactant associated to conversion."""
-        return self._chemicals.IDs[self._X_index]
+        if self.any_phase:
+            index = self._X_index
+        else:
+            index = self._X_index[1]
+        return self._chemicals.IDs[index]
 
     @property
     def MWs(self):
@@ -425,21 +472,22 @@ class Reaction:
         return stoichiometry_by_mol
     
     def check_mass_balance(self, tol=1e-3):
-        """Assert that stoichiometric mass balance is correct."""
+        """Check that stoichiometric mass balance is correct."""
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
         error = abs(stoichiometry_by_wt.sum())
-        assert error <= tol, (
-            f"material stoichiometry is unbalanced by {error} g / mol-reactant"
-        )
+        if error > tol:
+            raise RuntimeError("material stoichiometry is unbalanced by "
+                              f"{error} g / mol-reactant")
     
     def check_atomic_balance(self, tol=1e-3):
-        """Assert that stoichiometric atomic balance is correct."""
+        """Check that stoichiometric atomic balance is correct."""
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
         formula_array = self.chemicals.formula_array
         unbalanced_array = formula_array @ stoichiometry_by_mol
         atoms = elements.array_to_atoms(unbalanced_array)
-        assert abs(sum(atoms.values())) < tol, (
-            "atomic stoichiometry is unbalanced by the following molar stoichiometric coefficients:\n "
+        if abs(sum(atoms.values())) > tol: 
+            raise RuntimeError("atomic stoichiometry is unbalanced by the "
+                               "following molar stoichiometric coefficients:\n "
             + "\n ".join([f"{symbol}: {value}" for symbol, value in atoms.items()])
         )
     
@@ -453,14 +501,21 @@ class Reaction:
         else:
             index = self._X_index
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
-        
+        any_phase = self.any_phase
+        if not any_phase: 
+            stoichiometry_by_wt = stoichiometry_by_wt.sum(0)
         def f(x):
             stoichiometry_by_wt[index] = x
             return stoichiometry_by_wt.sum()
         
-        flx.aitken_secant(f, 1)
+        x = flx.aitken_secant(f, 1)
         if self._basis == 'mol': 
-            self._stoichiometry[:] = stoichiometry_by_wt / self.MWs
+            x /= self.MWs[index]
+            if any_phase:
+                self._stoichiometry[index] = x 
+            else:
+                row = np.where(self._stoichiometry[:, index])
+                self._stoichiometry[row, index] = x
         self._rescale()
     
     def correct_atomic_balance(self, constants=None):
@@ -520,15 +575,18 @@ class Reaction:
          Glucose + 8 O2 + CH4 -> 8 Water + 7 CO2  CH4       100.00
         
         """
+        any_phase = self.any_phase
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
+        if any_phase:
+            stoichiometry_by_mol = stoichiometry_by_mol.sum(0)
         chemicals = self.chemicals
         if constants:
             if isinstance(constants, str): constants = [constants]
             constants = set(constants)
             constant_index = chemicals.indices(constants)
         else:
-            constant_index = [self._X_index]
-        chemical_index, = np.where(stoichiometry_by_mol != 0.)
+            constant_index = [self._X_index if any_phase else self._X_index[-1]]
+        chemical_index, = np.where(stoichiometry_by_mol)
         chemical_index = np.setdiff1d(chemical_index, constant_index)
         formula_array = chemicals.formula_array
         b = - (formula_array[:, constant_index]
@@ -552,7 +610,10 @@ class Reaction:
                 warn(f'atomic balance was solved with a residual mass error of {residual_mass} g / mol of reactant')
         else:
             x = np.linalg.solve(A, b)
+        
         stoichiometry_by_mol[chemical_index] = x.flatten()
+        if any_phase: 
+            stoichiometry_by_mol = (self.stoichiometry > 0.) * stoichiometry_by_mol
         if self._basis == 'wt': 
             self._stoichiometry[:] = stoichiometry_by_mol * self.MWs
         self._rescale()
@@ -563,12 +624,12 @@ class Reaction:
         self._stoichiometry /= new_scale
     
     def __repr__(self):
-        stoichiometry = prs.get_stoichiometric_string(self._stoichiometry, self._chemicals)
-        return f"{type(self).__name__}('{stoichiometry}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
+        reaction = get_stoichiometric_string(self)
+        return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
     
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
-        rxn = prs.get_stoichiometric_string(self._stoichiometry, self._chemicals)
+        rxn = get_stoichiometric_string(self)
         cmp = self.reactant
         lrxn = len(rxn)
         lcmp = len(cmp)
@@ -650,7 +711,10 @@ class ReactionSet:
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     
     def __init__(self, reactions):
-        assert reactions, 'no reactions passed'
+        for i in reactions:
+            if not i.any_phase:
+                raise NotImplementedError('reactions with specific phases not supported (yet)')
+        if not reactions: raise ValueError('no reactions passed')
         chemicals = {i.chemicals for i in reactions}
         try: self._chemicals, = chemicals
         except: raise ValueError('all reactions must have the same chemicals')

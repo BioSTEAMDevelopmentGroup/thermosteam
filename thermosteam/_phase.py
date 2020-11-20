@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-__all__ = ('Phase', 'LockedPhase', 'NoPhase')
+__all__ = ('Phase', 'LockedPhase', 'NoPhase', 'AnyPhase')
 
 isa = isinstance
 new = object.__new__
@@ -70,3 +70,13 @@ class LockedPhase(Phase):
             raise AttributeError('phase is locked')
         
 NoPhase = LockedPhase(None)
+
+class AnyPhase:
+    
+    def __eq__(self, other):
+        return other in valid_phases
+    
+    def __repr__(self):
+        return "AnyPhase"
+    
+AnyPhase = AnyPhase()
