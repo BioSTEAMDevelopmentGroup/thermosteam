@@ -738,6 +738,7 @@ class ReactionSet:
         else:
             rxnset = self.__new__(self.__class__)
             rxnset._basis = self._basis
+            rxnset._phases = self._phases
             rxnset._stoichiometry = stoichiometry
             rxnset._X = self._X[index]
             rxnset._X_index = self._X_index[index]
