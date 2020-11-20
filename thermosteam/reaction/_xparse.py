@@ -19,11 +19,12 @@ def get_phases(reaction):
     if isa(reaction, dict):
         phases = []
         for i, j in reaction.items():
-            if isa(j, str): return None
-            phase = j[0]
+            try: phase = j[0]
+            except: break
             if phase not in valid_phases:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
             phases.append(phase)
+        return tuple(phases)
     elif isa(reaction, str):
         phases = []
         for i, x in enumerate(reaction):

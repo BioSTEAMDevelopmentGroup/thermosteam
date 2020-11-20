@@ -65,7 +65,7 @@ def as_material_array(material, basis, phases, chemicals):
         if basis == 'mol':
             return material.imol.data 
         elif basis == 'wt':
-            return material.mass.data
+            return material.imass.data
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
@@ -241,7 +241,7 @@ class Reaction:
         if copy or basis != rxn._basis: rxn = rxn.copy(basis)
         if self._chemicals is not rxn._chemicals:
             raise ValueError('chemicals must be the same to add/substract reactions')
-        if self._phases is not rxn._phases:
+        if self._phases != rxn._phases:
             raise ValueError('phases must be the same to add/substract reactions')
         if self._X_index != rxn._X_index:
             raise ValueError('reactants must be the same to add/substract reactions')
@@ -577,7 +577,7 @@ class Reaction:
         """
         any_phase = self.any_phase
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
-        if any_phase:
+        if not any_phase:
             stoichiometry_by_mol = stoichiometry_by_mol.sum(0)
         chemicals = self.chemicals
         if constants:
@@ -612,7 +612,7 @@ class Reaction:
             x = np.linalg.solve(A, b)
         
         stoichiometry_by_mol[chemical_index] = x.flatten()
-        if any_phase: 
+        if not any_phase: 
             stoichiometry_by_mol = (self.stoichiometry > 0.) * stoichiometry_by_mol
         if self._basis == 'wt': 
             self._stoichiometry[:] = stoichiometry_by_mol * self.MWs
@@ -656,8 +656,11 @@ class ReactionItem(Reaction):
         
     """
     __slots__ = ('_index')
+    phases = MaterialIndexer.phases
+    
     def __init__(self, rxnset, index):
         self._stoichiometry = rxnset._stoichiometry[index]
+        self._phases = rxnset._phases
         self._basis = rxnset._basis
         self._X = rxnset._X
         self._chemicals = rxnset._chemicals
@@ -676,6 +679,7 @@ class ReactionItem(Reaction):
         """Return copy of Reaction object."""
         copy = Reaction.__new__(Reaction)
         copy._basis = self._basis
+        copy._phases = self._phases
         copy._stoichiometry = self._stoichiometry.copy()
         copy._X_index = self._X_index
         copy._chemicals = self._chemicals
@@ -702,6 +706,7 @@ class ReactionSet:
     
     """
     __slots__ = ('_basis',
+                 '_phases',
                  '_stoichiometry', 
                  '_X', '_X_index', 
                  '_chemicals')
@@ -711,10 +716,11 @@ class ReactionSet:
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     
     def __init__(self, reactions):
+        if not reactions: raise ValueError('no reactions passed')
         for i in reactions:
             if not i.any_phase:
                 raise NotImplementedError('reactions with specific phases not supported (yet)')
-        if not reactions: raise ValueError('no reactions passed')
+        self._phases = reactions[0]._phases
         chemicals = {i.chemicals for i in reactions}
         try: self._chemicals, = chemicals
         except: raise ValueError('all reactions must have the same chemicals')
@@ -817,6 +823,7 @@ class ParallelReaction(ReactionSet):
     def __call__(self, material):
         material_array = as_material_array(material,
                                            self._basis, 
+                                           self._phases,
                                            self._chemicals)
         self._reaction(material_array)
         if tmo.reaction.CHECK_FEASIBILITY: 
@@ -824,7 +831,7 @@ class ParallelReaction(ReactionSet):
         
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
-        material_array = as_material_array(material, self._basis, self._chemicals)
+        material_array = as_material_array(material, self._basis, self._phases, self._chemicals)
         self._reaction(material_array)
         
     def adiabatic_reaction(self, stream):
@@ -931,6 +938,7 @@ class SeriesReaction(ReactionSet):
     def __call__(self, material):
         material_array = as_material_array(material,
                                            self._basis, 
+                                           self._phases,
                                            self._chemicals)
         self._reaction(material_array)
         if tmo.reaction.CHECK_FEASIBILITY:
@@ -938,7 +946,7 @@ class SeriesReaction(ReactionSet):
 
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
-        array = as_material_array(material, self._basis, self._chemicals)
+        array = as_material_array(material, self._basis, self._phases, self._chemicals)
         self._reaction(array)
         
     def adiabatic_reaction(self, stream):
