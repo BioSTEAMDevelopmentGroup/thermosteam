@@ -6,6 +6,7 @@
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
 import numpy as np
+from collections.abc import Sized
 from .._phase import valid_phases
 
 __all__ = ('get_phases',
@@ -19,24 +20,22 @@ def get_phases(reaction):
     if isa(reaction, dict):
         phases = []
         for i, j in reaction.items():
-            try: phase = j[0]
-            except: break
+            if isa(j, Sized): phase = j[0]
+            else: continue
             if phase not in valid_phases:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
-            phases.append(phase)
-        return tuple(phases)
     elif isa(reaction, str):
         phases = []
         for i, x in enumerate(reaction):
-            try: phase = reaction[i+1]
-            except: break
             if x == ',':
+                try: phase = reaction[i+1]
+                except: break
                 if phase not in valid_phases:
                     raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
                 phases.append(phase)
-        return tuple(phases)
     else:
         raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+    return tuple(sorted((set(phases))))
 
 def get_stoichiometric_array(reaction, phases, chemicals):
     """Return stoichiometric array given a string defining the reaction and chemicals."""
@@ -84,7 +83,7 @@ def extract_coefficients(nIDs, dct, sign):
         if ID[-2] == ',': 
             phase = ID[-1]
             if phase not in valid_phases:
-                raise 
+                raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
             ID = ID[:-2]
         else:
             raise ValueError('phase must be specified for each chemical; '
