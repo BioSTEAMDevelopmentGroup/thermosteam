@@ -25,9 +25,9 @@ def check_phase(phase):
         )  
 
 def phase_tuple(phases):
-    phases = sorted(set(phases))
+    phases = set(phases)
     for i in phases: check_phase(i)
-    return tuple(phases)
+    return tuple(sorted(phases))
 
 class PhaseIndexer:
     __slots__ = ('_index',)
@@ -43,10 +43,6 @@ class PhaseIndexer:
             self._index = cache[phases] = index = {j:i for i,j in enumerate(sorted(phases))}
             index[...] = slice(None) 
         return self
-    
-    @property
-    def phases(self):
-        return tuple(self._index)
     
     def __call__(self, phase):
         try:
