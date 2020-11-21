@@ -12,9 +12,13 @@ To get the git version and install it, run:
 
 .. code-block:: bash
    
-   $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+   $ git clone --depth 100 git://github.com/BioSTEAMDevelopmentGroup/thermosteam
    $ cd thermosteam
    $ pip install .
+
+We use the `depth` option to clone only the last 100 commits. Thermosteam has a 
+long history, so cloning the whole repository (without using the depth option)
+may take over 30 min.
 
 
 Common Issues
