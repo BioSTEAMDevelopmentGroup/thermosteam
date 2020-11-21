@@ -126,6 +126,8 @@ class Reaction:
     Reaction (by mol):
      stoichiometry             reactant    X[%]
      H2O,l -> H2,g + 0.5 O2,g  H2O,l       70.00
+    >>> reaction.reactant # The reactant is a tuple of phase and chemical ID
+    ('l', 'H2O')
     >>> feed = tmo.Stream('feed', H2O=100)
     >>> feed.phases = ('g', 'l') # Gas and liquid phases must be available
     >>> reaction(feed) # Call to run reaction on molar flow
@@ -157,7 +159,7 @@ class Reaction:
                          O2   35
                      (l) H2O  30
     
-    If you don't specify the phase of your chemicals, Reaction object can 
+    If chemicals phases are not specified, Reaction objects can 
     react a any single phase Stream object (regardless of phase):
     
     >>> reaction = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
@@ -379,7 +381,7 @@ class Reaction:
          H2 + 0.5 O2 -> H2O  H2         70.00
         
         >>> reaction(s1) 
-        >>> s1.show() # After non-adiabatic reaction
+        >>> s1.show() # After isothermal reaction
         Stream: s1
          phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   3
@@ -450,7 +452,7 @@ class Reaction:
         """[str] Reactant associated to conversion."""
         if self._phases:
             phase_index, chemical_index = self._X_index
-            return self._chemicals.IDs[chemical_index] + ',' + self._phases[phase_index]
+            return self._phases[phase_index], self._chemicals.IDs[chemical_index]
         else:
             return self._chemicals.IDs[self._X_index] 
 
@@ -543,10 +545,9 @@ class Reaction:
         Balance glucose fermentation to ethanol:
         
         >>> import thermosteam as tmo
-        >>> from thermosteam import reaction as rxn
         >>> from biorefineries import lipidcane as lc
         >>> tmo.settings.set_thermo(lc.chemicals)
-        >>> fermentation = rxn.Reaction('Glucose + O2 -> Ethanol + CO2',
+        >>> fermentation = tmo.Reaction('Glucose + O2 -> Ethanol + CO2',
         ...                             reactant='Glucose',  X=0.9)
         >>> fermentation.correct_atomic_balance()
         >>> fermentation.show()
@@ -556,18 +557,29 @@ class Reaction:
         
         Balance methane combustion:
             
-        >>> combustion = rxn.Reaction('CH4 + O2 -> Water + CO2',
+        >>> combustion = tmo.Reaction('CH4 + O2 -> Water + CO2',
         ...                           reactant='CH4', X=1)
         >>> combustion.correct_atomic_balance()
         >>> combustion.show()
         Reaction (by mol):
          stoichiometry                reactant    X[%]
          2 O2 + CH4 -> 2 Water + CO2  CH4       100.00
+         
+        Balance electrolysis of water (with chemical phases specified):
+            
+        >>> electrolysis = tmo.Reaction('H2O,l -> H2,g + O2,g',
+        ...                             chemicals=tmo.Chemicals(['H2O', 'H2', 'O2']),
+        ...                             reactant='H2O', X=1)
+        >>> electrolysis.correct_atomic_balance()
+        >>> electrolysis.show()
+        Reaction (by mol):
+         stoichiometry             reactant    X[%]
+         H2O,l -> H2,g + 0.5 O2,g  H2O,l     100.00
         
         Note that if the reaction is underspecified, there are infinite
         ways to balance the reaction and a runtime error is raised:
         
-        >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
+        >>> rxn_underspecified = tmo.Reaction('CH4 + Glucose + O2 -> Water + CO2',
         ...                                   reactant='CH4', X=1)
         >>> rxn_underspecified.correct_atomic_balance()
         Traceback (most recent call last):
@@ -577,7 +589,7 @@ class Reaction:
         
         Chemical coefficients can be held constant to prevent this error:
         
-        >>> rxn_underspecified = rxn.Reaction('CH4 + Glucose + O2 -> Water + CO2',
+        >>> rxn_underspecified = tmo.Reaction('CH4 + Glucose + O2 -> Water + CO2',
         ...                                   reactant='CH4', X=1)
         >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'CH4'])
         >>> rxn_underspecified.show()
@@ -623,10 +635,12 @@ class Reaction:
             x = np.linalg.solve(A, b)
         
         stoichiometry_by_mol[chemical_index] = x.flatten()
+        by_wt = self._basis == 'wt'
+        stoichiometry = stoichiometry_by_mol * self.MWs if by_wt else stoichiometry_by_mol
         if phases: 
-            stoichiometry_by_mol = (self.stoichiometry > 0.) * stoichiometry_by_mol
-        if self._basis == 'wt': 
-            self._stoichiometry[:] = stoichiometry_by_mol * self.MWs
+            self._stoichiometry[:] = (self._stoichiometry != 0.) * stoichiometry
+        elif by_wt: 
+            self._stoichiometry[:] = stoichiometry
         self._rescale()
     
     def _rescale(self):
@@ -641,7 +655,11 @@ class Reaction:
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
         rxn = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
-        cmp = self.reactant
+        if self.phases:
+            phase, ID = self.reactant
+            cmp = ID + ',' + phase
+        else:
+            cmp = self.reactant
         lrxn = len(rxn)
         lcmp = len(cmp)
         maxrxnlen = max([13, lrxn]) + 2
@@ -743,11 +761,12 @@ class ReactionSet:
         self._X = np.array([i.X for i in reactions])
         X_index = [i._X_index for i in reactions]
         self._X_index = tuple(X_index) if self._phases else np.array(X_index)
-            
         
     def __getitem__(self, index):
         stoichiometry = self._stoichiometry[index]
-        if isinstance(index, Sized):
+        if (self.phases and stoichiometry.ndim == 2) or stoichiometry.ndim == 1:
+            return ReactionItem(self, index)
+        else:
             rxnset = self.__new__(self.__class__)
             rxnset._basis = self._basis
             rxnset._phases = self._phases
@@ -756,8 +775,6 @@ class ReactionSet:
             rxnset._X_index = self._X_index[index]
             rxnset._chemicals = self._chemicals
             return rxnset
-        else:
-            return ReactionItem(self, index)
     
     @property
     def basis(self):
@@ -788,7 +805,7 @@ class ReactionSet:
         phases = self._phases
         X_index = self._X_index
         if phases:
-            return [IDs[j] + ',' + phases[i] for i,j in X_index]
+            return [(phases[i], IDs[j]) for i,j in X_index]
         else:
             return tuple([IDs[i] for i in X_index])
     
@@ -816,7 +833,7 @@ class ReactionSet:
         phases = self._phases
         rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
         maxrxnlen = max([13, *[len(i) for i in rxns]]) + 2
-        cmps = self.reactants
+        cmps = [ID + ',' + phase for phase, ID in self.reactants] if phases else self.reactants
         maxcmplen = max([8, *[len(i) for i in cmps]]) + 2
         Xs = self.X
         N = len(Xs)
@@ -841,6 +858,50 @@ class ParallelReaction(ReactionSet):
     ----------
     reactions : Iterable[Reaction]
     
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> import thermosteam.reaction as rxn
+    >>> chemicals = tmo.Chemicals(['H2', 'Ethanol', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
+    >>> tmo.settings.set_thermo(chemicals)
+    >>> kwargs = dict(phases='lg', correct_atomic_balance=True)
+    >>> reaction = rxn.ParallelReaction([
+    ...    #            Reaction definition                    Reactant             Conversion
+    ...    rxn.Reaction('H2,g + O2,g -> 2H2O,g',               reactant='H2',       X=0.7, **kwargs),
+    ...    rxn.Reaction('Ethanol,l + O2,g -> CO2,g + 2H2O,g',  reactant='Ethanol',  X=0.1, **kwargs)
+    ... ])
+    >>> reaction.reactants # Note that reactants are tuples of phase and ID pairs.
+    [('g', 'H2'), ('l', 'Ethanol')]
+    
+    >>> reaction.show()
+    ParallelReaction (by mol):
+    index  stoichiometry                            reactant     X[%]
+    [0]    H2,g + 0.5 O2,g -> H2O,g                 H2,g        70.00
+    [1]    3 O2,g + Ethanol,l -> 2 CO2,g + 3 H2O,g  Ethanol,l   10.00
+    
+    >>> s1 = tmo.MultiStream('s1', T=373.15, 
+    ...                      l=[('Ethanol', 10)],
+    ...                      g=[('H2', 10), ('CH4', 5), ('O2', 100), ('H2O', 10)])
+    
+    >>> s1.show() # Before reaction
+    MultiStream: s1
+     phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
+     flow (kmol/hr): (g) H2       10
+                         CH4      5
+                         O2       100
+                         H2O      10
+                     (l) Ethanol  10
+    
+    >>> reaction(s1)
+    >>> s1.show() # After isothermal reaction
+    MultiStream: s1
+     phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
+     flow (kmol/hr): (g) H2       3
+                         CH4      5
+                         O2       93.5
+                         CO2      2
+                         H2O      20
+                     (l) Ethanol  9
     
     """
     __slots__ = ()
@@ -877,16 +938,15 @@ class ParallelReaction(ReactionSet):
         ...    rxn.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
         ...    rxn.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
         ... ])
-        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=1000, T=373.15, phase='g')
+        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=100, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
-        >>> s2.copy_like(s1) # s1 and s2 are the same
         >>> s1.show() # Before reaction
         Stream: s1
          phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): H2   10
                          CH4  5
                          O2   100
-                         H2O  1e+03
+                         H2O  100
         
         >>> reaction.show()
         ParallelReaction (by mol):
@@ -894,30 +954,20 @@ class ParallelReaction(ReactionSet):
         [0]    H2 + 0.5 O2 -> H2O       H2         70.00
         [1]    CH4 + O2 -> CO2 + 2 H2O  CH4        10.00
         
-        >>> reaction(s1)
-        >>> s1.show() # After non-adiabatic reaction
+        >>> reaction.adiabatic_reaction(s1)
+        >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
+         phase: 'g', T: 663.51 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          CH4  4.5
                          O2   96
                          CO2  0.5
-                         H2O  1.01e+03
-        
-        >>> reaction.adiabatic_reaction(s2)
-        >>> s2.show() # After adiabatic reaction
-        Stream: s2
-         phase: 'g', T: 428.24 K, P: 101325 Pa
-         flow (kmol/hr): H2   3
-                         CH4  4.5
-                         O2   96
-                         CO2  0.5
-                         H2O  1.01e+03
+                         H2O  108
         """
         react_stream_adiabatically(stream, self)
 
     def _reaction(self, material_array):
-        reacted = material_array[self._X_index] * self._X
+        reacted = self._X * np.array([material_array[i] for i in self._X_index], float)
         if self._phases:
             material_array += (reacted[:, np.newaxis, np.newaxis] * self._stoichiometry).sum(0)
         else:
@@ -996,15 +1046,13 @@ class SeriesReaction(ReactionSet):
         ...     rxn.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
         ...     rxn.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
         ...     ])
-        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=1000, T=373.15, phase='g')
-        >>> s2 = tmo.Stream('s2')
-        >>> s2.copy_like(s1) # s1 and s2 are the same
+        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=100, T=373.15, phase='g')
         >>> s1.show() # Before reaction
         Stream: s1
          phase: 'g', T: 373.15 K, P: 101325 Pa
          flow (kmol/hr): CH4  5
                          O2   100
-                         H2O  1e+03
+                         H2O  100
         
         >>> reaction.show()
         SeriesReaction (by mol):
@@ -1012,25 +1060,15 @@ class SeriesReaction(ReactionSet):
         [0]    CH4 + 1.5 O2 -> CO + 2 H2O  CH4        70.00
         [1]    CO + 0.5 O2 -> CO2          CO         10.00
         
-        >>> reaction(s1)
-        >>> s1.show() # After non-adiabatic reaction
+        >>> reaction.adiabatic_reaction(s1)
+        >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
+         phase: 'g', T: 647.39 K, P: 101325 Pa
          flow (kmol/hr): CH4  1.5
                          CO   3.15
                          O2   94.6
                          CO2  0.35
-                         H2O  1.01e+03
-        
-        >>> reaction.adiabatic_reaction(s2)
-        >>> s2.show() # After adiabatic reaction
-        Stream: s2
-         phase: 'g', T: 423.73 K, P: 101325 Pa
-         flow (kmol/hr): CH4  1.5
-                         CO   3.15
-                         O2   94.6
-                         CO2  0.35
-                         H2O  1.01e+03
+                         H2O  107
         """
         react_stream_adiabatically(stream, self)
 

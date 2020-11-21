@@ -11,7 +11,7 @@ import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemical
-from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
+from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple, check_phase
 from free_properties import PropertyFactory, property_array
 import numpy as np
 
@@ -318,6 +318,7 @@ class MaterialIndexer(Indexer):
             get_index = self._chemicals.get_index
             get_phase_index = self.get_phase_index
             for phase, ID_data in phase_data.items():
+                check_phase(phase)
                 IDs, row = zip(*ID_data)
                 data[get_phase_index(phase), get_index(IDs)] = row
             if units: self.set_data(data, units)
