@@ -1,6 +1,17 @@
 Thermosteam 2.22
 ================
 
+2.22.2
+------
+
+New features:
+
+* :class:`thermosteam.reaction.Reaction`, :class:`thermosteam.reaction.ParallelReaction`,
+  and :class:`thermosteam.reaction.SeriesReaction` can now handle chemical reactions
+  with phases changed. For example, Reaction('H2O,l -> H2,g + O2,g', reactant='H2O')
+  will be able to react a MultiStream and add products (i.e. H2, O2) to the gas phase.
+  
+
 2.22.1
 ------
 
