@@ -18,6 +18,16 @@ setfield = object.__setattr__
 valid_phases = {'s', 'l', 'g', 'S', 'L', 'G'}
 
 def check_phase(phase):
+    """
+    Raise a RuntimeError if phase is invalid.
+    
+    Examples
+    --------
+    >>> check_phase('q')
+    Traceback (most recent call last):
+    RuntimeError: invalid phase 'q' encountered; valid phases are 's', 'l', 'g', 'S', 'L', and 'G'
+    
+    """
     if phase not in valid_phases:
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "
@@ -25,22 +35,69 @@ def check_phase(phase):
         )  
 
 def phase_tuple(phases):
+    """
+    Return a sorted set of phases.
+
+    Parameters
+    ----------
+    phases : Iterable['s', 'l', 'g', 'S', 'L', or 'G']
+
+    Examples
+    --------
+    >>> phase_tuple(['g', 's', 'l', 's'])
+    ('g', 'l', 's')
+    
+    """
     phases = set(phases)
     for i in phases: check_phase(i)
     return tuple(sorted(phases))
 
 class PhaseIndexer:
+    """
+    Create a PhaseIndexer object that can be used to find phase index of a 
+    material array.
+    
+    Parameters
+    ----------
+    phases : Iterable[str]
+    
+    Examples
+    --------
+    Create a phase indexer for liquid and gas:
+        
+    >>> phase_indexer = PhaseIndexer(['l', 'g'])
+    >>> phase_indexer # Note that phases are sorted
+    PhaseIndexer(['g', 'l'])
+    
+    Find phase index:
+    
+    >>> phase_indexer('l')
+    1
+    
+    An exception is raised when no index is available for a given phase:
+    
+    >>> phase_indexer('s')
+    Traceback (most recent call last):
+    UndefinedPhase: 'g'
+    
+    Phase indexers are unique for a given set of phases, regardless of order:
+        
+    >>> other = PhaseIndexer(['g', 'l'])
+    >>> phase_indexer is other
+    True
+    
+    """
     __slots__ = ('_index',)
     _index_cache = {}
     
     def __new__(cls, phases):
-        self = new(cls)
         phases = frozenset(phases)
-        cache = self._index_cache
+        cache = cls._index_cache
         if phases in cache:
-            self._index = cache[phases]
+            self = cache[phases]
         else:
-            self._index = cache[phases] = index = {j:i for i,j in enumerate(sorted(phases))}
+            cache[phases] = self = new(cls)
+            self._index = index = {j:i for i,j in enumerate(sorted(phases))}
             index[...] = slice(None) 
         return self
     
@@ -51,7 +108,7 @@ class PhaseIndexer:
             raise UndefinedPhase(phase)        
     
     def __repr__(self):
-        phases = list(self._index)
+        phases = list(self._index)[:-1]
         return f"{type(self).__name__}({phases})"
 
 class Phase:
