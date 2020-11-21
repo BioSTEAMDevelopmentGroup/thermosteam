@@ -7,7 +7,7 @@
 # for license details.
 import numpy as np
 from collections.abc import Sized
-from .._phase import valid_phases
+from .._phase import PhaseIndexer, valid_phases, phase_tuple
 
 __all__ = ('get_phases',
            'get_stoichiometric_array',
@@ -22,8 +22,6 @@ def get_phases(reaction):
         for i, j in reaction.items():
             if isa(j, Sized): phase = j[0]
             else: continue
-            if phase not in valid_phases:
-                raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
             phases.append(phase)
     elif isa(reaction, str):
         phases = []
@@ -31,21 +29,22 @@ def get_phases(reaction):
             if x == ',':
                 try: phase = reaction[i+1]
                 except: break
-                if phase not in valid_phases:
-                    raise ValueError(f'invalid phase {repr(phase)} encountered while parsing reaction')
                 phases.append(phase)
     else:
         raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
-    return tuple(sorted((set(phases))))
+    return phase_tuple(phases)
 
 def get_stoichiometric_array(reaction, phases, chemicals):
     """Return stoichiometric array given a string defining the reaction and chemicals."""
-    if isinstance(reaction, dict):
+    isa = isinstance
+    if isa(reaction, dict):
         stoichiometry_dict = reaction
-    elif isinstance(reaction, str):
+    elif isa(reaction, str):
         stoichiometry_dict = str2dct(reaction)
+    elif isa(reaction, np.ndarray):
+        return reaction
     else:
-        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+        raise ValueError(f"reaction must be either a str or a dict; not a '{type(reaction).__name__}' object")
     stoichiometric_array = dct2arr(stoichiometry_dict, phases, chemicals)
     return stoichiometric_array
 
@@ -56,15 +55,15 @@ def get_stoichiometric_string(reaction, phases, chemicals):
     elif isinstance(reaction, np.ndarray):
         stoichiometric_dict = arr2dct(reaction, phases, chemicals)
     else:
-        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+        raise ValueError(f"reaction must be either a str or an array; not a '{type(reaction).__name__}' object")
     return dct2str(stoichiometric_dict)
 
 def dct2arr(dct, phases, chemicals):
-    phase_index = {j:i for i,j in enumerate(phases)}
+    phase_index = PhaseIndexer(phases)
     arr = np.zeros([len(phases), chemicals.size])
-    chemical_index = chemicals._index
+    chemical_index = chemicals.index
     for ID, (phase, coefficient) in dct.items():
-        arr[phase_index[phase], chemical_index[ID]] = coefficient
+        arr[phase_index(phase), chemical_index(ID)] = coefficient
     return arr 
 
 def split_coefficient(nID, sign):
@@ -123,8 +122,9 @@ def dct2str(dct):
 
 def arr2dct(arr, phases, chemicals):
     dct = {}
-    phase_index = {j:i for i,j in enumerate(phases)}
-    for phase, index in phase_index.items():
+    phase_index = PhaseIndexer(phases)
+    for phase in phases:
+        index = phase_index(phase)
         dct.update({ID: (phase, n) for n, ID in zip(arr[index], chemicals.IDs) if n})
     return dct
 

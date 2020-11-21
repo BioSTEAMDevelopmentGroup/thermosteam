@@ -10,8 +10,8 @@
 import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedPhase, UndefinedChemical
-from ._phase import Phase, LockedPhase, NoPhase
+from .exceptions import UndefinedChemical
+from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
 from free_properties import PropertyFactory, property_array
 import numpy as np
 
@@ -306,10 +306,9 @@ class MaterialIndexer(Indexer):
     `MolarIndexer`, `MassIndexer`, or `VolumetricIndexer`.
     
     """
-    __slots__ = ('_chemicals', '_phases', '_phase_index',
+    __slots__ = ('_chemicals', '_phases', '_phase_indexer',
                  '_index_cache', '_data_cache')
     _index_caches = {}
-    _phase_index_cache = {}
     _ChemicalIndexer = ChemicalIndexer
     
     def __new__(cls, phases=None, units=None, chemicals=None, **phase_data):
@@ -317,10 +316,10 @@ class MaterialIndexer(Indexer):
         if phase_data:
             data = self._data
             get_index = self._chemicals.get_index
-            phase_index = self.get_phase_index
+            get_phase_index = self.get_phase_index
             for phase, ID_data in phase_data.items():
                 IDs, row = zip(*ID_data)
-                data[phase_index(phase), get_index(IDs)] = row
+                data[get_phase_index(phase), get_index(IDs)] = row
             if units: self.set_data(data, units)
         return self
     
@@ -360,8 +359,8 @@ class MaterialIndexer(Indexer):
         isa = isinstance
         data = self._data
         get_phase_index = self.get_phase_index
-        chemicals = self.chemicals
-        phases = self.phases
+        chemicals = self._chemicals
+        phases = self._phases
         indexer_data = [(i, i._data.copy() if i is self else i._data) for i in others]
         data[:] = 0.
         for i, idata in indexer_data:
@@ -399,14 +398,9 @@ class MaterialIndexer(Indexer):
                 raise ValueError("can only mix from chemical or material indexers")
     
     def _set_phases(self, phases):
-        self._phases = phases = tuple(sorted(phases))
-        cache = self._phase_index_cache
-        if phases in cache:
-            self._phase_index = cache[phases]
-        else:
-            self._phase_index = cache[phases] = phase_index = {j:i for i,j in enumerate(phases)}
-            phase_index[...] = slice(None) 
-            
+        self._phases = phases = phase_tuple(phases)
+        self._phase_indexer = PhaseIndexer(phases)
+    
     def _set_cache(self):
         caches = self._index_caches
         key = self._phases, self._chemicals
@@ -417,9 +411,9 @@ class MaterialIndexer(Indexer):
     
     def _copy_without_data(self):
         new = _new(self.__class__)
-        new._chemicals = self._chemicals
         new._phases = self._phases
-        new._phase_index = self._phase_index
+        new._chemicals = self._chemicals
+        new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
         new._data_cache = {}
         return new
@@ -458,6 +452,10 @@ class MaterialIndexer(Indexer):
     @property
     def phases(self):
         return self._phases
+    
+    @property
+    def get_phase_index(self):
+        return self._phase_indexer
     
     def to_chemical_indexer(self, phase=NoPhase):
         return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals, False)
@@ -532,12 +530,6 @@ class MaterialIndexer(Indexer):
                                  "(str, tuple(str), ellipisis, or missing)")
         return index
     
-    def get_phase_index(self, phase):
-        try:
-            return self._phase_index[phase]
-        except:
-            raise UndefinedPhase(phase)
-    
     def __iter__(self):
         """Iterate over phase-data pairs."""
         return zip(self._phases, self._data)
@@ -567,7 +559,7 @@ class MaterialIndexer(Indexer):
             if phase_data:
                 phase_data = "\n" + tab + phase_data
         else:
-            phases = f'phases={self.phases}'
+            phases = f'phases={self._phases}'
             if phase_data:
                 phase_data = dlim + phase_data
         return f"{type(self).__name__}({phases}{phase_data})"
@@ -596,7 +588,7 @@ class MaterialIndexer(Indexer):
 
         # Set up chemical data for all phases
         phases_data_info = ''
-        for phase in self.phases:
+        for phase in self._phases:
             phase_data = self[phase, all_IDs]
             IDs, data = nonzeros(all_IDs, phase_data)
             if not IDs: continue

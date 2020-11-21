@@ -26,12 +26,12 @@ class InfeasibleRegion(RuntimeError):
         self.region = region
         super().__init__(region + ' is infeasible')
 
-class UndefinedChemical(AttributeError):
-    """AttributeError regarding undefined chemicals."""
+class UndefinedChemical(Exception):
+    """Exception regarding undefined chemicals."""
     def __init__(self, ID): super().__init__(repr(ID))
     
-class UndefinedPhase(AttributeError):
-    """AttributeError regarding undefined phases."""
+class UndefinedPhase(Exception):
+    """Exception regarding undefined phases."""
     def __init__(self, phase): super().__init__(repr(phase))
 
 class DimensionError(ValueError):

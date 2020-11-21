@@ -14,12 +14,15 @@ __all__ = ('get_stoichiometric_array',
 
 def get_stoichiometric_array(reaction, chemicals):
     """Return stoichiometric array given a string defining the reaction and chemicals."""
-    if isinstance(reaction, dict):
+    isa = isinstance
+    if isa(reaction, dict):
         stoichiometry_dict = reaction
-    elif isinstance(reaction, str):
+    elif isa(reaction, str):
         stoichiometry_dict = str2dct(reaction)
+    elif isa(reaction, np.ndarray):
+        return reaction
     else:
-        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+        raise ValueError(f"reaction must be either a str, dict, or array; not a '{type(reaction).__name__}' object")
     stoichiometric_array = dct2arr(stoichiometry_dict, chemicals)
     return stoichiometric_array
 
@@ -30,7 +33,7 @@ def get_stoichiometric_string(reaction, chemicals):
     elif isinstance(reaction, np.ndarray):
         stoichiometric_dict = arr2dct(reaction, chemicals)
     else:
-        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+        raise ValueError(f"reaction must be either a str or an array; not a '{type(reaction).__name__}' object")
     return dct2str(stoichiometric_dict)
 
 def dct2arr(dct, chemicals):

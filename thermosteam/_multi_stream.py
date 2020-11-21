@@ -11,6 +11,7 @@ from ._stream import Stream
 from ._thermal_condition import ThermalCondition
 from .indexer import MolarFlowIndexer
 from ._settings import settings
+from ._phase import phase_tuple
 from . import equilibrium as eq
 from . import utils
 import numpy as np
@@ -252,7 +253,7 @@ class MultiStream(Stream):
         return stream
     
     def __iter__(self):
-        for i in self._imol._phases: yield self[i]
+        for i in self.phases: yield self[i]
     
     ### Property getters ###
     
@@ -319,7 +320,7 @@ class MultiStream(Stream):
     def phases(self, phases):
         if len(phases) == 1:
             self.phase = phases[0]
-        phases = sorted(phases)
+        phases = phase_tuple(phases)
         if phases != self.phases:
             if self._link: raise RuntimeError('cannot convert linked stream')
             self._imol = self._imol.to_material_indexer(phases)

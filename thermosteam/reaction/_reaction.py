@@ -11,26 +11,27 @@ import thermosteam as tmo
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
+from collections.abc import Sized
 from . import (
     _parse as prs,
     _xparse as xprs,
 )
 from ..utils import chemicals_user
-from .._phase import NoPhase
+from .._phase import NoPhase, phase_tuple
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
 
 __all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
 
-def get_stoichiometric_string(reaction):
-    if reaction.any_phase:
-        return prs.get_stoichiometric_string(reaction._stoichiometry, 
-                                             reaction._chemicals)
+def get_stoichiometric_string(stoichiometry, phases, chemicals):
+    if phases:
+        return xprs.get_stoichiometric_string(stoichiometry,
+                                              phases,
+                                              chemicals)
     else:
-        return xprs.get_stoichiometric_string(reaction._stoichiometry,
-                                              reaction._phases,
-                                              reaction._chemicals)
+        return prs.get_stoichiometric_string(stoichiometry, 
+                                             chemicals)
 
 def react_stream_adiabatically(stream, reaction):
     if not isinstance(stream, tmo.Stream):
@@ -124,7 +125,7 @@ class Reaction:
     >>> reaction.show() # Note that the default basis is by 'mol'
     Reaction (by mol):
      stoichiometry             reactant    X[%]
-     H2O,l -> H2,g + 0.5 O2,g  H2O        70.00
+     H2O,l -> H2,g + 0.5 O2,g  H2O,l       70.00
     >>> feed = tmo.Stream('feed', H2O=100)
     >>> feed.phases = ('g', 'l') # Gas and liquid phases must be available
     >>> reaction(feed) # Call to run reaction on molar flow
@@ -141,7 +142,7 @@ class Reaction:
     >>> reaction.show()
     Reaction (by wt):
      stoichiometry                     reactant    X[%]
-     H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O        70.00
+     H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O,l       70.00
     
     Although we changed the basis, the end result is the same if we pass a 
     stream:
@@ -188,6 +189,7 @@ class Reaction:
     
     def __init__(self, reaction, reactant, X, 
                  chemicals=None, basis='mol', *,
+                 phases=None,
                  check_mass_balance=False,
                  check_atomic_balance=False,
                  correct_atomic_balance=False,
@@ -199,16 +201,14 @@ class Reaction:
         self.X = X
         chemicals = self._load_chemicals(chemicals)
         if reaction:
-            phases = xprs.get_phases(reaction)
+            self._phases = phases = phase_tuple(phases) if phases else xprs.get_phases(reaction)
             if phases:
-                self._phases = phases = phases
                 self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
                 reactant_index = self._chemicals.index(reactant)
                 for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
                     if x: break
                 self._X_index = (phase_index, reactant_index)
             else:
-                self._phases = phases
                 self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
                 self._X_index = self._chemicals.index(reactant)
             self._rescale()
@@ -224,11 +224,6 @@ class Reaction:
         else:
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
-    
-    @property
-    def any_phase(self):
-        """Return whether Reaction object is capable of reacting any single phase."""
-        return self._stoichiometry.ndim == 1
     
     def copy(self, basis=None):
         """Return copy of Reaction object."""
@@ -409,6 +404,14 @@ class Reaction:
         """
         Heat of reaction at given conversion. Units are in either
         J/mol-reactant or J/g-reactant; depending on basis.
+        
+        Warning
+        -------
+        Latents heats of vaporization are not accounted for; only heats of 
+        formation are included in this term. Note that heats of vaporization
+        are temperature dependent and cannot be calculated using a Reaction
+        object.
+        
         """
         if self._basis == 'mol':
             Hfs = self._chemicals.Hf
@@ -445,11 +448,11 @@ class Reaction:
     @property
     def reactant(self):
         """[str] Reactant associated to conversion."""
-        if self.any_phase:
-            index = self._X_index
+        if self._phases:
+            phase_index, chemical_index = self._X_index
+            return self._chemicals.IDs[chemical_index] + ',' + self._phases[phase_index]
         else:
-            index = self._X_index[1]
-        return self._chemicals.IDs[index]
+            return self._chemicals.IDs[self._X_index] 
 
     @property
     def MWs(self):
@@ -510,8 +513,7 @@ class Reaction:
         else:
             index = self._X_index
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
-        any_phase = self.any_phase
-        if not any_phase: 
+        if self.phases: 
             stoichiometry_by_wt = stoichiometry_by_wt.sum(0)
         def f(x):
             stoichiometry_by_wt[index] = x
@@ -520,11 +522,11 @@ class Reaction:
         x = flx.aitken_secant(f, 1)
         if self._basis == 'mol': 
             x /= self.MWs[index]
-            if any_phase:
-                self._stoichiometry[index] = x 
-            else:
+            if self.phases:
                 row = np.where(self._stoichiometry[:, index])
                 self._stoichiometry[row, index] = x
+            else:
+                self._stoichiometry[index] = x 
         self._rescale()
     
     def correct_atomic_balance(self, constants=None):
@@ -584,9 +586,9 @@ class Reaction:
          Glucose + 8 O2 + CH4 -> 8 Water + 7 CO2  CH4       100.00
         
         """
-        any_phase = self.any_phase
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
-        if not any_phase:
+        phases = self.phases
+        if phases:
             stoichiometry_by_mol = stoichiometry_by_mol.sum(0)
         chemicals = self.chemicals
         if constants:
@@ -594,7 +596,7 @@ class Reaction:
             constants = set(constants)
             constant_index = chemicals.indices(constants)
         else:
-            constant_index = [self._X_index if any_phase else self._X_index[-1]]
+            constant_index = [self._X_index[1] if phases else self._X_index]
         chemical_index, = np.where(stoichiometry_by_mol)
         chemical_index = np.setdiff1d(chemical_index, constant_index)
         formula_array = chemicals.formula_array
@@ -621,7 +623,7 @@ class Reaction:
             x = np.linalg.solve(A, b)
         
         stoichiometry_by_mol[chemical_index] = x.flatten()
-        if not any_phase: 
+        if phases: 
             stoichiometry_by_mol = (self.stoichiometry > 0.) * stoichiometry_by_mol
         if self._basis == 'wt': 
             self._stoichiometry[:] = stoichiometry_by_mol * self.MWs
@@ -633,12 +635,12 @@ class Reaction:
         self._stoichiometry /= new_scale
     
     def __repr__(self):
-        reaction = get_stoichiometric_string(self)
+        reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
     
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
-        rxn = get_stoichiometric_string(self)
+        rxn = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         cmp = self.reactant
         lrxn = len(rxn)
         lcmp = len(cmp)
@@ -721,15 +723,16 @@ class ReactionSet:
                  '_chemicals')
 
     copy = Reaction.copy
+    phases = MaterialIndexer.phases
     _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     
     def __init__(self, reactions):
         if not reactions: raise ValueError('no reactions passed')
-        for i in reactions:
-            if not i.any_phase:
-                raise NotImplementedError('reactions with specific phases not supported (yet)')
-        self._phases = reactions[0]._phases
+        phases_set = set([i.phases for i in reactions])
+        if len(phases_set) > 1:
+            raise ValueError('all reactions must implement the same phases')
+        self._phases, = phases_set
         chemicals = {i.chemicals for i in reactions}
         try: self._chemicals, = chemicals
         except: raise ValueError('all reactions must have the same chemicals')
@@ -738,13 +741,13 @@ class ReactionSet:
         except: raise ValueError('all reactions must have the same basis')
         self._stoichiometry = np.array([i._stoichiometry for i in reactions])
         self._X = np.array([i.X for i in reactions])
-        self._X_index = np.array([i._X_index for i in reactions])
-    
+        X_index = [i._X_index for i in reactions]
+        self._X_index = tuple(X_index) if self._phases else np.array(X_index)
+            
+        
     def __getitem__(self, index):
         stoichiometry = self._stoichiometry[index]
-        if len(stoichiometry.shape) == 1:
-            return ReactionItem(self, index)
-        else:
+        if isinstance(index, Sized):
             rxnset = self.__new__(self.__class__)
             rxnset._basis = self._basis
             rxnset._phases = self._phases
@@ -753,6 +756,8 @@ class ReactionSet:
             rxnset._X_index = self._X_index[index]
             rxnset._chemicals = self._chemicals
             return rxnset
+        else:
+            return ReactionItem(self, index)
     
     @property
     def basis(self):
@@ -780,7 +785,12 @@ class ReactionSet:
     def reactants(self):
         """tuple[str] Reactants associated to conversion."""
         IDs = self._chemicals.IDs
-        return tuple([IDs[i] for i in self._X_index])
+        phases = self._phases
+        X_index = self._X_index
+        if phases:
+            return [IDs[j] + ',' + phases[i] for i,j in X_index]
+        else:
+            return tuple([IDs[i] for i in X_index])
     
     @property
     def MWs(self):
@@ -790,7 +800,11 @@ class ReactionSet:
     def _rescale(self):
         """Scale stoichiometry to a per reactant basis."""
         X_index = self._X_index
-        new_scale = -self._stoichiometry[np.arange(X_index.size), X_index, np.newaxis]
+        if self._phases:
+            index = (np.arange(len(X_index)), *zip(*X_index), np.newaxis)
+        else:
+            index = (np.arange(len(X_index)), X_index, np.newaxis)
+        new_scale = -self._stoichiometry[index]
         self._stoichiometry /= new_scale
     
     def __repr__(self):
@@ -799,7 +813,8 @@ class ReactionSet:
     def show(self):
         info = f"{type(self).__name__} (by {self.basis}):"
         chemicals = self._chemicals
-        rxns = [prs.get_stoichiometric_string(i, chemicals) for i in self._stoichiometry]
+        phases = self._phases
+        rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
         maxrxnlen = max([13, *[len(i) for i in rxns]]) + 2
         cmps = self.reactants
         maxcmplen = max([8, *[len(i) for i in cmps]]) + 2
@@ -861,7 +876,7 @@ class ParallelReaction(ReactionSet):
         ...    #            Reaction definition          Reactant    Conversion
         ...    rxn.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
         ...    rxn.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
-        ...    ])
+        ... ])
         >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=1000, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_like(s1) # s1 and s2 are the same
@@ -902,7 +917,11 @@ class ParallelReaction(ReactionSet):
         react_stream_adiabatically(stream, self)
 
     def _reaction(self, material_array):
-        material_array += material_array[self._X_index] * self.X @ self._stoichiometry
+        reacted = material_array[self._X_index] * self._X
+        if self._phases:
+            material_array += (reacted[:, np.newaxis, np.newaxis] * self._stoichiometry).sum(0)
+        else:
+            material_array += reacted @ self._stoichiometry
 
     def reduce(self):
         """
