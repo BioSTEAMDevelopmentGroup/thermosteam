@@ -1,7 +1,7 @@
-Thermosteam 2.22
+Thermosteam 0.22
 ================
 
-2.22.2
+0.22.2
 ------
 
 New features:
@@ -12,7 +12,7 @@ New features:
   will be able to react a MultiStream and add products (i.e. H2, O2) to the gas phase.
   
 
-2.22.1
+0.22.1
 ------
 
 New features:

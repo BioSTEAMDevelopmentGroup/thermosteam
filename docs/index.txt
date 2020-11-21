@@ -57,7 +57,7 @@ Key Features & Capabilities
    :maxdepth: 1
    :caption: What's new?
    
-   updates/2.22
+   updates/0.22
 
 
 .. toctree::
