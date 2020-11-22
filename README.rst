@@ -44,7 +44,7 @@ If you have an installation of Python with pip, simple install it with:
 
     $ pip install thermosteam
 
-To get the git version and install it, run:
+To get the git version and install it, run::
 
     $ git clone --depth 100 git://github.com/BioSTEAMDevelopmentGroup/thermosteam
     $ cd thermosteam
