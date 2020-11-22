@@ -40,7 +40,7 @@ Installation
 ------------
 
 Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`_.
-If you have an installation of Python with pip, simple install it with:
+If you have an installation of Python with pip, simple install it with::
 
     $ pip install thermosteam
 
