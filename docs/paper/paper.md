@@ -61,11 +61,11 @@ In `Thermosteam`, Peng Robinson is the default equation of state
 for all pure components. However, the estimation of pure component chemical 
 properties is not limited to solving the equation of state. Several models 
 of thermodynamic properties (e.g. density, heat capacity, vapor pressure, 
-heat of vaporization, etc.) are analytical and estimate correlations that rely 
-on fitted coefficients and key chemical properties (e.g. critical temperature 
-and pressure). To facilitate the calculation of mixture properties, 
-`Thermosteam`'s default mixing rule estimates mixture properties by assuming 
-a molar weighted average of the pure chemical properties.
+heat of vaporization, etc.) are correlations that rely on fitted coefficients 
+and key chemical properties (e.g. critical temperature and pressure). To 
+facilitate the calculation of mixture properties, `Thermosteam`'s default 
+mixing rule estimates mixture properties by assuming a molar weighted average 
+of the pure chemical properties.
 
 `Thermosteam` allows for fast estimation of thermodynamic equilibrium within 
 hundreds of microseconds through the smart use of cache and Numba just-in-time 
