@@ -58,14 +58,14 @@ and biodiesel, a sugarcane biorefinery for the production of bioethanol, and a
 wheatstraw biorefinery for the production of cellulosic ethanol [@BioSTEAM;@Sanchis].
 
 In `Thermosteam`, Peng Robinson is the default equation of state 
-of all pure components. However, the estimation of pure component chemical 
-properties are not limited to solving the equation of state. Several models 
-for thermodynamic properties (e.g. density, heat capacity, vapor pressure, 
-heat of vaporization, etc.) may rely on fitted coefficients and key chemical 
-properties (e.g. critical temperature and pressure). To facilitate the 
-calculation of mixture properties, `Thermosteam`'s default mixing rule estimates 
-mixture properties by assuming a molar weighted average of the pure chemical 
-properties.
+for all pure components. However, the estimation of pure component chemical 
+properties is not limited to solving the equation of state. Several models 
+of thermodynamic properties (e.g. density, heat capacity, vapor pressure, 
+heat of vaporization, etc.) are analytical and estimate correlations that rely 
+on fitted coefficients and key chemical properties (e.g. critical temperature 
+and pressure). To facilitate the calculation of mixture properties, 
+`Thermosteam`'s default mixing rule estimates mixture properties by assuming 
+a molar weighted average of the pure chemical properties.
 
 `Thermosteam` allows for fast estimation of thermodynamic equilibrium within 
 hundreds of microseconds through the smart use of cache and Numba just-in-time 
@@ -83,17 +83,18 @@ Various other open-source libraries in Python have comparable capabilities to
 `Thermosteam`: most notably `Cantera` and `CoolProp`. `Cantera` is 
 a collection of software tools capable of modeling kinetic reactions,
 thermodynamic equilibrium, and chemical mixture properties [@Cantera]. `Cantera`'s 
-built-in fluids are limited to 8, but new fluids can be defined by users with flexibility
-on the amount of detail. `Thermosteam` has yet to implement any features on 
-kinetic reaction networks, but exposes a much larger set of roughly 20,000 
+built-in chemicals are limited to 8, but new chemicals can be defined by users 
+with flexibility on the amount of detail. `Thermosteam` has yet to implement any 
+features on kinetic reaction networks, but exposes a larger set of roughly 20,000 
 built-in chemicals from the `chemicals` library. `CoolProp` offers fast and accurate 
 thermodynamic and transport properties for 122 chemical components, and can 
 estimate thermodynamic phase equilibrium and mixture properties [@CoolProp].
 `CoolProp` also offers an interface to the NIST REFPROP software, which is 
-considered a gold standard in thermophysical properties. It is within `Thermosteam`'s
-roadmap to use `CoolProp` as part of it's default, built-in models.
-In contrast to `CoolProp`, `Thermosteam` also includes mass and energy balances 
-and stoichiometric reactions as one of its central features.
+considered the gold standard in thermophysical properties [@REFPROP]. It is 
+within `Thermosteam`'s roadmap to use `CoolProp` as part of it's default, built-in
+models. While `CoolProp` focuses on thermophysical chemical properties, 
+`Thermosteam` also includes mass and energy balances and stoichiometric reactions 
+as one of its central features.
 
 All of Thermosteam's application program interface (API) is documented with 
 examples. These examples also serve as preliminary tests that must pass before
