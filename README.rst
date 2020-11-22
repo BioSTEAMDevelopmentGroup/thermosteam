@@ -28,7 +28,13 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 What is Thermosteam?
 --------------------
 
-Thermosteam is a standalone thermodynamic engine capable of creating property packages for the rigorous estimation of temperature and pressure dependent mixture properties and thermodynamic equilibrium. Thermosteam builds upon `chemicals <https://github.com/CalebBell/chemicals>`_, the chemical properties component of the Chemical Engineering Design Library, with a robust and flexible framework that facilitates the creation of property packages.  `The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ is dependent on thermosteam for the simulation of unit operations.
+Thermosteam is a standalone thermodynamic engine capable of estimating mixture 
+properties, solving thermodynamic phase equilibria, and modeling stoichiometric 
+reactions. Thermosteam builds upon `chemicals <https://github.com/CalebBell/chemicals>`_, 
+the chemical properties component of the Chemical Engineering Design Library, 
+with a robust and flexible framework that facilitates the creation of property packages.  
+`The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ 
+is dependent on thermosteam for the simulation of unit operations.
 
 Installation
 ------------
@@ -38,10 +44,15 @@ If you have an installation of Python with pip, simple install it with:
 
     $ pip install thermosteam
 
-To get the git version, run:
+To get the git version and install it, run:
 
-    $ git clone git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+    $ git clone --depth 100 git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+    $ cd thermosteam
+    $ pip install .
 
+We use the `depth` option to clone only the last 100 commits. Thermosteam has a 
+long history, so cloning the whole repository (without using the depth option)
+may take over 30 min.
 
 Documentation
 -------------

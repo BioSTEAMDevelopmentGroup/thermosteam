@@ -12,7 +12,7 @@ Here’s the short summary of how to contribute using git bash:
 
    * Clone the project to your local computer::
     
-        git clone https://github.com/your-username/thermosteam.git
+        git clone --depth 100 https://github.com/your-username/thermosteam.git
     
    * Change the directory::
     
