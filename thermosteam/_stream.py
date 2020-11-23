@@ -190,10 +190,10 @@ class Stream:
     >>> s1.show()
     MultiStream: s1
      phases: ('g', 'l'), T: 364.8 K, P: 101325 Pa
-     flow (kmol/hr): (g) Water    0.4721
-                         Ethanol  0.1916
-                     (l) Water    0.6381
-                         Ethanol  0.02552
+     flow (kmol/hr): (g) Water    0.472
+                         Ethanol  0.192
+                     (l) Water    0.638
+                         Ethanol  0.0255
     
     Note that the stream is a now a MultiStream object to manage multiple phases.
     Each phase can be accessed separately too:

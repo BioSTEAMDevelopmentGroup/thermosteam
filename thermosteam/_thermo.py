@@ -83,10 +83,10 @@ class Thermo:
     >>> stream.show()
     MultiStream: stream
      phases: ('g', 'l'), T: 361 K, P: 101325 Pa
-     flow (kmol/hr): (g) Ethanol  32.19
-                         Water    17.33
-                     (l) Ethanol  67.81
-                         Water    82.67
+     flow (kmol/hr): (g) Ethanol  32.2
+                         Water    17.3
+                     (l) Ethanol  67.8
+                         Water    82.7
     >>> # Modified Roult's law:                 
     >>> tmo.settings.set_thermo(thermo)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)

@@ -231,6 +231,8 @@ def phase_split(feed, outlets):
         
     Examples
     --------
+    Split gas and liquid phases to streams:
+    
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = tmo.Stream('feed', Water=10, Ethanol=10)
@@ -249,6 +251,13 @@ def phase_split(feed, outlets):
      phase: 'l', T: 353.88 K, P: 101325 Pa
      flow (kmol/hr): Water    6.14
                      Ethanol  3.86
+    
+    Note that the number of phases in the feed should be equal to the number of 
+    outlets:
+        
+    >>> tmo.separations.phase_split(feed, [vapor])
+    Traceback (most recent call last):
+    RuntimeError: number of phases in feed must be equal to the number of outlets
     
     """
     phases = feed.phases
@@ -460,7 +469,7 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     bottom : Stream
         Bottom fluid.
     top_chemical : str, optional
-        Identifier of chemical that will be favored in the "liquid" phase.
+        Identifier of chemical that will be favored in the top fluid.
     efficiency=1. : float,
         Fraction of feed in liquid-liquid equilibrium.
         The rest of the feed is divided equally between phases
@@ -469,6 +478,8 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     
     Examples
     --------
+    Perform liquid-liquid equilibrium around water and octanol and split the phases:
+    
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'], cache=True)
     >>> feed = tmo.Stream('feed', Water=20, Octanol=20, Ethanol=1)
@@ -487,6 +498,25 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
      flow (kmol/hr): Water    16.5
                      Ethanol  0.139
                      Octanol  0.00409
+    
+    Assume that 1% of the feed is not in equilibrium (possibly due to poor mixing):
+        
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'], cache=True)
+    >>> feed = tmo.Stream('feed', Water=20, Octanol=20, Ethanol=1)
+    >>> top = tmo.Stream('top')
+    >>> bottom = tmo.Stream('bottom')
+    >>> ms = tmo.MultiStream('ms', phases='lL') # Store flow rate data here as well
+    >>> tmo.separations.lle(feed, top, bottom, efficiency=0.99, multi_stream=ms)
+    >>> ms.show()
+    MultiStream: ms
+     phases: ('L', 'l'), T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): (L) Water    3.55
+                         Ethanol  0.861
+                         Octanol  20
+                     (l) Water    16.5
+                         Ethanol  0.139
+                         Octanol  0.00408
     
     """
     if multi_stream:
@@ -545,6 +575,9 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     
     Examples
     --------
+    Perform vapor-liquid equilibrium on water and ethanol and split phases
+    to vapor and liquid streams:
+    
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = tmo.Stream('feed', Water=20, Ethanol=20)
@@ -561,6 +594,18 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
      phase: 'l', T: 353.88 K, P: 101325 Pa
      flow (kmol/hr): Water    12.3
                      Ethanol  7.72
+    
+    It is also possible to save flow rate data in a multi-stream as well:
+        
+    >>> ms = tmo.MultiStream('ms', phases='lg')
+    >>> tmo.separations.vle(feed, vapor, liquid, V=0.5, P=101325, multi_stream=ms)
+    >>> ms.show()
+    MultiStream: ms
+     phases: ('g', 'l'), T: 353.88 K, P: 101325 Pa
+     flow (kmol/hr): (g) Water    7.72
+                         Ethanol  12.3
+                     (l) Water    12.3
+                         Ethanol  7.72
     
     """
     if multi_stream:
@@ -783,6 +828,79 @@ class StageLLE:
     
 @thermo_user
 class MultiStageLLE:
+    """
+    Create a MultiStageLLE object that models a counter-current system
+    of mixer-settlers for liquid-liquid extraction.
+    
+    Parameters
+    ----------
+    N_stages : int
+        Number of stages.
+    feed : Stream
+        Feed with solute.
+    solvent : Stream
+        Solvent to contact feed and recover solute.
+    carrier_chemical : str
+        Name of main chemical in the feed (which is not selectively extracted by the solvent).
+    partition_data : {'IDs': tuple[str], 'K': 1d array}, optional
+        IDs of chemicals in equilibrium and partition coefficients (molar 
+        composition ratio of the raffinate over the extract). If given,
+        The mixer-settlers will be modeled with these constants. Otherwise,
+        partition coefficients are computed based on temperature and composition.
+    
+    Examples
+    --------
+    Simulate 2-stage extraction of methanol from water using octanol:
+    
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'], cache=True)
+    >>> N_stages = 2
+    >>> feed = tmo.Stream('feed', Water=500, Methanol=50)
+    >>> solvent = tmo.Stream('solvent', Octanol=500)
+    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent)
+    >>> stages.simulate_multi_stage_lle_without_side_draws()
+    >>> stages.raffinate.show()
+    Stream: 
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water     413
+                     Methanol  8.4
+                     Octanol   0.103
+    >>> stages.extract.show()
+    Stream: 
+     phase: 'L', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water     87.1
+                     Methanol  41.6
+                     Octanol   500
+    
+    Simulate 10-stage extraction with user defined partition coefficients:
+    
+    >>> import numpy as np
+    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'])
+    >>> N_stages = 10
+    >>> feed = tmo.Stream('feed', Water=5000, Methanol=500)
+    >>> solvent = tmo.Stream('solvent', Octanol=5000)
+    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
+    ...     partition_data={
+    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
+    ...         'IDs': ('Water', 'Methanol', 'Octanol'),
+    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
+    ...     }
+    ... )
+    >>> stages.simulate_multi_stage_lle_without_side_draws()
+    >>> stages.raffinate.show()
+    Stream: 
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water     4.13e+03
+                     Methanol  1.27
+                     Octanol   1.51
+    >>> stages.extract.show()
+    Stream: 
+     phase: 'L', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water     871
+                     Methanol  499
+                     Octanol   5e+03
+    
+    """
     __slots__ = ('stages', 'index', 'multi_stream', 
                  'carrier_chemical', 'extract_flow_rates', 
                  'partition_data', '_thermo')
@@ -883,7 +1001,7 @@ class MultiStageLLE:
         )
         return extract_flow_rates
         
-@flx.njitable
+@flx.njitable(cache=True)
 def single_component_flow_rates_for_multi_stage_lle_without_side_draws(
         N_stages,
         phase_ratios,
@@ -929,7 +1047,7 @@ def single_component_flow_rates_for_multi_stage_lle_without_side_draws(
     b[-1] += solvent
     return np.linalg.solve(A, b)
 
-@flx.njitable
+@flx.njitable(cache=True)
 def flow_rates_for_multi_stage_extration_without_side_draws(
         N_stages,
         phase_fractions,
@@ -961,7 +1079,7 @@ def flow_rates_for_multi_stage_extration_without_side_draws(
 
     Returns
     -------
-    extract_flow_rates : 2d array]
+    extract_flow_rates : 2d array
         Extract flow rates with stages by row and components by column.
 
     """

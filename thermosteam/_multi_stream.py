@@ -834,7 +834,7 @@ class MultiStream(Stream):
             for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
                 if i: flow_rates += new_line    
-                flow_rates += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
+                flow_rates += f'{IDs[i]} ' + spaces + f' {data[i]:.3g}'
             if too_many_chemicals:
                 flow_rates += new_line + '...'
             if composition:

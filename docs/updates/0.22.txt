@@ -1,6 +1,14 @@
 Thermosteam 0.22
 ================
 
+0.22.3
+------
+
+Bug fixes:
+
+* :class:`thermosteam.reaction.Reaction` math operations (including divisions) are now working correctly. Please see examples in documentation to learn how to add, multiply, and divide reactions.
+
+
 0.22.2
 ------
 

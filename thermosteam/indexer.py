@@ -264,7 +264,7 @@ class ChemicalIndexer(Indexer):
             spaces = ' ' * (maxlen - lengths[i])
             if i != 0:
                 data_info += new_line
-            data_info += IDs[i] + spaces + f' {data[i]:.4g}'
+            data_info += IDs[i] + spaces + f' {data[i]:.3g}'
         if too_many_chemicals:
             data_info += new_line + '...'
         return (basic_info
@@ -607,7 +607,7 @@ class MaterialIndexer(Indexer):
             for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
                 if i: data_info += new_line
-                data_info += f'{IDs[i]} ' + spaces + f' {data[i]:.4g}'
+                data_info += f'{IDs[i]} ' + spaces + f' {data[i]:.3g}'
             if too_many_chemicals: data += new_line + '...'
             # Put it together
             phases_data_info += beginning + data_info + '\n'

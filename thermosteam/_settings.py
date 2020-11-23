@@ -106,7 +106,7 @@ class Settings:
         thermo = self.get_thermo()
         return thermo.chemicals
     
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return "<Settings>"
     
 settings = Settings()
