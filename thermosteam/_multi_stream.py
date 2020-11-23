@@ -731,18 +731,7 @@ class MultiStream(Stream):
         array([27.671,  4.266])
 
         """
-        return self.imol[phase, IDs]/self.F_vol
-        
-    def link_with(self, other):
-        if settings._debug:
-            assert isinstance(other, self.__class__), "other must be of same type to link with"
-        self._thermal_condition = other._thermal_condition
-        self._imol._data = other._imol._data
-        self._streams = other._streams
-        self._vle_cache = other._vle_cache
-        self._dew_point_cache = other._dew_point_cache
-        self._bubble_point_cache = other._bubble_point_cache
-        self._imol._data_cache = other._imol._data_cache
+        return self.imol[phase, IDs] / self.F_vol
     
     ### Equilibrium ###
     
@@ -764,8 +753,11 @@ class MultiStream(Stream):
     def as_stream(self):
         """Convert MultiStream to Stream."""
         phase = self.phase
-        if len(phase) == 1:
+        N_phase = len(phase)
+        if N_phase == 1:
             self.phase = phase
+        elif N_phase == 0:
+            self.phase = self.phases[0]
         else:
             raise RuntimeError('multiple phases present; cannot convert to single phase stream')
     

@@ -51,8 +51,8 @@ def as_model_index(models, key):
     elif isa(key, ThermoModel):
         index = models.index(key)
     else:
-        raise ValueError(
-            '`key` must be either the index [int], name [str], '
+        raise TypeError(
+            'key must be either the index [int], name [str], '
             'or the model itself [ThermoModel]')
     return index
 
@@ -69,8 +69,8 @@ def as_model(models, key):
         model = key
         assert model in models, "''"
     else:
-        raise ValueError(
-            '`key` must be either the index [int], name [str], '
+        raise TypeError(
+            'key must be either the index [int], name [str], '
             'or the model itself [ThermoModel]')
     return model
 
@@ -133,9 +133,9 @@ class ThermoModelHandle:
         return models[as_model_index(models, index)]
     
     def __setitem__(self, index, model):
-        assert isinstance(model, ThermoModel), (
-            "a 'ThermoModelHandle' object may only "
-            "contain 'ThermoModel' objects")
+        if not isinstance(model, ThermoModel):
+            raise TypeError("a 'ThermoModelHandle' object may only "
+                            "contain 'ThermoModel' objects")
         models = self._models
         models[as_model_index(models, index)] = model
 	
@@ -228,9 +228,9 @@ class ThermoModelHandle:
         if isinstance(evaluate, ThermoModel):
             model = evaluate
         elif isinstance(evaluate, ThermoModelHandle):
-            raise ValueError("ThermoModelHandle object cannot be added as a "
-                             "model; only ThermoModel objects, functions, "
-                             "and constants can be added")
+            raise TypeError("ThermoModelHandle object cannot be added as a "
+                            "model; only ThermoModel objects, functions, "
+                            "and constants can be added")
         else:
             model = thermo_model(evaluate, Tmin, Tmax, Pmin, Pmax,
                                  name, self._var, **kwargs)
@@ -287,7 +287,7 @@ class TDependentModelHandle(ThermoModelHandle):
     
     at_T = __call__
     
-    def try_out(self, T):
+    def try_out(self, T, P=None):
         for model in self._models:
             if model.indomain(T):
                 try: return model.evaluate(T)
@@ -302,7 +302,7 @@ class TDependentModelHandle(ThermoModelHandle):
     def differentiate_by_P(self, T, P=None, dP=1e-12):
         return 0
         
-    def integrate_by_T(self, Ta, Tb):
+    def integrate_by_T(self, Ta, Tb, P=None):
         integral = 0.
         defined = hasattr
         for model in self._models:
@@ -326,7 +326,7 @@ class TDependentModelHandle(ThermoModelHandle):
     def integrate_by_P(self, Pa, Pb, T):
         return (Pb - Pa) * self(T)
     
-    def integrate_by_T_over_T(self, Ta, Tb):
+    def integrate_by_T_over_T(self, Ta, Tb, P=None):
         integral = 0.
         defined = hasattr
         for model in self._models:

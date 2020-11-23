@@ -86,8 +86,6 @@ COSTALD_compressed.functor.hook = COSTALD_compressed_hook
 @TPDependentHandleBuilder('V.l')
 def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
                          omega, Psat, eos, dipole, has_hydroxyl):
-    Tmin = 50
-    Tmax = 1000
     all_ = all
     add_model = handle.add_model
     if CAS in rho_data_VDI_PPDS_2:
@@ -114,7 +112,7 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
         add_model(CRC_inorganic.functor.from_args(data), Tm, Tmax)
     data = (Tc, Vc, Zc)
     if all_(data):
-        add_model(Yen_Woods_saturation.functor.from_args(data))
+        add_model(Yen_Woods_saturation.functor.from_args(data), 0, Tc)
     data = (Tc, Pc, Zc)
     if all_(data):
         add_model(Rackett.functor.from_args(data), 0, Tc)
@@ -128,15 +126,15 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
         if CAS in rho_data_SNM0:
             SNM0_delta_SRK = float(rho_data_SNM0.get(CAS, 'delta_SRK'))
             data = (Tc, Vc, omega, SNM0_delta_SRK)
-            add_model(SNM0.functor.from_args(data))
+            add_model(SNM0.functor.from_args(data), 0, Tc)
     if CAS in rho_data_CRC_inorg_l_const:
         Vl = float(rho_data_CRC_inorg_l_const.get(CAS, 'Vm'))
-        add_model(Vl, Tmin, Tmax, name="CRC inorganic liquid constant")
+        add_model(Vl, 0., Tc, name="CRC inorganic liquid constant")
     if Tc and Pc and CAS in rho_data_COSTALD:
         Zc_ = rho_data_COSTALD.get(CAS, 'Z_RA')
         if not np.isnan(Zc_): Zc_ = float(Zc_)
         data = (Tc, Pc, Zc_)
-        add_model(Rackett.functor.from_args(data), Tmin, Tmax)
+        add_model(Rackett.functor.from_args(data), 0., Tc)
         # Roughly data at STP; not guaranteed however; not used for Trange
     data = (Tc, Vc, omega)
     if all_(data) and CAS in rho_data_COSTALD:

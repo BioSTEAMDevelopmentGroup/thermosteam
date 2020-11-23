@@ -200,7 +200,7 @@ class TDependentModel(ThermoModel, Functor=TFunctor):
         return 0
     
     def integrate_by_P(self, Pa, Pb, T):
-        return (Pb - Pa) * self.evaulate(T)
+        return (Pb - Pa) * self.evaluate(T)
     
     def show(self):
         print(f"{self}\n"
@@ -242,7 +242,7 @@ class TPDependentModel(ThermoModel, Functor=TPFunctor):
         return self.evaluate((Tb+Ta)/2., P)*log(Tb/Ta)
     
     def integrate_by_P(self, Pa, Pb, T):
-        return self.evaluate((Pb+Pa)/2, T)*(Pb - Pa)
+        return self.evaluate(T, (Pb+Pa)/2)*(Pb - Pa)
 
     def differentiate_by_T(self, T, P, dT=1e-12):
         return (self.evaluate(T+dT, P) - self.evaluate(T, P))/dT
@@ -267,7 +267,7 @@ class ConstantThermoModel(ThermoModel):
                  Tmin=None, Tmax=None,
                  Pmin=None, Pmax=None,
                  name=None, var=""):
-        self.value = value
+        self.value = float(value)
         self.name = name or "Constant"
         self.var = var
         self.Pmin = Pmin or 0.

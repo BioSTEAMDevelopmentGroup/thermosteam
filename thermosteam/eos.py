@@ -17,6 +17,10 @@
 Data and methods related to equations of state.
 
 '''
+# TODO: This module will go through many changes including:
+# * Importing all functions from the `chemicals` library
+# * Revised math
+# * Better cache
 
 
 __all__ = ['GCEOS', 'PR', 'SRK', 'PR78', 'PRSV', 'PRSV2', 'VDW', 'RK',  
@@ -29,7 +33,7 @@ from .constants import R
 from math import log, exp, sqrt, copysign
 
 
-class GCEOS:
+class GCEOS: # pragma: no cover
     r'''Class for solving a generic Pressure-explicit three-parameter cubic 
     equation of state. Does not implement any parameters itself; must be 
     subclassed by an equation of state class which uses it. Works for mixtures
@@ -843,7 +847,7 @@ class GCEOS:
             return self
 
 
-class GCEOS_DUMMY(GCEOS):
+class GCEOS_DUMMY(GCEOS): # pragma: no cover
     Tc = None
     Pc = None
     omega = None
@@ -852,7 +856,7 @@ class GCEOS_DUMMY(GCEOS):
         self.P = P
 
 # No named parameters
-class ALPHA_FUNCTIONS(GCEOS):
+class ALPHA_FUNCTIONS(GCEOS): # pragma: no cover
     r'''Basic class with a number of attached alpha functions for different
     applications, all of which have no parameters attached. These alpha 
     functions should be used for fitting purposes; new EOSs should have their
@@ -1464,7 +1468,7 @@ class ALPHA_FUNCTIONS(GCEOS):
 
 
 
-class PR(GCEOS):
+class PR(GCEOS): # pragma: no cover
     r'''Class for solving the Peng-Robinson cubic 
     equation of state for a pure compound. Subclasses `CUBIC_EOS`, which 
     provides the methods for solving the EOS and calculating its assorted 
@@ -1741,7 +1745,7 @@ class PR(GCEOS):
 #print(c.d2V_dPdT_l, c.PIP_l, c.V_l, c.T)
 
 
-class PR78(PR):
+class PR78(PR): # pragma: no cover
     r'''Class for solving the Peng-Robinson cubic 
     equation of state for a pure compound according to the 1978 variant.
     Subclasses `PR`, which provides everything except the variable `kappa`.
@@ -1822,7 +1826,7 @@ class PR78(PR):
         self.solve()
 
 
-class PRSV(PR):
+class PRSV(PR): # pragma: no cover
     r'''Class for solving the Peng-Robinson-Stryjek-Vera equations of state for
     a pure compound as given in [1]_. The same as the Peng-Robinson EOS,
     except with a different `kappa` formula and with an optional fit parameter.
@@ -2034,7 +2038,7 @@ class PRSV(PR):
             return a_alpha, da_alpha_dT, d2a_alpha_dT2
 
             
-class PRSV2(PR):
+class PRSV2(PR): # pragma: no cover
     r'''Class for solving the Peng-Robinson-Stryjek-Vera 2 equations of state 
     for a pure compound as given in [1]_. The same as the Peng-Robinson EOS,
     except with a different `kappa` formula and with three fit parameters.
@@ -2237,7 +2241,7 @@ class PRSV2(PR):
             return a_alpha, da_alpha_dT, d2a_alpha_dT2
 
 
-class VDW(GCEOS):
+class VDW(GCEOS): # pragma: no cover
     r'''Class for solving the Van der Waals cubic 
     equation of state for a pure compound. Subclasses `CUBIC_EOS`, which 
     provides the methods for solving the EOS and calculating its assorted 
@@ -2399,7 +2403,7 @@ class VDW(GCEOS):
 
         
 
-class RK(GCEOS):
+class RK(GCEOS): # pragma: no cover
     r'''Class for solving the Redlich-Kwong cubic 
     equation of state for a pure compound. Subclasses `CUBIC_EOS`, which 
     provides the methods for solving the EOS and calculating its assorted 
@@ -2548,7 +2552,7 @@ class RK(GCEOS):
             return ((-(-1/2 + sqrt(3)*1j/2)*(sqrt(729*(-V*a + a*b)**2/(R*V**2 + R*V*b)**2 + 108*(-P*V + P*b)**3/R**3)/2 + 27*(-V*a + a*b)/(2*(R*V**2 + R*V*b))+0j)**(1/3)/3 + (-P*V + P*b)/(R*(-1/2 + sqrt(3)*1j/2)*(sqrt(729*(-V*a + a*b)**2/(R*V**2 + R*V*b)**2 + 108*(-P*V + P*b)**3/R**3)/2 + 27*(-V*a + a*b)/(2*(R*V**2 + R*V*b))+0j)**(1/3)))**2).real
 
 
-class SRK(GCEOS):
+class SRK(GCEOS): # pragma: no cover
     r'''Class for solving the Soave-Redlich-Kwong cubic 
     equation of state for a pure compound. Subclasses `CUBIC_EOS`, which 
     provides the methods for solving the EOS and calculating its assorted 
@@ -2730,7 +2734,7 @@ class SRK(GCEOS):
             return Tc*(-2*a*m*sqrt(V*(V - b)**3*(V + b)*(P*R*Tc*V**2 + P*R*Tc*V*b - P*V*a*m**2 + P*a*b*m**2 + R*Tc*a*m**2 + 2*R*Tc*a*m + R*Tc*a))*(m + 1)*(R*Tc*V**2 + R*Tc*V*b - V*a*m**2 + a*b*m**2)**2 + (V - b)*(R**2*Tc**2*V**4 + 2*R**2*Tc**2*V**3*b + R**2*Tc**2*V**2*b**2 - 2*R*Tc*V**3*a*m**2 + 2*R*Tc*V*a*b**2*m**2 + V**2*a**2*m**4 - 2*V*a**2*b*m**4 + a**2*b**2*m**4)*(P*R*Tc*V**4 + 2*P*R*Tc*V**3*b + P*R*Tc*V**2*b**2 - P*V**3*a*m**2 + P*V*a*b**2*m**2 + R*Tc*V**2*a*m**2 + 2*R*Tc*V**2*a*m + R*Tc*V**2*a + R*Tc*V*a*b*m**2 + 2*R*Tc*V*a*b*m + R*Tc*V*a*b + V*a**2*m**4 + 2*V*a**2*m**3 + V*a**2*m**2 - a**2*b*m**4 - 2*a**2*b*m**3 - a**2*b*m**2))/((R*Tc*V**2 + R*Tc*V*b - V*a*m**2 + a*b*m**2)**2*(R**2*Tc**2*V**4 + 2*R**2*Tc**2*V**3*b + R**2*Tc**2*V**2*b**2 - 2*R*Tc*V**3*a*m**2 + 2*R*Tc*V*a*b**2*m**2 + V**2*a**2*m**4 - 2*V*a**2*b*m**4 + a**2*b**2*m**4))
 
 
-class APISRK(SRK):
+class APISRK(SRK): # pragma: no cover
     r'''Class for solving the Refinery Soave-Redlich-Kwong cubic 
     equation of state for a pure compound shown in the API Databook [1]_.
     Subclasses `CUBIC_EOS`, which 
@@ -2906,7 +2910,7 @@ class APISRK(SRK):
             return newton(to_solve, Tc*0.5)
 
 
-class TWUPR(PR):
+class TWUPR(PR): # pragma: no cover
     r'''Class for solving the Twu [1]_ variant of the Peng-Robinson cubic 
     equation of state for a pure compound. Subclasses `PR`, which 
     provides the methods for solving the EOS and calculating its assorted 
@@ -3007,7 +3011,7 @@ class TWUPR(PR):
         return TWU_a_alpha_common(T, self.Tc, self.omega, self.a, full=full, quick=quick, method='PR')
 
 
-def TWU_a_alpha_common(T, Tc, omega, a, full=True, quick=True, method='PR'):
+def TWU_a_alpha_common(T, Tc, omega, a, full=True, quick=True, method='PR'): # pragma: no cover
     r'''Function to calculate `a_alpha` and optionally its first and second
     derivatives for the TWUPR or TWUSRK EOS. Returns 'a_alpha', and 
     optionally 'da_alpha_dT' and 'd2a_alpha_dT2'.
@@ -3111,7 +3115,7 @@ def TWU_a_alpha_common(T, Tc, omega, a, full=True, quick=True, method='PR'):
         return a_alpha, da_alpha_dT, d2a_alpha_dT2
 
 
-class TWUSRK(SRK):
+class TWUSRK(SRK): # pragma: no cover
     r'''Class for solving the Soave-Redlich-Kwong cubic 
     equation of state for a pure compound. Subclasses `CUBIC_EOS`, which 
     provides the methods for solving the EOS and calculating its assorted 

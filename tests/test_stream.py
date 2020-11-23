@@ -101,6 +101,8 @@ def test_multistream():
     assert not stream.isfeed()
     assert not stream.isproduct()
     assert stream.vapor_fraction == 0.
+    assert stream.liquid_fraction == 1.
+    assert stream.solid_fraction == 0.
     with pytest.raises(ValueError):
         stream.get_property('isfeed', 'kg/hr')
     with pytest.raises(ValueError):
@@ -122,6 +124,30 @@ def test_multistream():
         stream.F_mass = 1.
     with pytest.raises(AttributeError):
         stream.F_vol = 1.
+        
+    # Casting
+    stream.as_stream()
+    assert stream.phase == 'g' # Phase of an empty multi-stream defaults to stream.phases[0]
+    assert type(stream) is tmo.Stream
+    stream.phases = 'gl'
+    assert stream.phases == ('g', 'l')
+    stream.phases = 'gls'
+    stream.phases == ('g', 'l', 's')
+    stream.phases = 's'
+    assert type(stream) is tmo.Stream
+    assert stream.phase == 's'
+    
+    # Linking
+    stream.phase = 'l'
+    stream.phases = 'lg'
+    other = stream.copy()
+    stream.link_with(other)
+    other.imol['l', 'Water'] = 10
+    other.vle(V=0.5, P=2*101325)
+    assert_allclose(other.mol, stream.mol)
+    assert_allclose(other.T, stream.T)
+    assert_allclose(other.P, stream.P)
+    
     
 if __name__ == '__main__':
     test_stream()

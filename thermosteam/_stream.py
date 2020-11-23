@@ -988,7 +988,7 @@ class Stream:
         if self._link and not (self.source is other.sink or self.sink is other.source):
             raise RuntimeError(f"stream {self} cannot link with stream {other};"
                                f" {self} already linked with {self._link}")
-        if TP and flow and phase:
+        if TP and flow and (phase or self._imol._data.ndim == 2):
             self._imol._data_cache = other._imol._data_cache
         else:
             self._imol._data_cache.clear()
@@ -997,7 +997,7 @@ class Stream:
             self._thermal_condition = other._thermal_condition
         if flow:
             self._imol._data = other._imol._data
-        if phase:
+        if phase and self._imol._data.ndim == 1:
             self._imol._phase = other._imol._phase
         
         self._link = other
