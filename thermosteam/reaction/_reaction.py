@@ -116,17 +116,16 @@ class Reaction:
     Warning
     -------
     Negative conversions and conversions above 1.0 are fair game (allowed), but
-    may lead to infeasible values when reacting a stream.
+    may lead to odd/infeasible values when reacting a stream.
     
     Examples
     --------
     Electrolysis of water to molecular hydrogen and oxygen:
     
     >>> import thermosteam as tmo
-    >>> import thermosteam.reaction as rxn
     >>> chemicals = tmo.Chemicals(['H2O', 'H2', 'O2'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
-    >>> reaction = rxn.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=0.7)
+    >>> reaction = tmo.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=0.7)
     >>> reaction.show() # Note that the default basis is by 'mol'
     Reaction (by mol):
      stoichiometry             reactant    X[%]
@@ -167,7 +166,7 @@ class Reaction:
     If chemicals phases are not specified, Reaction objects can 
     react a any single phase Stream object (regardless of phase):
     
-    >>> reaction = rxn.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
+    >>> reaction = tmo.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=0.7)
     >>> feed = tmo.Stream('feed', H2O=100, phase='g')
     >>> reaction(feed) 
     >>> feed.show() 
@@ -400,10 +399,9 @@ class Reaction:
         heat of reaction:
         
         >>> import thermosteam as tmo
-        >>> import thermosteam.reaction as rxn
         >>> chemicals = tmo.Chemicals(['H2', 'O2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
-        >>> reaction = rxn.Reaction('2H2 + O2 -> 2H2O', reactant='H2', X=0.7)
+        >>> reaction = tmo.Reaction('2H2 + O2 -> 2H2O', reactant='H2', X=0.7)
         >>> s1 = tmo.Stream('s1', H2=10, O2=20, H2O=1000, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_like(s1) # s1 and s2 are the same
@@ -901,15 +899,16 @@ class ParallelReaction(ReactionSet):
     
     Examples
     --------
+    Run two reactions in parallel:
+    
     >>> import thermosteam as tmo
-    >>> import thermosteam.reaction as rxn
     >>> chemicals = tmo.Chemicals(['H2', 'Ethanol', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
     >>> tmo.settings.set_thermo(chemicals)
     >>> kwargs = dict(phases='lg', correct_atomic_balance=True)
-    >>> reaction = rxn.ParallelReaction([
+    >>> reaction = tmo.ParallelReaction([
     ...    #            Reaction definition                    Reactant             Conversion
-    ...    rxn.Reaction('H2,g + O2,g -> 2H2O,g',               reactant='H2',       X=0.7, **kwargs),
-    ...    rxn.Reaction('Ethanol,l + O2,g -> CO2,g + 2H2O,g',  reactant='Ethanol',  X=0.1, **kwargs)
+    ...    tmo.Reaction('H2,g + O2,g -> 2H2O,g',               reactant='H2',       X=0.7, **kwargs),
+    ...    tmo.Reaction('Ethanol,l + O2,g -> CO2,g + 2H2O,g',  reactant='Ethanol',  X=0.1, **kwargs)
     ... ])
     >>> reaction.reactants # Note that reactants are tuples of phase and ID pairs.
     (('g', 'H2'), ('l', 'Ethanol'))
@@ -923,7 +922,6 @@ class ParallelReaction(ReactionSet):
     >>> s1 = tmo.MultiStream('s1', T=373.15, 
     ...                      l=[('Ethanol', 10)],
     ...                      g=[('H2', 10), ('CH4', 5), ('O2', 100), ('H2O', 10)])
-    
     >>> s1.show() # Before reaction
     MultiStream: s1
      phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
@@ -943,6 +941,57 @@ class ParallelReaction(ReactionSet):
                          CO2      2
                          H2O      20
                      (l) Ethanol  9
+    
+    Reaction items are accessible:
+    
+    >>> reaction[0].show()
+    ReactionItem (by mol):
+     stoichiometry             reactant    X[%]
+     H2,g + 0.5 O2,g -> H2O,g  H2,g       70.00
+    
+    Note that changing the conversion of a reaction item changes the 
+    conversion of its parent reaction set:
+        
+    >>> reaction[0].X = 0.5
+    >>> reaction.show()
+    ParallelReaction (by mol):
+    index  stoichiometry                            reactant     X[%]
+    [0]    H2,g + 0.5 O2,g -> H2O,g                 H2,g        50.00
+    [1]    3 O2,g + Ethanol,l -> 2 CO2,g + 3 H2O,g  Ethanol,l   10.00
+    
+    Reactions subsets can be made as well:
+        
+    >>> reaction[:1].show()
+    ParallelReaction (by mol):
+    index  stoichiometry             reactant    X[%]
+    [0]    H2,g + 0.5 O2,g -> H2O,g  H2,g       50.00
+    
+    Get net reaction conversion of reactants as a material indexer:
+        
+    >>> mi = reaction.X_net
+    >>> mi.show()
+    MaterialIndexer:
+     (g) H2        0.5
+     (l) Ethanol   0.1
+    >>> mi['g', 'H2']
+    0.5
+    
+    If no phases are specified for a reaction set, the `X_net` property returns
+    a ChemicalIndexer:
+    
+    >>> kwargs = dict(correct_atomic_balance=True)
+    >>> reaction = tmo.ParallelReaction([
+    ...    #            Reaction definition            Reactant             Conversion
+    ...    tmo.Reaction('H2 + O2 -> 2H2O',             reactant='H2',       X=0.7, **kwargs),
+    ...    tmo.Reaction('Ethanol + O2 -> CO2 + 2H2O',  reactant='Ethanol',  X=0.1, **kwargs)
+    ... ])
+    >>> ci = reaction.X_net
+    >>> ci.show()
+    ChemicalIndexer:
+     H2       0.7
+     Ethanol  0.1
+    >>> ci['H2']
+    0.7
     
     """
     __slots__ = ()
@@ -971,13 +1020,12 @@ class ParallelReaction(ReactionSet):
         Note how the stream temperature changed after the reaction due to the heat of reaction:
             
         >>> import thermosteam as tmo
-        >>> import thermosteam.reaction as rxn
         >>> chemicals = tmo.Chemicals(['H2', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
-        >>> reaction = rxn.ParallelReaction([
+        >>> reaction = tmo.ParallelReaction([
         ...    #            Reaction definition          Reactant    Conversion
-        ...    rxn.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
-        ...    rxn.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
+        ...    tmo.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
+        ...    tmo.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
         ... ])
         >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=100, T=373.15, phase='g')
         >>> s2 = tmo.Stream('s2')
@@ -1038,8 +1086,15 @@ class ParallelReaction(ReactionSet):
             else:
                 X_net[i] = j
         chemicals = self.chemicals
-        data = chemicals.kwarray(X_net)
-        return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+        phases = self.phases
+        if phases:
+            phases = [i[0] for i in X_net]
+            mi = MaterialIndexer(phases=phases, chemicals=chemicals)
+            for i,j in X_net.items(): mi[i] = j
+            return mi                
+        else:
+            data = chemicals.kwarray(X_net)
+            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
 
 
 class SeriesReaction(ReactionSet):
@@ -1079,13 +1134,12 @@ class SeriesReaction(ReactionSet):
         Note how the stream temperature changed after the reaction due to the heat of reaction:
         
         >>> import thermosteam as tmo
-        >>> import thermosteam.reaction as rxn
         >>> chemicals = tmo.Chemicals(['CH4', 'CO','O2', 'CO2', 'H2O'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
-        >>> reaction = rxn.SeriesReaction([
+        >>> reaction = tmo.SeriesReaction([
         ...     #            Reaction definition                 Reactant       Conversion
-        ...     rxn.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
-        ...     rxn.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
+        ...     tmo.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
+        ...     tmo.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
         ...     ])
         >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=100, T=373.15, phase='g')
         >>> s1.show() # Before reaction
