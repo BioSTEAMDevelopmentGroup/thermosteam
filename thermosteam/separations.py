@@ -598,7 +598,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
         Outlet streams that cannot vary in flow rates.
     is_exact=True : bool, optional
         True if exact flow rate solution is required for the specified IDs.
-    kind='flow' : {'flow', 'composition'}, optional
+    balance='flow' : {'flow', 'composition'}, optional
           * 'flow': Satisfy output flow rates
           * 'composition': Satisfy net output molar composition
     
@@ -618,14 +618,25 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     >>> constant_outlets = [out_a, out_b]
     >>> chemical_IDs = ('Water', 'Ethanol')
     >>> tmo.separations.material_balance(chemical_IDs, variable_inlets, constant_inlets, constant_outlets)
-    >>> in_a.show()
-    Stream: in_a
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water  100
-    >>> in_b.show()
-    Stream: in_b
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Ethanol  102
+    >>> tmo.Stream.sum([in_a, in_b, in_c]).mol - tmo.Stream.sum([out_a, out_b]).mol # Molar flow rates entering and leaving are equal
+    array([0., 0.])
+    
+    Vary inlet flow rates to satisfy outlet composition:
+        
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    >>> in_a = tmo.Stream('in_a', Water=1)
+    >>> in_b = tmo.Stream('in_b', Ethanol=1)
+    >>> variable_inlets = [in_a, in_b]
+    >>> in_c = tmo.Stream('in_c', Water=100)
+    >>> constant_inlets = [in_c]
+    >>> out_a = tmo.Stream('out_a', Water=200, Ethanol=2)
+    >>> out_b = tmo.Stream('out_b', Ethanol=100)
+    >>> constant_outlets = [out_a, out_b]
+    >>> chemical_IDs = ('Water', 'Ethanol')
+    >>> tmo.separations.material_balance(chemical_IDs, variable_inlets, constant_inlets, constant_outlets, balance='composition')
+    >>> tmo.Stream.sum([in_a, in_b, in_c]).z_mol - tmo.Stream.sum([out_a, out_b]).z_mol # Molar composition entering and leaving are equal
+    array([0., 0.])
     
     """
     # SOLVING BY ITERATION TAKES 15 LOOPS FOR 2 STREAMS
@@ -686,7 +697,11 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
             # Solve linear equations for mass balance
             b = (A_ * x_guess).sum()*f + O
             x_new = solver(A, b)
-            not_converged = sum(((x_new - x_guess)/x_new)**2) > 0.0001
+            infeasibles = x_new < 0.
+            if infeasibles.any(): x_new -= x_new[infeasibles].min()
+            denominator = x_guess.copy()
+            denominator[denominator == 0.] = 1.
+            not_converged = sum(((x_new - x_guess)/denominator)**2) > 1e-6
             x_guess = x_new
 
         # Set flow rates for input streams

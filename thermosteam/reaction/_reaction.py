@@ -844,7 +844,7 @@ class ReactionSet:
         phases = self._phases
         X_index = self._X_index
         if phases:
-            return [(phases[i], IDs[j]) for i,j in X_index]
+            return tuple([(phases[i], IDs[j]) for i,j in X_index])
         else:
             return tuple([IDs[i] for i in X_index])
     
@@ -870,19 +870,21 @@ class ReactionSet:
         info = f"{type(self).__name__} (by {self.basis}):"
         chemicals = self._chemicals
         phases = self._phases
+        length = len
+        string = str
         rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
-        maxrxnlen = max([13, *[len(i) for i in rxns]]) + 2
+        maxrxnlen = max([13, *[length(i) for i in rxns]]) + 2
         cmps = [ID + ',' + phase for phase, ID in self.reactants] if phases else self.reactants
-        maxcmplen = max([8, *[len(i) for i in cmps]]) + 2
+        maxcmplen = max([8, *[length(i) for i in cmps]]) + 2
         Xs = self.X
         N = len(Xs)
-        maxnumspace = max(len(str(N)) + 1, 5)
+        maxnumspace = max(length(string(N)) + 1, 5)
         info += "\nindex" + " "*(max(2, maxnumspace-3)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
         for N, rxn, cmp, X in zip(range(N), rxns, cmps, Xs):
-            rxn_spaces = " "*(maxrxnlen - len(rxn))
-            cmp_spaces = " "*(maxcmplen - len(cmp))
-            num = str(N)
-            numspace = (maxnumspace - len(num)) * " "
+            rxn_spaces = " "*(maxrxnlen - length(rxn))
+            cmp_spaces = " "*(maxcmplen - length(cmp))
+            num = string(N)
+            numspace = (maxnumspace - length(num)) * " "
             info += f"\n[{N}]{numspace}{rxn}{rxn_spaces}{cmp}{cmp_spaces}{X*100: >6.2f}"
         print(info)
     _ipython_display_ = show
@@ -910,7 +912,7 @@ class ParallelReaction(ReactionSet):
     ...    rxn.Reaction('Ethanol,l + O2,g -> CO2,g + 2H2O,g',  reactant='Ethanol',  X=0.1, **kwargs)
     ... ])
     >>> reaction.reactants # Note that reactants are tuples of phase and ID pairs.
-    [('g', 'H2'), ('l', 'Ethanol')]
+    (('g', 'H2'), ('l', 'Ethanol'))
     
     >>> reaction.show()
     ParallelReaction (by mol):
