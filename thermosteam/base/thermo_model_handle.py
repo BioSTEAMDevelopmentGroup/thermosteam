@@ -98,27 +98,27 @@ class ThermoModelHandle:
         for model in self._models: model.set_value(var, value)
     
     def plot_vs_T(self, T_range=None, T_units=None, units=None, 
-                  P=101325, label_axis=True, **plot_kwargs):
+                  P=101325, label_axis=True, **plot_kwargs): # pragma: no cover
         Ts, Ys = self.tabulate_vs_T(T_range, T_units, units, P)
         plt.plot(Ts, Ys, **plot_kwargs)
         if label_axis: create_axis_labels('T', T_units, self._var, units)
         plt.legend()
         
     def plot_vs_P(self, P_range=None, P_units=None, units=None,
-                  T=298.15, label_axis=True, **plot_kwargs):
+                  T=298.15, label_axis=True, **plot_kwargs): # pragma: no cover
         Ps, Ys = self.tabulate_vs_P(P_range, P_units, units, T)
         plt.plot(Ps, Ys, **plot_kwargs)
         if label_axis: create_axis_labels('P', P_units, self._var, units)
         plt.legend()
     
     def plot_models_vs_T(self, T_range=None, T_units=None, units=None,
-                         P=101325, label_axis=True, **plot_kwargs):
+                         P=101325, label_axis=True, **plot_kwargs): # pragma: no cover
         for model in self: model.plot_vs_T(T_range, T_units, units, P, False, **plot_kwargs)
         if label_axis: create_axis_labels('T', T_units, self._var, units)
         plt.legend()
     
     def plot_models_vs_P(self, P_range=None, P_units=None, units=None,
-                         T=298.15, label_axis=True, **plot_kwargs):
+                         T=298.15, label_axis=True, **plot_kwargs): # pragma: no cover
         for model in self: model.plot_vs_P(P_range, P_units, units, T, False, **plot_kwargs)
         if label_axis: create_axis_labels('P', P_units, self._var, units)
         plt.legend()
