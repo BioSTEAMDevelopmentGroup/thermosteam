@@ -107,9 +107,15 @@ class PhaseIndexer:
         except:
             raise UndefinedPhase(phase)        
     
+    @property
+    def phases(self):
+        return tuple(self._index)[:-1]
+    
+    def __reduce__(self):
+        return PhaseIndexer, (self.phases,)
+    
     def __repr__(self):
-        phases = list(self._index)[:-1]
-        return f"{type(self).__name__}({phases})"
+        return f"{type(self).__name__}({list(self.phases)})"
 
 class Phase:
     __slots__ = ('_phase',)
@@ -131,7 +137,7 @@ class Phase:
         return self._phase
     @phase.setter
     def phase(self, phase):
-        
+        check_phase(phase)
         self._phase = phase
     
     def copy(self):

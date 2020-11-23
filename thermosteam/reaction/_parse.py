@@ -77,12 +77,11 @@ def dct2str(dct):
     left = []
     right = []
     for ID, n in dct.items():
-        n_int = int(n)
-        if n_int == n: n = n_int
-        if n == -1: left.append(ID)
-        elif n == 1: right.append(ID)
+        nf = format(n, '.3g')
+        if nf == '-1': left.append(ID)
+        elif nf == '1': right.append(ID)
         elif n < 0: left.append(f"{-n:.3g} {ID}")
-        else: right.append(f"{n:.3g} {ID}")
+        else: right.append(f"{nf} {ID}")
     left = ' + '.join(left)
     right = ' + '.join(right)
     reaction = left + ' -> ' + right

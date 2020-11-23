@@ -113,6 +113,11 @@ class Reaction:
     the basis of the reaction object. When an array is passed, the array
     elements are reacted regardless of what basis they are associated with.
     
+    Warning
+    -------
+    Negative conversions and conversions above 1.0 are fair game (allowed), but
+    may lead to infeasible values when reacting a stream.
+    
     Examples
     --------
     Electrolysis of water to molecular hydrogen and oxygen:
@@ -179,6 +184,40 @@ class Reaction:
     >>> reaction(array)
     >>> array
     array([30., 70., 35.])
+    
+    Reaction objects with the same reactant can be added together:
+        
+    >>> tmo.settings.set_thermo(['Glucose', 'Ethanol', 'H2O', 'O2', 'CO2'])
+    >>> fermentation = tmo.Reaction('Glucose + O2 -> Ethanol + CO2', reactant='Glucose', X=0.7)
+    >>> combustion = tmo.Reaction('Glucose + O2 -> H2O + CO2', reactant='Glucose', X=0.2)
+    >>> mixed_reaction = fermentation + combustion
+    >>> mixed_reaction.show()
+    Reaction (by mol):
+     stoichiometry                                    reactant    X[%]
+     Glucose + O2 -> 0.778 Ethanol + 0.222 H2O + CO2  Glucose    90.00
+    
+    Note how conversions are added and the stoichiometry rescales to a per
+    reactant basis. Conversly, reaction objects may be substracted as well:
+    
+    >>> combustion = mixed_reaction - fermentation
+    >>> combustion.show()
+    Reaction (by mol):
+     stoichiometry                reactant    X[%]
+     Glucose + O2 -> H2O + CO2  Glucose    20.00
+    
+    When a Reaction object is multiplied (or divided), a new Reaction object
+    with the conversion multiplied (or divided) is returned:
+        
+    >>> combustion_multiplied = 2 * combustion
+    >>> combustion_multiplied.show()
+    Reaction (by mol):
+     stoichiometry                reactant    X[%]
+     Glucose + O2 -> H2O + CO2  Glucose    40.00
+    >>> fermentation_divided = fermentation / 2
+    >>> fermentation_divided.show()
+    Reaction (by mol):
+     stoichiometry                  reactant    X[%]
+     Glucose + O2 -> Ethanol + CO2  Glucose    35.00
     
     """
     phases = MaterialIndexer.phases
@@ -284,14 +323,14 @@ class Reaction:
         self.X *= num
         return self
     
-    def __div__(self, num):
-        self.__mul__(self, 1/num)
+    def __truediv__(self, num):
+        return self.__mul__(1./num)
     
-    def __rdiv__(self, num):
-        self.__mul__(self, 1/num)    
+    def __rtruediv__(self, num):
+        return self.__mul__(1./num)    
     
-    def __idiv__(self, num):
-        return self.__imul__(self, 1/num) 
+    def __itruediv__(self, num):
+        return self.__imul__(1./num) 
     
     def __neg__(self):
         new = self.copy()

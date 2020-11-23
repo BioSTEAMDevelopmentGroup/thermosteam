@@ -195,20 +195,53 @@ class Chemicals:
         """
         return type(self)([getattr(self, i) for i in IDs])
     
-    def compile(self):
+    def compile(self, skip_checks=False):
         """
         Cast as a CompiledChemicals object.
         
+        Parameters
+        ----------
+        skip_checks : bool, optional
+            Whether to skip checks for missing or invalid properties.
+            
+        Warning
+        -------
+        If checks are skipped, certain features in thermosteam (e.g. phase equilibrium)
+        cannot be guaranteed to function properly. 
+        
         Examples
         --------
-        >>> from thermosteam import Chemicals
-        >>> chemicals = Chemicals(['Water', 'Ethanol'])
+        Compile ethanol and water chemicals:
+        
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'])
         >>> chemicals.compile()
         >>> chemicals
         CompiledChemicals([Water, Ethanol])
         
+        Attempt to compile chemicals with missing properties:
+            
+        >>> Substance = tmo.Chemical('Substance', search_db=False)
+        >>> chemicals = tmo.Chemicals([Substance])
+        >>> chemicals.compile()
+        Traceback (most recent call last):
+        RuntimeError: Substance is missing key thermodynamic properties 
+        (V, S, H, Cn, Psat, Tb and Hvap); use the `<Chemical>.get_missing_properties()` 
+        to check all missing properties
+        
+        Compile chemicals with missing properties (skipping checks) and note 
+        how certain features do not work:
+        
+        >>> chemicals.compile(skip_checks=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> s = tmo.Stream('s', Substance=10)
+        >>> s.rho
+        Traceback (most recent call last):
+        DomainError: Substance (CAS: Substance) has no valid liquid molar 
+        volume model at T=298.15 K and P=101325 Pa
+        
         """
-        CompiledChemicals._compile(self)
+        CompiledChemicals._compile(self, skip_checks)
         setattr(self, '__class__', CompiledChemicals)
     
     kwarray = array = index = indices = must_compile
@@ -373,7 +406,7 @@ class CompiledChemicals(Chemicals):
         reactions = [i.get_combustion_reaction(self) for i in self]
         return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
-    def _compile(self):
+    def _compile(self, skip_checks=False):
         dct = self.__dict__
         tuple_ = tuple
         chemicals = tuple_(dct.values())
@@ -381,6 +414,7 @@ class CompiledChemicals(Chemicals):
         for chemical in chemicals:
             if chemical.get_missing_properties(free_energies):
                 chemical.reset_free_energies()
+            if skip_checks: continue
             key_properties = chemical.get_key_property_names()
             missing_properties = chemical.get_missing_properties(key_properties)
             if not missing_properties: continue
