@@ -23,6 +23,8 @@ try: test_LAOs = ignore_import_error(test_LAOs)
 except NameError: pass
 try: test_lactic = ignore_import_error(test_lactic)
 except NameError: pass
+try: test_ethanol_adipic = ignore_import_error(test_annimal_bedding)
+except NameError: pass
 try: test_annimal_bedding = ignore_import_error(test_annimal_bedding)
 except NameError: pass
 try: test_wheatstraw = ignore_import_error(test_wheatstraw)
