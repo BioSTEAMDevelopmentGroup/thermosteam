@@ -323,10 +323,7 @@ class Reaction:
         return self
     
     def __truediv__(self, num):
-        return self.__mul__(1./num)
-    
-    def __rtruediv__(self, num):
-        return self.__mul__(1./num)    
+        return self.__mul__(1./num)  
     
     def __itruediv__(self, num):
         return self.__imul__(1./num) 
