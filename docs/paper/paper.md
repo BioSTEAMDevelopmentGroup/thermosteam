@@ -91,7 +91,7 @@ thermodynamic and transport properties for 122 chemical components, and can
 estimate thermodynamic phase equilibrium and mixture properties [@CoolProp].
 `CoolProp` also offers an interface to the NIST REFPROP software, which is 
 considered the gold standard in thermophysical properties [@REFPROP]. It is 
-within `Thermosteam`'s roadmap to use `CoolProp` as part of it's built-in
+within `Thermosteam`'s roadmap to use `CoolProp` as part of its built-in
 models. While `CoolProp` focuses on thermophysical chemical properties, 
 `Thermosteam` also includes mass and energy balances and stoichiometric reactions 
 as one of its central features.
