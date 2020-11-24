@@ -42,7 +42,7 @@ def format_degrees(units):
     
     """
     if units.startswith('deg'):
-        units = '^\circ ' + units[3:]
+        units = r'^\circ ' + units[3:]
     return units
 
 def format_units_power(units, isnumerator=True):

@@ -1,6 +1,13 @@
 Thermosteam 0.22
 ================
 
+0.22.4
+------
+
+Bug fixes:
+
+* Corrected bug in the gas enthalpy of chemicals, closing enthalpy balances.
+
 0.22.3
 ------
 

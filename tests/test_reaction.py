@@ -45,5 +45,43 @@ def test_reaction():
                              phases='gl')
     with pytest.raises(ValueError): reaction(stream)
     
+def test_reaction_enthalpy_balance():
+    # Combustion; ensure heat of gas phase reaction without sensible heats is 
+    # the lower heating value
+    chemicals = H2O, Methane, CO2, O2, H2 = tmo.Chemicals(['H2O', 'Methane', 'CO2', 'O2', 'H2'])
+    H2O.H.g.Hvap_Tb = 44011.496 # Depending on the model, this value may be different.
+    tmo.settings.set_thermo(chemicals)
+    combustion = tmo.Reaction('Methane + O2 -> H2O + CO2',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    Tref = 298.15
+    Tb = H2O.Tb
+    feed = tmo.Stream(Methane=1, O2=2, T=Tb, phase='g')
+    H0 = feed.Hnet - Methane.Cn.g.integrate_by_T(Tref, Tb) - 2 * O2.Cn.g.integrate_by_T(Tref, Tb) 
+    combustion(feed)
+    Hf = feed.Hnet - 2 * H2O.Cn.l.integrate_by_T(Tref, Tb) - CO2.Cn.g.integrate_by_T(Tref, Tb)
+    assert_allclose(Hf - H0, Methane.LHV)
+    
+    # Electrolysis of water; ensure heat of reaction without sensible
+    # heats is the higher heating value of hydrogen (with opposite sign)
+    tmo.settings.set_thermo(chemicals)
+    reaction = tmo.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=1)
+    feed = tmo.Stream('feed', H2O=1)
+    H0 = feed.Hnet
+    feed.phases = ('g', 'l') # Gas and liquid phases must be available
+    reaction(feed) # Call to run reaction on molar flow
+    Hf = feed.Hnet
+    assert_allclose(Hf - H0, -H2.HHV)
+    
+    # Electrolysis of water; ensure gas phase heat of reaction without sensible
+    # heats is the lower heating value of hydrogen (with opposite sign)
+    reaction = tmo.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=1)
+    feed = tmo.Stream('feed', H2O=1, T=Tref, phase='g')
+    H0 = feed.Hnet - H2O.Cn.l.integrate_by_T(Tref, H2O.Tb) - H2O.Cn.g.integrate_by_T(H2O.Tb, Tref)
+    reaction(feed) # Call to run reaction on molar flow
+    Hf = feed.Hnet
+    assert_allclose(Hf - H0, -H2.LHV)
+    
 if __name__ == '__main__':
     test_reaction()
+    test_reaction_enthalpy_balance()

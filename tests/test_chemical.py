@@ -108,7 +108,7 @@ def test_chemical_model_handles():
     
     # Test enthalpies and entropies
     assert_allclose(Water.H('g', 450.), 49101.658621, rtol=1e-3)
-    assert_allclose(Water.S('g', 450., 2*101325), 204.52545470522114, rtol=1e-3)
+    assert_allclose(Water.S('g', 450., 2*101325), 196.94997469403052, rtol=1e-3)
 
     # Check value setters; note that some key properties in functors have 
     # slightly different values. This is because their fitted coefficients
