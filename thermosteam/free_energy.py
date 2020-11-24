@@ -53,8 +53,8 @@ def Gas_Enthalpy_Ref_Gas(T, Cn_g, T_ref, H_ref):
 
 @functor(var='H.g')
 def Gas_Enthalpy_Ref_Liquid(T, Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, 
-                            T_ref, H_ref):
-    return H_ref + H_int_T_ref_to_Tb_l + Hvap_Tb + Cn_g.integrate_by_T(T_ref, T)
+                            T_ref, H_ref, Tb):
+    return H_ref + H_int_T_ref_to_Tb_l + Hvap_Tb + Cn_g.integrate_by_T(Tb, T)
 
 @functor(var='H.g')
 def Gas_Enthalpy_Ref_Solid(T, Cn_g, H_int_T_ref_to_Tm_s, Hfus,

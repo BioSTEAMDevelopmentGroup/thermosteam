@@ -1598,7 +1598,7 @@ class Chemical:
                 elif phase_ref == 'l':
                     sdata = (Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
                     ldata = (Cn_l, T_ref, H_ref)
-                    gdata = (Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref)
+                    gdata = (Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, T_ref, H_ref, Tb)
                     self._H = EnthalpyRefLiquid(sdata, ldata, gdata)
                     sdata = (Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0)
                     ldata = (Cn_l, T_ref, S0)
