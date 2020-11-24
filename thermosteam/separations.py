@@ -890,9 +890,9 @@ class MultiStageLLE:
     >>> stages.raffinate.show()
     Stream: 
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     4.13e+03
-                     Methanol  1.27
-                     Octanol   1.51
+     flow (kmol/hr): Water     4.1e+03
+                     Methanol  1.2
+                     Octanol   1.5
     >>> stages.extract.show()
     Stream: 
      phase: 'L', T: 298.15 K, P: 101325 Pa
