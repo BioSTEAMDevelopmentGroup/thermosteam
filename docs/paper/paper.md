@@ -101,7 +101,7 @@ examples. These examples also serve as preliminary tests that must pass before
 accepting any changes to the software via continuous integration on Github.
 Additionally, the online documentation includes a full tutorial that concludes 
 with the creation of a property package. Thermosteam’s powerful features 
-and extensive documentation encourage its users to become a part of its
+and extensive documentation encourage users to become a part of its
 community-driven platform and help it become more industrially and academically 
 relevant. 
 
