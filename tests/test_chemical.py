@@ -107,7 +107,7 @@ def test_chemical_model_handles():
     Water.Psat.integrate_by_T(298.15, 350.0, 101325)
     
     # Test enthalpies and entropies
-    assert_allclose(Water.H('g', 450.), 51634.289474550125, rtol=1e-3)
+    assert_allclose(Water.H('g', 450.), 49101.658621, rtol=1e-3)
     assert_allclose(Water.S('g', 450., 2*101325), 204.52545470522114, rtol=1e-3)
 
     # Check value setters; note that some key properties in functors have 

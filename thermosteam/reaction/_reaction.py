@@ -428,7 +428,7 @@ class Reaction:
         >>> reaction.adiabatic_reaction(s2)
         >>> s2.show() # After adiabatic reaction
         Stream: s2
-         phase: 'g', T: 421.1 K, P: 101325 Pa
+         phase: 'g', T: 421.6 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          O2   16.5
                          H2O  1.01e+03
@@ -1046,7 +1046,7 @@ class ParallelReaction(ReactionSet):
         >>> reaction.adiabatic_reaction(s1)
         >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 663.51 K, P: 101325 Pa
+         phase: 'g', T: 666.21 K, P: 101325 Pa
          flow (kmol/hr): H2   3
                          CH4  4.5
                          O2   96
@@ -1158,7 +1158,7 @@ class SeriesReaction(ReactionSet):
         >>> reaction.adiabatic_reaction(s1)
         >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 647.39 K, P: 101325 Pa
+         phase: 'g', T: 649.84 K, P: 101325 Pa
          flow (kmol/hr): CH4  1.5
                          CO   3.15
                          O2   94.6
