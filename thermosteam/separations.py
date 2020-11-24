@@ -864,12 +864,12 @@ class MultiStageLLE:
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     413
                      Methanol  8.4
-                     Octanol   0.103
+                     Octanol   0.1
     >>> stages.extract.show()
     Stream: 
      phase: 'L', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     87.1
-                     Methanol  41.6
+     flow (kmol/hr): Water     87.
+                     Methanol  41.
                      Octanol   500
     
     Simulate 10-stage extraction with user defined partition coefficients:
