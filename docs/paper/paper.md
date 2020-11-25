@@ -41,7 +41,7 @@ cellulosic ethanol, a lipid-cane biorefinery for the co-production of ethanol
 and biodiesel, and a wheatstraw biorefinery for the production of cellulosic 
 ethanol [@BioSTEAM;@Sanchis].
 
-# Statement of need
+# Statement of Need
 
 The overarching goal of `Thermosteam` is to aid the rigorous design and 
 simulation of chemical production processes, whereby low value feedstocks are
