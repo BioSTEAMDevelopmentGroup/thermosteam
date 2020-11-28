@@ -1,6 +1,12 @@
 Thermosteam 0.22
 ================
 
+0.22.5
+------
+* Activity coefficient calculations for chemicals with missing functional 
+  groups models are default to 1 and a RuntimeWarning is issued. Previously,
+  an RuntimeError was raised instead.
+
 0.22.4
 ------
 
