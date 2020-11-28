@@ -16,6 +16,7 @@
 """
 """
 import numpy as np
+from warnings import warn
 from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG
 from flexsolve import njitable
 
@@ -65,12 +66,17 @@ def get_interaction(all_interactions, i, j, no_interaction):
 def get_chemgroups(chemicals, field):
     getfield = getattr
     chemgroups = []
-    for chemical in chemicals: 
+    index = []
+    for i, chemical in enumerate(chemicals): 
         group = getfield(chemical, field)
-        if not group:
-            raise RuntimeError(f"{chemical} has no defined {field} UNIFAC groups")
-        chemgroups.append(group)
-    return chemgroups
+        if group:
+            chemgroups.append(group)
+            index.append(i)
+        else:
+            warn(f"{chemical} has no defined {field} groups; "
+                  "functional group interactions are ignored",
+                  RuntimeWarning, stacklevel=3)
+    return index, chemgroups
 
 @njitable(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
@@ -157,7 +163,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
     __slots__ = ('_rs', '_qs', '_Qs','_chemgroups',
                  '_group_psis',  '_chem_Qfractions',
                  '_group_mask', '_interactions',
-                 '_chemicals')
+                 '_chemicals', '_index')
     
     def __new__(cls, chemicals):
         chemicals = tuple(chemicals)
@@ -165,7 +171,8 @@ class GroupActivityCoefficients(ActivityCoefficients):
             return cls._cached[chemicals]
         else:
             self = super().__new__(cls)
-        chemgroups = get_chemgroups(chemicals, self.group_name)
+        index, chemgroups = get_chemgroups(chemicals, self.group_name)
+        self._index = None if len(index) == len(chemicals) else index
         all_groups = set()
         for groups in chemgroups: all_groups.update(groups)
         index = {group:i for i,group in enumerate(all_groups)}
@@ -204,31 +211,60 @@ class GroupActivityCoefficients(ActivityCoefficients):
     def __reduce__(self):
         return type(self), (self.chemicals,)
     
-    def __call__(self, x, T):
-        """Return UNIFAC coefficients.
+    def activity_coefficients(self, x, T):
+        """
+        Return activity coefficients of chemicals with defined functional groups.
         
         Parameters
         ----------
         x : array_like
             Molar fractions
         T : float
-            Temperature (K)
+            Temperature [K]
         
         """
-        x = np.asarray(x)
         psis = self.psi(T, self._interactions.copy())
         self._group_psis[self._group_mask] =  psis[self._group_mask]
-        gamma =  group_activity_coefficients(x, self._chemgroups,
-                                             self.loggammacs(self._qs, self._rs, x),
-                                             self._Qs, psis,
-                                             self._chem_Qfractions,
-                                             self._group_psis)
+        return group_activity_coefficients(x, self._chemgroups,
+                                           self.loggammacs(self._qs, self._rs, x),
+                                           self._Qs, psis,
+                                           self._chem_Qfractions,
+                                           self._group_psis)
+    
+    def __call__(self, x, T):
+        """
+        Return activity coefficients.
+        
+        Parameters
+        ----------
+        x : array_like
+            Molar fractions
+        T : float
+            Temperature [K]
+        
+        Notes
+        -----
+        Activity coefficients of chemicals with missing groups are default to 1.
+        
+        """
+        x = np.asarray(x, float)
+        if self._index:
+            N_chemicals = x.size
+            x = x[self._index]
+            xsum = x.sum()
+            gamma = np.ones(N_chemicals)
+            if xsum: gamma[self._index] =  self.activity_coefficients(x / xsum, T)
+        else:
+            gamma = self.activity_coefficients(x, T)
         gamma[np.isnan(gamma)] = 1
         return gamma
     
     
 class UNIFACActivityCoefficients(GroupActivityCoefficients):
-    """Create a UNIFACActivityCoefficients that estimates activity coefficients using the UNIFAC group contribution method when called with a composition and a temperature (K).
+    """
+    Create a UNIFACActivityCoefficients that estimates activity coefficients 
+    using the UNIFAC group contribution method when called with a composition
+    and a temperature (K).
     
     Parameters
     ----------
@@ -251,12 +287,40 @@ class UNIFACActivityCoefficients(GroupActivityCoefficients):
 
 
 class DortmundActivityCoefficients(GroupActivityCoefficients):
-    """Create a DortmundActivityCoefficients that estimates activity coefficients using the Dortmund UNIFAC group contribution method when called with a composition and a temperature (K).
+    """
+    Create a DortmundActivityCoefficients that estimates activity coefficients
+    using the Dortmund UNIFAC group contribution method when called with a 
+    composition and a temperature (K).
     
     Parameters
     ----------
     
     chemicals : Iterable[Chemical]
+    
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
+    >>> Gamma = tmo.equilibrium.DortmundActivityCoefficients(chemicals)
+    >>> composition = [0.5, 0.5]
+    >>> T = 350.                                
+    >>> Gamma(composition, T)
+    array([1.475, 1.242])
+    
+    >>> chemicals = tmo.Chemicals(['Dodecane', 'Tridecane'], cache=True)
+    >>> Gamma = tmo.equilibrium.DortmundActivityCoefficients(chemicals)
+    >>> # Note how both hydrocarbons have similar lenghts and structure,
+    >>> # so activities should be very close
+    >>> Gamma([0.5, 0.5], 350.) 
+    array([1., 1.])
+    
+    >>> chemicals = tmo.Chemicals(['Water', 'O2'], cache=True)
+    >>> Gamma = tmo.equilibrium.DortmundActivityCoefficients(chemicals)
+    >>> # The following warning is issued because O2 does not have Dortmund groups
+    >>> # RuntimeWarning: O2 has no defined Dortmund groups; 
+    >>> # functional group interactions are ignored
+    >>> Gamma([0.5, 0.5], 350.) 
+    array([1., 1.])
     
     """
     __slots__ = ()
