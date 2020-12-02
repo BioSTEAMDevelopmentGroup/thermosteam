@@ -17,11 +17,10 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 .. image:: https://coveralls.io/repos/github/BioSTEAMDevelopmentGroup/thermosteam/badge.svg?branch=master
    :target: https://coveralls.io/github/BioSTEAMDevelopmentGroup/thermosteam?branch=master
    :alt: Coverage
-.. image:: https://zenodo.org/badge/219133879.svg
-   :target: https://zenodo.org/badge/latestdoi/219133879
 .. image:: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam.svg?branch=master
    :target: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam
-
+.. image:: https://joss.theoj.org/papers/10.21105/joss.02814/status.svg
+   :target: https://doi.org/10.21105/joss.02814
 
 .. contents::
 
@@ -85,5 +84,5 @@ Citation
 
 To cite Thermosteam in publications use::
 
-    Yoel Cortes-Pena (2019). Thermosteam: BioSTEAM's Premier Thermodynamic Engine.
-    https://github.com/BioSTEAMDevelopmentGroup/thermosteam
+    Cortés-Peña, Y., (2020). Thermosteam: BioSTEAM’s Premier Thermodynamic Engine. 
+    Journal of Open Source Software, 5(56), 2814. https://doi.org/10.21105/joss.02814
