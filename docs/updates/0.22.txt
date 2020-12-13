@@ -1,6 +1,11 @@
 Thermosteam 0.22
 ================
 
+0.22.6
+------
+* :class:`thermosteam.equilibrium.SLE` can now perform equilibrium using
+  a user-specified solubility.
+
 0.22.5
 ------
 * Activity coefficient calculations for chemicals with missing functional 

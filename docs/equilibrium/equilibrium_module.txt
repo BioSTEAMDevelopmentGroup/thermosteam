@@ -8,6 +8,7 @@ Use the equilibrium subpackage to perform equilibrium calculations.
    
    VLE
    LLE
+   SLE
    BubblePoint
    DewPoint
    activity_coefficients_module
