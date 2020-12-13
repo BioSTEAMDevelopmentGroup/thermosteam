@@ -243,7 +243,7 @@ class Chemical:
     Hvap : float or function(T), optional
         Heat of vaporization model [J/mol] as a function of temperature [K].
     V : float or function(T, P), optional
-        Molar volume model [mol/m3] as a function of temperature [K] and pressure [Pa].
+        Molar volume model [m3/mol] as a function of temperature [K] and pressure [Pa].
     mu : float or function(T, P), optional
         Dynamic viscosity model [Pa*s] as a function of temperature [K] and pressure [Pa].
     kappa : float or function(T, P), optional

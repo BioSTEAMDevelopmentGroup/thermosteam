@@ -14,7 +14,7 @@ class FugacityCoefficients:
     """
     Abstract class for the estimation of fugacity coefficients. Non-abstract subclasses should implement the following methods:
         
-    __init__(self, chemicals: Iterable[Chemicals]):
+    __init__(self, chemicals: Iterable[:class:`~thermosteam.Chemical`]):
         Should use pure component data from chemicals to setup future calculations of fugacity coefficients.
     
     __call__(self, y: 1d array, T: float, P:float):
@@ -37,7 +37,7 @@ class IdealFugacityCoefficients(FugacityCoefficients):
     
     Parameters
     ----------
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
     __slots__ = ('_chemicals')

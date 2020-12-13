@@ -20,9 +20,9 @@ class LiquidFugacities:
     
     Parameters
     ----------
-    chemicals : Iterable[Chemicals]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
         Chemicals to compute fugacities.
-    thermo : Thermo, optional
+    thermo : :class:`~thermosteam.Thermo`, optional
         Thermodynamic property package.
     
     Examples

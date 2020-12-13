@@ -13,7 +13,7 @@ __all__ = ('PoyintingCorrectionFactors',
 class PoyintingCorrectionFactors:
     """Abstract class for the estimation of Poyinting correction factors. Non-abstract subclasses should implement the following methods:
         
-    __init__(self, chemicals: Iterable[Chemicals]):
+    __init__(self, chemicals: Iterable[:class:`~thermosteam.Chemical`]):
         Should use pure component data from chemicals to setup future calculations of Poyinting correction factors.
     
     __call__(self, y: 1d array, T: float):
@@ -36,7 +36,7 @@ class IdealPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     Parameters
     ----------
     
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
     __slots__ = ('_chemicals')

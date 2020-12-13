@@ -18,11 +18,11 @@ class Equilibrium:
     
     Parameters
     ----------
-    imol=None : MaterialIndexer, optional
+    imol=None : :class:`~thermosteam.indexer.MaterialIndexer`, optional
         Molar chemical phase data is stored here.
-    thermal_condition=None : ThermalCondition, optional
+    thermal_condition=None : :class:`~thermosteam.ThermalCondition`, optional
         The temperature and pressure used in calculations are stored here.
-    thermo=None : Thermo, optional
+    thermo=None : :class:`~thermosteam.Thermo`, optional
         Themodynamic property package for equilibrium calculations.
         Defaults to `thermosteam.settings.get_thermo()`.
 

@@ -26,16 +26,16 @@ class VLE(Equilibrium, phases='lg'):
         
     Parameters
     ----------
-    imol=None : MaterialIndexer, optional
+    imol=None : :class:`~thermosteam.indexer.MaterialIndexer`, optional
         Molar chemical phase data is stored here.
-    thermal_condition=None : ThermalCondition, optional
+    thermal_condition=None : :class:`~thermosteam.ThermalCondition`, optional
         Temperature and pressure results are stored here.
-    thermo=None : Thermo, optional
+    thermo=None : :class:`~thermosteam.Thermo`, optional
         Themodynamic property package for equilibrium calculations.
         Defaults to `thermosteam.settings.get_thermo()`.
-    bubble_point_cache=None : thermosteam.utils.Cache, optional
+    bubble_point_cache=None : :class:`~thermosteam.utils.Cache`, optional
         Cache to retrieve bubble point object.
-    dew_point_cache=None : thermosteam.utils.Cache, optional
+    dew_point_cache=None : :class:`~thermosteam.utils.Cache`, optional
         Cache to retrieve dew point object
     
     Examples

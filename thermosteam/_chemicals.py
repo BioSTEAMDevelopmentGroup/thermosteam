@@ -38,7 +38,7 @@ class Chemicals:
 
     Parameters
     ----------
-    chemicals : Iterable[str or Chemical]
+    chemicals : Iterable[str or :class:`~thermosteam.Chemical`]
         Strings should be one of the following [-]:
            * Name, in IUPAC form or common form or a synonym registered in PubChem
            * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'

@@ -238,7 +238,8 @@ class ThermoModelHandle:
             self._models.appendleft(model)
         else:
             self._models.append(model)    
-        return evaluate
+        
+        if callable(evaluate): return evaluate
        
     def remove(self, key):
         """

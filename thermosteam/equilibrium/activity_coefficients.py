@@ -115,7 +115,7 @@ def psi_UNIFAC(T, a):
 class ActivityCoefficients:
     """Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:
         
-    __init__(self, chemicals: Iterable[Chemicals]):
+    __init__(self, chemicals: Iterable[:class:`~thermosteam.Chemical`]):
         Should use pure component data from chemicals to setup future calculations of activity coefficients.
     
     __call__(self, x: 1d array, T: float):
@@ -139,7 +139,7 @@ class IdealActivityCoefficients(ActivityCoefficients):
     
     Parameters
     ----------
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
     __slots__ = ()
@@ -157,7 +157,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
     Parameters
     ----------
     
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
     __slots__ = ('_rs', '_qs', '_Qs','_chemgroups',
@@ -269,7 +269,7 @@ class UNIFACActivityCoefficients(GroupActivityCoefficients):
     Parameters
     ----------
     
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
     all_subgroups = UFSG
@@ -295,7 +295,7 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     Parameters
     ----------
     
-    chemicals : Iterable[Chemical]
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     Examples
     --------

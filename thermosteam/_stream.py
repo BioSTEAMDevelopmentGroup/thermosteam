@@ -55,7 +55,7 @@ class Stream:
         volumetric flow rates are valid).
     price=0 : float
         Price per unit mass [USD/kg].
-    thermo=None : Thermo
+    thermo=None : :class:`~thermosteam.Thermo`
         Thermo object to initialize input and output streams. Defaults to
         `biosteam.settings.get_thermo()`.
     **chemical_flows : float

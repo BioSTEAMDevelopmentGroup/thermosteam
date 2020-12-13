@@ -42,9 +42,9 @@ class DewPoint:
     
     Parameters
     ----------
-    chemicals=None : Iterable[Chemical], optional
+    chemicals=None : Iterable[:class:`~thermosteam.Chemical`], optional
     
-    thermo=None : Thermo, optional
+    thermo=None : :class:`~thermosteam.Thermo`, optional
     
     Examples
     --------

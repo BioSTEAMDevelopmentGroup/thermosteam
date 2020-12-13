@@ -24,15 +24,15 @@ class Thermo:
     
     Parameters
     ----------
-    chemicals : Chemicals or Iterable[str]
+    chemicals : Iterable[:class:`~thermosteam.Chemical` or str]
         Pure component chemical data.
-    mixture : Mixture, optional
+    mixture : :class:`~thermosteam.mixture.Mixture`, optional
         Calculates mixture properties.
-    Gamma : ActivityCoefficients subclass, optional
+    Gamma : :class:`~thermosteam.equilibrium.activity_coefficients.ActivityCoefficients` subclass, optional
         Class for computing activity coefficients.
-    Phi : FugacityCoefficients subclass, optional
+    Phi : :class:`~thermosteam.equilibrium.fugacity_coefficients.FugacityCoefficients` subclass, optional
         Class for computing fugacity coefficients.
-    PCF : PoyntingCorrectionFactor subclass, optional
+    PCF : :class:`~thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors` subclass, optional
         Class for computing poynting correction factors.
     cache : optional
         Whether or not to use cached chemicals.

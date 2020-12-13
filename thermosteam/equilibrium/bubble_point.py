@@ -42,8 +42,8 @@ class BubblePoint:
     
     Parameters
     ----------
-    chemicals=() : Iterable[Chemical], optional
-    thermo=None : Thermo, optional
+    chemicals=() : Iterable[:class:`~thermosteam.Chemical`], optional
+    thermo=None : :class:`~thermosteam.Thermo`, optional
     
     Examples
     --------

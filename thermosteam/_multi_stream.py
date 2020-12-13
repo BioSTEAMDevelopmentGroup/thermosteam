@@ -50,7 +50,7 @@ class MultiStream(Stream):
         If no ID is given, stream will be registered with a unique ID.
     flow=() : 2d array
         All flow rates corresponding to `phases` by row and chemical IDs by column.
-    thermo=None : Thermo
+    thermo=None : :class:`~thermosteam.Thermo`
         Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
     units='kmol/hr' : str
         Flow rate units of measure (only mass, molar, and
