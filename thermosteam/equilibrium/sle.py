@@ -48,7 +48,7 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle('Glucose', T=298.15) 
     >>> sle
     SLE(imol=MolarFlowIndexer(
-            l=[('Water', 10), ('Glucose', 0.01307)],
+            l=[('Water', 10), ('Glucose', 0.01308)],
             s=[('Glucose', 0.9869)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
         
@@ -58,8 +58,8 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle('Glucose', T=298.15, solubility=0.0833)
     >>> sle
     SLE(imol=MolarFlowIndexer(
-            l=[('Water', 10), ('Glucose', 0.833)],
-            s=[('Glucose', 0.167)]),
+            l=[('Water', 10), ('Glucose', 0.9087)],
+            s=[('Glucose', 0.09131)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
     
     Solve SLE of tetradecanol in octanol:
@@ -71,8 +71,8 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle('Tetradecanol', T=300)
     >>> sle
     SLE(imol=MolarFlowIndexer(
-            l=[('Methanol', 10), ('Tetradecanol', 5.721)],
-            s=[('Tetradecanol', 24.28)]),
+            l=[('Methanol', 10), ('Tetradecanol', 19.06)],
+            s=[('Tetradecanol', 10.94)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
     
     Solve SLE of pure tetradecanol:
@@ -90,7 +90,7 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             l=[('Tetradecanol', 30)]),
-        thermal_condition=ThermalCondition(T=320.00, P=101325))        
+        thermal_condition=ThermalCondition(T=320.00, P=101325))      
     
     
     """
@@ -202,7 +202,7 @@ class SLE(Equilibrium, phases='ls'):
             liquid_mol[solute_index] = mol_solute
             solid_mol[solute_index] = 0.
         else:
-            liquid_mol[solute_index] = mol_solute_liquid = x * F_mol_liquid
+            liquid_mol[solute_index] = mol_solute_liquid = F_mol_liquid * x / (1 - x)
             solid_mol[solute_index] = mol_solute - mol_solute_liquid 
     
     def _solve_x(self, T):
