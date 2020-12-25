@@ -16,7 +16,7 @@ setup(
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
     install_requires=['pint>=0.9',
-                      'scipy>=1.3.1', 
+                      'scipy>=1.4', 
                       'chemicals>=0.1.5',
                       'IPython>=7.9.0', 
                       'colorpalette>=0.3.1', 
