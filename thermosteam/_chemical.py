@@ -35,8 +35,8 @@ from chemicals.reaction import (
 )
 from chemicals.elements import (
     similarity_variable as compute_similarity_variable, 
-    simple_formula_parser as get_atoms,
-    molecular_weight as compute_molecular_weight
+    molecular_weight as compute_molecular_weight,
+    get_atoms,
 )
 from chemicals.viscosity import viscosity_handle
 from chemicals.thermal_conductivity import thermal_conductivity_handle
@@ -56,7 +56,8 @@ from .equilibrium.unifac import (
     DDBST_PSRK_assignments,
     UNIFACGroupCounts, 
     DortmundGroupCounts, 
-    PSRKGroupCounts
+    PSRKGroupCounts,
+    NISTGroupCounts,
 )
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    ThermoModelHandle, TDependentModelHandle,
@@ -158,9 +159,10 @@ _names = ('_CAS',
           '_smiles', 
           '_formula')
 
-_groups = ('_Dortmund', 
+_groups = ('_Dortmund',
            '_UNIFAC', 
-           '_PSRK')
+           '_PSRK',
+           '_NIST')
 
 _model_handles = ('_Psat', '_Hvap', '_sigma', '_epsilon')
     
@@ -280,6 +282,7 @@ class Chemical:
     [Groups] Dortmund: <1H2O>
              UNIFAC: <1H2O>
              PSRK: <1H2O>
+             NIST: <Empty>
     [Data]   MW: 18.015 g/mol
              Tm: 273.15 K
              Tb: 373.12 K
@@ -638,6 +641,7 @@ class Chemical:
         [Groups] Dortmund: <Empty>
                  UNIFAC: <Empty>
                  PSRK: <Empty>
+                 NIST: <Empty>
         [Data]   MW: None
                  Tm: None
                  Tb: None
@@ -664,6 +668,7 @@ class Chemical:
         self._UNIFAC = UNIFACGroupCounts()
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
+        self._NIST = NISTGroupCounts()
         setfield = setattr
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
@@ -697,10 +702,6 @@ class Chemical:
         
         Examples
         --------
-        >>> import thermosteam as tmo
-        >>> Glucose = tmo.Chemical('Glucose')
-        >>> Mannose = Glucose.copy('Mannose')
-        >>> Mannose.show()
         Chemical: Mannose (phase_ref='l')
         [Names]  CAS: Mannose
                  InChI: C6H12O6/c7-1-3(9)5(1...
@@ -710,9 +711,10 @@ class Chemical:
                  pubchemid: 1.0753e+05
                  smiles: O=C[C@H](O)[C@@H](O...
                  formula: C6H12O6
-        [Groups] Dortmund: {2: 1, 3: 4, 14: ...
-                 UNIFAC: {2: 1, 3: 4, 14: 5,...
-                 PSRK: {2: 1, 3: 4, 14: 5, 2...
+        [Groups] Dortmund: <1CH2, 4CH, 1OH(P...
+                 UNIFAC: <1CH2, 4CH, 5OH, 1C...
+                 PSRK: <1CH2, 4CH, 5OH, 1CHO...
+                 NIST: <Empty>
         [Data]   MW: 180.16 g/mol
                  Tm: None
                  Tb: 616.29 K
@@ -867,6 +869,11 @@ class Chemical:
         """[PSRKGroupCounts] Dictionary-like object with functional group 
         numerical identifiers as keys and the number of groups as values."""
         return self._PSRK
+    @property
+    def NIST(self): 
+        """[NISTGroupCounts] Dictionary-like object with functional group 
+        numerical identifiers as keys and the number of groups as values."""
+        return self._NIST
     
     ### Equations of state ###
     
@@ -1178,7 +1185,7 @@ class Chemical:
         formula = self._formula
         return get_atoms(formula) if formula else {}
     
-    def get_combustion_reaction(self, chemicals=None):
+    def get_combustion_reaction(self, chemicals=None, conversion=1.0):
         """Return a Reaction object defining the combustion of this chemical.
         If no combustion stoichiometry is available, return None."""
         combustion = self._combustion
@@ -1187,7 +1194,7 @@ class Chemical:
         ID = self._ID
         combustion = combustion.copy()
         combustion[ID] = -1
-        return tmo.reaction.Reaction(combustion, ID, 1.0, chemicals)
+        return tmo.reaction.Reaction(combustion, ID, conversion, chemicals)
     
     def get_phase(self, T=298.15, P=101325.):
         """Return phase of chemical at given thermal condition.
@@ -1340,6 +1347,8 @@ class Chemical:
             self._PSRK = DDBST_PSRK_assignments[InChI_key]
         else:
             self._PSRK = PSRKGroupCounts()
+        # TODO: Download data for NIST UNIFAC group assignments
+        self._NIST = NISTGroupCounts()
 
     def _init_data(self, CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                    dipole, atoms, similarity_variable, iscyclic_aliphatic):

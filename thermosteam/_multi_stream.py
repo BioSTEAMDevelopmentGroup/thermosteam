@@ -763,7 +763,7 @@ class MultiStream(Stream):
     
     @property
     def phase(self):
-        return ''.join([phases[0] for phases in ('gG', 'lL', 'sS')  if phase_is_present(self, phases)])
+        return ''.join([phases[0] for phases in ('gG', 'lL', 'sS') if phase_is_present(self, phases)])
     @phase.setter
     def phase(self, phase):
         if self._link: raise RuntimeError('cannot convert linked stream')

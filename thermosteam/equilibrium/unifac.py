@@ -22,6 +22,7 @@ __all__ = ('DDBST_UNIFAC_assignments',
            'DDBST_PSRK_assignments',
            'UNIFACGroupCounts',
            'DortmundGroupCounts',
+           'NISTGroupCounts',
            'PSRKGroupCounts')
 import os
 import json
@@ -860,6 +861,9 @@ class GroupCounts(dict):
         for i,j in dict.items(): self[to_int(i)] = j
         return self
         
+    def copy(self):
+        return self.__class__(self)
+    
     def set_group_counts_by_name(self, group_counts: dict):
         self.clear()
         ids_by_group_name = self.ids_by_group_name
@@ -894,6 +898,10 @@ class UNIFACGroupCounts(GroupCounts):
 class DortmundGroupCounts(GroupCounts):
     __slots__ = ()
     subgroups_by_id = DOUFSG 
+
+class NISTGroupCounts(GroupCounts):
+    __slots__ = ()
+    subgroups_by_id = NISTUFSG 
     
 class PSRKGroupCounts(GroupCounts):
     __slots__ = ()

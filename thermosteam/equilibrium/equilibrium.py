@@ -34,13 +34,20 @@ class Equilibrium:
     """
     __slots__ = ('_imol', '_thermal_condition', '_thermo')
     
-    def __init_subclass__(cls, phases):
+    def __init_subclass__(cls, phases=None):
         try: 
             cls.__call__
         except:
             raise NotImplementedError("Equilibrium subclasses must implement a "
-                                      "'__call__' method.")
-        cls._phases = phases
+                                      "'__call__' method")
+        if phases:
+            cls._phases = phases
+        else:
+            try:
+                cls._phases
+            except:
+                raise NotImplementedError("Equilibrium subclasses must implement a "
+                                          "'_phases' attribute")
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None):
         self._load_thermo(thermo)

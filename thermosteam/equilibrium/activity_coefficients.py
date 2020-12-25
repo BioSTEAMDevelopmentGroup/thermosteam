@@ -17,14 +17,15 @@
 """
 import numpy as np
 from warnings import warn
-from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG
+from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG, NISTUFSG, NISTUFIP
 from flexsolve import njitable
 
 __all__ = ('ActivityCoefficients',
            'IdealActivityCoefficients',
            'GroupActivityCoefficients',
            'DortmundActivityCoefficients',
-           'UNIFACActivityCoefficients')
+           'UNIFACActivityCoefficients',
+           'NISTActivityCoefficients')
 
 # %% Utilities
 
@@ -80,19 +81,19 @@ def get_chemgroups(chemicals, field):
 
 @njitable(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
-    r_net = (x*rs).sum()
-    q_net = (x*qs).sum()  
+    r_net = np.dot(x, rs)
+    q_net = np.dot(x, qs)
     Vs = rs/r_net
     Fs = qs/q_net
     Vs_over_Fs = Vs/Fs
     return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
 @njitable(cache=True)
-def loggammacs_Dortmund(qs, rs, x):
-    r_net = (x*rs).sum()
-    q_net = (x*qs).sum()
+def loggammacs_modified_UNIFAC(qs, rs, x):
+    r_net = np.dot(x, rs)
+    q_net = np.dot(x, qs)
     rs_p = rs**0.75
-    r_pnet = (rs_p*x).sum()
+    r_pnet = np.dot(rs_p, x)
     Vs = rs/r_net
     Fs = qs/q_net
     Vs_over_Fs = Vs/Fs
@@ -100,7 +101,7 @@ def loggammacs_Dortmund(qs, rs, x):
     return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
 @njitable(cache=True)
-def psi_Dortmund(T, abc):
+def psi_modified_UNIFAC(T, abc):
     abc[:, :, 0] /= T
     abc[:, :, 2] *= T
     return np.exp(-abc.sum(2)) 
@@ -113,13 +114,20 @@ def psi_UNIFAC(T, a):
 # %% Activity Coefficients
 
 class ActivityCoefficients:
-    """Abstract class for the estimation of activity coefficients. Non-abstract subclasses should implement the following methods:
+    """
+    Abstract class for the estimation of activity coefficients. 
+    Non-abstract subclasses should implement the following methods:
         
     __init__(self, chemicals: Iterable[:class:`~thermosteam.Chemical`]):
-        Should use pure component data from chemicals to setup future calculations of activity coefficients.
+        Should use pure component data from chemicals to setup future 
+        calculations of activity coefficients.
     
     __call__(self, x: 1d array, T: float):
-        Should accept an array of liquid molar compositions `x`, and temperature `T` (in Kelvin), and return an array of activity coefficients. Note that the molar compositions must be in the same order as the chemicals defined when creating the ActivityCoefficients object.
+        Should accept an array of liquid molar compositions `x`, and
+        temperature `T` (in Kelvin), and return an array of activity 
+        coefficients. Note that the molar compositions must be in the same 
+        order as the chemicals defined when creating the ActivityCoefficients
+        object.
     
     """
     __slots__ = ('_chemicals',)
@@ -135,7 +143,9 @@ class ActivityCoefficients:
 
     
 class IdealActivityCoefficients(ActivityCoefficients):
-    """Create an IdealActivityCoefficients object that estimates all activity coefficients to be 1 when called with a composition and a temperature (K).
+    """
+    Create an IdealActivityCoefficients object that estimates all activity 
+    coefficients to be 1 when called with a composition and a temperature (K).
     
     Parameters
     ----------
@@ -152,7 +162,9 @@ class IdealActivityCoefficients(ActivityCoefficients):
     
 
 class GroupActivityCoefficients(ActivityCoefficients):
-    """Abstract class for the estimation of activity coefficients using group contribution methods.
+    """
+    Abstract class for the estimation of activity coefficients using
+    group contribution methods.
     
     Parameters
     ----------
@@ -332,13 +344,49 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     
     @staticmethod
     def loggammacs(qs, rs, x):
-        return loggammacs_Dortmund(qs, rs, x)
+        return loggammacs_modified_UNIFAC(qs, rs, x)
     
     @staticmethod
     def psi(T, abc):
-        return psi_Dortmund(T, abc)
+        return psi_modified_UNIFAC(T, abc)
     
     
-
-
+class NISTActivityCoefficients(GroupActivityCoefficients):
+    """
+    Create a NISTActivityCoefficients that estimates activity coefficients
+    using the NIST-modified UNIFAC group contribution method when called with a 
+    composition and a temperature (K).
+    
+    Parameters
+    ----------
+    
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
+    
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> Water, Ethanol = chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
+    >>> Ethanol.NIST.set_group_counts_by_name({'CH3':1, 'CH2':1, 'OH prim':1})
+    >>> Water.NIST.set_group_counts_by_name({'H2O':1})
+    >>> Gamma = tmo.equilibrium.NISTActivityCoefficients(chemicals)
+    >>> composition = [0.5, 0.5]
+    >>> T = 350.                                
+    >>> Gamma(composition, T)
+    array([1.479, 1.238])
+    
+    """
+    __slots__ = ()
+    all_subgroups = NISTUFSG
+    all_interactions = NISTUFIP
+    group_name = 'NIST'
+    _no_interaction = np.array([0., 0., 0.])
+    _cached = {}
+    
+    @staticmethod
+    def loggammacs(qs, rs, x):
+        return loggammacs_modified_UNIFAC(qs, rs, x)
+    
+    @staticmethod
+    def psi(T, abc):
+        return psi_modified_UNIFAC(T, abc)
 

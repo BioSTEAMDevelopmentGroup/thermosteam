@@ -20,6 +20,9 @@ elements.__all__.extend([
     'atoms_to_array', 'array_to_atoms', 'atomic_index',
 ])
 
+#: Dict[str, dict[str, int]] Cache of atomic counts.
+formula_to_atoms = {}
+
 #: Dict[str, int] Symbol - index pairs for atomic arrays.
 symbol_to_index = {e.symbol: e.number - 1 for e in periodic_table}
 
@@ -37,6 +40,16 @@ def array_to_atoms(array: np.ndarray) -> dict:
     index, = np.where(array != 0.)
     return dict(zip([symbols[i] for i in index], array[index]))
 
+
+def get_atoms(formula):
+    if formula in formula_to_atoms:
+        return formula_to_atoms[formula]
+    else:
+        formula_to_atoms[formula] = atoms = elements.simple_formula_parser(formula)
+        if len(formula_to_atoms) > 50: del formula_to_atoms[next(iter(formula_to_atoms))]
+    return atoms.copy() # Prevent cached atoms from being altered
+
+elements.get_atoms = get_atoms 
 elements.atoms_to_array = atoms_to_array
 elements.array_to_atoms = array_to_atoms
 elements.symbol_to_index = symbol_to_index

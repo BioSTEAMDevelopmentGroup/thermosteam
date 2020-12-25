@@ -218,7 +218,7 @@ class SLE(Equilibrium, phases='ls'):
         args = (T, Tm, Hm, Cpl, Cps)
         if isinstance(self._gamma, IdealActivityCoefficients):
             return solubility_eutectic(T, Tm, Hm, Cpl, Cps, self.activity_coefficient or 1.)
-        return flx.wegstein(self._x_iter, x, xtol=1e-6, args=args)
+        return flx.aitken(self._x_iter, x, xtol=1e-6, args=args, checkiter=False, maxiter=100)
         
     def _x_iter(self, x, T, Tm, Hm, Cpl, Cps):
         self._update_solubility(x)

@@ -12,9 +12,7 @@ from .exceptions import UndefinedPhase
 __all__ = ('Phase', 'LockedPhase', 'NoPhase', 'PhaseIndexer',
            'phase_tuple')
 
-isa = isinstance
 new = object.__new__
-setfield = object.__setattr__
 valid_phases = {'s', 'l', 'g', 'S', 'L', 'G'}
 
 def check_phase(phase):
@@ -122,7 +120,7 @@ class Phase:
     
     @classmethod
     def convert(cls, phase):
-        return phase if isa(phase, cls) else cls(phase)
+        return phase if isinstance(phase, cls) else cls(phase)
     
     def __new__(cls, phase):
         self = new(cls)
@@ -158,7 +156,7 @@ class LockedPhase(Phase):
             self = cache[phase]
         else:
             cache[phase] = self = new(cls)
-            setfield(self, '_phase', phase)
+            object.__setattr__(self, '_phase', phase)
         return self
     
     def __reduce__(self):
