@@ -64,7 +64,7 @@ from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    TPDependentModelHandle, display_asfunctor)
 from .units_of_measure import chemical_units_of_measure
 from .eos import GCEOS_DUMMY, PR
-from .utils import copy_maybe
+from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
 
 # from .solubility import SolubilityParameter
@@ -600,6 +600,7 @@ class Chemical:
         """Create a new chemical from data without searching through
         the data base, and load all possible models from given data."""
         self = super().__new__(cls)
+        check_valid_ID(ID)
         self._ID = ID
         self.reset(CAS, eos, phase_ref, phase=phase, **data)
         return self
@@ -685,6 +686,7 @@ class Chemical:
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
             setfield(self, '_' + i, TDependentModelHandle(i))
         self._locked_state = phase
+        check_valid_ID(ID)
         self._ID = ID
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID

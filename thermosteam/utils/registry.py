@@ -8,7 +8,19 @@
 """
 """
 
-__all__ = ('Registry',)
+__all__ = ('Registry', 'check_valid_ID')
+
+def check_valid_ID(ID):
+    if not isinstance(ID, str):
+        raise RuntimeError(f"ID must be a string, not a '{type(ID).__name__}' object")
+    if not ID[0].isalpha():
+        raise RuntimeError("ID must start with a letter")
+    ID_words = ID.split('_')
+    if not all([word.isalnum() for word in ID_words if word]):
+        raise RuntimeError(
+            'ID may only contain letters, numbers, and/or underscores; '
+            'no special characters or spaces'
+        )
 
 class Registry: # pragma: no cover
     
@@ -20,12 +32,7 @@ class Registry: # pragma: no cover
     
     def __setitem__(self, ID, obj):
         """Register object."""
-        assert isinstance(ID, str), f"ID must be a string, not a '{type(ID).__name__}' object"
-        assert ID[0].isalpha(), "ID must start with a letter"
-        ID_words = ID.split('_')
-        assert all([word.isalnum() for word in ID_words if word]), (
-                'ID may only contain letters, numbers, and/or underscores; '
-                'no special characters or spaces')
+        check_valid_ID(ID)
         self.__dict__[ID] = obj
     
     def __setattr__(self, ID, obj):
