@@ -124,7 +124,8 @@ def adjust_moisture_content(retentate, permeate, moisture_content):
     F_mass = retentate.F_mass
     mc = moisture_content
     retentate_water = retentate.imol[CAS_water]
-    retentate.imol[CAS_water] = water = (F_mass * mc/(1-mc))/18.01528
+    dry_mass = F_mass - 18.01528 * retentate_water
+    retentate.imol[CAS_water] = water = (dry_mass * mc/(1-mc))/18.01528
     permeate.imol[CAS_water] -= (water - retentate_water)
     if permeate.imol[CAS_water] < 0:
         raise InfeasibleRegion('not enough water; permeate moisture content')
