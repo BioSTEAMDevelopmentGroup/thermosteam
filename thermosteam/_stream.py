@@ -1731,6 +1731,10 @@ class Stream:
         s = '' if isinstance(phase, str) else 's'
         return f" phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
     
+    def _source_info(self):
+        source = self.source
+        return f"{source}-{source.outs.index(self)}"
+    
     def _info(self, T, P, flow, composition, N):
         """Return string with all specifications."""
         from .indexer import nonzeros

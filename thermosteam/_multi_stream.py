@@ -255,6 +255,9 @@ class MultiStream(Stream):
     def __iter__(self):
         for i in self.phases: yield self[i]
     
+    def __len__(self):
+        return len(self.phases)
+    
     ### Property getters ###
     
     def get_flow(self, units, key=...):
