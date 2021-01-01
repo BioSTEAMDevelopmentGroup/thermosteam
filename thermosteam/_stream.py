@@ -1733,7 +1733,7 @@ class Stream:
     
     def _source_info(self):
         source = self.source
-        return f"{source}-{source.outs.index(self)}"
+        return f"{source}-{source.outs.index(self)}" if source else self.ID
     
     def _info(self, T, P, flow, composition, N):
         """Return string with all specifications."""
