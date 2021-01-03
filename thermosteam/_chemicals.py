@@ -241,8 +241,8 @@ class Chemicals:
         volume model at T=298.15 K and P=101325 Pa
         
         """
-        CompiledChemicals._compile(self, skip_checks)
         setattr(self, '__class__', CompiledChemicals)
+        self._compile(skip_checks)
     
     kwarray = array = index = indices = must_compile
         
@@ -469,6 +469,23 @@ class CompiledChemicals(Chemicals):
         lle_index = [index[i.ID] for i in lle_chemicals]
         has_vle[vle_index] = True
         has_lle[lle_index] = True
+        repeated_names = set()
+        names = set()
+        for i in chemicals:
+            if not i.iupac_name: i.iupac_name = ()
+            all_names = (*i.iupac_name, i.common_name, i.formula)
+            for name in all_names:
+                if not name: continue
+                if name in names:
+                    repeated_names.add(name)
+                else:
+                    names.add(name)
+        for i in chemicals:
+            all_names = (*i.iupac_name, i.common_name, i.formula)
+            ID = i.ID
+            for name in all_names:
+                if name and name not in repeated_names:
+                    self.set_synonym(ID, name)
         
     @property
     def formula_array(self):
@@ -634,6 +651,30 @@ class CompiledChemicals(Chemicals):
                 except: pass
         return new
     
+    def get_parsable_synonym(self, ID):
+        """
+        Return a synonym of the given chemical identifier that can be 
+        parsed by Python as a variable name
+        
+        Parameters
+        ----------
+        ID : str
+            Chemical identifier.
+            
+        Examples
+        --------
+        Get parsable synonym of 2,3-Butanediol:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['2,3-Butanediol'], cache=True)
+        >>> chemicals.get_parsable_synonym('2,3-Butanediol')
+        'C4H10O2'
+        
+        """
+        isvalid = utils.is_valid_ID      
+        for i in self.get_synonyms(ID):
+            if isvalid(i): return i
+    
     def get_synonyms(self, ID):
         """
         Get all synonyms of a chemical.
@@ -650,8 +691,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water'], cache=True)
         >>> chemicals.get_synonyms('Water')
-        ['7732-18-5', 'Water']
-        
+        ['7732-18-5', 'Water', 'oxidane', 'water', 'H2O']
         
         """
         k = self._index[ID]

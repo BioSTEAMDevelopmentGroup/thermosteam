@@ -13,7 +13,7 @@ from . import indexer
 from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
-from .exceptions import DimensionError
+from .exceptions import DimensionError, DomainError
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
 
@@ -701,7 +701,9 @@ class Stream:
     @property
     def Hvap(self):
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
-        return self.mixture.Hvap(self.mol, *self._thermal_condition)
+        mol = self.mol
+        condition = self._thermal_condition
+        return sum([i*j.Hvap(condition.T) for i,j in zip(mol, self.chemicals) if i and not j.locked_state])
     
     @property
     def C(self):

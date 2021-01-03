@@ -48,9 +48,7 @@ class Settings:
         Return a default Thermo object.
         If `thermo` is a Thermo object, return the same object.
         """
-        if not thermo:
-            thermo = self.get_thermo()
-        return thermo
+        return thermo if thermo else self.get_thermo()
     
     def get_default_chemicals(self, chemicals):
         """

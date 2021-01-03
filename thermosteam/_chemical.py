@@ -600,7 +600,6 @@ class Chemical:
         """Create a new chemical from data without searching through
         the data base, and load all possible models from given data."""
         self = super().__new__(cls)
-        check_valid_ID(ID)
         self._ID = ID
         self.reset(CAS, eos, phase_ref, phase=phase, **data)
         return self

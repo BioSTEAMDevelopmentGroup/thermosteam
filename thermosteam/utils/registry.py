@@ -8,15 +8,21 @@
 """
 """
 
-__all__ = ('Registry', 'check_valid_ID')
+__all__ = ('Registry', 'is_valid_ID', 'check_valid_ID')
+
+
+def is_valid_ID(ID):
+    if not isinstance(ID, str): return False
+    if not ID[0].isalpha(): return False
+    if not all([word.isalnum() for word in ID.split('_') if word]): return False
+    return True
 
 def check_valid_ID(ID):
     if not isinstance(ID, str):
         raise RuntimeError(f"ID must be a string, not a '{type(ID).__name__}' object")
     if not ID[0].isalpha():
         raise RuntimeError("ID must start with a letter")
-    ID_words = ID.split('_')
-    if not all([word.isalnum() for word in ID_words if word]):
+    if not all([word.isalnum() for word in ID.split('_') if word]):
         raise RuntimeError(
             'ID may only contain letters, numbers, and/or underscores; '
             'no special characters or spaces'
