@@ -242,7 +242,11 @@ class Chemicals:
         
         """
         setattr(self, '__class__', CompiledChemicals)
-        self._compile(skip_checks)
+        try: self._compile(skip_checks)
+        except Exception as error:
+            setattr(self, '__class__', Chemicals)
+            setattr(self, '__dict__', Chemicals(self).__dict__)
+            raise error
     
     kwarray = array = index = indices = must_compile
         
