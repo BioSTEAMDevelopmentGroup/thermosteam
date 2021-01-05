@@ -296,7 +296,10 @@ def partition_coefficients(IDs, top, bottom):
     array([0.629, 1.59 ])
 
     """
-    return top.get_normalized_mol(IDs) / bottom.get_normalized_mol(IDs)
+    numerator = top.get_normalized_mol(IDs)
+    denominator = bottom.get_normalized_mol(IDs)
+    denominator[denominator < 1e-24] = 1e-24
+    return numerator / denominator
 
 def chemical_splits(a, b=None, mixed=None):
     """
