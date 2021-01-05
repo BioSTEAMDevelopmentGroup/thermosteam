@@ -886,6 +886,11 @@ class Stream:
          flow (kg/hr): Water    40
                        Ethanol  20
         
+        Mixing emptry streams if fine too:
+            
+        >>> s1.empty(); s2.empty(); s_mix.mix_from([s1, s2])
+        >>> s_mix.show()
+        
         """
         others = [i for i in others if i]
         N_others = len(others)
