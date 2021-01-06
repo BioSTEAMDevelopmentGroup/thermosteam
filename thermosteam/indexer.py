@@ -31,6 +31,11 @@ __all__ = ('ChemicalIndexer',
 isa = isinstance
 _new = object.__new__
 
+def raise_material_indexer_index_error():
+    raise IndexError("index by [phase, IDs] where phase is a "
+                     "(str, ellipsis, or missing), and IDs is a "
+                     "(str, tuple(str), ellipisis, or missing)")
+
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
     try:
@@ -493,8 +498,8 @@ class MaterialIndexer(Indexer):
         except KeyError:
             try:
                 index = self._chemicals.get_index(key)
-            except UndefinedChemical:
-                index = self._get_index(key)
+            except UndefinedChemical as error:
+                index = self._get_index(key, error)
             else:
                 index = ChemicalIndex(index)
             cache[key] = index
@@ -503,32 +508,35 @@ class MaterialIndexer(Indexer):
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
         return index
     
-    def _get_index(self, phase_IDs):
+    def _get_index(self, phase_IDs, undefined_chemical_error):
         if isa(phase_IDs, str):
-            index = self.get_phase_index(phase_IDs)
+            if len(phase_IDs) == 1: 
+                index = self.get_phase_index(phase_IDs)
+            else:
+                raise undefined_chemical_error
         elif phase_IDs is ...:
-            index = slice(None) 
+            index = slice(None)
         else:
+            phase = phase_IDs[0]
+            if isa(phase, str):
+                if len(phase) == 1:
+                    phase_index = self.get_phase_index(phase)
+                else:
+                    raise undefined_chemical_error
+            elif phase is ...:
+                phase_index = slice(None)
+            else:
+                raise_material_indexer_index_error()
             try:
                 phase, IDs = phase_IDs
             except:
-                raise IndexError("index by [phase, IDs] where phase is a "
-                                 "(str, ellipsis, or missing), and IDs is a "
-                                 "(str, tuple(str), ellipisis, or missing)")
+                raise_material_indexer_index_error()
             if isa(IDs, (str, tuple)):
-                IDs_index = self._chemicals.get_index(IDs)
+                index = (phase_index, self._chemicals.get_index(IDs))
             elif IDs is ...:
-                IDs_index = IDs
+                index = (phase_index, IDs)
             else:
                 raise TypeError("only strings, tuples, and ellipsis are valid index keys")
-            if isa(phase, str):
-                index = (self.get_phase_index(phase), IDs_index)
-            elif phase is ...:
-                index = (phase, IDs_index)
-            else:
-                raise IndexError("index by [phase, IDs] where phase is a "
-                                 "(str, ellipsis, or missing), and IDs is a "
-                                 "(str, tuple(str), ellipisis, or missing)")
         return index
     
     def __iter__(self):

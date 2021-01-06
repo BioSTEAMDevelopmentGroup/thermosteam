@@ -74,7 +74,7 @@ def test_stream():
         
 def test_multistream():
     import thermosteam as tmo
-    tmo.settings.set_thermo(['Water'], cache=True)
+    tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     stream = tmo.MultiStream(None, l=[('Water', 1)], T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
     assert_allclose(stream.epsilon, 77.72395675564552)
@@ -92,9 +92,9 @@ def test_multistream():
     assert_allclose(stream.H, 139.3139852692184)
     assert_allclose(stream.S, 70.465818)
     assert_allclose(stream.sigma, 0.07168596252716256)
-    assert_allclose(stream.z_mol, [1.0])
-    assert_allclose(stream.z_mass, [1.0])
-    assert_allclose(stream.z_vol, [1.0])
+    assert_allclose(stream.z_mol, [1.0, 0.])
+    assert_allclose(stream.z_mass, [1.0, 0.])
+    assert_allclose(stream.z_vol, [1.0, 0.])
     assert not stream.source
     assert not stream.sink
     assert stream.main_chemical == 'Water'
@@ -148,7 +148,23 @@ def test_multistream():
     assert_allclose(other.T, stream.T)
     assert_allclose(other.P, stream.P)
     
+    # Indexing
+    assert_allclose(stream.imol['Water'], 10.)
+    assert_allclose(stream.imol['Water', 'Ethanol'], [10., 0.])
+    UndefinedChemical = tmo.exceptions.UndefinedChemical
+    UndefinedPhase = tmo.exceptions.UndefinedPhase
+    with pytest.raises(UndefinedChemical):
+        stream.imol['Octanol']
+    with pytest.raises(UndefinedChemical):
+        stream.imol['l', 'Octanol']
+    with pytest.raises(TypeError):
+        stream.imol['l', ['Octanol', 'Water']]
+    with pytest.raises(IndexError):
+        stream.imol[None, 'Octanol']
+    with pytest.raises(UndefinedPhase):
+        stream.imol['s', 'Octanol']
     
+        
 if __name__ == '__main__':
     test_stream()
     test_multistream()
