@@ -1,0 +1,15 @@
+Thermosteam 0.22
+================
+
+0.23.3
+------
+New features:
+
+* The :meth:`Stream.mix_from <thermosteam.Stream.mix_from>` can now mix empty 
+  streams.
+* Synonymns to all chemicals (e.g. IUPAC names, common name, formula) are 
+  automatically added after copiling a :class:`~thermosteam.Chemicals` object.
+* Creating a :class:`~thermosteam.Chemical` doesn't require an alphanumerical 
+  ID (any string is valid).
+* Better errors for material indexers (i.e. imol, imass, and ivol properties 
+  of :class:`~thermosteam.Stream` objects).
