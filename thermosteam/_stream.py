@@ -890,6 +890,9 @@ class Stream:
             
         >>> s1.empty(); s2.empty(); s_mix.mix_from([s1, s2])
         >>> s_mix.show()
+        Stream: s_mix
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow: 0
         
         """
         others = [i for i in others if i]
