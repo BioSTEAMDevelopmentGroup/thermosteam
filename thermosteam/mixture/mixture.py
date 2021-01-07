@@ -132,12 +132,12 @@ class Mixture:
     def solve_T(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         args = (H, self.H, phase, mol, P, self.Cn(phase, mol, T_guess))
-        return flx.aitken(iter_temperature, T_guess, 1e-6, args, 50, checkiter=True)
+        return flx.aitken(iter_temperature, T_guess, 1e-6, args, 100, checkiter=True)
         
     def xsolve_T(self, phase_mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         args = (H, self.xH, tuple(phase_mol), P, self.xCn(phase_mol, T_guess))
-        return flx.aitken(xiter_temperature, T_guess, 1e-6, args, 50, checkiter=True)
+        return flx.aitken(xiter_temperature, T_guess, 1e-6, args, 100, checkiter=True)
         
     def xCn(self, phase_mol, T):
         """Multi-phase mixture heat capacity [J/mol/K]."""

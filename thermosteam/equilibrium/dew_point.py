@@ -167,12 +167,14 @@ class DewPoint:
         (357.451847, array([0.849, 0.151]))
         
         """
+        if P > self.Pmax: return self.Tmax, z.copy()
+        elif P < self.Pmin: return self.Tmin, z.copy()
         f = self._T_error
         z_norm = z/z.sum()
         zP = z * P
         args = (P, z_norm, zP)
         self.P = P
-        T_guess = self.T or self._T_ideal(zP) 
+        T_guess = self._T_ideal(zP) 
         try:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
@@ -184,7 +186,6 @@ class DewPoint:
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.T = T
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
     
@@ -217,13 +218,15 @@ class DewPoint:
         (82444.29876, array([0.853, 0.147]))
  
        """
+        if T > self.Tmax: return self.Pmax, z.copy()
+        elif T < self.Tmin: return self.Pmin, z.copy()
         z_norm = z/z.sum()
         Psats = array([i(T) for i in self.Psats], dtype=float)
         z_over_Psats = z/Psats
         args = (T, z_norm, z_over_Psats)
         self.T = T
         f = self._P_error
-        P_guess = self.P or self._P_ideal(z_over_Psats)
+        P_guess = self._P_ideal(z_over_Psats)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 5e-12, args,
                                   checkiter=False)
@@ -234,7 +237,6 @@ class DewPoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.P = P
         self.x = fn.normalize(self.x)
         return P, self.x.copy()
     

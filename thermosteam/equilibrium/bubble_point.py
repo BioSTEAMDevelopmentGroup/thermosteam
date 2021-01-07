@@ -163,12 +163,14 @@ class BubblePoint:
         (353.7543, array([0.381, 0.619]))
         
         """
+        if P > self.Pmax: return self.Tmax, z.copy()
+        elif P < self.Pmin: return self.Tmin, z.copy()
         self.P = P
         f = self._T_error
         z_norm = z / z.sum()
         z_over_P = z_norm/P
         args = (P, z_over_P, z_norm)
-        T_guess = self.T or self._T_ideal(z_over_P) 
+        T_guess = self._T_ideal(z_over_P) 
         try:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
@@ -179,7 +181,6 @@ class BubblePoint:
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args, 
                                      checkiter=False, checkbounds=False)
-        self.T = T
         self.y = fn.normalize(self.y)
         return T, self.y.copy()
     
@@ -212,13 +213,15 @@ class BubblePoint:
         (91830.9798, array([0.419, 0.581]))
         
         """
+        if T > self.Tmax: return self.Pmax, z.copy()
+        elif T < self.Tmin: return self.Pmin, z.copy()
         self.T = T
         Psat = array([i(T) for i in self.Psats])
         z_norm = z / z.sum()
         z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
         f = self._P_error
         args = (T, z_Psat_gamma_pcf)
-        P_guess = self.P or self._P_ideal(z_Psat_gamma_pcf)
+        P_guess = self._P_ideal(z_Psat_gamma_pcf)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
                                   args, checkiter=False)
@@ -228,7 +231,6 @@ class BubblePoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.P = P
         self.y = fn.normalize(self.y)
         return P, self.y.copy()
     

@@ -497,9 +497,7 @@ class VLE(Equilibrium, phases='lg'):
         H_dew = self.mixture.xH(phase_data, T, P_dew)
         dH_dew = (H - H_dew)
         if dH_dew >= 0:
-            self._T = self.mixture.xsolve_T(phase_data, H, T, P_dew)
-            self._thermal_condition.P = P_dew
-            return
+            raise InfeasibleRegion(f'T={T:.3g} and H={H:.3g}')
 
         # Check if subcooled liquid
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
@@ -508,9 +506,7 @@ class VLE(Equilibrium, phases='lg'):
         H_bubble = self.mixture.xH(phase_data, T, P_bubble)
         dH_bubble = (H - H_bubble)
         if dH_bubble <= 0:
-            self._T = self.mixture.xsolve_T(phase_data, H, T, P_bubble)
-            self._thermal_condition.P = P_bubble
-            return
+            raise InfeasibleRegion(f'T={T:.3g} and H={H:.3g}')
 
         # Guess overall vapor fraction, and vapor flow rates
         V = self._V or dH_bubble/(H_dew - H_bubble)
@@ -625,8 +621,19 @@ class VLE(Equilibrium, phases='lg'):
         
         F_mass = self._F_mass
         H_hat = H/F_mass
-        H_hat_bubble = H_bubble/F_mass
-        H_hat_dew = H_dew/F_mass
+        H_hat_bubble = self._H_hat_err_at_T(T_bubble, 0.)
+        if H_hat_bubble > H_hat:
+            vapor_mol[index] = 0
+            liquid_mol[index] = mol
+            thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_bubble, P)
+            return
+        H_hat_dew = self._H_hat_err_at_T(T_dew, 0.)
+        if H_hat_dew < H_hat:
+            vapor_mol[index] = mol
+            liquid_mol[index] = 0.
+            thermal_condition.T = self.mixture.xsolve_T(self._phase_data, H, T_dew, P)
+            return
+    
         T = flx.IQ_interpolation(self._H_hat_err_at_T,
                                  T_bubble, T_dew, 
                                  H_hat_bubble - H_hat, H_hat_dew - H_hat,
