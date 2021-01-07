@@ -165,6 +165,7 @@ class DewPoint:
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
         (357.451847, array([0.849, 0.151]))
+        
         """
         f = self._T_error
         z_norm = z/z.sum()
@@ -176,13 +177,14 @@ class DewPoint:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
                                   checkiter=False)
-        except (InfeasibleRegion, DomainError):
+        except (InfeasibleRegion, DomainError) as e:
             Tmin = self.Tmin
             Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args,
                                      checkiter=False, checkbounds=False)
+        self.T = T
         self.x = fn.normalize(self.x)
         return T, self.x.copy()
     
@@ -232,6 +234,7 @@ class DewPoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
+        self.P = P
         self.x = fn.normalize(self.x)
         return P, self.x.copy()
     

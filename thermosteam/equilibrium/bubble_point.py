@@ -179,6 +179,7 @@ class BubblePoint:
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args, 
                                      checkiter=False, checkbounds=False)
+        self.T = T
         self.y = fn.normalize(self.y)
         return T, self.y.copy()
     
@@ -227,6 +228,7 @@ class BubblePoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
+        self.P = P
         self.y = fn.normalize(self.y)
         return P, self.y.copy()
     

@@ -25,6 +25,16 @@ mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
+class StreamData:
+    __slots__ = ('_imol', '_T', '_P', '_phases')
+    
+    def __init__(self, imol, thermal_condition, phases):
+        self._imol = imol.copy()
+        self._T = thermal_condition.T
+        self._P = thermal_condition.P
+        self._phases = phases
+        
+    
 # %%
 
 @utils.thermo_user
@@ -252,6 +262,63 @@ class Stream:
     def as_stream(self):
         """Does nothing."""
 
+    def get_data(self):
+        """
+        Return a StreamData object containing data on material flow rates, 
+        temperature, pressure, and phase(s).
+        
+        See Also
+        --------
+        Stream.set_data
+        
+        Examples
+        --------
+        Get and set data from stream at different conditions
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> stream = tmo.Stream('stream', Water=10)
+        >>> data = stream.get_data()
+        >>> stream.vle(V=0.5, P=101325)
+        >>> data_vle = stream.get_data()
+        >>> stream.set_data(data)
+        >>> stream.show()
+        Stream: stream
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kmol/hr): Water  10
+        >>> stream.set_data(data_vle)
+        >>> stream.show()
+        MultiStream: stream
+         phases: ('g', 'l'), T: 373.12 K, P: 101325 Pa
+         flow (kmol/hr): (g) Water  5
+                         (l) Water  5
+        
+        Note that only StreamData objects are valid for this method:
+        
+        >>> stream.set_data({'T': 298.15})
+        Traceback (most recent call last):
+        ValueError: stream_data must be a StreamData object; not dict
+        
+        """
+        return StreamData(self.imol, self.thermal_condition, self.phases)
+
+    def set_data(self, stream_data):
+        """
+        Set material flow rates, temperature, pressure, and phase(s) through a 
+        StreamData object
+
+        See Also
+        --------
+        Stream.get_data
+
+        """
+        if isinstance(stream_data, StreamData):
+            self.phases = stream_data._phases
+            self._imol.copy_like(stream_data._imol)
+            self._thermal_condition.copy_like(stream_data)
+        else:
+            raise ValueError(f'stream_data must be a StreamData object; not {type(stream_data).__name__}')
+        
     @property
     def price(self):
         """[float] Price of stream per unit mass [USD/kg."""
