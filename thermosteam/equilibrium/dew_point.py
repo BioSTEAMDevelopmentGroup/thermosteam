@@ -167,8 +167,8 @@ class DewPoint:
         (357.451847, array([0.849, 0.151]))
         
         """
-        if P > self.Pmax: return self.Tmax, z.copy()
-        elif P < self.Pmin: return self.Tmin, z.copy()
+        if P > self.Pmax: P = self.Pmax
+        elif P < self.Pmin: P = self.Pmin
         f = self._T_error
         z_norm = z/z.sum()
         zP = z * P
@@ -218,8 +218,8 @@ class DewPoint:
         (82444.29876, array([0.853, 0.147]))
  
        """
-        if T > self.Tmax: return self.Pmax, z.copy()
-        elif T < self.Tmin: return self.Pmin, z.copy()
+        if T > self.Tmax: T = self.Tmax
+        elif T < self.Tmin: T = self.Tmin
         z_norm = z/z.sum()
         Psats = array([i(T) for i in self.Psats], dtype=float)
         z_over_Psats = z/Psats

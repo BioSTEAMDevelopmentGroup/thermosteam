@@ -163,8 +163,8 @@ class BubblePoint:
         (353.7543, array([0.381, 0.619]))
         
         """
-        if P > self.Pmax: return self.Tmax, z.copy()
-        elif P < self.Pmin: return self.Tmin, z.copy()
+        if P > self.Pmax: P = self.Pmax
+        elif P < self.Pmin: P = self.Pmin
         self.P = P
         f = self._T_error
         z_norm = z / z.sum()
@@ -213,8 +213,8 @@ class BubblePoint:
         (91830.9798, array([0.419, 0.581]))
         
         """
-        if T > self.Tmax: return self.Pmax, z.copy()
-        elif T < self.Tmin: return self.Pmin, z.copy()
+        if T > self.Tmax: T = self.Tmax
+        elif T < self.Tmin: T = self.Tmin
         self.T = T
         Psat = array([i(T) for i in self.Psats])
         z_norm = z / z.sum()
