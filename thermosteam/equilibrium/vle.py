@@ -686,7 +686,8 @@ class VLE(Equilibrium, phases='lg'):
         Psat_over_P_phi = Psats_over_P / phi
         f = self._x_iter
         args = (Psat_over_P_phi,)
-        x = flx.aitken(f, self._x, 1e-12, args, checkiter=False)
+        x = flx.aitken(f, self._x, 1e-12, args, checkiter=False, 
+                       checkconvergence=False, convergenceiter=3)
         self._x = f(x, *args)
         v = self._F_mol_vle * self._V * x * self._Ks     
         return fn.normalize(v)
@@ -704,8 +705,10 @@ class VLE(Equilibrium, phases='lg'):
             self._y = self._y_iter(y, Psats_over_P, T, P)
         else:
             self._y = flx.aitken(self._y_iter, v/v.sum(), 1e-12,
-                                   args=(Psats_over_P, T, P),
-                                   checkiter=False)
+                                 args=(Psats_over_P, T, P),
+                                 checkiter=False, 
+                                 checkconvergence=False, 
+                                 convergenceiter=3)
         self._v = self._F_mol_vle * self._V * self._y
         return self._v
 
