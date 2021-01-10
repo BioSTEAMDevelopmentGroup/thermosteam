@@ -917,7 +917,7 @@ class Stream:
             new = cls(ID, thermo=thermo)
         return new
     
-    def mix_from(self, others):
+    def mix_from(self, others, energy_balance=True):
         """
         Mix all other streams into this one, ignoring its initial contents.
         
@@ -970,12 +970,14 @@ class Stream:
             self.copy_like(others[0])
         else:
             self._imol.mix_from([i._imol for i in others])
+            if not energy_balance: return
             H = sum([i.H for i in others])
             if self.isempty():
                 self.T = np.mean([i.T for i in others])
+            elif isinstance(self, tmo.MultiStream):
+                self.H = H
             else:
-                try: 
-                    self.H = H
+                try: self.H = H
                 except: # pragma: no cover
                     phase = self.phase.lower()
                     if phase == 'g':
@@ -1813,12 +1815,15 @@ class Stream:
         source = self.source
         return f"{source}-{source.outs.index(self)}" if source else self.ID
     
-    def _info(self, T, P, flow, composition, N):
+    def _info(self, T, P, flow, composition, N, IDs):
         """Return string with all specifications."""
         from .indexer import nonzeros
         basic_info = self._basic_info()
-        IDs = self.chemicals.IDs
-        data = self.imol.data
+        if not IDs:
+            IDs = self.chemicals.IDs
+            data = self.imol.data
+        else:
+            data = self.imol[IDs]
         IDs, data = nonzeros(IDs, data)
         IDs = tuple(IDs)
         display_units = self.display_units
@@ -1863,28 +1868,30 @@ class Stream:
               + beginning
               + flow_rates)
 
-    def show(self, T=None, P=None, flow=None, composition=None, N=None):
+    def show(self, T=None, P=None, flow=None, composition=None, N=None, IDs=None):
         """Print all specifications.
         
         Parameters
         ----------
-        T: str, optional
+        T : str, optional
             Temperature units.
-        P: str, optional
+        P : str, optional
             Pressure units.
-        flow: str, optional
+        flow : str, optional
             Flow rate units.
-        composition: bool, optional
+        composition : bool, optional
             Whether to show composition.
-        N: int, optional
+        N : int, optional
             Number of compounds to display.
-        
+        IDs : tuple[str], optional
+            IDs of compounds to display. Defaults to all chemicals
+            .
         Notes
         -----
         Default values are stored in `Stream.display_units`.
         
         """
-        print(self._info(T, P, flow, composition, N))
+        print(self._info(T, P, flow, composition, N, IDs))
     _ipython_display_ = show
     
     def print(self, units=None):

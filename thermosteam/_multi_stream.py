@@ -769,18 +769,20 @@ class MultiStream(Stream):
         return ''.join([phases[0] for phases in ('gG', 'lL', 'sS') if phase_is_present(self, phases)])
     @phase.setter
     def phase(self, phase):
+        if len(phase) > 1: self.phases = phase
         if self._link: raise RuntimeError('cannot convert linked stream')
         self._imol = self._imol.to_chemical_indexer(phase)
+        self._streams.clear()
         self.__class__ = Stream
     
     ### Representation ###
     
-    def _info(self, T, P, flow, composition, N):
+    def _info(self, T, P, flow, composition, N, IDs):
         """Return string with all specifications."""
         from .indexer import nonzeros
-        IDs = self.chemicals.IDs
+        if not IDs: IDs = self.chemicals.IDs
         basic_info = self._basic_info()
-        all_IDs, _ = nonzeros(self.chemicals.IDs, self.mol)
+        all_IDs, _ = nonzeros(IDs, self.imol[IDs])
         all_IDs = tuple(all_IDs)
         display_units = self.display_units
         T_units = T or display_units.T

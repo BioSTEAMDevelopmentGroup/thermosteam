@@ -317,10 +317,10 @@ class Chemical:
         
     >>> # Vapor pressure (Pa)
     >>> Water.Psat(T=373.15)
-    101284.55...
+    101284.55
     >>> # Surface tension (N/m)
     >>> Water.sigma(T=298.15)
-    0.07197220523...
+    0.0719722
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
     1.80692...e-05
@@ -374,7 +374,7 @@ class Chemical:
     When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
         
     >>> Water.Psat(373.15)
-    101284.55179999319
+    101284.55
     >>> # Water.Psat(1000.0) ->
     >>> # ValueError: Water has no valid saturated vapor pressure model at T=1000.00 K
     
