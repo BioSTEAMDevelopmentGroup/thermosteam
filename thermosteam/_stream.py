@@ -741,9 +741,9 @@ class Stream:
         return self.mixture.H(self.phase, self.mol, *self._thermal_condition)
     @H.setter
     def H(self, H:float):
-        try: T = self.mixture.solve_T(self.phase, self.mol, H,
-                                      *self._thermal_condition)
-        except: # pragma: no cover
+        try: self.T = self.mixture.solve_T(self.phase, self.mol, H,
+                                           *self._thermal_condition)
+        except Exception as error: # pragma: no cover
             phase = self.phase.lower()
             if phase == 'g':
                 # Maybe too little heat, liquid must be present
@@ -752,19 +752,9 @@ class Stream:
                 # Maybe too much heat, gas must be present
                 self.phase = 'g'
             else:
-                phases = ''.join([i.phase for i in others])
-                self.phases = tuple(set(phases))
-                self._imol.mix_from([i._imol for i in others])
-            try: 
-                T = self.mixture.solve_T(self.phase, self.mol, H,
-                                         *self._thermal_condition)
-            except:
-                phases = ''.join([i.phase for i in others])
-                self.phases = tuple(set(phases))
-                self._imol.mix_from([i._imol for i in others])
-                T = self.mixture.solve_T(self.phase, self.mol, H,
-                                         *self._thermal_condition)
-        self.T = T
+                raise error
+            self.T = self.mixture.solve_T(self.phase, self.mol, H,
+                                          *self._thermal_condition)
 
     @property
     def S(self):
@@ -994,8 +984,14 @@ class Stream:
         else:
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():
-                self.H = sum([i.H for i in others])
-            
+                try:
+                    self.H = sum([i.H for i in others])
+                except:
+                    phases = ''.join([i.phase for i in others])
+                    self.phases = tuple(set(phases))
+                    self._imol.mix_from([i._imol for i in others])
+                    self.H = H
+                
     def split_to(self, s1, s2, split):
         """
         Split molar flow rate from this stream to two others given
