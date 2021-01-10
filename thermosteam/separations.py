@@ -932,14 +932,50 @@ class MultiStageLLE:
     Stream: 
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     4.1e+03
-                     Methanol  1.2
-                     Octanol   1.5
+                     Methanol  1.3
+                     Octanol   1.2
     >>> stages.extract.show()
     Stream: 
      phase: 'L', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     871
                      Methanol  499
                      Octanol   5e+03
+    
+    Using a constant set of partition coefficients to simulated many stages
+    (e.g. 25 stages) may lead to infeasible equilibrium solutions. We can 
+    make sure an error is raised in these situations as follows:
+        
+    >>> tmo.separations.StageLLE.strict_infeasibility_check = True
+    >>> N_stages = 20
+    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
+    ...     partition_data={
+    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
+    ...         'IDs': ('Water', 'Methanol', 'Octanol'),
+    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
+    ...     }
+    ... )
+    >>> stages.simulate_multi_stage_lle_without_side_draws()
+    Traceback (most recent call last):
+    InfeasibleRegion: negative flow rates in equilibrium solution; partition data is infeasible
+    
+    Otherwise, infeasible equilibrium solutions are handled by enforcing a
+    strict mass balance around each stage (preventing negative flows). For example:
+    
+    >>> tmo.separations.StageLLE.strict_infeasibility_check = False
+    >>> N_stages = 20
+    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
+    ...     partition_data={
+    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
+    ...         'IDs': ('Water', 'Methanol', 'Octanol'),
+    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
+    ...     }
+    ... )
+    >>> stages.simulate_multi_stage_lle_without_side_draws()
+    >>> stages.raffinate.show()
+    Stream: 
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water    2.48e+03
+                     Octanol  0.777
     
     """
     __slots__ = ('stages', 'index', 'multi_stream', 
@@ -985,8 +1021,6 @@ class MultiStageLLE:
         index = self.index
         for stage, extract_flow in zip(self.stages, extract_flow_rates):
             stage.extract.mol[index] = extract_flow
-        
-        i = 0
         for stage in self.stages: stage.balance_raffinate_flows()
             
     
@@ -1013,7 +1047,7 @@ class MultiStageLLE:
             bottom = multi_stream['L']
             IDs = data['IDs']
             K = data['K']
-            phi = data['phi']
+            phi = data.get('phi', 0.5)
             data['phi'] = phi = partition(multi_stream, top, bottom, IDs, K, phi)
         else:
             lle = multi_stream.lle
