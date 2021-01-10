@@ -1023,7 +1023,6 @@ class MultiStageLLE:
             stage.extract.mol[index] = extract_flow
         for stage in self.stages: stage.balance_raffinate_flows()
             
-    
     def simulate_multi_stage_lle_without_side_draws(self):
         f = self.multi_stage_lle_without_side_draws_iter
         if hasattr(self, 'extract_flow_rates'):

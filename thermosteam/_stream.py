@@ -741,7 +741,30 @@ class Stream:
         return self.mixture.H(self.phase, self.mol, *self._thermal_condition)
     @H.setter
     def H(self, H:float):
-        self.T = self.mixture.solve_T(self.phase, self.mol, H, *self._thermal_condition)
+        try: T = self.mixture.solve_T(self.phase, self.mol, H,
+                                      *self._thermal_condition)
+        except: # pragma: no cover
+            phase = self.phase.lower()
+            if phase == 'g':
+                # Maybe too little heat, liquid must be present
+                self.phase = 'l'
+            elif phase == 'l':
+                # Maybe too much heat, gas must be present
+                self.phase = 'g'
+            else:
+                phases = ''.join([i.phase for i in others])
+                self.phases = tuple(set(phases))
+                self._imol.mix_from([i._imol for i in others])
+            try: 
+                T = self.mixture.solve_T(self.phase, self.mol, H,
+                                         *self._thermal_condition)
+            except:
+                phases = ''.join([i.phase for i in others])
+                self.phases = tuple(set(phases))
+                self._imol.mix_from([i._imol for i in others])
+                T = self.mixture.solve_T(self.phase, self.mol, H,
+                                         *self._thermal_condition)
+        self.T = T
 
     @property
     def S(self):
@@ -970,33 +993,8 @@ class Stream:
             self.copy_like(others[0])
         else:
             self._imol.mix_from([i._imol for i in others])
-            if not energy_balance: return
-            H = sum([i.H for i in others])
-            if self.isempty():
-                self.T = np.mean([i.T for i in others])
-            elif isinstance(self, tmo.MultiStream):
-                self.H = H
-            else:
-                try: self.H = H
-                except: # pragma: no cover
-                    phase = self.phase.lower()
-                    if phase == 'g':
-                        # Maybe too little heat, liquid must be present
-                        self.phase = 'l'
-                    elif phase == 'l':
-                        # Maybe too much heat, gas must be present
-                        self.phase = 'g'
-                    else:
-                        phases = ''.join([i.phase for i in others])
-                        self.phases = tuple(set(phases))
-                        self._imol.mix_from([i._imol for i in others])
-                    try: 
-                        self.H = H
-                    except:
-                        phases = ''.join([i.phase for i in others])
-                        self.phases = tuple(set(phases))
-                        self._imol.mix_from([i._imol for i in others])
-                        self.H = H
+            if energy_balance and not self.isempty():
+                self.H = sum([i.H for i in others])
             
     def split_to(self, s1, s2, split):
         """
