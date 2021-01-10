@@ -798,7 +798,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
 @thermo_user
 class StageLLE:
     __slots__ = ('feed', 'raffinate', 'solvent', 'extract', 'multi_stream',
-                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs')
+                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs', '_used_lle')
     
     strict_infeasibility_check = False
     
@@ -842,7 +842,9 @@ class StageLLE:
             self._phi = partition(multi_stream, top, bottom, IDs, 
                                   K, self._phi or partition_data['phi'], 
                                   self.strict_infeasibility_check, stacklevel+1)
+            self._used_lle = False
         else:
+            self._used_lle = True
             lle(self.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
             self._IDs = tuple([i.ID for i in lle._lle_chemicals])
             self._phi = lle._phi
@@ -862,7 +864,13 @@ class StageLLE:
         return self._phi
     @property
     def K(self):
-        return self._K 
+        if self._used_lle:
+            return self._K 
+        else:
+            if self.raffinate.isempty() or self.extract.isempty():
+                return self._K
+            else:
+                return partition_coefficients(self._IDs, self.raffinate, self.extract)
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T}, P={self.P})"
@@ -1068,8 +1076,9 @@ class MultiStageLLE:
     def multi_stage_lle_without_side_draws_iter(self, extract_flow_rates):
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
         stages = self.stages
-        for i in stages:
+        for i in stages: 
             i.partition(self.partition_data)
+            i.balance_raffinate_flows()
         K = np.transpose([i.K for i in stages]) 
         phi = np.array([i.phi for i in stages])
         index = self.index
@@ -1162,6 +1171,7 @@ def flow_rates_for_multi_stage_extration_without_side_draws(
         Extract flow rates with stages by row and components by column.
 
     """
+    phase_fractions[phase_fractions >= 1. - 1e-6] = 1. - 1e-6
     phase_ratios = phase_fractions / (1. - phase_fractions)
     N_chemicals = feed.size
     extract_flow_rates = np.zeros((N_stages, N_chemicals))
