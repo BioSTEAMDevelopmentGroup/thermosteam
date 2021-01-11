@@ -487,14 +487,14 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water    7.31
-                     Ethanol  11.9
+     flow (kmol/hr): Water    7.73
+                     Ethanol  12.3
                      O2       0.1
     >>> bottom.show()
     Stream: bottom
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water    12.7
-                     Ethanol  8.15
+     flow (kmol/hr): Water    12.3
+                     Ethanol  7.72
                      NaCl     0.1
 
     """
@@ -502,7 +502,7 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     mol = feed.imol[IDs]
     F_mol = mol.sum()
     if not bottom.shares_flow_rate_with(feed): bottom.empty()
-    Fa = feed.imol[top_chemicals].sum() / F_mol if top_chemicals else 0.
+    Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
     if bottom_chemicals:
         bottom.imol[bottom_chemicals] = bottom_flows = feed.imol[bottom_chemicals]
         Fb = bottom_flows.sum()
@@ -967,7 +967,7 @@ class MultiStageLLE:
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     4.1e+03
                      Methanol  1.3
-                     Octanol   1.2
+                     Octanol   1.1
     >>> stages.extract.show()
     Stream: 
      phase: 'L', T: 298.15 K, P: 101325 Pa
@@ -992,8 +992,13 @@ class MultiStageLLE:
     Stream: 
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     5e+03
-                     Methanol  0.091
-    
+                     Methanol  0.199
+    >>> stages.extract.show()
+    Stream: 
+     phase: 'L', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Methanol  500
+                     Octanol   5e+03
+        
     """
     __slots__ = ('stages', 'index', 'multi_stream', 
                  'carrier_chemical', 'extract_flow_rates', 

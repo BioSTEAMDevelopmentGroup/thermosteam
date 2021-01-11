@@ -34,11 +34,11 @@ def as_valid_fraction(x):
         x = 1.
     return x
 
-def phase_fraction(zs, Ks, guess=None, Fa=0., Fb=0.):
+def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     """Return phase fraction for binary phase equilibrium."""
-    if Fa or Fb:
+    if za or zb:
         phase_fraction = solve_phase_fraction_with_contant_phase_fluids(
-            zs, Ks, guess or 0.5, Fa, Fb
+            zs, Ks, guess or 0.5, za, zb
         )
     else:
         N = zs.size
@@ -52,7 +52,7 @@ def phase_fraction(zs, Ks, guess=None, Fa=0., Fb=0.):
             phase_fraction = solve_phase_fraction_Rashford_Rice(zs, Ks, guess)
     return as_valid_fraction(phase_fraction)
 
-def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, Fa=0., Fb=0.):
+def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, za=0., zb=0.):
     """
     Return phase fraction for N-component binary phase equilibrium with 
     non-partitioning chemicals by accelerated fixed-point iteration. 
@@ -60,7 +60,7 @@ def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, Fa=0., Fb=
     Notes
     -----
     This iterative method was developed by Yoel Cortes-Pena to handle chemicals
-    which do not partition. Fa and Fb are the fraction of non-partitioning
+    which do not partition. za and zb are the fraction of non-partitioning
     chemicals in phases a and b, respectively. 
     
     Examples
@@ -77,34 +77,34 @@ def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, Fa=0., Fb=
     >>> F_water = 1
     >>> F_CO2 = 1
     >>> F_total = F_air + F_water + F_CO2
-    >>> F_vapor = F_air / F_total
-    >>> F_liquid = F_water / F_total
+    >>> z_air = F_air / F_total
+    >>> z_water = F_water / F_total
     >>> zs = np.array([0.333]) # CO2
     >>> Ks = np.array([0.999]) # CO2
     >>> phi = solve_phase_fraction_with_contant_phase_fluids(
-    ...     zs, Ks, Fa=F_vapor, Fb=F_liquid
+    ...     zs, Ks, za=z_air, zb=z_water
     ... )
     >>> phi
     0.4998750625858867
     
     """
-    if Ks.max() < 1.0 and not Fa: return 0.
-    if Ks.min() > 1.0 and not Fb: return 1.
-    if not (Fa or Fb):
+    if Ks.max() < 1.0 and not za: return 0.
+    if Ks.min() > 1.0 and not zb: return 1.
+    if not (za or zb):
         y0 = phase_fraction_objective_function(0., zs, Ks)
         y1 = phase_fraction_objective_function(1., zs, Ks)
         if y0 > y1 > 0.: return 1
         if y1 > y0 > 0.: return 0.
         if y0 < y1 < 0.: return 1.
         if y1 < y0 < 0.: return 0.
-    args = (zs, Ks, Fa, Fb)
+    args = (zs, Ks, za, zb)
     zs = zs[np.newaxis, :]
     if not 0. < guess < 1.: guess = 0.5
     phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
-    Fs = np.ones([2, 1]); Fs[:, 0] = [Fa, Fb]
+    zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
     Ks = np.array([Ks, 1. / Ks])
     phi = flx.wegstein(compute_phase_fraction_iter, phi, 1e-16, 
-                       args=(zs, Ks, Fs), checkiter=False)
+                       args=(zs, Ks, zc), checkiter=False)
     return phi[0, 0] / phi.sum()
 
 @flx.njitable(cache=True)
@@ -112,10 +112,10 @@ def phase_composition(zs, Ks, phi):
     return zs * Ks / (phi * Ks + (1. - phi))
 
 @flx.njitable(cache=True)
-def compute_phase_fraction_iter(phi, zs, Ks, Fs):
+def compute_phase_fraction_iter(phi, zs, Ks, zc):
     ys = phase_composition(zs, Ks, phi)
     phi = (ys * phi).sum(axis=1, keepdims=True)
-    phi += Fs
+    phi += zc
     return phi
     
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess):
