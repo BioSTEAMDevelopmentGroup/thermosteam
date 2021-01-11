@@ -20,7 +20,7 @@ import flexsolve as flx
 
 __all__ = ('phase_fraction', 
            'solve_phase_fraction_Rashford_Rice',
-           'solve_phase_fraction_with_contant_phase_fluids',
+           'solve_phase_fraction_iteration',
            'phase_composition',
            'compute_phase_fraction_2N', 
            'compute_phase_fraction_3N')
@@ -36,32 +36,29 @@ def as_valid_fraction(x):
 
 def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     """Return phase fraction for binary phase equilibrium."""
-    if za or zb:
-        phase_fraction = solve_phase_fraction_with_contant_phase_fluids(
-            zs, Ks, guess or 0.5, za, zb
-        )
+    N = zs.size
+    if za or zb or N > 3:
+        phase_fraction = solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb)
+    elif N == 2:
+        phase_fraction = compute_phase_fraction_2N(zs, Ks)
+    elif N == 3:
+        phase_fraction = compute_phase_fraction_3N(zs, Ks)
     else:
-        N = zs.size
-        if N == 2:
-            phase_fraction = compute_phase_fraction_2N(zs, Ks)
-            phase_fraction = as_valid_fraction(phase_fraction)
-        elif N == 3:
-            phase_fraction = compute_phase_fraction_3N(zs, Ks)
-            phase_fraction = as_valid_fraction(phase_fraction)
-        else:
-            phase_fraction = solve_phase_fraction_Rashford_Rice(zs, Ks, guess)
+        raise ValueError('number of chemicals in equilibrium must be 2 or more '
+                         'to find phase fraction')
+        
     return as_valid_fraction(phase_fraction)
 
-def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, za=0., zb=0.):
+def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     """
-    Return phase fraction for N-component binary phase equilibrium with 
-    non-partitioning chemicals by accelerated fixed-point iteration. 
+    Return phase fraction for N-component binary phase equilibrium by 
+    accelerated fixed-point iteration. 
     
     Notes
     -----
-    This iterative method was developed by Yoel Cortes-Pena to handle chemicals
-    which do not partition. za and zb are the fraction of non-partitioning
-    chemicals in phases a and b, respectively. 
+    This iterative method was developed by Yoel Cortes-Pena. It can handle 
+    chemicals which do not partition. za and zb are the fraction of 
+    non-partitioning chemicals in phases a and b, respectively. 
     
     Examples
     --------
@@ -70,7 +67,7 @@ def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, za=0., zb=
         
     >>> import numpy as np
     >>> from thermosteam.equilibrium import (
-    ...     solve_phase_fraction_with_contant_phase_fluids,
+    ...     solve_phase_fraction_iteration,
     ...     phase_composition,
     ... )
     >>> F_air = 1
@@ -81,23 +78,24 @@ def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, za=0., zb=
     >>> z_water = F_water / F_total
     >>> zs = np.array([0.333]) # CO2
     >>> Ks = np.array([0.999]) # CO2
-    >>> phi = solve_phase_fraction_with_contant_phase_fluids(
+    >>> phi = solve_phase_fraction_iteration(
     ...     zs, Ks, za=z_air, zb=z_water
     ... )
     >>> phi
-    0.4998750625858867
+    0.4998
     
     """
     if Ks.max() < 1.0 and not za: return 0.
     if Ks.min() > 1.0 and not zb: return 1.
-    if not (za or zb):
-        y0 = phase_fraction_objective_function(0., zs, Ks)
-        y1 = phase_fraction_objective_function(1., zs, Ks)
-        if y0 > y1 > 0.: return 1
-        if y1 > y0 > 0.: return 0.
-        if y0 < y1 < 0.: return 1.
-        if y1 < y0 < 0.: return 0.
     args = (zs, Ks, za, zb)
+    x0 = 0.
+    x1 = 1.
+    y0 = np.inf if za else f(x0, *args) 
+    y1 = -np.inf if zb else f(x1, *args)
+    if y0 > y1 > 0.: return 1
+    if y1 > y0 > 0.: return 0.
+    if y0 < y1 < 0.: return 1.
+    if y1 < y0 < 0.: return 0.
     zs = zs[np.newaxis, :]
     if not 0. < guess < 1.: guess = 0.5
     phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
@@ -118,34 +116,37 @@ def compute_phase_fraction_iter(phi, zs, Ks, zc):
     phi += zc
     return phi
     
-def solve_phase_fraction_Rashford_Rice(zs, Ks, guess):
+def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     """
     Return phase fraction for N-component binary equilibrium by
     numerically solving the Rashford Rice equation.
     
     """
-    args = (zs, Ks)
+    if Ks.max() < 1.0 and not za: return 0.
+    if Ks.min() > 1.0 and not zb: return 1.
+    args = (zs, Ks, za, zb)
     f = phase_fraction_objective_function
-    if Ks.max() < 1.0: return 0.
-    if Ks.min() > 1.0: return 1.
-    y0 = f(0., *args)
-    y1 = f(1., *args)
+    x0 = 0.
+    x1 = 1.
+    y0 = np.inf if za else f(x0, *args) 
+    y1 = -np.inf if zb else f(x1, *args)
     if y0 > y1 > 0.: return 1
     if y1 > y0 > 0.: return 0.
     if y0 < y1 < 0.: return 1.
     if y1 < y0 < 0.: return 0.
-    return flx.IQ_interpolation(f, 0., 1., y0, y1,
+    x0, x1, y0, y1 = flx.find_bracket(f, x0, x1, y0, y1, args)
+    return flx.IQ_interpolation(f, x0, x1, y0, y1,
                                 guess, 1e-16, 1e-16,
                                 args, checkiter=False)
 
 @flx.njitable(cache=True)
-def phase_fraction_objective_function(phi, zs, Ks):
+def phase_fraction_objective_function(phi, zs, Ks, za, zb):
     """Phase fraction objective function."""
     Kterm = Ks - 1.
     numerator = zs * Kterm
     denominator = 1. + phi * Kterm
     denominator[denominator < 1e-16] = 1e-16
-    return (numerator / denominator).sum()    
+    return (numerator / denominator).sum() + za/phi - zb/(1. - phi)
 
 @flx.njitable(cache=True)
 def compute_phase_fraction_2N(zs, Ks):
