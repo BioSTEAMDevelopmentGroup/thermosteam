@@ -15,34 +15,114 @@
 # https://github.com/CalebBell/thermo/blob/master/LICENSE.txt for details.
 """
 """
+import numpy as np
 import flexsolve as flx
 
-__all__ = ('phase_fraction', 'solve_phase_fraction',
-           'compute_phase_fraction_2N', 'compute_phase_fraction_3N')
+__all__ = ('phase_fraction', 
+           'solve_phase_fraction_Rashford_Rice',
+           'solve_phase_fraction_with_contant_phase_fluids',
+           'phase_composition',
+           'compute_phase_fraction_2N', 
+           'compute_phase_fraction_3N')
 
 @flx.njitable(cache=True)
 def as_valid_fraction(x):
+    """Ensure that x is between 0 and 1."""
     if x < 0.:
         x = 0.
     elif x > 1.:
         x = 1.
     return x
 
-def phase_fraction(zs, Ks, guess=None):
-    """Return phase fraction for binary equilibrium."""
-    N = zs.size
-    if N == 2:
-        phase_fraction = compute_phase_fraction_2N(zs, Ks)
-    elif N == 3:
-        phase_fraction = compute_phase_fraction_3N(zs, Ks)
+def phase_fraction(zs, Ks, guess=None, Fa=0., Fb=0.):
+    """Return phase fraction for binary phase equilibrium."""
+    if Fa or Fb:
+        phase_fraction = solve_phase_fraction_with_contant_phase_fluids(
+            zs, Ks, guess or 0.5, Fa, Fb
+        )
     else:
-        phase_fraction = solve_phase_fraction(zs, Ks, guess)
+        N = zs.size
+        if N == 2:
+            phase_fraction = compute_phase_fraction_2N(zs, Ks)
+            phase_fraction = as_valid_fraction(phase_fraction)
+        elif N == 3:
+            phase_fraction = compute_phase_fraction_3N(zs, Ks)
+            phase_fraction = as_valid_fraction(phase_fraction)
+        else:
+            phase_fraction = solve_phase_fraction_Rashford_Rice(zs, Ks, guess)
     return as_valid_fraction(phase_fraction)
 
-def solve_phase_fraction(zs, Ks, guess):
+def solve_phase_fraction_with_contant_phase_fluids(zs, Ks, guess=0.5, Fa=0., Fb=0.):
     """
-    Return phase fraction for N-component binary equilibrium through
-    numerically solving an objective function.
+    Return phase fraction for N-component binary phase equilibrium with 
+    non-partitioning chemicals by accelerated fixed-point iteration. 
+    
+    Notes
+    -----
+    This iterative method was developed by Yoel Cortes-Pena to handle chemicals
+    which do not partition. Fa and Fb are the fraction of non-partitioning
+    chemicals in phases a and b, respectively. 
+    
+    Examples
+    --------
+    Find the vapor fraction of a mixture of CO2, air, and water. Assume that 
+    air is always a gas, water is always a liquid, but CO2 can partition in both.
+        
+    >>> import numpy as np
+    >>> from thermosteam.equilibrium import (
+    ...     solve_phase_fraction_with_contant_phase_fluids,
+    ...     phase_composition,
+    ... )
+    >>> F_air = 1
+    >>> F_water = 1
+    >>> F_CO2 = 1
+    >>> F_total = F_air + F_water + F_CO2
+    >>> F_vapor = F_air / F_total
+    >>> F_liquid = F_water / F_total
+    >>> zs = np.array([0.333]) # CO2
+    >>> Ks = np.array([0.999]) # CO2
+    >>> phi = solve_phase_fraction_with_contant_phase_fluids(
+    ...     zs, Ks, Fa=F_vapor, Fb=F_liquid
+    ... )
+    >>> phi
+    0.4998750625858867
+    
+    """
+    if Ks.max() < 1.0 and not Fa: return 0.
+    if Ks.min() > 1.0 and not Fb: return 1.
+    if not (Fa or Fb):
+        y0 = phase_fraction_objective_function(0., zs, Ks)
+        y1 = phase_fraction_objective_function(1., zs, Ks)
+        if y0 > y1 > 0.: return 1
+        if y1 > y0 > 0.: return 0.
+        if y0 < y1 < 0.: return 1.
+        if y1 < y0 < 0.: return 0.
+    args = (zs, Ks, Fa, Fb)
+    zs = zs[np.newaxis, :]
+    if not 0. < guess < 1.: guess = 0.5
+    phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
+    Fs = np.ones([2, 1]); Fs[:, 0] = [Fa, Fb]
+    Ks = np.array([Ks, 1. / Ks])
+    phi = flx.wegstein(compute_phase_fraction_iter, phi, 1e-16, 
+                       args=(zs, Ks, Fs), checkiter=False)
+    return phi[0, 0] / phi.sum()
+
+@flx.njitable(cache=True)
+def phase_composition(zs, Ks, phi):
+    return zs * Ks / (phi * Ks + (1. - phi))
+
+@flx.njitable(cache=True)
+def compute_phase_fraction_iter(phi, zs, Ks, Fs):
+    ys = phase_composition(zs, Ks, phi)
+    phi = (ys * phi).sum(axis=1, keepdims=True)
+    phi += Fs
+    return phi
+    
+def solve_phase_fraction_Rashford_Rice(zs, Ks, guess):
+    """
+    Return phase fraction for N-component binary equilibrium by
+    numerically solving the Rashford Rice equation.
+    
     """
     args = (zs, Ks)
     f = phase_fraction_objective_function
@@ -59,11 +139,11 @@ def solve_phase_fraction(zs, Ks, guess):
                                 args, checkiter=False)
 
 @flx.njitable(cache=True)
-def phase_fraction_objective_function(V, zs, Ks):
+def phase_fraction_objective_function(phi, zs, Ks):
     """Phase fraction objective function."""
     Kterm = Ks - 1.
     numerator = zs * Kterm
-    denominator = 1. + V * Kterm
+    denominator = 1. + phi * Kterm
     denominator[denominator < 1e-16] = 1e-16
     return (numerator / denominator).sum()    
 
@@ -198,9 +278,9 @@ def compute_phase_fraction_3N(zs, Ks):
     K22K32z2z3 = K22K32*z2z3
     K22K32z32 = K22K32*z32
     return ((-K1K2z1/2 - K1K2z2/2 - K1K3z1/2 - K1K3z3/2 + K1z1
-             + K1z2/2 + K1z3/2 - K2K3z2/2 - K2K3z3/2 + K2z1/2 + K2z2
-             + K2z3/2 + K3z1/2 + K3z2/2 + K3z3 - z1_z2_z3
-             - (K12K22z12 + 2*K12K22z1z2 + K12K22z22
+              + K1z2/2 + K1z3/2 - K2K3z2/2 - K2K3z3/2 + K2z1/2 + K2z2
+              + K2z3/2 + K3z1/2 + K3z2/2 + K3z3 - z1_z2_z3
+              - (K12K22z12 + 2*K12K22z1z2 + K12K22z22
                 - 2*K12K2K3z12 - 2*K12K2K3z1z2 - 2*K12K2K3z1z3
                 + 2*K12K2K3z2z3 - 2*K12K2z1z2 + 2*K12K2z1z3
                 - 2*K12K2z22 - 2*K12K2z2z3 + K12K32z12
@@ -224,6 +304,6 @@ def compute_phase_fraction_3N(zs, Ks):
                 - 2*K2K3*z12 - 2*K2K3*z1z2 - 2*K2K3*z1z3
                 + 2*K2K3*z2z3 + K32*z12 + 2*K32*z1z2 + K32*z22)**0.5/2)
                 / (K1K2K3*z1 + K1K2K3*z2 + K1K2K3*z3 - K1K2*z1 - K1K2*z2
-                   - K1K2*z3 - K1K3*z1 - K1K3*z2 - K1K3*z3 + K1z1 + K1z2
-                   + K1z3 - K2K3*z1 - K2K3*z2 - K2K3*z3 + K2z1 + K2z2 + K2z3
-                   + K3z1 + K3z2 + K3z3 - z1_z2_z3))
+                    - K1K2*z3 - K1K3*z1 - K1K3*z2 - K1K3*z3 + K1z1 + K1z2
+                    + K1z3 - K2K3*z1 - K2K3*z2 - K2K3*z3 + K2z1 + K2z2 + K2z3
+                    + K3z1 + K3z2 + K3z3 - z1_z2_z3))

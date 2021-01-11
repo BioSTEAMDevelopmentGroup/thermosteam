@@ -417,7 +417,8 @@ def lle_partition_coefficients(top, bottom):
     IDs = tuple([i.ID for i in bottom.lle_chemicals])
     return IDs, partition_coefficients(IDs, top, bottom)
 
-def partition(feed, top, bottom, IDs, K, phi=None, strict=False, stacklevel=1):
+def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None, 
+              bottom_chemicals=None, strict=False, stacklevel=1):
     """
     Run equilibrium of feed to top and bottom streams given partition 
     coeffiecients and return the phase fraction.
@@ -436,6 +437,10 @@ def partition(feed, top, bottom, IDs, K, phi=None, strict=False, stacklevel=1):
         Partition coefficeints corresponding to IDs.
     phi : float, optional
         Guess phase fraction in top phase.
+    top_chemicals : tuple[str], optional
+        Chemicals that remain in the top fluid.
+    bottom_chemicals : tuple[str], optional
+        Chemicals that remain in the bottom fluid.
     strict : bool, optional
         Whether to raise an InfeasibleRegion exception when solution results
         in negative flow rates or to remove negative flows and issue a warning. 
@@ -454,14 +459,15 @@ def partition(feed, top, bottom, IDs, K, phi=None, strict=False, stacklevel=1):
     --------
     >>> import numpy as np
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('O2', phase='g')], cache=True)
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', tmo.Chemical('NaCl', default=True), 
+    ...                          tmo.Chemical('O2', phase='g')], cache=True)
     >>> IDs = ('Water', 'Ethanol')
     >>> K = np.array([0.629, 1.59])
     >>> feed = tmo.Stream('feed', Water=20, Ethanol=20, O2=0.1)
     >>> top = tmo.Stream('top')
     >>> bottom = tmo.Stream('bottom')
     >>> tmo.separations.partition(feed, top, bottom, IDs, K)
-    0.5002512677600628
+    0.500
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
@@ -473,22 +479,48 @@ def partition(feed, top, bottom, IDs, K, phi=None, strict=False, stacklevel=1):
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water    12.3
                      Ethanol  7.72
+    >>> feed = tmo.Stream('feed', Water=20, Ethanol=20, NaCl=0.1, O2=0.1)
+    >>> tmo.separations.partition(feed, top, bottom, IDs, K, 
+    ...                           top_chemicals=('O2',),
+    ...                           bottom_chemicals=('NaCl'))
+    0.477
+    >>> top.show()
+    Stream: top
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water    7.31
+                     Ethanol  11.9
+                     O2       0.1
+    >>> bottom.show()
+    Stream: bottom
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water    12.7
+                     Ethanol  8.15
+                     NaCl     0.1
 
     """
     feed_mol = feed.mol
     mol = feed.imol[IDs]
     F_mol = mol.sum()
+    if not bottom.shares_flow_rate_with(feed): bottom.empty()
+    Fa = feed.imol[top_chemicals].sum() / F_mol if top_chemicals else 0.
+    if bottom_chemicals:
+        bottom.imol[bottom_chemicals] = bottom_flows = feed.imol[bottom_chemicals]
+        Fb = bottom_flows.sum()
+    else:
+        Fb = 0.
+    F_mol += Fa + Fb
     z_mol = mol / F_mol
-    phi = phase_fraction(z_mol, K, phi)
-    bottom.empty()
+    phi = phase_fraction(z_mol, K, phi, Fa/F_mol, Fb/F_mol)
     if phi <= 0.:
         bottom.imol[IDs] = mol
+        phi = 0.
     elif phi < 1.:
         x = z_mol / (phi * K + (1. - phi))
-        bottom.empty()
         bottom_mol = x * (1. - phi) * F_mol
         handle_infeasible_flow_rates(bottom_mol, mol, strict, stacklevel+1)
         bottom.imol[IDs] = bottom_mol
+    else:
+        phi = 1.        
     top.mol[:] = feed_mol - bottom.mol
     return phi
 
@@ -798,7 +830,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
 @thermo_user
 class StageLLE:
     __slots__ = ('feed', 'raffinate', 'solvent', 'extract', 'multi_stream',
-                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs', '_used_lle')
+                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs')
     
     strict_infeasibility_check = False
     
@@ -834,17 +866,17 @@ class StageLLE:
         multi_stream.mix_from([self.feed, self.solvent], energy_balance=False)
         lle = multi_stream.lle
         if partition_data:
-            top = multi_stream['l']
-            bottom = multi_stream['L']
+            raffinate = multi_stream['l']
+            extract = multi_stream['L']
             lle = multi_stream.lle
             self._K = K = partition_data['K']
             self._IDs = IDs = partition_data['IDs']
-            self._phi = partition(multi_stream, top, bottom, IDs, 
+            self._phi = partition(multi_stream, raffinate, extract, IDs, 
                                   K, self._phi or partition_data['phi'], 
+                                  partition_data.get('raffinate_chemicals'),
+                                  partition_data.get('extract_chemicals'),
                                   self.strict_infeasibility_check, stacklevel+1)
-            self._used_lle = False
         else:
-            self._used_lle = True
             lle(self.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
             self._IDs = tuple([i.ID for i in lle._lle_chemicals])
             self._phi = lle._phi
@@ -864,13 +896,7 @@ class StageLLE:
         return self._phi
     @property
     def K(self):
-        if self._used_lle:
-            return self._K 
-        else:
-            if self.raffinate.isempty() or self.extract.isempty():
-                return self._K
-            else:
-                return partition_coefficients(self._IDs, self.raffinate, self.extract)
+        return self._K
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T}, P={self.P})"
@@ -949,41 +975,24 @@ class MultiStageLLE:
                      Methanol  499
                      Octanol   5e+03
     
-    Using a constant set of partition coefficients to simulated many stages
-    (e.g. 25 stages) may lead to infeasible equilibrium solutions. We can 
-    make sure an error is raised in these situations as follows:
+    Because octanol and water do not mix well, it may be a good idea to assume
+    that these solvents do not mix at all:
         
-    >>> tmo.separations.StageLLE.strict_infeasibility_check = True
     >>> N_stages = 20
     >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
     ...     partition_data={
-    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
-    ...         'IDs': ('Water', 'Methanol', 'Octanol'),
-    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
-    ...     }
-    ... )
-    >>> stages.simulate_multi_stage_lle_without_side_draws()
-    Traceback (most recent call last):
-    InfeasibleRegion: negative flow rates in equilibrium solution; partition data is infeasible
-    
-    Otherwise, infeasible equilibrium solutions are handled by enforcing a
-    strict mass balance around each stage (preventing negative flows). For example:
-    
-    >>> tmo.separations.StageLLE.strict_infeasibility_check = False
-    >>> N_stages = 20
-    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
-    ...     partition_data={
-    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
-    ...         'IDs': ('Water', 'Methanol', 'Octanol'),
-    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
+    ...         'K': np.array([0.7244]),
+    ...         'IDs': ('Methanol',),
+    ...         'raffinate_chemicals': ('Water',),
+    ...         'extract_chemicals': ('Octanol',),
     ...     }
     ... )
     >>> stages.simulate_multi_stage_lle_without_side_draws()
     >>> stages.raffinate.show()
     Stream: 
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water    2.48e+03
-                     Octanol  0.777
+     flow (kmol/hr): Water     5e+03
+                     Methanol  0.091
     
     """
     __slots__ = ('stages', 'index', 'multi_stream', 
@@ -1029,7 +1038,6 @@ class MultiStageLLE:
         index = self.index
         for stage, extract_flow in zip(self.stages, extract_flow_rates):
             stage.extract.mol[index] = extract_flow
-        for stage in self.stages: stage.balance_raffinate_flows()
             
     def simulate_multi_stage_lle_without_side_draws(self):
         f = self.multi_stage_lle_without_side_draws_iter
@@ -1050,12 +1058,21 @@ class MultiStageLLE:
         N_stages = len(stages)
         if self.partition_data: 
             data = self.partition_data
-            top = multi_stream['l']
-            bottom = multi_stream['L']
+            raffinate = multi_stream['l']
+            extract = multi_stream['L']
             IDs = data['IDs']
             K = data['K']
-            phi = data.get('phi', 0.5)
-            data['phi'] = phi = partition(multi_stream, top, bottom, IDs, K, phi)
+            phi = data.get('phi') or feed.F_mol / multi_stream.F_mol
+            raffinate_chemicals = data.get('raffinate_chemicals')
+            extract_chemicals = data.get('extract_chemicals')
+            data['phi'] = phi = partition(multi_stream, raffinate, extract, IDs, K, phi,
+                                          raffinate_chemicals, extract_chemicals)
+            if raffinate_chemicals:
+                raffinate_flows = multi_stream.imol[raffinate_chemicals]
+                for i in stages: i.raffinate.imol[raffinate_chemicals] = raffinate_flows
+            if extract_chemicals:
+                extract_flows = multi_stream.imol[extract_chemicals]
+                for i in stages: i.extract.imol[extract_chemicals] = extract_flows
         else:
             lle = multi_stream.lle
             lle(multi_stream.T, top_chemical=self.carrier_chemical or feed.main_chemical)
@@ -1076,9 +1093,7 @@ class MultiStageLLE:
     def multi_stage_lle_without_side_draws_iter(self, extract_flow_rates):
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
         stages = self.stages
-        for i in stages: 
-            i.partition(self.partition_data)
-            i.balance_raffinate_flows()
+        for i in stages: i.partition(self.partition_data)
         K = np.transpose([i.K for i in stages]) 
         phi = np.array([i.phi for i in stages])
         index = self.index
@@ -1171,7 +1186,8 @@ def flow_rates_for_multi_stage_extration_without_side_draws(
         Extract flow rates with stages by row and components by column.
 
     """
-    phase_fractions[phase_fractions >= 1. - 1e-6] = 1. - 1e-6
+    phase_fractions[phase_fractions < 1e-16] = 1e-16
+    phase_fractions[phase_fractions > 1. - 1e-16] = 1. - 1e-16
     phase_ratios = phase_fractions / (1. - phase_fractions)
     N_chemicals = feed.size
     extract_flow_rates = np.zeros((N_stages, N_chemicals))

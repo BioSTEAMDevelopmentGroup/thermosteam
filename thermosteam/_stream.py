@@ -259,6 +259,44 @@ class Stream:
         self._register(ID)
         self._link = None
 
+    def shares_flow_rate_with(self, other):
+        """
+        Return whether other stream shares data with this one.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> s1 = tmo.Stream('s1')
+        >>> other = s1.flow_proxy()
+        >>> s1.shares_flow_rate_with(other)
+        True
+        >>> s1 = tmo.MultiStream('s1', phases=('l', 'g'))
+        >>> s1['g'].shares_flow_rate_with(s1)
+        True
+        >>> s2 = tmo.MultiStream('s2', phases=('l', 'g'))
+        >>> s1['g'].shares_flow_rate_with(s2)
+        False
+        >>> s1['g'].shares_flow_rate_with(s2['g'])
+        False
+        
+        """
+        imol = self._imol
+        other_imol = other._imol
+        if imol.__class__ is other_imol.__class__ and imol._data is other_imol._data:
+            shares_data = True
+        elif isinstance(other, tmo.MultiStream):
+            phase = self.phase
+            substreams = other._streams
+            if phase in substreams:
+                substream = substreams[phase]
+                shares_data = self.shares_flow_rate_with(substream)
+            else:
+                shares_data = False
+        else:
+            shares_data = False
+        return shares_data
+
     def as_stream(self):
         """Does nothing."""
 

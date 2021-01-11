@@ -258,6 +258,44 @@ class MultiStream(Stream):
     def __len__(self):
         return len(self.phases)
     
+    def shares_flow_rate_with(self, other):
+        """
+        Return whether other stream shares data with this one.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> s1 = tmo.MultiStream('s1')
+        >>> other = s1.flow_proxy()
+        >>> s1.shares_flow_rate_with(other)
+        True
+        >>> s1 = tmo.MultiStream('s1', phases=('l', 'g'))
+        >>> s1.shares_flow_rate_with(s1['g'])
+        True
+        >>> s2 = tmo.MultiStream('s2', phases=('l', 'g'))
+        >>> s2.shares_flow_rate_with(s1['g'])
+        False
+        >>> s1.shares_flow_rate_with(s2)
+        False
+        
+        """
+        imol = self._imol
+        other_imol = other._imol
+        if imol.__class__ is other_imol.__class__ and imol._data is other_imol._data:
+            shares_data = True
+        elif isinstance(other, Stream):
+            phase = other.phase
+            substreams = self._streams
+            if phase in substreams:
+                substream = substreams[phase]
+                shares_data = other.shares_flow_rate_with(substream)
+            else:
+                shares_data = False
+        else:
+            shares_data = False
+        return shares_data
+    
     ### Property getters ###
     
     def get_flow(self, units, key=...):
