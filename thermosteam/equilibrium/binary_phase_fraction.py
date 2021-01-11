@@ -124,7 +124,8 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     """
     if Ks.max() < 1.0 and not za: return 0.
     if Ks.min() > 1.0 and not zb: return 1.
-    args = (zs, Ks, za, zb)
+    K_minus_1 = Ks - 1.
+    args = (zs, K_minus_1, za, zb)
     f = phase_fraction_objective_function
     x0 = 0.
     x1 = 1.
@@ -141,11 +142,10 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
                                 args, checkiter=False)
 
 @flx.njitable(cache=True)
-def phase_fraction_objective_function(phi, zs, Ks, za, zb):
+def phase_fraction_objective_function(phi, zs, K_minus_1, za, zb):
     """Phase fraction objective function."""
-    Kterm = Ks - 1.
-    numerator = zs * Kterm
-    denominator = 1. + phi * Kterm
+    numerator = - zs * K_minus_1
+    denominator = 1. + phi * K_minus_1
     denominator[denominator < 1e-16] = 1e-16
     a = za/phi if za > 0. else 0.
     b = zb/(1. - phi) if zb > 0. else 0.

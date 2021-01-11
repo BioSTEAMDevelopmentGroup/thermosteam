@@ -483,7 +483,7 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     >>> tmo.separations.partition(feed, top, bottom, IDs, K, 
     ...                           top_chemicals=('O2',),
     ...                           bottom_chemicals=('NaCl'))
-    0.477
+    0.500
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
