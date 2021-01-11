@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.23.5',
+    version='0.23.6',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -27,7 +27,7 @@ setup(
                       'xlrd==1.2.0',
                       'openpyxl>=3.0.0', 
                       'free_properties>=0.2.5',
-                      'flexsolve==0.4.2', 
+                      'flexsolve==0.4.4', 
                       'pyglet',
                       'numba>=0.50.0'],
     extras_require={ # Not in current PyPI version, but will be available in the next
