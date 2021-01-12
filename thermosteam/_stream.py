@@ -1130,11 +1130,21 @@ class Stream:
         >>> s2.mol is s1.mol
         False
         
+        MultiStream phases cannot be unlinked:
+        
+        >>> s1 = tmo.MultiStream(None, phases=('l', 'g'))
+        >>> s1['g'].unlink()
+        Traceback (most recent call last):
+        RuntimeError: phase is locked; stream cannot be unlinked
+        
         """
-        self._imol._data_cache.clear()
+        imol = self._imol
+        if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
+            raise RuntimeError('phase is locked; stream cannot be unlinked')
+        imol._data_cache.clear()
+        imol._data = imol._data.copy()
+        imol._phase = imol._phase.copy()
         self._thermal_condition = self._thermal_condition.copy()
-        self._imol._data = self._imol._data.copy()
-        self._imol._phase = self._imol._phase.copy()
         self._init_cache()
         self._link = None
     

@@ -46,7 +46,6 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     else:
         raise ValueError('number of chemicals in equilibrium must be 2 or more '
                          'to find phase fraction')
-        
     return as_valid_fraction(phase_fraction)
 
 def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):

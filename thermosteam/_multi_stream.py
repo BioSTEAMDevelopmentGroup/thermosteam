@@ -608,25 +608,21 @@ class MultiStream(Stream):
                 other_phase_index = self.imol.get_phase_index(other.phase)
                 data[other_phase_index, :] = other_data
                 data[phase_index, IDs_index] = original_data[phase_index, IDs_index]
-                if remove:
-                    if phase is ... or phase_index == other_phase_index:
-                        excluded_data = other_data[IDs_index]
-                        other_data[:] = 0.
-                        other_data[IDs_index] = excluded_data   
+                if remove and (phase is ... or phase_index == other_phase_index):
+                    excluded_data = other_data[IDs_index]
+                    other_data[:] = 0.
+                    other_data[IDs_index] = excluded_data   
+        elif isinstance(other, MultiStream):
+            if self.phases != other.phases:
+                raise ValueError('other stream must have the same phases defined to copy flow')
+            data[phase_index, IDs_index] = other_data[phase_index, IDs_index]
+            if remove: other_data[phase_index, IDs_index] = 0.
         else:
-            if isinstance(other, MultiStream):
-                if self.phases != other.phases:
-                    raise ValueError('other stream must have the same phases defined to copy flow')
-                data[phase_index, IDs_index] = other_data[phase_index, IDs_index]
-                if remove:
-                    other_data[phase_index, IDs_index] = 0.
-            else:
-                data[:] = 0.
-                other_phase_index = self.imol.get_phase_index(other.phase)
-                if phase is ... or phase_index == other_phase_index:
-                    data[other_phase_index, IDs_index] = other_data[IDs_index]
-                    if remove:
-                        other_data[IDs_index] = 0.
+            data[:] = 0.
+            other_phase_index = self.imol.get_phase_index(other.phase)
+            if phase is ... or phase_index == other_phase_index:
+                data[other_phase_index, IDs_index] = other_data[IDs_index]
+                if remove: other_data[IDs_index] = 0.
     
     def get_normalized_mol(self, IDs):
         """
