@@ -12,6 +12,7 @@ import flexsolve as flx
 from chemicals import elements
 from warnings import warn
 from collections.abc import Sized
+from free_properties import property_array
 from . import (
     _parse as prs,
     _xparse as xprs,
@@ -33,15 +34,26 @@ def get_stoichiometric_string(stoichiometry, phases, chemicals):
         return prs.get_stoichiometric_string(stoichiometry, 
                                              chemicals)
 
-def react_stream_adiabatically(stream, reaction):
-    if not isinstance(stream, tmo.Stream):
-        raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-    Hnet = stream.Hnet
-    reaction(stream)
-    stream.H = Hnet - stream.Hf
-
+@flx.njitable(cache=True)
+def infeasible(material: np.ndarray):
+    material_sum = np.abs(material).sum()
+    return material_sum > 1e-16 and (material / material_sum < -1e-16).any()
+    
 def check_material_feasibility(material: np.ndarray):
-    if (material < 0.).any(): raise InfeasibleRegion('not enough reactants; reaction conversion')
+    if infeasible(material):
+        raise InfeasibleRegion('not enough reactants; reaction conversion')
+    else:
+        material[material < 0.] = 0. 
+
+@flx.njitable(cache=True)
+def remove_negligible_negative_values(material: np.ndarray):
+    material_sum = np.abs(material).sum()
+    negative = material < 0.
+    if material_sum > 1e-16:
+        negligible = material / material_sum > -1e-16
+        material[negative & negligible] = 0. 
+    else:
+        material[negative] = 0. 
 
 def set_reaction_basis(rxn, basis):
     if basis != rxn._basis:
@@ -71,6 +83,14 @@ def as_material_array(material, basis, phases, chemicals):
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
         raise ValueError('reaction material must be either an array or a stream')
+
+def get_array_values(array):
+    return array.value if isinstance(array, property_array) else array
+
+def set_array_values(array, values):
+    if array is not values: array[:] = values
+
+# %%
 
 @chemicals_user
 class Reaction:
@@ -143,7 +163,7 @@ class Reaction:
                      (l) H2O  30
     
     Let's change to a per 'wt' basis:
-        
+    
     >>> reaction.basis = 'wt'
     >>> reaction.show()
     Reaction (by wt):
@@ -354,9 +374,13 @@ class Reaction:
                                            self._basis,
                                            self._phases,
                                            self._chemicals)
-        self._reaction(material_array)
+        values = get_array_values(material_array)
+        self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
-            check_material_feasibility(material_array)
+            check_material_feasibility(values)
+        else:
+            remove_negligible_negative_values(values)
+        set_array_values(material_array, values)
         
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
@@ -364,7 +388,10 @@ class Reaction:
                                            self._basis,
                                            self._phases,
                                            self._chemicals)
-        self._reaction(material_array)
+        values = get_array_values(material_array)
+        self._reaction(values)
+        remove_negligible_negative_values(values)
+        set_array_values(material_array, values)
     
     def product_yield(self, product, basis=None):
         """Return yield of product per reactant."""
@@ -392,8 +419,8 @@ class Reaction:
         
         Examples
         --------
-        Note how the stream temperature changed after the reaction due to the
-        heat of reaction:
+        Note how the stream temperature changes after each reaction due to the
+        heat of reaction. Adiabatic combustion of hydrogen:
         
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['H2', 'O2', 'H2O'], cache=True)
@@ -429,8 +456,83 @@ class Reaction:
          flow (kmol/hr): H2   3
                          O2   16.5
                          H2O  1.01e+03
+        
+        Adiabatic combustion of H2 and CH4:
+        
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['H2', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> reaction = tmo.ParallelReaction([
+        ...    #            Reaction definition          Reactant    Conversion
+        ...    tmo.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
+        ...    tmo.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
+        ... ])
+        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=100, T=373.15, phase='g')
+        >>> s2 = tmo.Stream('s2')
+        >>> s1.show() # Before reaction
+        Stream: s1
+         phase: 'g', T: 373.15 K, P: 101325 Pa
+         flow (kmol/hr): H2   10
+                         CH4  5
+                         O2   100
+                         H2O  100
+        
+        >>> reaction.show()
+        ParallelReaction (by mol):
+        index  stoichiometry            reactant    X[%]
+        [0]    H2 + 0.5 O2 -> H2O       H2         70.00
+        [1]    CH4 + O2 -> CO2 + 2 H2O  CH4        10.00
+        
+        >>> reaction.adiabatic_reaction(s1)
+        >>> s1.show() # After adiabatic reaction
+        Stream: s1
+         phase: 'g', T: 666.21 K, P: 101325 Pa
+         flow (kmol/hr): H2   3
+                         CH4  4.5
+                         O2   96
+                         CO2  0.5
+                         H2O  108    
+        
+        Sequential combustion of CH4 and CO:
+        
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['CH4', 'CO','O2', 'CO2', 'H2O'], cache=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> reaction = tmo.SeriesReaction([
+        ...     #            Reaction definition                 Reactant       Conversion
+        ...     tmo.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
+        ...     tmo.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
+        ...     ])
+        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=100, T=373.15, phase='g')
+        >>> s1.show() # Before reaction
+        Stream: s1
+         phase: 'g', T: 373.15 K, P: 101325 Pa
+         flow (kmol/hr): CH4  5
+                         O2   100
+                         H2O  100
+        
+        >>> reaction.show()
+        SeriesReaction (by mol):
+        index  stoichiometry               reactant    X[%]
+        [0]    CH4 + 1.5 O2 -> CO + 2 H2O  CH4        70.00
+        [1]    CO + 0.5 O2 -> CO2          CO         10.00
+        
+        >>> reaction.adiabatic_reaction(s1)
+        >>> s1.show() # After adiabatic reaction
+        Stream: s1
+         phase: 'g', T: 649.84 K, P: 101325 Pa
+         flow (kmol/hr): CH4  1.5
+                         CO   3.15
+                         O2   94.6
+                         CO2  0.35
+                         H2O  107
+        
         """
-        react_stream_adiabatically(stream, self)
+        if not isinstance(stream, tmo.Stream):
+            raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
+        Hnet = stream.Hnet
+        self(stream)
+        stream.H = Hnet - stream.Hf
     
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
@@ -778,6 +880,9 @@ class ReactionSet:
     phases = MaterialIndexer.phases
     _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
+    force_reaction = Reaction.force_reaction
+    adiabatic_reaction = Reaction.adiabatic_reaction
+    __call__ = Reaction.__call__
     
     def __init__(self, reactions):
         if not reactions: raise ValueError('no reactions passed')
@@ -993,65 +1098,6 @@ class ParallelReaction(ReactionSet):
     """
     __slots__ = ()
     
-    def __call__(self, material):
-        material_array = as_material_array(material,
-                                           self._basis, 
-                                           self._phases,
-                                           self._chemicals)
-        self._reaction(material_array)
-        if tmo.reaction.CHECK_FEASIBILITY: 
-            check_material_feasibility(material_array)
-        
-    def force_reaction(self, material):
-        """React material ignoring feasibility checks."""
-        material_array = as_material_array(material, self._basis, self._phases, self._chemicals)
-        self._reaction(material_array)
-        
-    def adiabatic_reaction(self, stream):
-        """
-        React stream material adiabatically, accounting for the change in enthalpy
-        due to the heat of reaction.
-        
-        Examples
-        --------
-        Note how the stream temperature changed after the reaction due to the heat of reaction:
-            
-        >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['H2', 'CH4', 'O2', 'CO2', 'H2O'], cache=True)
-        >>> tmo.settings.set_thermo(chemicals)
-        >>> reaction = tmo.ParallelReaction([
-        ...    #            Reaction definition          Reactant    Conversion
-        ...    tmo.Reaction('2H2 + O2 -> 2H2O',        reactant='H2',  X=0.7),
-        ...    tmo.Reaction('CH4 + O2 -> CO2 + 2H2O',  reactant='CH4', X=0.1)
-        ... ])
-        >>> s1 = tmo.Stream('s1', H2=10, CH4=5, O2=100, H2O=100, T=373.15, phase='g')
-        >>> s2 = tmo.Stream('s2')
-        >>> s1.show() # Before reaction
-        Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): H2   10
-                         CH4  5
-                         O2   100
-                         H2O  100
-        
-        >>> reaction.show()
-        ParallelReaction (by mol):
-        index  stoichiometry            reactant    X[%]
-        [0]    H2 + 0.5 O2 -> H2O       H2         70.00
-        [1]    CH4 + O2 -> CO2 + 2 H2O  CH4        10.00
-        
-        >>> reaction.adiabatic_reaction(s1)
-        >>> s1.show() # After adiabatic reaction
-        Stream: s1
-         phase: 'g', T: 666.21 K, P: 101325 Pa
-         flow (kmol/hr): H2   3
-                         CH4  4.5
-                         O2   96
-                         CO2  0.5
-                         H2O  108
-        """
-        react_stream_adiabatically(stream, self)
-
     def _reaction(self, material_array):
         reacted = self._X * np.array([material_array[i] for i in self._X_index], float)
         if self._phases:
@@ -1106,63 +1152,6 @@ class SeriesReaction(ReactionSet):
     
     """
     __slots__ = ()
-    
-    def __call__(self, material):
-        material_array = as_material_array(material,
-                                           self._basis, 
-                                           self._phases,
-                                           self._chemicals)
-        self._reaction(material_array)
-        if tmo.reaction.CHECK_FEASIBILITY:
-            check_material_feasibility(material_array)
-
-    def force_reaction(self, material):
-        """React material ignoring feasibility checks."""
-        array = as_material_array(material, self._basis, self._phases, self._chemicals)
-        self._reaction(array)
-        
-    def adiabatic_reaction(self, stream):
-        """
-        React stream material adiabatically, accounting for the change in enthalpy
-        due to the heat of reaction.
-        
-        Examples
-        --------
-        Note how the stream temperature changed after the reaction due to the heat of reaction:
-        
-        >>> import thermosteam as tmo
-        >>> chemicals = tmo.Chemicals(['CH4', 'CO','O2', 'CO2', 'H2O'], cache=True)
-        >>> tmo.settings.set_thermo(chemicals)
-        >>> reaction = tmo.SeriesReaction([
-        ...     #            Reaction definition                 Reactant       Conversion
-        ...     tmo.Reaction('2CH4 + 3O2 -> 2CO + 4H2O',       reactant='CH4',    X=0.7),
-        ...     tmo.Reaction('2CO + O2 -> 2CO2',               reactant='CO',     X=0.1)
-        ...     ])
-        >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=100, T=373.15, phase='g')
-        >>> s1.show() # Before reaction
-        Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): CH4  5
-                         O2   100
-                         H2O  100
-        
-        >>> reaction.show()
-        SeriesReaction (by mol):
-        index  stoichiometry               reactant    X[%]
-        [0]    CH4 + 1.5 O2 -> CO + 2 H2O  CH4        70.00
-        [1]    CO + 0.5 O2 -> CO2          CO         10.00
-        
-        >>> reaction.adiabatic_reaction(s1)
-        >>> s1.show() # After adiabatic reaction
-        Stream: s1
-         phase: 'g', T: 649.84 K, P: 101325 Pa
-         flow (kmol/hr): CH4  1.5
-                         CO   3.15
-                         O2   94.6
-                         CO2  0.35
-                         H2O  107
-        """
-        react_stream_adiabatically(stream, self)
 
     def reduce(self):
         raise TypeError('cannot reduce a SeriesReation object, only '
