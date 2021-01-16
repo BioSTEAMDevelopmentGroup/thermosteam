@@ -922,9 +922,6 @@ class MultiStageLLE:
         composition ratio of the raffinate over the extract). If given,
         The mixer-settlers will be modeled with these constants. Otherwise,
         partition coefficients are computed based on temperature and composition.
-    update_partition_data : bool, optional
-        Whether to update partition data (used for all stages) in each 
-        iteration.
     
     Examples
     --------
@@ -953,8 +950,7 @@ class MultiStageLLE:
     Simulate 10-stage extraction with user defined partition coefficients:
     
     >>> import numpy as np
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'], cache=True)
+    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'])
     >>> N_stages = 10
     >>> feed = tmo.Stream('feed', Water=5000, Methanol=500)
     >>> solvent = tmo.Stream('solvent', Octanol=5000)
@@ -982,12 +978,7 @@ class MultiStageLLE:
     Because octanol and water do not mix well, it may be a good idea to assume
     that these solvents do not mix at all:
         
-    >>> import numpy as np
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'], cache=True)
     >>> N_stages = 20
-    >>> feed = tmo.Stream('feed', Water=5000, Methanol=500)
-    >>> solvent = tmo.Stream('solvent', Octanol=5000)
     >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
     ...     partition_data={
     ...         'K': np.array([0.7244]),
@@ -1008,42 +999,18 @@ class MultiStageLLE:
      flow (kmol/hr): Methanol  500
                      Octanol   5e+03
         
-    It is also possible to run the multi-stage extraction semi-rigorously
-    by recomputing partition data through liquid-liquid equilibrium of the overall 
-    mixture composition (as opposed to each stage) in each iteration:
-        
-    >>> import numpy as np
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Methanol', 'Octanol'], cache=True)
-    >>> N_stages = 20
-    >>> feed = tmo.Stream('feed', Water=5000, Methanol=500)
-    >>> solvent = tmo.Stream('solvent', Octanol=5000)
-    >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent,
-    ...     update_partition_data=True,                                        
-    ...     partition_data={},
-    ... )
-    >>> stages.simulate_multi_stage_lle_without_side_draws()
-    >>> stages.raffinate.show()
-    Stream: 
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     4.6e+03
-                     Methanol  0.0311
-                     Octanol   1.34
-    
     """
     __slots__ = ('stages', 'index', 'multi_stream', 
                  'carrier_chemical', 'extract_flow_rates', 
-                 'update_partition_data', 'partition_data', 
-                 '_thermo')
+                 'partition_data', '_thermo')
     
     def __init__(self, N_stages, feed, solvent, carrier_chemical=None,
-                 thermo=None, partition_data=None, update_partition_data=False):
+                 thermo=None, partition_data=None):
         thermo = self._load_thermo(thermo)
         self.multi_stream = tmo.MultiStream(None, phases=('l', 'L'), thermo=thermo)
         self.stages = stages = [StageLLE(thermo=thermo) for i in range(N_stages)]
         self.carrier_chemical = carrier_chemical
         self.partition_data = partition_data
-        self.update_partition_data = update_partition_data
         for i in range(N_stages-1):
             stage = stages[i]
             next_stage = stages[i + 1]
@@ -1131,15 +1098,7 @@ class MultiStageLLE:
     def multi_stage_lle_without_side_draws_iter(self, extract_flow_rates):
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
         stages = self.stages
-        partition_data = self.partition_data
-        if self.update_partition_data: 
-            multi_stream = self.multi_stream
-            lle = multi_stream.lle
-            lle(multi_stream.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
-            partition_data['IDs'] = tuple([i.ID for i in lle._lle_chemicals])
-            partition_data['K'] = lle._K
-            partition_data['phi'] = lle._phi
-        for i in stages: i.partition(partition_data)
+        for i in stages: i.partition(self.partition_data)
         K = np.transpose([i.K for i in stages]) 
         phi = np.array([i.phi for i in stages])
         index = self.index
