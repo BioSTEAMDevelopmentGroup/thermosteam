@@ -1046,10 +1046,7 @@ class MultiStageLLE:
             
     def simulate_multi_stage_lle_without_side_draws(self):
         f = self.multi_stage_lle_without_side_draws_iter
-        if hasattr(self, 'extract_flow_rates'):
-            extract_flow_rates = self.extract_flow_rates
-        else:
-            extract_flow_rates = self.initialize_multi_stage_lle_without_side_draws()
+        extract_flow_rates = self.initialize_multi_stage_lle_without_side_draws()
         extract_flow_rates = flx.wegstein(f, extract_flow_rates, xtol=0.1, maxiter=10, checkiter=False)
         self.extract_flow_rates = extract_flow_rates
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
