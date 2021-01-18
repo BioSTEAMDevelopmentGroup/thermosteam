@@ -10,7 +10,6 @@
 from ._stream import Stream
 from ._thermal_condition import ThermalCondition
 from .indexer import MolarFlowIndexer
-from ._settings import settings
 from ._phase import phase_tuple
 from . import equilibrium as eq
 from . import utils
@@ -29,12 +28,6 @@ def get_phase_fraction(stream, phases):
             phase_fraction += imol[phase].sum() 
     return phase_fraction / F_mol
 
-def phase_is_present(stream, phases):
-    all_phases = stream.phases
-    imol = stream.imol
-    for phase in phases:
-        if phase in all_phases and imol[phase].any(): return True
-    return False
 
 class MultiStream(Stream):
     """
@@ -800,7 +793,8 @@ class MultiStream(Stream):
     
     @property
     def phase(self):
-        return ''.join([phases[0] for phases in ('gG', 'lL', 'sS') if phase_is_present(self, phases)])
+        imol = self._imol
+        return ''.join([phases[0] for phases in ('gG', 'lL', 'sS') if not imol.phases_are_empty(phases)])
     @phase.setter
     def phase(self, phase):
         if len(phase) > 1: self.phases = phase

@@ -13,7 +13,7 @@ from . import indexer
 from . import equilibrium as eq
 from . import functional as fn
 from . import units_of_measure as thermo_units
-from .exceptions import DimensionError, DomainError
+from .exceptions import DimensionError
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
 
@@ -378,7 +378,7 @@ class Stream:
         True
         
         """
-        return (self._imol._data == 0.).all()
+        return self._imol.isempty()
 
     @property
     def vapor_fraction(self):
@@ -1022,8 +1022,9 @@ class Stream:
         else:
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():
+                H = sum([i.H for i in others])
                 try:
-                    self.H = sum([i.H for i in others])
+                    self.H = H
                 except:
                     phases = ''.join([i.phase for i in others])
                     self.phases = tuple(set(phases))

@@ -65,6 +65,12 @@ class Indexer:
     __slots__ = ('_data',)
     units = None
     
+    def empty(self):
+        self._data[:] = 0
+    
+    def isempty(self):
+        return (self._data == 0.).all()
+    
     def copy(self):
         new = self._copy_without_data()
         new._data = self._data.copy()
@@ -157,9 +163,6 @@ class ChemicalIndexer(Indexer):
     @property
     def get_index(self):
         return self._chemicals.get_index
-    
-    def empty(self):
-        self._data[:] = 0.
     
     def mix_from(self, others):
         self.phase = find_main_phase(others, self.phase)
@@ -332,11 +335,15 @@ class MaterialIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)
     
+    def phases_are_empty(self, phases):
+        get_phase_index = self.get_phase_index
+        data = self._data
+        for phase in set(self._phases).intersection(phases):
+            if data[get_phase_index(phase)].any(): return False
+        return True
+    
     def sum_across_phases(self):
         return self._data.sum(0)
-    
-    def empty(self):
-        self._data[:] = 0
     
     def copy_like(self, other):
         if isa(other, ChemicalIndexer):
