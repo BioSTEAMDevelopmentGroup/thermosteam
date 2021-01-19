@@ -89,6 +89,7 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     args = (zs, Ks, za, zb)
     x0 = 0.
     x1 = 1.
+    f = compute_phase_fraction_iter
     y0 = -np.inf if za else f(x0, *args) 
     y1 = np.inf if zb else f(x1, *args)
     if y0 > y1 > 0.: return 1
@@ -100,7 +101,7 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
     zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
     Ks = np.array([Ks, 1. / Ks])
-    phi = flx.wegstein(compute_phase_fraction_iter, phi, 1e-16, 
+    phi = flx.wegstein(f, phi, 1e-16, 
                        args=(zs, Ks, zc), checkiter=False)
     return phi[0, 0] / phi.sum()
 
