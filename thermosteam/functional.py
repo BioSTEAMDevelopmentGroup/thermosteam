@@ -11,6 +11,7 @@ from chemicals import *
 from fluids.core import Pr, alpha
 from flexsolve import njitable
 from thermosteam.base import functor
+from thermosteam.exceptions import InfeasibleRegion
 import numpy as np
 
 @functor
@@ -142,5 +143,20 @@ def rho_to_V(rho, MW):
     
     '''
     return MW/rho/1000.
+
+@njitable(cache=True)
+def remove_negligible_negative_values(material: np.ndarray):
+    material_sum = np.abs(material).sum()
+    negative = material < 0.
+    if material_sum > 1e-16:
+        negligible = material / material_sum > -1e-16
+        material[negative & negligible] = 0. 
+    else:
+        material[negative] = 0. 
+
+@njitable(cache=True)
+def infeasible(material: np.ndarray):
+    material_sum = np.abs(material).sum()
+    return material_sum > 1e-16 and (material / material_sum < -1e-16).any()
 
 del njitable

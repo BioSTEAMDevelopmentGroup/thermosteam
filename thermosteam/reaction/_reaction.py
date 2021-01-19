@@ -8,6 +8,7 @@
 """
 """
 import thermosteam as tmo
+from thermosteam import functional as fn
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
@@ -34,26 +35,11 @@ def get_stoichiometric_string(stoichiometry, phases, chemicals):
         return prs.get_stoichiometric_string(stoichiometry, 
                                              chemicals)
 
-@flx.njitable(cache=True)
-def infeasible(material: np.ndarray):
-    material_sum = np.abs(material).sum()
-    return material_sum > 1e-16 and (material / material_sum < -1e-16).any()
-    
 def check_material_feasibility(material: np.ndarray):
-    if infeasible(material):
+    if fn.infeasible(material):
         raise InfeasibleRegion('not enough reactants; reaction conversion')
     else:
         material[material < 0.] = 0. 
-
-@flx.njitable(cache=True)
-def remove_negligible_negative_values(material: np.ndarray):
-    material_sum = np.abs(material).sum()
-    negative = material < 0.
-    if material_sum > 1e-16:
-        negligible = material / material_sum > -1e-16
-        material[negative & negligible] = 0. 
-    else:
-        material[negative] = 0. 
 
 def set_reaction_basis(rxn, basis):
     if basis != rxn._basis:
@@ -379,7 +365,7 @@ class Reaction:
         if tmo.reaction.CHECK_FEASIBILITY:
             check_material_feasibility(values)
         else:
-            remove_negligible_negative_values(values)
+            fn.remove_negligible_negative_values(values)
         set_array_values(material_array, values)
         
     def force_reaction(self, material):
@@ -390,7 +376,7 @@ class Reaction:
                                            self._chemicals)
         values = get_array_values(material_array)
         self._reaction(values)
-        remove_negligible_negative_values(values)
+        fn.remove_negligible_negative_values(values)
         set_array_values(material_array, values)
     
     def product_yield(self, product, basis=None):
