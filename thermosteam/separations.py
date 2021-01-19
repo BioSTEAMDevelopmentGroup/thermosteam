@@ -1130,6 +1130,10 @@ class MultiStageLLE:
         multi_stream.mix_from([feed, solvent])
         stages = self.stages
         N_stages = len(stages)
+        T = multi_stream.T
+        for i in stages: 
+            i.multi_stream.T = T
+            i.raffinate.empty()
         if self.partition_data: 
             data = self.partition_data
             raffinate = multi_stream['l']
@@ -1153,10 +1157,6 @@ class MultiStageLLE:
             IDs = tuple([i.ID for i in lle._lle_chemicals])
             K = lle._K
             phi = lle._phi
-        T = multi_stream.T
-        for i in stages: 
-            i.multi_stream.T = T
-            i.raffinate.empty()
         index = multi_stream.chemicals.get_index(IDs)
         phase_fractions = np.ones(N_stages) * phi
         partition_coefficients = np.ones([K.size, N_stages]) * K[:, np.newaxis]
