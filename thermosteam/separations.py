@@ -1171,7 +1171,6 @@ class MultiStageLLE:
         stages = self.stages
         for i in stages: 
             i.partition(self.partition_data)
-            i.balance_raffinate_flows()
         K = np.transpose([i.K for i in stages]) 
         phi = np.array([i.phi for i in stages])
         index = self.index
