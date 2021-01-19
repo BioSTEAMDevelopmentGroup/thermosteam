@@ -934,8 +934,9 @@ class StageLLE:
     def P(self, P):
         self.multi_stream.P = P
         
-    def partition(self, partition_data=None, stacklevel=1):
+    def partition(self, partition_data=None, update=True, stacklevel=1):
         multi_stream = self.multi_stream
+        if not update: data = multi_stream.get_data()
         multi_stream.mix_from([self.feed, self.solvent], energy_balance=False)
         if partition_data:
             raffinate = multi_stream['l']
@@ -948,11 +949,12 @@ class StageLLE:
                     self.strict_infeasibility_check, stacklevel+1)
             self._phi = partition(multi_stream, raffinate, extract, *args)
         else:
-            lle = multi_stream.lle    
+            lle = multi_stream.lle                
             lle(self.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
             self._IDs = tuple([i.ID for i in lle._lle_chemicals])
             self._phi = lle._phi
             self._K = lle._K 
+        if not update: multi_stream.set_data(data)
         
     def balance_raffinate_flows(self):
         total_mol = self.feed.mol + self.solvent.mol
@@ -1010,7 +1012,7 @@ class MultiStageLLE:
     Stream: 
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     413
-                     Methanol  8.4
+                     Methanol  8.5
                      Octanol   0.1
     >>> stages.extract.show()
     Stream: 
@@ -1039,7 +1041,7 @@ class MultiStageLLE:
      phase: 'l', T: 298.15 K, P: 101325 Pa
      flow (kmol/hr): Water     4.1e+03
                      Methanol  1.3
-                     Octanol   1.2
+                     Octanol   1.1
     >>> stages.extract.show()
     Stream: 
      phase: 'L', T: 298.15 K, P: 101325 Pa
@@ -1169,8 +1171,8 @@ class MultiStageLLE:
     def multi_stage_lle_without_side_draws_iter(self, extract_flow_rates):
         self.update_multi_stage_lle_without_side_draws(extract_flow_rates)
         stages = self.stages
-        for i in stages: 
-            i.partition(self.partition_data)
+        for i in stages: i.balance_raffinate_flows()
+        for i in stages: i.partition(self.partition_data, update=False)
         K = np.transpose([i.K for i in stages]) 
         phi = np.array([i.phi for i in stages])
         index = self.index
