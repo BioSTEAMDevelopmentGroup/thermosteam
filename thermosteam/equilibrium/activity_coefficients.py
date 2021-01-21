@@ -260,8 +260,10 @@ class GroupActivityCoefficients(ActivityCoefficients):
         
         """
         x = np.asarray(x, float)
-        if self._index:
-            N_chemicals = x.size
+        N_chemicals = x.size
+        if N_chemicals == 1:
+            gamma = np.ones(N_chemicals)
+        elif self._index:
             x = x[self._index]
             xsum = x.sum()
             gamma = np.ones(N_chemicals)

@@ -9,6 +9,7 @@
 """
 from numpy import asarray, array
 import flexsolve as flx
+from .domain import vle_domain
 from ..exceptions import InfeasibleRegion, DomainError
 from .solve_vle_composition import solve_y
 from .. import functional as fn
@@ -66,7 +67,6 @@ class BubblePoint:
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'P', 'T', 'y', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
-    Tmin_default = 150.
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -82,8 +82,9 @@ class BubblePoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
-            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-3
+            Tmin, Tmax = vle_domain(chemicals)
+            self.Tmin = Tmin
+            self.Tmax = Tmax
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
@@ -168,7 +169,7 @@ class BubblePoint:
         self.P = P
         f = self._T_error
         z_norm = z / z.sum()
-        z_over_P = z_norm/P
+        z_over_P = z/P
         args = (P, z_over_P, z_norm)
         T_guess = self._T_ideal(z_over_P) 
         try:

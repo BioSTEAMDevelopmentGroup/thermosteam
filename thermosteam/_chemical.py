@@ -66,6 +66,8 @@ from .units_of_measure import chemical_units_of_measure
 from .eos import GCEOS_DUMMY, PR
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
+from ._phase import check_phase
+from . import units_of_measure as thermo_units
 
 # from .solubility import SolubilityParameter
 # from .lennard_jones import Stockmayer, MolecularDiameter
@@ -79,7 +81,7 @@ __all__ = ('Chemical',)
 
 def get_chemical_data(chemical):
     getfield = getattr
-    return {i:getfield(chemical, i) for i in chemical.__slots__}
+    return {i:getfield(chemical, i, None) for i in chemical.__slots__}
 
 def unpickle_chemical(chemical_data):
     chemical = object.__new__(Chemical)
@@ -527,7 +529,8 @@ class Chemical:
     __slots__ = ('_ID', '_locked_state', 
                  '_phase_ref', '_eos', '_eos_1atm',
                  *_names, *_groups, 
-                 *_handles, *_data)
+                 *_handles, *_data,
+                 '_N_solutes')
     
     #: [float] Reference temperature in Kelvin
     T_ref = 298.15
@@ -551,14 +554,12 @@ class Chemical:
         chemical_cache = cls.chemical_cache
         if (cache or cls.cache) and ID in chemical_cache:
             if any([search_ID, eos, phase_ref, CAS, default, phase, 
-                    V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap, data]):
+                    V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap,
+                    data]):
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
         search_ID = search_ID or ID
         if not eos: eos = PR
-        if phase: 
-            phase = phase[0].lower()
-            assert phase in ('s', 'l', 'g'), "phase must be either 's', 'l', or 'g'"
         if search_db:
             metadata = pubchem_db.search(search_ID)
             data['metadata'] = metadata
@@ -674,6 +675,8 @@ class Chemical:
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
         if phase:
+            phase = phase[0]
+            check_phase(phase)
             for i in ('kappa', 'mu', 'V'):
                 setfield(self, '_' + i, TPDependentModelHandle(i))
             self._Cn = TDependentModelHandle('Cn')
@@ -741,7 +744,7 @@ class Chemical:
         getfield = getattr
         setfield = setattr
         for field in self.__slots__: 
-            value = getfield(self, field)
+            value = getfield(self, field, None)
             setfield(new, field, copy_maybe(value))
         new._ID = ID
         new._CAS = CAS or ID
@@ -767,6 +770,114 @@ class Chemical:
 
     def __reduce__(self):
         return unpickle_chemical, (get_chemical_data(self),)
+    
+    ### Helpful functionality ###
+    def rho(self, *args, **kwargs):
+        """
+        Return density given thermal condition [kg/m^3].
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.rho('l', 298.15, 101325)
+        997.015
+        
+        """
+        return fn.V_to_rho(self.V(*args, **kwargs), self.MW)
+    
+    def Cp(self, *args, **kwargs):
+        """
+        Return heat capacity given thermal condition [J/g/K].
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.Cp('l', 298.15, 101325)
+        4.180
+        
+        """
+        return self.Cn(*args, **kwargs) / self.MW
+    
+    def alpha(self, *args, **kwargs):
+        """
+        Return thermal diffusivity  given thermal condition [m^2/s].
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.alpha('l', 298.15, 101325)
+        1.455...e-07
+        
+        """
+        return fn.alpha(self.kappa(*args, **kwargs), 
+                        self.rho(*args, **kwargs), 
+                        self.Cp(*args, **kwargs) * 1000.)
+    
+    def nu(self, *args, **kwargs):
+        """
+        Return kinematic viscosity given thermal condition ['m^2/s'].
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.nu('l', 298.15, 101325)
+        8.958...e-07
+        
+        """
+        return fn.mu_to_nu(self.mu(*args, **kwargs), 
+                           self.rho(*args, **kwargs))
+    
+    def Pr(self, *args, **kwargs):
+        """
+        Return the Prandtl number given thermal condition [-].
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.Pr('l', 298.15, 101325)
+        6.156
+        
+        """
+        return fn.Pr(self.Cp(*args, **kwargs) * 1000,
+                     self.kappa(*args, **kwargs), 
+                     self.mu(*args, **kwargs))
+    
+    def get_property(self, name, units, *args, **kwargs):
+        """
+        Return property in requested units.
+
+        Parameters
+        ----------
+        name : str
+            Name of stream property.
+        units : str
+            Units of measure.
+        *args, **kwargs :
+            Thermal condition.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> Water = tmo.Chemical('Water', cache=True)
+        >>> Water.get_property('sigma', 'N/m', 300.) # Surface tension
+        0.071685
+
+        >>> Water.get_property('rho', 'g/cm3', 'l', 300., 101325) # Density
+        0.996267
+
+        """
+        value = getattr(self, name)(*args, **kwargs)
+        units_dct = thermo_units.chemical_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
+        else:
+            raise ValueError(f"'{name}' is not thermodynamic property")
+        return original_units.convert(value, units)
     
     @property
     def phase_ref(self):
@@ -1833,6 +1944,14 @@ class Chemical:
         """[str] Constant phase of chemical."""
         return self._locked_state
     
+    @property
+    def N_solutes(self):
+        """[int] Number of molecules formed when solvated."""
+        return getattr(self, '_N_solutes', None)
+    @N_solutes.setter
+    def N_solutes(self, N_solutes):
+        self._N_solutes = int(N_solutes)
+    
     def at_state(self, phase, copy=False):
         """
         Set the state of chemical.
@@ -1895,6 +2014,8 @@ class Chemical:
         return f"Chemical('{self}')"
     
 def lock_phase(chemical, phase):
+    phase = phase[0]
+    check_phase(phase)
     getfield = getattr
     setfield = object.__setattr__
     hasfield = hasattr

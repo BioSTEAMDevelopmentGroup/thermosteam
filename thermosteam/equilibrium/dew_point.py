@@ -14,6 +14,7 @@ from ..exceptions import DomainError, InfeasibleRegion
 from .solve_vle_composition import solve_x
 from ..utils import fill_like, Cache
 from .._settings import settings
+from .domain import vle_domain
 
 __all__ = ('DewPoint', 'DewPointCache')
 
@@ -84,8 +85,9 @@ class DewPoint:
             self.phi = thermo.Phi(chemicals)
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
-            self.Tmin = Tmin = max(max([i.Tmin for i in Psats]) + 1e-3, self.Tmin_default)
-            self.Tmax = Tmax = min([i.Tmax for i in Psats]) - 1e-3
+            Tmin, Tmax = vle_domain(chemicals)
+            self.Tmin = Tmin
+            self.Tmax = Tmax
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
@@ -179,7 +181,7 @@ class DewPoint:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
                                   checkiter=False)
-        except (InfeasibleRegion, DomainError) as e:
+        except (InfeasibleRegion, DomainError):
             Tmin = self.Tmin
             Tmax = self.Tmax
             T = flx.IQ_interpolation(f, Tmin, Tmax,

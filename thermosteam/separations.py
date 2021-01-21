@@ -953,7 +953,7 @@ class StageLLE:
             lle(self.T, top_chemical=self.carrier_chemical or self.feed.main_chemical)
             self._IDs = tuple([i.ID for i in lle._lle_chemicals])
             self._phi = lle._phi
-            self._K = lle._K 
+            self._K = lle._K
         if not update: multi_stream.set_data(data)
         
     def balance_raffinate_flows(self):

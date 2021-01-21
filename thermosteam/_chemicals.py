@@ -23,9 +23,9 @@ def must_compile(*args, **kwargs): # pragma: no cover
     raise TypeError("method valid only for compiled chemicals; "
                     "run <Chemicals>.compile() to compile")
 
-def chemical_data_array(chemicals, attr):
+def chemical_data_array(chemicals, attr, dtype=float):
     getfield = getattr
-    data = np.asarray([getfield(i, attr) for i in chemicals], dtype=float)
+    data = np.asarray([getfield(i, attr) for i in chemicals], dtype)
     data.setflags(0)
     return data
     
@@ -443,36 +443,6 @@ class CompiledChemicals(Chemicals):
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
-        vle_chemicals = []
-        lle_chemicals = []
-        heavy_chemicals = []
-        light_chemicals = []
-        for i in chemicals:
-            locked_phase = i.locked_state
-            if locked_phase:
-                if locked_phase in ('s', 'l'):
-                    heavy_chemicals.append(i)
-                    if i.Dortmund or i.UNIFAC:
-                        lle_chemicals.append(i)
-                elif locked_phase == 'g':
-                    light_chemicals.append(i)
-                else:
-                    raise Exception('chemical locked state has an invalid phase')
-            else:
-                vle_chemicals.append(i)
-                lle_chemicals.append(i)
-        dct['vle_chemicals'] = tuple_(vle_chemicals)
-        dct['lle_chemicals'] = tuple_(lle_chemicals)
-        dct['heavy_chemicals'] = tuple_(heavy_chemicals)
-        dct['light_chemicals'] = tuple_(light_chemicals)
-        dct['_has_vle'] = has_vle = np.zeros(size, dtype=bool)
-        dct['_has_lle'] = has_lle = np.zeros(size, dtype=bool)
-        dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
-        dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
-        vle_index = [index[i.ID] for i in vle_chemicals]
-        lle_index = [index[i.ID] for i in lle_chemicals]
-        has_vle[vle_index] = True
-        has_lle[lle_index] = True
         repeated_names = set()
         names = set()
         for i in chemicals:
@@ -490,6 +460,38 @@ class CompiledChemicals(Chemicals):
             for name in all_names:
                 if name and name not in repeated_names:
                     self.set_synonym(ID, name)
+        vle_chemicals = []
+        lle_chemicals = []
+        heavy_chemicals = []
+        light_chemicals = []
+        for i in chemicals:
+            locked_phase = i.locked_state
+            if locked_phase:
+                if locked_phase in ('s', 'l'):
+                    heavy_chemicals.append(i)
+                    if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK:
+                        lle_chemicals.append(i)
+                    if i.N_solutes is None: i._N_solutes = 0
+                elif locked_phase == 'g':
+                    light_chemicals.append(i)
+                else:
+                    raise Exception('chemical locked state has an invalid phase')
+            else:
+                vle_chemicals.append(i)
+                lle_chemicals.append(i)
+        dct['vle_chemicals'] = tuple_(vle_chemicals)
+        dct['lle_chemicals'] = tuple_(lle_chemicals)
+        dct['heavy_chemicals'] = tuple_(heavy_chemicals)
+        dct['light_chemicals'] = tuple_(light_chemicals)
+        dct['_has_vle'] = has_vle = np.zeros(size, dtype=bool)
+        dct['_has_lle'] = has_lle = np.zeros(size, dtype=bool)
+        dct['_heavy_solutes'] = chemical_data_array(heavy_chemicals, 'N_solutes')
+        dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
+        dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
+        vle_index = [index[i.ID] for i in vle_chemicals]
+        lle_index = [index[i.ID] for i in lle_chemicals]
+        has_vle[vle_index] = True
+        has_lle[lle_index] = True
         
     @property
     def formula_array(self):

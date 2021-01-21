@@ -901,7 +901,7 @@ class Stream:
         return fn.V_to_rho(self.V, self.MW)
     @property
     def nu(self):
-        """[float] Kinematic viscosity [-]."""
+        """[float] Kinematic viscosity ['m^2/s']."""
         return fn.mu_to_nu(self.mu, self.rho)
     @property
     def Pr(self):
@@ -1753,11 +1753,6 @@ class Stream:
         """
         Receive vapors from another stream as if in equilibrium.
 
-        Notes
-        -----
-        Disregards energy balance. Assumes liquid composition will not change
-        significantly.
-
         Examples
         --------
         >>> import thermosteam as tmo
@@ -1773,7 +1768,7 @@ class Stream:
                          Ethanol  0.0616
                          N2       0.369
         """
-        # TODO: Add energy balance 
+        ms = tmo.MultiStream(None)
         assert self.phase == 'g', 'stream must be a gas to receive vent'
         chemicals = other.vle_chemicals
         light_indices = other.chemicals._light_indices
@@ -1800,6 +1795,8 @@ class Stream:
         index = other.mol < 0.
         self.mol[index] += other.mol[index]
         other.mol[index] = 0
+        ms.mix_from([self, other])
+        self.T = other.T = ms.T
         
     ### Casting ###
     

@@ -12,7 +12,6 @@ from thermosteam import functional as fn
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
-from collections.abc import Sized
 from free_properties import property_array
 from . import (
     _parse as prs,

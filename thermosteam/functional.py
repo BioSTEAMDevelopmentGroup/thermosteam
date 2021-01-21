@@ -11,7 +11,6 @@ from chemicals import *
 from fluids.core import Pr, alpha
 from flexsolve import njitable
 from thermosteam.base import functor
-from thermosteam.exceptions import InfeasibleRegion
 import numpy as np
 
 @functor
@@ -21,12 +20,12 @@ def horner(T, coeffs):
     return tot 
 
 @njitable(cache=True)
-def normalize(array, minimum=1e-16):
+def normalize(array, sum_array=None, minimum=1e-16):
     """
     Return a normalized array to a magnitude of 1.
     If magnitude is zero, all fractions will have equal value.
     """
-    sum_array = array.sum()
+    if sum_array is None: sum_array = array.sum()
     if sum_array < minimum:
         size = array.size
         return np.ones(size)/size

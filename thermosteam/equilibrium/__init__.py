@@ -10,6 +10,7 @@
 
 __all__ = []
 
+from . import domain
 from . import activity_coefficients
 from . import fugacity_coefficients
 from . import dew_point
@@ -22,7 +23,8 @@ from . import lle
 from . import sle
 from . import plot_equilibrium
 
-__all__ = (*activity_coefficients.__all__,
+__all__ = (*domain.__all__,
+           *activity_coefficients.__all__,
            *vle.__all__,
            *lle.__all__,
            *sle.__all__,
@@ -34,6 +36,7 @@ __all__ = (*activity_coefficients.__all__,
            *fugacities.__all__,
            *plot_equilibrium.__all__)
 
+from .domain import *
 from .vle import *
 from .lle import *
 from .sle import *
