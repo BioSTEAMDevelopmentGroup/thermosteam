@@ -21,7 +21,7 @@ New features:
 * Enhanced functionality of :class:`~thermosteam.Chemical` objects, including
   the :meth:`Chemical.get_property <thermosteam.Chemical.get_property>` method
   for retrieving chemical properities with given units of measure.
-* Non-partitioning gases/liquids/solutes are not taken into account in 
+* Non-partitioning gases/liquids/solutes are now taken into account in 
   vapor-liquid equilibrium.
 * More robust and accurate liquid-liquid extration algorithms in the 
   thermosteam.separations module.
