@@ -706,6 +706,9 @@ class Chemical:
         
         Examples
         --------
+        >>> import thermosteam as tmo
+        >>> Glucose = tmo.Chemical('Glucose')
+        >>> Glucose.copy('Mannose')
         Chemical: Mannose (phase_ref='l')
         [Names]  CAS: Mannose
                  InChI: C6H12O6/c7-1-3(9)5(1...
@@ -818,7 +821,7 @@ class Chemical:
     
     def nu(self, *args, **kwargs):
         """
-        Return kinematic viscosity given thermal condition ['m^2/s'].
+        Return kinematic viscosity given thermal condition [m^2/s].
         
         Examples
         --------

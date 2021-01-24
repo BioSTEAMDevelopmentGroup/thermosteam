@@ -30,8 +30,8 @@ class StreamData:
     
     def __init__(self, imol, thermal_condition, phases):
         self._imol = imol.copy()
-        self._T = thermal_condition.T
-        self._P = thermal_condition.P
+        self._T = thermal_condition._T
+        self._P = thermal_condition._P
         self._phases = phases
         
     
@@ -338,7 +338,7 @@ class Stream:
         ValueError: stream_data must be a StreamData object; not dict
         
         """
-        return StreamData(self.imol, self.thermal_condition, self.phases)
+        return StreamData(self._imol, self._thermal_condition, self.phases)
 
     def set_data(self, stream_data):
         """
@@ -901,7 +901,7 @@ class Stream:
         return fn.V_to_rho(self.V, self.MW)
     @property
     def nu(self):
-        """[float] Kinematic viscosity ['m^2/s']."""
+        """[float] Kinematic viscosity [m^2/s]."""
         return fn.mu_to_nu(self.mu, self.rho)
     @property
     def Pr(self):
