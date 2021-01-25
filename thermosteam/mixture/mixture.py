@@ -167,14 +167,14 @@ class Mixture:
         
         Parameters
         ----------
-        chemicals : Chemicals
+        chemicals : Iterable[Chemical]
             For retrieving pure component chemical data.
         include_excess_energies=False : bool
             Whether to include excess energies in enthalpy and entropy calculations.
         rule : str, optional
             Mixing rule. Defaults to 'ideal'.
         cache : optional
-            Whether or not to use cached chemicals and cache new chemicals.
+            Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
     
         See also
         --------
