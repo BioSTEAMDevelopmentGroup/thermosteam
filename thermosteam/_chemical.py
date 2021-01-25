@@ -1816,7 +1816,7 @@ class Chemical:
                 mu.add_model(0.00091272)
         if 'V' in properties:
             V = self._V
-            V_default = fn.rho_to_V(1050, MW)
+            V_default = fn.rho_to_V(1000, MW)
             if hasfield(V, 'l'):
                 V.l.add_model(V_default)
             elif not V:
