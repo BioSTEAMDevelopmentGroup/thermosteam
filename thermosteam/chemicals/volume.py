@@ -202,15 +202,22 @@ vol.volume_gas_handle = volume_gas_handle
 Goodman = functor(vol.Goodman, 'V.s')
 
 # TODO: Make a data table for new additions (not just for common sugars).
-common_sugars = {'50-99-7', '25990-60-7', '57-48-7'}
+# Source: PubChem
+sugar_solid_densities = {
+    '50-99-7': 0.0001125975, 
+    '57-48-7': 0.0001063495,
+    '3458-28-4': 0.00011698,
+    '25990-60-7': 9.84459e-05,
+    '59-23-4': 0.000120104,   
+}
 
 @TPDependentHandleBuilder('V.s')
 def volume_solid_handle(handle, CAS):
     if CAS in rho_data_CRC_inorg_s_const:
         CRC_INORG_S_Vm = float(rho_data_CRC_inorg_s_const.get(CAS, 'Vm'))
         handle.add_model(CRC_INORG_S_Vm, 0, 1e6, 0, 1e12)
-    elif CAS in common_sugars: 
-        handle.add_model(0.0001125975, 0, 1e6, 0, 1e12)
+    elif CAS in sugar_solid_densities: 
+        handle.add_model(sugar_solid_densities[CAS], 0, 1e6, 0, 1e12)
 vol.volume_solid_handle = volume_solid_handle
 
 vol.volume_handle = PhaseTPHandleBuilder('V',
