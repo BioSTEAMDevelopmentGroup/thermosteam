@@ -1,5 +1,5 @@
-Thermosteam 0.23
-================
+v0.23
+=====
 
 0.23.3
 ------
@@ -25,3 +25,11 @@ New features:
   vapor-liquid equilibrium.
 * More robust and accurate liquid-liquid extration algorithms in the 
   thermosteam.separations module.
+
+0.23.10
+-------
+New features:
+
+* Enhanced functionality of :class:`~thermosteam.Mixture` objects, including
+  the :meth:`Mixture.get_property <thermosteam.Mixture.get_property>` method
+  for retrieving chemical properities with given units of measure.
