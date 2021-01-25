@@ -8,6 +8,7 @@
 """
 """
 import flexsolve as flx
+import numpy as np
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
 from ..base import PhaseMixtureHandle
@@ -187,8 +188,15 @@ class Mixture:
         >>> from thermosteam import Mixture
         >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.Hvap([0.2, 0.8], 350)
-        39601.089191849824
+        39601.089
 
+        Calculate density for a water and ethanol mixture in g/L:
+
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
+        754.005
+        
         """
         
         if rule == 'ideal':
@@ -218,6 +226,7 @@ class Mixture:
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
+        mol = np.asarray(mol, float)
         total_mol = mol.sum()
         return (mol * self.MWs).sum() / total_mol if total_mol else 0.
     
