@@ -10,8 +10,42 @@
 import flexsolve as flx
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
+from ..base import PhaseMixtureHandle
+from .ideal_mixture_model import IdealMixtureModel
+from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture',)
+
+# %% Functions for building mixture models
+
+def group_handles_by_phase(phase_handles):
+    hasfield = hasattr
+    getfield = getattr
+    iscallable = callable
+    handles_by_phase = {'s': [],
+                        'l': [],
+                        'g': []}
+    for phase, handles in handles_by_phase.items():
+        for phase_handle in phase_handles:
+            if iscallable(phase_handle) and hasfield(phase_handle, phase):
+                prop = getfield(phase_handle, phase)
+            else:
+                prop = phase_handle
+            handles.append(prop)
+    return handles_by_phase
+    
+def build_ideal_PhaseMixtureHandle(chemicals, var):
+    setfield = object.__setattr__
+    getfield = getattr
+    phase_handles = [getfield(i, var) for i in chemicals]
+    new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
+    for phase, handles in group_handles_by_phase(phase_handles).items():
+        setfield(new, phase, IdealMixtureModel(handles, var))
+    setfield(new, 'var', var)
+    return new
+
+
+# %% Energy balance
 
 def iter_temperature(T, H, H_model, phase, mol, P, Cn):
     # Used to solve for ethalpy at given temperature
@@ -20,6 +54,7 @@ def iter_temperature(T, H, H_model, phase, mol, P, Cn):
 def xiter_temperature(T, H, H_model, phase_mol, P, Cn):
     # Used to solve for ethalpy at given temperature
     return T + (H - H_model(phase_mol, T, P)) / Cn
+
 
 # %% Ideal mixture
 
@@ -120,6 +155,66 @@ class Mixture:
         self._S = S
         self._H_excess = H_excess
         self._S_excess = S_excess
+    
+    @classmethod
+    def from_chemicals(cls, chemicals, 
+                       include_excess_energies=False, 
+                       rule='ideal',
+                       cache=True):
+        """
+        Create a Mixture object from chemical objects.
+        
+        Parameters
+        ----------
+        chemicals : Chemicals
+            For retrieving pure component chemical data.
+        include_excess_energies=False : bool
+            Whether to include excess energies in enthalpy and entropy calculations.
+        rule : str, optional
+            Mixing rule. Defaults to 'ideal'.
+        cache : optional
+            Whether or not to use cached chemicals and cache new chemicals.
+    
+        See also
+        --------
+        :class:`~.mixture.Mixture`
+        :class:`~.IdealMixtureModel`
+    
+        Examples
+        --------
+        Calculate enthalpy of evaporation for a water and ethanol mixture:
+        
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.Hvap([0.2, 0.8], 350)
+        39601.089191849824
+
+        """
+        
+        if rule == 'ideal':
+            isa = isinstance
+            if isa(chemicals, CompiledChemicals):
+                MWs = chemicals.MW
+                chemicals = chemicals.tuple
+            else:
+                chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
+                MWs = chemical_data_array(chemicals, 'MW')
+            getfield = getattr
+            Cn =  build_ideal_PhaseMixtureHandle(chemicals, 'Cn')
+            H =  build_ideal_PhaseMixtureHandle(chemicals, 'H')
+            S = build_ideal_PhaseMixtureHandle(chemicals, 'S')
+            H_excess = build_ideal_PhaseMixtureHandle(chemicals, 'H_excess')
+            S_excess = build_ideal_PhaseMixtureHandle(chemicals, 'S_excess')
+            mu = build_ideal_PhaseMixtureHandle(chemicals, 'mu')
+            V = build_ideal_PhaseMixtureHandle(chemicals, 'V')
+            kappa = build_ideal_PhaseMixtureHandle(chemicals, 'kappa')
+            Hvap = IdealMixtureModel([getfield(i, 'Hvap') for i in chemicals], 'Hvap')
+            sigma = IdealMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+            epsilon = IdealMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+            return cls(rule, Cn, H, S, H_excess, S_excess,
+                       mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
+        else:
+            raise ValueError("rule '{rule}' is not available (yet)")
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""

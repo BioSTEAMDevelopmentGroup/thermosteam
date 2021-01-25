@@ -10,7 +10,7 @@
 from . import equilibrium as eq
 from ._chemical import Chemical
 from ._chemicals import Chemicals
-from .mixture import Mixture, ideal_mixture
+from .mixture import Mixture
 from .utils import read_only, cucumber
 
 __all__ = ('Thermo',)
@@ -46,12 +46,12 @@ class Thermo:
     >>> import thermosteam as tmo
     >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
     >>> thermo
-    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal mixing', ..., include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
+    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal', ..., include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
     >>> thermo.show() # May be easier to read
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
         mixture=Mixture(
-            rule='ideal mixing', ...
+            rule='ideal', ...
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -68,7 +68,7 @@ class Thermo:
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
         mixture=Mixture(
-            rule='ideal mixing', ...
+            rule='ideal', ...
             include_excess_energies=False
         ),
         Gamma=IdealActivityCoefficients,
@@ -107,7 +107,7 @@ class Thermo:
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
         mixture=Mixture(
-            rule='ideal mixing', ...
+            rule='ideal', ...
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -139,7 +139,7 @@ class Thermo:
                  skip_checks=False):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if not mixture:
-            mixture = ideal_mixture(chemicals)
+            mixture = Mixture.from_chemicals(chemicals)
         elif not isinstance(mixture, Mixture): # pragma: no cover
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         chemicals.compile(skip_checks=skip_checks)
@@ -217,7 +217,7 @@ class Thermo:
         Thermo(
             chemicals=CompiledChemicals([Water]),
             mixture=Mixture(
-                rule='ideal mixing', ...
+                rule='ideal', ...
                 include_excess_energies=False
             ),
             Gamma=DortmundActivityCoefficients,
