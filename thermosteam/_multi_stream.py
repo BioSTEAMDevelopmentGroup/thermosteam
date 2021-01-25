@@ -445,7 +445,6 @@ class MultiStream(Stream):
     def mu(self):
         """[float] Hydrolic viscosity [Pa*s]."""
         return self.mixture.xmu(self._imol.iter_composition(), *self._thermal_condition)
-
     @property
     def sigma(self):
         """[float] Surface tension [N/m]."""
@@ -456,6 +455,26 @@ class MultiStream(Stream):
         """[float] Relative permittivity [-]."""
         mol = self._imol['l']
         return self.mixture.epsilon(mol / mol.sum(), *self._thermal_condition)
+    @property
+    def Cp(self):
+        """[float] Heat capacity [J/g/K]."""
+        return self.mixture.xCp(self._imol.iter_composition(), self.T)
+    @property
+    def alpha(self):
+        """[float] Thermal diffusivity [m^2/s]."""
+        return self.mixture.xalpha(self._imol.iter_composition(), *self._thermal_condition)
+    @property
+    def rho(self):
+        """[float] Density [kg/m^3]."""
+        return self.mixture.xrho(self._imol.iter_composition(), *self._thermal_condition)
+    @property
+    def nu(self):
+        """[float] Kinematic viscosity [m^2/s]."""
+        return self.mixture.xnu(self._imol.iter_composition(), *self._thermal_condition)
+    @property
+    def Pr(self):
+        """[float] Prandtl number [-]."""
+        return self.mixture.xPr(self._imol.iter_composition(), *self._thermal_condition)
         
     ### Methods ###
     

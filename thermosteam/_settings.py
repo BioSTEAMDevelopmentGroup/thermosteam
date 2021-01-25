@@ -82,7 +82,7 @@ class Settings:
         if not thermo: raise_no_thermo_error()
         return thermo
     
-    def set_thermo(self, thermo, cache=None):
+    def set_thermo(self, thermo, cache=None, skip_checks=False):
         """
         Set the default Thermo object. If `thermo` is not a Thermo object,
         an attempt is made to convert it to one.
@@ -93,10 +93,12 @@ class Settings:
             A Thermo object or iterable of chemicals or chemical IDs.
         cache : bool, optional
             Wether or not to use cached chemicals.
+        skip_checks : bool, optional
+            Whether to skip checks for missing or invalid properties.
             
         """
         if not isinstance(thermo, tmo.Thermo):
-            thermo = tmo.Thermo(thermo, cache=cache)
+            thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
         self._thermo = thermo
     
     def get_chemicals(self):

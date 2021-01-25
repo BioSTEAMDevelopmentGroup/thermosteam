@@ -12,6 +12,7 @@ All Mixture object builders.
 from ..base import PhaseMixtureHandle
 from .ideal_mixture_model import IdealMixtureModel
 from .mixture import Mixture
+from .._chemicals import CompiledChemicals, chemical_data_array
 
 __all__ = ('ideal_mixture',)
 
@@ -73,7 +74,12 @@ def ideal_mixture(chemicals,
 
 
     """
-    chemicals = tuple(chemicals)
+    if isinstance(chemicals, CompiledChemicals):
+        MWs = chemicals.MW
+        chemicals = chemicals.tuple
+    else:
+        chemicals = tuple(chemicals)
+        MWs = chemical_data_array(chemicals, 'MW')
     getfield = getattr
     Cn =  build_ideal_PhaseMixtureHandle(chemicals, 'Cn')
     H =  build_ideal_PhaseMixtureHandle(chemicals, 'H')
@@ -87,4 +93,4 @@ def ideal_mixture(chemicals,
     sigma = IdealMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
     epsilon = IdealMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
     return Mixture('ideal mixing', Cn, H, S, H_excess, S_excess,
-                   mu, V, kappa, Hvap, sigma, epsilon, include_excess_energies)
+                   mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)

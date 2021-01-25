@@ -36,6 +36,8 @@ class Thermo:
         Class for computing poynting correction factors.
     cache : optional
         Whether or not to use cached chemicals.
+    skip_checks : bool, optional
+        Whether to skip checks for missing or invalid properties.
     
     Examples
     --------
@@ -133,13 +135,14 @@ class Thermo:
                  Gamma=eq.DortmundActivityCoefficients,
                  Phi=eq.IdealFugacityCoefficients,
                  PCF=eq.IdealPoyintingCorrectionFactors,
-                 cache=None):
+                 cache=None,
+                 skip_checks=False):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if not mixture:
             mixture = ideal_mixture(chemicals)
         elif not isinstance(mixture, Mixture): # pragma: no cover
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
-        chemicals.compile()
+        chemicals.compile(skip_checks=skip_checks)
         issubtype = issubclass
         if not issubtype(Gamma, eq.ActivityCoefficients): # pragma: no cover
             raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")

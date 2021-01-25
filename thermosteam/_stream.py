@@ -855,58 +855,61 @@ class Stream:
     @property
     def MW(self):
         """[float] Overall molecular weight."""
-        return self.F_mass / self.F_mol
+        return self.mixture.MW(self.mol)
     @property
     def V(self):
         """[float] Molar volume [m^3/mol]."""
-        mol = self.mol
-        return self.mixture.V(self.phase, mol / mol.sum(), *self._thermal_condition)
+        return self.mixture.V(*self._imol.get_phase_and_composition(),
+                              *self._thermal_condition)
     @property
     def kappa(self):
         """[float] Thermal conductivity [W/m/k]."""
-        mol = self.mol
-        return self.mixture.kappa(self.phase, mol / mol.sum(), *self._thermal_condition)
+        return self.mixture.kappa(*self._imol.get_phase_and_composition(),
+                                  *self._thermal_condition)
     @property
     def Cn(self):
         """[float] Molar heat capacity [J/mol/K]."""
-        mol = self.mol
-        return self.mixture.Cn(self.phase, mol / mol.sum(), self.T)
+        return self.mixture.Cn(*self._imol.get_phase_and_composition(), self.T)
     @property
     def mu(self):
         """[float] Hydrolic viscosity [Pa*s]."""
-        mol = self.mol
-        return self.mixture.mu(self.phase, mol / mol.sum(), *self._thermal_condition)
+        return self.mixture.mu(*self._imol.get_phase_and_composition(),
+                               *self._thermal_condition)
     @property
     def sigma(self):
         """[float] Surface tension [N/m]."""
         mol = self.mol
-        return self.mixture.sigma(mol / mol.sum(), *self._thermal_condition)
+        return self.mixture.sigma(mol / mol.sum(),
+                                  *self._thermal_condition)
     @property
     def epsilon(self):
         """[float] Relative permittivity [-]."""
         mol = self.mol
         return self.mixture.epsilon(mol / mol.sum(), *self._thermal_condition)
-    
     @property
     def Cp(self):
         """[float] Heat capacity [J/g/K]."""
-        return self.Cn / self.MW
+        return self.mixture.Cp(*self._imol.get_phase_and_composition(), self.T)
     @property
     def alpha(self):
         """[float] Thermal diffusivity [m^2/s]."""
-        return fn.alpha(self.kappa, self.rho, self.Cp * 1000.)
+        return self.mixture.alpha(*self._imol.get_phase_and_composition(),
+                                  *self._thermal_condition)
     @property
     def rho(self):
         """[float] Density [kg/m^3]."""
-        return fn.V_to_rho(self.V, self.MW)
+        return self.mixture.rho(*self._imol.get_phase_and_composition(), 
+                                *self._thermal_condition)
     @property
     def nu(self):
         """[float] Kinematic viscosity [m^2/s]."""
-        return fn.mu_to_nu(self.mu, self.rho)
+        return self.mixture.nu(*self._imol.get_phase_and_composition(),
+                               *self._thermal_condition)
     @property
     def Pr(self):
         """[float] Prandtl number [-]."""
-        return fn.Pr(self.Cp * 1000, self.kappa, self.mu)
+        return self.mixture.Pr(*self._imol.get_phase_and_composition(),
+                               *self._thermal_condition)
     
     ### Stream methods ###
     

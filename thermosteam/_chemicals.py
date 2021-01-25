@@ -375,7 +375,7 @@ class CompiledChemicals(Chemicals):
     def __reduce__(self):
         return CompiledChemicals, (self.tuple,)
     
-    def compile(self):
+    def compile(self, skip_checks=False):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
     
     def refresh_constants(self):

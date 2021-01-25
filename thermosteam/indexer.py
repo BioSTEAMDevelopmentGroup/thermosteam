@@ -232,6 +232,11 @@ class ChemicalIndexer(Indexer):
     def phase(self, phase):
         self._phase.phase = phase
     
+    def get_phase_and_composition(self):
+        """Return phase and composition."""
+        data = self._data
+        return self.phase, data / data.sum()
+    
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs) 

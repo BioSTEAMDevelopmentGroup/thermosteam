@@ -8,6 +8,8 @@
 """
 """
 import flexsolve as flx
+from thermosteam import functional as fn
+from .. import units_of_measure as thermo_units
 
 __all__ = ('Mixture',)
 
@@ -51,6 +53,8 @@ class Mixture:
         Surface tension mixture model [N/m].
     epsilon : function(mol, T, P)
         Relative permitivity mixture model [-]
+    MWs : 1d array[float]
+        Component molecular weights [g/mol].
     include_excess_energies=False : bool
         Whether to include excess energies
         in enthalpy and entropy calculations.
@@ -87,7 +91,8 @@ class Mixture:
         Mixture surface tension [N/m].
     epsilon(mol, T, P) : 
         Mixture relative permitivity [-].
-    
+    MWs : 1d-array[float]
+        Component molecular weights [g/mol].
     
     """
     __slots__ = ('rule',
@@ -95,12 +100,12 @@ class Mixture:
                  'include_excess_energies',
                  'Cn', 'mu', 'V', 'kappa',
                  'Hvap', 'sigma', 'epsilon',
-                 '_H', '_H_excess', '_S', '_S_excess',
+                 'MWs', '_H', '_H_excess', '_S', '_S_excess',
     )
     
     def __init__(self, rule, Cn, H, S, H_excess, S_excess,
                  mu, V, kappa, Hvap, sigma, epsilon,
-                 include_excess_energies=False):
+                 MWs, include_excess_energies=False):
         self.rule = rule
         self.include_excess_energies = include_excess_energies
         self.Cn = Cn
@@ -110,10 +115,88 @@ class Mixture:
         self.Hvap = Hvap
         self.sigma = sigma
         self.epsilon = epsilon
+        self.MWs = MWs
         self._H = H
         self._S = S
         self._H_excess = H_excess
         self._S_excess = S_excess
+    
+    def MW(self, mol):
+        """Return molecular weight [g/mol] given molar array [mol]."""
+        total_mol = mol.sum()
+        return (mol * self.MWs).sum() / total_mol if total_mol else 0.
+    
+    def rho(self, phase, mol, T, P):
+        """Mixture density [kg/m^3]"""
+        MW = self.MW(mol)
+        return fn.V_to_rho(self.V(phase, mol, T, P), MW) if MW else 0.
+    
+    def Cp(self, phase, mol, T):
+        """Mixture heat capacity [J/g/K]"""
+        MW = self.MW(mol)
+        return self.Cn(phase, mol, T) / MW if MW else 0.
+    
+    def alpha(self, phase, mol, T, P):
+        """Mixture thermal diffusivity [m^2/s]."""
+        Cp = self.Cp(phase, mol, T)
+        return fn.alpha(self.kappa(phase, mol, T, P), 
+                        self.rho(phase, mol, T, P), 
+                        Cp * 1000.) if Cp else 0.
+    
+    def nu(self, phase, mol, T, P):
+        """Mixture kinematic viscosity [m^2/s]."""
+        rho = self.rho(phase, mol, T, P)
+        return fn.mu_to_nu(self.mu(phase, mol, T, P), 
+                           rho) if rho else 0.
+    
+    def Pr(self, phase, mol, T, P):
+        """Mixture Prandtl number [-]."""
+        Cp = self.Cp(phase, mol, T)
+        return fn.Pr(Cp * 1000.,
+                     self.kappa(phase, mol, T, P), 
+                     self.mu(phase, mol, T, P)) if Cp else 0.
+    
+    def xrho(self, phase_mol, T, P):
+        """Multi-phase mixture density [kg/m3]."""
+        return sum([self.rho(phase, mol, T, P) for phase, mol in phase_mol])
+    
+    def xCp(self, phase_mol, T):
+        """Multi-phase mixture heat capacity [kg/m3]."""
+        return sum([self.Cp(phase, mol, T) for phase, mol in phase_mol])
+    
+    def xalpha(self, phase_mol, T, P):
+        """Multi-phase mixture thermal diffusivity [m^2/s]."""
+        return sum([self.alpha(phase, mol, T, P) for phase, mol in phase_mol])
+    
+    def xnu(self, phase_mol, T, P):
+        """Multi-phase mixture kinematic viscosity [m^2/s]."""
+        return sum([self.nu(phase, mol, T, P) for phase, mol in phase_mol])
+    
+    def xPr(self, phase_mol, T, P):
+        """Multi-phase mixture Prandtl number [-]."""
+        return sum([self.Pr(phase, mol, T, P) for phase, mol in phase_mol])
+    
+    def get_property(self, name, units, *args, **kwargs):
+        """
+        Return property in requested units.
+
+        Parameters
+        ----------
+        name : str
+            Name of stream property.
+        units : str
+            Units of measure.
+        *args, **kwargs :
+            Phase, material and thermal condition.
+
+        """
+        value = getattr(self, name)(*args, **kwargs)
+        units_dct = thermo_units.chemical_units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
+        else:
+            raise ValueError(f"'{name}' is not thermodynamic property")
+        return original_units.convert(value, units)
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
@@ -141,8 +224,7 @@ class Mixture:
         
     def xCn(self, phase_mol, T):
         """Multi-phase mixture heat capacity [J/mol/K]."""
-        Cn = self.Cn
-        return sum([Cn(phase, mol, T) for phase, mol in phase_mol])
+        return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])
     
     def xH(self, phase_mol, T, P):
         """Multi-phase mixture enthalpy [J/mol]."""
@@ -164,18 +246,15 @@ class Mixture:
     
     def xV(self, phase_mol, T, P):
         """Multi-phase mixture molar volume [mol/m^3]."""
-        V = self.V
-        return sum([V(phase, mol, T, P) for phase, mol in phase_mol])
+        return sum([self.V(phase, mol, T, P) for phase, mol in phase_mol])
     
     def xmu(self, phase_mol, T, P):
         """Multi-phase mixture hydrolic [Pa*s]."""
-        mu = self.mu
-        return sum([mu(phase, mol, T, P) for phase, mol in phase_mol])
+        return sum([self.mu(phase, mol, T, P) for phase, mol in phase_mol])
     
     def xkappa(self, phase_mol, T, P):
         """Multi-phase mixture thermal conductivity [W/m/K]."""
-        kappa = self.kappa
-        return sum([kappa(phase, mol, T, P) for phase, mol in phase_mol])
+        return sum([self.kappa(phase, mol, T, P) for phase, mol in phase_mol])
     
     def __repr__(self):
         return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"

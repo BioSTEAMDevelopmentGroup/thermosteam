@@ -708,7 +708,8 @@ class Chemical:
         --------
         >>> import thermosteam as tmo
         >>> Glucose = tmo.Chemical('Glucose')
-        >>> Glucose.copy('Mannose')
+        >>> Mannose = Glucose.copy('Mannose')
+        >>> Mannose.show()
         Chemical: Mannose (phase_ref='l')
         [Names]  CAS: Mannose
                  InChI: C6H12O6/c7-1-3(9)5(1...
