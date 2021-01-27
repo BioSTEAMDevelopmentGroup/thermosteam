@@ -47,6 +47,7 @@ class Settings:
         """
         Return a default Thermo object.
         If `thermo` is a Thermo object, return the same object.
+        
         """
         return thermo if thermo else self.get_thermo()
     
@@ -54,6 +55,7 @@ class Settings:
         """
         Return a default CompiledChemicals object.
         If `chemicals` is a Chemicals object, return the same object.
+        
         """
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
@@ -69,6 +71,7 @@ class Settings:
         """
         Return a default Mixture object.
         If `mixture` is a Mixture object, return the same object.
+        
         """
         if not mixture:
             thermo = settings.thermo
