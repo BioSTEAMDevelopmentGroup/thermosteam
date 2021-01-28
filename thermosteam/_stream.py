@@ -1874,8 +1874,10 @@ class Stream:
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
         N_max = display_units.N if N is None else N
-        composition = display_units.composition if composition is None else composition 
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
+        if N_max == 0:
+            return basic_info[:-1]
+        composition = display_units.composition if composition is None else composition 
         N_IDs = len(IDs)
         if N_IDs == 0:
             return basic_info + ' flow: 0' 

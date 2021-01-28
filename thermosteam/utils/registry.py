@@ -44,6 +44,9 @@ class Registry: # pragma: no cover
     def __setattr__(self, ID, obj):
         self[ID] = obj
     
+    def clear(self):
+        self.__dict__.clear()
+    
     def discard(self, ID):
         dct = self.__dict__
         try: dct[ID].disconnect()
