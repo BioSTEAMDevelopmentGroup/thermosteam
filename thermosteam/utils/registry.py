@@ -7,6 +7,7 @@
 # for license details.
 """
 """
+from warnings import warn
 
 __all__ = ('Registry', 'is_valid_ID', 'check_valid_ID')
 
@@ -39,6 +40,11 @@ class Registry: # pragma: no cover
     def __setitem__(self, ID, obj):
         """Register object."""
         check_valid_ID(ID)
+        dct = self.__dict__
+        if ID in dct:
+            other = dct[ID]
+            if obj is not other and other.ID == ID and hasattr(obj, '_ID'):
+                warn(f"{obj} replaced {other} in registry", stacklevel=4)
         self.__dict__[ID] = obj
     
     def __setattr__(self, ID, obj):

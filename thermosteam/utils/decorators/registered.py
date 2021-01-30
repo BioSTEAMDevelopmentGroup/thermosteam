@@ -48,12 +48,12 @@ def _unregister(self):
 def _register(self, ID):
     if ID:
         self.registry[ID] = self
+        self._ID = ID
     elif ID == "":
-        ID = self._take_ticket()
+        self._ID = ID = self._take_ticket()
         self.registry.__dict__[ID] = self
     else:
-        ID = self._take_unregistered_ticket()
-    self._ID = ID
+        self._ID = self._take_unregistered_ticket()
         
 @property
 def ID(self):
