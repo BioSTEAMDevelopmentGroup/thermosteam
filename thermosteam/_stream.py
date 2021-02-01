@@ -48,23 +48,25 @@ class Stream:
 
     Parameters
     ----------
-    ID='' : str
+    ID : str, optional
         A unique identification. If ID is None, stream will not be registered.
         If no ID is given, stream will be registered with a unique ID.
-    flow=() : Iterable[float]
+    flow : Iterable[float], optional
         All flow rates corresponding to chemical `IDs`.
-    phase='l' : 'l', 'g', or 's'
-        Either gas (g), liquid (l), or solid (s).
-    T=298.15 : float
-        Temperature [K].
-    P=101325 : float
-        Pressure [Pa].
-    units='kmol/hr' : str
+    phase : 'l', 'g', or 's'
+        Either gas (g), liquid (l), or solid (s). Defaults to 'l'.
+    T : float
+        Temperature [K]. Defaults to 298.15.
+    P : float
+        Pressure [Pa]. Defaults to 101325.
+    units : str, optional
         Flow rate units of measure (only mass, molar, and
-        volumetric flow rates are valid).
-    price=0 : float
-        Price per unit mass [USD/kg].
-    thermo=None : :class:`~thermosteam.Thermo`
+        volumetric flow rates are valid). Defaults to 'kmol/hr'.
+    price : float, optional
+        Price per unit mass [USD/kg]. Defaults to 0.
+    total_flow : float, optional
+        Total flow rate.
+    thermo : :class:`~thermosteam.Thermo`, optional
         Thermo object to initialize input and output streams. Defaults to
         `biosteam.settings.get_thermo()`.
     **chemical_flows : float
@@ -244,15 +246,21 @@ class Stream:
     _flow_cache = {}
 
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
-                 units='kmol/hr', price=0., thermo=None, **chemical_flows):
+                 units=None, price=0., total_flow=None, thermo=None, 
+                 **chemical_flows):
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
         self.price = price
-        if units != 'kmol/hr':
+        mol = self.mol
+        if units:
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, name)
-            flow[:] = self.mol / factor
+            material_data = mol / factor
+            if total_flow: material_data *= total_flow / material_data.sum()
+            flow[:] = material_data
+        elif total_flow:
+            mol *= total_flow / mol.sum()
         self._sink = self._source = None # For BioSTEAM
         self._init_cache()
         self._register(ID)

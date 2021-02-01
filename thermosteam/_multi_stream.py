@@ -38,24 +38,26 @@ class MultiStream(Stream):
 
     Parameters
     ----------
-    ID='' : str
+    ID : str, optional
         A unique identification. If ID is None, stream will not be registered.
         If no ID is given, stream will be registered with a unique ID.
-    flow=() : 2d array
+    flow : 2d array, optional
         All flow rates corresponding to `phases` by row and chemical IDs by column.
-    thermo=None : :class:`~thermosteam.Thermo`
-        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
-    units='kmol/hr' : str
-        Flow rate units of measure (only mass, molar, and
-        volumetric flow rates are valid).
+    T : float
+        Temperature [K]. Defaults to 298.15.
+    P : float
+        Pressure [Pa]. Defaults to 101325.
     phases : tuple['g', 'l', 's', 'G', 'L', 'S']
         Tuple denoting the phases present. Defaults to ('g', 'l').
-    T=298.15 : float
-        Temperature [K].
-    P=101325 : float
-        Pressure [Pa].
-    price=0 : float
-        Price per unit mass [USD/kg].
+    units : str, optional
+        Flow rate units of measure (only mass, molar, and
+        volumetric flow rates are valid). Defaults to 'kmol/hr'.
+    price : float, optional
+        Price per unit mass [USD/kg]. Defaults to 0.
+    total_flow : float, optional
+        Total flow rate.
+    thermo : :class:`~thermosteam.Thermo`
+        Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
     **phase_flow : tuple[str, float]
         phase-(ID, flow) pairs.
     
@@ -184,9 +186,9 @@ class MultiStream(Stream):
     
     """
     __slots__ = ()
-    def __init__(self, ID="", flow=(), T=298.15, P=101325.,
-                 phases=('g', 'l'), units=None,
-                 thermo=None, price=0, **phase_flows):
+    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), 
+                 units=None, price=0, total_flow=None,
+                 thermo=None, **phase_flows):
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
@@ -194,7 +196,11 @@ class MultiStream(Stream):
         if units:
             name, factor = self._get_flow_name_and_factor(units)
             flow = getattr(self, 'i' + name)
-            flow.data[:] = self._imol._data * factor
+            material_data = self._imol._data * factor
+            if total_flow: material_data *= total_flow / material_data.sum()
+            flow._data[:] = material_data
+        elif total_flow:
+            self._imol._data *= total_flow / self.F_mol
         self._sink = self._source = None
         self._init_cache()
         self._register(ID)
