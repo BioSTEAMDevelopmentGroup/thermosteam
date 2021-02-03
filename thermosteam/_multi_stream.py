@@ -202,7 +202,7 @@ class MultiStream(Stream):
         elif total_flow:
             self._imol._data *= total_flow / self.F_mol
         self._sink = self._source = None
-        self._init_cache()
+        self.reset_cache()
         self._register(ID)
         self._link = None
             
@@ -221,9 +221,13 @@ class MultiStream(Stream):
                 imol = MolarFlowIndexer.from_data(flow, phases, chemicals)
         self._imol = imol
         
-    def _init_cache(self):
-        super()._init_cache()
-        self._streams = {}
+    def reset_cache(self):
+        """Reset cache regarding equilibrium methods."""
+        super().reset_cache()
+        if hasattr(self, '_streams'): 
+            for i in self._streams.values(): i.reset_cache()
+        else:
+            self._streams = {}
         self._vle_cache = eq.VLECache(self._imol,
                                       self._thermal_condition, 
                                       self._thermo,
@@ -364,7 +368,7 @@ class MultiStream(Stream):
         if phases != self.phases:
             if self._link: raise RuntimeError('cannot convert linked stream')
             self._imol = self._imol.to_material_indexer(phases)
-            self._init_cache()
+            self.reset_cache()
     
     ### Flow properties ###
             

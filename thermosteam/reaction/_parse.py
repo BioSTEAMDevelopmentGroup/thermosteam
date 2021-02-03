@@ -45,7 +45,7 @@ def dct2arr(dct, chemicals):
 
 def split_coefficient(nID, sign):
     for i, letter in enumerate(nID):
-        if letter != 'e' and letter.isalpha(): break
+        if letter != 'e' and (letter.isalpha() or letter in '()[]{}'): break
     if i: 
         ID = nID[i:]
         n = sign * float(nID[:i])

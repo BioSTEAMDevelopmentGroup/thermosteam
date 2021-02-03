@@ -262,7 +262,7 @@ class Stream:
         elif total_flow:
             mol *= total_flow / mol.sum()
         self._sink = self._source = None # For BioSTEAM
-        self._init_cache()
+        self.reset_cache()
         self._register(ID)
         self._link = None
 
@@ -444,7 +444,8 @@ class Stream:
                     np.asarray(flow, dtype=float), phase, chemicals)
         self._imol = imol
 
-    def _init_cache(self):
+    def reset_cache(self):
+        """Reset cache regarding equilibrium methods."""
         self._bubble_point_cache = eq.BubblePointCache()
         self._dew_point_cache = eq.DewPointCache()
 
@@ -1156,7 +1157,7 @@ class Stream:
         imol._data = imol._data.copy()
         imol._phase = imol._phase.copy()
         self._thermal_condition = self._thermal_condition.copy()
-        self._init_cache()
+        self.reset_cache()
         self._link = None
     
     def copy_like(self, other):
@@ -1346,7 +1347,7 @@ class Stream:
         new._thermo = self._thermo
         new._imol = self._imol.copy()
         new._thermal_condition = self._thermal_condition.copy()
-        new._init_cache()
+        new.reset_cache()
         new.price = 0
         new.ID = ID
         return new
@@ -1374,7 +1375,7 @@ class Stream:
         new._imol = imol = self._imol._copy_without_data()
         imol._data = self._imol._data
         new._thermal_condition = self._thermal_condition.copy()
-        new._init_cache()
+        new.reset_cache()
         new._link = self
         return new
     
