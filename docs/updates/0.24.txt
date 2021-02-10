@@ -1,0 +1,11 @@
+0.24
+====
+
+0.24.0
+------
+New features:
+
+* The :class:`~thermosteam.Stream` now accepts an optional `total_flow` argument
+  to set the total flow for the stream.
+* Better warnings and functionality of Stream registry to avoid confusions.
+  

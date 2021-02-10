@@ -59,7 +59,7 @@ Key Features & Capabilities
    
    updates/0.22
    updates/0.23
-
+   updates/0.24
 
 .. toctree::
    :maxdepth: 1
