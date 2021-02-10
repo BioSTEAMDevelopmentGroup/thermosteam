@@ -118,11 +118,13 @@ class Chemicals:
         self = super().__new__(cls)
         isa = isinstance
         setfield = setattr
-        for chem in chemicals:
-            if isa(chem, Chemical):
-                setfield(self, chem.ID, chem)
-            else:
-                setfield(self, chem, Chemical(chem, cache=cache))
+        CASs = set()
+        chemicals = [i if isa(i, Chemical) else Chemical(i, cache=cache) for i in chemicals]
+        for i in chemicals:
+            CAS = i.CAS
+            if CAS in CASs: continue
+            CASs.add(CAS)
+            setfield(self, i.ID, i)
         return self
     
     def __getnewargs__(self):
@@ -241,11 +243,12 @@ class Chemicals:
         volume model at T=298.15 K and P=101325 Pa
         
         """
+        chemicals = tuple(self)
         setattr(self, '__class__', CompiledChemicals)
-        try: self._compile(skip_checks)
+        try: self._compile(chemicals, skip_checks)
         except Exception as error:
             setattr(self, '__class__', Chemicals)
-            setattr(self, '__dict__', Chemicals(self).__dict__)
+            setattr(self, '__dict__', {i.ID: i for i in chemicals})
             raise error
     
     kwarray = array = index = indices = must_compile
@@ -349,19 +352,14 @@ class CompiledChemicals(Chemicals):
     _cache = {}
     
     def __new__(cls, chemicals, cache=None):
-        isa = isinstance
-        chemicals = tuple([chem if isa(chem, Chemical) else Chemical(chem, cache)
-                           for chem in chemicals])        
+        chemicals = tmo.Chemicals(chemicals)
+        chemicals_tuple = tuple(chemicals) 
         cache = cls._cache
         if chemicals in cache:
             self = cache[chemicals]
         else:
-            self = object.__new__(cls)
-            setfield = setattr
-            for chem in chemicals:
-                setfield(self, chem.ID, chem)
-            self._compile()
-            cache[chemicals] = self
+            chemicals.compile(cache)
+            self = cache[chemicals_tuple] = chemicals
         return self
     
     def __dir__(self):
@@ -410,10 +408,9 @@ class CompiledChemicals(Chemicals):
         reactions = [i.get_combustion_reaction(self) for i in self]
         return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
-    def _compile(self, skip_checks=False):
+    def _compile(self, chemicals, skip_checks=False):
         dct = self.__dict__
         tuple_ = tuple
-        chemicals = tuple_(dct.values())
         free_energies = ('H', 'S', 'H_excess', 'S_excess')
         for chemical in chemicals:
             if chemical.get_missing_properties(free_energies):
@@ -445,17 +442,18 @@ class CompiledChemicals(Chemicals):
         dct['_index_cache'] = {}
         repeated_names = set()
         names = set()
+        all_names_list = []
         for i in chemicals:
             if not i.iupac_name: i.iupac_name = ()
-            all_names = (*i.iupac_name, i.common_name, i.formula)
+            all_names = set([*i.iupac_name, *i.synonyms, i.common_name, i.formula])
+            all_names_list.append(all_names)
             for name in all_names:
                 if not name: continue
                 if name in names:
                     repeated_names.add(name)
                 else:
                     names.add(name)
-        for i in chemicals:
-            all_names = (*i.iupac_name, i.common_name, i.formula)
+        for all_names, i in zip(all_names_list, chemicals):
             ID = i.ID
             for name in all_names:
                 if name and name not in repeated_names:
@@ -679,11 +677,11 @@ class CompiledChemicals(Chemicals):
         """
         isvalid = utils.is_valid_ID      
         for i in self.get_synonyms(ID):
-            if isvalid(i): return i
+            if isvalid(i): return i        
     
     def get_synonyms(self, ID):
         """
-        Get all synonyms of a chemical.
+        Return all synonyms of a chemical.
         
         Parameters
         ----------
@@ -697,7 +695,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water'], cache=True)
         >>> chemicals.get_synonyms('Water')
-        ['7732-18-5', 'Water', 'oxidane', 'water', 'H2O']
+        ['7732-18-5', 'Water', 'oxidane', 'H2O', 'water']
         
         """
         k = self._index[ID]
@@ -738,6 +736,7 @@ class CompiledChemicals(Chemicals):
         else:
             self._index[synonym] = self._index[ID]
             dct[synonym] = chemical
+        chemical.synonyms.add(synonym)
     
     def zeros(self):
         """

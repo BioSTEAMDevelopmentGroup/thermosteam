@@ -11,7 +11,6 @@ from ..registry import Registry
 
 __all__ = ('registered',)
 
-
 def registered(ticket_name):
     return lambda cls: _registered(cls, ticket_name)
 
@@ -22,7 +21,6 @@ def _registered(cls, ticket_name):
     cls.unregistered_ticket_number = 0
     cls._take_unregistered_ticket = _take_unregistered_ticket
     cls._take_ticket = _take_ticket
-    cls._unregister = _unregister
     cls._register = _register
     cls.ID = ID
     cls.__repr__ = __repr__
@@ -40,21 +38,23 @@ def _take_unregistered_ticket(cls):
     else:
         cls.unregistered_ticket_number += 1
     return cls.ticket_name + '.' + str(cls.unregistered_ticket_number)
-
-def _unregister(self):
-    try: delattr(self.registry, self._ID)
-    except: pass
     
 def _register(self, ID):
-    if ID:
-        self.registry[ID] = self
-        self._ID = ID
-    elif ID == "":
-        self._ID = ID = self._take_ticket()
-        self.registry.__dict__[ID] = self
+    if ID == "": 
+        registry = self.registry
+        while True:
+            ID = self._take_ticket()
+            if not ID in self.registry.data: break
+        registry.register(ID, self)
+    elif isinstance(ID, int):
+        try: self.set_ID_by_area(ID)
+        except AttributeError:
+            raise ValueError('ID must be a string or None; not an integer')
+    elif ID:
+        self.registry.register_safely(ID, self) 
     else:
         self._ID = self._take_unregistered_ticket()
-        
+
 @property
 def ID(self):
     """Unique identification (str). If set as '', it will choose a default ID."""
@@ -62,7 +62,6 @@ def ID(self):
 
 @ID.setter
 def ID(self, ID):
-    self._unregister()
     self._register(ID)
     
 def __repr__(self):

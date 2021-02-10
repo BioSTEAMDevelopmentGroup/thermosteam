@@ -526,9 +526,9 @@ class Chemical:
         Excess enthalpy [J/mol].
     
     """
-    __slots__ = ('_ID', '_locked_state', 
+    __slots__ = ('_ID', '_locked_state', '_other_names',
                  '_phase_ref', '_eos', '_eos_1atm',
-                 *_names, *_groups, 
+                 '_synonyms', *_names, *_groups, 
                  *_handles, *_data,
                  '_N_solutes')
     
@@ -599,7 +599,7 @@ class Chemical:
     @classmethod
     def new(cls, ID, CAS, eos=PR, phase_ref=None, phase=None, **data):
         """Create a new chemical from data without searching through
-        the data base, and load all possible models from given data."""
+        the database, and load all possible models from given data."""
         self = super().__new__(cls)
         self._ID = ID
         self.reset(CAS, eos, phase_ref, phase=phase, **data)
@@ -671,6 +671,7 @@ class Chemical:
         self._PSRK = PSRKGroupCounts()
         self._NIST = NISTGroupCounts()
         setfield = setattr
+        self._synonyms = set()
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
@@ -712,12 +713,12 @@ class Chemical:
         >>> Mannose.show()
         Chemical: Mannose (phase_ref='l')
         [Names]  CAS: Mannose
-                 InChI: C6H12O6/c7-1-3(9)5(1...
-                 InChI_key: GZCGUPFRVQAUEE-S...
-                 common_name: D-Glucose
-                 iupac_name: ('(2R,3S,4R,5R)...
-                 pubchemid: 1.0753e+05
-                 smiles: O=C[C@H](O)[C@@H](O...
+                 InChI: None
+                 InChI_key: None
+                 common_name: None
+                 iupac_name: None
+                 pubchemid: None
+                 smiles: None
                  formula: C6H12O6
         [Groups] Dortmund: <1CH2, 4CH, 1OH(P...
                  UNIFAC: <1CH2, 4CH, 5OH, 1C...
@@ -750,6 +751,8 @@ class Chemical:
         for field in self.__slots__: 
             value = getfield(self, field, None)
             setfield(new, field, copy_maybe(value))
+        for field in _names[:-1]:
+            setfield(new, field, None)
         new._ID = ID
         new._CAS = CAS or ID
         new._locked_state = new._locked_state
@@ -906,6 +909,14 @@ class Chemical:
         return self._CAS
     
     ### Names ###
+    
+    @property
+    def synonyms(self):
+        """[str] User-defined synonyms."""
+        return self._synonyms
+    @synonyms.setter
+    def synonyms(self, synonyms):
+        self._synonyms = set(synonyms)
     
     @property
     def InChI(self):
@@ -1448,6 +1459,7 @@ class Chemical:
         self._pubchemid = pubchemid
         self._iupac_name = iupac_name
         self._common_name = common_name
+        self._synonyms = set()
         self._formula = formula
         
     def _init_groups(self, InChI_key):
