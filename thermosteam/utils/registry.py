@@ -57,8 +57,7 @@ class Registry: # pragma: no cover
                 other = data[ID]
                 if obj is not other:
                     warning = RuntimeWarning(
-                        f"{ID} already exists in registry; "
-                        f"{repr(other)} has been replaced"
+                        f"{repr(other)} has been replaced in registry"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
                     data[ID] = obj
@@ -102,8 +101,7 @@ class Registry: # pragma: no cover
                     warn(warning, 4)
                 else:
                     warning = RuntimeWarning(
-                        f"{ID} already exists in registry; {repr(other)} "
-                        f"has been replaced"
+                        f"{repr(other)} has been replaced in registry"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
         data[ID] = obj
