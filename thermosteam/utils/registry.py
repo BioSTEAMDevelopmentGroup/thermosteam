@@ -33,10 +33,21 @@ class Registry: # pragma: no cover
 
     __slots__ = ('data', 'safe_to_replace')
 
-    def mark_safe_to_replace(self, objs):
+    def untrack(self, objs):
+        """
+        Mark objects safe to replace, so no warnings are issued if any are 
+        replaced.
+        
+        """
         self.safe_to_replace.update(objs)
 
-    def unmark_safe_to_replace(self, objs):
+    def track(self, objs):
+        """
+        Reregister objects if they are not already in the registry and mark 
+        objects as unsafe to replace, so that warnings can be issued if any are 
+        replaced.
+        
+        """
         safe_to_replace = self.safe_to_replace
         data = self.data
         for obj in objs:
@@ -45,32 +56,27 @@ class Registry: # pragma: no cover
             if ID in data: 
                 other = data[ID]
                 if obj is not other:
-                    *root, n = ID.split('_')
-                    if n.isdigit(): 
-                        root = '_'.join(root)
-                        ID_new = ID + '_2'
-                    else:
-                        root = ID
-                        n = 2
-                    ID_new = self._suggest_non_conflicting_ID(root, n)
                     warning = RuntimeWarning(
                         f"{ID} already exists in registry; "
-                        f"{type(obj).__name__} has been replaced"
+                        f"{repr(other)} has been replaced"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
-                    data[ID_new] = other
-                    other._ID = ID_new
                     data[ID] = obj
                     obj._ID = ID
             else:
                 data[ID] = obj
         
-    def __init__(self):
-        self.data = {}
+    def __init__(self, objs=None):
+        self.data = {i.ID: i for i in objs} if objs else {}
         self.safe_to_replace = set()
 
     def search(self, ID):
+        """Return object given ID. If ID not in registry, return None."""
         return self.data.get(ID)
+    
+    def __dir__(self):
+        return [*self.data, 'search', 'register', 'register_safely', 'discard', 
+                'clear', 'mark_safe_to_replace', 'unmark_safe_to_replace']
     
     def __getattr__(self, ID):
         try:
@@ -89,11 +95,15 @@ class Registry: # pragma: no cover
             other = data[ID]
             if obj is not other and other not in self.safe_to_replace:
                 if ID_old:
-                    warn(RuntimeWarning(f"upon renaming, {obj} replaced {other} in registry"), 4)
+                    warning = RuntimeWarning(
+                        f"upon renaming, {repr(obj)} replaced {repr(other)} "
+                         "in registry"
+                    )
+                    warn(warning, 4)
                 else:
                     warning = RuntimeWarning(
-                        f"{ID} already exists in registry; {type(other).__name__} "
-                        f"object has been replaced"
+                        f"{ID} already exists in registry; {repr(other)} "
+                        f"has been replaced"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
         data[ID] = obj
@@ -108,22 +118,17 @@ class Registry: # pragma: no cover
         obj._ID = ID
         
     def clear(self):
+        """Clear data."""
         self.data.clear()
-        self.safe_to_replace.clear()
     
     def discard(self, obj):
+        """Remove object from data."""
         data = self.data
         if hasattr(obj, '_ID'):
             ID = obj._ID
             if ID in data and data[ID] is obj: del data[ID]
         elif isinstance(obj, str):
             if ID in data: del data[ID]
-    
-    def get_IDs(self):
-        return set(self.data)
-    
-    def to_set(self):
-        return set(self.data.values())
     
     def __contains__(self, obj):
         data = self.data
@@ -137,8 +142,13 @@ class Registry: # pragma: no cover
         return iter(self.data.values())
     
     def __repr__(self):
+        return f"{type(self).__name__}([{', '.join([str(i) for i in self])}])"
+    
+    def show(self):
         if self.data:
-            return 'Register:\n ' + '\n '.join([repr(i) for i in self.data.values()])
+            print('Register:\n ' + '\n '.join([repr(i) for i in self]))
         else:
-            return 'Register: (Empty)'
+            print('Register: (Empty)')
+    
+    _ipython_display_ = show
 
