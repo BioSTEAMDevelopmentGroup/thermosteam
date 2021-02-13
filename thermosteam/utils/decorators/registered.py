@@ -9,7 +9,11 @@
 """
 from ..registry import Registry
 
-__all__ = ('registered',)
+__all__ = ('registered', 'unregistered')
+
+def unregistered(cls):
+    cls._register = _pretend_to_register
+    return cls
 
 def registered(ticket_name):
     return lambda cls: _registered(cls, ticket_name)
@@ -54,6 +58,9 @@ def _register(self, ID):
         self.registry.register_safely(ID, self) 
     else:
         self._ID = self._take_unregistered_ticket()
+
+def _pretend_to_register(self, ID):
+    self._ID = ID
 
 @property
 def ID(self):
