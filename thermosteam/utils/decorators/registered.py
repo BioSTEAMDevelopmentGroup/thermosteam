@@ -42,18 +42,17 @@ def _take_unregistered_ticket(cls):
     else:
         cls.unregistered_ticket_number += 1
     return cls.ticket_name + '.' + str(cls.unregistered_ticket_number)
-    
+
 def _register(self, ID):
-    if ID == "": 
+    replace_ticket_number = isinstance(ID, int)
+    if replace_ticket_number: self.__class__.ticket_number = ID
+    if ID == "" or replace_ticket_number: 
         registry = self.registry
+        data = registry.data
         while True:
             ID = self._take_ticket()
-            if not ID in self.registry.data: break
+            if not ID in data: break
         registry.register(ID, self)
-    elif isinstance(ID, int):
-        try: self.set_ID_by_area(ID)
-        except AttributeError:
-            raise ValueError('ID must be a string or None; not an integer')
     elif ID:
         self.registry.register_safely(ID, self) 
     else:

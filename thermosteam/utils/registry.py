@@ -31,7 +31,7 @@ def check_valid_ID(ID):
 
 class Registry: # pragma: no cover
 
-    __slots__ = ('data', 'safe_to_replace')
+    __slots__ = ('data', 'safe_to_replace',)
 
     def untrack(self, objs):
         """
@@ -126,7 +126,7 @@ class Registry: # pragma: no cover
             ID = obj._ID
             if ID in data and data[ID] is obj: del data[ID]
         elif isinstance(obj, str):
-            if ID in data: del data[ID]
+            if obj in data: del data[obj]
     
     def __contains__(self, obj):
         data = self.data
