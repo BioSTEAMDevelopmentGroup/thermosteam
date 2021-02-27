@@ -9,10 +9,11 @@
 """
 import numpy as np
 import thermosteam as tmo
+from thermosteam import functional as fn
 from . import indexer
 from . import equilibrium as eq
 from . import units_of_measure as thermo_units
-from .exceptions import DimensionError
+from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
 
@@ -386,6 +387,30 @@ class Stream:
         
         """
         return self._imol.isempty()
+
+    def sanity_check(self):
+        """
+        Raise an InfeasibleRegion error if flow rates are infeasible.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> s1 = tmo.Stream('s1')
+        >>> s1.sanity_check()
+        >>> s1.mol[0] = -1.
+        >>> s1.sanity_check()
+        Traceback (most recent call last):
+        InfeasibleRegion: stream 's1' has negative material flow rates
+        
+        """
+        material = self._imol._data
+        if fn.infeasible(material):
+            region = 'negative material flow rates'
+            msg = f"stream '{self}' has " + region
+            raise InfeasibleRegion(region, msg)
+        else:
+            material[material < 0.] = 0. 
 
     @property
     def vapor_fraction(self):

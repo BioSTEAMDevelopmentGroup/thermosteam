@@ -7,6 +7,26 @@
 # for license details.
 """
 """
+# DO NOT DELETE:
+# chemicals' numba feature does not offer any benefit to speed
+# but it may be used later
+# def use_numba_chemicals():
+#     import chemicals
+#     import chemicals.numba as numba
+#     Module = type(chemicals)
+#     def update_module(module, other):
+#         dct = module.__dict__
+#         isa = isinstance
+#         for i, j in other.__dict__.items():
+#             if i[:2] != '__'  and i in dct:
+#                 if isa(j, Module) and 'chemicals.' in j.__name__:
+#                     update_module(dct[i], j)
+#                 else:
+#                     dct[i] = j
+#     update_module(chemicals, numba)
+# use_numba_chemicals()
+# del use_numba_chemicals
+
 from . import (constants,
                base,
                utils,
@@ -52,4 +72,4 @@ pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 del np, pd
 
-__version__ = "0.24.2"
+__version__ = "0.24.3"

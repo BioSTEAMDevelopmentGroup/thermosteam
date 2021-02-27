@@ -22,9 +22,10 @@ __all__ = ('UndefinedChemical',
 
 class InfeasibleRegion(RuntimeError):
     """Runtime error regarding infeasible processes."""
-    def __init__(self, region): 
+    def __init__(self, region, msg=None): 
         self.region = region
-        super().__init__(region + ' is infeasible')
+        if msg is None: msg = region + ' is infeasible'
+        super().__init__(msg)
 
 class UndefinedChemical(Exception):
     """Exception regarding undefined chemicals."""

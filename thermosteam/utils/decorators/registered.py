@@ -21,7 +21,7 @@ def registered(ticket_name):
 def _registered(cls, ticket_name):
     cls.registry = Registry()
     cls.ticket_name = ticket_name
-    cls.ticket_number = 0
+    cls.ticket_numbers = {}
     cls.unregistered_ticket_number = 0
     cls._take_unregistered_ticket = _take_unregistered_ticket
     cls._take_ticket = _take_ticket
@@ -33,8 +33,14 @@ def _registered(cls, ticket_name):
 
 @classmethod
 def _take_ticket(cls):
-    cls.ticket_number += 1
-    return cls.ticket_name + str(cls.ticket_number)
+    ticket_numbers = cls.ticket_numbers
+    ticket_name = cls.ticket_name 
+    if ticket_name not in ticket_numbers:
+        ticket_numbers[ticket_name] = n = 1
+    else:
+        ticket_numbers[ticket_name] = n = ticket_numbers[ticket_name] + 1
+    return ticket_name + str(n)
+
 @classmethod
 def _take_unregistered_ticket(cls):
     if cls.unregistered_ticket_number > 100:
