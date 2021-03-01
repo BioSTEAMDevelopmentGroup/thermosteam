@@ -694,8 +694,10 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water'], cache=True)
-        >>> chemicals.get_synonyms('Water')
-        ['7732-18-5', 'Water', 'oxidane', 'H2O', 'water']
+        >>> synonyms = chemicals.get_synonyms('Water')
+        >>> synonyms.sort()
+        >>> synonyms
+        ['7732-18-5', 'H2O', 'Water', 'oxidane', 'water']
         
         """
         k = self._index[ID]

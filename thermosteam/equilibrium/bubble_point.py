@@ -66,7 +66,7 @@ class BubblePoint:
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
-                 'P', 'T', 'y', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
+                 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
@@ -88,41 +88,44 @@ class BubblePoint:
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
-            self.P = self.T = self.y = None
             cached[key] = self
     
-    def _T_error(self, T, P, z_over_P, z_norm):
+    def _T_error(self, T, P, z_over_P, z_norm, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         y_phi =  (z_over_P
                   * array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
                   * self.pcf(z_norm, T))
-        self.y = solve_y(y_phi, self.phi, T, P, self.y)
-        return 1. - self.y.sum()
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
     
-    def _P_error(self, P, T, z_Psat_gamma_pcf):
+    def _P_error(self, P, T, z_Psat_gamma_pcf, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psat_gamma_pcf / P
-        self.y = solve_y(y_phi, self.phi, T, P, self.y)
-        return 1. - self.y.sum()
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
         
-    def _T_error_ideal(self, T, z_over_P):
-        self.y = y = z_over_P * array([i(T) for i in self.Psats])
+    def _T_error_ideal(self, T, z_over_P, y):
+        y[:] = z_over_P * array([i(T) for i in self.Psats])
         return 1 - y.sum()
     
-    def _T_ideal(self, z_over_P):
+    def _Ty_ideal(self, z_over_P):
         f = self._T_error_ideal
-        args = (z_over_P,)
+        y = z_over_P.copy()
+        args = (z_over_P, y)
         Tmin = self.Tmin
         Tmax = self.Tmax
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
-                                 None, 1e-9, 5e-12,
-                                 args, checkbounds=False)
-        return T
+                                 None, 1e-9, 5e-12, args, 
+                                 checkiter=False,
+                                 checkbounds=False)
+        return T, y
     
-    def _P_ideal(self, z_Psat_gamma_pcf):
-        return z_Psat_gamma_pcf.sum()
+    def _Py_ideal(self, z_Psat_gamma_pcf):
+        P = z_Psat_gamma_pcf.sum()
+        y = z_Psat_gamma_pcf / P
+        return P, y
     
     def __call__(self, z, *, T=None, P=None):
         z = asarray(z, float)
@@ -166,12 +169,11 @@ class BubblePoint:
         """
         if P > self.Pmax: P = self.Pmax
         elif P < self.Pmin: P = self.Pmin
-        self.P = P
         f = self._T_error
         z_norm = z / z.sum()
         z_over_P = z/P
-        args = (P, z_over_P, z_norm)
-        T_guess = self._T_ideal(z_over_P) 
+        T_guess, y = self._Ty_ideal(z_over_P)
+        args = (P, z_over_P, z_norm, y)
         try:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
@@ -182,8 +184,7 @@ class BubblePoint:
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args, 
                                      checkiter=False, checkbounds=False)
-        self.y = fn.normalize(self.y)
-        return T, self.y.copy()
+        return T, fn.normalize(y)
     
     def solve_Py(self, z, T):
         """
@@ -216,13 +217,12 @@ class BubblePoint:
         """
         if T > self.Tmax: T = self.Tmax
         elif T < self.Tmin: T = self.Tmin
-        self.T = T
         Psat = array([i(T) for i in self.Psats])
         z_norm = z / z.sum()
         z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
         f = self._P_error
-        args = (T, z_Psat_gamma_pcf)
-        P_guess = self._P_ideal(z_Psat_gamma_pcf)
+        P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
+        args = (T, z_Psat_gamma_pcf, y)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
                                   args, checkiter=False)
@@ -232,8 +232,7 @@ class BubblePoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.y = fn.normalize(self.y)
-        return P, self.y.copy()
+        return P, fn.normalize(y)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

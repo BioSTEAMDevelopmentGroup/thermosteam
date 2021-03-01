@@ -66,9 +66,8 @@ class DewPoint:
     DewPointValues(T=376.26, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
 
     """
-    __slots__ = ('chemicals', 'phi', 'gamma', 'IDs',
-                 'pcf', 'Psats', 'P', 'T', 'x',
-                 'Tmin', 'Tmax', 'Pmin', 'Pmax')
+    __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
+                 'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     Tmin_default = 150.
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
@@ -91,43 +90,45 @@ class DewPoint:
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
-            self.P = self.T = self.x = None
             cached[key] = self
     
-    def _T_error(self, T, P, z_norm, zP):
+    def _T_error(self, T, P, z_norm, zP, x):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
         x_gamma_pcf = phi * zP / Psats
-        self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
-        return 1 - self.x.sum()
+        x[:] = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, x)
+        return 1 - x.sum()
     
-    def _T_error_ideal(self, T, zP):
+    def _T_error_ideal(self, T, zP, x):
         Psats = array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
-        self.x = zP / Psats
-        return 1 - self.x.sum()
+        x[:] = zP / Psats
+        return 1 - x.sum()
     
-    def _P_error(self, P, T, z_norm, z_over_Psats):
+    def _P_error(self, P, T, z_norm, z_over_Psats, x):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
-        self.x = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, self.x)
-        return 1 - self.x.sum()
+        x[:] = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, x)
+        return 1 - x.sum()
     
-    def _T_ideal(self, zP):
+    def _Tx_ideal(self, zP):
         f = self._T_error_ideal
         Tmin = self.Tmin
         Tmax = self.Tmax
-        args = (zP,)
+        x = zP.copy()
+        args = (zP, x)
         T = flx.IQ_interpolation(f, Tmin, Tmax,
                                  f(Tmin, *args), f(Tmax, *args),
                                  None, 1e-9, 5e-12, args,
                                  checkiter=False, checkbounds=False)
-        return T
+        return T, x
     
-    def _P_ideal(self, z_over_Psats):
-        return 1. / z_over_Psats.sum()
+    def _Px_ideal(self, z_over_Psats):
+        P = 1. / z_over_Psats.sum()
+        x = z_over_Psats * P
+        return P, x
     
     def __call__(self, z, *, T=None, P=None):
         z = asarray(z, float)
@@ -174,9 +175,8 @@ class DewPoint:
         f = self._T_error
         z_norm = z/z.sum()
         zP = z * P
-        args = (P, z_norm, zP)
-        self.P = P
-        T_guess = self._T_ideal(zP) 
+        T_guess, x = self._Tx_ideal(zP) 
+        args = (P, z_norm, zP, x)
         try:
             T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                   1e-9, 5e-12, args,
@@ -188,8 +188,7 @@ class DewPoint:
                                      f(Tmin, *args), f(Tmax, *args),
                                      T_guess, 1e-9, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.x = fn.normalize(self.x)
-        return T, self.x.copy()
+        return T, fn.normalize(x)
     
     def solve_Px(self, z, T):
         """
@@ -225,10 +224,9 @@ class DewPoint:
         z_norm = z/z.sum()
         Psats = array([i(T) for i in self.Psats], dtype=float)
         z_over_Psats = z/Psats
-        args = (T, z_norm, z_over_Psats)
-        self.T = T
+        P_guess, x = self._Px_ideal(z_over_Psats)
+        args = (T, z_norm, z_over_Psats, x)
         f = self._P_error
-        P_guess = self._P_ideal(z_over_Psats)
         try:
             P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 5e-12, args,
                                   checkiter=False)
@@ -239,8 +237,7 @@ class DewPoint:
                                      f(Pmin, *args), f(Pmax, *args),
                                      P_guess, 1e-3, 5e-12, args,
                                      checkiter=False, checkbounds=False)
-        self.x = fn.normalize(self.x)
-        return P, self.x.copy()
+        return P, fn.normalize(x)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

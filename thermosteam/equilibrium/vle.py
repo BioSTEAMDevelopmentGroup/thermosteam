@@ -169,7 +169,6 @@ class VLE(Equilibrium, phases='lg'):
                  '_P', # [float] Pressure [Pa].
                  '_H_hat', # [float] Specific enthalpy [kJ/kg].
                  '_V', # [float] Molar vapor fraction.
-                 '_y', # [1d array] Molar vapor composition in equilibrium.
                  '_dew_point', # [DewPoint] Solves for dew point.
                  '_bubble_point', # [BubblePoint] Solves for bubble point.
                  '_x', # [1d array] Liquid composition.
@@ -214,7 +213,6 @@ class VLE(Equilibrium, phases='lg'):
         self._vapor_mol = imol['g']
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
         self._index = ()
-        self._y = None
     
     def __call__(self, P=None, H=None, T=None, V=None, x=None, y=None):
         """
@@ -304,8 +302,7 @@ class VLE(Equilibrium, phases='lg'):
             index = chemicals.get_vle_indices(nonzero)
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
-            reset = True
-            self._y = None            
+            reset = True     
             self._nonzero = nonzero
             self._index = index
         
@@ -496,7 +493,7 @@ class VLE(Equilibrium, phases='lg'):
             return
         # Guess composition in the vapor is a
         # weighted average of bubble/dew points
-        V = self._V or (T - P_dew)/(P_bubble - P_dew)
+        V = (T - P_dew)/(P_bubble - P_dew)
         self._refresh_v(V, y_bubble)
         # Solve
         try:
@@ -591,7 +588,7 @@ class VLE(Equilibrium, phases='lg'):
             raise InfeasibleRegion(f'T={T:.3g} and H={H:.3g}')
 
         # Guess overall vapor fraction, and vapor flow rates
-        V = self._V or dH_bubble/(H_dew - H_bubble)
+        V = dH_bubble/(H_dew - H_bubble)
         
         # Guess composition in the vapor is a weighted average of boiling points
         self._refresh_v(V, y_bubble)
@@ -702,7 +699,7 @@ class VLE(Equilibrium, phases='lg'):
             return
         
         # Guess T, overall vapor fraction, and vapor flow rates
-        V = self._V or dH_bubble/(H_dew - H_bubble)
+        V = dH_bubble/(H_dew - H_bubble)
         self._refresh_v(V, y_bubble)
         
         F_mass = self._F_mass
@@ -740,15 +737,8 @@ class VLE(Equilibrium, phases='lg'):
         return (V*self._z_norm + (1-V)*y_bubble) * V * self._F_mol_vle
     
     def _refresh_v(self, V, y_bubble):
-        y = self._y
-        if y is None:
-            self._v = self._estimate_v(V, y_bubble)
-        elif self._V == V:
-            self._v = y * self._F_mol * V
-        else:
-            self._v = y * self._F_mol_vle * V
-        if self._V is None:
-            self._V = V
+        self._v = self._estimate_v(V, y_bubble)
+        self._V = V
     
     def _H_hat_err_at_T(self, T, H_hat):
         self._vapor_mol[self._index] = self._solve_v(T, self._P)
@@ -798,14 +788,14 @@ class VLE(Equilibrium, phases='lg'):
         l = self._mol_vle - v
         self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
         if isinstance(self._phi, IdealFugacityCoefficients):
-            self._y = self._y_iter(y, Psats_over_P, T, P)
+            y = self._y_iter(y, Psats_over_P, T, P)
         else:
-            self._y = flx.aitken(self._y_iter, v/v.sum(), 1e-12,
-                                 args=(Psats_over_P, T, P),
-                                 checkiter=False, 
-                                 checkconvergence=False, 
-                                 convergenceiter=3)
-        self._v = self._F_mol * self._V * self._y
+            y = flx.aitken(self._y_iter, v/v.sum(), 1e-12,
+                           args=(Psats_over_P, T, P),
+                           checkiter=False, 
+                           checkconvergence=False, 
+                           convergenceiter=3)
+        self._v = self._F_mol * self._V * y
         return self._v
 
 class VLECache(Cache): load = VLE
