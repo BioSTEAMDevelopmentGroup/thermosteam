@@ -13,6 +13,7 @@ from thermosteam import functional as fn
 from . import indexer
 from . import equilibrium as eq
 from . import units_of_measure as thermo_units
+from collections.abc import Iterable
 from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
@@ -401,14 +402,12 @@ class Stream:
         >>> s1.mol[0] = -1.
         >>> s1.sanity_check()
         Traceback (most recent call last):
-        InfeasibleRegion: stream 's1' has negative material flow rates
+        InfeasibleRegion: negative material flow rate is infeasible
         
         """
         material = self._imol._data
         if fn.infeasible(material):
-            region = 'negative material flow rates'
-            msg = f"stream '{self}' has " + region
-            raise InfeasibleRegion(region, msg)
+            raise InfeasibleRegion('negative material flow rate')
         else:
             material[material < 0.] = 0. 
 
@@ -811,7 +810,8 @@ class Stream:
         """[float] Enthalpy flow rate in kJ/hr."""
         return self.mixture.H(self.phase, self.mol, *self._thermal_condition)
     @H.setter
-    def H(self, H:float):
+    def H(self, H: float):
+        if not H and self.isempty(): return
         try: self.T = self.mixture.solve_T(self.phase, self.mol, H,
                                            *self._thermal_condition)
         except Exception as error: # pragma: no cover
@@ -997,12 +997,61 @@ class Stream:
          flow (kg/hr): Water    40
                        Ethanol  20
         """
-        if streams:
-            new = streams[0].copy(ID)
-            new.mix_from(streams)
-        else:
-            new = cls(ID, thermo=thermo)
+        new = cls(ID, thermo=thermo)
+        if streams: new.copy_thermal_condition(streams[0])
+        new.mix_from(streams)
         return new
+    
+    def separate_out(self, other, energy_balance=True):
+        """
+        Separate out given stream from this one.
+        
+        Examples
+        --------
+        Separate out another stream with the same thermodynamic property package:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s1 = tmo.Stream('s1', Water=30, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2', Water=10, Ethanol=5, units='kg/hr')
+        >>> s1.separate_out(s2)
+        >>> s1.show(flow='kg/hr')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    20
+                       Ethanol  5
+        
+        It's also possible to separate out streams with different property packages
+        so long as all chemicals are defined in the mixed stream's property 
+        package:
+        
+        >>> tmo.settings.set_thermo(['Water'], cache=True) 
+        >>> s1 = tmo.Stream('s1', Water=40, units='kg/hr')
+        >>> tmo.settings.set_thermo(['Ethanol'], cache=True) 
+        >>> s2 = tmo.Stream('s2', Ethanol=20, units='kg/hr')
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s_mix = tmo.Stream.sum([s1, s2], 's_mix')
+        >>> s_mix.separate_out(s2)
+        >>> s_mix.show(flow='kg/hr')
+        Stream: s_mix
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+        
+        Removing empty streams is fine too:
+            
+        >>> s1.empty(); s_mix.separate_out(s1)
+        >>> s_mix.show(flow='kg/hr')
+        Stream: s_mix
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water    40
+        
+        """
+        if other:
+            if self is other: self.empty()
+            if energy_balance: H_new = self.H - other.H
+            self._imol.separate_out(other._imol)
+            self.sanity_check()
+            if energy_balance: self.H = H_new
     
     def mix_from(self, others, energy_balance=True):
         """
@@ -1040,7 +1089,7 @@ class Stream:
          flow (kg/hr): Water    40
                        Ethanol  20
         
-        Mixing emptry streams if fine too:
+        Mixing empty streams is fine too:
             
         >>> s1.empty(); s2.empty(); s_mix.mix_from([s1, s2])
         >>> s_mix.show()

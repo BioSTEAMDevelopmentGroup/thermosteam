@@ -21,7 +21,7 @@ Key Features & Capabilities
 * **Extendable** framework that allows easy integration of new methods for computing thermodynamic equilibrium coefficients and mixture properties.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
    :caption: Tutorial
    
@@ -34,7 +34,7 @@ Key Features & Capabilities
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: API
    
    Chemical
@@ -72,7 +72,8 @@ Related Projects
 
 There are many third party open-source Python libraries that may provide additional resources for designing and modeling chemical processes:
 
-* `chemicals <https://chemicals.readthedocs.io/en/latest/>`_: Chemical properties component of Chemical Engineering Design Library.
+* `thermo` <https://pypi.org/project/thermo/#documentation>`_: Chemical properties component of Chemical Engineering Design Library. 
+* `chemicals <https://chemicals.readthedocs.io/en/latest/>`_: Chemical database component of Chemical Engineering Design Library.
 * `fluids <https://fluids.readthedocs.io/>`_: Fluid dynamics component of Chemical Engineering Design Library (ChEDL) 
 * `chempy <https://pythonhosted.org/chempy/>`_: A package useful for chemistry written in Python.
 * `thermochem <https://thermochem.readthedocs.io/en/latest/>`_: Useful Python modules for Thermodynamics and Thermochemistry.

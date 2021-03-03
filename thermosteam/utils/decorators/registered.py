@@ -51,13 +51,13 @@ def _take_unregistered_ticket(cls):
 
 def _register(self, ID):
     replace_ticket_number = isinstance(ID, int)
-    if replace_ticket_number: self.__class__.ticket_number = ID
+    if replace_ticket_number: 
+        self.ticket_numbers[self.ticket_name] = ID
     if ID == "" or replace_ticket_number: 
         registry = self.registry
         data = registry.data
-        while True:
-            ID = self._take_ticket()
-            if not ID in data: break
+        ID = self._take_ticket()
+        while ID in data: ID = self._take_ticket()
         registry.register(ID, self)
     elif ID:
         self.registry.register_safely(ID, self) 
