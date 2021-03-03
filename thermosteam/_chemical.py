@@ -526,7 +526,7 @@ class Chemical:
         Excess enthalpy [J/mol].
     
     """
-    __slots__ = ('_ID', '_locked_state', '_other_names',
+    __slots__ = ('_ID', '_locked_state', 
                  '_phase_ref', '_eos', '_eos_1atm',
                  '_synonyms', *_names, *_groups, 
                  *_handles, *_data,
