@@ -66,49 +66,12 @@ to your local thermosteam directory and running the following:
 .. code-block:: bash
     
    $ pytest
-    =========================== test session starts ============================
-    platform win32 -- Python 3.7.6, pytest-6.0.1, py-1.9.0, pluggy-0.13.1
-    rootdir: C:\...\thermosteam, configfile: pytest.ini
-    plugins: hypothesis-5.5.4, arraydiff-0.3, astropy-header-0.1.2, cov-2.10.1, 
-    doctestplus-0.5.0, openfiles-0.4.0, remotedata-0.3.2
-    collected 157 items
-
-    tests\test_biorefineries.py .......                                   [  4%]
-    tests\test_chemical.py .                                              [  5%]
-    tests\test_stream.py ..                                               [  6%]
-    thermosteam\_chemical.py .......                                      [ 10%]
-    thermosteam\_chemicals.py .....................                       [ 24%]
-    thermosteam\_multi_stream.py ............                             [ 31%]
-    thermosteam\_stream.py ......................................         [ 56%]
-    thermosteam\_thermo.py ...                                            [ 57%]
-    thermosteam\_thermo_data.py .                                         [ 58%]
-    thermosteam\eos.py ...................                                [ 70%]
-    thermosteam\functional.py .....                                       [ 73%]
-    thermosteam\separations.py .............                              [ 82%]
-    thermosteam\units_of_measure.py ....                                  [ 84%]
-    thermosteam\base\functor.py .                                         [ 85%]
-    thermosteam\chemicals\reaction.py ..                                  [ 86%]
-    thermosteam\equilibrium\bubble_point.py ...                           [ 88%]
-    thermosteam\equilibrium\dew_point.py ...                              [ 90%]
-    thermosteam\equilibrium\lle.py .                                      [ 91%]
-    thermosteam\equilibrium\sle.py .                                      [ 91%]
-    thermosteam\equilibrium\vle.py .                                      [ 92%]
-    thermosteam\mixture\ideal_mixture_model.py .                          [ 92%]
-    thermosteam\mixture\mixture_builders.py .                             [ 93%]
-    thermosteam\reaction\_reaction.py .....                               [ 96%]
-    thermosteam\utils\representation.py .....                             [100%]
-
-    =========================== 157 passed in 36.52s ===========================
     
 This runs all the `doctests <https://docs.python.org/3.6/library/doctest.html>`__
 in thermosteam, which covers most of the API. If any test is marked with a 
 letter F, that test has failed. Pytest will point you to the location of the 
 error, the values that were expected, and the values that were generated.
 
-.. note:: 
-
-    Some parts in thermosteam do not have tests yet. Any contributions
-    towards rigorous testing is welcome!
 
 Documentation
 -------------
@@ -120,7 +83,23 @@ Concise and thorough documentation is required for any contribution. Make sure t
 * Document short functions in one line if possible.
 * Mention and reference any equations or methods used and make sure to include the chapter and page number if it is a book or a long document.
 * Preview the docs before making a pull request (open your cmd/terminal in the "docs" folder, run "make html", and open "docs/_build/html/index.html").
-    
+
+
+Authorship
+----------
+
+Authorship must be acknowledged for anyone contributing code, significant resources, 
+expertise, and/or other impactful efforts. Additionally, authorship should be 
+included at the module-level, with a short description of the general contribution. 
+
+If any code or implementation was copied from a third party, it should be rightfully
+noted in the module-level documentation along with the corresponding copyright.
+
+Any third-party code copied to the BioSTEAM software must be strictly open-source 
+(not copy-left or open-access). Additionally, if the license is different, 
+the module should add the third-party license as an option (dual licensing is OK).
+
+
 Best practices
 --------------
 

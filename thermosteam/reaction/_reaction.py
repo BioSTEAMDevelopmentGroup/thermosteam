@@ -606,20 +606,31 @@ class Reaction:
             stoichiometry_by_mol = self._stoichiometry
         return stoichiometry_by_mol
     
+    def mass_balance_error(self):
+        """Return error in stoichiometric mass balance. If positive,
+        mass is being created. If negative, mass is being destroyed."""
+        stoichiometry_by_wt = self._get_stoichiometry_by_wt()
+        return stoichiometry_by_wt.sum()
+    
+    def atomic_balance_error(self):
+        """Return a dictionary of errors in stoichiometric atomic balances. 
+        If value is positive, the atom is being created. If negative, the atom 
+        is being destroyed."""
+        stoichiometry_by_mol = self._get_stoichiometry_by_mol()
+        formula_array = self.chemicals.formula_array
+        unbalanced_array = formula_array @ stoichiometry_by_mol
+        return elements.array_to_atoms(unbalanced_array)
+    
     def check_mass_balance(self, tol=1e-3):
         """Check that stoichiometric mass balance is correct."""
-        stoichiometry_by_wt = self._get_stoichiometry_by_wt()
-        error = abs(stoichiometry_by_wt.sum())
-        if error > tol:
+        error = self.mass_balance_error()
+        if abs(error) > tol:
             raise RuntimeError("material stoichiometry is unbalanced by "
                               f"{error} g / mol-reactant")
     
     def check_atomic_balance(self, tol=1e-3):
         """Check that stoichiometric atomic balance is correct."""
-        stoichiometry_by_mol = self._get_stoichiometry_by_mol()
-        formula_array = self.chemicals.formula_array
-        unbalanced_array = formula_array @ stoichiometry_by_mol
-        atoms = elements.array_to_atoms(unbalanced_array)
+        atoms = self.atomic_balance_error()
         if abs(sum(atoms.values())) > tol: 
             raise RuntimeError("atomic stoichiometry is unbalanced by the "
                                "following molar stoichiometric coefficients:\n "
