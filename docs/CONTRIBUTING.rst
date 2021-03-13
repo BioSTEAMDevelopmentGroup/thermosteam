@@ -96,7 +96,7 @@ If any code or implementation was copied from a third party, it should be rightf
 noted in the module-level documentation along with the corresponding copyright.
 
 Any third-party code copied to the BioSTEAM software must be strictly open-source 
-(not copy-left or open-access). Additionally, if the license is different, 
+(not copy-left nor open-access). Additionally, if the license is different, 
 the module should add the third-party license as an option (dual licensing is OK).
 
 
