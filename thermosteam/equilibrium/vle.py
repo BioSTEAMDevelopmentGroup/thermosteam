@@ -798,7 +798,8 @@ class VLE(Equilibrium, phases='lg'):
                            checkconvergence=False, 
                            convergenceiter=3)
         self._v = v = self._F_mol * self._V * y
-        if (v > self._mol_vle).any(): v[:] = self._mol_vle
+        mask = v > self._mol_vle
+        v[mask] = self._mol_vle[mask]
         return v
 
 class VLECache(Cache): load = VLE
