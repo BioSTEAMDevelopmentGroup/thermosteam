@@ -858,7 +858,7 @@ class Stream:
     
     @property
     def C(self):
-        """[float] Heat capacity flow rate in kJ/K/hr."""
+        """[float] Heat capacity flow rate in kJ/hr."""
         return self.mixture.Cn(self.phase, self.mol, self.T)
     
     ### Composition properties ###

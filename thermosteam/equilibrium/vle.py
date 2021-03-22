@@ -254,24 +254,24 @@ class VLE(Equilibrium, phases='lg'):
         # Run equilibrium
         if T_spec:
             if P_spec:
-                return self.set_thermal_condition(T, P)
+                self.set_thermal_condition(T, P)
             elif V_spec:
-                return self.set_TV(T, V)
+                self.set_TV(T, V)
             elif H_spec:
-                return self.set_TH(T, H)
+                self.set_TH(T, H)
             elif x_spec:
-                return self.set_Tx(T, np.asarray(x))
+                self.set_Tx(T, np.asarray(x))
             else: # y_spec
-                return self.set_Ty(T, np.asarray(y))
+                self.set_Ty(T, np.asarray(y))
         elif P_spec:
             if V_spec:
-                return self.set_PV(P, V)
+                self.set_PV(P, V)
             elif H_spec:
-                return self.set_PH(P, H)
+                self.set_PH(P, H)
             elif x_spec:
-                return self.set_Px(P, np.asarray(x))
+                self.set_Px(P, np.asarray(x))
             else: # y_spec
-                return self.set_Py(P, np.asarray(y))
+                self.set_Py(P, np.asarray(y))
         elif H_spec: # pragma: no cover
             if y_spec:
                 raise NotImplementedError('specification H and y is invalid')
@@ -286,6 +286,8 @@ class VLE(Equilibrium, phases='lg'):
                 raise ValueError("specification V and x is invalid")
         else: # pragma: no cover
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
+        assert (self._liquid_mol >= 0.).all()
+        assert (self._vapor_mol >= 0.).all()
     
     def _setup(self):
         # Get flow rates
@@ -795,8 +797,9 @@ class VLE(Equilibrium, phases='lg'):
                            checkiter=False, 
                            checkconvergence=False, 
                            convergenceiter=3)
-        self._v = self._F_mol * self._V * y
-        return self._v
+        self._v = v = self._F_mol * self._V * y
+        if (v > self._mol_vle).any(): v[:] = self._mol_vle
+        return v
 
 class VLECache(Cache): load = VLE
 del Cache, Equilibrium
