@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from numpy import asarray, array
+import numpy as np
 import flexsolve as flx
 from .domain import vle_domain
 from ..exceptions import InfeasibleRegion, DomainError
@@ -93,7 +93,7 @@ class BubblePoint:
     def _T_error(self, T, P, z_over_P, z_norm, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         y_phi =  (z_over_P
-                  * array([i(T) for i in self.Psats])
+                  * np.array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
                   * self.pcf(z_norm, T))
         y[:] = solve_y(y_phi, self.phi, T, P, y)
@@ -106,7 +106,7 @@ class BubblePoint:
         return 1. - y.sum()
         
     def _T_error_ideal(self, T, z_over_P, y):
-        y[:] = z_over_P * array([i(T) for i in self.Psats])
+        y[:] = z_over_P * np.array([i(T) for i in self.Psats])
         return 1 - y.sum()
     
     def _Ty_ideal(self, z_over_P):
@@ -128,7 +128,7 @@ class BubblePoint:
         return P, y
     
     def __call__(self, z, *, T=None, P=None):
-        z = asarray(z, float)
+        z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
             P, y = self.solve_Py(z, T)
@@ -145,7 +145,7 @@ class BubblePoint:
         Parameters
         ----------
         z : ndarray
-            Molar composotion.
+            Molar composition.
         P : float
             Pressure [Pa].
         
@@ -167,23 +167,31 @@ class BubblePoint:
         (353.7543, array([0.381, 0.619]))
         
         """
-        if P > self.Pmax: P = self.Pmax
-        elif P < self.Pmin: P = self.Pmin
-        f = self._T_error
-        z_norm = z / z.sum()
-        z_over_P = z/P
-        T_guess, y = self._Ty_ideal(z_over_P)
-        args = (P, z_over_P, z_norm, y)
-        try:
-            T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
-                                  1e-9, 5e-12, args,
-                                  checkiter=False)
-        except (InfeasibleRegion, DomainError):
-            Tmin = self.Tmin; Tmax = self.Tmax
-            T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                     f(Tmin, *args), f(Tmax, *args),
-                                     T_guess, 1e-9, 5e-12, args, 
-                                     checkiter=False, checkbounds=False)
+        positives = z > 0.
+        N = positives.sum()
+        if N == 0:
+            raise ValueError('no positive components present')
+        if N == 1:
+            T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
+            y = z.copy()
+        else:
+            if P > self.Pmax: P = self.Pmax
+            elif P < self.Pmin: P = self.Pmin
+            f = self._T_error
+            z_norm = z / z.sum()
+            z_over_P = z/P
+            T_guess, y = self._Ty_ideal(z_over_P)
+            args = (P, z_over_P, z_norm, y)
+            try:
+                T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                                      1e-9, 5e-12, args,
+                                      checkiter=False)
+            except (InfeasibleRegion, DomainError):
+                Tmin = self.Tmin; Tmax = self.Tmax
+                T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                         f(Tmin, *args), f(Tmax, *args),
+                                         T_guess, 1e-9, 5e-12, args, 
+                                         checkiter=False, checkbounds=False)
         return T, fn.normalize(y)
     
     def solve_Py(self, z, T):
@@ -193,7 +201,7 @@ class BubblePoint:
         Parameters
         ----------
         z : ndarray
-            Molar composotion.
+            Molar composition.
         T : float
             Temperature [K].
         
@@ -215,23 +223,31 @@ class BubblePoint:
         (91830.9798, array([0.419, 0.581]))
         
         """
-        if T > self.Tmax: T = self.Tmax
-        elif T < self.Tmin: T = self.Tmin
-        Psat = array([i(T) for i in self.Psats])
-        z_norm = z / z.sum()
-        z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
-        f = self._P_error
-        P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
-        args = (T, z_Psat_gamma_pcf, y)
-        try:
-            P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
-                                  args, checkiter=False)
-        except (InfeasibleRegion, DomainError):
-            Pmin = self.Pmin; Pmax = self.Pmax
-            P = flx.IQ_interpolation(f, Pmin, Pmax,
-                                     f(Pmin, *args), f(Pmax, *args),
-                                     P_guess, 1e-3, 5e-12, args,
-                                     checkiter=False, checkbounds=False)
+        positives = z > 0.
+        N = positives.sum()
+        if N == 0:
+            raise ValueError('no positive components present')
+        if N == 1:
+            P = self.chemicals[fn.first_true_index(positives)].Psat(T)
+            y = z.copy()
+        else:
+            if T > self.Tmax: T = self.Tmax
+            elif T < self.Tmin: T = self.Tmin
+            Psat = np.array([i(T) for i in self.Psats])
+            z_norm = z / z.sum()
+            z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
+            f = self._P_error
+            P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
+            args = (T, z_Psat_gamma_pcf, y)
+            try:
+                P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
+                                      args, checkiter=False)
+            except (InfeasibleRegion, DomainError):
+                Pmin = self.Pmin; Pmax = self.Pmax
+                P = flx.IQ_interpolation(f, Pmin, Pmax,
+                                         f(Pmin, *args), f(Pmax, *args),
+                                         P_guess, 1e-3, 5e-12, args,
+                                         checkiter=False, checkbounds=False)
         return P, fn.normalize(y)
     
     def __repr__(self):

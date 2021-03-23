@@ -1355,7 +1355,7 @@ class Chemical:
         try:
             T = IQ_interpolation(lambda T: Psat(T) - P,
                                  Tmin, Tmax, Psat(Tmin) - P, Psat(Tmax) - P,
-                                 Tguess, 1e-3, 1e-1, checkroot=False)
+                                 Tguess, 1e-6, 1e-2, checkroot=False)
         except: return None
         return T
 

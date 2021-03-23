@@ -8,6 +8,7 @@
 """
 """
 import flexsolve as flx
+from warnings import warn
 from ..exceptions import InfeasibleRegion
 from . import binary_phase_fraction as binary
 from .equilibrium import Equilibrium
@@ -356,17 +357,29 @@ class VLE(Equilibrium, phases='lg'):
         
     def _set_thermal_condition_chemical(self, T, P):
         # Either liquid or gas
-        if P < self._chemical.Psat(T):
+        Psat = self._chemical.Psat(T)
+        tol = 1e-3
+        if P < Psat - tol:
             self._liquid_mol[self._index] = 0
             self._vapor_mol[self._index] = self._mol_vle
-        else:
+        elif P > Psat + tol:
             self._liquid_mol[self._index] = self._mol_vle
             self._vapor_mol[self._index] = 0
+        else:
+            pass
+            # raise RuntimeError(
+            #     'VLE of a one component mixture at the bubble point '
+            #     '(which is also the dew point) results in an undetermined '
+            #     'vapor fraction'
+            # )
+            # L_over_F = (P - Psat + tol) / (2 * tol)
+            # self._liquid_mol[self._index] = liq = L_over_F * self._mol_vle
+            # self._vapor_mol[self._index] = self._mol_vle - liq
     
     def _set_TV_chemical(self, T, V):
         # Set vapor fraction
         self._T = self._thermal_condition.T = self._chemical.Psat(T)
-        self._vapor_mol[self._index] = self._mol_vle*V
+        self._vapor_mol[self._index] = V * self._mol_vle
         self._liquid_mol[self._index] = self._mol_vle - self._vapor_mol[self._index]
         
     def _set_PV_chemical(self, P, V):

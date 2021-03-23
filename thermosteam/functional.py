@@ -32,6 +32,14 @@ def normalize(array, sum_array=None, minimum=1e-16):
     else:
         return array/sum_array
     
+def first_true_index(x):
+    """
+    Return index of first true value.
+    
+    """
+    for index, i in enumerate(x):
+        if i: return index
+    
 @njitable(cache=True)
 def mixing_simple(z, y):
     r'''
