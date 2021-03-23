@@ -287,8 +287,6 @@ class VLE(Equilibrium, phases='lg'):
                 raise ValueError("specification V and x is invalid")
         else: # pragma: no cover
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
-        assert (self._liquid_mol >= 0.).all()
-        assert (self._vapor_mol >= 0.).all()
     
     def _setup(self):
         # Get flow rates
@@ -813,6 +811,7 @@ class VLE(Equilibrium, phases='lg'):
         self._v = v = self._F_mol * self._V * y
         mask = v > self._mol_vle
         v[mask] = self._mol_vle[mask]
+        v[v < 0.] = 0.
         return v
 
 class VLECache(Cache): load = VLE
