@@ -30,6 +30,9 @@ class BubblePointValues:
         self.z = z
         self.y = y
         
+    @property
+    def x(self): return self.z
+        
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
 

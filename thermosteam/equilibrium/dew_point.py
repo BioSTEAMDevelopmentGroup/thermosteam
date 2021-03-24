@@ -30,6 +30,9 @@ class DewPointValues:
         self.z = z
         self.x = x
         
+    @property
+    def y(self): return self.z
+        
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, x={self.x})"
 
