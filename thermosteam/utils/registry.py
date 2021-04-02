@@ -31,7 +31,7 @@ def check_valid_ID(ID):
 
 class Registry: # pragma: no cover
 
-    __slots__ = ('data', 'safe_to_replace',)
+    __slots__ = ('data', 'safe_to_replace', '_dumps')
 
     def untrack(self, objs):
         """
@@ -68,6 +68,7 @@ class Registry: # pragma: no cover
     def __init__(self, objs=None):
         self.data = {i.ID: i for i in objs} if objs else {}
         self.safe_to_replace = set()
+        self._dumps = {}
 
     def search(self, ID):
         """Return object given ID. If ID not in registry, return None."""
@@ -88,8 +89,7 @@ class Registry: # pragma: no cover
         """Register object safely, with checks and due warnings."""
         check_valid_ID(ID)
         data = self.data
-        ID_old = getattr(obj, '_ID', None)
-        if ID_old and data.get(ID_old) is obj: del data[ID_old]
+        ID_old = self._open_registration(ID, obj)
         if ID in data:
             other = data[ID]
             if obj is not other and other not in self.safe_to_replace:
@@ -104,17 +104,30 @@ class Registry: # pragma: no cover
                         f"{repr(other)} has been replaced in registry"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
-        data[ID] = obj
-        obj._ID = ID
+        self._close_registration(ID, obj)
         
     def register(self, ID, obj):
         """Register object without warnings or checks."""
+        self._open_registration(ID, obj)
+        self._close_registration(ID, obj)
+        
+    def _open_registration(self, ID, obj):
         data = self.data
         ID_old = getattr(obj, '_ID', None)
-        if ID_old in data: del data[ID_old]
-        data[ID] = obj
-        obj._ID = ID
+        if ID_old and data.get(ID_old) is obj: del data[ID_old]
+        return ID_old
         
+    def _close_registration(self, ID, obj):
+        self.data[ID] = obj
+        for i in self._dumps.values(): i.add(obj)
+        obj._ID = ID
+    
+    def _open_dump(self, key):
+        self._dumps[key] = set()
+        
+    def _close_dump(self, key):
+        return self._dumps.pop(key)
+    
     def clear(self):
         """Clear data."""
         self.data.clear()
