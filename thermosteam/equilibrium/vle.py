@@ -506,7 +506,8 @@ class VLE(Equilibrium, phases='lg'):
             return
         # Guess composition in the vapor is a
         # weighted average of bubble/dew points
-        V = (T - P_dew)/(P_bubble - P_dew)
+        dP = (P_bubble - P_dew)
+        V = (P - P_dew) / dP if dP > 1. else 0.5
         self._refresh_v(V, y_bubble)
         # Solve
         try:
