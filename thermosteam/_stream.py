@@ -1920,13 +1920,6 @@ class Stream:
     
     ### Representation ###
     
-    def diagram(self, file=None, format='png'): # pragma: no cover
-        from biosteam._digraph import make_digraph, save_digraph
-        units = [i for i in (self.source, self.sink) if i]
-        streams = sum([i.ins + i.outs for i in units], [])
-        f = make_digraph(units, set(streams))
-        save_digraph(f, file, format)
-    
     def _basic_info(self):
         return f"{type(self).__name__}: {self.ID or ''}\n"
     
