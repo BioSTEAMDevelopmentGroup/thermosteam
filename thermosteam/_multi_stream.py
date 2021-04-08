@@ -834,8 +834,9 @@ class MultiStream(Stream):
     
     ### Representation ###
     
-    def _info(self, T, P, flow, composition, N, IDs):
+    def _info(self, layout, T, P, flow, composition, N, IDs):
         """Return string with all specifications."""
+        flow, composition, N = self._translate_layout(layout, flow, composition, N)
         from .indexer import nonzeros
         if not IDs: IDs = self.chemicals.IDs
         basic_info = self._basic_info()

@@ -363,6 +363,8 @@ class Stream:
             self.phases = stream_data._phases
             self._imol.copy_like(stream_data._imol)
             self._thermal_condition.copy_like(stream_data)
+        elif stream_data is None:
+            self.empty()
         else:
             raise ValueError(f'stream_data must be a StreamData object; not {type(stream_data).__name__}')
         
@@ -1899,6 +1901,7 @@ class Stream:
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
+        if self.phases == phases: return
         if self._link: raise RuntimeError('cannot convert linked stream')
         if len(phases) == 1:
             self.phase = phases[0]
@@ -1933,8 +1936,38 @@ class Stream:
         source = self.source
         return f"{source}-{source.outs.index(self)}" if source else self.ID
     
-    def _info(self, T, P, flow, composition, N, IDs):
+    def _translate_layout(self, layout, flow, composition, N):
+        if layout:
+            for param in (flow, composition, N):
+                if param is not None: raise ValueError(f'cannot specify both `layout` and `{param}`')
+            if layout[0] == 'c':
+                composition = True
+                layout = layout[1:]
+            if layout.startswith('wt'):
+                flow = 'kg/hr'
+                layout = layout[2:]
+            elif layout.startswith('mol'):
+                flow = 'kmol/hr'
+                layout = layout[3:]
+            elif layout.startswith('vol'):
+                flow = 'm3/hr'
+                layout = layout[3:]
+            elif layout.isdigit():
+                flow = 'kmol/hr'
+            else:
+                raise ValueError(
+                    "`layout` must have the form "
+                    "{'c' or ''}{'wt', 'mol' or 'vol'}{# or ''};"
+                    "for example: 'cwt100' corresponds to compostion=True, "
+                    "flow='kg/hr', and N=100."
+                )
+            if layout.isdigit():
+                N = int(layout)
+        return flow, composition, N
+    
+    def _info(self, layout, T, P, flow, composition, N, IDs):
         """Return string with all specifications."""
+        flow, composition, N = self._translate_layout(layout, flow, composition, N)
         from .indexer import nonzeros
         basic_info = self._basic_info()
         if not IDs:
@@ -1988,11 +2021,17 @@ class Stream:
               + beginning
               + flow_rates)
 
-    def show(self, T=None, P=None, flow=None, composition=None, N=None, IDs=None):
-        """Print all specifications.
+    def show(self, layout=None, T=None, P=None, flow=None, composition=None, N=None, IDs=None):
+        """
+        Print all specifications.
         
         Parameters
         ----------
+        layout : str, optional
+            Convenience paramater for passing `flow`, `composition`, and `N`. 
+            Must have the form {'c' or ''}{'wt', 'mol' or 'vol'}{# or ''}.
+            For example: 'cwt100' corresponds to compostion=True, flow='kg/hr', 
+            and N=100.
         T : str, optional
             Temperature units.
         P : str, optional
@@ -2011,7 +2050,7 @@ class Stream:
         Default values are stored in `Stream.display_units`.
         
         """
-        print(self._info(T, P, flow, composition, N, IDs))
+        print(self._info(layout, T, P, flow, composition, N, IDs))
     _ipython_display_ = show
     
     def print(self, units=None):
