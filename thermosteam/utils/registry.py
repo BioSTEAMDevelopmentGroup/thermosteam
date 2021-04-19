@@ -119,11 +119,12 @@ class Registry: # pragma: no cover
         
     def _close_registration(self, ID, obj):
         self.data[ID] = obj
-        for i in self._dumps.values(): i.add(obj)
+        for i in self._dumps.values(): 
+            if obj not in i: i.append(obj)
         obj._ID = ID
     
     def _open_dump(self, key):
-        self._dumps[key] = set()
+        self._dumps[key] = []
         
     def _close_dump(self, key):
         return self._dumps.pop(key)
