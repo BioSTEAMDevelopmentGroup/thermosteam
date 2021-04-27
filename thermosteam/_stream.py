@@ -1181,6 +1181,7 @@ class Stream:
         'g'
         
         """
+        if not other: other = other.materialize_connection()
         if not isinstance(other._imol, self._imol.__class__):
             at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit

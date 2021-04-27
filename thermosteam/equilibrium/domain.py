@@ -13,7 +13,7 @@ __all__ = (
 )
 
 Tmin_limit = 200.
-Tmax_limit = 10000.
+Tmax_limit = 1000.
 
 def vle_domain(chemicals):
     """

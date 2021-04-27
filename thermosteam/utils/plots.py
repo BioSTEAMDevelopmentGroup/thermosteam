@@ -15,11 +15,13 @@ __all__ = ('style_axis',
            'set_axes_labels',
            'set_axes_xlabels',
            'set_axes_ylabels',
-)
+)   
 
 def style_axis(ax=None, xticks=None, yticks=None, 
                xticklabels=True, yticklabels=True,
-               top=True, right=True, trim_to_limits=False): # pragma: no cover
+               top=True, right=True, trim_to_limits=False,
+               xtick0=True, ytick0=True,
+               xtickf=True, ytickf=True): # pragma: no cover
     if ax is None:
         ax = plt.gca()
     if xticks is None:
@@ -30,8 +32,18 @@ def style_axis(ax=None, xticks=None, yticks=None,
         style_plot_limits(xticks, yticks)
         if yticks[0] == 0.:
             yticks = yticks[1:]
-    plt.xticks(xticks) if xticklabels else plt.xticks(xticks, ())
-    plt.yticks(yticks) if yticklabels else plt.yticks(yticks, ())
+    xtext = xticks.copy()
+    ytext = yticks.copy()
+    if not xtick0:
+        xtext[0] = ''
+    if not xtickf:
+        xtext[-1] = ''
+    if not ytick0:
+        ytext[0] = ''
+    if not ytickf:
+        ytext[-1] = ''
+    plt.xticks(xticks, xtext) if xticklabels else plt.xticks(xticks, ())
+    plt.yticks(yticks, ytext) if yticklabels else plt.yticks(yticks, ())
     xlim = plt.xlim()
     ylim = plt.ylim()
     ax.tick_params(axis="x", top=False, direction="inout", length=4)

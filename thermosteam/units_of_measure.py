@@ -64,7 +64,10 @@ def format_units_power(units, isnumerator=True):
         units += '^{' + (power if isnumerator else '-' + power) + '}'
     else:
         units = format_degrees(units)
-        units = '\mathrm{' + units + '}'
+        if isnumerator:
+            units = '\mathrm{' + units + '}'
+        else:
+            units = '\mathrm{' + units + '}^{-1}'
     return units
 
 def format_units(units):
@@ -76,6 +79,9 @@ def format_units(units):
     >>> format_units('USD/m^3')
     '$\\mathrm{USD} \\cdot \\mathrm{m}^{-3}$'
     
+    >>> format_units('USD/MT')
+    '$\\mathrm{USD} \\cdot \\mathrm{MT}^{-1}$'
+    
     """
     units = str(units)
     all_numerators = []
@@ -84,7 +90,7 @@ def format_units(units):
     for unprocessed_denominators in units.split("/"):
         term, *numerators = unprocessed_denominators.split("*")
         if term_is_numerator:
-            numerators.append(term)
+            all_numerators.append(term)
         else:
             all_denominators.append(term)
         term_is_numerator = not term_is_numerator

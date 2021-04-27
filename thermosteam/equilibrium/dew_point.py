@@ -71,7 +71,6 @@ class DewPoint:
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
                  'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
-    Tmin_default = 150.
     _cached = {}
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)

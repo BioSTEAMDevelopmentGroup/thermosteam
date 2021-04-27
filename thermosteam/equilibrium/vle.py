@@ -740,12 +740,12 @@ class VLE(Equilibrium, phases='lg'):
                                      H_hat_bubble - H_hat, H_hat_dew - H_hat,
                                      self._T, self.T_tol, self.H_hat_tol,
                                      (H_hat,), checkiter=False, checkbounds=False)
-        
+            # self._T = thermal_condition.T = T
             # Make sure enthalpy balance is correct
             self._T = thermal_condition.T = self.mixture.xsolve_T(
                 self._phase_data, H, T, P
             )
-            self._H_hat = H_hat
+        self._H_hat = H_hat
     
     def _estimate_v(self, V, y_bubble):
         return (V*self._z_norm + (1-V)*y_bubble) * V * self._F_mol_vle
@@ -772,9 +772,24 @@ class VLE(Equilibrium, phases='lg'):
     def _V_err_at_T(self, T, V):
         return self._solve_v(T, self._P).sum()/self._F_mol_vle  - V
     
+    # def _x_iter_ideal(self, x):
+    #     x = fn.normalize(x)
+    #     self._V = V = binary.phase_fraction(self._z, self._Ks, self._V,
+    #                                         self._z_light,
+    #                                         self._z_heavy)
+    #     return self._z/(1. + V * (self._Ks - 1.))
+    
+    # def _x_iter(self, x, Psat_over_P_phi):
+    #     x = fn.normalize(x)
+    #     x[x < 1e-32] = 1e-32
+    #     self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
+    #     f = self._x_iter_ideal
+    #     return flx.aitken(f, x, 1e-16, checkiter=False, 
+    #                       checkconvergence=False, convergenceiter=3)
+    
     def _x_iter(self, x, Psat_over_P_phi):
+        x[x < 0.] = 0.
         x = fn.normalize(x)
-        x[x < 1e-32] = 1e-32
         self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
         self._V = V = binary.phase_fraction(self._z, self._Ks, self._V,
                                             self._z_light,
