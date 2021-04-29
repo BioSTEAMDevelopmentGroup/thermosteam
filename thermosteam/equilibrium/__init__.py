@@ -10,6 +10,7 @@
 
 __all__ = []
 
+from . import ideal
 from . import domain
 from . import activity_coefficients
 from . import fugacity_coefficients
@@ -23,7 +24,8 @@ from . import lle
 from . import sle
 from . import plot_equilibrium
 
-__all__ = (*domain.__all__,
+__all__ = (*ideal.__all__,
+           *domain.__all__,
            *activity_coefficients.__all__,
            *vle.__all__,
            *lle.__all__,
@@ -36,6 +38,7 @@ __all__ = (*domain.__all__,
            *fugacities.__all__,
            *plot_equilibrium.__all__)
 
+from .ideal import *
 from .domain import *
 from .vle import *
 from .lle import *

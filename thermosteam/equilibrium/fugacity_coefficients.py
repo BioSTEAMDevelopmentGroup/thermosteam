@@ -7,6 +7,9 @@
 # for license details.
 """
 """
+from .ideal import ideal
+
+
 __all__ = ('FugacityCoefficients', 
            'IdealFugacityCoefficients')
 
@@ -31,6 +34,7 @@ class FugacityCoefficients:
         return f"<{type(self).__name__}([{chemicals}])>"
 
 
+@ideal
 class IdealFugacityCoefficients(FugacityCoefficients):
     """
     Create an IdealFugacityCoefficients object that estimates all fugacity coefficients to be 1 when called with composition, temperature (K), and pressure (Pa).

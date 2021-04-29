@@ -9,14 +9,28 @@
 """
 import numpy as np
 import flexsolve as flx
+from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
 from ..exceptions import InfeasibleRegion, DomainError
-from .solve_vle_composition import solve_y
 from .. import functional as fn
 from ..utils import fill_like, Cache
 from .._settings import settings
 
 __all__ = ('BubblePoint', 'BubblePointValues', 'BubblePointCache')
+
+# %% Solvers
+
+def y_iter(y, y_phi, phi, T, P):
+    y = fn.normalize(y)
+    return y_phi / phi(y, T, P)
+
+def solve_y(y_phi, phi, T, P, y_guess):
+    if isinstance(phi, IdealFugacityCoefficients): return y_phi
+    return flx.wegstein(y_iter, y_phi, 1e-9, args=(y_phi, phi, T, P), 
+                        checkiter=False,
+                        checkconvergence=False, 
+                        convergenceiter=3)
+
 
 # %% Bubble point values container
 

@@ -10,6 +10,8 @@
 __all__ = ('PoyintingCorrectionFactors',
            'IdealPoyintingCorrectionFactors')
 
+from .ideal import ideal
+
 class PoyintingCorrectionFactors:
     """Abstract class for the estimation of Poyinting correction factors. Non-abstract subclasses should implement the following methods:
         
@@ -29,7 +31,7 @@ class PoyintingCorrectionFactors:
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"<{type(self).__name__}([{chemicals}])>"
 
-
+@ideal
 class IdealPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     """Create an IdealPoyintingCorrectionFactor object that estimates all poyinting correction factors to be 1 when called with composition and temperature (K).
     

@@ -11,12 +11,40 @@ import numpy as np
 import flexsolve as flx
 from .. import functional as fn
 from ..exceptions import DomainError, InfeasibleRegion
-from .solve_vle_composition import solve_x
 from ..utils import fill_like, Cache
 from .._settings import settings
 from .domain import vle_domain
 
 __all__ = ('DewPoint', 'DewPointCache')
+
+# %% Solvers
+
+@flx.njitable(cache=True)
+def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
+    # Add back trace amounts for activity coefficients at infinite dilution
+    mask = x < 1e-32
+    x[mask] = 1e-32
+    x = fn.normalize(x)
+    gamma = f_gamma(x, T, *gamma_args)
+    pcf = f_pcf(x, T, *pcf_args)
+    denominator = gamma * pcf
+    # try:
+    x = x_gamma_poyinting / denominator
+    # except: 
+    #     x_gamma_poyinting
+    # if (np.abs(x) > 1e16).any():
+    #     return x_gamma_poyinting
+    return x
+
+@flx.njitable(cache=True)
+def solve_x(x_guess, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
+    args = (x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args)
+    try:
+        x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
+                         checkconvergence=False, convergenceiter=3)
+    except:
+        return x_gamma_poyinting
+    return x
 
 # %% Dew point values container
 
@@ -94,13 +122,18 @@ class DewPoint:
             self.chemicals = chemicals
             cached[key] = self
     
+    def _solve_x(self, x_gamma_pcf, T, x):
+        gamma = self.gamma
+        pcf = self.pcf
+        return solve_x(x, x_gamma_pcf, T, gamma.f, gamma.args, pcf.f, pcf.args)
+    
     def _T_error(self, T, P, z_norm, zP, x):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
         x_gamma_pcf = phi * zP / Psats
-        x[:] = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, x)
+        x[:] = self._solve_x(x_gamma_pcf, T, x)
         return 1 - x.sum()
     
     def _T_error_ideal(self, T, zP, x):
@@ -112,7 +145,7 @@ class DewPoint:
     def _P_error(self, P, T, z_norm, z_over_Psats, x):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
-        x[:] = solve_x(x_gamma_pcf, self.gamma, self.pcf, T, x)
+        x[:] = self._solve_x(x_gamma_pcf, T, x)
         return 1 - x.sum()
     
     def _Tx_ideal(self, zP):

@@ -19,6 +19,7 @@ import numpy as np
 from warnings import warn
 from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG, NISTUFSG, NISTUFIP
 from flexsolve import njitable
+from .ideal import ideal
 
 __all__ = ('ActivityCoefficients',
            'IdealActivityCoefficients',
@@ -72,12 +73,12 @@ def get_chemgroups(chemicals, field):
         group = getfield(chemical, field)
         if group:
             chemgroups.append(group)
-            index.append(i)
+            index.append(True)
         else:
             warn(f"{chemical} has no defined {field} groups; "
                   "functional group interactions are ignored",
                   RuntimeWarning, stacklevel=3)
-    return index, chemgroups
+    return np.array(index, bool), chemgroups
 
 @njitable(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
@@ -110,7 +111,63 @@ def psi_modified_UNIFAC(T, abc):
 def psi_UNIFAC(T, a):
     return np.exp(-a/T)
 
+@njitable(cache=True)
+def gamma_UNIFAC(x, T, interactions, 
+                 group_psis, group_mask, qs, rs, Qs,
+                 chemgroups, chem_Qfractions, index):
+    N_chemicals = x.size
+    gamma = np.ones(N_chemicals)
+    if N_chemicals > 1:
+        x = x[index]
+        xsum = x.sum()
+        if xsum: 
+            x = x / xsum
+            psis = psi_UNIFAC(T, interactions)
+            M = psis.shape[0]
+            N = psis.shape[1]
+            for i in range(M):
+                for j in range(N):
+                    if group_mask[i, j]: 
+                        group_psis[i, j] = psis[i, j]
+                    else:
+                        group_psis[i, j] = 0.
+            gamma[index] = group_activity_coefficients(x, chemgroups,
+                                        loggammacs_UNIFAC(qs, rs, x),
+                                        Qs, psis,
+                                        chem_Qfractions,
+                                        group_psis)
+    gamma[np.isnan(gamma)] = 1
+    return gamma
 
+@njitable(cache=True)
+def gamma_modified_UNIFAC(x, T, interactions, 
+                   group_psis, group_mask, qs, rs, Qs,
+                   chemgroups, chem_Qfractions, index):
+    N_chemicals = x.size
+    gamma = np.ones(N_chemicals)
+    if N_chemicals > 1:
+        x = x[index]
+        xsum = x.sum()
+        if xsum:
+            x = x / xsum
+            psis = psi_modified_UNIFAC(T, interactions)
+            M = psis.shape[0]
+            N = psis.shape[1]
+            for i in range(M):
+                for j in range(N):
+                    if group_mask[i, j]: 
+                        group_psis[i, j] = psis[i, j]
+                    else:
+                        group_psis[i, j] = 0.
+            gamma[index] = group_activity_coefficients(x, chemgroups,
+                                        loggammacs_modified_UNIFAC(qs, rs, x),
+                                        Qs, psis,
+                                        chem_Qfractions,
+                                        group_psis)
+    gamma[np.isnan(gamma)] = 1
+    return gamma
+    
+    
 # %% Activity Coefficients
 
 class ActivityCoefficients:
@@ -141,7 +198,7 @@ class ActivityCoefficients:
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
 
-    
+@ideal
 class IdealActivityCoefficients(ActivityCoefficients):
     """
     Create an IdealActivityCoefficients object that estimates all activity 
@@ -184,7 +241,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
         else:
             self = super().__new__(cls)
         index, chemgroups = get_chemgroups(chemicals, self.group_name)
-        self._index = None if len(index) == len(chemicals) else index
+        self._index = index
         all_groups = set()
         for groups in chemgroups: all_groups.update(groups)
         index = {group:i for i,group in enumerate(all_groups)}
@@ -222,6 +279,14 @@ class GroupActivityCoefficients(ActivityCoefficients):
     
     def __reduce__(self):
         return type(self), (self.chemicals,)
+    
+    @property
+    def args(self):
+        return (self._interactions.copy(), 
+                self._group_psis, self._group_mask,
+                self._qs, self._rs, self._Qs,
+                self._chemgroups, self._chem_Qfractions, 
+                self._index)
     
     def activity_coefficients(self, x, T):
         """
@@ -263,13 +328,13 @@ class GroupActivityCoefficients(ActivityCoefficients):
         N_chemicals = x.size
         if N_chemicals == 1:
             gamma = np.ones(N_chemicals)
-        elif self._index:
+        else:
             x = x[self._index]
             xsum = x.sum()
             gamma = np.ones(N_chemicals)
-            if xsum: gamma[self._index] =  self.activity_coefficients(x / xsum, T)
-        else:
-            gamma = self.activity_coefficients(x, T)
+            if xsum: 
+                x /= xsum
+                gamma[self._index] = self.activity_coefficients(x, T)
         gamma[np.isnan(gamma)] = 1
         return gamma
     
@@ -291,13 +356,18 @@ class UNIFACActivityCoefficients(GroupActivityCoefficients):
     group_name = 'UNIFAC'
     _no_interaction = 0.
     _cached = {}
-    @staticmethod
-    def loggammacs(qs, rs, x):
-        return loggammacs_UNIFAC(qs, rs, x)
     
-    @staticmethod
-    def psi(T, a):
-        return psi_UNIFAC(T, a)
+    @property
+    def f(self):
+        return gamma_UNIFAC
+    
+    @property
+    def loggammacs(self):
+        return loggammacs_UNIFAC
+    
+    @property
+    def psi(self):
+        return psi_UNIFAC
 
 
 class DortmundActivityCoefficients(GroupActivityCoefficients):
@@ -344,13 +414,17 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     _no_interaction = np.array([0., 0., 0.])
     _cached = {}
     
-    @staticmethod
-    def loggammacs(qs, rs, x):
-        return loggammacs_modified_UNIFAC(qs, rs, x)
+    @property
+    def f(self):
+        return gamma_modified_UNIFAC
     
-    @staticmethod
-    def psi(T, abc):
-        return psi_modified_UNIFAC(T, abc)
+    @property
+    def loggammacs(self):
+        return loggammacs_modified_UNIFAC
+    
+    @property
+    def psi(self):
+        return psi_modified_UNIFAC
     
     
 class NISTActivityCoefficients(GroupActivityCoefficients):
@@ -384,11 +458,11 @@ class NISTActivityCoefficients(GroupActivityCoefficients):
     _no_interaction = np.array([0., 0., 0.])
     _cached = {}
     
-    @staticmethod
-    def loggammacs(qs, rs, x):
-        return loggammacs_modified_UNIFAC(qs, rs, x)
+    @property
+    def loggammacs(self):
+        return loggammacs_modified_UNIFAC
     
-    @staticmethod
-    def psi(T, abc):
-        return psi_modified_UNIFAC(T, abc)
+    @property
+    def psi(self):
+        return psi_modified_UNIFAC
 

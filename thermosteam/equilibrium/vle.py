@@ -15,11 +15,28 @@ from .equilibrium import Equilibrium
 from .dew_point import DewPointCache
 from .bubble_point import BubblePointCache
 from .fugacity_coefficients import IdealFugacityCoefficients
+from .poyinting_correction_factors import IdealPoyintingCorrectionFactors
+from . import activity_coefficients as ac
 from .. import functional as fn
 from ..utils import Cache
 import numpy as np
 
 __all__ = ('VLE', 'VLECache')
+
+# @flx.njitable(cache=True)
+def xV_iter(xV, Psat_over_P_phi, T, z, z_light, z_heavy, f_gamma, gamma_args, f_pcf, pcf_args):
+    xV = xV.copy()
+    x = xV[:-1]
+    V = xV[-1]
+    x[x < 0.] = 0.
+    x = fn.normalize(x)
+    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(x, T, *pcf_args)
+    xV[-1] = V = binary.phase_fraction(z, Ks, V,
+                                       z_light,
+                                       z_heavy)
+    xV[:-1] = z/(1. + V * (Ks - 1.))
+    return xV
+    
 
 class VLE(Equilibrium, phases='lg'):
     """
@@ -189,7 +206,6 @@ class VLE(Equilibrium, phases='lg'):
                  '_z_norm', # [1d array] Normalized molar composition of chemicals in equilibrium
                  '_z_light', # [1d array] Molar composition of light chemicals not included in equilibrium calculation.
                  '_z_heavy', # [1d array] Molar composition of heavy chemicals not included in equilibrium calculation.
-                 '_Ks', # [1d array] Partition coefficients.
                  '_nonzero', # [1d array(bool)] Chemicals present in the mixture
                  '_F_mol', # [float] Total moles of chemicals (accounting for dissociation).
                  '_F_mol_vle', # [float] Total moles in equilibrium.
@@ -209,6 +225,7 @@ class VLE(Equilibrium, phases='lg'):
         self._bubble_point_cache = bubble_point_cache or BubblePointCache()
         super().__init__(imol, thermal_condition, thermo)
         imol = self._imol
+        self._x = None
         self._phase_data = tuple(imol)
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = imol['g']
@@ -787,24 +804,39 @@ class VLE(Equilibrium, phases='lg'):
     #     return flx.aitken(f, x, 1e-16, checkiter=False, 
     #                       checkconvergence=False, convergenceiter=3)
     
-    def _x_iter(self, x, Psat_over_P_phi):
+    def _x_iter(self, x, Psat_over_P_phi, T):
         x[x < 0.] = 0.
         x = fn.normalize(x)
-        self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
-        self._V = V = binary.phase_fraction(self._z, self._Ks, self._V,
+        Ks = Psat_over_P_phi * self._gamma(x, T) * self._pcf(x, T)
+        self._V = V = binary.phase_fraction(self._z, Ks, self._V,
                                             self._z_light,
                                             self._z_heavy)
-        return self._z/(1. + V * (self._Ks - 1.))
+        return self._z/(1. + V * (Ks - 1.))
     
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
+        gamma = self._gamma
+        pcf = self._pcf
+        x = self._x
         Psat_over_P_phi = Psats_over_P / phi
-        f = self._x_iter
-        args = (Psat_over_P_phi,)
-        x = flx.aitken(f, self._x, 1e-12, args, checkiter=False, 
+        f = xV_iter
+        args = (Psat_over_P_phi, T, self._z, self._z_light, 
+                self._z_heavy, gamma.f, gamma.args, pcf.f, pcf.args)
+        xV = np.zeros(x.size + 1)
+        xV[:-1] = x
+        xV[-1] = self._V
+        xV = flx.aitken(f, xV, 1e-12, args, checkiter=False, 
                        checkconvergence=False, convergenceiter=3)
-        self._x = f(x, *args)
-        v = self._F_mol * self._V * x * self._Ks     
+        x = xV[:-1]
+        self._V = V = xV[-1]
+        x[x < 1e-32] = 1e-32
+        xV[:-1] = x = fn.normalize(x)
+        if V == 0:
+            Ks = 0
+        else:
+            Ks = (self._z / x - 1) / V + 1.
+        self._x = x
+        v = self._F_mol * V * x * Ks     
         return fn.normalize(v, v.sum() + self._F_mol_light)
     
     def _solve_v(self, T, P):
