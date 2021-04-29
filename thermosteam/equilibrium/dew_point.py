@@ -21,19 +21,19 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 @flx.njitable(cache=True)
 def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
+    x = fn.normalize(x)
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
     x[mask] = 1e-32
-    x = fn.normalize(x)
     gamma = f_gamma(x, T, *gamma_args)
     pcf = f_pcf(x, T, *pcf_args)
     denominator = gamma * pcf
-    # try:
-    x = x_gamma_poyinting / denominator
-    # except: 
-    #     x_gamma_poyinting
-    # if (np.abs(x) > 1e16).any():
-    #     return x_gamma_poyinting
+    try:
+        x = x_gamma_poyinting / denominator
+    except: 
+        raise Exception('liquid phase composition is infeasible')
+    if (np.abs(x) > 1e16).any():
+        raise Exception('liquid phase composition is infeasible')
     return x
 
 @flx.njitable(cache=True)
@@ -41,7 +41,7 @@ def solve_x(x_guess, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args)
     args = (x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args)
     try:
         x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
-                         checkconvergence=False, convergenceiter=3)
+                          checkconvergence=False, convergenceiter=3)
     except:
         return x_gamma_poyinting
     return x

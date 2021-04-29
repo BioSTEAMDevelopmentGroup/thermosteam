@@ -115,6 +115,7 @@ def psi_UNIFAC(T, a):
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
                  chemgroups, chem_Qfractions, index):
+    interactions = interactions.copy()
     N_chemicals = x.size
     gamma = np.ones(N_chemicals)
     if N_chemicals > 1:
@@ -143,6 +144,7 @@ def gamma_UNIFAC(x, T, interactions,
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
                    chemgroups, chem_Qfractions, index):
+    interactions = interactions.copy()
     N_chemicals = x.size
     gamma = np.ones(N_chemicals)
     if N_chemicals > 1:
@@ -282,7 +284,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
     
     @property
     def args(self):
-        return (self._interactions.copy(), 
+        return (self._interactions, 
                 self._group_psis, self._group_mask,
                 self._qs, self._rs, self._Qs,
                 self._chemgroups, self._chem_Qfractions, 
