@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from flexsolve import njitable
+from numba import njit
 from ..utils import Cache
 from .equilibrium import Equilibrium
 from .binary_phase_fraction import phase_fraction
@@ -15,34 +15,35 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
-def liquid_activities(mol_L, T, f_gamma):
+@njit(cache=True)
+def liquid_activities(mol_L, T, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
     if total_mol_L:
         x = mol_L / total_mol_L
-        gamma = f_gamma(x, T)
+        gamma = f_gamma(x, T, *gamma_args)
         xgamma = x * gamma
     else:
         xgamma = np.ones_like(mol_L)
     return xgamma
 
-@njitable(cache=True)
+@njit(cache=True)
 def gibbs_free_energy_of_liquid(mol_L, xgamma):
     xgamma[xgamma <= 0] = 1
     g_mix = (mol_L * np.log(xgamma)).sum()
     return g_mix
 
-def lle_objective_function(mol_L, mol, T, f_gamma):
+def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
     mol_l = mol - mol_L
-    xgamma_l = liquid_activities(mol_l, T, f_gamma)
-    xgamma_L = liquid_activities(mol_L, T, f_gamma)
+    xgamma_l = liquid_activities(mol_l, T, f_gamma, gamma_args)
+    xgamma_L = liquid_activities(mol_L, T, f_gamma, gamma_args)
     g_mix_l = gibbs_free_energy_of_liquid(mol_l, xgamma_l)
     g_mix_L = gibbs_free_energy_of_liquid(mol_L, xgamma_L)
     g_mix = g_mix_l + g_mix_L
     return g_mix
 
-def solve_lle_liquid_mol(mol, T, f_gamma, **differential_evolution_options):
+def solve_lle_liquid_mol(mol, T, f_gamma, gamma_args, **differential_evolution_options):
     from scipy.optimize import differential_evolution
-    args = (mol, T, f_gamma)
+    args = (mol, T, f_gamma, gamma_args)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol
     result = differential_evolution(lle_objective_function, bounds, args,
@@ -134,7 +135,7 @@ class LLE(Equilibrium, phases='lL'):
                 mol_L = mol - mol_l
             else:
                 gamma = self.thermo.Gamma(lle_chemicals)
-                mol_L = solve_lle_liquid_mol(mol, T, gamma,
+                mol_L = solve_lle_liquid_mol(mol, T, gamma.f, gamma.args,
                                              **self.differential_evolution_options)
                 mol_l = mol - mol_L
                 if top_chemical:
@@ -173,4 +174,4 @@ class LLE(Equilibrium, phases='lL'):
         return mol, index, lle_chemicals
 
 class LLECache(Cache): load = LLE
-del Cache, njitable, Equilibrium
+del Cache, njit, Equilibrium

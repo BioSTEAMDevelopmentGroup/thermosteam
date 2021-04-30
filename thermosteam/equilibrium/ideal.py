@@ -4,7 +4,7 @@ Created on Thu Apr 29 08:43:40 2021
 
 @author: yrc2
 """
-import flexsolve as flx
+from numba import njit
 
 __all__ = ('ideal_coefficient',)
 
@@ -17,6 +17,6 @@ def ideal(cls):
 def ideal_coefficient(self):
     return _ideal_coefficient
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def _ideal_coefficient(z=None, T=None, P=None):
     return 1.

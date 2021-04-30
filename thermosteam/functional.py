@@ -9,7 +9,7 @@
 """
 from chemicals import *
 from fluids.core import Pr, alpha
-from flexsolve import njitable
+from numba import njit
 from thermosteam.base import functor
 import numpy as np
 
@@ -19,7 +19,7 @@ def horner(T, coeffs):
     for c in coeffs: tot = tot * T + c
     return tot 
 
-@njitable(cache=True)
+@njit(cache=True)
 def normalize(array, sum_array=None, minimum=1e-16):
     """
     Return a normalized array to a magnitude of 1.
@@ -40,7 +40,7 @@ def first_true_index(x):
     for index, i in enumerate(x):
         if i: return index
     
-@njitable(cache=True)
+@njit(cache=True)
 def mixing_simple(z, y):
     r'''
     Return a weighted average of `y` given the weights, `z`.
@@ -54,7 +54,7 @@ def mixing_simple(z, y):
     '''
     return (z * y).sum()
 
-@njitable(cache=True)
+@njit(cache=True)
 def mixing_logarithmic(z, y):
     r'''
     Return the logarithmic weighted average `y` given weights, `z`.
@@ -75,7 +75,7 @@ def mixing_logarithmic(z, y):
     '''
     return np.exp((z*np.log(y)).sum())
 
-@njitable(cache=True)
+@njit(cache=True)
 def mu_to_nu(mu, rho):
     r"""
     Return the kinematic viscosity (nu) given the dynamic viscosity (mu) and 
@@ -93,7 +93,7 @@ def mu_to_nu(mu, rho):
     """
     return mu/rho
 
-@njitable(cache=True)
+@njit(cache=True)
 def V_to_rho(V, MW):
     r'''
     Return the density (rho) in kg/m^3 given the molar volume (V) in
@@ -122,7 +122,7 @@ def V_to_rho(V, MW):
     '''
     return MW/V/1000.
 
-@njitable(cache=True)
+@njit(cache=True)
 def rho_to_V(rho, MW):
     r'''
     Return the molar volume (V) in m^3/mol given the density (rho) in
@@ -151,7 +151,7 @@ def rho_to_V(rho, MW):
     '''
     return MW/rho/1000.
 
-@njitable(cache=True)
+@njit(cache=True)
 def remove_negligible_negative_values(material: np.ndarray):
     material_sum = np.abs(material).sum()
     negative = material < 0.
@@ -161,9 +161,9 @@ def remove_negligible_negative_values(material: np.ndarray):
     else:
         material[negative] = 0. 
 
-@njitable(cache=True)
+@njit(cache=True)
 def infeasible(material: np.ndarray):
     material_sum = np.abs(material).sum()
     return material_sum > 1e-16 and (material / material_sum < -1e-16).any()
 
-del njitable
+del njit

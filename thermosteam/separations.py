@@ -10,6 +10,7 @@ This module contains functions for modeling separations in unit operations.
 
 """
 from warnings import warn
+from numba import njit
 import thermosteam as tmo
 import flexsolve as flx
 import numpy as np
@@ -1183,7 +1184,7 @@ class MultiStageLLE:
         )
         return extract_flow_rates
         
-@flx.njitable(cache=True)
+@njit(cache=True)
 def single_component_flow_rates_for_multi_stage_lle_without_side_draws(
         N_stages,
         phase_ratios,
@@ -1229,7 +1230,7 @@ def single_component_flow_rates_for_multi_stage_lle_without_side_draws(
     b[-1] += solvent
     return np.linalg.solve(A, b)
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def flow_rates_for_multi_stage_extration_without_side_draws(
         N_stages,
         phase_fractions,

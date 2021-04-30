@@ -9,6 +9,7 @@
 """
 import numpy as np
 import flexsolve as flx
+from numba import njit
 from .. import functional as fn
 from ..exceptions import DomainError, InfeasibleRegion
 from ..utils import fill_like, Cache
@@ -19,7 +20,7 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
     x = fn.normalize(x)
     # Add back trace amounts for activity coefficients at infinite dilution
@@ -36,7 +37,6 @@ def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
         raise Exception('liquid phase composition is infeasible')
     return x
 
-@flx.njitable(cache=True)
 def solve_x(x_guess, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
     args = (x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args)
     try:

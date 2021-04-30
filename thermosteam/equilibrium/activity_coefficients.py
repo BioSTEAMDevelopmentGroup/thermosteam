@@ -18,7 +18,7 @@
 import numpy as np
 from warnings import warn
 from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG, NISTUFSG, NISTUFIP
-from flexsolve import njitable
+from numba import njit
 from .ideal import ideal
 
 __all__ = ('ActivityCoefficients',
@@ -39,7 +39,7 @@ def chemgroup_array(chemgroups, index):
             array[i, index[group]] = count
     return array
 
-@njitable(cache=True)
+@njit(cache=True)
 def group_activity_coefficients(x, chemgroups, loggammacs,
                                 Qs, psis, cQfs, gpsis):
     weighted_counts = chemgroups.transpose() @ x
@@ -81,7 +81,7 @@ def get_chemgroups(chemicals, field):
                   RuntimeWarning, stacklevel=3)
     return np.array(index, bool), chemgroups
 
-@njitable(cache=True)
+@njit(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
     r_net = np.dot(x, rs)
     q_net = np.dot(x, qs)
@@ -90,7 +90,7 @@ def loggammacs_UNIFAC(qs, rs, x):
     Vs_over_Fs = Vs/Fs
     return 1. - Vs - np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
-@njitable(cache=True)
+@njit(cache=True)
 def loggammacs_modified_UNIFAC(qs, rs, x):
     r_net = np.dot(x, rs)
     q_net = np.dot(x, qs)
@@ -102,17 +102,17 @@ def loggammacs_modified_UNIFAC(qs, rs, x):
     Vs_p = rs_p/r_pnet
     return 1. - Vs_p + np.log(Vs_p) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
-@njitable(cache=True)
+@njit(cache=True)
 def psi_modified_UNIFAC(T, abc):
     abc[:, :, 0] /= T
     abc[:, :, 2] *= T
     return np.exp(-abc.sum(2)) 
 
-@njitable(cache=True)
+@njit(cache=True)
 def psi_UNIFAC(T, a):
     return np.exp(-a/T)
 
-@njitable(cache=True)
+@njit(cache=True)
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
                  chemgroups, chem_Qfractions, index):
@@ -141,7 +141,7 @@ def gamma_UNIFAC(x, T, interactions,
     gamma[np.isnan(gamma)] = 1
     return gamma
 
-@njitable(cache=True)
+@njit(cache=True)
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
                    chemgroups, chem_Qfractions, index):

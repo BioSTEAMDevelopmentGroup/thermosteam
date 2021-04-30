@@ -8,6 +8,7 @@
 """
 """
 import flexsolve as flx
+from numba import njit
 from warnings import warn
 from ..exceptions import InfeasibleRegion
 from . import binary_phase_fraction as binary
@@ -23,7 +24,7 @@ import numpy as np
 
 __all__ = ('VLE', 'VLECache')
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def xV_iter(xV, Psat_over_P_phi, T, z, z_light, z_heavy, f_gamma, gamma_args, f_pcf, pcf_args):
     xV = xV.copy()
     x = xV[:-1]

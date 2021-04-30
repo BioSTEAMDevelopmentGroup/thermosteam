@@ -53,13 +53,20 @@ from ._stream import Stream
 from ._multi_stream import MultiStream
 from .base import functor
 from .reaction import *
-from flexsolve import speed_up
 
 __all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 'Stream',
            'MultiStream', 'ThermalCondition', 'mixture', 'ThermoData',
            *reaction.__all__, 'indexer', 'settings', 'functor', 'functors', 
            'chemicals', 'base', 'equilibrium', 'units_of_measure', 'exceptions',
-           'functional', 'reaction', 'constants', 'utils', 'separations', 'speed_up')
+           'functional', 'reaction', 'constants', 'utils', 'separations')
+
+def speed_up():
+    from warnings import warn
+    warning = DeprecationWarning(
+        "this function is deprecated; all functions are now automatically JIT "
+        "compiled by numba when the libray is loaded"
+    )
+    warn(warning)
 
 # Set number of digits displayed
 import numpy as np
@@ -72,4 +79,4 @@ pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 del np, pd
 
-__version__ = "0.25.1"
+__version__ = "0.25.2"

@@ -15,7 +15,6 @@ from .lle import LLE
 from ..indexer import MaterialIndexer
 import matplotlib.pyplot as plt
 from math import floor
-from flexsolve import speed_up
 import thermosteam as tmo
 import numpy as np
 
@@ -149,7 +148,6 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
 
     """
     import ternary
-    speed_up()
     chemicals = [carrier, solvent, solute]
     thermo = as_thermo(thermo, chemicals)
     chemicals = thermo.chemicals

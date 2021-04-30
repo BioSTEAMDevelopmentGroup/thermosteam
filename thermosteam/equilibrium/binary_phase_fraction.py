@@ -17,6 +17,7 @@
 """
 import numpy as np
 import flexsolve as flx
+from numba import njit
 
 __all__ = ('phase_fraction', 
            'solve_phase_fraction_Rashford_Rice',
@@ -25,7 +26,7 @@ __all__ = ('phase_fraction',
            'compute_phase_fraction_2N', 
            'compute_phase_fraction_3N')
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def as_valid_fraction(x):
     """Ensure that x is between 0 and 1."""
     if x < 0.:
@@ -34,7 +35,7 @@ def as_valid_fraction(x):
         x = 1.
     return x
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     """Return phase fraction for binary phase equilibrium."""
     N = zs.size
@@ -49,7 +50,7 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
                          'to find phase fraction')
     return as_valid_fraction(phase_fraction)
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     """
     Return phase fraction for N-component binary phase equilibrium by 
@@ -107,18 +108,18 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
                        args=(zs, Ks, zc), checkiter=False)
     return phi[0, 0] / phi.sum()
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def phase_composition(zs, Ks, phi):
     return zs * Ks / (phi * Ks + (1. - phi))
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def compute_phase_fraction_iter(phi, zs, Ks, zc):
     ys = phase_composition(zs, Ks, phi)
     phi = (ys * phi).sum(axis=1, keepdims=True)
     phi += zc
     return phi
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     """
     Return phase fraction for N-component binary equilibrium by
@@ -144,7 +145,7 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
                                 guess, 1e-16, 1e-16,
                                 args, checkiter=False)
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def phase_fraction_objective_function(phi, zs, K_minus_1, za, zb):
     """Phase fraction objective function."""
     numerator = - zs * K_minus_1
@@ -155,7 +156,7 @@ def phase_fraction_objective_function(phi, zs, K_minus_1, za, zb):
     phi = (numerator / denominator).sum()
     return phi - a + b
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def compute_phase_fraction_2N(zs, Ks):
     """Return phase fraction for 2-component binary equilibrium."""
     z1, z2 = zs
@@ -171,7 +172,7 @@ def compute_phase_fraction_2N(zs, Ks):
     K1z1_K2z2 = K1z1 + K2z2
     return (-K1z1_K2z2 + z1_z2)/(K1K2z1 + K1K2z2 - K1z2 - K1z1_K2z2 - K2z1 + z1_z2)
 
-@flx.njitable(cache=True)
+@njit(cache=True)
 def compute_phase_fraction_3N(zs, Ks):
     """Return phase fraction for 3-component binary equilibrium."""
     z1, z2, z3 = zs
