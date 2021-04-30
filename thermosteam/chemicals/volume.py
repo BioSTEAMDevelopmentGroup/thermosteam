@@ -94,7 +94,7 @@ def volume_liquid_handle(handle, CAS, MW, Tb, Tc, Pc, Vc, Zc,
         add_model(volume_VDI_PPDS.functor.from_args(data), 0., Tc_)
     if CAS in rho_data_Perry_8E_105_l:
         C1, C2, C3, C4, Tmin, Tmax = rho_data_Perry_8E_105_l[CAS]
-        data = (C1, C2, C3, C4, True)
+        data = (C1, C2, C3, C4, 0)
         f = EQ105.functor.from_args(data)
         f.molar_volume = True
         add_model(f, Tmin, Tmax)

@@ -7,6 +7,10 @@
 # for license details.
 """
 """
+from warnings import filterwarnings
+from numba import NumbaWarning
+filterwarnings('ignore', category=NumbaWarning)
+del filterwarnings, NumbaWarning
 
 __all__ = []
 

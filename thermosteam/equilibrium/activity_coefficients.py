@@ -75,6 +75,7 @@ def get_chemgroups(chemicals, field):
             chemgroups.append(group)
             index.append(True)
         else:
+            index.append(False)
             warn(f"{chemical} has no defined {field} groups; "
                   "functional group interactions are ignored",
                   RuntimeWarning, stacklevel=3)
@@ -327,18 +328,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
         
         """
         x = np.asarray(x, float)
-        N_chemicals = x.size
-        if N_chemicals == 1:
-            gamma = np.ones(N_chemicals)
-        else:
-            x = x[self._index]
-            xsum = x.sum()
-            gamma = np.ones(N_chemicals)
-            if xsum: 
-                x /= xsum
-                gamma[self._index] = self.activity_coefficients(x, T)
-        gamma[np.isnan(gamma)] = 1
-        return gamma
+        return self.f(x, T, *self.args)
     
     
 class UNIFACActivityCoefficients(GroupActivityCoefficients):
@@ -459,6 +449,8 @@ class NISTActivityCoefficients(GroupActivityCoefficients):
     group_name = 'NIST'
     _no_interaction = np.array([0., 0., 0.])
     _cached = {}
+    
+    f = DortmundActivityCoefficients.f
     
     @property
     def loggammacs(self):

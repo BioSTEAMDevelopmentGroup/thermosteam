@@ -23,7 +23,7 @@ import numpy as np
 
 __all__ = ('VLE', 'VLECache')
 
-# @flx.njitable(cache=True)
+@flx.njitable(cache=True)
 def xV_iter(xV, Psat_over_P_phi, T, z, z_light, z_heavy, f_gamma, gamma_args, f_pcf, pcf_args):
     xV = xV.copy()
     x = xV[:-1]
@@ -189,7 +189,9 @@ class VLE(Equilibrium, phases='lg'):
                  '_V', # [float] Molar vapor fraction.
                  '_dew_point', # [DewPoint] Solves for dew point.
                  '_bubble_point', # [BubblePoint] Solves for bubble point.
-                 '_x', # [1d array] Liquid composition.
+                 '_x', # [1d array] Vapor composition.
+                 '_y', # [1d array] Liquid composition.
+                 '_z_last', # tuple[1d array] Last bulk composition.
                  '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
                  '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
                  '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
@@ -226,6 +228,7 @@ class VLE(Equilibrium, phases='lg'):
         super().__init__(imol, thermal_condition, thermo)
         imol = self._imol
         self._x = None
+        self._z_last = None
         self._phase_data = tuple(imol)
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = imol['g']
@@ -526,12 +529,7 @@ class VLE(Equilibrium, phases='lg'):
         dP = (P_bubble - P_dew)
         V = (P - P_dew) / dP if dP > 1. else 0.5
         self._refresh_v(V, y_bubble)
-        # Solve
-        try:
-            v = self._solve_v(T, P)
-        except:
-            self._v = self._estimate_v(V, y_bubble)
-            v = self._solve_v(T, P)
+        v = self._solve_v(T, P)
         self._vapor_mol[self._index] = v
         self._liquid_mol[self._index] = self._mol_vle - v
         self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
@@ -768,8 +766,14 @@ class VLE(Equilibrium, phases='lg'):
         return (V*self._z_norm + (1-V)*y_bubble) * V * self._F_mol_vle
     
     def _refresh_v(self, V, y_bubble):
-        self._v = self._estimate_v(V, y_bubble)
+        self._v = v = self._estimate_v(V, y_bubble)
         self._V = V
+        self._y = fn.normalize(v, v.sum() + self._F_mol_light)
+        z_last = self._z_last
+        if (self._x is None
+            or np.abs(z_last - self._z).sum() > 0.001):
+            l = self._mol_vle - v
+            self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
     def _H_hat_err_at_T(self, T, H_hat):
         self._vapor_mol[self._index] = self._solve_v(T, self._P)
@@ -789,30 +793,6 @@ class VLE(Equilibrium, phases='lg'):
     def _V_err_at_T(self, T, V):
         return self._solve_v(T, self._P).sum()/self._F_mol_vle  - V
     
-    # def _x_iter_ideal(self, x):
-    #     x = fn.normalize(x)
-    #     self._V = V = binary.phase_fraction(self._z, self._Ks, self._V,
-    #                                         self._z_light,
-    #                                         self._z_heavy)
-    #     return self._z/(1. + V * (self._Ks - 1.))
-    
-    # def _x_iter(self, x, Psat_over_P_phi):
-    #     x = fn.normalize(x)
-    #     x[x < 1e-32] = 1e-32
-    #     self._Ks = Psat_over_P_phi * self._gamma(x, self._T) * self._pcf(x, self._T)
-    #     f = self._x_iter_ideal
-    #     return flx.aitken(f, x, 1e-16, checkiter=False, 
-    #                       checkconvergence=False, convergenceiter=3)
-    
-    def _x_iter(self, x, Psat_over_P_phi, T):
-        x[x < 0.] = 0.
-        x = fn.normalize(x)
-        Ks = Psat_over_P_phi * self._gamma(x, T) * self._pcf(x, T)
-        self._V = V = binary.phase_fraction(self._z, Ks, self._V,
-                                            self._z_light,
-                                            self._z_heavy)
-        return self._z/(1. + V * (Ks - 1.))
-    
     def _y_iter(self, y, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
         gamma = self._gamma
@@ -820,7 +800,8 @@ class VLE(Equilibrium, phases='lg'):
         x = self._x
         Psat_over_P_phi = Psats_over_P / phi
         f = xV_iter
-        args = (Psat_over_P_phi, T, self._z, self._z_light, 
+        z = self._z
+        args = (Psat_over_P_phi, T, z, self._z_light, 
                 self._z_heavy, gamma.f, gamma.args, pcf.f, pcf.args)
         xV = np.zeros(x.size + 1)
         xV[:-1] = x
@@ -830,12 +811,12 @@ class VLE(Equilibrium, phases='lg'):
         x = xV[:-1]
         self._V = V = xV[-1]
         x[x < 1e-32] = 1e-32
-        xV[:-1] = x = fn.normalize(x)
+        self._x = xV[:-1] = x = fn.normalize(x)
         if V == 0:
             Ks = 0
         else:
-            Ks = (self._z / x - 1) / V + 1.
-        self._x = x
+            Ks = (z / x - 1) / V + 1.
+        self._z_last = z
         v = self._F_mol * V * x * Ks     
         return fn.normalize(v, v.sum() + self._F_mol_light)
     
@@ -844,14 +825,10 @@ class VLE(Equilibrium, phases='lg'):
         Psats_over_P = np.array([i(T) for i in
                                  self._bubble_point.Psats]) / P
         self._T = T
-        v = self._v
-        y = fn.normalize(v, v.sum() + self._F_mol_light)
-        l = self._mol_vle - v
-        self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
         if isinstance(self._phi, IdealFugacityCoefficients):
-            y = self._y_iter(y, Psats_over_P, T, P)
+            y = self._y_iter(self._y, Psats_over_P, T, P)
         else:
-            y = flx.aitken(self._y_iter, v/v.sum(), 1e-12,
+            y = flx.aitken(self._y_iter, self._y, 1e-12,
                            args=(Psats_over_P, T, P),
                            checkiter=False, 
                            checkconvergence=False, 
