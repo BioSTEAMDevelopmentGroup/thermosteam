@@ -22,10 +22,10 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 @njit(cache=True)
 def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
-    x = fn.normalize(x)
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
     x[mask] = 1e-32
+    x = fn.normalize(x)
     gamma = f_gamma(x, T, *gamma_args)
     pcf = f_pcf(x, T, *pcf_args)
     denominator = gamma * pcf

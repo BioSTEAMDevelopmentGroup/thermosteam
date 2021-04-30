@@ -35,7 +35,7 @@ def as_valid_fraction(x):
         x = 1.
     return x
 
-@njit(cache=True)
+# @njit(cache=True)
 def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     """Return phase fraction for binary phase equilibrium."""
     N = zs.size
@@ -119,7 +119,7 @@ def compute_phase_fraction_iter(phi, zs, Ks, zc):
     phi += zc
     return phi
 
-@njit(cache=True)
+# @njit(cache=True)
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     """
     Return phase fraction for N-component binary equilibrium by
