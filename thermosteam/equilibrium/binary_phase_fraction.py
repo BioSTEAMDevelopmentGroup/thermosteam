@@ -99,7 +99,7 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     if y0 < y1 < 0.: return 1.
     if y1 < y0 < 0.: return 0.
     if not 0. < guess < 1.: guess = 0.5
-    phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
+    phi = np.array([guess, 1. - guess])
     zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
     N = zs.shape[0]
     Ks_2d = np.ones([2, N])
@@ -109,7 +109,7 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     Ks_2d[1, :] = 1. / Ks
     phi = flx.wegstein(f, phi, 1e-16, 
                        args=(zs_2d, Ks_2d, zc), checkiter=False)
-    return phi[0, 0] / phi.sum()
+    return phi[0] / phi.sum()
 
 @njit(cache=True)
 def phase_composition(zs, Ks, phi):
@@ -118,14 +118,14 @@ def phase_composition(zs, Ks, phi):
 @njit(cache=True)
 def compute_phase_fraction_iter(phi, zs, Ks, zc):
     ys = phase_composition(zs, Ks, phi)
+    new_phi = np.zeros(phi.shape)
     shape = Ks.shape
-    new_phi = np.ones(shape)
-    M = Ks.shape[0]
-    N = Ks.shape[1]
+    M = shape[0]
+    N = shape[1]
     for i in range(M):
         isum = 0.
         for j in range(N): isum += ys[i, j]
-        new_phi[i, 0] = isum * phi[i, 0] + zc[i, 0]
+        new_phi[i] = isum * phi[i] + zc[i, 0]
     return new_phi
 
 # @njit#(cache=True)
