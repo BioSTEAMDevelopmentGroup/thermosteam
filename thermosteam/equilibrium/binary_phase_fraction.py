@@ -35,7 +35,7 @@ def as_valid_fraction(x):
         x = 1.
     return x
 
-# @njit(cache=True)
+# @njit#(cache=True)
 def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     """Return phase fraction for binary phase equilibrium."""
     N = zs.size
@@ -50,7 +50,7 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
                          'to find phase fraction')
     return as_valid_fraction(phase_fraction)
 
-@njit(cache=True)
+# @njit#(cache=True)
 def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     """
     Return phase fraction for N-component binary phase equilibrium by 
@@ -70,7 +70,6 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     >>> import numpy as np
     >>> from thermosteam.equilibrium import (
     ...     solve_phase_fraction_iteration,
-    ...     phase_composition,
     ... )
     >>> F_air = 1
     >>> F_water = 1
@@ -99,13 +98,17 @@ def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
     if y1 > y0 > 0.: return 0.
     if y0 < y1 < 0.: return 1.
     if y1 < y0 < 0.: return 0.
-    zs = zs[np.newaxis, :]
     if not 0. < guess < 1.: guess = 0.5
     phi = np.ones([2, 1]); phi[:, 0] = [guess, 1. - guess]
     zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
-    Ks = np.array([Ks, 1. / Ks])
+    N = zs.shape[0]
+    Ks_2d = np.ones([2, N])
+    zs_2d = np.ones([1, N])
+    zs_2d[0, :] = zs
+    Ks_2d[0, :] = Ks
+    Ks_2d[1, :] = 1. / Ks
     phi = flx.wegstein(f, phi, 1e-16, 
-                       args=(zs, Ks, zc), checkiter=False)
+                       args=(zs_2d, Ks_2d, zc), checkiter=False)
     return phi[0, 0] / phi.sum()
 
 @njit(cache=True)
@@ -115,11 +118,17 @@ def phase_composition(zs, Ks, phi):
 @njit(cache=True)
 def compute_phase_fraction_iter(phi, zs, Ks, zc):
     ys = phase_composition(zs, Ks, phi)
-    phi = (ys * phi).sum(axis=1, keepdims=True)
-    phi += zc
-    return phi
+    shape = Ks.shape
+    new_phi = np.ones(shape)
+    M = Ks.shape[0]
+    N = Ks.shape[1]
+    for i in range(M):
+        isum = 0.
+        for j in range(N): isum += ys[i, j]
+        new_phi[i, 0] = isum * phi[i, 0] + zc[i, 0]
+    return new_phi
 
-# @njit(cache=True)
+# @njit#(cache=True)
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     """
     Return phase fraction for N-component binary equilibrium by
