@@ -15,7 +15,7 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
-@njit(cache=True)
+# @njit(cache=True)
 def liquid_activities(mol_L, T, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
     if total_mol_L:
@@ -26,7 +26,7 @@ def liquid_activities(mol_L, T, f_gamma, gamma_args):
         xgamma = np.ones_like(mol_L)
     return xgamma
 
-@njit(cache=True)
+# @njit(cache=True)
 def gibbs_free_energy_of_liquid(mol_L, xgamma):
     xgamma[xgamma <= 0] = 1
     g_mix = (mol_L * np.log(xgamma)).sum()

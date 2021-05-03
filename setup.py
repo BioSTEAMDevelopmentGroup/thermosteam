@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.25.4',
+    version='0.25.5',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -27,8 +27,8 @@ setup(
                       'openpyxl>=3.0.0', 
                       'free_properties>=0.2.6',
                       'flexsolve==0.5.3', 
-                      'pyglet',
-                      'numba>=0.50.0'],
+                      'numba>=0.53.1',
+                      'pyglet'],
     extras_require={ 
         'dev': [
             'biorefineries>=2.21.1',
