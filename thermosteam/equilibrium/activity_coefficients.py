@@ -112,7 +112,7 @@ def psi_modified_UNIFAC(T, abc):
 def psi_UNIFAC(T, a):
     return np.exp(-a/T)
 
-# @njit(cache=True)
+@njit(cache=True)
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
                  chemgroups, chem_Qfractions, index):
@@ -141,7 +141,7 @@ def gamma_UNIFAC(x, T, interactions,
     gamma[np.isnan(gamma)] = 1
     return gamma
 
-# @njit(cache=True)
+@njit(cache=True)
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
                    chemgroups, chem_Qfractions, index):

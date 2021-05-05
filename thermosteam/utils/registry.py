@@ -52,18 +52,7 @@ class Registry: # pragma: no cover
         data = self.data
         for obj in objs:
             safe_to_replace.discard(obj)
-            ID = obj._ID
-            if ID in data: 
-                other = data[ID]
-                if obj is not other:
-                    warning = RuntimeWarning(
-                        f"{repr(other)} has been replaced in registry"
-                    )
-                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
-                    data[ID] = obj
-                    obj._ID = ID
-            else:
-                data[ID] = obj
+            data[obj._ID] = obj
         
     def __init__(self, objs=None):
         self.data = {i.ID: i for i in objs} if objs else {}
@@ -140,7 +129,12 @@ class Registry: # pragma: no cover
             ID = obj._ID
             if ID in data and data[ID] is obj: del data[ID]
         elif isinstance(obj, str):
-            if obj in data: del data[obj]
+            if obj in data: 
+                ID = obj
+                obj = data[obj]
+                del data[ID]
+        for dump in self._dumps.values():
+            if obj in dump: dump.remove(obj)
     
     def __contains__(self, obj):
         data = self.data

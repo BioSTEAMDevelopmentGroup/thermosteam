@@ -1002,6 +1002,33 @@ class CompiledChemicals(Chemicals):
         except KeyError as key_error:
             raise UndefinedChemical(key_error.args[0])
     
+    def available_indices(self, IDs):
+        """
+        Return indices of all chemicals available.
+
+        Parameters
+        ----------
+        IDs : iterable[str] or str
+              Chemical identifiers.
+
+        Notes
+        -----
+        CAS numbers are also supported.
+
+        Examples
+        --------
+        Get available indices from IDs:
+        
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
+        >>> IDs = ('Water', 'Ethanol', 'Octane')
+        >>> chemicals.available_indices(IDs)
+        [0, 1]
+
+        """
+        index = self._index
+        return [index[i] for i in IDs if i in index]
+            
     def get_index(self, IDs):
         """
         Return index/indices of specified chemicals.
