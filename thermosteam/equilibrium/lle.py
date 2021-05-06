@@ -15,7 +15,7 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
-@njit(cache=True)
+# @njit(cache=True)
 def liquid_activities(mol_L, T, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
     if total_mol_L:
