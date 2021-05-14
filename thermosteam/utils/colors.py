@@ -12,7 +12,7 @@ This module includes classes and functions relating string coloring and format.
 from colorpalette import Color, Palette
 import numpy as np
 
-__all__ = ('colors', 'CABBI_colors')
+__all__ = ('colors', 'CABBI_colors', 'CABBI_wheel')
 
 # %% Classes for coloring
 
@@ -97,4 +97,12 @@ CABBI_colors = Palette(
     grey = colors.CABBI_grey,
     brown = colors.CABBI_brown,
     black = colors.CABBI_black,
+)
+
+CABBI_wheel = Palette(
+    blue_light = colors.CABBI_blue_light,
+    teal_green = colors.CABBI_teal_green,
+    green_dirty = colors.CABBI_green_dirty,
+    orange = colors.CABBI_orange,
+    brown = colors.CABBI_brown,
 )
