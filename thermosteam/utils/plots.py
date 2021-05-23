@@ -85,8 +85,12 @@ def set_axes_labels(axes, xlabel, ylabel): # pragma: no cover
    
 def set_axes_xlabels(axes, xlabel): # pragma: no cover
     assert axes.ndim == 2
-    for ax in axes[-1]: ax.set_xlabel(xlabel)
+    N = axes.shape[1]
+    if isinstance(xlabel, str): xlabel = N * [xlabel]
+    for i in range(N): axes[-1, i].set_xlabel(xlabel[i])
     
 def set_axes_ylabels(axes, ylabel): # pragma: no cover
     assert axes.ndim == 2
-    for ax in axes[:, 0]: ax.set_ylabel(ylabel)
+    N = axes.shape[0]
+    if isinstance(ylabel, str): ylabel = N * [ylabel]
+    for i in range(N): axes[i, 0].set_ylabel(ylabel[i])
