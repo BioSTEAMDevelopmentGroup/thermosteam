@@ -8,6 +8,7 @@
 """
 """
 import matplotlib.pyplot as plt
+from typing import Iterable
 
 __all__ = ('style_axis',
            'style_plot_limits',
@@ -25,15 +26,20 @@ def style_axis(ax=None, xticks=None, yticks=None,
     if ax is None:
         ax = plt.gca()
     if xticks is None:
-        xticks, _ = plt.xticks()
+        xticks, xtext = plt.xticks()
+    else:
+        xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xticks)
     if yticks is None:
-        yticks, _ = plt.yticks()
+        yticks, ytext = plt.yticks()
+        if not any([str(i) for i in ytext]): ytext = yticks
+    else:
+        ytext = yticklabels if isinstance(yticklabels, Iterable) else list(yticks)
+    xtext = list(xtext)
+    ytext = list(ytext)
     if trim_to_limits:
         style_plot_limits(xticks, yticks)
         if yticks[0] == 0.:
             yticks = yticks[1:]
-    xtext = xticks.copy()
-    ytext = yticks.copy()
     if not xtick0:
         xtext[0] = ''
     if not xtickf:
@@ -44,14 +50,12 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ytext[-1] = ''
     plt.xticks(xticks, xtext) if xticklabels else plt.xticks(xticks, ())
     plt.yticks(yticks, ytext) if yticklabels else plt.yticks(yticks, ())
-    xlim = plt.xlim()
-    ylim = plt.ylim()
     ax.tick_params(axis="x", top=False, direction="inout", length=4)
     ax.tick_params(axis="y", right=False, direction="inout", length=4)
     ax.zorder = 1
-    
+    xlim = plt.xlim()
+    ylim = plt.ylim()
     axes = {'ax': ax}
-    
     if right:
         x_twin = ax.twinx()
         axes['twinx'] = x_twin 

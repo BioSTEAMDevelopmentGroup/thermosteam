@@ -11,7 +11,8 @@ __all__ = ('chemical_units_of_measure',
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
            'DisplayUnits', 'AbsoluteUnitsOfMeasure', 'convert',
-           'Quantity', 'format_units', 'format_plot_units')
+           'Quantity', 'format_units', 'format_plot_units',
+           'reformat_units')
 
 from .exceptions import DimensionError
 
@@ -45,7 +46,7 @@ def format_degrees(units):
         units = r'^\circ ' + units[3:]
     return units
 
-def format_units_power(units, isnumerator=True):
+def format_units_power(units, isnumerator=True, mathrm=True):
     r"""
     Format units of measure power sign to have a latex friendly format.
 
@@ -60,17 +61,17 @@ def format_units_power(units, isnumerator=True):
     if '^' in units:
         units, power = units.split('^')
         units = format_degrees(units)
-        units = '\mathrm{' + units + '}'
+        if mathrm: units = '\mathrm{' + units + '}'
         units += '^{' + (power if isnumerator else '-' + power) + '}'
     else:
         units = format_degrees(units)
-        if isnumerator:
+        if mathrm: 
             units = '\mathrm{' + units + '}'
-        else:
-            units = '\mathrm{' + units + '}^{-1}'
+        if not isnumerator:
+            units = units + '^{-1}'
     return units
 
-def format_units(units):
+def format_units(units, ends='$', mathrm=True):
     r"""
     Format units of measure to have a latex friendly format.
 
@@ -95,9 +96,14 @@ def format_units(units):
             all_denominators.append(term)
         term_is_numerator = not term_is_numerator
         all_numerators.extend(numerators)
-    all_numerators = [format_units_power(i) for i in all_numerators]
-    all_denominators = [format_units_power(i, False) for i in all_denominators]
-    return '$' + ' \cdot '.join(all_numerators + all_denominators) + '$'
+    all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators]
+    all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators]
+    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$') + ends
+
+def reformat_units(name):
+    left, right = name.split('[')
+    units, right = right.split(']')
+    return f"{left} [{format_units(units)}] {right}"
 
 format_plot_units = format_units
 
