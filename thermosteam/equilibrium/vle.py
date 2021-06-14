@@ -353,6 +353,8 @@ class VLE(Equilibrium, phases='lg'):
             N += z_light > 0.
             N += z_heavy > 0.
         self._N = N
+        # self._z_last = None
+        
         if reset:
             if N == 1:
                 self._chemical, = eq_chems
@@ -771,8 +773,12 @@ class VLE(Equilibrium, phases='lg'):
         self._V = V
         self._y = fn.normalize(v, v.sum() + self._F_mol_light)
         z_last = self._z_last
-        if (self._x is None
-            or np.abs(z_last - self._z).sum() > 0.001):
+        try:
+            if (self._x is None or self._z_last is None 
+                or np.abs(z_last - self._z).sum() > 0.001):
+                l = self._mol_vle - v
+                self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
+        except:
             l = self._mol_vle - v
             self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
