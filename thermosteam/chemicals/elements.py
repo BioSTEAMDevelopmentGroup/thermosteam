@@ -17,7 +17,7 @@ from chemicals import elements, periodic_table
 import numpy as np
 
 elements.__all__.extend([
-    'atoms_to_array', 'array_to_atoms', 'atomic_index',
+    'atoms_to_array', 'array_to_atoms',
 ])
 
 #: Dict[str, dict[str, int]] Cache of atomic counts.

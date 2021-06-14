@@ -370,7 +370,7 @@ class Stream:
         
     @property
     def price(self):
-        """[float] Price of stream per unit mass [USD/kg."""
+        """[float] Price of stream per unit mass [USD/kg]."""
         return self._price
     @price.setter
     def price(self, price):

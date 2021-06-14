@@ -102,6 +102,11 @@ def thermo_model(evaluate,
             ConstantModel = ConstantThermoModel
         return ConstantModel(evaluate, Tmin, Tmax, Pmin, Pmax,
                              name, var, **kwargs)
+    else:
+        if Tmin is None: Tmin = getattr(evaluate, 'Tmin', None)
+        if Tmax is None: Tmax = getattr(evaluate, 'Tmax', None)
+        if Pmin is None: Pmin = getattr(evaluate, 'Pmin', None)
+        if Pmax is None: Pmax = getattr(evaluate, 'Pmax', None)
     Model = model_matching_function(evaluate)
     return Model(evaluate, Tmin, Tmax, Pmin, Pmax, name, var, **kwargs)
 
