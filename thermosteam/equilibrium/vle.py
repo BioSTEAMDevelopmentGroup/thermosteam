@@ -774,7 +774,7 @@ class VLE(Equilibrium, phases='lg'):
         try:
             reload_cache = self._x is None or np.abs(z_last - self._z).sum() > 0.001
         except:
-            reload_cache = False
+            reload_cache = True
         if reload_cache:
             l = self._mol_vle - v
             self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
