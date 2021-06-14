@@ -774,18 +774,11 @@ class VLE(Equilibrium, phases='lg'):
         self._y = fn.normalize(v, v.sum() + self._F_mol_light)
         z_last = self._z_last
         try:
-<<<<<<< HEAD
             if (self._x is None or self._z_last is None 
                 or np.abs(z_last - self._z).sum() > 0.001):
                 l = self._mol_vle - v
                 self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
         except:
-=======
-            reload_cache = self._x is None or np.abs(z_last - self._z).sum() > 0.001
-        except:
-            reload_cache = True
-        if reload_cache:
->>>>>>> 1a6acf01c6d51bfb39e2d7ceb667c8c4885deb97
             l = self._mol_vle - v
             self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
