@@ -10,7 +10,7 @@
 import flexsolve as flx
 from numba import njit
 from warnings import warn
-from ..exceptions import InfeasibleRegion
+from ..exceptions import InfeasibleRegion, NoEquilibrium
 from . import binary_phase_fraction as binary
 from .equilibrium import Equilibrium
 from .dew_point import DewPointCache
@@ -276,9 +276,18 @@ class VLE(Equilibrium, phases='lg'):
         # Run equilibrium
         if T_spec:
             if P_spec:
-                self.set_thermal_condition(T, P)
+                try:
+                    self.set_thermal_condition(T, P)
+                except NoEquilibrium:
+                    thermal_condition = self._thermal_condition
+                    thermal_condition.T = T
+                    thermal_condition.P = P
             elif V_spec:
-                self.set_TV(T, V)
+                try:
+                    self.set_TV(T, V)
+                except NoEquilibrium:
+                    thermal_condition = self._thermal_condition
+                    thermal_condition.T = T
             elif H_spec:
                 self.set_TH(T, H)
             elif x_spec:
@@ -287,9 +296,18 @@ class VLE(Equilibrium, phases='lg'):
                 self.set_Ty(T, np.asarray(y))
         elif P_spec:
             if V_spec:
-                self.set_PV(P, V)
+                try:
+                    self.set_PV(P, V)
+                except NoEquilibrium:
+                    thermal_condition = self._thermal_condition
+                    thermal_condition.P = P
             elif H_spec:
-                self.set_PH(P, H)
+                try:
+                    self.set_PH(P, H)
+                except NoEquilibrium:
+                    thermal_condition = self._thermal_condition
+                    thermal_condition.P = P
+                    thermal_condition.T = self.mixture.xH(self._phase_data, T, P)
             elif x_spec:
                 self.set_Px(P, np.asarray(x))
             else: # y_spec
@@ -329,7 +347,7 @@ class VLE(Equilibrium, phases='lg'):
             self._index = index
         
         # Get overall composition
-        if not mol.any(): raise RuntimeError('no chemicals to perform equilibrium')
+        if not mol.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         self._F_mass = (chemicals.MW * mol).sum()
         self._mol_vle = mol_vle = mol[index]
 
@@ -344,6 +362,7 @@ class VLE(Equilibrium, phases='lg'):
         self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
         self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
+        if F_mol == 0.: raise NoEquilibrium('no chemicals to perform equilibrium')
         self._z = mol_vle / F_mol
         self._z_light = z_light = F_mol_light / F_mol
         self._z_heavy = z_heavy = F_mol_heavy / F_mol

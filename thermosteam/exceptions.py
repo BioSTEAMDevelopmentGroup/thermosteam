@@ -16,6 +16,7 @@ __all__ = ('UndefinedChemical',
            'InfeasibleRegion',
            'DomainError',
            'InvalidMethod',
+           'NoEquilibrium',
            'message_with_object_stamp',
            'try_method_with_object_stamp',
            'raise_error_with_object_stamp')
@@ -34,6 +35,9 @@ class UndefinedChemical(Exception):
 class UndefinedPhase(Exception):
     """Exception regarding undefined phases."""
     def __init__(self, phase): super().__init__(repr(phase))
+
+class NoEquilibrium(Exception):
+    """Exception regarding an attempt to solve phase equilibrium when not applicable."""
 
 class DimensionError(ValueError):
     """ValueError regarding wrong dimensions."""
