@@ -1903,7 +1903,7 @@ class Stream:
     @phases.setter
     def phases(self, phases):
         if self.phases == phases: return
-        if self._link: raise RuntimeError('cannot convert linked stream')
+        if self._link: self.unlink()
         if len(phases) == 1:
             self.phase = phases[0]
         else:

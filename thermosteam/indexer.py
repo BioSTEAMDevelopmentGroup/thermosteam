@@ -361,6 +361,7 @@ class MaterialIndexer(Indexer):
         return self._data.sum(0)
     
     def copy_like(self, other):
+        if self is other: return
         if isa(other, ChemicalIndexer):
             self.empty()
             other_data = other._data
