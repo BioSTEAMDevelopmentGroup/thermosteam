@@ -1368,7 +1368,7 @@ class Chemical:
               Tb=None, Tc=None, Pc=None, Vc=None, omega=None,
               Tt=None, Pt=None, Hf=None, S0=None, LHV=None, combustion=None,
               HHV=None, Hfus=None, dipole=None,
-              similarity_variable=None, iscyclic_aliphatic=None,
+              similarity_variable=None, iscyclic_aliphatic=None, synonyms=None,
               *, metadata=None, phase=None):
         """
         Reset all chemical properties.
@@ -1410,7 +1410,7 @@ class Chemical:
             MW = compute_molecular_weight(formula)
         self._init_names(CAS, smiles, InChI, InChI_key, 
                          pubchemid, iupac_name, common_name,
-                         formula)
+                         formula, synonyms)
         self._init_groups(InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
             self._Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
@@ -1451,7 +1451,7 @@ class Chemical:
     ### Initializers ###
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
-                    pubchemid, iupac_name, common_name, formula):
+                    pubchemid, iupac_name, common_name, formula, synonyms):
         self._CAS = CAS
         self._smiles = smiles
         self._InChI = InChI
@@ -1459,7 +1459,7 @@ class Chemical:
         self._pubchemid = pubchemid
         self._iupac_name = iupac_name
         self._common_name = common_name
-        self._synonyms = set()
+        self._synonyms = set(synonyms or ())
         self._formula = formula
         
     def _init_groups(self, InChI_key):
