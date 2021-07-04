@@ -196,6 +196,7 @@ class ChemicalIndexer(Indexer):
         return material_array
     
     def copy_like(self, other):
+        if self is other: return
         if self.chemicals is other.chemicals:
             self._data[:] = other._data
         else:
