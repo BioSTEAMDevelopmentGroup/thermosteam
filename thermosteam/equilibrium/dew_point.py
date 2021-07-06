@@ -153,10 +153,13 @@ class DewPoint:
         f = self._T_error_ideal
         Tmin = self.Tmin
         Tmax = self.Tmax
-        x = zP.copy()
+        x = zP.copy() 
         args = (zP, x)
-        T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                 f(Tmin, *args), f(Tmax, *args),
+        fmin = f(Tmin, *args)
+        if fmin > 0.: return Tmin, x
+        fmax = f(Tmax, *args)
+        if fmax < 0.: return Tmax, x
+        T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, 
                                  None, 1e-9, 5e-12, args,
                                  checkiter=False, checkbounds=False)
         return T, x

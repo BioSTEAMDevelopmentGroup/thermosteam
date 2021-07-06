@@ -11,7 +11,7 @@ __all__ = ('repr_IDs_data', 'repr_kwargs', 'repr_kwarg', 'repr_couples',
            'repr_listed_values', 'repr_obj')
     
 def repr_IDs_data(IDs, data, dlim=", ", start=None): # Used for Indexer and Stream representation
-    return (start or dlim) + dlim.join([f"{ID}={i:.4g}" for ID, i in zip(IDs, data) if i])
+    return (dlim if start is None else start) + dlim.join([f"{ID}={i:.4g}" for ID, i in zip(IDs, data) if i])
 
 def repr_kwargs(kwargs, dlim=", ", start=None):
     """

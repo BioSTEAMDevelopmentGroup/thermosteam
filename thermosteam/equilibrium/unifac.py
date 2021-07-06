@@ -864,8 +864,8 @@ class GroupCounts(dict):
     def copy(self):
         return self.__class__(self)
     
-    def set_group_counts_by_name(self, group_counts: dict):
-        self.clear()
+    def set_group_counts_by_name(self, group_counts: dict, reset=True):
+        if reset: self.clear()
         ids_by_group_name = self.ids_by_group_name
         for name, count in group_counts.items():
             key = ids_by_group_name[name]

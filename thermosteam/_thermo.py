@@ -199,36 +199,6 @@ class Thermo:
             raise ValueError(f"can only convert '{type(chemical).__name__}' object to chemical")
         return chemical
     
-    def subgroup(self, IDs):
-        """
-        Create a Thermo object from a subset of chemicals.
-
-        Parameters
-        ----------
-        IDs : Iterable[str]
-            Names of chemicals.
-
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
-        >>> thermo_water = thermo.subgroup(['Water'])
-        >>> thermo_water.show()
-        Thermo(
-            chemicals=CompiledChemicals([Water]),
-            mixture=Mixture(
-                rule='ideal', ...
-                include_excess_energies=False
-            ),
-            Gamma=DortmundActivityCoefficients,
-            Phi=IdealFugacityCoefficients,
-            PCF=IdealPoyintingCorrectionFactors
-        )
-        
-        """
-        chemicals = self.chemicals.subgroup(IDs)
-        return type(self)(chemicals, None, self.Gamma, self.Phi, self.PCF)
-    
     def __repr__(self):
         return f"{type(self).__name__}(chemicals={self.chemicals}, mixture={self.mixture}, Gamma={self.Gamma.__name__}, Phi={self.Phi.__name__}, PCF={self.PCF.__name__})"
     

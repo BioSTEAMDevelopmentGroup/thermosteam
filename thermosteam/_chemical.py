@@ -36,6 +36,7 @@ from chemicals.reaction import (
 from chemicals.elements import (
     similarity_variable as compute_similarity_variable, 
     molecular_weight as compute_molecular_weight,
+    atoms_to_Hill,
     get_atoms,
 )
 from chemicals.viscosity import viscosity_handle
@@ -1311,6 +1312,10 @@ class Chemical:
         """dict[str: int] Atom-count pairs based on formula."""
         formula = self._formula
         return get_atoms(formula) if formula else {}
+    @atoms.setter
+    def atoms(self, atoms):
+        """dict[str: int] Atom-count pairs based on formula."""
+        self.formula = atoms_to_Hill(atoms)
     
     def get_combustion_reaction(self, chemicals=None, conversion=1.0):
         """Return a Reaction object defining the combustion of this chemical.

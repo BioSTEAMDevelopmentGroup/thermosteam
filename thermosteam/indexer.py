@@ -13,22 +13,25 @@ from . import utils
 from .exceptions import UndefinedChemical
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple, check_phase
 from free_properties import PropertyFactory, property_array
+from collections.abc import Iterable
 import numpy as np
 
-__all__ = ('ChemicalIndexer',
-           'MaterialIndexer',
-           'ChemicalMolarFlowIndexer', 
-           'MolarFlowIndexer',
-           'ChemicalMassFlowIndexer', 
-           'MassFlowIndexer',
-           'ChemicalVolumetricFlowIndexer',
-           'VolumetricFlowIndexer',
-           'MassFlowProperty',
-           'VolumetricFlowProperty')
+__all__ = (
+    'ChemicalSplitIndexer',
+    'ChemicalIndexer',
+    'MaterialIndexer',
+    'ChemicalMolarFlowIndexer', 
+    'MolarFlowIndexer',
+    'ChemicalMassFlowIndexer', 
+    'MassFlowIndexer',
+    'ChemicalVolumetricFlowIndexer',
+    'VolumetricFlowIndexer',
+    'MassFlowProperty',
+    'VolumetricFlowProperty'
+)
 
 # %% Utilities
 
-isa = isinstance
 _new = object.__new__
 
 def raise_material_indexer_index_error():
@@ -50,12 +53,18 @@ def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
+
 class ChemicalIndex:
-    __slots__ = ('value')
+    __slots__ = ('value',)
     def __init__(self, value):
         self.value = value
     def __repr__(self): # pragma: no cover
         return f"{type(self).__name__}({self.value})"
+
+class ChemicalGroupIndex:
+    __slots__ = ChemicalIndex.__slots__
+    __init__ = ChemicalIndex.__init__
+    __repr__ = ChemicalIndex.__repr__
 
 
 # %% Abstract indexer
@@ -114,6 +123,141 @@ class Indexer:
 # %% Phase data
 
 @utils.chemicals_user
+class ChemicalSplitIndexer(Indexer):
+    """
+    Create a ChemicalSplitIndexer that can index a single-phase, 1d-array given
+    chemical IDs.
+    
+    Parameters
+    ----------
+    chemicals : Chemicals
+        Required to define the chemicals that are present.
+    **ID_data : float
+        ID-value pairs
+    
+    """
+    __slots__ = ('_chemicals',)
+
+    def __new__(cls, chemicals=None, **ID_data):
+        if ID_data:
+            chemicals = tmo.settings.get_default_chemicals(chemicals)
+            self = cls.from_data(chemicals.kwarray(ID_data), chemicals)
+        else:
+            self = cls.blank(chemicals)
+        return self
+    
+    def __reduce__(self):
+        return self.from_data, (self._data, self._chemicals, False)
+    
+    @classmethod
+    def blank(cls, chemicals=None):
+        self = _new(cls)
+        self._load_chemicals(chemicals)
+        self._data = np.zeros(self._chemicals.size, float)
+        return self
+    
+    @classmethod
+    def from_data(cls, data, chemicals=None, check_data=True):
+        self = _new(cls)
+        self._load_chemicals(chemicals)
+        if check_data:
+            assert data.ndim == 1, 'data must be a 1d numpy array'
+            assert data.size == self._chemicals.size, ('size of data must be equal to '
+                                                       'size of chemicals')
+            assert (data <= 1.).all(), 'data must be less or equal to one'
+        self._data = data
+        return self
+    
+    def __getitem__(self, key):
+        chemicals = self._chemicals
+        index = chemicals.get_index(key)
+        try:
+            return self._data[index]
+        except IndexError:
+            isa = isinstance
+            data = self._data
+            if isa(index, ChemicalGroupIndex):
+                return data[index.value]
+            else:
+                lst = []
+                for s in index:
+                    if isa(s, ChemicalGroupIndex): 
+                        lst.append(data[s.value])
+                    else:
+                        lst.append(data[s])
+                return np.array(lst, dtype=object)
+    
+    def __setitem__(self, key, data):
+        index = self._chemicals.get_index(key)
+        try:
+            self._data[index] = data
+        except IndexError:
+            local_data = self._data
+            isa = isinstance
+            if isa(index, ChemicalGroupIndex):
+                local_data[index.value] = data
+            else:
+                if not isa(data, Iterable): data = [data] * len(index)
+                for i, x in zip(index, data):
+                    if isa(i, ChemicalGroupIndex):
+                        local_data[i.value] = x
+                    else:
+                        local_data[i] = x
+
+    def __format__(self, tabs=""):
+        if not tabs: tabs = 1
+        tabs = int(tabs) 
+        tab = tabs*4*" "
+        if tab:
+            dlim = ",\n" + tab
+        else:
+            dlim = ", "
+        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self._data, dlim, start='')
+        return f"{type(self).__name__}({ID_data})"
+    
+    def __repr__(self):
+        return self.__format__()
+    
+    def _info(self, N):
+        """Return string with all specifications."""
+        IDs = self.chemicals.IDs
+        data = self.data
+        IDs, data = nonzeros(IDs, data)
+        N_IDs = len(IDs)
+        if N_IDs == 0:
+            return f"{type(self).__name__}: (all zeros)"
+        else:
+            basic_info = f"{type(self).__name__}:\n "
+        new_line = '\n '
+        data_info = ''
+        lengths = [len(i) for i in IDs]
+        maxlen = max(lengths) + 1
+        N_max = N or tmo.Stream.display_units.N
+        too_many_chemicals = N_IDs > N_max
+        N = N_max if too_many_chemicals else N_IDs
+        for i in range(N):
+            spaces = ' ' * (maxlen - lengths[i])
+            if i != 0:
+                data_info += new_line
+            data_info += IDs[i] + spaces + f' {data[i]:.3g}'
+        if too_many_chemicals:
+            data_info += new_line + '...'
+        return (basic_info
+              + data_info)
+
+    def show(self, N=None):
+        """Print all specifications.
+        
+        Parameters
+        ----------
+        N: int, optional
+            Number of compounds to display.
+        
+        """
+        print(self._info(N))
+    _ipython_display_ = show
+
+@utils.chemicals_user
 class ChemicalIndexer(Indexer):
     """
     Create a ChemicalIndexer that can index a single-phase, 1d-array given
@@ -152,11 +296,36 @@ class ChemicalIndexer(Indexer):
         return self.from_data, (self._data, self._phase, self._chemicals, False)
     
     def __getitem__(self, key):
-        return self._data[self.get_index(key)]
+        chemicals = self._chemicals
+        index = chemicals.get_index(key)
+        try:
+            return self._data[index]
+        except IndexError:
+            isa = isinstance
+            data = self._data
+            if isa(index, ChemicalGroupIndex):
+                return data[index.value].sum()
+            else:
+                arr = np.zeros(len(index))
+                for d, s in enumerate(index):
+                    if isa(s, ChemicalGroupIndex): 
+                        arr[d] = data[s.value].sum()
+                    else:
+                        arr[d] = data[s]
+                return arr
     
     def __setitem__(self, key, data):
-        self._data[self.get_index(key)] = data
-    
+        index = self._chemicals.get_index(key)
+        try:
+            self._data[index] = data
+        except IndexError as e:
+            if isinstance(index, ChemicalGroupIndex):
+                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+            for i, k in zip(index, key): 
+                if isinstance(i, ChemicalGroupIndex):
+                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
+            raise e
+            
     def sum_across_phases(self):
         return self._data
     
@@ -295,17 +464,7 @@ class ChemicalIndexer(Indexer):
               + beginning
               + data_info)
 
-    def show(self, N=None):
-        """Print all specifications.
-        
-        Parameters
-        ----------
-        N: int, optional
-            Number of compounds to display.
-        
-        """
-        print(self._info(N))
-    _ipython_display_ = show
+    _ipython_display_ = show = ChemicalSplitIndexer.show 
       
 @utils.chemicals_user
 class MaterialIndexer(Indexer):
@@ -363,7 +522,7 @@ class MaterialIndexer(Indexer):
     
     def copy_like(self, other):
         if self is other: return
-        if isa(other, ChemicalIndexer):
+        if isinstance(other, ChemicalIndexer):
             self.empty()
             other_data = other._data
             phase_index = self.get_phase_index(other.phase)
@@ -542,18 +701,66 @@ class MaterialIndexer(Indexer):
     
     def __getitem__(self, key):
         index = self.get_index(key)
-        if isa(index, ChemicalIndex):
-            values = self._data[:, index.value].sum(0)
-        else:
-            values = self._data[index]
-        return values
+        try:
+            return self._data[index]
+        except IndexError:
+            isa = isinstance
+            if isa(index, ChemicalIndex):
+                index = index.value
+                try:
+                    values = self._data[:, index].sum(0)
+                except IndexError:
+                    if isa(index, ChemicalGroupIndex):
+                        values = self._data[:, index.value].sum()
+                    else:
+                        data = self._data
+                        values = np.zeros(len(index))
+                        for d, s in enumerate(index):
+                            if isa(s, ChemicalGroupIndex): 
+                                values[d] = data[:, s.value].sum()
+                            else:
+                                values[d] = data[:, s].sum()
+            else:
+                phase, index = index
+                if isa(index, ChemicalGroupIndex):
+                    if phase == slice(None):
+                        values = self._data[phase, index.value].sum(1)
+                    else:
+                        values = self._data[phase, index.value].sum()
+                else:
+                    data = self._data
+                    if phase == slice(None):
+                        values = np.zeros([len(self.phases), len(index)])
+                        for d, s in enumerate(index):
+                            if isa(s, ChemicalGroupIndex): 
+                                values[:, d] = data[phase, s.value].sum(1)
+                            else:
+                                values[:, d] = data[phase, s]
+                    else:
+                        values = np.zeros(len(index))
+                        for d, s in enumerate(index):
+                            if isa(s, ChemicalGroupIndex): 
+                                values[d] = data[phase, s.value].sum(1)
+                            else:
+                                values[d] = data[phase, s]
+            return values
     
     def __setitem__(self, key, data):
-        index = self.get_index(key)
-        if isa(index, ChemicalIndex):
-            raise IndexError("multiple phases present; must include phase key "
-                             "to set chemical data")                
-        self._data[index] = data
+        index = self.get_index(key)         
+        try:
+            self._data[index] = data
+        except IndexError as e:
+            if isinstance(index, ChemicalIndex):
+                raise IndexError("multiple phases present; must include phase key "
+                                 "to set chemical data")       
+            phase, index = index
+            _, key = key
+            if isinstance(index, ChemicalGroupIndex):
+                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+            for i, k in zip(index, key): 
+                if isinstance(i, ChemicalGroupIndex):
+                    raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+            raise e
     
     def get_index(self, key):
         cache = self._index_cache
@@ -573,6 +780,7 @@ class MaterialIndexer(Indexer):
         return index
     
     def _get_index(self, phase_IDs, undefined_chemical_error):
+        isa = isinstance
         if isa(phase_IDs, str):
             if len(phase_IDs) == 1: 
                 index = self.get_phase_index(phase_IDs)
@@ -685,8 +893,8 @@ class MaterialIndexer(Indexer):
             phases_data_info += beginning + data_info + '\n'
             
         return basic_info + phases_data_info.rstrip('\n')
-    show = ChemicalIndexer.show
-    _ipython_display_ = show
+    
+    _ipython_display_ = show = ChemicalIndexer.show   
     
 def _replace_indexer_doc(Indexer, Parent):
     doc = Parent.__doc__

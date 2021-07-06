@@ -132,8 +132,11 @@ class BubblePoint:
         args = (z_over_P, y)
         Tmin = self.Tmin
         Tmax = self.Tmax
-        T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                 f(Tmin, *args), f(Tmax, *args),
+        fmax = f(Tmin, *args)
+        if fmax < 0.: return Tmin, y
+        fmin = f(Tmax, *args)
+        if fmin > 0.: return Tmax, y
+        T = flx.IQ_interpolation(f, Tmin, Tmax, fmax, fmin, 
                                  None, 1e-9, 5e-12, args, 
                                  checkiter=False,
                                  checkbounds=False)

@@ -738,7 +738,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-        if self._F_mol_heavy: T_dew = self._dew_point.Tmax
+        if self._F_mol_heavy or T_dew < T_bubble: T_dew = self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = self.mixture.xH(self._phase_data, T_dew, P)
@@ -775,7 +775,9 @@ class VLE(Equilibrium, phases='lg'):
                                      H_hat_bubble - H_hat, H_hat_dew - H_hat,
                                      self._T, self.T_tol, self.H_hat_tol,
                                      (H_hat,), checkiter=False, checkbounds=False)
-            # self._T = thermal_condition.T = T
+            
+            
+            
             # Make sure enthalpy balance is correct
             self._T = thermal_condition.T = self.mixture.xsolve_T(
                 self._phase_data, H, T, P
@@ -830,7 +832,7 @@ class VLE(Equilibrium, phases='lg'):
         xV[:-1] = x
         xV[-1] = self._V
         xV = flx.aitken(f, xV, 1e-12, args, checkiter=False, 
-                       checkconvergence=False, convergenceiter=3)
+                       checkconvergence=False, convergenceiter=5)
         x = xV[:-1]
         self._V = V = xV[-1]
         x[x < 1e-32] = 1e-32
@@ -855,7 +857,7 @@ class VLE(Equilibrium, phases='lg'):
                            args=(Psats_over_P, T, P),
                            checkiter=False, 
                            checkconvergence=False, 
-                           convergenceiter=3)
+                           convergenceiter=5)
         self._v = v = self._F_mol * self._V * y
         mask = v > self._mol_vle
         v[mask] = self._mol_vle[mask]

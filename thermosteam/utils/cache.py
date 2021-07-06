@@ -36,6 +36,7 @@ class Cache:
             self.value = value = self.load(*self.args)
         return value
     
-def trim_cache(cache, size=100): # pragma: no cover
-    if cache.__len__() > size: 
-        del cache[cache.__iter__().__next__()]
+def trim_cache(cache): # pragma: no cover
+    if cache.__len__() > 500: 
+        iter = cache.__iter__()
+        for i in 100: del cache[iter.__next__()]

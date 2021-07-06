@@ -7,13 +7,26 @@
 # for license details.
 """
 """
+from collections.abc import Iterable
+
 __all__ = (
+    'flattened',
     'fill_like', 
     'getfields', 
     'setfields', 
     'copy_maybe', 
     'get_instance'
 )
+
+def flattened(lst):
+    flat = []
+    isa = isinstance
+    for i in lst:
+        if isa(i, Iterable):
+            flat.extend(flattened(i))
+        else:
+            flat.append(i)
+    return flat
 
 def fill_like(A, B, fields):
     setfield = setattr

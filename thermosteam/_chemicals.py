@@ -10,7 +10,7 @@
 from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
-from .indexer import ChemicalIndexer
+from .indexer import ChemicalIndexer, ChemicalGroupIndex, ChemicalSplitIndexer
 import thermosteam as tmo
 import numpy as np
 
@@ -178,25 +178,6 @@ class Chemicals:
         else:
             for chemical in chemicals: self.append(chemical)
     
-    def subgroup(self, IDs):
-        """
-        Create a new subgroup of chemicals.
-        
-        Parameters
-        ----------
-        IDs : Iterable[str]
-              Chemical identifiers.
-              
-        Examples
-        --------
-        
-        >>> chemicals = Chemicals(['Water', 'Ethanol', 'Propane'])
-        >>> chemicals.subgroup(['Propane', 'Water'])
-        Chemicals([Propane, Water])
-        
-        """
-        return type(self)([getattr(self, i) for i in IDs])
-    
     def compile(self, skip_checks=False):
         """
         Cast as a CompiledChemicals object.
@@ -295,20 +276,22 @@ class CompiledChemicals(Chemicals):
         
     Attributes
     ----------
+    groups : dict[str, set[str]]
+        Groups of chemicals.
     tuple : tuple[Chemical]
-            All compiled chemicals.
+        All compiled chemicals.
     size : int
-           Number of chemicals.
+        Number of chemicals.
     IDs : tuple[str]
-          IDs of all chemicals.
+        IDs of all chemicals.
     CASs : tuple[str]
-           CASs of all chemicals
+        CASs of all chemicals
     MW : 1d ndarray
-         MWs of all chemicals.
+        MWs of all chemicals.
     Hf : 1d ndarray
-         Heats of formation of all chemicals.
+        Heats of formation of all chemicals.
     Hc : 1d ndarray
-         Heats of combustion of all chemicals.
+        Heats of combustion of all chemicals.
     vle_chemicals : tuple[Chemical]
         Chemicals that may have vapor and liquid phases.
     lle_chemicals : tuple[Chemical]
@@ -368,13 +351,19 @@ class CompiledChemicals(Chemicals):
                 'get_lle_indices', 'get_synonyms',
                 'get_vle_indices', 'iarray', 'ikwarray',
                 'index', 'indices', 'kwarray', 'refresh_constants', 
-                'set_synonym', 'subgroup') + self.IDs
+                'set_synonym') + self.IDs
     
     def __reduce__(self):
         return CompiledChemicals, (self.tuple,)
     
     def compile(self, skip_checks=False):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
+    
+    def define_group(self, name, IDs):
+        IDs = tuple(IDs)
+        index = utils.flattened(self.indices(IDs))
+        self._index[name] = ChemicalGroupIndex(index)
+        self.__dict__[name] = [self.tuple[i] for i in index]
     
     def refresh_constants(self):
         """
@@ -429,6 +418,7 @@ class CompiledChemicals(Chemicals):
         size = len(IDs)
         index = tuple_(range(size))
         for i in chemicals: dct[i.CAS] = i
+        dct['groups'] = {}
         dct['tuple'] = chemicals
         dct['size'] = size
         dct['IDs'] = IDs
@@ -630,31 +620,6 @@ class CompiledChemicals(Chemicals):
         formula_array.setflags(0)
         return formula_array
     
-    def subgroup(self, IDs):
-        """
-        Create a new subgroup of chemicals.
-        
-        Parameters
-        ----------
-        IDs : Iterable[str]
-              Chemical identifiers.
-              
-        Examples
-        --------
-        >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'], cache=True)
-        >>> chemicals.subgroup(['Propane', 'Water'])
-        CompiledChemicals([Propane, Water])
-        
-        """
-        chemicals = self[IDs]
-        new = Chemicals(chemicals)
-        new.compile()
-        for i in new.IDs:
-            for j in self.get_synonyms(i):
-                try: new.set_synonym(i, j)
-                except: pass
-        return new
-    
     def get_parsable_synonym(self, ID):
         """
         Return a synonym of the given chemical identifier that can be 
@@ -827,18 +792,31 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
-        >>> chemical_indexer = chemicals.iarray(['Water', 'Ethanol'], [2., 1.])
-        >>> chemical_indexer.show()
+        >>> indexer = chemicals.iarray(['Water', 'Ethanol'], [2., 1.])
+        >>> indexer.show()
         ChemicalIndexer:
          Water    2
          Ethanol  1
         
         Note that indexers allow for computationally efficient indexing using identifiers:
             
-        >>> chemical_indexer['Ethanol', 'Water']
+        >>> indexer['Ethanol', 'Water']
         array([1., 2.])
-        >>> chemical_indexer['Ethanol']
+        >>> indexer['Ethanol']
         1.0
+        
+        Index the sum of a chemical group:
+            
+        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
+        >>> indexer['Methanol', 'Ethanol'] = [0.5, 2.0]
+        >>> indexer['Alcohol']
+        2.5
+        
+        Note that you cannot set values vy chemical group:
+        
+        >>> indexer['Alcohol'] = 2.0
+        Traceback (most recent call last):
+        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
         
         """
         array = self.array(IDs, data)
@@ -859,18 +837,32 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
-        >>> chemical_indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))
-        >>> chemical_indexer.show()
+        >>> indexer = chemicals.ikwarray(dict(Water=2., Ethanol=1.))
+        >>> indexer.show()
         ChemicalIndexer:
          Water    2
          Ethanol  1
         
-        Note that indexers allow for computationally efficient indexing using identifiers:
+        Note that chemical indexers allow for computationally efficient 
+        indexing using identifiers:
             
-        >>> chemical_indexer['Ethanol', 'Water']
+        >>> indexer['Ethanol', 'Water']
         array([1., 2.])
-        >>> chemical_indexer['Ethanol']
+        >>> indexer['Ethanol']
         1.0
+        
+        Index the sum of a chemical group:
+            
+        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
+        >>> indexer['Methanol', 'Ethanol'] = [0.5, 2.0]
+        >>> indexer['Alcohol']
+        2.5
+        
+        Note that you cannot set values vy chemical group:
+        
+        >>> indexer['Alcohol'] = 2.0
+        Traceback (most recent call last):
+        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
         
         """
         array = self.kwarray(ID_data)
@@ -878,7 +870,7 @@ class CompiledChemicals(Chemicals):
 
     def isplit(self, split, order=None):
         """
-        Create a chemical indexer that represents chemical splits.
+        Create a chemical-split indexer that represents chemical splits.
     
         Parameters
         ----------   
@@ -895,53 +887,73 @@ class CompiledChemicals(Chemicals):
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
-        >>> chemical_indexer = chemicals.isplit(dict(Water=0.5, Ethanol=1.))
-        >>> chemical_indexer.show()
-        ChemicalIndexer:
+        >>> indexer = chemicals.isplit(dict(Water=0.5, Ethanol=1.))
+        >>> indexer.show()
+        ChemicalSplitIndexer:
          Water    0.5
          Ethanol  1
         
         From iterable given the order:
         
-        >>> chemical_indexer = chemicals.isplit([0.5, 1], ['Water', 'Ethanol'])
-        >>> chemical_indexer.show()
-        ChemicalIndexer:
+        >>> indexer = chemicals.isplit([0.5, 1], ['Water', 'Ethanol'])
+        >>> indexer.show()
+        ChemicalSplitIndexer:
          Water    0.5
          Ethanol  1
            
         From a fraction:
         
-        >>> chemical_indexer = chemicals.isplit(0.75)
-        >>> chemical_indexer.show()
-        ChemicalIndexer:
+        >>> indexer = chemicals.isplit(0.75)
+        >>> indexer.show()
+        ChemicalSplitIndexer:
          Water     0.75
          Methanol  0.75
          Ethanol   0.75
             
         From an iterable (assuming same order as the Chemicals object):
         
-        >>> chemical_indexer = chemicals.isplit([0.5, 0, 1])
-        >>> chemical_indexer.show()
-        ChemicalIndexer:
+        >>> indexer = chemicals.isplit([0.5, 0, 1])
+        >>> indexer.show()
+        ChemicalSplitIndexer:
          Water    0.5
          Ethanol  1
-            
+        
+        Define splits by group:
+        
+        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol']) 
+        >>> indexer['Alcohol'] = 0.8
+        >>> indexer.show()
+        ChemicalSplitIndexer:
+         Water     0.5
+         Methanol  0.8
+         Ethanol   0.8
+        
+        This is possible because ChemicalSplitIndexer objects can use nested
+        indices with broadcasting:
+        
+        >>> indexer['Alcohol'] = [0.70, 0.80]
+        >>> indexer['Alcohol']
+        array([0.7, 0.8])
+        
+        >>> indexer['Water', 'Alcohol'] = [0.2, [0.6, 0.7]]
+        >>> indexer['Water', 'Alcohol']
+        array([0.2, array([0.6, 0.7])], dtype=object)
+
         """
         if isinstance(split, dict):
             assert not order, "cannot pass 'order' key word argument when split is a dictionary"
             order, split = zip(*split.items())
         
         if order:
-            isplit = self.iarray(order, split)
+            isplit = ChemicalSplitIndexer.blank(chemicals=self)
+            isplit[tuple(order)] = split
         elif hasattr(split, '__len__'):
-            isplit = ChemicalIndexer.from_data(np.asarray(split),
-                                               phase=None,
-                                               chemicals=self)
+            isplit = ChemicalSplitIndexer.from_data(np.asarray(split),
+                                                    chemicals=self)
         else:
             split = split * np.ones(self.size)
-            isplit = ChemicalIndexer.from_data(split,
-                                               phase=None,
-                                               chemicals=self)
+            isplit = ChemicalSplitIndexer.from_data(split,
+                                                    chemicals=self)
         return isplit
 
     def index(self, ID):
