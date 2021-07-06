@@ -810,7 +810,7 @@ class CompiledChemicals(Chemicals):
         >>> indexer['Alcohol']
         2.5
         
-        Note that you cannot set values vy chemical group:
+        Note that you cannot set values by chemical group:
         
         >>> indexer['Alcohol'] = 2.0
         Traceback (most recent call last):
