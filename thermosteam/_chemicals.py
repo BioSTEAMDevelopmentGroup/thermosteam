@@ -276,8 +276,6 @@ class CompiledChemicals(Chemicals):
         
     Attributes
     ----------
-    groups : dict[str, set[str]]
-        Groups of chemicals.
     tuple : tuple[Chemical]
         All compiled chemicals.
     size : int
