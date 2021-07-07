@@ -10,7 +10,7 @@
 from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
-from .indexer import ChemicalIndexer, ChemicalGroupIndex, ChemicalSplitIndexer
+from .indexer import ChemicalIndexer, ChemicalGroupIndex, SplitIndexer
 import thermosteam as tmo
 import numpy as np
 
@@ -358,6 +358,97 @@ class CompiledChemicals(Chemicals):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
     
     def define_group(self, name, IDs):
+        """
+        Define a group of chemicals.
+        
+        Parameters
+        ----------
+        name : str
+            Name of group.
+        IDs : List[str]
+            IDs of chemicals in the group.
+            
+        Examples
+        --------
+        Create a chemical group and get the index:
+        
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
+        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
+        >>> chemicals.get_index('Alcohol')
+        ChemicalGroupIndex([1, 2])
+        >>> chemicals.get_index(('Water', 'Alcohol'))
+        [0, ChemicalGroupIndex([1, 2])]
+        
+        By defining a chemical group, you can conviniently use indexers
+        to retrieve the total value of the group:
+            
+        >>> # Single phase stream case
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> s1 = tmo.Stream(ID='s1', Water=2)
+        >>> s1.imol['Alcohol']
+        0.
+        >>> s1.imol['Methanol', 'Ethanol'] = [2., 1.]
+        >>> s1.imol['Water', 'Alcohol']
+        array([2., 3.])
+        
+        >>> # Multi-phase stream case
+        >>> s2 = tmo.Stream(ID='s2', Water=2, Methanol=1, Ethanol=1)
+        >>> s2.vle(V=0.5, P=101325)
+        >>> s2.imol['Alcohol']
+        2.0
+        >>> s2.imol['l', 'Alcohol']
+        0.678
+        >>> s2.imol['l', ('Water', 'Alcohol')]
+        array([1.322, 0.678])
+        
+        Note that groups cannot be set using stream indexers as they represent 
+        the sum of chemicals in the group without a defined composition:
+            
+        >>> s1.imol['Alcohol'] = 3.
+        Traceback (most recent call last):
+        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        
+        >>> s2.imol['Alcohol'] = 1.
+        Traceback (most recent call last):
+        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        
+        For SplitIndexer objects, which reflect the separation of chemicals 
+        in two streams, getting and setting by chemical groups is OK because
+        group names correspond to nested indexes:
+            
+        >>> # Create a split-indexer
+        >>> indexer = chemicals.isplit(0.7)
+        >>> indexer.show()
+        SplitIndexer:
+         Water     0.7
+         Methanol  0.7
+         Ethanol   0.7
+        
+        >>> # Normal index
+        >>> indexer['Alcohol'] = [0.50, 0.80] # Methanol and ethanol
+        >>> indexer['Alcohol']
+        array([0.5, 0.8])
+        
+        >>> # Broadcasted index
+        >>> indexer['Alcohol'] = 0.9
+        >>> indexer['Alcohol']
+        array([0.9, 0.9])
+        
+        >>> # Nested index
+        >>> indexer['Water', 'Alcohol'] = [0.2, [0.6, 0.7]]
+        >>> indexer['Water', 'Alcohol']
+        array([0.2, array([0.6, 0.7])], dtype=object)
+        
+        >>> # Broadcasted and nested index
+        >>> indexer['Water', 'Alcohol'] = [0.2, 0.8]
+        >>> indexer['Water', 'Alcohol']
+        array([0.2, array([0.8, 0.8])], dtype=object)
+        
+        This feature allows splits to be easily defined for groups of chemicals 
+        in BioSTEAM.
+        
+        """
         IDs = tuple(IDs)
         index = utils.flattened(self.indices(IDs))
         self._index[name] = ChemicalGroupIndex(index)
@@ -803,19 +894,6 @@ class CompiledChemicals(Chemicals):
         >>> indexer['Ethanol']
         1.0
         
-        Index the sum of a chemical group:
-            
-        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
-        >>> indexer['Methanol', 'Ethanol'] = [0.5, 2.0]
-        >>> indexer['Alcohol']
-        2.5
-        
-        Note that you cannot set values by chemical group:
-        
-        >>> indexer['Alcohol'] = 2.0
-        Traceback (most recent call last):
-        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
-        
         """
         array = self.array(IDs, data)
         return ChemicalIndexer.from_data(array, chemicals=self)
@@ -849,26 +927,13 @@ class CompiledChemicals(Chemicals):
         >>> indexer['Ethanol']
         1.0
         
-        Index the sum of a chemical group:
-            
-        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
-        >>> indexer['Methanol', 'Ethanol'] = [0.5, 2.0]
-        >>> indexer['Alcohol']
-        2.5
-        
-        Note that you cannot set values vy chemical group:
-        
-        >>> indexer['Alcohol'] = 2.0
-        Traceback (most recent call last):
-        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
-        
         """
         array = self.kwarray(ID_data)
         return ChemicalIndexer.from_data(array, chemicals=self)
 
     def isplit(self, split, order=None):
         """
-        Create a chemical-split indexer that represents chemical splits.
+        Create a SplitIndexer object that represents chemical splits.
     
         Parameters
         ----------   
@@ -887,7 +952,7 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> indexer = chemicals.isplit(dict(Water=0.5, Ethanol=1.))
         >>> indexer.show()
-        ChemicalSplitIndexer:
+        SplitIndexer:
          Water    0.5
          Ethanol  1
         
@@ -895,7 +960,7 @@ class CompiledChemicals(Chemicals):
         
         >>> indexer = chemicals.isplit([0.5, 1], ['Water', 'Ethanol'])
         >>> indexer.show()
-        ChemicalSplitIndexer:
+        SplitIndexer:
          Water    0.5
          Ethanol  1
            
@@ -903,7 +968,7 @@ class CompiledChemicals(Chemicals):
         
         >>> indexer = chemicals.isplit(0.75)
         >>> indexer.show()
-        ChemicalSplitIndexer:
+        SplitIndexer:
          Water     0.75
          Methanol  0.75
          Ethanol   0.75
@@ -912,30 +977,9 @@ class CompiledChemicals(Chemicals):
         
         >>> indexer = chemicals.isplit([0.5, 0, 1])
         >>> indexer.show()
-        ChemicalSplitIndexer:
+        SplitIndexer:
          Water    0.5
          Ethanol  1
-        
-        Define splits by group:
-        
-        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol']) 
-        >>> indexer['Alcohol'] = 0.8
-        >>> indexer.show()
-        ChemicalSplitIndexer:
-         Water     0.5
-         Methanol  0.8
-         Ethanol   0.8
-        
-        This is possible because ChemicalSplitIndexer objects can use nested
-        indices with broadcasting:
-        
-        >>> indexer['Alcohol'] = [0.70, 0.80]
-        >>> indexer['Alcohol']
-        array([0.7, 0.8])
-        
-        >>> indexer['Water', 'Alcohol'] = [0.2, [0.6, 0.7]]
-        >>> indexer['Water', 'Alcohol']
-        array([0.2, array([0.6, 0.7])], dtype=object)
 
         """
         if isinstance(split, dict):
@@ -943,14 +987,14 @@ class CompiledChemicals(Chemicals):
             order, split = zip(*split.items())
         
         if order:
-            isplit = ChemicalSplitIndexer.blank(chemicals=self)
+            isplit = SplitIndexer.blank(chemicals=self)
             isplit[tuple(order)] = split
         elif hasattr(split, '__len__'):
-            isplit = ChemicalSplitIndexer.from_data(np.asarray(split),
+            isplit = SplitIndexer.from_data(np.asarray(split),
                                                     chemicals=self)
         else:
             split = split * np.ones(self.size)
-            isplit = ChemicalSplitIndexer.from_data(split,
+            isplit = SplitIndexer.from_data(split,
                                                     chemicals=self)
         return isplit
 

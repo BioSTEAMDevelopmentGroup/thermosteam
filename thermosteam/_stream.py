@@ -439,18 +439,26 @@ class Stream:
         """[str] ID of chemical with the largest mol fraction in stream."""
         return self.chemicals.tuple[self.mol.argmax()].ID
 
-    def disconnect(self):
-        """Disconnect stream from unit operations."""
-        sink = self._sink
+    def disconnect_source(self):
+        """Disconnect stream from source."""
         source = self._source
-        if sink:
-            ins = sink.ins
-            index = ins.index(self)
-            ins[index] = None
         if source:
             outs = source.outs
             index = outs.index(self)
             outs[index] = None
+
+    def disconnect_sink(self):
+        """Disconnect stream from sink."""
+        sink = self._sink
+        if sink:
+            ins = sink.ins
+            index = ins.index(self)
+            ins[index] = None
+
+    def disconnect(self):
+        """Disconnect stream from unit operations."""
+        self.disconnect_source()
+        self.disconnect_sink()
     
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""

@@ -17,7 +17,7 @@ from collections.abc import Iterable
 import numpy as np
 
 __all__ = (
-    'ChemicalSplitIndexer',
+    'SplitIndexer',
     'ChemicalIndexer',
     'MaterialIndexer',
     'ChemicalMolarFlowIndexer', 
@@ -123,9 +123,9 @@ class Indexer:
 # %% Phase data
 
 @utils.chemicals_user
-class ChemicalSplitIndexer(Indexer):
+class SplitIndexer(Indexer):
     """
-    Create a ChemicalSplitIndexer that can index a single-phase, 1d-array given
+    Create a SplitIndexer that can index a 1d-array given
     chemical IDs.
     
     Parameters
@@ -320,10 +320,10 @@ class ChemicalIndexer(Indexer):
             self._data[index] = data
         except IndexError as e:
             if isinstance(index, ChemicalGroupIndex):
-                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
             for i, k in zip(index, key): 
                 if isinstance(i, ChemicalGroupIndex):
-                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
+                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group") from None
             raise e
             
     def sum_across_phases(self):
@@ -464,7 +464,7 @@ class ChemicalIndexer(Indexer):
               + beginning
               + data_info)
 
-    _ipython_display_ = show = ChemicalSplitIndexer.show 
+    _ipython_display_ = show = SplitIndexer.show 
       
 @utils.chemicals_user
 class MaterialIndexer(Indexer):
@@ -740,7 +740,7 @@ class MaterialIndexer(Indexer):
                         values = np.zeros(len(index))
                         for d, s in enumerate(index):
                             if isa(s, ChemicalGroupIndex): 
-                                values[d] = data[phase, s.value].sum(1)
+                                values[d] = data[phase, s.value].sum()
                             else:
                                 values[d] = data[phase, s]
             return values
@@ -752,14 +752,14 @@ class MaterialIndexer(Indexer):
         except IndexError as e:
             if isinstance(index, ChemicalIndex):
                 raise IndexError("multiple phases present; must include phase key "
-                                 "to set chemical data")       
+                                 "to set chemical data") from None
             phase, index = index
             _, key = key
             if isinstance(index, ChemicalGroupIndex):
-                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
             for i, k in zip(index, key): 
                 if isinstance(i, ChemicalGroupIndex):
-                    raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+                    raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
             raise e
     
     def get_index(self, key):

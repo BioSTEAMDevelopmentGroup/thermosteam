@@ -778,6 +778,8 @@ class Reaction:
     def _rescale(self):
         """Scale stoichiometry to a per reactant basis."""
         new_scale = -self._stoichiometry[self._X_index]
+        if new_scale == 0.:
+            raise RuntimeError(f"reactant '{self.reactant}' does not participate in stoichiometric reaction")
         self._stoichiometry /= new_scale
     
     def __repr__(self):
@@ -948,16 +950,6 @@ class ReactionSet:
     def MWs(self):
         """[2d array] Molecular weights of all chemicals."""
         return self._chemicals.MW[np.newaxis, :]
-    
-    def _rescale(self):
-        """Scale stoichiometry to a per reactant basis."""
-        X_index = self._X_index
-        if self._phases:
-            index = (np.arange(len(X_index)), *zip(*X_index), np.newaxis)
-        else:
-            index = (np.arange(len(X_index)), X_index, np.newaxis)
-        new_scale = -self._stoichiometry[index]
-        self._stoichiometry /= new_scale
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join([repr(i) for i in self])}])"
