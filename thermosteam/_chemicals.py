@@ -10,7 +10,7 @@
 from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
-from .indexer import ChemicalIndexer, ChemicalGroupIndex, SplitIndexer
+from .indexer import ChemicalIndexer, SplitIndexer
 import thermosteam as tmo
 import numpy as np
 
@@ -376,9 +376,9 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = tmo.CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
         >>> chemicals.get_index('Alcohol')
-        ChemicalGroupIndex([1, 2])
+        [1, 2]
         >>> chemicals.get_index(('Water', 'Alcohol'))
-        [0, ChemicalGroupIndex([1, 2])]
+        [0, [1, 2]]
         
         By defining a chemical group, you can conviniently use indexers
         to retrieve the total value of the group:
@@ -451,7 +451,8 @@ class CompiledChemicals(Chemicals):
         """
         IDs = tuple(IDs)
         index = utils.flattened(self.indices(IDs))
-        self._index[name] = ChemicalGroupIndex(index)
+        self._index[name] = index
+        self._groups.add(name)
         self.__dict__[name] = [self.tuple[i] for i in index]
     
     def refresh_constants(self):
@@ -507,7 +508,6 @@ class CompiledChemicals(Chemicals):
         size = len(IDs)
         index = tuple_(range(size))
         for i in chemicals: dct[i.CAS] = i
-        dct['groups'] = {}
         dct['tuple'] = chemicals
         dct['size'] = size
         dct['IDs'] = IDs
@@ -519,6 +519,7 @@ class CompiledChemicals(Chemicals):
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
+        dct['_groups'] = set()
         repeated_names = set()
         names = set()
         all_names_list = []
@@ -579,126 +580,11 @@ class CompiledChemicals(Chemicals):
         
         Examples
         --------
+        >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol', 'Propane'], cache=True)
-        >>> chemicals.formula_array
-        array([[2., 6., 8.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 2., 3.],
-               [0., 0., 0.],
-               [1., 1., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.],
-               [0., 0., 0.]])
+        >>> chemicals.formula_array.sum(0)
+        array([ 3.,  9., 11.])
+        
         """
         try: return self._formula_array
         except: pass
@@ -1123,17 +1009,6 @@ class CompiledChemicals(Chemicals):
         TypeError: only strings, tuples, and ellipsis are valid index keys
 
         """
-        cache = self._index_cache
-        try: 
-            index = cache[IDs]
-        except KeyError: 
-            cache[IDs] = index = self._get_index(IDs)
-            utils.trim_cache(cache)
-        except TypeError:
-            raise TypeError("only strings, tuples, and ellipsis are valid index keys")
-        return index
-    
-    def _get_index(self, IDs):
         if isinstance(IDs, str):
             return self.index(IDs)
         elif isinstance(IDs, tuple):
@@ -1142,6 +1017,27 @@ class CompiledChemicals(Chemicals):
             return slice(None)
         else: # pragma: no cover
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")    
+    
+    def _get_index_and_kind(self, key):
+        index_cache = self._index_cache
+        if key in index_cache:
+            return index_cache[key]
+        else:
+            isa = isinstance
+            kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
+            if isa(key, str):
+                index = self.index(key)
+                if isa(index, list): kind = 1 
+            elif isa(key, tuple):
+                index = self.indices(key)
+                for i in index:
+                    if isa(i, list): kind = 2
+            elif key is ...:
+                index = slice(None)
+            else: # pragma: no cover
+                raise TypeError("only strings, tuples, and ellipsis are valid index keys")
+            index_cache[key] = index, kind
+        return index, kind
     
     def __len__(self):
         return self.size

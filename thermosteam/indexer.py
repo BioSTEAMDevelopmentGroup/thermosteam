@@ -53,20 +53,6 @@ def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
 
-
-class ChemicalIndex:
-    __slots__ = ('value',)
-    def __init__(self, value):
-        self.value = value
-    def __repr__(self): # pragma: no cover
-        return f"{type(self).__name__}({self.value})"
-
-class ChemicalGroupIndex:
-    __slots__ = ChemicalIndex.__slots__
-    __init__ = ChemicalIndex.__init__
-    __repr__ = ChemicalIndex.__repr__
-
-
 # %% Abstract indexer
     
 class Indexer:
@@ -147,7 +133,7 @@ class SplitIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._chemicals, False)
+        return self.from_data, (self._data, self._chemicals, False)        
     
     @classmethod
     def blank(cls, chemicals=None):
@@ -170,40 +156,29 @@ class SplitIndexer(Indexer):
     
     def __getitem__(self, key):
         chemicals = self._chemicals
-        index = chemicals.get_index(key)
-        try:
+        index, kind = chemicals._get_index_and_kind(key)
+        if kind == 0 or kind == 1:
             return self._data[index]
-        except IndexError:
-            isa = isinstance
+        elif kind == 2:
             data = self._data
-            if isa(index, ChemicalGroupIndex):
-                return data[index.value]
-            else:
-                lst = []
-                for s in index:
-                    if isa(s, ChemicalGroupIndex): 
-                        lst.append(data[s.value])
-                    else:
-                        lst.append(data[s])
-                return np.array(lst, dtype=object)
+            return np.array([data[i] for i in index], dtype=object)
+        else:
+            raise IndexError('unknown error')
     
     def __setitem__(self, key, data):
-        index = self._chemicals.get_index(key)
-        try:
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind == 0 or kind == 1:
             self._data[index] = data
-        except IndexError:
+        elif kind == 2:
             local_data = self._data
             isa = isinstance
-            if isa(index, ChemicalGroupIndex):
-                local_data[index.value] = data
+            if isa(data, Iterable):
+                for i, x in zip(index, data): local_data[i] = x
             else:
-                if not isa(data, Iterable): data = [data] * len(index)
-                for i, x in zip(index, data):
-                    if isa(i, ChemicalGroupIndex):
-                        local_data[i.value] = x
-                    else:
-                        local_data[i] = x
-
+                for i in index: local_data[i] = data
+        else:
+            raise IndexError('unknown error')
+                
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
         tabs = int(tabs) 
@@ -296,35 +271,36 @@ class ChemicalIndexer(Indexer):
         return self.from_data, (self._data, self._phase, self._chemicals, False)
     
     def __getitem__(self, key):
-        chemicals = self._chemicals
-        index = chemicals.get_index(key)
-        try:
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind == 0:
             return self._data[index]
-        except IndexError:
-            isa = isinstance
+        elif kind == 1:
+            return self._data[index].sum()
+        elif kind == 2:
+            arr = np.zeros(len(index))
             data = self._data
-            if isa(index, ChemicalGroupIndex):
-                return data[index.value].sum()
-            else:
-                arr = np.zeros(len(index))
-                for d, s in enumerate(index):
-                    if isa(s, ChemicalGroupIndex): 
-                        arr[d] = data[s.value].sum()
-                    else:
-                        arr[d] = data[s]
-                return arr
+            isa = isinstance
+            for d, s in enumerate(index):
+                if isa(s, list): 
+                    arr[d] = data[s].sum()
+                else:
+                    arr[d] = data[s]
+            return arr
+        else:
+            raise IndexError('unknown index error')
     
     def __setitem__(self, key, data):
-        index = self._chemicals.get_index(key)
-        try:
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind == 0:
             self._data[index] = data
-        except IndexError as e:
-            if isinstance(index, ChemicalGroupIndex):
-                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
+        elif kind == 1:
+            raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+        elif kind == 1:
             for i, k in zip(index, key): 
-                if isinstance(i, ChemicalGroupIndex):
-                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group") from None
-            raise e
+                if isinstance(i, list):
+                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
+        else:
+            raise IndexError('unknown error')
             
     def sum_across_phases(self):
         return self._data
@@ -346,7 +322,7 @@ class ChemicalIndexer(Indexer):
             else:
                 other_index, = np.where(idata)
                 IDs = ichemicals.IDs
-                self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self_index = chemicals.indices([IDs[i] for i in other_index])
                 data[self_index] += idata[other_index]
     
     def separate_out(self, other):
@@ -356,7 +332,7 @@ class ChemicalIndexer(Indexer):
             idata = other._data
             other_index, = np.where(idata)
             IDs = other._chemicals.IDs
-            self_index = self._chemicals.get_index(tuple([IDs[i] for i in other_index]))
+            self_index = self._chemicals.indices([IDs[i] for i in other_index])
             self._data[self_index] -= idata[other_index]
     
     def to_material_indexer(self, phases):
@@ -372,7 +348,7 @@ class ChemicalIndexer(Indexer):
             self.empty()
             other_index, = np.where(other._data)
             IDs = other.chemicals.IDs
-            self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+            self_index = self.chemicals.indices([IDs[i] for i in other_index])
             self._data[self_index] = other._data[other_index]
         self.phase = other.phase
     
@@ -531,7 +507,7 @@ class MaterialIndexer(Indexer):
             else:
                 other_index, = np.where(other_data)
                 IDs = other.chemicals.IDs
-                self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self_index = self.chemicals.indices([IDs[i] for i in other_index])
                 self._data[phase_index, self_index] += other._data[other_index]
         else:
             if self.chemicals is other.chemicals:
@@ -541,7 +517,7 @@ class MaterialIndexer(Indexer):
                 other_data = other._data
                 other_index, = np.where(other_data.any(0))
                 IDs = other.chemicals.IDs
-                self_index = self.chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self_index = self.chemicals.indices([IDs[i] for i in other_index])
                 self._data[:, self_index] = other_data[:, other_index]
     
     def mix_from(self, others):
@@ -561,7 +537,7 @@ class MaterialIndexer(Indexer):
                         idata = i._data
                         other_index, = np.where(idata.any(0))
                         IDs = i.chemicals.IDs
-                        self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                        self_index = chemicals.indices([IDs[i] for i in other_index])
                         data[:, self_index] += idata[:, other_index]
                 else:
                     if chemicals is i.chemicals:
@@ -573,7 +549,7 @@ class MaterialIndexer(Indexer):
                             if not idata.any(): continue
                             other_index, = np.where(idata)
                             IDs = i.chemicals.IDs
-                            self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                            self_index = chemicals.indices([IDs[i] for i in other_index])
                             data[get_phase_index(phase), self_index] += idata[other_index]
             elif isa(i, ChemicalIndexer):
                 if chemicals is i.chemicals:
@@ -581,7 +557,7 @@ class MaterialIndexer(Indexer):
                 else:
                     other_index, = np.where(idata != 0.)
                     IDs = i.chemicals.IDs
-                    self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                    self_index = chemicals.indices([IDs[i] for i in other_index])
                     data[get_phase_index(i.phase), self_index] += idata[other_index]
             else:
                 raise ValueError("can only mix from chemical or material indexers")
@@ -601,7 +577,7 @@ class MaterialIndexer(Indexer):
                     idata = other._data
                     other_index, = np.where(idata.any(0))
                     IDs = other.chemicals.IDs
-                    self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                    self_index = chemicals.indices([IDs[i] for i in other_index])
                     data[:, self_index] -= idata[:, other_index]
             else:
                 if chemicals is other.chemicals:
@@ -613,7 +589,7 @@ class MaterialIndexer(Indexer):
                         if not idata.any(): continue
                         other_index, = np.where(idata)
                         IDs = other.chemicals.IDs
-                        self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                        self_index = chemicals.indices([IDs[i] for i in other_index])
                         data[get_phase_index(phase), self_index] -= idata[other_index]
         elif isa(other, ChemicalIndexer):
             if chemicals is other.chemicals:
@@ -621,7 +597,7 @@ class MaterialIndexer(Indexer):
             else:
                 other_index, = np.where(idata != 0.)
                 IDs = other.chemicals.IDs
-                self_index = chemicals.get_index(tuple([IDs[i] for i in other_index]))
+                self_index = chemicals.indices([IDs[i] for i in other_index])
                 data[get_phase_index(other.phase), self_index] -= idata[other_index]
         else:
             raise ValueError("can only separate out from chemical or material indexers")
@@ -700,94 +676,92 @@ class MaterialIndexer(Indexer):
                                                LockedPhase(phase), self._chemicals, False)
     
     def __getitem__(self, key):
-        index = self.get_index(key)
-        try:
-            return self._data[index]
-        except IndexError:
-            isa = isinstance
-            if isa(index, ChemicalIndex):
-                index = index.value
-                try:
-                    values = self._data[:, index].sum(0)
-                except IndexError:
-                    if isa(index, ChemicalGroupIndex):
-                        values = self._data[:, index.value].sum()
-                    else:
-                        data = self._data
-                        values = np.zeros(len(index))
-                        for d, s in enumerate(index):
-                            if isa(s, ChemicalGroupIndex): 
-                                values[d] = data[:, s.value].sum()
-                            else:
-                                values[d] = data[:, s].sum()
-            else:
+        index, kind, sum_across_phases = self._get_index_data(key)
+        if sum_across_phases:
+            if kind == 0: # Normal
+                values = self._data[:, index].sum(0)
+            elif kind == 1: # Chemical group
+                values = self._data[:, index].sum()
+            elif kind == 2: # Nested chemical group
+                data = self._data
+                values = np.array([data[:, i].sum() for i in index], dtype=float)
+        else:
+            if kind == 0: # Normal
+                return self._data[index]
+            elif kind == 1: # Chemical group
                 phase, index = index
-                if isa(index, ChemicalGroupIndex):
-                    if phase == slice(None):
-                        values = self._data[phase, index.value].sum(1)
-                    else:
-                        values = self._data[phase, index.value].sum()
+                if phase == slice(None):
+                    values = self._data[phase, index].sum(1)
                 else:
-                    data = self._data
-                    if phase == slice(None):
-                        values = np.zeros([len(self.phases), len(index)])
-                        for d, s in enumerate(index):
-                            if isa(s, ChemicalGroupIndex): 
-                                values[:, d] = data[phase, s.value].sum(1)
-                            else:
-                                values[:, d] = data[phase, s]
-                    else:
-                        values = np.zeros(len(index))
-                        for d, s in enumerate(index):
-                            if isa(s, ChemicalGroupIndex): 
-                                values[d] = data[phase, s.value].sum()
-                            else:
-                                values[d] = data[phase, s]
-            return values
+                    values = self._data[phase, index].sum()
+            elif kind == 2: # Nested chemical group
+                data = self._data
+                isa = isinstance
+                phase, index = index
+                if phase == slice(None):
+                    values = np.zeros([len(self.phases), len(index)])
+                    for d, s in enumerate(index):
+                        if isa(s, list): 
+                            values[:, d] = data[phase, s].sum(1)
+                        else:
+                            values[:, d] = data[phase, s]
+                else:
+                    values = np.zeros(len(index))
+                    for d, s in enumerate(index):
+                        if isa(s, list): 
+                            values[d] = data[phase, s].sum()
+                        else:
+                            values[d] = data[phase, s]
+        return values
     
     def __setitem__(self, key, data):
-        index = self.get_index(key)         
-        try:
+        index, kind, sum_across_phases = self._get_index_data(key)
+        if sum_across_phases:
+            raise IndexError("multiple phases present; must include phase key "
+                             "to set chemical data")
+        if kind == 0:
             self._data[index] = data
-        except IndexError as e:
-            if isinstance(index, ChemicalIndex):
-                raise IndexError("multiple phases present; must include phase key "
-                                 "to set chemical data") from None
+        elif kind == 1: # Chemical group
             phase, index = index
-            _, key = key
-            if isinstance(index, ChemicalGroupIndex):
-                raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
+            if not sum_across_phases: _, key = key
+            raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+        elif kind == 2: # Nested chemical group
             for i, k in zip(index, key): 
-                if isinstance(i, ChemicalGroupIndex):
-                    raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group") from None
-            raise e
+                if isinstance(i, list):
+                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
+            raise IndexError('unknown error')
+        else:
+            raise IndexError('unknown error')
     
-    def get_index(self, key):
+    def _get_index_data(self, key):
         cache = self._index_cache
         try: 
-            index = cache[key]
+            index_data = cache[key]
         except KeyError:
             try:
-                index = self._chemicals.get_index(key)
+                index, kind = self._chemicals._get_index_and_kind(key)
             except UndefinedChemical as error:
-                index = self._get_index(key, error)
+                index, kind = self._get_index_and_kind(key, error)
+                sum_across_phases = False
             else:
-                index = ChemicalIndex(index)
-            cache[key] = index
+                sum_across_phases = True
+            cache[key] = index_data = (index, kind, sum_across_phases)
             utils.trim_cache(cache)
         except TypeError:
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")
-        return index
+        return index_data
     
-    def _get_index(self, phase_IDs, undefined_chemical_error):
+    def _get_index_and_kind(self, phase_IDs, undefined_chemical_error):
         isa = isinstance
         if isa(phase_IDs, str):
             if len(phase_IDs) == 1: 
                 index = self.get_phase_index(phase_IDs)
+                kind = 0
             else:
                 raise undefined_chemical_error
         elif phase_IDs is ...:
             index = slice(None)
+            kind = 0
         else:
             phase = phase_IDs[0]
             if isa(phase, str):
@@ -803,13 +777,9 @@ class MaterialIndexer(Indexer):
                 phase, IDs = phase_IDs
             except:
                 raise_material_indexer_index_error()
-            if isa(IDs, (str, tuple)):
-                index = (phase_index, self._chemicals.get_index(IDs))
-            elif IDs is ...:
-                index = (phase_index, IDs)
-            else:
-                raise TypeError("only strings, tuples, and ellipsis are valid index keys")
-        return index
+            chemical_index, kind = self._chemicals._get_index_and_kind(IDs)
+            index = (phase_index, chemical_index)
+        return index, kind
     
     def __iter__(self):
         """Iterate over phase-data pairs."""
