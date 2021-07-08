@@ -409,6 +409,10 @@ class CompiledChemicals(Chemicals):
         Traceback (most recent call last):
         IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
         
+        >>> s1.imol['Water', 'Alcohol'] = [3., 1.]
+        Traceback (most recent call last):
+        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        
         >>> s2.imol['Alcohol'] = 1.
         Traceback (most recent call last):
         IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
@@ -452,7 +456,6 @@ class CompiledChemicals(Chemicals):
         IDs = tuple(IDs)
         index = utils.flattened(self.indices(IDs))
         self._index[name] = index
-        self._groups.add(name)
         self.__dict__[name] = [self.tuple[i] for i in index]
     
     def refresh_constants(self):
@@ -519,7 +522,6 @@ class CompiledChemicals(Chemicals):
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
         dct['_index_cache'] = {}
-        dct['_groups'] = set()
         repeated_names = set()
         names = set()
         all_names_list = []

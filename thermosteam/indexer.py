@@ -295,7 +295,7 @@ class ChemicalIndexer(Indexer):
             self._data[index] = data
         elif kind == 1:
             raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
-        elif kind == 1:
+        elif kind == 2:
             for i, k in zip(index, key): 
                 if isinstance(i, list):
                     raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
