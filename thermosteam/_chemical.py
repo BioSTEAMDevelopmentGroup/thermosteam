@@ -126,14 +126,12 @@ def raise_helpful_handle_error(handle):
     var = handle.var
     if isinstance(handle, PhaseHandle):
         raise AttributeError(
-            f"cannot set '{var}'; use the `add_model` "
-            f"and the `set_model_priority` methods "
+            f"cannot set '{var}'; use `add_method` "
             f"to modify the thermodynamic properties for "
-            f"each phase (e.g. {var}.l.add_model(...))")
+            f"each phase (e.g. {var}.l.add_method(...))")
     elif isinstance(handle, ThermoModelHandle):
         raise AttributeError(
-            f"cannot set '{var}'; use the `{var}.add_model` "
-            f"and the `{var}.set_model_priority` methods to "
+            f"cannot set '{var}'; use `{var}.add_method` to "
             f"modify the thermodynamic property instead")
     else:
         raise Exception(
@@ -188,11 +186,13 @@ _functor_data = {'MW', 'Tm', 'Tb', 'Tt', 'Pt', 'Tc', 'Pc', 'Vc',
                  'Hfus', 'Sfus', 'omega', 'dipole',
                  'similarity_variable', 'iscyclic_aliphatic'}
 
-_checked_properties = ('phase_ref', 'eos', 'eos_1atm',
-                  'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 
-                  'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 
-                  'Dortmund', 'UNIFAC', 'PSRK', 'Hf', 'LHV', 'HHV',
-                  'combustion', *_functor_data)
+_checked_properties = (
+    'phase_ref', 'eos', 'eos_1atm',
+    'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 
+    'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 
+    'Dortmund', 'UNIFAC', 'PSRK', 'Hf', 'LHV', 'HHV',
+    'combustion', *_functor_data
+)
 
 _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
@@ -411,10 +411,10 @@ class Chemical:
     .. Note::
        All chemical property functors are available in the thermosteam.properties subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
     
-    A new model can be added easily to a model handle through the `add_model` method, for example:
+    A new model can be added easily to a model handle through the `add_method` method, for example:
         
     >>> # Set top_priority=True to place model in postion [0]
-    >>> @Water.Psat.add_model(Tmin=273.20, Tmax=473.20, top_priority=True)
+    >>> @Water.Psat.add_method(Tmin=273.20, Tmax=473.20)
     ... def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
     >>> Water.Psat.show()
@@ -430,9 +430,9 @@ class Chemical:
     [8] Sanjari
     [9] Edalat
 
-    The `add_model` method is a high level interface that even lets you create a constant model:
+    The `add_method` method is a high level interface that even lets you create a constant model:
         
-    >>> value = Water.V.l.add_model(1.687e-05, name='User constant')
+    >>> value = Water.V.l.add_method(1.687e-05, name='User constant')
     ... # Model is appended at the end by default
     >>> added_model = Water.V.l[-1]
     >>> added_model.show()
@@ -569,12 +569,12 @@ class Chemical:
         else:
             self = cls.blank(ID, CAS, phase_ref, phase=phase, **data)
         if phase:
-            if mu: self.mu.add_model(mu, top_priority=True)
-            if Cn: self.Cn.add_model(Cn, top_priority=True)
-            if kappa: self.kappa.add_model(kappa, top_priority=True)
-            if Cp: self.Cn.add_model(Cp * self.MW, top_priority=True)
-            if rho: self.V.add_model(fn.rho_to_V(rho, self.MW), top_priority=True)
-            if V: self.V.add_model(V, top_priority=True)
+            if mu: self.mu.add_method(mu)
+            if Cn: self.Cn.add_method(Cn)
+            if kappa: self.kappa.add_method(kappa)
+            if Cp: self.Cn.add_method(Cp * self.MW)
+            if rho: self.V.add_method(fn.rho_to_V(rho, self.MW))
+            if V: self.V.add_method(V)
         else:
             multi_phase_items = (('mu', mu),
                                  ('Cn', Cn),
@@ -584,10 +584,10 @@ class Chemical:
                                  ('V', V))
             for i,j in multi_phase_items:
                 if j: raise ValueError(f'must specify phase to set {i} model')
-        if sigma: self.sigma.add_model(sigma, top_priority=True)
-        if epsilon: self.epsilon.add_model(epsilon, top_priority=True)
-        if Psat: self.Psat.add_model(Psat, top_priority=True)
-        if Hvap: self.Hvap.add_model(Hvap, top_priority=True)
+        if sigma: self.sigma.add_method(sigma)
+        if epsilon: self.epsilon.add_method(epsilon)
+        if Psat: self.Psat.add_method(Psat)
+        if Hvap: self.Hvap.add_method(Hvap)
         if default: self.default()
         if cache:
             chemical_cache[ID] = self
@@ -1825,26 +1825,26 @@ class Chemical:
         else:
             MW = self._MW
         if 'sigma' in properties:
-            self._sigma.add_model(0.072055)
+            self._sigma.add_method(0.072055)
         if 'mu' in properties:
             mu = self._mu
             if hasfield(mu, 'l'):
-                mu.l.add_model(0.00091272)
+                mu.l.add_method(0.00091272)
             elif not mu:
-                mu.add_model(0.00091272)
+                mu.add_method(0.00091272)
         if 'V' in properties:
             V = self._V
             V_default = fn.rho_to_V(1000, MW)
             if hasfield(V, 'l'):
-                V.l.add_model(V_default)
+                V.l.add_method(V_default)
             elif not V:
-                V.add_model(V_default)
+                V.add_method(V_default)
         if 'kappa' in properties:
             kappa = self._kappa
             if hasfield(kappa, 'l'):
-                kappa.l.add_model(0.5942)
+                kappa.l.add_method(0.5942)
             if not kappa:
-                kappa.add_model(0.5942)
+                kappa.add_method(0.5942)
         if self._formula:
             if any([i in properties for i in ('HHV', 'LHV', 'combustion', 'Hf')]):
                 if 'Hf' in properties:
@@ -1882,7 +1882,7 @@ class Chemical:
         if 'Hf' in properties:
             self._Hf = 0
         if 'epsilon' in properties:
-            self._epsilon.add_model(0)
+            self._epsilon.add_method(0)
         if 'phase_ref' in properties:
             self._phase_ref = 'l'
         if 'eos' in properties:
@@ -1895,11 +1895,11 @@ class Chemical:
             getfield = getattr
             single_phase = self._locked_state
             if single_phase:
-                Cn.add_model(4.18*MW)
+                Cn.add_method(4.18*MW)
                 Cn_phase = Cn
             else:
                 Cn_phase = getfield(Cn, phase_ref)
-                Cn_phase.add_model(4.18*MW)
+                Cn_phase.add_method(4.18*MW)
             self.reset_free_energies()
         if not self._H:
             self.reset_free_energies()
