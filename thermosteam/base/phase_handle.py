@@ -7,13 +7,12 @@
 # for license details.
 """
 """
-from .thermo_model_handle import TDependentModelHandle, TPDependentModelHandle
 from .functor import functor_lookalike
 from ..utils import read_only, cucumber
 
 __all__ = ('PhaseHandle',
-           'PhaseTHandle', 'PhaseTPHandle',
-           'PhaseTHandleBuilder', 'PhaseTPHandleBuilder',
+           'PhaseTHandle', 
+           'PhaseTPHandle',
            'PhaseMixtureHandle',
            'PhaseFunctorBuilder',
            'PhaseTFunctorBuilder',
@@ -35,16 +34,6 @@ class PhaseHandle:
         setattr(self, 'l', l)
         setattr(self, 'g', g)
     
-    @classmethod
-    def blank(cls, var):
-        new = cls.__new__(cls)
-        setattr = object.__setattr__
-        setattr(new, 'var', var)
-        setattr(new, 's', None)
-        setattr(new, 'l', None)
-        setattr(new, 'g', None)
-        return new
-    
     @property
     def S(self): return self.s
     @property
@@ -62,9 +51,9 @@ class PhaseHandle:
     
     def copy(self):
         return self.__class__(self.var,
-                              self.s.copy(),
-                              self.l.copy(),
-                              self.g.copy())
+                              self.s.copy() if self.s else None,
+                              self.l.copy() if self.l else None,
+                              self.g.copy() if self.g else None)
     __copy__ = copy
     
     def show(self):
@@ -77,34 +66,12 @@ class PhaseHandle:
 class PhaseTHandle(PhaseHandle):
     __slots__ = ()
     
-    def __init__(self, var, s=None, l=None, g=None):
-        super().__init__(
-            var,
-            TDependentModelHandle(var + '.s') if s is None else s,
-            TDependentModelHandle(var + '.l') if l is None else l,
-            TDependentModelHandle(var + '.g') if g is None else g,
-        )
-    
-    def set_value(self, var, value):
-        for i in (self.s, self.l, self.g):
-            if i: i.set_value(var, value)
-    
     def __call__(self, phase, T, P=None):
         return getattr(self, phase)(T)
     
     
 class PhaseTPHandle(PhaseHandle):
     __slots__ = ()
-    
-    def __init__(self, var, s=None, l=None, g=None):
-        super().__init__(
-            var,
-            TPDependentModelHandle(var + '.s') if s is None else s,
-            TPDependentModelHandle(var + '.l') if l is None else l,
-            TPDependentModelHandle(var + '.g') if g is None else g,
-        )
-    
-    set_value = PhaseTHandle.set_value
     
     def __call__(self, phase, T, P):
         return getattr(self, phase)(T, P)
@@ -121,39 +88,6 @@ class PhaseMixtureHandle(PhaseHandle):
 
 # %% Builders
 
-class PhaseHandleBuilder:
-    __slots__ = ('var', 's', 'l', 'g', 'build_functors')
-    
-    def __init__(self, var, s, l, g, build_functors=False):
-        self.var = var
-        self.s = s
-        self.l = l
-        self.g = g
-        self.build_functors = build_functors
-        
-    def __call__(self, sdata, ldata, gdata, phase_handle=None):
-        if phase_handle is None: 
-            phase_handle = self.PhaseHandle(self.var)
-        phases = ('s', 'g', 'l')
-        builders = (self.s, self.g, self.l)
-        phases_data = (sdata, gdata, ldata)
-        for phase, builder, data in zip(phases, builders, phases_data):
-            if builder:
-                handle = getattr(phase_handle, phase)
-                builder.build(handle, *data)
-        return phase_handle
-
-
-class PhaseTHandleBuilder(PhaseHandleBuilder):
-    __slots__ = ()
-    PhaseHandle = PhaseTHandle
-    
-        
-class PhaseTPHandleBuilder(PhaseHandleBuilder):
-    __slots__ = ()
-    PhaseHandle = PhaseTPHandle
-        
-    
 class PhaseFunctorBuilder:
     __slots__ = ('var', 's', 'l', 'g', 'build_functors')
     
@@ -184,5 +118,5 @@ class PhaseTFunctorBuilder(PhaseFunctorBuilder):
 class PhaseTPFunctorBuilder(PhaseFunctorBuilder):
     __slots__ = ()
     PhaseHandle = PhaseTPHandle
-        
-        
+    
+    

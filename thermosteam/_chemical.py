@@ -1664,30 +1664,30 @@ class Chemical:
             
             # Enthalpy and entropy integrals
             if phase_ref != 'l' and has_Cnl and (Tm and Tb):
-                H_int_Tm_to_Tb_l = Cn_l.integrate_by_T(Tm, Tb)
-                S_int_Tm_to_Tb_l = Cn_l.integrate_by_T_over_T(Tm, Tb)
+                H_int_Tm_to_Tb_l = Cn_l.T_dependent_property_integral(Tm, Tb)
+                S_int_Tm_to_Tb_l = Cn_l.T_dependent_property_integral_over_T(Tm, Tb)
             else:
                 H_int_Tm_to_Tb_l = S_int_Tm_to_Tb_l = None
             if phase_ref == 's' and has_Cns and Tm:
-                H_int_T_ref_to_Tm_s = Cn_s.integrate_by_T(T_ref, Tm)
-                S_int_T_ref_to_Tm_s = Cn_s.integrate_by_T_over_T(T_ref, Tm)
+                H_int_T_ref_to_Tm_s = Cn_s.T_dependent_property_integral(T_ref, Tm)
+                S_int_T_ref_to_Tm_s = Cn_s.T_dependent_property_integral_over_T(T_ref, Tm)
             else:
                 H_int_T_ref_to_Tm_s = S_int_T_ref_to_Tm_s = None
             if phase_ref == 'g' and has_Cng and Tb:
-                H_int_Tb_to_T_ref_g = Cn_g.integrate_by_T(Tb, T_ref)
-                S_int_Tb_to_T_ref_g = Cn_g.integrate_by_T_over_T(Tb, T_ref)
+                H_int_Tb_to_T_ref_g = Cn_g.T_dependent_property_integral(Tb, T_ref)
+                S_int_Tb_to_T_ref_g = Cn_g.T_dependent_property_integral_over_T(Tb, T_ref)
             else:
                 H_int_Tb_to_T_ref_g = S_int_Tb_to_T_ref_g = None
             if phase_ref == 'l':
                 if has_Cnl:
                     if Tb:
-                        H_int_T_ref_to_Tb_l = Cn_l.integrate_by_T(T_ref, Tb)
-                        S_int_T_ref_to_Tb_l = Cn_l.integrate_by_T_over_T(T_ref, Tb)
+                        H_int_T_ref_to_Tb_l = Cn_l.T_dependent_property_integral(T_ref, Tb)
+                        S_int_T_ref_to_Tb_l = Cn_l.T_dependent_property_integral_over_T(T_ref, Tb)
                     else:
                         H_int_T_ref_to_Tb_l = S_int_T_ref_to_Tb_l = None
                     if Tm:
-                        H_int_Tm_to_T_ref_l = Cn_l.integrate_by_T(Tm, T_ref)
-                        S_int_Tm_to_T_ref_l = Cn_l.integrate_by_T_over_T(Tm, T_ref)
+                        H_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral(Tm, T_ref)
+                        S_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral_over_T(Tm, T_ref)
                     else:
                         H_int_Tm_to_T_ref_l = S_int_Tm_to_T_ref_l = None
                 else:

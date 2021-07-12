@@ -7,13 +7,15 @@
 # for license details.
 """
 """
-from ..units_of_measure import chemical_units_of_measure
+from ..units_of_measure import chemical_units_of_measure, definitions, format_plot_units, convert
 from .. import utils
 from .. import functors
 from inspect import signature
+import matplotlib.pyplot as plt
+import numpy as np
 
 __all__ = ("functor", "Functor",  "TFunctor", 
-           "TPFunctor", "TIntegralFunctor", 'display_asfunctor', 
+           "TPFunctor", 'display_asfunctor', 
            'functor_lookalike', 'functor_matching_params', 
            'parse_var', 'get_units', 'var_with_units')
 
@@ -71,6 +73,42 @@ def var_with_units(var, units=None):
     if units: var += f' [{units}]'
     return var
 
+# %% Plotting utilities
+
+def convert_var(value, var, units):
+    if var and units:
+        var, *_ = var.split('.')
+        return convert(value, chemical_units_of_measure[var].units, units)
+    else:
+        return value
+
+def describe_parameter(var, units):
+    info = definitions.get(var) or var
+    if info:
+        var, *_ = var.split('.')
+        units = units or chemical_units_of_measure.get(var)
+        units = format_plot_units(units)
+        if units: info += f" [{units}]"
+        else: info += " [-]"
+        return info
+
+def create_axis_labels(Xvar, X_units, Yvar, Y_units):
+    Xvar_description = describe_parameter(Xvar, X_units)
+    Yvar_description = describe_parameter(Yvar, Y_units)
+    plt.xlabel(Xvar_description)
+    plt.ylabel(Yvar_description)
+
+def plot_functors_vs_T(fs, T_range=None, T_units=None, units=None,
+                        P=101325, label_axis=True, **plot_kwargs): # pragma: no cover
+    for f in fs: f.plot_vs_T(T_range, T_units, units, P, False, **plot_kwargs)
+    if label_axis: create_axis_labels('T', T_units, f.var, units)
+    plt.legend()
+    
+def plot_functors_vs_P(fs, P_range=None, P_units=None, units=None,
+                       T=298.15, label_axis=True, **plot_kwargs): # pragma: no cover
+    for f in fs: f.plot_vs_P(P_range, P_units, units, T, False, **plot_kwargs)
+    if label_axis: create_axis_labels('P', P_units, f.var, units)
+    plt.legend()
 
 # %% Decorator
   
@@ -167,9 +205,6 @@ class Functor:
         for i, j in zip(self.params, args): kwargs[i] = j
         self.__dict__ = kwargs
     
-    def set_value(self, var, value):
-        if var in self.__dict__: self.__dict__[var] = value
-    
     def copy(self):
         cls = self.__class__
         new = cls.__new__(cls)
@@ -230,21 +265,65 @@ class Functor:
 class TFunctor(Functor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
+    
     def __call__(self, T, P=None):
-        return self.hook(T, self.__dict__) if self.hook else self.function(T, **self.__dict__)
+        return self.function(T, **self.__dict__)
+        
+    def tabulate_vs_T(self, Tmin, Tmax, T_units=None, units=None, P=101325):
+        Ts = np.linspace(Tmin, Tmax)
+        Ys = np.array([self(T) for T in Ts])
+        if T_units: Ts = convert_var(Ts, 'T', T_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ts, Ys
+    
+    def tabulate_vs_P(self, Pmin, Pmax, P_units=None, units=None, T=298.15):
+        Ps = np.linspace(Pmin, Pmax)
+        Y = self(T)
+        Ys = np.array([Y, Y])
+        if P_units: Ps = convert_var(Ps, 'P', P_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ps, Ys
+    
+    def plot_vs_T(self, Tmin, Tmax, T_units=None, units=None, P=101325,
+                  label_axis=True, **plot_kwargs):
+        Ts, Ys = self.tabulate_vs_T(Tmin, Tmax, T_units, units, P)
+        plot_kwargs['label'] = plot_kwargs.get('label') or self.name
+        plt.plot(Ts, Ys, **plot_kwargs)
+        if label_axis: create_axis_labels('T', T_units, self.var, units)
+        plt.legend()
+    
+    def plot_vs_P(self, Pmin, Pmax, P_units=None, units=None, T=298.15, 
+                  label_axis=True, **plot_kwargs):
+        Ps, Ys = self.tabulate_vs_P(Pmin, Pmax, P_units, units, T)
+        plot_kwargs['label'] = plot_kwargs.get('label') or self.name
+        plt.plot(Ps, Ys, **plot_kwargs)
+        if label_axis: create_axis_labels('P', P_units, self.var, units)
+        plt.legend()
+    
 
 class TPFunctor(Functor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
+    
     def __call__(self, T, P):
-        return self.hook(T, P, self.__dict__) if self.hook else self.function(T, P, **self.__dict__)
-
-class TIntegralFunctor(Functor, args=('Ta', 'Tb')):
-    __slots__ = ()
-    kind = "temperature integral functor (Ta to Tb; in K)"
-    def __call__(self, Ta, Tb, P=None):
-        return self.hook(Ta, Tb, self.__dict__) if self.hook else self.function(Ta, Tb, **self.__dict__)
-
+        return self.function(T, P, **self.__dict__)
+    
+    def tabulate_vs_T(self, Tmin, Tmax, T_units=None, units=None, P=101325):
+        Ts = np.linspace(Tmin, Tmax)
+        Ys = np.array([self(T, P) for T in Ts])
+        if T_units: Ts = convert_var(Ts, 'T', T_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ts, Ys
+    
+    def tabulate_vs_P(self, Pmin, Pmax, P_units=None, units=None, T=298.15):
+        Ps = np.linspace(Pmin, Pmax)
+        Ys = np.array([self(T, P) for P in Ps])
+        if P_units: Ps = convert_var(Ps, 'P', P_units)
+        if units: Ys = convert_var(Ys, self.var, units)
+        return Ps, Ys
+    
+    plot_vs_T = TFunctor.plot_vs_T
+    plot_vs_P = TFunctor.plot_vs_P
 
 
     
