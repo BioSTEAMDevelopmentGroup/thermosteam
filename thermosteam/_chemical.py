@@ -1311,7 +1311,7 @@ class Chemical:
     def atoms(self):
         """dict[str: int] Atom-count pairs based on formula."""
         formula = self._formula
-        return get_atoms(formula) if formula else {}
+        return get_atoms(formula).copy() if formula else {}
     @atoms.setter
     def atoms(self, atoms):
         """dict[str: int] Atom-count pairs based on formula."""
