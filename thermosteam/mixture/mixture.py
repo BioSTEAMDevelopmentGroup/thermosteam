@@ -12,7 +12,7 @@ import numpy as np
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
 from ..base import PhaseMixtureHandle
-from .ideal_mixture_model import IdealMixtureModel
+from .ideal_mixture_model import IdealTMixtureModel, IdealTPMixtureModel
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture',)
@@ -35,16 +35,25 @@ def group_handles_by_phase(phase_handles):
             handles.append(prop)
     return handles_by_phase
     
-def build_ideal_PhaseMixtureHandle(chemicals, var):
+def build_ideal_PhaseTMixtureHandle(chemicals, var):
     setfield = object.__setattr__
     getfield = getattr
     phase_handles = [getfield(i, var) for i in chemicals]
     new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
     for phase, handles in group_handles_by_phase(phase_handles).items():
-        setfield(new, phase, IdealMixtureModel(handles, var))
+        setfield(new, phase, IdealTMixtureModel(handles, var))
     setfield(new, 'var', var)
     return new
 
+def build_ideal_PhaseTPMixtureHandle(chemicals, var):
+    setfield = object.__setattr__
+    getfield = getattr
+    phase_handles = [getfield(i, var) for i in chemicals]
+    new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
+    for phase, handles in group_handles_by_phase(phase_handles).items():
+        setfield(new, phase, IdealTPMixtureModel(handles, var))
+    setfield(new, 'var', var)
+    return new
 
 # %% Energy balance
 
@@ -103,8 +112,8 @@ class Mixture:
     
     See also
     --------
-    IdealMixtureModel
-    :func:`~.mixture_builders.ideal_mixture`
+    IdealTMixtureModel
+    IdealTPMixtureModel
     
     Attributes
     ----------
@@ -208,17 +217,17 @@ class Mixture:
                 chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
                 MWs = chemical_data_array(chemicals, 'MW')
             getfield = getattr
-            Cn =  build_ideal_PhaseMixtureHandle(chemicals, 'Cn')
-            H =  build_ideal_PhaseMixtureHandle(chemicals, 'H')
-            S = build_ideal_PhaseMixtureHandle(chemicals, 'S')
-            H_excess = build_ideal_PhaseMixtureHandle(chemicals, 'H_excess')
-            S_excess = build_ideal_PhaseMixtureHandle(chemicals, 'S_excess')
-            mu = build_ideal_PhaseMixtureHandle(chemicals, 'mu')
-            V = build_ideal_PhaseMixtureHandle(chemicals, 'V')
-            kappa = build_ideal_PhaseMixtureHandle(chemicals, 'kappa')
-            Hvap = IdealMixtureModel([getfield(i, 'Hvap') for i in chemicals], 'Hvap')
-            sigma = IdealMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
-            epsilon = IdealMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+            Cn =  build_ideal_PhaseTMixtureHandle(chemicals, 'Cn')
+            H =  build_ideal_PhaseTPMixtureHandle(chemicals, 'H')
+            S = build_ideal_PhaseTPMixtureHandle(chemicals, 'S')
+            H_excess = build_ideal_PhaseTPMixtureHandle(chemicals, 'H_excess')
+            S_excess = build_ideal_PhaseTPMixtureHandle(chemicals, 'S_excess')
+            mu = build_ideal_PhaseTPMixtureHandle(chemicals, 'mu')
+            V = build_ideal_PhaseTPMixtureHandle(chemicals, 'V')
+            kappa = build_ideal_PhaseTPMixtureHandle(chemicals, 'kappa')
+            Hvap = IdealTMixtureModel([getfield(i, 'Hvap') for i in chemicals], 'Hvap')
+            sigma = IdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+            epsilon = IdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
             return cls(rule, Cn, H, S, H_excess, S_excess,
                        mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
         else:

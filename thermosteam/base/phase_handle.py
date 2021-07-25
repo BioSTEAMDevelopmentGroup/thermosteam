@@ -34,6 +34,16 @@ class PhaseHandle:
         setattr(self, 'l', l)
         setattr(self, 'g', g)
     
+    @classmethod
+    def blank(cls, var):
+        new = cls.__new__(cls)
+        setattr = object.__setattr__
+        setattr(new, 'var', var)
+        setattr(new, 's', None)
+        setattr(new, 'l', None)
+        setattr(new, 'g', None)
+        return new
+    
     @property
     def S(self): return self.s
     @property

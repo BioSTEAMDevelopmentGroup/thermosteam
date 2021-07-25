@@ -55,12 +55,12 @@ from .equilibrium.unifac import (
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    display_asfunctor)
 from .units_of_measure import chemical_units_of_measure
-from .eos import GCEOS_DUMMY, PR
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
 from ._phase import check_phase
 from . import units_of_measure as thermo_units
 from chemicals.utils import Z
+from thermo.eos import IG, PR
 from thermo import (
     TDependentProperty, TPDependentProperty,
     VaporPressure, SublimationPressure,
@@ -96,8 +96,14 @@ sugar_solid_densities = {
 class CompressibilityFactor:
     __slots__ = ('V')
     
+    def __init__(self, V):
+        self.V = V
+    
     def Z(self, T, P):
         return Z(T, P, self.V(T, P))
+    
+    def __repr__(self):
+        return f"{type(self).__name__}(self.V)"
 
 # %% Filling missing properties
 
@@ -127,21 +133,36 @@ def chemical_identity(chemical, pretty=False):
                          
 def create_eos(eos, Tc, Pc, omega):
     try: return eos(T=298.15, P=101325., Tc=Tc, Pc=Pc, omega=omega)
-    except: return GCEOS_DUMMY(T=298.15, P=101325.)
+    except: return IG(T=298.15, P=101325.)
 
 # %% Resetting data
 
 def reset_constant(chemical, var, value):
     getfield = getattr
-    setattr(chemical, '_'+var, value)
+    hasfield = hasattr
+    setfield = setattr
+    setfield(chemical, '_'+var, value)
+    isa = isinstance
     for handle in _model_and_phase_handles: 
-        getfield(chemical, handle).set_value(var, value)
+        handle = getfield(chemical, handle)
+        if isa(handle, PhaseHandle):
+            for phase, obj in handle:
+                if hasfield(obj, var): setfield(obj, var, value)
+        elif hasfield(obj, var): setfield(handle, var, value)
 
 def reset_energy_constant(chemical, var, value):
     getfield = getattr
-    setattr(chemical, '_'+var, value)
+    hasfield = hasattr
+    setfield = object.__setattr__
+    setfield(chemical, '_'+var, value)
+    isa = isinstance
     for handle in _energy_handles: 
-        getfield(chemical, handle).set_value(var, value)
+        handle = getfield(chemical, handle)
+        if isa(handle, PhaseHandle):
+            for phase, obj in handle:
+                if hasfield(obj, var): setfield(obj, var, value)
+        elif hasfield(handle, var):
+            setfield(handle, var, value)
 
 def raise_helpful_handle_error(var, handle):
     if isinstance(handle, PhaseHandle):
@@ -155,7 +176,7 @@ def raise_helpful_handle_error(var, handle):
             f"modify the thermodynamic property instead")
     else:
         raise Exception(
-            'expected a either a PhaseHandle or a ThermoModelHandle object; '
+            'expected either a PhaseHandle or a TDependentProperty object; '
            f'got a {type(handle).__name__} object instead')
 
 def raise_helpful_energy_functor_error(energy_functor):
@@ -207,7 +228,7 @@ _functor_data = {'MW', 'Tm', 'Tb', 'Tt', 'Pt', 'Tc', 'Pc', 'Vc',
                  'similarity_variable', 'iscyclic_aliphatic'}
 
 _checked_properties = (
-    'phase_ref', 'eos', 'eos_1atm',
+    'phase_ref', 'eos', 
     'S_excess', 'H_excess', 'mu', 'kappa', 'V', 'S', 
     'H', 'Cn', 'Psat', 'Hvap', 'sigma', 'epsilon', 
     'Dortmund', 'UNIFAC', 'PSRK', 'Hf', 'LHV', 'HHV',
@@ -365,104 +386,36 @@ class Chemical:
     >>> Water.Tb
     373.124
     
-    Temperature dependent properties are managed by model handles:
+    Temperature dependent properties are managed by objects:
     
-    >>> Water.Psat.show()
-    TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner original
-    [1] Antoine
-    [2] EQ101
-    [3] Wagner
-    [4] boiling critical relation
-    [5] Lee Kesler
-    [6] Ambrose Walton
-    [7] Sanjari
-    [8] Edalat
+    >>> Water.Psat
+    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344,
+                  extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY")
 
     Phase dependent properties have attributes with model handles for each phase:
 
     >>> Water.V
     <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
-    >>> (Water.V.l, Water.V.g)
-    (<TPDependentModelHandle(T, P) -> V.l [m^3/mol]>, <TPDependentModelHandle(T, P) -> V.g [m^3/mol]>)
-
-    A model handle contains a series of models applicable to a certain domain:
-    
-    >>> Water.Psat[0].show()
-    TDependentModel(T, P=None) -> Psat [Pa]
-     name: Wagner original
-     Tmin: 275 K
-     Tmax: 647.35 K
+    >>> Water.V.l
+    VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Pc=273.15, Vc=5.60e-05, Zc=0.22947, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0), extrapolation="constant", method="VDI_PPDS", method_P=None, tabular_extrapolation_permitted=True)
 
     When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
         
     >>> Water.Psat(373.15)
     101284.55
-    >>> # Water.Psat(1000.0) ->
-    >>> # ValueError: Water has no valid saturated vapor pressure model at T=1000.00 K
-    
-    Model handles as well as the models themselves have tabulation and plotting methods to help visualize how properties depend on temperature and pressure.
-    
-    >>> # import matplotlib.pyplot as plt
-    >>> # Water.Psat.plot_vs_T([Water.Tm, Water.Tb], 'degC', 'atm', label="Water")
-    >>> # plt.show()
-    
-    .. figure:: ./images/Water_Psat_vs_T.png
-    
-    >>> # Plot all models
-    
-    >>> # Water.Psat.plot_models_vs_T([Water.Tm, Water.Tb], 'degC', 'atm')
-    >>> # plt.show()
-    
-    .. figure:: ./images/Water_all_models_Psat_vs_T.png
-    
-    Each model may contain either a function or a functor (a function with stored data) to compute the property:
-        
-    >>> functor = Water.Psat[0].evaluate
-    >>> functor.show()
-    Functor: Wagner_original(T, P=None) -> Psat [Pa]
-     Tc: 647.35 K
-     Pc: 2.2122e+07 Pa
-     a: -7.7645
-     b: 1.4584
-     c: -2.7758
-     d: -1.233
-    
-    .. Note::
-       All chemical property functors are available in the thermosteam.properties subpackage. You can also use help(<functor>) for further information on the math and equations used in the functor.
     
     A new model can be added easily to a model handle through the `add_method` method, for example:
         
-    >>> # Set top_priority=True to place model in postion [0]
-    >>> @Water.Psat.add_method(Tmin=273.20, Tmax=473.20)
-    ... def User_antoine_model(T):
+    >>> def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
-    >>> Water.Psat.show()
-    TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] User antoine model
-    [1] Wagner original
-    [2] Antoine
-    [3] EQ101
-    [4] Wagner
-    [5] boiling critical relation
-    [6] Lee Kesler
-    [7] Ambrose Walton
-    [8] Sanjari
-    [9] Edalat
+    >>> Water.Psat.add_method(f=User_antoine_model, Tmin=273.20, Tmax=473.20)
+    >>> Water.Psat
+    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
 
     The `add_method` method is a high level interface that even lets you create a constant model:
         
-    >>> value = Water.V.l.add_method(1.687e-05, name='User constant')
-    ... # Model is appended at the end by default
-    >>> added_model = Water.V.l[-1]
-    >>> added_model.show()
-    ConstantThermoModel(T=None, P=None) -> V.l [m^3/mol]
-     name: User constant
-     value: 1.687e-05
-     Tmin: 0 K
-     Tmax: inf K
-     Pmin: 0 Pa
-     Pmax: inf Pa
+    >>> Water.Cn.l.add_method(1.687e-05, name='User constant') # TODO: Left off here
+    >>> Water.V.l(T=298.15)
 
     .. Note::
        Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
@@ -708,7 +661,7 @@ class Chemical:
             self._Cn = Cn = PhaseTHandle('Cn')
             Cn.s._chemical = Cn.l._chemical = Cn.g._chemical = self
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
-            setfield(self, '_' + i, TDependentModelHandle(i))
+            setfield(self, '_' + i, TDependentProperty(i))
         self._locked_state = phase
         check_valid_ID(ID)
         self._ID = ID
@@ -778,7 +731,7 @@ class Chemical:
         new._CAS = CAS or ID
         new._locked_state = new._locked_state
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
-                           new.Tb, new.eos, new.eos_1atm, new.phase_ref)
+                           new.Tb, new.eos, new.phase_ref)
         new._label_handles()
         for i,j in data.items(): setfield(new, i , j)
         return new
@@ -788,12 +741,11 @@ class Chemical:
         handles = (self._Psat, self._Hvap, self._sigma, self._epsilon,
                    self._V, self._Cn, self._mu, self._kappa)
         isa = isinstance
-        label = f"{self.CAS} (self.ID)"
+        label = f"{self.CAS} ({self.ID})"
         for handle in handles:
             if isa(handle, PhaseHandle):
-                handle.s.CASRN = \
-                handle.l.CASRN = \
-                handle.g.CASRN = label
+                for i, j in handle:
+                    j.CASRN = label
             else:
                 handle.CASRN = label
 
@@ -1030,10 +982,6 @@ class Chemical:
     def eos(self):
         """[object] Instance for solving equations of state."""
         return self._eos
-    @property
-    def eos_1atm(self): 
-        """[object] Instance for solving equations of state at 1 atm."""
-        return self._eos_1atm
     
     ### Phase/model handles ###
     
@@ -1043,7 +991,7 @@ class Chemical:
         return self._mu
     @mu.setter
     def mu(self, value): 
-        raise_helpful_handle_error(self._mu)
+        raise_helpful_handle_error('mu', self._mu)
     
     @property
     def kappa(self): 
@@ -1051,7 +999,7 @@ class Chemical:
         return self._kappa
     @kappa.setter
     def kappa(self, value): 
-        raise_helpful_handle_error(self._kappa)
+        raise_helpful_handle_error('kappa', self._kappa)
         
     @property
     def V(self): 
@@ -1059,7 +1007,7 @@ class Chemical:
         return self._V
     @V.setter
     def V(self, value): 
-        raise_helpful_handle_error(self._V)
+        raise_helpful_handle_error('V', self._V)
         
     @property
     def Cn(self): 
@@ -1067,7 +1015,7 @@ class Chemical:
         return self._Cn
     @Cn.setter
     def Cn(self, value): 
-        raise_helpful_handle_error(self._Cn)
+        raise_helpful_handle_error('Cn', self._Cn)
         
     @property
     def Psat(self):
@@ -1075,7 +1023,7 @@ class Chemical:
         return self._Psat
     @Psat.setter
     def Psat(self, value): 
-        raise_helpful_handle_error(self._Psat)
+        raise_helpful_handle_error('Psat', self._Psat)
         
     @property
     def Hvap(self): 
@@ -1083,7 +1031,7 @@ class Chemical:
         return self._Hvap
     @Hvap.setter
     def Hvap(self, value): 
-        raise_helpful_handle_error(self._Hvap)
+        raise_helpful_handle_error('Hvap', self._Hvap)
         
     @property
     def sigma(self): 
@@ -1091,7 +1039,7 @@ class Chemical:
         return self._sigma
     @sigma.setter
     def sigma(self, value): 
-        raise_helpful_handle_error(self._sigma)
+        raise_helpful_handle_error('sigma', self._sigma)
         
     @property
     def epsilon(self): 
@@ -1099,7 +1047,7 @@ class Chemical:
         return self._epsilon
     @epsilon.setter
     def epsilon(self, value):
-        raise_helpful_handle_error(self._epsilon)
+        raise_helpful_handle_error('epsilon', self._epsilon)
     
     @property
     def S(self): 
@@ -1107,7 +1055,7 @@ class Chemical:
         return self._S
     @S.setter
     def S(self, value): 
-        raise_helpful_energy_functor_error(self._S)
+        raise_helpful_energy_functor_error('S', self._S)
     
     @property
     def H(self): 
@@ -1115,7 +1063,7 @@ class Chemical:
         return self._H
     @H.setter
     def H(self, value): 
-        raise_helpful_energy_functor_error(self._H)
+        raise_helpful_energy_functor_error('H', self._H)
     
     @property
     def S_excess(self): 
@@ -1123,7 +1071,7 @@ class Chemical:
         return self._S_excess
     @S_excess.setter
     def S_excess(self, value): 
-        raise_helpful_energy_functor_error(self._S_excess)
+        raise_helpful_energy_functor_error('S_excess', self._S_excess)
     
     @property
     def H_excess(self): 
@@ -1131,7 +1079,7 @@ class Chemical:
         return self._H_excess
     @H_excess.setter
     def H_excess(self, value): 
-        raise_helpful_energy_functor_error(self._H_excess)
+        raise_helpful_energy_functor_error('H_excess', self._H_excess)
     
     ### Data ###
     
@@ -1184,7 +1132,7 @@ class Chemical:
         return self._Tc
     @Tc.setter
     def Tc(self, Tc):
-        reset_constant(self, 'Tc',float(Tc))
+        reset_constant(self, 'Tc', float(Tc))
     
     @property
     def Pc(self):
@@ -1304,7 +1252,10 @@ class Chemical:
         Tc = self._Tc
         Pc = self._Pc
         if all([Psat, omega, Tc, Pc]):
-            P_at_Tr_sixtenths = Psat.try_out(0.6 * Tc)
+            try:
+                P_at_Tr_sixtenths = Psat(0.6 * Tc)
+            except:
+                P_at_Tr_sixtenths = None
             if P_at_Tr_sixtenths:
                 Stiel_Polar = compute_Stiel_Polar(P_at_Tr_sixtenths, Pc, omega)
             else:
@@ -1444,6 +1395,7 @@ class Chemical:
         self._init_data(CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                         dipole, atoms, similarity_variable, iscyclic_aliphatic)
         self._init_eos(eos, self._Tc, self._Pc, self._omega)
+        self._estimate_missing_properties()
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
@@ -1453,8 +1405,7 @@ class Chemical:
         if phase: self.at_state(phase)
         self._estimate_missing_properties()
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, self._eos_1atm,
-                            phase_ref)
+                            self._Tm, self._Tb, self._eos, phase_ref)
         self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
 
@@ -1470,8 +1421,7 @@ class Chemical:
     def reset_free_energies(self):
         """Reset the `H`, `S`, `H_excess`, and `S_excess` functors."""
         if not self._eos:
-            self._eos = GCEOS_DUMMY(T=298.15, P=101325.)
-            self._eos_1atm = self._eos.to_TP(298.15, 101325)
+            self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, self._eos_1atm, self._phase_ref)
 
@@ -1537,11 +1487,17 @@ class Chemical:
     def _init_reactions(self, Hf, S0, LHV, HHV, combustion, atoms):
         Hvap_298K = None
         if Hf is None:
-            Hvap_298K = self.Hvap.try_out(298.15)
+            try:
+                Hvap_298K = self.Hvap(298.15)
+            except:
+                Hvap_298K = None
             Hf = heat_of_formation(self._CAS, self._phase_ref,
                                    Hvap_298K, self.Hfus) 
         if S0 is None:
-            Hvap_298K = self.Hvap.try_out(298.15) if Hvap_298K is None else Hvap_298K
+            try:
+                Hvap_298K = self.Hvap(298.15) if Hvap_298K is None else Hvap_298K
+            except:
+                Hvap_298K = None
             Svap_298K = None if Hvap_298K is None else Hvap_298K / 298.15
             S0 = absolute_entropy_of_formation(self._CAS, self._phase_ref,
                                                Svap_298K, self.Sfus) or 0.
@@ -1559,14 +1515,12 @@ class Chemical:
 
     def _init_eos(self, eos, Tc, Pc, omega):
         self._eos = create_eos(eos, Tc, Pc, omega)
-        self._eos_1atm = self._eos.to_TP(298.15, 101325)
 
     def _init_handles(self, CAS, MW, Tm, Tb, Tc, Pc, Pt, Tt, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
                       has_hydroxyl, Hfus):
         # Vapor pressure
-        data = (CAS, Tb, Tc, Pc, omega)
-        self._Psat = Psat = VaporPressure(data)
+        self._Psat = Psat = VaporPressure(CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega)
         
         # Volume
         Vl = VolumeLiquid(MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, Vc=Vc, 
@@ -1576,7 +1530,7 @@ class Chemical:
         Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
                        eos=eos, CASRN=CAS)
-        Vml_Tm = self.VolumeLiquid.T_dependent_property(self.Tm) if self.Tm else None
+        Vml_Tm = Vl.T_dependent_property(self.Tm) if self.Tm else None
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         
         # Heat capacity
@@ -1635,8 +1589,10 @@ class Chemical:
         if not Tt and Tm:
             self._Tt = Tt = Tm
         if not Pt and Tt:
-            self._Pt = Pt = self._Psat.try_out(Tt)
-        
+            try:
+                self._Pt = Pt = self._Psat(Tt)
+            except:
+                self._Pt = Pt = None
         # Find missing critical property, if only two are given.
         critical_point = (Tc, Pc, Vc)
         N_values = sum([bool(i) for i in critical_point])
@@ -1651,14 +1607,17 @@ class Chemical:
             
         omega = self._omega
         if not omega and Pc and Tc:
-            P_at_Tr_seventenths = self._Psat.try_out(0.7 * Tc)
+            try:
+                P_at_Tr_seventenths = self._Psat(0.7 * Tc)
+            except:
+                P_at_Tr_seventenths = None
             if P_at_Tr_seventenths:
                 omega = acentric_factor_definition(P_at_Tr_seventenths, Pc)
             if not omega and Tb:
                 omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
 
-    def _init_energies(self, Cn, Hvap, Psat, Hfus, Sfus, Tm, Tb, eos, eos_1atm,
+    def _init_energies(self, Cn, Hvap, Psat, Hfus, Sfus, Tm, Tb, eos, 
                        phase_ref=None):        
         # Reference
         P_ref = self.P_ref
@@ -1692,7 +1651,10 @@ class Chemical:
                 else:
                     self._phase_ref = phase_ref = 'l'
             if Hvap:
-                Hvap_Tb = Hvap.try_out(Tb) if Tb else None
+                try:
+                    Hvap_Tb = Hvap(Tb) if Tb else None
+                except:
+                    Hvap_Tb = None
                 Svap_Tb = Hvap_Tb / Tb if Hvap_Tb else None
             else:
                 Hvap_Tb = Svap_Tb = None
@@ -1730,7 +1692,7 @@ class Chemical:
                     H_int_T_ref_to_Tb_l = S_int_T_ref_to_Tb_l = None
     
             # Excess data
-            if isinstance(eos, GCEOS_DUMMY):
+            if isinstance(eos, IG):
                 H_dep_ref_g = S_dep_ref_g = H_dep_ref_l = S_dep_ref_l = \
                 H_dep_T_ref_Pb = S_dep_T_ref_Pb = H_dep_Tb_Pb_g = H_dep_Tb_P_ref_g = \
                 S_dep_Tb_P_ref_g = S_dep_Tb_Pb_g = 0
@@ -1801,10 +1763,10 @@ class Chemical:
                 gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
                 self._S_excess = ExcessEntropyRefLiquid((), (), gdata)
             elif phase_ref == 'g':
-                ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g, eos_1atm)
+                ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g)
                 gdata = (eos, H_dep_ref_g)
                 self._H_excess = ExcessEnthalpyRefGas((), ldata, gdata)
-                ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g, eos_1atm)
+                ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g)
                 gdata = (eos, S_dep_ref_g)
                 self._S_excess = ExcessEntropyRefGas((), ldata, gdata)
                 
@@ -1814,6 +1776,12 @@ class Chemical:
                 self._S_excess = getfield(self._S_excess, single_phase)
         else:
             self._H = self._S = self._S_excess = self._H_excess = None
+
+    ### EOS ###
+    
+    @property
+    def eos_in_a_box(self):
+        return (self._eos,)
 
     ### Filling missing values ###
 
@@ -1921,8 +1889,7 @@ class Chemical:
         if 'phase_ref' in properties:
             self._phase_ref = 'l'
         if 'eos' in properties:
-            self._eos = GCEOS_DUMMY(T=298.15, P=101325.)
-            self._eos_1atm = self._eos.to_TP(298.15, 101325)
+            self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
         if 'Cn' in properties:
             MW = self._MW
             Cn = self._Cn
@@ -1979,20 +1946,24 @@ class Chemical:
         for key in names:
             handle = getfield(self, key)
             other_handle = getfield(other, key)
-            if isa(handle, ThermoModelHandle):
-                if isa(other_handle, ThermoModelHandle):
-                    models = other_handle._models
+            if isa(handle, TDependentProperty):
+                if isa(other_handle, TDependentProperty):
+                    pass
                 elif isa(other_handle, PhaseHandle):
-                    models = getfield(other_handle, phase)._models
-                handle._models = models.copy()
+                    other_handle = getfield(other_handle, phase)
+                else:
+                    raise RuntimeError(f"unexpected type '{type(other_handle).__name__}"
+                                       f"for attribute '{key}'")
+                handle.__dict__.update(other_handle.__dict__)
             elif isa(handle, PhaseHandle):
-                if isa(other_handle, ThermoModelHandle):
+                if isa(other_handle, TDependentProperty):
                     handle = getfield(handle, other_phase)
-                    handle._models = other_handle._models.copy()
+                    handle.__dict__.update(other_handle.__dict__)
                 elif isa(other_handle, PhaseHandle):
-                    for i, model_handle in handle:
-                        models = getfield(other_handle, i)._models.copy()
-                        model_handle._models = models
+                    for i, obj in handle:
+                        other = getfield(other_handle, i)
+                        obj.__dict__.update(other.__dict__)
+                
         if {'Cn', 'Hvap'}.intersection(names): self.reset_free_energies()
     
     @property

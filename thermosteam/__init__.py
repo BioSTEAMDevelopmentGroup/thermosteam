@@ -26,7 +26,7 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
-import thermo
+from . import thermo
 del thermo
 from . import (constants,
                base,
