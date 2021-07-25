@@ -11,11 +11,9 @@ import thermosteam as tmo
 from warnings import warn
 from flexsolve import IQ_interpolation
 from chemicals.identifiers import pubchem_db
-from chemicals.vapor_pressure import vapor_pressure_handle
 from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
                                     Tm as normal_melting_point_temperature,
-                                    Hfus as heat_of_fusion,
-                                    heat_of_vaporization_handle)
+                                    Hfus as heat_of_fusion)
 from chemicals.critical import (Ihmels,
                                 Tc as critical_point_temperature,
                                 Pc as critical_point_pressure,
@@ -27,8 +25,6 @@ from chemicals.acentric import (omega as acentric_factor,
 from chemicals.triple import (Tt as triple_point_temperature,
                               Pt as triple_point_pressure)
 from chemicals.combustion import combustion_data, combustion_stoichiometry
-from chemicals.volume import volume_handle
-from chemicals.heat_capacity import heat_capacity_handle
 from chemicals.reaction import (
     Hf as heat_of_formation,
     S0 as absolute_entropy_of_formation
@@ -39,10 +35,6 @@ from chemicals.elements import (
     atoms_to_Hill,
     get_atoms,
 )
-from chemicals.viscosity import viscosity_handle
-from chemicals.thermal_conductivity import thermal_conductivity_handle
-from chemicals.permittivity import permitivity_handle
-from chemicals.interface import surface_tension_handle
 from chemicals.dipole import dipole_moment
 from .free_energy import (
     Enthalpy, Entropy,
@@ -69,6 +61,16 @@ from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
 from ._phase import check_phase
 from . import units_of_measure as thermo_units
+from thermo import (
+    VaporPressure, SublimationPressure,
+    EnthalpyVaporization,
+    SurfaceTension,
+    VolumeSolid, VolumeLiquid, VolumeGas, VolumeSupercriticalLiquid,
+    HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas,
+    ThermalConductivityLiquid, ThermalConductivityGas,
+    ViscosityLiquid, ViscosityGas,
+    PermittivityLiquid,
+)
 
 # from .solubility import SolubilityParameter
 # from .lennard_jones import Stockmayer, MolecularDiameter
@@ -77,6 +79,18 @@ from . import units_of_measure as thermo_units
 # from .electrochem import conductivity
 
 __all__ = ('Chemical',)
+
+# %% Temporarilly here
+
+# TODO: Make a data table for new additions (not just for common sugars).
+# Source: PubChem
+sugar_solid_densities = {
+    '50-99-7': 0.0001125975, 
+    '57-48-7': 0.0001063495,
+    '3458-28-4': 0.00011698,
+    '25990-60-7': 9.84459e-05,
+    '59-23-4': 0.000120104,   
+}
 
 # %% Filling missing properties
 
@@ -1423,8 +1437,8 @@ class Chemical:
         self._init_data(CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                         dipole, atoms, similarity_variable, iscyclic_aliphatic)
         self._init_eos(eos, self._Tc, self._Pc, self._omega)
-        self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Tc,
-                           self._Pc, self.Zc, self._Vc,
+        self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
+                           self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
                            self._iscyclic_aliphatic, self._eos, self.has_hydroxyl)
         self._locked_state = None
@@ -1539,51 +1553,51 @@ class Chemical:
         self._eos = create_eos(eos, Tc, Pc, omega)
         self._eos_1atm = self._eos.to_TP(298.15, 101325)
 
-    def _init_handles(self, CAS, MW, Tm, Tb, Tc, Pc, Zc, Vc, omega,
+    def _init_handles(self, CAS, MW, Tm, Tb, Tc, Pc, Pt, Tt, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
                       has_hydroxyl):
         # Vapor pressure
         data = (CAS, Tb, Tc, Pc, omega)
-        self._Psat = Psat = vapor_pressure_handle(data)
+        self._Psat = Psat = VaporPressure(data)
         
         # Volume
-        sdata = (CAS,)
-        ldata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, Psat, eos, dipole, has_hydroxyl)
-        gdata = (CAS, Tc, Pc, omega, eos)
-        self._V = V = volume_handle(sdata, ldata, gdata)
+        Vl = VolumeLiquid(MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, Vc=Vc, 
+                          Zc=Zc, omega=omega, dipole=dipole, Psat=Psat, 
+                          CASRN=CAS, eos=eos, has_hydroxyl=has_hydroxyl)
+        Vml_Tm = Vl.T_dependent_property(Tm) if Tm else None
+        Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
+        Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
+                       eos=eos, CASRN=CAS)
+        Vml_Tm = self.VolumeLiquid.T_dependent_property(self.Tm) if self.Tm else None
+        self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         
         # Heat capacity
-        Cn = PhaseTHandle('Cn')
-        sdata = (CAS, similarity_variable, MW)
-        ldata = (CAS, Tb, Tc, omega, MW, similarity_variable, Cn.g)
-        gdata = (CAS, MW, similarity_variable, iscyclic_aliphatic)
-        self._Cn = Cn = heat_capacity_handle(sdata, ldata, gdata, Cn)
+        Cns = HeatCapacitySolid(CAS, similarity_variable, MW)
+        Cng = HeatCapacitySolid(CAS, MW, similarity_variable, iscyclic_aliphatic)
+        Cnl = HeatCapacitySolid(CAS, Tb, Tc, omega, MW, similarity_variable, Cng)
+        self._Cn = Cn = PhaseTHandle('Cn', Cns, Cnl, Cng)
         
         # Heat of vaporization
-        data = (CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V)
-        self._Hvap = heat_of_vaporization_handle(data)
+        self._Hvap = EnthalpyVaporization('Hvap', CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V)
         
         # Viscosity
-        ldata = (CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, V.l)
-        gdata = (CAS, MW, Tc, Pc, Zc, dipole)
-        self._mu = mu = viscosity_handle(None, ldata, gdata)
+        mul = ViscosityLiquid(CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, V.l)
+        mug = ViscosityGas(CAS, MW, Tc, Pc, Zc, dipole)
+        self._mu = mu = PhaseTPHandle('mu', None, mul, mug)
         
         # Conductivity
-        ldata = (CAS, MW, Tm, Tb, Tc, Pc, omega, V.l)
-        gdata = (CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cn.g, mu.g)
-        self._kappa = thermal_conductivity_handle(None, ldata, gdata)
+        kappal = ThermalConductivityLiquid(CAS, MW, Tm, Tb, Tc, Pc, omega, V.l)
+        kappag = ThermalConductivityGas(CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cn.g, mu.g)
+        self._kappa = PhaseTPHandle('kappa', None, kappal, kappag)
         
         # Surface tension
-        data = (CAS, MW, Tb, Tc, Pc, Vc, Zc,
-                omega, self.Stiel_Polar)
-        self._sigma = surface_tension_handle(data)
+        self._sigma = SurfaceTension(CAS, MW, Tb, Tc, Pc, Vc, Zc,
+                                     omega, self.Stiel_Polar)
         
         # Other
-        self._epsilon = permitivity_handle((CAS, V.l,))
+        self._epsilon = PermittivityLiquid(CAS)
         self._label_handles()
         
-        # self.delta = SolubilityParameter(self)
-        # self.molecular_diameter = MolecularDiameter(self)
 
     def _estimate_missing_properties(self):
         # Melting temperature is a week function of pressure,
