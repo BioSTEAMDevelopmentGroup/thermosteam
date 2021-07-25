@@ -53,15 +53,16 @@ from .equilibrium.unifac import (
     NISTGroupCounts,
 )
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
-                   ThermoModelHandle, TDependentModelHandle,
-                   TPDependentModelHandle, display_asfunctor)
+                   display_asfunctor)
 from .units_of_measure import chemical_units_of_measure
 from .eos import GCEOS_DUMMY, PR
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
 from ._phase import check_phase
 from . import units_of_measure as thermo_units
+from chemicals.utils import Z
 from thermo import (
+    TDependentProperty, TPDependentProperty,
     VaporPressure, SublimationPressure,
     EnthalpyVaporization,
     SurfaceTension,
@@ -91,6 +92,12 @@ sugar_solid_densities = {
     '25990-60-7': 9.84459e-05,
     '59-23-4': 0.000120104,   
 }
+
+class CompressibilityFactor:
+    __slots__ = ('V')
+    
+    def Z(self, T, P):
+        return Z(T, P, self.V(T, P))
 
 # %% Filling missing properties
 
@@ -136,14 +143,13 @@ def reset_energy_constant(chemical, var, value):
     for handle in _energy_handles: 
         getfield(chemical, handle).set_value(var, value)
 
-def raise_helpful_handle_error(handle):
-    var = handle.var
+def raise_helpful_handle_error(var, handle):
     if isinstance(handle, PhaseHandle):
         raise AttributeError(
             f"cannot set '{var}'; use `add_method` "
             f"to modify the thermodynamic properties for "
             f"each phase (e.g. {var}.l.add_method(...))")
-    elif isinstance(handle, ThermoModelHandle):
+    elif isinstance(handle, TDependentProperty):
         raise AttributeError(
             f"cannot set '{var}'; use `{var}.add_method` to "
             f"modify the thermodynamic property instead")
@@ -694,8 +700,8 @@ class Chemical:
             phase = phase[0]
             check_phase(phase)
             for i in ('kappa', 'mu', 'V'):
-                setfield(self, '_' + i, TPDependentModelHandle(i))
-            self._Cn = TDependentModelHandle('Cn')
+                setfield(self, '_' + i, TPDependentProperty(i))
+            self._Cn = TDependentProperty('Cn')
         else:
             for i in ('kappa', 'mu', 'V'):
                 setfield(self, '_' + i, PhaseTPHandle(i))
@@ -782,13 +788,14 @@ class Chemical:
         handles = (self._Psat, self._Hvap, self._sigma, self._epsilon,
                    self._V, self._Cn, self._mu, self._kappa)
         isa = isinstance
+        label = f"{self.CAS} (self.ID)"
         for handle in handles:
             if isa(handle, PhaseHandle):
-                handle.s._chemical = \
-                handle.l._chemical = \
-                handle.g._chemical = self
+                handle.s.CASRN = \
+                handle.l.CASRN = \
+                handle.g.CASRN = label
             else:
-                handle._chemical = self
+                handle.CASRN = label
 
     def __reduce__(self):
         return unpickle_chemical, (get_chemical_data(self),)
@@ -1440,7 +1447,8 @@ class Chemical:
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
-                           self._iscyclic_aliphatic, self._eos, self.has_hydroxyl)
+                           self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
+                           self._Hfus)
         self._locked_state = None
         if phase: self.at_state(phase)
         self._estimate_missing_properties()
@@ -1555,7 +1563,7 @@ class Chemical:
 
     def _init_handles(self, CAS, MW, Tm, Tb, Tc, Pc, Pt, Tt, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
-                      has_hydroxyl):
+                      has_hydroxyl, Hfus):
         # Vapor pressure
         data = (CAS, Tb, Tc, Pc, omega)
         self._Psat = Psat = VaporPressure(data)
@@ -1572,27 +1580,40 @@ class Chemical:
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         
         # Heat capacity
-        Cns = HeatCapacitySolid(CAS, similarity_variable, MW)
-        Cng = HeatCapacitySolid(CAS, MW, similarity_variable, iscyclic_aliphatic)
-        Cnl = HeatCapacitySolid(CAS, Tb, Tc, omega, MW, similarity_variable, Cng)
+        Cns = HeatCapacitySolid(CASRN=CAS, similarity_variable=similarity_variable, MW=MW)
+        Cng = HeatCapacityGas(CASRN=CAS, MW=MW, similarity_variable=similarity_variable, 
+                              iscyclic_aliphatic=iscyclic_aliphatic)
+        Cnl = HeatCapacityLiquid(CASRN=CAS, Tc=Tc, omega=omega, MW=MW, 
+                                 similarity_variable=similarity_variable, Cpgm=Cng)
         self._Cn = Cn = PhaseTHandle('Cn', Cns, Cnl, Cng)
         
         # Heat of vaporization
-        self._Hvap = EnthalpyVaporization('Hvap', CAS, Tb, Tc, Pc, omega, similarity_variable, Psat, V)
+        Zl = CompressibilityFactor(Vl)
+        Zg = CompressibilityFactor(Vg)
+        self._Hvap = EnthalpyVaporization(CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega,
+                                          Zl=Zl, Zg=Zg, similarity_variable=similarity_variable, Psat=Psat)
         
         # Viscosity
-        mul = ViscosityLiquid(CAS, MW, Tm, Tc, Pc, Vc, omega, Psat, V.l)
-        mug = ViscosityGas(CAS, MW, Tc, Pc, Zc, dipole)
+        mul = ViscosityLiquid(CASRN=CAS, MW=MW, Tm=Tm, Tc=Tc, Pc=Pc, Vc=Vc, 
+                              omega=omega, Psat=Psat, Vml=V.l)
+        mug = ViscosityGas(CASRN=CAS, MW=MW, Tc=Tc, Pc=Pc, Zc=Zc, dipole=dipole,
+                           Vmg=Vg)
         self._mu = mu = PhaseTPHandle('mu', None, mul, mug)
         
         # Conductivity
-        kappal = ThermalConductivityLiquid(CAS, MW, Tm, Tb, Tc, Pc, omega, V.l)
-        kappag = ThermalConductivityGas(CAS, MW, Tb, Tc, Pc, Vc, Zc, omega, dipole, V.g, Cn.g, mu.g)
+        kappal = ThermalConductivityLiquid(CASRN=CAS, MW=MW, Tm=Tm, Tb=Tb, 
+                                           Tc=Tc, Pc=Pc, omega=omega, Hfus=Hfus)
+        kappag = ThermalConductivityGas(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
+                                        Vc=Vc, Zc=Zc, omega=omega, dipole=dipole, 
+                                        Vmg=V.g, Cpgm=Cn.g, mug=mu.g)
         self._kappa = PhaseTPHandle('kappa', None, kappal, kappag)
         
         # Surface tension
-        self._sigma = SurfaceTension(CAS, MW, Tb, Tc, Pc, Vc, Zc,
-                                     omega, self.Stiel_Polar)
+        Hvap_Tb = self._Hvap(Tb) if Tb else None
+        self._sigma = SurfaceTension(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
+                                     Vc=Vc, Zc=Zc, omega=omega, 
+                                     Stiel_Polar=self.Stiel_Polar,
+                                     Hvap_Tb=Hvap_Tb, Vml=Vl, Cpl=Cnl)
         
         # Other
         self._epsilon = PermittivityLiquid(CAS)

@@ -16,15 +16,14 @@
 """
 """
 from . import (
-    elements,
-    identifiers,
-    reaction,
+    t_dependent_property,
+    tp_dependent_property,
 )
-import chemicals
-from chemicals import *
+import thermo
+from thermo import *
 
 __all__ = (
-    *chemicals.__all__,
+    *thermo.__all__,
 )
 
-del chemicals
+del thermo
