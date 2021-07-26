@@ -520,7 +520,7 @@ class Chemical:
     
     """
     __slots__ = ('_ID', '_locked_state', 
-                 '_phase_ref', '_eos', '_eos_1atm',
+                 '_phase_ref', '_eos', 
                  '_synonyms', *_names, *_groups, 
                  *_handles, *_data,
                  '_N_solutes')
@@ -1533,23 +1533,24 @@ class Chemical:
     def _init_eos(self, eos, Tc, Pc, omega):
         self._eos = create_eos(eos, Tc, Pc, omega)
 
-    def _init_handles(self, CAS, MW, Tm, Tb, Tc, Pc, Pt, Tt, Zc, Vc, omega,
+    def _init_handles(self, CAS, MW, Tm, Tb, Pt, Tt, Tc, Pc, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
                       has_hydroxyl, Hfus):
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         # Vapor pressure
         self._Psat = Psat = VaporPressure(CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega)
         
         # Volume
         Vl = VolumeLiquid(MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, Vc=Vc, 
                           Zc=Zc, omega=omega, dipole=dipole, Psat=Psat, 
-                          CASRN=CAS, eos=eos, has_hydroxyl=has_hydroxyl)
+                          CASRN=CAS, eos=[eos], has_hydroxyl=has_hydroxyl)
         try:
             Vml_Tm = Vl(Tm) if Tm else None
         except:
             Vml_Tm = None
         Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
-                       eos=eos, CASRN=CAS)
+                       eos=[eos], CASRN=CAS)
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         
         # Heat capacity
@@ -1589,10 +1590,12 @@ class Chemical:
         self._sigma = SurfaceTension(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
                                      Vc=Vc, Zc=Zc, omega=omega, 
                                      Stiel_Polar=self.Stiel_Polar,
-                                     Hvap_Tb=Hvap_Tb, Vml=Vl, Cpl=Cnl)
+                                     Hvap_Tb=Hvap_Tb, Vml=Vl, Cpl=Cnl, 
+                                     extrapolation='constant')
         
         # Other
         self._epsilon = PermittivityLiquid(CAS)
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         self._label_handles()
         
 
@@ -1801,12 +1804,7 @@ class Chemical:
                 self._S_excess = getfield(self._S_excess, single_phase)
         else:
             self._H = self._S = self._S_excess = self._H_excess = None
-
-    ### EOS ###
-    
-    @property
-    def eos_in_a_box(self):
-        return (self._eos,)
+            
 
     ### Filling missing values ###
 
@@ -1960,11 +1958,13 @@ class Chemical:
                     raise ValueError(f"{i} is not a valid model name; "
                                       "names must be a subset of "
                                      f"{_model_and_phase_properties}")
+            names = ['_' + i for i in names]
         else:
             missing_handles = self.get_missing_properties(_model_and_phase_handles)
             other_missing_handles = other.get_missing_properties(_model_and_phase_handles)
             names = set(missing_handles).difference(other_missing_handles)
         getfield = getattr
+        setfield = object.__setattr__
         isa = isinstance
         phase = self._locked_state
         other_phase = other._locked_state
@@ -1979,16 +1979,21 @@ class Chemical:
                 else:
                     raise RuntimeError(f"unexpected type '{type(other_handle).__name__}"
                                        f"for attribute '{key}'")
-                handle.__dict__.update(other_handle.__dict__)
+                new_handle = other_handle.copy()
+                new_handle.CASRN = handle.CASRN
+                setfield(self, key, new_handle)
             elif isa(handle, PhaseHandle):
                 if isa(other_handle, TDependentProperty):
-                    handle = getfield(handle, other_phase)
-                    handle.__dict__.update(other_handle.__dict__)
+                    old_handle = getfield(handle, other_phase)
+                    new_handle = other_handle.copy()
+                    new_handle.CASRN = old_handle.CASRN
+                    setfield(handle, other_phase, new_handle)
                 elif isa(other_handle, PhaseHandle):
                     for i, obj in handle:
                         other = getfield(other_handle, i)
-                        obj.__dict__.update(other.__dict__)
-                
+                        new_handle = other.copy()
+                        new_handle.CASRN = obj.CASRN
+                        setfield(handle, i, new_handle)
         if {'Cn', 'Hvap'}.intersection(names): self.reset_free_energies()
     
     @property

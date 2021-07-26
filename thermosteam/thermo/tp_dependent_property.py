@@ -13,7 +13,7 @@
 # 
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
-from thermo import TPDependentProperty
+from thermo import TPDependentProperty, VolumeLiquid, VolumeGas
 
 # Remove cache from call
 def __call__(self, T, P):
@@ -28,3 +28,7 @@ def has_method(self):
     return bool(self._method or self._method_P)
 
 TPDependentProperty.__bool__ = has_method
+
+VolumeLiquid.ranked_methods.remove('EOS')
+VolumeLiquid.ranked_methods_P.remove('EOS')
+VolumeGas.ranked_methods_P.remove('EOS')
