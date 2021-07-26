@@ -23,3 +23,8 @@ def __call__(self, T, P):
         return self.T_dependent_property(T)
 
 TPDependentProperty.__call__ = __call__
+
+def has_method(self):
+    return bool(self._method or self._method_P)
+
+TPDependentProperty.__bool__ = has_method

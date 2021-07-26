@@ -144,7 +144,8 @@ def reset_constant(chemical, var, value):
     setfield(chemical, '_'+var, value)
     isa = isinstance
     for handle in _model_and_phase_handles: 
-        handle = getfield(chemical, handle)
+        handle = getfield(chemical, handle, None)
+        if handle is None: continue
         if isa(handle, PhaseHandle):
             for phase, obj in handle:
                 if hasfield(obj, var): setfield(obj, var, value)
@@ -157,7 +158,8 @@ def reset_energy_constant(chemical, var, value):
     setfield(chemical, '_'+var, value)
     isa = isinstance
     for handle in _energy_handles: 
-        handle = getfield(chemical, handle)
+        handle = getfield(chemical, handle, None)
+        if handle is None: continue
         if isa(handle, PhaseHandle):
             for phase, obj in handle:
                 if hasfield(obj, var): setfield(obj, var, value)
@@ -239,24 +241,24 @@ _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
                     '\n[Data]   ': _data}
 
-_field_to_handles = {
-    'Psat': VaporPressure,
-    'Psub': SublimationPressure,
-    'Hvap': EnthalpyVaporization,
-    'sigma': SurfaceTension,
-    'Vs': VolumeSolid, 
-    'Vl': VolumeLiquid, 
-    'Vg': VolumeGas, 
-    'Vsl': VolumeSupercriticalLiquid,
-    'Cns': HeatCapacitySolid, 
-    'Cnl': HeatCapacityLiquid, 
-    'Cng': HeatCapacityGas,
-    'kappal': ThermalConductivityLiquid,
-    'kappag':ThermalConductivityGas,
-    'mul': ViscosityLiquid, 
-    'mug': ViscosityGas,
-    'epsilon': PermittivityLiquid,
-}
+# _field_to_handles = {
+#     'Psat': VaporPressure,
+#     'Psub': SublimationPressure,
+#     'Hvap': EnthalpyVaporization,
+#     'sigma': SurfaceTension,
+#     'Vs': VolumeSolid, 
+#     'Vl': VolumeLiquid, 
+#     'Vg': VolumeGas, 
+#     'Vsl': VolumeSupercriticalLiquid,
+#     'Cns': HeatCapacitySolid, 
+#     'Cnl': HeatCapacityLiquid, 
+#     'Cng': HeatCapacityGas,
+#     'kappal': ThermalConductivityLiquid,
+#     'kappag':ThermalConductivityGas,
+#     'mul': ViscosityLiquid, 
+#     'mug': ViscosityGas,
+#     'epsilon': PermittivityLiquid,
+# }
 # %% Chemical
 
 class Chemical:
@@ -562,8 +564,6 @@ class Chemical:
             if mu: self.mu.add_method(mu)
             if Cn: self.Cn.add_method(Cn)
             if kappa: self.kappa.add_method(kappa)
-            if Cp: self.Cn.add_method(Cp * self.MW)
-            if rho: self.V.add_method(fn.rho_to_V(rho, self.MW))
             if V: self.V.add_method(V)
         else:
             multi_phase_items = (('mu', mu),
@@ -579,6 +579,9 @@ class Chemical:
         if Psat: self.Psat.add_method(Psat)
         if Hvap: self.Hvap.add_method(Hvap)
         if default: self.default()
+        if phase:
+            if Cp: self.Cn.add_method(Cp * self.MW)
+            if rho: self.V.add_method(fn.rho_to_V(rho, self.MW))
         if cache:
             chemical_cache[ID] = self
             if len(chemical_cache) > 100:
@@ -656,7 +659,7 @@ class Chemical:
         
         """
         self = super().__new__(cls)
-        self._eos = self._eos_1atm = None
+        self._eos = None
         self._UNIFAC = UNIFACGroupCounts()
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
@@ -666,32 +669,27 @@ class Chemical:
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
-        if phase:
-            phase = phase[0]
-            check_phase(phase)
-            self._kappa = ThermalConductivity
-            # TODO: left off here
-            for i in ('kappa', 'mu', 'V'):
-                setfield(self, '_' + i, TPDependentProperty())
-            self._Cn = TDependentProperty('Cn')
-        else:
-            for i in ('kappa', 'mu', 'V'):
-                setfield(self, '_' + i, PhaseTPHandle(i))
-            self._Cn = Cn = PhaseTHandle('Cn')
-            Cn.s._chemical = Cn.l._chemical = Cn.g._chemical = self
-        for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
-            setfield(self, '_' + i, TDependentProperty())
-        self._locked_state = phase
         check_valid_ID(ID)
         self._ID = ID
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID
         for i,j in data.items(): setfield(self, '_' + i , j)
-        self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
-        self._eos_1atm = self._eos.to_TP(298.15, 101325)
-        self._label_handles()
         if formula: self.formula = formula
-        else: self._formula = formula
+        self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
+        self._estimate_missing_properties()
+        self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
+                           self._Tc, self._Pc, self.Zc, self._Vc,
+                           self._omega, self._dipole, self._similarity_variable,
+                           self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
+                           self._Hfus)
+        self._locked_state = None
+        if phase: self.at_state(phase)
+        self._estimate_missing_properties()
+        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
+                            self._Tm, self._Tb, self._eos, phase_ref)
+        self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
+                             self._combustion, self.atoms)
+        if self._formula and self._Hf is not None: self.reset_combustion_data()
         return self
 
     def copy(self, ID, CAS=None, **data):
@@ -1442,7 +1440,7 @@ class Chemical:
         if not self._eos:
             self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, self._eos_1atm, self._phase_ref)
+                            self._Tm, self._Tb, self._eos, self._phase_ref)
 
     ### Initializers ###
     
@@ -1860,7 +1858,7 @@ class Chemical:
             mu = self._mu
             if hasfield(mu, 'l'):
                 mu.l.add_method(0.00091272)
-            elif not mu:
+            elif self._locked_state != 's':
                 mu.add_method(0.00091272)
         if 'V' in properties:
             V = self._V
@@ -1873,7 +1871,7 @@ class Chemical:
             kappa = self._kappa
             if hasfield(kappa, 'l'):
                 kappa.l.add_method(0.5942)
-            if not kappa:
+            if self._locked_state != 's':
                 kappa.add_method(0.5942)
         if self._formula:
             if any([i in properties for i in ('HHV', 'LHV', 'combustion', 'Hf')]):
