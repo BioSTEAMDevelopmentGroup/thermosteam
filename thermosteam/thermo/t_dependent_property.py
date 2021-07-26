@@ -18,3 +18,6 @@ TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
 # Remove cache from call
 TDependentProperty.__call__ = TDependentProperty.T_dependent_property
+
+# Backwards compatibility with past thermosteam versions
+TDependentProperty.add_model = TDependentProperty.add_method

@@ -239,7 +239,24 @@ _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
                     '\n[Data]   ': _data}
 
-
+_field_to_handles = {
+    'Psat': VaporPressure,
+    'Psub': SublimationPressure,
+    'Hvap': EnthalpyVaporization,
+    'sigma': SurfaceTension,
+    'Vs': VolumeSolid, 
+    'Vl': VolumeLiquid, 
+    'Vg': VolumeGas, 
+    'Vsl': VolumeSupercriticalLiquid,
+    'Cns': HeatCapacitySolid, 
+    'Cnl': HeatCapacityLiquid, 
+    'Cng': HeatCapacityGas,
+    'kappal': ThermalConductivityLiquid,
+    'kappag':ThermalConductivityGas,
+    'mul': ViscosityLiquid, 
+    'mug': ViscosityGas,
+    'epsilon': PermittivityLiquid,
+}
 # %% Chemical
 
 class Chemical:
@@ -652,8 +669,10 @@ class Chemical:
         if phase:
             phase = phase[0]
             check_phase(phase)
+            self._kappa = ThermalConductivity
+            # TODO: left off here
             for i in ('kappa', 'mu', 'V'):
-                setfield(self, '_' + i, TPDependentProperty(i))
+                setfield(self, '_' + i, TPDependentProperty())
             self._Cn = TDependentProperty('Cn')
         else:
             for i in ('kappa', 'mu', 'V'):
@@ -661,7 +680,7 @@ class Chemical:
             self._Cn = Cn = PhaseTHandle('Cn')
             Cn.s._chemical = Cn.l._chemical = Cn.g._chemical = self
         for i in ('sigma', 'epsilon', 'Psat', 'Hvap'):
-            setfield(self, '_' + i, TDependentProperty(i))
+            setfield(self, '_' + i, TDependentProperty())
         self._locked_state = phase
         check_valid_ID(ID)
         self._ID = ID
@@ -1526,11 +1545,13 @@ class Chemical:
         Vl = VolumeLiquid(MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, Vc=Vc, 
                           Zc=Zc, omega=omega, dipole=dipole, Psat=Psat, 
                           CASRN=CAS, eos=eos, has_hydroxyl=has_hydroxyl)
-        Vml_Tm = Vl.T_dependent_property(Tm) if Tm else None
+        try:
+            Vml_Tm = Vl(Tm) if Tm else None
+        except:
+            Vml_Tm = None
         Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
                        eos=eos, CASRN=CAS)
-        Vml_Tm = Vl.T_dependent_property(self.Tm) if self.Tm else None
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         
         # Heat capacity
@@ -1563,7 +1584,10 @@ class Chemical:
         self._kappa = PhaseTPHandle('kappa', None, kappal, kappag)
         
         # Surface tension
-        Hvap_Tb = self._Hvap(Tb) if Tb else None
+        try:
+            Hvap_Tb = self._Hvap(Tb) if Tb else None
+        except:
+            Hvap_Tb = None
         self._sigma = SurfaceTension(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
                                      Vc=Vc, Zc=Zc, omega=omega, 
                                      Stiel_Polar=self.Stiel_Polar,
@@ -1603,7 +1627,10 @@ class Chemical:
             elif not Vc: self._Vc = third_property
         Tb = self._Tb
         if not Tb:
-            self._Tb = Tb = self.Tsat(101325)
+            try:
+                self._Tb = Tb = self.Tsat(101325)
+            except:
+                self._Tb = Tb = None
             
         omega = self._omega
         if not omega and Pc and Tc:
