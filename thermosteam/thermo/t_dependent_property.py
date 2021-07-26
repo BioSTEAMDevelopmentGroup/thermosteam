@@ -27,7 +27,6 @@ def add_model(self, f=None, *args, top_priority=True, **kwargs):
         self.add_method(f, *args, **kwargs)
 
 TDependentProperty.add_model = add_model
-
 def has_method(self):
     return bool(self._method)
 
@@ -37,3 +36,11 @@ def __call__(self, T, P):
     return self.T_dependent_property(T)
 
 VolumeSolid.__call__ = __call__
+
+def copy(self):
+    cls = type(self)
+    copy = cls.__new__(cls)
+    copy.__dict__.update(self.__dict__)
+    return copy
+
+TDependentProperty.copy = copy

@@ -27,22 +27,12 @@ __all__ = ('PhaseHandle',
 class PhaseHandle:
     __slots__ = ('var', 's', 'l', 'g')
     
-    def __init__(self, var, s=None, l=None, g=None):
+    def __init__(self, var, s, l, g):
         setattr = object.__setattr__
         setattr(self, 'var', var)
         setattr(self, 's', s)
         setattr(self, 'l', l)
         setattr(self, 'g', g)
-    
-    @classmethod
-    def blank(cls, var):
-        new = cls.__new__(cls)
-        setattr = object.__setattr__
-        setattr(new, 'var', var)
-        setattr(new, 's', None)
-        setattr(new, 'l', None)
-        setattr(new, 'g', None)
-        return new
     
     @property
     def S(self): return self.s
@@ -52,18 +42,16 @@ class PhaseHandle:
     def G(self): return self.g
     
     def __iter__(self):
-        if self.s is not None: yield 's', self.s
-        if self.l is not None: yield 'l', self.l
-        if self.g is not None: yield 'g', self.g 
+        return iter((('s', self.s), ('l', self.l), ('g', self.g)))
     
     def __bool__(self):
         return any((self.s, self.l, self.g)) 
     
     def copy(self):
         return self.__class__(self.var,
-                              self.s.copy() if self.s else None,
-                              self.l.copy() if self.l else None,
-                              self.g.copy() if self.g else None)
+                              self.s.copy(),
+                              self.l.copy(),
+                              self.g.copy())
     __copy__ = copy
     
     def show(self):
@@ -108,16 +96,15 @@ class PhaseFunctorBuilder:
         self.g = g
         
     def __call__(self, sdata, ldata, gdata):
-        setfield = object.__setattr__
-        phase_handle = self.PhaseHandle.blank(self.var)
         phases = ('s', 'g', 'l')
         builders = (self.s, self.g, self.l)
         phases_data = (sdata, gdata, ldata)
+        slg = {}
         for phase, builder, data in zip(phases, builders, phases_data):
             if builder:
                 functor = builder.from_args(data)
-                setfield(phase_handle, phase, functor)
-        return phase_handle
+                slg[phase] = functor
+        return self.PhaseHandle(self.var, **slg)
 
 
 class PhaseTFunctorBuilder(PhaseFunctorBuilder):

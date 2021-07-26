@@ -1571,7 +1571,7 @@ class Chemical:
                               omega=omega, Psat=Psat, Vml=V.l)
         mug = ViscosityGas(CASRN=CAS, MW=MW, Tc=Tc, Pc=Pc, Zc=Zc, dipole=dipole,
                            Vmg=Vg)
-        self._mu = mu = PhaseTPHandle('mu', None, mul, mug)
+        self._mu = mu = PhaseTPHandle('mu', mul, mul, mug)
         
         # Conductivity
         kappal = ThermalConductivityLiquid(CASRN=CAS, MW=MW, Tm=Tm, Tb=Tb, 
@@ -1579,7 +1579,7 @@ class Chemical:
         kappag = ThermalConductivityGas(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
                                         Vc=Vc, Zc=Zc, omega=omega, dipole=dipole, 
                                         Vmg=V.g, Cpgm=Cn.g, mug=mu.g)
-        self._kappa = PhaseTPHandle('kappa', None, kappal, kappag)
+        self._kappa = PhaseTPHandle('kappa', kappal, kappal, kappag)
         
         # Surface tension
         try:
@@ -1858,7 +1858,7 @@ class Chemical:
             mu = self._mu
             if hasfield(mu, 'l'):
                 mu.l.add_method(0.00091272)
-            elif self._locked_state != 's':
+            elif not mu:
                 mu.add_method(0.00091272)
         if 'V' in properties:
             V = self._V
@@ -1871,7 +1871,7 @@ class Chemical:
             kappa = self._kappa
             if hasfield(kappa, 'l'):
                 kappa.l.add_method(0.5942)
-            if self._locked_state != 's':
+            if not kappa:
                 kappa.add_method(0.5942)
         if self._formula:
             if any([i in properties for i in ('HHV', 'LHV', 'combustion', 'Hf')]):
