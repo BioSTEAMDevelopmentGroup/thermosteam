@@ -24,10 +24,25 @@ def __call__(self, T, P):
 
 TPDependentProperty.__call__ = __call__
 
+# Missing method 
 def has_method(self):
     return bool(self._method or self._method_P)
 
 TPDependentProperty.__bool__ = has_method
+
+# Handling methods
+
+@TPDependentProperty.method_P.setter
+def method_P(self, method):
+    if method is not None:
+        method, *_ = method.split('(')
+        method = method.upper().replace(' ', '_').replace('_AND_', '_').strip('_').replace('SOLID', 'S')
+        if method not in self.all_methods_P and method != 'POLY_FIT':
+            raise ValueError("Pressure dependent method '%s' is not available for this chemical; "
+                             "available methods are %s" %(method, self.all_methods_P))
+    self._method_P = method
+
+TPDependentProperty.method_P = method_P
 
 VolumeLiquid.ranked_methods.remove('EOS')
 VolumeLiquid.ranked_methods_P.remove('EOS')

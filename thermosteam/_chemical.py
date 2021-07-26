@@ -149,7 +149,7 @@ def reset_constant(chemical, var, value):
         if isa(handle, PhaseHandle):
             for phase, obj in handle:
                 if hasfield(obj, var): setfield(obj, var, value)
-        elif hasfield(obj, var): setfield(handle, var, value)
+        elif hasfield(handle, var): setfield(handle, var, value)
 
 def reset_energy_constant(chemical, var, value):
     getfield = getattr
@@ -686,7 +686,7 @@ class Chemical:
         if phase: self.at_state(phase)
         self._estimate_missing_properties()
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, phase_ref)
+                            self._Tm, self._Tb, self._eos, self._phase_ref)
         self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
                              self._combustion, self.atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
@@ -1990,8 +1990,7 @@ class Chemical:
                     setfield(handle, other_phase, new_handle)
                 elif isa(other_handle, PhaseHandle):
                     for i, obj in handle:
-                        other = getfield(other_handle, i)
-                        new_handle = other.copy()
+                        new_handle = getfield(other_handle, i).copy()
                         new_handle.CASRN = obj.CASRN
                         setfield(handle, i, new_handle)
         if {'Cn', 'Hvap'}.intersection(names): self.reset_free_energies()
