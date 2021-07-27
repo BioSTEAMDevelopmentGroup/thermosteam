@@ -326,6 +326,9 @@ class Chemical:
     
     Examples
     --------
+    Chemical objects contain the same thermodynamic models and data as
+    `thermo <https://thermo.readthedocs.io/>`_'s Chemical objects, but present
+    an API more suitable for `BioSTEAM <https://biosteam.readthedocs.io/en/latest/>`_'s needs.
     Chemical objects contain pure component properties:
     
     >>> import thermosteam as tmo
@@ -417,13 +420,8 @@ class Chemical:
     <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
     >>> Water.V.l
     VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Pc=273.15, Vc=5.60e-05, Zc=0.22947, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0), extrapolation="constant", method="VDI_PPDS", method_P=None, tabular_extrapolation_permitted=True)
-
-    When called, the model handle searches through each model until it finds one with an applicable domain. If none are applicable, a value error is raised:
-        
-    >>> Water.Psat(373.15)
-    101284.55
     
-    A new model can be added easily to a model handle through the `add_method` method, for example:
+    A new model can be added easily using `add_method`, for example:
         
     >>> def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
@@ -433,63 +431,30 @@ class Chemical:
 
     The `add_method` method is a high level interface that even lets you create a constant model:
         
-    >>> Water.Cn.l.add_method(1.687e-05, name='User constant') # TODO: Left off here
-    >>> Water.V.l(T=298.15)
+    >>> Water.Cn.l.add_method(75.31) 
+    >>> Water.Cn('l', 350)
+    75.31
 
     .. Note::
        Because no bounds were given, the model assumes it is valid across all temperatures and pressures.
 
-    Manage the model order with the `set_model_priority` and `move_up_model_priority` methods:
+    Choose what model to use through the `method` attribute:
     
-    >>> # Note: In this case, we pass the model name, but its
-    >>> # also possible to pass the current index, or the model itself.
-    >>> Water.Psat.move_up_model_priority('Wagner original')
-    >>> Water.Psat.show()
-    TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner original
-    [1] Antoine
-    [2] EQ101
-    [3] Wagner
-    [4] boiling critical relation
-    [5] Lee Kesler
-    [6] Ambrose Walton
-    [7] Sanjari
-    [8] Edalat
-    [9] User antoine model
-    
-    >>> Water.Psat.set_model_priority('Antoine')
-    >>> Water.Psat.show()
-    TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Antoine
-    [1] Wagner original
-    [2] EQ101
-    [3] Wagner
-    [4] boiling critical relation
-    [5] Lee Kesler
-    [6] Ambrose Walton
-    [7] Sanjari
-    [8] Edalat
-    [9] User antoine model
-    
-    The default priority is `0` (or top priority), but you can choose any priority:
-    
-    >>> Water.Psat.set_model_priority('Antoine', 1)
-    >>> Water.Psat.show()
-    TDependentModelHandle(T, P=None) -> Psat [Pa]
-    [0] Wagner original
-    [1] Antoine
-    [2] EQ101
-    [3] Wagner
-    [4] boiling critical relation
-    [5] Lee Kesler
-    [6] Ambrose Walton
-    [7] Sanjari
-    [8] Edalat
-    [9] User antoine model
+    >>> Water.Cn.l.all_methods
+    {'CRCSTD',
+     'DADGOSTAR_SHAW',
+     'POLING_CONST',
+     'ROWLINSON_BONDI',
+     'ROWLINSON_POLING',
+     'USER_METHOD',
+     'ZABRANSKY_SPLINE_C'}
+    >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
     .. note::
     
-        All models are stored as a :py:class:`deque` in the `models` attribute (e.g. Water.Psat.models).
+        For details on the available methods and the capabilities of objects
+        like VaporPressure and VolumeLiquid, visit 
+        `thermo's documentation <https://thermo.readthedocs.io/>`_.
     
     Attributes
     ----------
@@ -676,7 +641,8 @@ class Chemical:
         for i,j in data.items(): setfield(self, '_' + i , j)
         if formula: self.formula = formula
         self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
-        self._estimate_missing_properties()
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
+        self._estimate_missing_properties(None)
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
@@ -684,12 +650,13 @@ class Chemical:
                            self._Hfus)
         self._locked_state = None
         if phase: self.at_state(phase)
-        self._estimate_missing_properties()
+        self._estimate_missing_properties(self.Psat)
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, self._phase_ref)
         self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
                              self._combustion, self.atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         return self
 
     def copy(self, ID, CAS=None, **data):
@@ -747,8 +714,10 @@ class Chemical:
         new._ID = ID
         new._CAS = CAS or ID
         new._locked_state = new._locked_state
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
                            new.Tb, new.eos, new.phase_ref)
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         new._label_handles()
         for i,j in data.items(): setfield(new, i , j)
         return new
@@ -1332,7 +1301,7 @@ class Chemical:
         if self._Psat and P <= self._Psat(T): return 'g'
         else: return 'l'
     
-    ### Data solvers###
+    ### Data solvers ###
 
     def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None):
         """Return the saturated temperature (in Kelvin) given the pressure (in Pascal)."""
@@ -1346,11 +1315,9 @@ class Chemical:
             else: Tguess = Tb
         elif not Tguess:
             Tguess = (Tmin + Tmax)/2.0
-        try:
-            T = IQ_interpolation(lambda T: Psat(T) - P,
-                                 Tmin, Tmax, Psat(Tmin) - P, Psat(Tmax) - P,
-                                 Tguess, 1e-6, 1e-2, checkroot=False)
-        except: return None
+        T = IQ_interpolation(lambda T: Psat(T) - P,
+                             Tmin, Tmax, Psat(Tmin) - P, Psat(Tmax) - P,
+                             Tguess, 1e-6, 1e-2, checkroot=False)
         return T
 
     ### Reinitializers ###
@@ -1412,7 +1379,8 @@ class Chemical:
         self._init_data(CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                         dipole, atoms, similarity_variable, iscyclic_aliphatic)
         self._init_eos(eos, self._Tc, self._Pc, self._omega)
-        self._estimate_missing_properties()
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
+        self._estimate_missing_properties(None)
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
@@ -1420,11 +1388,12 @@ class Chemical:
                            self._Hfus)
         self._locked_state = None
         if phase: self.at_state(phase)
-        self._estimate_missing_properties()
+        self._estimate_missing_properties(self._Psat)
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, phase_ref)
         self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
     def reset_combustion_data(self, method="Stoichiometry"):
         """Reset combustion data (LHV, HHV, and combution attributes)
@@ -1439,8 +1408,10 @@ class Chemical:
         """Reset the `H`, `S`, `H_excess`, and `S_excess` functors."""
         if not self._eos:
             self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, self._phase_ref)
+        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
     ### Initializers ###
     
@@ -1504,17 +1475,11 @@ class Chemical:
     def _init_reactions(self, Hf, S0, LHV, HHV, combustion, atoms):
         Hvap_298K = None
         if Hf is None:
-            try:
-                Hvap_298K = self.Hvap(298.15)
-            except:
-                Hvap_298K = None
+            Hvap_298K = self.Hvap(298.15)
             Hf = heat_of_formation(self._CAS, self._phase_ref,
                                    Hvap_298K, self.Hfus) 
         if S0 is None:
-            try:
-                Hvap_298K = self.Hvap(298.15) if Hvap_298K is None else Hvap_298K
-            except:
-                Hvap_298K = None
+            Hvap_298K = self.Hvap(298.15) if Hvap_298K is None else Hvap_298K
             Svap_298K = None if Hvap_298K is None else Hvap_298K / 298.15
             S0 = absolute_entropy_of_formation(self._CAS, self._phase_ref,
                                                Svap_298K, self.Sfus) or 0.
@@ -1536,7 +1501,6 @@ class Chemical:
     def _init_handles(self, CAS, MW, Tm, Tb, Pt, Tt, Tc, Pc, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
                       has_hydroxyl, Hfus):
-        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         # Vapor pressure
         self._Psat = Psat = VaporPressure(CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega)
         
@@ -1544,10 +1508,7 @@ class Chemical:
         Vl = VolumeLiquid(MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, Vc=Vc, 
                           Zc=Zc, omega=omega, dipole=dipole, Psat=Psat, 
                           CASRN=CAS, eos=[eos], has_hydroxyl=has_hydroxyl)
-        try:
-            Vml_Tm = Vl(Tm) if Tm else None
-        except:
-            Vml_Tm = None
+        Vml_Tm = Vl(Tm, 101325.) if Tm else None
         Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
                        eos=[eos], CASRN=CAS)
@@ -1583,10 +1544,7 @@ class Chemical:
         self._kappa = PhaseTPHandle('kappa', kappal, kappal, kappag)
         
         # Surface tension
-        try:
-            Hvap_Tb = self._Hvap(Tb) if Tb else None
-        except:
-            Hvap_Tb = None
+        Hvap_Tb = self._Hvap(Tb) if Tb else None
         self._sigma = SurfaceTension(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
                                      Vc=Vc, Zc=Zc, omega=omega, 
                                      Stiel_Polar=self.Stiel_Polar,
@@ -1595,11 +1553,10 @@ class Chemical:
         
         # Other
         self._epsilon = PermittivityLiquid(CAS)
-        TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         self._label_handles()
         
 
-    def _estimate_missing_properties(self):
+    def _estimate_missing_properties(self, Psat):
         # Melting temperature is a week function of pressure,
         # so assume the triple point temperature is the 
         # melting temperature
@@ -1613,11 +1570,8 @@ class Chemical:
             self._Tm = Tm = Tt
         if not Tt and Tm:
             self._Tt = Tt = Tm
-        if not Pt and Tt:
-            try:
-                self._Pt = Pt = self._Psat(Tt)
-            except:
-                self._Pt = Pt = None
+        if not Pt and Tt and Psat:
+            self._Pt = Pt = self._Psat(Tt)
         # Find missing critical property, if only two are given.
         critical_point = (Tc, Pc, Vc)
         N_values = sum([bool(i) for i in critical_point])
@@ -1635,13 +1589,10 @@ class Chemical:
             
         omega = self._omega
         if not omega and Pc and Tc:
-            try:
-                P_at_Tr_seventenths = self._Psat(0.7 * Tc)
-            except:
-                P_at_Tr_seventenths = None
+            P_at_Tr_seventenths = Psat(0.7 * Tc)
             if P_at_Tr_seventenths:
                 omega = acentric_factor_definition(P_at_Tr_seventenths, Pc)
-            if not omega and Tb:
+            elif not omega and Tb:
                 omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
 
@@ -1679,10 +1630,7 @@ class Chemical:
                 else:
                     self._phase_ref = phase_ref = 'l'
             if Hvap:
-                try:
-                    Hvap_Tb = Hvap(Tb) if Tb else None
-                except:
-                    Hvap_Tb = None
+                Hvap_Tb = Hvap(Tb) if Tb else None
                 Svap_Tb = Hvap_Tb / Tb if Hvap_Tb else None
             else:
                 Hvap_Tb = Svap_Tb = None
@@ -1726,24 +1674,25 @@ class Chemical:
                 S_dep_Tb_P_ref_g = S_dep_Tb_Pb_g = 0
             else:
                 if phase_ref == 'g':
-                    eos_phase_ref = eos.to_TP(T_ref, P_ref)
-                    H_dep_ref_g = eos_phase_ref.H_dep_g
-                    S_dep_ref_g = eos_phase_ref.S_dep_g
+                    try:
+                        eos_phase_ref = eos.to_TP(T_ref, P_ref)
+                        H_dep_ref_g = eos_phase_ref.H_dep_g
+                        S_dep_ref_g = eos_phase_ref.S_dep_g
+                    except:
+                        H_dep_ref_g = S_dep_ref_g = 0.
                 elif phase_ref == 'l':
-                    eos_phase_ref = eos.to_TP(T_ref, P_ref)
-                    H_dep_ref_l = eos_phase_ref.H_dep_l
-                    S_dep_ref_l = eos_phase_ref.S_dep_l
-                    eos_T_ref_Pb = eos.to_TP(T_ref, 101325)
-                    H_dep_T_ref_Pb = eos_T_ref_Pb.H_dep_l
-                    S_dep_T_ref_Pb = eos_T_ref_Pb.S_dep_l
+                    try:
+                        eos_T_ref_Pb = eos.to_TP(T_ref, P_ref)
+                        H_dep_ref_l = H_dep_T_ref_Pb = eos_T_ref_Pb.H_dep_l
+                        S_dep_ref_l = S_dep_T_ref_Pb = eos_T_ref_Pb.S_dep_l
+                    except:
+                        H_dep_ref_l = H_dep_T_ref_Pb = 0.
+                        S_dep_ref_l = S_dep_T_ref_Pb = 0.
                 if Tb:
                     try:
-                        eos_Tb = eos.to_TP(Tb, 101325)
                         eos_Tb_P_ref = eos.to_TP(Tb, P_ref)
-                        H_dep_Tb_Pb_g = eos_Tb.H_dep_g
-                        H_dep_Tb_P_ref_g = eos_Tb_P_ref.H_dep_g
-                        S_dep_Tb_P_ref_g = eos_Tb_P_ref.S_dep_g
-                        S_dep_Tb_Pb_g = eos_Tb.S_dep_g
+                        H_dep_Tb_Pb_g = H_dep_Tb_P_ref_g = eos_Tb_P_ref.H_dep_g
+                        S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = eos_Tb_P_ref.S_dep_g
                     except:
                         S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
                         H_dep_Tb_Pb_g = 0.
@@ -1993,7 +1942,7 @@ class Chemical:
                         new_handle = getfield(other_handle, i).copy()
                         new_handle.CASRN = obj.CASRN
                         setfield(handle, i, new_handle)
-        if {'Cn', 'Hvap'}.intersection(names): self.reset_free_energies()
+        if {'_Cn', '_Hvap'}.intersection(names): self.reset_free_energies()
     
     @property
     def locked_state(self):

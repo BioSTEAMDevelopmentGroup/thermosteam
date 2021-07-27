@@ -57,8 +57,9 @@ TDependentProperty.copy = copy
 @TDependentProperty.method.setter
 def method(self, method):
     if method is not None:
-        method, *_ = method.split('(')
-        method = method.upper().replace(' ', '_').replace('_AND_', '_').strip('_').replace('SOLID', 'S')
+        if method not in self.all_methods and method != 'POLY_FIT':
+            method, *_ = method.split('(')
+            method = method.upper().replace(' ', '_').replace('_AND_', '_').strip('_').replace('SOLID', 'S').replace('SATURATION', 'SAT')
         if method not in self.all_methods and method != 'POLY_FIT':
             raise ValueError("Method '%s' is not available for this chemical; "
                              "available methods are %s" %(method, self.all_methods))
