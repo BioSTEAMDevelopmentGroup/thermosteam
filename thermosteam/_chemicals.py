@@ -220,8 +220,8 @@ class Chemicals:
         >>> s = tmo.Stream('s', Substance=10)
         >>> s.rho
         Traceback (most recent call last):
-        DomainError: Substance (CAS: Substance) has no valid liquid molar 
-        volume model at T=298.15 K and P=101325 Pa
+        RuntimeError: No liquid molar volume method selected for 
+        component with CASRN 'Substance'
         
         """
         chemicals = tuple(self)

@@ -354,7 +354,7 @@ class Chemical:
              Tb: 373.12 K
              Tt: 273.15 K
              Tc: 647.14 K
-             Pt: 610.88 Pa
+             Pt: 610.71 Pa
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
              Hf: -2.8582e+05 J/mol
@@ -611,7 +611,7 @@ class Chemical:
                  Pc: None
                  Vc: None
                  Hf: None
-                 S0: None
+                 S0: 0 J/K/mol
                  LHV: None
                  HHV: None
                  Hfus: None
@@ -684,7 +684,7 @@ class Chemical:
                  NIST: <Empty>
         [Data]   MW: 180.16 g/mol
                  Tm: None
-                 Tb: 616.29 K
+                 Tb: 615.69 K
                  Tt: None
                  Tc: 755 K
                  Pt: None
@@ -727,7 +727,10 @@ class Chemical:
         handles = (self._Psat, self._Hvap, self._sigma, self._epsilon,
                    self._V, self._Cn, self._mu, self._kappa)
         isa = isinstance
-        label = f"{self.CAS} ({self.ID})"
+        if self.CAS == self.ID:
+            label = self.CAS
+        else:
+            label = f"{self.CAS} ({self.ID})"
         for handle in handles:
             if isa(handle, PhaseHandle):
                 for i, j in handle:
@@ -748,7 +751,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.rho('l', 298.15, 101325)
-        997.015
+        997.024
         
         """
         return fn.V_to_rho(self.V(*args, **kwargs), self.MW)
@@ -776,7 +779,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.alpha('l', 298.15, 101325)
-        1.455...e-07
+        1.425...e-07
         
         """
         return fn.alpha(self.kappa(*args, **kwargs), 
@@ -792,7 +795,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.nu('l', 298.15, 101325)
-        8.958...e-07
+        9.154...e-07
         
         """
         return fn.mu_to_nu(self.mu(*args, **kwargs), 
@@ -807,7 +810,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.Pr('l', 298.15, 101325)
-        6.156
+        6.421
         
         """
         return fn.Pr(self.Cp(*args, **kwargs) * 1000,
@@ -832,10 +835,10 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.get_property('sigma', 'N/m', 300.) # Surface tension
-        0.071685
+        0.07176
 
         >>> Water.get_property('rho', 'g/cm3', 'l', 300., 101325) # Density
-        0.996267
+        0.9962
 
         """
         value = getattr(self, name)(*args, **kwargs)
@@ -1571,7 +1574,7 @@ class Chemical:
         if not Tt and Tm:
             self._Tt = Tt = Tm
         if not Pt and Tt and Psat:
-            self._Pt = Pt = self._Psat(Tt)
+            self._Pt = Pt = Psat(Tt)
         # Find missing critical property, if only two are given.
         critical_point = (Tc, Pc, Vc)
         N_values = sum([bool(i) for i in critical_point])
@@ -1589,9 +1592,9 @@ class Chemical:
             
         omega = self._omega
         if not omega and Pc and Tc:
-            P_at_Tr_seventenths = Psat(0.7 * Tc)
-            if P_at_Tr_seventenths:
-                omega = acentric_factor_definition(P_at_Tr_seventenths, Pc)
+            if Psat: 
+                P_at_Tr_seventenths = Psat(0.7 * Tc)
+                if P_at_Tr_seventenths: omega = acentric_factor_definition(P_at_Tr_seventenths, Pc)
             elif not omega and Tb:
                 omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
@@ -1786,7 +1789,24 @@ class Chemical:
         >>> Substance = Chemical.blank('Substance')
         >>> missing_properties = Substance.default()
         >>> sorted(missing_properties)
-        ['Dortmund', 'Hfus', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
+        ['Dortmund',
+         'Hfus',
+         'Hvap',
+         'PSRK',
+         'Pc',
+         'Psat',
+         'Pt',
+         'Sfus',
+         'Tb',
+         'Tc',
+         'Tm',
+         'Tt',
+         'UNIFAC',
+         'Vc',
+         'dipole',
+         'iscyclic_aliphatic',
+         'omega',
+         'similarity_variable']
         
         Note that missing properties does not include essential properties volume, heat capacity, and conductivity.
         
@@ -1893,7 +1913,38 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> sorted(Substance.get_missing_properties())
-        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'V', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
+        ['Cn',
+         'Dortmund',
+         'H',
+         'HHV',
+         'H_excess',
+         'Hf',
+         'Hfus',
+         'Hvap',
+         'LHV',
+         'MW',
+         'PSRK',
+         'Pc',
+         'Psat',
+         'Pt',
+         'S',
+         'S_excess',
+         'Sfus',
+         'Tb',
+         'Tc',
+         'Tm',
+         'Tt',
+         'UNIFAC',
+         'Vc',
+         'combustion',
+         'dipole',
+         'epsilon',
+         'iscyclic_aliphatic',
+         'kappa',
+         'mu',
+         'omega',
+         'sigma',
+         'similarity_variable']
         
         """
         getfield = getattr

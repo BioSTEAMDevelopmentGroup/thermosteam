@@ -57,16 +57,16 @@ def test_reaction_enthalpy_balance():
     Tref = 298.15
     Tb = H2O.Tb
     feed = tmo.Stream(Methane=1, O2=2, T=Tb, phase='g')
-    H0 = feed.Hnet - Methane.Cn.g.integrate_by_T(Tref, Tb) - 2 * O2.Cn.g.integrate_by_T(Tref, Tb) 
+    H0 = feed.Hnet - Methane.Cn.g.T_dependent_property_integral(Tref, Tb) - 2 * O2.Cn.g.T_dependent_property_integral(Tref, Tb) 
     combustion(feed)
-    Hf = feed.Hnet - 2 * H2O.Cn.l.integrate_by_T(Tref, Tb) - CO2.Cn.g.integrate_by_T(Tref, Tb)
+    Hf = feed.Hnet - 2 * H2O.Cn.l.T_dependent_property_integral(Tref, Tb) - CO2.Cn.g.T_dependent_property_integral(Tref, Tb)
     assert_allclose(Hf - H0, Methane.LHV)
     
     # Electrolysis of water; ensure heat of reaction without sensible
     # heats is the higher heating value of hydrogen (with opposite sign)
     tmo.settings.set_thermo(chemicals)
     reaction = tmo.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=1)
-    feed = tmo.Stream('feed', H2O=1)
+    feed = tmo.Stream(None, H2O=1)
     H0 = feed.Hnet
     feed.phases = ('g', 'l') # Gas and liquid phases must be available
     reaction(feed) # Call to run reaction on molar flow
@@ -76,8 +76,8 @@ def test_reaction_enthalpy_balance():
     # Electrolysis of water; ensure gas phase heat of reaction without sensible
     # heats is the lower heating value of hydrogen (with opposite sign)
     reaction = tmo.Reaction('2H2O -> 2H2 + O2', reactant='H2O', X=1)
-    feed = tmo.Stream('feed', H2O=1, T=Tref, phase='g')
-    H0 = feed.Hnet - H2O.Cn.l.integrate_by_T(Tref, H2O.Tb) - H2O.Cn.g.integrate_by_T(H2O.Tb, Tref)
+    feed = tmo.Stream(None, H2O=1, T=Tref, phase='g')
+    H0 = feed.Hnet - H2O.Cn.l.T_dependent_property_integral(Tref, H2O.Tb) - H2O.Cn.g.T_dependent_property_integral(H2O.Tb, Tref)
     reaction(feed) # Call to run reaction on molar flow
     Hf = feed.Hnet
     assert_allclose(Hf - H0, -H2.LHV)
