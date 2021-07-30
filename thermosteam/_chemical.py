@@ -386,10 +386,10 @@ class Chemical:
     101284.55
     >>> # Surface tension (N/m)
     >>> Water.sigma(T=298.15)
-    0.0719722
+    0.07205
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
-    1.80692...e-05
+    1.806...e-05
     
     Note that the reference state of all chemicals is 25 degC and 1 atm:
     
@@ -411,15 +411,16 @@ class Chemical:
     Temperature dependent properties are managed by objects:
     
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344,
-                  extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY")
+    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, 
+                  Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC",
+                  method="WAGNER_MCGARRY")
 
     Phase dependent properties have attributes with model handles for each phase:
 
     >>> Water.V
     <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
     >>> Water.V.l
-    VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Pc=273.15, Vc=5.60e-05, Zc=0.22947, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0), extrapolation="constant", method="VDI_PPDS", method_P=None, tabular_extrapolation_permitted=True)
+    VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6000000000000006e-05, Zc=0.22947273972184645, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
     
     A new model can be added easily using `add_method`, for example:
         
@@ -427,7 +428,7 @@ class Chemical:
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
     >>> Water.Psat.add_method(f=User_antoine_model, Tmin=273.20, Tmax=473.20)
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Pc=273.15, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
+    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
 
     The `add_method` method is a high level interface that even lets you create a constant model:
         
@@ -440,14 +441,14 @@ class Chemical:
 
     Choose what model to use through the `method` attribute:
     
-    >>> Water.Cn.l.all_methods
-    {'CRCSTD',
+    >>> list(sorted(Water.Cn.l.all_methods))
+    ['CRCSTD',
      'DADGOSTAR_SHAW',
      'POLING_CONST',
      'ROWLINSON_BONDI',
      'ROWLINSON_POLING',
      'USER_METHOD',
-     'ZABRANSKY_SPLINE_C'}
+     'ZABRANSKY_SPLINE_C']
     >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
     .. note::

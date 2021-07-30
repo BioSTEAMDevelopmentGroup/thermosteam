@@ -787,7 +787,7 @@ class MultiStream(Stream):
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='m3/hr')
         >>> s1.get_concentration('l', ('Water', 'Ethanol'))
-        array([27.671,  4.266])
+        array([27.672,  4.265])
 
         """
         return self.imol[phase, IDs] / self.F_vol

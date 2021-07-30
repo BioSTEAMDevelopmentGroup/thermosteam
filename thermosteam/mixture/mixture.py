@@ -204,7 +204,7 @@ class Mixture:
         >>> from thermosteam import Mixture
         >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
-        754.005
+        752.513
         
         """
         

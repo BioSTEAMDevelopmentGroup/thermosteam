@@ -35,15 +35,15 @@ class IdealTPMixtureModel:
     
     Examples
     --------
-    >>> from thermosteam.mixture import IdealMixtureModel
+    >>> from thermosteam.mixture import IdealTPMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
-    >>> models = [i.Psat for i in chemicals]
-    >>> mixture_model = IdealMixtureModel(models, 'Psat')
+    >>> models = [i.V.l for i in chemicals]
+    >>> mixture_model = IdealTPMixtureModel(models, 'V')
     >>> mixture_model
-    <IdealTPMixtureModel(mol, T, P=None) -> Psat [Pa]>
-    >>> mixture_model([0.2, 0.8], 350)
-    84902.48775
+    <IdealTPMixtureModel(mol, T, P) -> V [m^3/mol]>
+    >>> mixture_model([0.2, 0.8], 350, 101325)
+    5.376...e-05
     
     """
     __slots__ = ('var', 'models',)
@@ -81,11 +81,11 @@ class IdealTMixtureModel:
     
     Examples
     --------
-    >>> from thermosteam.mixture import IdealMixtureModel
+    >>> from thermosteam.mixture import IdealTMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
     >>> models = [i.Psat for i in chemicals]
-    >>> mixture_model = IdealMixtureModel(models, 'Psat')
+    >>> mixture_model = IdealTMixtureModel(models, 'Psat')
     >>> mixture_model
     <IdealTMixtureModel(mol, T, P=None) -> Psat [Pa]>
     >>> mixture_model([0.2, 0.8], 350)

@@ -108,7 +108,7 @@ class Stream:
     >>> s1.mass
     property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
     >>> s1.vol
-    property_array([<Water: 0.02006 m^3/hr>, <Ethanol: 0.012722 m^3/hr>])
+    property_array([<Water: 0.02006 m^3/hr>, <Ethanol: 0.012724 m^3/hr>])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
@@ -169,12 +169,12 @@ class Stream:
     Other thermodynamic properties are temperature and pressure dependent as well:
     
     >>> s1.rho # Density [kg/m3]
-    908.8914226...
+    908.648
     
     It may be more convinient to get properties with different units:
         
     >>> s1.get_property('rho', 'g/cm3')
-    0.90889142...
+    0.90864
     
     It is also possible to set some of the properties in different units:
         
@@ -652,7 +652,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.get_property('sigma', 'N/m') # Surface tension
-        0.063780393
+        0.06384
 
         """
         value = getattr(self, name)
@@ -1828,7 +1828,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_concentration(('Water', 'Ethanol'))
-        array([27.671,  4.266])
+        array([27.672,  4.265])
 
         """
         F_vol = self.F_vol

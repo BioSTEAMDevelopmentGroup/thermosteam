@@ -71,8 +71,8 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle('Tetradecanol', T=300)
     >>> sle
     SLE(imol=MolarFlowIndexer(
-            l=[('Methanol', 10), ('Tetradecanol', 19.06)],
-            s=[('Tetradecanol', 10.94)]),
+            l=[('Methanol', 10), ('Tetradecanol', 19.07)],
+            s=[('Tetradecanol', 10.93)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
     
     Solve SLE of pure tetradecanol:
