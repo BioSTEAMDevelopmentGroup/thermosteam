@@ -54,22 +54,30 @@ TDependentProperty.copy = copy
 
 # Handling methods
 
-@TDependentProperty.method.setter
-def method(self, method):
+def _set_method(self, method, stacklevel):
     if method is not None:
+        old_method = method
         if method not in self.all_methods and method != 'POLY_FIT':
+            old_method = method
             method, *_ = method.split('(')
             method = method.upper().replace(' ', '_').replace('_AND_', '_').strip('_').replace('SOLID', 'S').replace('SATURATION', 'SAT')
         if method not in self.all_methods and method != 'POLY_FIT':
             raise ValueError("Method '%s' is not available for this chemical; "
                              "available methods are %s" %(method, self.all_methods))
+        if old_method != method:
+            warn("Method '%s' does not exist, but was assummed to indicate '%s'" %(old_method, method),
+                 category=RuntimeWarning, stacklevel=stacklevel)
     self._method = method
+
+@TDependentProperty.method.setter
+def method(self, method):
+    self._set_method(method, 2)
 
 def set_model_priority(self, model, priority=0):
     if priority == 0:
         warn("'set_model_priority' is deprecated; set the 'method' "
              "attribute to change model", DeprecationWarning)
-        self.method = model
+        self._set_method(model, 3)
     else:
         raise RuntimeError(
             "'set_model_priority' is deprecated; cannot set model "
@@ -79,12 +87,13 @@ def move_up_model_priority(self, model, priority=0):
     if priority == 0:
         warn("'move_up_model_priority' is deprecated; set the 'method' "
              "attribute to change model", DeprecationWarning)
-        self.method = model
+        self._set_method(model, 3)
     else:
         raise RuntimeError(
             "'move_up_model_priority' is deprecated; cannot set model "
             "priority as models are not cycled anymore")
 
+TDependentProperty._set_method = _set_method
 TDependentProperty.method = method
 TDependentProperty.set_model_priority = set_model_priority
 TDependentProperty.move_up_model_priority = move_up_model_priority

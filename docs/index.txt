@@ -6,7 +6,7 @@
 Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 ====================================================
 
-Thermosteam is a standalone thermodynamic engine capable of estimating mixture properties, solving thermodynamic phase equilibria, and modeling stoichiometric reactions. Thermosteam builds upon `chemicals <https://github.com/CalebBell/chemicals>`_, the chemical properties component of the Chemical Engineering Design Library, with a robust and flexible framework that facilitates the creation of property packages.  `The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ is dependent on thermosteam for the simulation of unit operations.
+Thermosteam is a standalone thermodynamic engine capable of estimating mixture properties, solving thermodynamic phase equilibria, and modeling stoichiometric reactions. Thermosteam builds upon `chemicals <https://github.com/CalebBell/chemicals>`_ and `thermo <https://github.com/CalebBell/thermo>`_, from the Chemical Engineering Design Library, with a framework tailored to `The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ for the simulation of unit operations.
 
 Key Features & Capabilities
 ---------------------------
@@ -27,7 +27,7 @@ Key Features & Capabilities
    
    Overview
    Installation
-   tutorial/An_hour_blitz_to_practical_thermodynamics
+   tutorial/Thermosteam_in_an_hour
    tutorial/Thermodynamic_equilibrium
    tutorial/Thermo_property_packages
    tutorial/Stoichiometric_reactions

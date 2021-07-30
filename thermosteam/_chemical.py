@@ -241,24 +241,6 @@ _chemical_fields = {'\n[Names]  ': _names,
                     '\n[Groups] ': _groups,
                     '\n[Data]   ': _data}
 
-# _field_to_handles = {
-#     'Psat': VaporPressure,
-#     'Psub': SublimationPressure,
-#     'Hvap': EnthalpyVaporization,
-#     'sigma': SurfaceTension,
-#     'Vs': VolumeSolid, 
-#     'Vl': VolumeLiquid, 
-#     'Vg': VolumeGas, 
-#     'Vsl': VolumeSupercriticalLiquid,
-#     'Cns': HeatCapacitySolid, 
-#     'Cnl': HeatCapacityLiquid, 
-#     'Cng': HeatCapacityGas,
-#     'kappal': ThermalConductivityLiquid,
-#     'kappag':ThermalConductivityGas,
-#     'mul': ViscosityLiquid, 
-#     'mug': ViscosityGas,
-#     'epsilon': PermittivityLiquid,
-# }
 # %% Chemical
 
 class Chemical:
