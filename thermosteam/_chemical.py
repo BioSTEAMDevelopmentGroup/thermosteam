@@ -9,7 +9,7 @@
 """
 import thermosteam as tmo
 from warnings import warn
-from flexsolve import IQ_interpolation
+from flexsolve import IQ_interpolation, aitken_secant
 from chemicals.identifiers import pubchem_db
 from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
                                     Tm as normal_melting_point_temperature,
@@ -1301,9 +1301,15 @@ class Chemical:
             else: Tguess = Tb
         elif not Tguess:
             Tguess = (Tmin + Tmax)/2.0
-        T = IQ_interpolation(lambda T: Psat(T) - P,
-                             Tmin, Tmax, Psat(Tmin) - P, Psat(Tmax) - P,
-                             Tguess, 1e-6, 1e-2, checkroot=False)
+        y0 = Psat(Tmin) - P
+        y1 = Psat(Tmax) - P
+        if y0 < 0. < y1:
+            T = IQ_interpolation(lambda T: Psat(T) - P,
+                                 Tmin, Tmax, y0, y1,
+                                 Tguess, 1e-6, 1e-2, checkroot=False)
+        else:
+            T = aitken_secant(lambda T: Psat(T) - P,
+                              Tmin, Tmax, 1e-6, 1e-2, checkroot=False)
         return T
 
     ### Reinitializers ###
