@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.27.1',
+    version='0.27.2',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst').read(),
     author='Yoel Cortes-Pena',
@@ -31,7 +31,7 @@ setup(
                       'pyglet'],
     extras_require={ 
         'dev': [
-            'biorefineries>=2.22.0',
+            'biorefineries>=2.23.0',
             'sympy',
             'sphinx', 
             'sphinx_rtd_theme', 
