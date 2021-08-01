@@ -10,6 +10,7 @@ Thermosteam is a standalone thermodynamic engine capable of estimating mixture p
 
 Key Features & Capabilities
 ---------------------------
+
 * **Simple** and straight foward estimation of mixture properties, thermodynamic phase equilibria, and chemical reactions with just a few lines of code.
 
 * **Clear** representation of chemical and phase data within every object using IPython's rich display system.
@@ -19,6 +20,7 @@ Key Features & Capabilities
 * **Flexible** implemention of thermodynamic models for estimating pure component properties in just a few lines of code.
 
 * **Extendable** framework that allows easy integration of new methods for computing thermodynamic equilibrium coefficients and mixture properties.
+
 
 .. toctree::
    :maxdepth: 2
@@ -72,7 +74,7 @@ Related Projects
 
 There are many third party open-source Python libraries that may provide additional resources for designing and modeling chemical processes:
 
-* `thermo` <https://pypi.org/project/thermo/#documentation>`_: Chemical properties component of Chemical Engineering Design Library. 
+* `thermo <https://pypi.org/project/thermo/#documentation>`_: Chemical properties component of Chemical Engineering Design Library. 
 * `chemicals <https://chemicals.readthedocs.io/en/latest/>`_: Chemical database component of Chemical Engineering Design Library.
 * `fluids <https://fluids.readthedocs.io/>`_: Fluid dynamics component of Chemical Engineering Design Library (ChEDL) 
 * `chempy <https://pythonhosted.org/chempy/>`_: A package useful for chemistry written in Python.
