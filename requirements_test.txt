@@ -4,7 +4,7 @@ coveralls
 simpy
 pint>=0.9
 scipy>=1.5
-chemicals>=0.1.5
+thermo>=0.2.9
 IPython>=7.9.0 
 colorpalette>=0.3.1
 biosteam>=2.21.11
