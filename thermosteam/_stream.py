@@ -1155,7 +1155,11 @@ class Stream:
         
         
         """
-        mol = self.mol
+        if self is s1: 
+            mol = self.mol.copy()
+        else:
+            mol = self.mol
+        
         s1.mol[:] = dummy = mol * split
         s2.mol[:] = mol - dummy
         
