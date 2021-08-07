@@ -374,7 +374,10 @@ class Stream:
         return self._price
     @price.setter
     def price(self, price):
-        self._price = float(price)
+        if np.isfinite(price):
+            self._price = float(price)
+        else:
+            raise AttributeError(f'price must be finite, not {price}')
     
     def isempty(self):
         """
