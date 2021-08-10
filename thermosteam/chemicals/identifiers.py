@@ -142,25 +142,25 @@ class ChemicalMetadataDB:
                 self.load(files.pop())
                 self.search_index(index, key)
     
-    def search_pubchem(self, pubchem, autoload=None):
+    def search_pubchem(self, pubchem):
         return self.search_index(self.pubchem_index, int(pubchem))
         
-    def search_CAS(self, CAS, autoload=None):
+    def search_CAS(self, CAS):
         return self.search_index(self.CAS_index, CAS_to_int(CAS))
 
-    def search_smiles(self, smiles, autoload=None):
+    def search_smiles(self, smiles):
         return self.search_index(self.smiles_index, smiles)
 
-    def search_InChI(self, InChI, autoload=None):
+    def search_InChI(self, InChI):
         return self.search_index(self.InChI_index, InChI)
 
-    def search_InChI_key(self, InChI_key, autoload=None):
+    def search_InChI_key(self, InChI_key):
         return self.search_index(self.InChI_key_index, InChI_key)
 
-    def search_name(self, name, autoload=None):
+    def search_name(self, name):
         return self.search_index(self.name_index, name)
     
-    def search_formula(self, formula, autoload=None):
+    def search_formula(self, formula):
         return self.search_index(self.formula_index, formula)
 
     def search(self, ID):

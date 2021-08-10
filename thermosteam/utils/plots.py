@@ -8,7 +8,6 @@
 """
 """
 import matplotlib.pyplot as plt
-from typing import Iterable
 
 __all__ = ('style_axis',
            'style_plot_limits',
@@ -26,20 +25,15 @@ def style_axis(ax=None, xticks=None, yticks=None,
     if ax is None:
         ax = plt.gca()
     if xticks is None:
-        xticks, xtext = plt.xticks()
-    else:
-        xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xticks)
+        xticks, _ = plt.xticks()
     if yticks is None:
-        yticks, ytext = plt.yticks()
-        if not any([str(i) for i in ytext]): ytext = yticks
-    else:
-        ytext = yticklabels if isinstance(yticklabels, Iterable) else list(yticks)
-    xtext = list(xtext)
-    ytext = list(ytext)
+        yticks, _ = plt.yticks()
     if trim_to_limits:
         style_plot_limits(xticks, yticks)
         if yticks[0] == 0.:
             yticks = yticks[1:]
+    xtext = xticks.copy()
+    ytext = yticks.copy()
     if not xtick0:
         xtext[0] = ''
     if not xtickf:
@@ -50,12 +44,14 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ytext[-1] = ''
     plt.xticks(xticks, xtext) if xticklabels else plt.xticks(xticks, ())
     plt.yticks(yticks, ytext) if yticklabels else plt.yticks(yticks, ())
+    xlim = plt.xlim()
+    ylim = plt.ylim()
     ax.tick_params(axis="x", top=False, direction="inout", length=4)
     ax.tick_params(axis="y", right=False, direction="inout", length=4)
     ax.zorder = 1
-    xlim = plt.xlim()
-    ylim = plt.ylim()
+    
     axes = {'ax': ax}
+    
     if right:
         x_twin = ax.twinx()
         axes['twinx'] = x_twin 
@@ -89,12 +85,8 @@ def set_axes_labels(axes, xlabel, ylabel): # pragma: no cover
    
 def set_axes_xlabels(axes, xlabel): # pragma: no cover
     assert axes.ndim == 2
-    N = axes.shape[1]
-    if isinstance(xlabel, str): xlabel = N * [xlabel]
-    for i in range(N): axes[-1, i].set_xlabel(xlabel[i])
+    for ax in axes[-1]: ax.set_xlabel(xlabel)
     
 def set_axes_ylabels(axes, ylabel): # pragma: no cover
     assert axes.ndim == 2
-    N = axes.shape[0]
-    if isinstance(ylabel, str): ylabel = N * [ylabel]
-    for i in range(N): axes[i, 0].set_ylabel(ylabel[i])
+    for ax in axes[:, 0]: ax.set_ylabel(ylabel)
