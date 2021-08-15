@@ -57,7 +57,7 @@ jobs:
         pip install -r requirements_test.txt
     - name: Test with pytest
       run: |
-        pytest . -v
+        pytest . -v --cov-report html --cov=thermosteam --cov-report term-missing -m "not slow"
       env:
             COVERALLS_REPO_TOKEN: ${{ secrets.coveralls }}
             COVERALLS_PARALLEL: true
