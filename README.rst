@@ -17,8 +17,6 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 .. image:: https://coveralls.io/repos/github/BioSTEAMDevelopmentGroup/thermosteam/badge.svg?branch=master
    :target: https://coveralls.io/github/BioSTEAMDevelopmentGroup/thermosteam?branch=master
    :alt: Coverage
-.. image:: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam.svg?branch=master
-   :target: https://travis-ci.com/BioSTEAMDevelopmentGroup/thermosteam
 .. image:: https://joss.theoj.org/papers/10.21105/joss.02814/status.svg
    :target: https://doi.org/10.21105/joss.02814
 
