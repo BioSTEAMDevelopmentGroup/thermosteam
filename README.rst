@@ -51,6 +51,10 @@ We use the `depth` option to clone only the last 100 commits. Thermosteam has a
 long history, so cloning the whole repository (without using the depth option)
 may take over 30 min.
 
+If you would like to clone all branches, add the "--no-single-branch" flag as such::
+
+    $ git clone --depth 100 --no-single-branch git://github.com/BioSTEAMDevelopmentGroup/thermosteam
+
 Documentation
 -------------
 
