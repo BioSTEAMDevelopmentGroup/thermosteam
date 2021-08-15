@@ -788,7 +788,7 @@ class Reaction:
         reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
     
-    def show(self):
+    def _info(self):
         info = f"{type(self).__name__} (by {self.basis}):"
         rxn = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         if self.phases:
@@ -801,11 +801,14 @@ class Reaction:
         maxrxnlen = max([13, lrxn]) + 2
         maxcmplen = max([8, lcmp]) + 2
         X = self.X
-        info += "\n stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
+        info += "\nstoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
         rxn_spaces = " "*(maxrxnlen - lrxn)
         cmp_spaces = " "*(maxcmplen - lcmp)
-        info += f"\n {rxn}{rxn_spaces}{cmp}{cmp_spaces}{X*100: >6.2f}"
-        print(info)
+        info += f"\n{rxn}{rxn_spaces}{cmp}{cmp_spaces}{X*100: >6.2f}"
+        return info
+    
+    def show(self):
+        print(self._info())
     _ipython_display_ = show
 
 
@@ -956,7 +959,7 @@ class ReactionSet:
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join([repr(i) for i in self])}])"
     
-    def show(self):
+    def _info(self, index_name='index'):
         info = f"{type(self).__name__} (by {self.basis}):"
         chemicals = self._chemicals
         phases = self._phases
@@ -968,16 +971,16 @@ class ReactionSet:
         maxcmplen = max([8, *[length(i) for i in cmps]]) + 2
         Xs = self.X
         N = len(Xs)
-        maxnumspace = max(length(string(N)) + 1, 5)
-        info += "\nindex" + " "*(max(2, maxnumspace-3)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
+        maxnumspace = max(length(string(N)) + 1, len(index_name))
+        info += f"\n{index_name}" + " "*(max(2, length(string(N)) + 1)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
         for N, rxn, cmp, X in zip(range(N), rxns, cmps, Xs):
             rxn_spaces = " "*(maxrxnlen - length(rxn))
             cmp_spaces = " "*(maxcmplen - length(cmp))
             num = string(N)
             numspace = (maxnumspace - length(num)) * " "
             info += f"\n[{N}]{numspace}{rxn}{rxn_spaces}{cmp}{cmp_spaces}{X*100: >6.2f}"
-        print(info)
-    _ipython_display_ = show
+        return info
+    _ipython_display_ = show = Reaction.show
         
 
 class ParallelReaction(ReactionSet):
@@ -1261,6 +1264,7 @@ class ReactionSystem:
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
     __call__ = Reaction.__call__
+    show = Reaction.show
     
     @property
     def reactions(self):
@@ -1335,7 +1339,26 @@ class ReactionSystem:
         
     def __repr__(self):
         return f"{type(self).__name__}({', '.join([repr(i) for i in self.reactions])})"
+    
+    def _info(self):
+        indexed_info = f"{type(self).__name__}:\n"
+        isa = isinstance
+        infos = [(i._info('subindex') if isa(i, ReactionSet) else i._info()) 
+                 for i in self._reactions]
+        N = len(infos)
+        index_name = 'index'
+        maxnumspace = max(len(str(N)) + 1, len(index_name))
+        header = f"{index_name}" + " "*(max(2, maxnumspace-3))
+        indexed_info += header + "reaction"
+        info_dim = '\n' + len(header) * " "
+        for index, info in enumerate(infos):
+            num = str(index) 
+            numspace = (maxnumspace - len(num)) * " "
+            info = info.replace('\n', info_dim)
+            indexed_info += f"\n[{num}]{numspace}{info}"
+        return indexed_info    
         
+    _ipython_display_ = show = Reaction.show
 
 # Short-hand conventions
 Rxn = Reaction
