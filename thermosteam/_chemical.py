@@ -402,7 +402,7 @@ class Chemical:
     >>> Water.V
     <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
     >>> Water.V.l
-    VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6000000000000006e-05, Zc=0.22947273972184645, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
+    VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6-05, Zc=0.2294727, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
     
     A new model can be added easily using `add_method`, for example:
         
