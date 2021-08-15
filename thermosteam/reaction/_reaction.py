@@ -23,7 +23,9 @@ from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
 
-__all__ = ('Reaction', 'ParallelReaction', 'SeriesReaction')
+__all__ = ('Reaction', 'ReactionItem', 'ReactionSet', 
+           'ParallelReaction', 'SeriesReaction', 'ReactionSystem',
+           'Rxn', 'RxnS', 'RxnI', 'PRxn', 'SRxn', 'RxnSys')
 
 def get_stoichiometric_string(stoichiometry, phases, chemicals):
     if phases:
@@ -383,7 +385,7 @@ class Reaction:
         product_index = self._chemicals.index(product)
         product_coefficient = self._stoichiometry[product_index]
         product_yield = product_coefficient * self.X
-        if self.basis != basis:
+        if basis and self.basis != basis:
             chemicals_tuple = self._chemicals.tuple
             reactant_index = self._X_index
             MW_reactant = chemicals_tuple[reactant_index].MW
@@ -1058,7 +1060,7 @@ class ParallelReaction(ReactionSet):
     
     Get net reaction conversion of reactants as a material indexer:
         
-    >>> mi = reaction.X_net
+    >>> mi = reaction.X_net(indexer=True)
     >>> mi.show()
     MaterialIndexer:
      (g) H2        0.5
@@ -1075,7 +1077,7 @@ class ParallelReaction(ReactionSet):
     ...    tmo.Reaction('H2 + O2 -> 2H2O',             reactant='H2',       X=0.7, **kwargs),
     ...    tmo.Reaction('Ethanol + O2 -> CO2 + 2H2O',  reactant='Ethanol',  X=0.1, **kwargs)
     ... ])
-    >>> ci = reaction.X_net
+    >>> ci = reaction.X_net(indexer=True)
     >>> ci.show()
     ChemicalIndexer:
      H2       0.7
@@ -1107,25 +1109,28 @@ class ParallelReaction(ReactionSet):
             rxn_dict[key] = rxn 
         return self.__class__(rxn_dict.values())
             
-    @property
-    def X_net(self):
-        """[ChemicalIndexer] Net reaction conversion of reactants."""
+    def X_net(self, indexer=False):
+        """Return net reaction conversion of reactants as a dictionary or
+        a ChemicalIndexer if indexer is True."""
         X_net = {}
         for i, j in zip(self.reactants, self.X):
             if i in X_net:
                 X_net[i] += j
             else:
                 X_net[i] = j
-        chemicals = self.chemicals
-        phases = self.phases
-        if phases:
-            phases = [i[0] for i in X_net]
-            mi = MaterialIndexer(phases=phases, chemicals=chemicals)
-            for i,j in X_net.items(): mi[i] = j
-            return mi                
+        if indexer:
+            chemicals = self.chemicals
+            phases = self.phases
+            if phases:
+                phases = [i[0] for i in X_net]
+                mi = MaterialIndexer(phases=phases, chemicals=chemicals)
+                for i,j in X_net.items(): mi[i] = j
+                return mi                
+            else:
+                data = chemicals.kwarray(X_net)
+                return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
         else:
-            data = chemicals.kwarray(X_net)
-            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+            return X_net
 
 
 class SeriesReaction(ReactionSet):
@@ -1149,22 +1154,193 @@ class SeriesReaction(ReactionSet):
         for i, j, k in zip(self._X_index, self.X, self._stoichiometry):
             material_array += material_array[i] * j * k
 
-    @property
-    def X_net(self):
-        """[ChemicalIndexer] Net reaction conversion of reactants."""
+    def X_net(self, indexer=False):
+        """Return net reaction conversion of reactants as a dictionary or
+        a ChemicalIndexer if indexer is True."""
         X_net = {}
         for i, j in zip(self.reactants, self.X):
             if i in X_net:
                 X_net[i] += (1 - X_net[i]) * j
             else:
                 X_net[i] = j
-        chemicals = self.chemicals
-        data = chemicals.kwarray(X_net)
-        return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+        if indexer:
+            chemicals = self.chemicals
+            data = chemicals.kwarray(X_net)
+            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+        else:
+            return X_net
+
+class ReactionSystem:
+    """
+    Create a ReactionSystem object that can react a stream across a series of
+    reactions.
+    
+    Parameters
+    ----------
+    *reactions : Reaction, ParallelReaction, or SeriesReaction
+        All reactions within the reaction system.
+    
+    Examples
+    --------
+    Create a reaction system for cellulosic fermentation of biomass:
+    
+    >>> from thermosteam import Rxn, RxnSys, PRxn, SRxn, settings, Chemical, Stream
+    >>> cal2joule = 4.184
+    >>> Glucan = Chemical('Glucan', search_db=False, formula='C6H10O5', Hf=-233200*cal2joule, phase='s', default=True)
+    >>> Glucose = Chemical('Glucose', phase='s')
+    >>> CO2 = Chemical('CO2', phase='g')
+    >>> HMF = Chemical('HMF', search_ID='Hydroxymethylfurfural', phase='l', default=True)
+    >>> Biomass = Glucose.copy(ID='Biomass')
+    >>> settings.set_thermo(['Water', 'Ethanol', 'LacticAcid', HMF, Glucose, Glucan, CO2, Biomass])
+    
+    >>> saccharification = PRxn([
+    ...     Rxn('Glucan + H2O -> Glucose', reactant='Glucan', X=0.9),
+    ...     Rxn('Glucan -> HMF + 2H2O', reactant='Glucan', X=0.025)
+    ... ])
+    >>> fermentation = SRxn([
+    ...     Rxn('Glucose -> 2LacticAcid', reactant='Glucose', X=0.03),
+    ...     Rxn('Glucose -> 2Ethanol + 2CO2', reactant='Glucose', X=0.95),
+    ... ])
+    >>> cell_growth = Rxn('Glucose -> Biomass', reactant='Glucose', X=1.0)
+    >>> cellulosic_rxnsys = RxnSys(saccharification, fermentation, cell_growth)
+    >>> cellulosic_rxnsys
+    ReactionSystem(ParallelReaction([ReactionItem('Water + Glucan -> Glucose', reactant='Glucan', X=0.9, basis='mol'), ReactionItem('Glucan -> 2 Water + HMF', reactant='Glucan', X=0.025, basis='mol')]), SeriesReaction([ReactionItem('Glucose -> 2 LacticAcid', reactant='Glucose', X=0.03, basis='mol'), ReactionItem('Glucose -> 2 Ethanol + 2 CO2', reactant='Glucose', X=0.95, basis='mol')]), Reaction('Glucose -> Biomass', reactant='Glucose', X=1, basis='mol'))
+    
+    Compute the flux of glucan through saccharification reactions:
+    
+    >>> feed = Stream('feed', Glucan=1.0, Water=5.0)
+    >>> cellulosic_rxnsys.reactant_flux(feed, index=0)
+    0.925
+    
+    Compute the flux of glucan through glucan to glucose saccharification:
+    
+    >>> cellulosic_rxnsys.reactant_flux(feed, index=0, subindex=0)
+    0.9
+    
+    Compute the flux of glucose through cell growth:
+        
+    >>> cellulosic_rxnsys.reactant_flux(feed, index=2)
+    0.04365
+    
+    Compute the flux of glucose through ethanol production:
+    
+    >>> cellulosic_rxnsys.reactant_flux(feed, index=1, subindex=1)
+    0.8293
+    
+    Notice how reacting the stream leads to ethanol production equivalent
+    of 2x the glucose flux to that reaction:
+    
+    >>> cellulosic_rxnsys(feed)
+    >>> feed.show()
+    Stream: feed
+     phase: 'l', T: 298.15 K, P: 101325 Pa
+     flow (kmol/hr): Water       4.15
+                     Ethanol     1.66
+                     LacticAcid  0.054
+                     HMF         0.025
+                     Glucan      0.075
+                     CO2         1.66
+                     Biomass     0.0437
+    
+    """
+    __slots__ = ('_reactions',
+                 '_basis',
+                 '_chemicals',
+                 '_phases')
+    
+    def __init__(self, *reactions, basis=None):
+        if not reactions: raise ValueError('Reactions cannot be empty')
+        self._reactions = reactions
+        try: self._phases, = set([i._phases for i in reactions])
+        except: raise ValueError('all reactions must have the same phases')
+        try: self._chemicals, = set([i._chemicals for i in reactions])
+        except: raise ValueError('all reactions must have the same chemicals')
+        try: self._basis, = set([i._basis for i in reactions])
+        except: raise ValueError('all reactions must have the same basis')
+        
+    force_reaction = Reaction.force_reaction
+    adiabatic_reaction = Reaction.adiabatic_reaction
+    __call__ = Reaction.__call__
+    
+    @property
+    def reactions(self):
+        return self._reactions
+    
+    def _reaction(self, material):
+        basis = self._basis
+        for i in self._reactions: 
+            if i._basis != basis: raise RuntimeError('not all reactions have the same basis')
+            i._reaction(material)
+        
+    def X_net(self, indexer=False):
+        """Return net reaction conversion of reactants as a dictionary or
+        a ChemicalIndexer if indexer is True."""
+        X_net = {}
+        for rxn in self._reactions:
+            for i, j in rxn.X_net().items():
+                if i in X_net:
+                    X_net[i] += (1 - X_net[i]) * j
+                else:
+                    X_net[i] = j
+        if indexer:
+            chemicals = self._chemicals
+            data = chemicals.kwarray(X_net)
+            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+        else:
+            return X_net
+        
+    def reactant_flux(self, material, index, subindex=None):
+        """
+        Return the amount of reactant being reacted in a reaction.
+        
+        Parameters
+        ----------
+        material : Stream or array
+            Material entering reaction system.
+        index : int
+            Index of reaction to calculate reactant flux.
+        subindex : int, optional
+            Subindex of reaction to calculate reactant flux.    
+        
+        """
+        material_array = as_material_array(material,
+                                           self._basis,
+                                           self._phases,
+                                           self._chemicals)
+        values = get_array_values(material_array)
+        preconverted_material = values.copy()
+        reactions = self.reactions
+        for i, rxn in enumerate(reactions):
+            if i == index: break
+            rxn(preconverted_material)
+        reaction = reactions[index]
+        if subindex is not None:
+            if isinstance(reaction, SeriesReaction):
+                reactions = reaction
+                for i, rxn in enumerate(reactions):
+                    if i == subindex: break
+                    rxn(preconverted_material)
+            reaction = reaction[subindex]
+            X_index = reaction._X_index
+            return reaction.X * preconverted_material[X_index]
+        elif isinstance(reaction, SeriesReaction):
+            raise ValueError('must pass subindex if the index refers to a SeriesReaction object')
+        elif isinstance(reaction, ParallelReaction):
+            X_index = reaction._X_index
+            return (reaction.X * preconverted_material[X_index]).sum()
+        else:
+            X_index = reaction._X_index
+            return reaction.X * preconverted_material[X_index]
+        
+        
+    def __repr__(self):
+        return f"{type(self).__name__}({', '.join([repr(i) for i in self.reactions])})"
+        
 
 # Short-hand conventions
-# Rxn = Reaction
-# RxnI = ReactionItem
-# RxnS = ReactionSet
-# PRxn = ParallelReaction
-# SRxn = SeriesReaction
+Rxn = Reaction
+RxnI = ReactionItem
+RxnS = ReactionSet
+PRxn = ParallelReaction
+SRxn = SeriesReaction
+RxnSys = ReactionSystem

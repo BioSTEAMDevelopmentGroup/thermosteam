@@ -1009,18 +1009,12 @@ class MultiStageLLE:
     >>> solvent = tmo.Stream('solvent', Octanol=500)
     >>> stages = tmo.separations.MultiStageLLE(N_stages, feed, solvent)
     >>> stages.simulate_multi_stage_lle_without_side_draws()
-    >>> stages.raffinate.show()
-    Stream: 
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     413
-                     Methanol  8.5
-                     Octanol   0.1
-    >>> stages.extract.show()
-    Stream: 
-     phase: 'L', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     87.
-                     Methanol  41.
-                     Octanol   500
+    >>> stages.extract.imol['Methanol'] / feed.imol['Methanol'] # Recovery
+    0.83
+    >>> stages.extract.imol['Octanol'] / solvent.imol['Octanol'] # Solvent stays in extract
+    0.99
+    >>> stages.raffinate.imol['Water'] / feed.imol['Water'] # Carrier remains in raffinate
+    0.82
     
     Simulate 10-stage extraction with user defined partition coefficients:
     
@@ -1037,18 +1031,12 @@ class MultiStageLLE:
     ...     }
     ... )
     >>> stages.simulate_multi_stage_lle_without_side_draws()
-    >>> stages.raffinate.show()
-    Stream: 
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     4.1e+03
-                     Methanol  1.3
-                     Octanol   1.1
-    >>> stages.extract.show()
-    Stream: 
-     phase: 'L', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     871
-                     Methanol  499
-                     Octanol   5e+03
+    >>> stages.extract.imol['Methanol'] / feed.imol['Methanol'] # Recovery
+    0.99
+    >>> stages.extract.imol['Octanol'] / solvent.imol['Octanol'] # Solvent stays in extract
+    0.99
+    >>> stages.raffinate.imol['Water'] / feed.imol['Water'] # Carrier remains in raffinate
+    0.82
     
     Because octanol and water do not mix well, it may be a good idea to assume
     that these solvents do not mix at all:
@@ -1063,16 +1051,12 @@ class MultiStageLLE:
     ...     }
     ... )
     >>> stages.simulate_multi_stage_lle_without_side_draws()
-    >>> stages.raffinate.show()
-    Stream: 
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water     5e+03
-                     Methanol  0.199
-    >>> stages.extract.show()
-    Stream: 
-     phase: 'L', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Methanol  500
-                     Octanol   5e+03
+    >>> stages.extract.imol['Methanol'] / feed.imol['Methanol'] # Recovery
+    0.99
+    >>> stages.extract.imol['Octanol'] / solvent.imol['Octanol'] # Solvent stays in extract
+    1.0
+    >>> stages.raffinate.imol['Water'] / feed.imol['Water'] # Carrier remains in raffinate
+    1.0
         
     """
     __slots__ = ('stages', 'index', 'multi_stream', 

@@ -509,10 +509,10 @@ class Chemical:
         else:
             self = cls.blank(ID, CAS, phase_ref, phase=phase, **data)
         if phase:
-            if mu: self.mu.add_method(mu)
-            if Cn: self.Cn.add_method(Cn)
-            if kappa: self.kappa.add_method(kappa)
-            if V: self.V.add_method(V)
+            if mu: self._mu.add_method(mu)
+            if Cn: self._Cn.add_method(Cn)
+            if kappa: self._kappa.add_method(kappa)
+            if V: self._V.add_method(V)
         else:
             multi_phase_items = (('mu', mu),
                                  ('Cn', Cn),
@@ -522,14 +522,14 @@ class Chemical:
                                  ('V', V))
             for i,j in multi_phase_items:
                 if j: raise ValueError(f'must specify phase to set {i} model')
-        if sigma: self.sigma.add_method(sigma)
-        if epsilon: self.epsilon.add_method(epsilon)
-        if Psat: self.Psat.add_method(Psat)
-        if Hvap: self.Hvap.add_method(Hvap)
+        if sigma: self._sigma.add_method(sigma)
+        if epsilon: self._epsilon.add_method(epsilon)
+        if Psat: self._Psat.add_method(Psat)
+        if Hvap: self._Hvap.add_method(Hvap)
         if default: self.default()
         if phase:
-            if Cp: self.Cn.add_method(Cp * self.MW)
-            if rho: self.V.add_method(fn.rho_to_V(rho, self.MW))
+            if Cp: self._Cn.add_method(Cp * self._MW)
+            if rho: self._V.add_method(fn.rho_to_V(rho, self._MW))
         if cache:
             chemical_cache[ID] = self
             if len(chemical_cache) > 100:
@@ -696,7 +696,6 @@ class Chemical:
             setfield(new, field, None)
         new._ID = ID
         new._CAS = CAS or ID
-        new._locked_state = new._locked_state
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
                            new.Tb, new.eos, new.phase_ref)
@@ -737,7 +736,7 @@ class Chemical:
         997.024
         
         """
-        return fn.V_to_rho(self.V(*args, **kwargs), self.MW)
+        return fn.V_to_rho(self._V(*args, **kwargs), self._MW)
     
     def Cp(self, *args, **kwargs):
         """
@@ -751,7 +750,7 @@ class Chemical:
         4.180
         
         """
-        return self.Cn(*args, **kwargs) / self.MW
+        return self._Cn(*args, **kwargs) / self._MW
     
     def alpha(self, *args, **kwargs):
         """
@@ -765,7 +764,7 @@ class Chemical:
         1.425...e-07
         
         """
-        return fn.alpha(self.kappa(*args, **kwargs), 
+        return fn.alpha(self._kappa(*args, **kwargs), 
                         self.rho(*args, **kwargs), 
                         self.Cp(*args, **kwargs) * 1000.)
     
@@ -781,7 +780,7 @@ class Chemical:
         9.154...e-07
         
         """
-        return fn.mu_to_nu(self.mu(*args, **kwargs), 
+        return fn.mu_to_nu(self._mu(*args, **kwargs), 
                            self.rho(*args, **kwargs))
     
     def Pr(self, *args, **kwargs):
@@ -797,8 +796,8 @@ class Chemical:
         
         """
         return fn.Pr(self.Cp(*args, **kwargs) * 1000,
-                     self.kappa(*args, **kwargs), 
-                     self.mu(*args, **kwargs))
+                     self._kappa(*args, **kwargs), 
+                     self._mu(*args, **kwargs))
     
     def get_property(self, name, units, *args, **kwargs):
         """
@@ -921,7 +920,7 @@ class Chemical:
         if self._formula: raise AttributeError('cannot set formula')
         self._formula = str(formula)
         if self._Hf is None:
-            self.MW = compute_molecular_weight(self.atoms)
+            self._MW = compute_molecular_weight(self.atoms)
         else:
             self.reset_combustion_data()
     
@@ -1505,6 +1504,7 @@ class Chemical:
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
                        eos=[eos], CASRN=CAS)
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
+        if CAS in sugar_solid_densities: Vs.add_method(sugar_solid_densities[CAS])
         
         # Heat capacity
         Cns = HeatCapacitySolid(CASRN=CAS, similarity_variable=similarity_variable, MW=MW)

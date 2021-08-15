@@ -9,5 +9,6 @@ Use the reaction subpackage to perform reactions on chemical arrays.
    Reaction
    ParallelReaction
    SeriesReaction
+   ReactionSystem
    
    
