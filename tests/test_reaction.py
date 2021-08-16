@@ -9,6 +9,9 @@
 """
 import pytest
 import thermosteam as tmo
+from thermosteam.reaction import (
+    Reaction, ParallelReaction, SeriesReaction, ReactionSystem, ReactionItem
+)
 from numpy.testing import assert_allclose
 
 def test_reaction():
@@ -81,6 +84,30 @@ def test_reaction_enthalpy_balance():
     reaction(feed) # Call to run reaction on molar flow
     Hf = feed.Hnet
     assert_allclose(Hf - H0, -H2.LHV)
+    
+def test_repr():
+    cal2joule = 4.184
+    Glucan = tmo.Chemical('Glucan', search_db=False, formula='C6H10O5', Hf=-233200*cal2joule, phase='s', default=True)
+    Glucose = tmo.Chemical('Glucose', phase='s')
+    CO2 = tmo.Chemical('CO2', phase='g')
+    HMF = tmo.Chemical('HMF', search_ID='Hydroxymethylfurfural', phase='l', default=True)
+    Biomass = Glucose.copy(ID='Biomass')
+    tmo.settings.set_thermo(['Water', 'Ethanol', 'LacticAcid', HMF, Glucose, Glucan, CO2, Biomass])
+    saccharification = tmo.PRxn([
+        tmo.Rxn('Glucan + H2O -> Glucose', reactant='Glucan', X=0.9),
+        tmo.Rxn('Glucan -> HMF + 2H2O', reactant='Glucan', X=0.025)
+    ])
+    fermentation = tmo.SRxn([
+        tmo.Rxn('Glucose -> 2LacticAcid', reactant='Glucose', X=0.03),
+        tmo.Rxn('Glucose -> 2Ethanol + 2CO2', reactant='Glucose', X=0.95),
+    ])
+    cell_growth = tmo.Rxn('Glucose -> Biomass', reactant='Glucose', X=1.0)
+    cellulosic_rxnsys = tmo.RxnSys(saccharification, fermentation, cell_growth)
+    saccharification = eval(repr(saccharification))
+    fermentation = eval(repr(fermentation))
+    cell_growth = eval(repr(cell_growth))
+    cellulosic_rxnsys = eval(repr(cellulosic_rxnsys))
+    
     
 if __name__ == '__main__':
     test_reaction()

@@ -272,6 +272,19 @@ class Reaction:
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
     
+    def __eq__(self, other):
+        try:
+            return all([
+                self._basis == other._basis,
+                self._phases == other._phases,
+                self._chemicals is other._chemicals,
+                self._X_index == other._X_index,
+                (self._stoichiometry == other._stoichiometry).all(),
+                self._X == other._X,
+            ])
+        except:
+            return False
+    
     def copy(self, basis=None):
         """Return copy of Reaction object."""
         copy = self.__new__(self.__class__)
@@ -873,12 +886,8 @@ class ReactionSet:
     reactions : Iterable[Reaction]
     
     """
-    __slots__ = ('_basis',
-                 '_phases',
-                 '_stoichiometry', 
-                 '_X', '_X_index', 
-                 '_chemicals')
-
+    __slots__ = Reaction.__slots__
+    __eq__ = Reaction.__eq__
     copy = Reaction.copy
     phases = MaterialIndexer.phases
     _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
@@ -957,7 +966,7 @@ class ReactionSet:
         return self._chemicals.MW[np.newaxis, :]
     
     def __repr__(self):
-        return f"{type(self).__name__}([{', '.join([repr(i) for i in self])}])"
+        return f"{type(self).__name__}([{', '.join([repr(i).replace('ReactionItem', 'Reaction') for i in self])}])"
     
     def _info(self, index_name='index'):
         info = f"{type(self).__name__} (by {self.basis}):"
@@ -1206,8 +1215,20 @@ class ReactionSystem:
     ... ])
     >>> cell_growth = Rxn('Glucose -> Biomass', reactant='Glucose', X=1.0)
     >>> cellulosic_rxnsys = RxnSys(saccharification, fermentation, cell_growth)
-    >>> cellulosic_rxnsys
-    ReactionSystem(ParallelReaction([ReactionItem('Water + Glucan -> Glucose', reactant='Glucan', X=0.9, basis='mol'), ReactionItem('Glucan -> 2 Water + HMF', reactant='Glucan', X=0.025, basis='mol')]), SeriesReaction([ReactionItem('Glucose -> 2 LacticAcid', reactant='Glucose', X=0.03, basis='mol'), ReactionItem('Glucose -> 2 Ethanol + 2 CO2', reactant='Glucose', X=0.95, basis='mol')]), Reaction('Glucose -> Biomass', reactant='Glucose', X=1, basis='mol'))
+    >>> cellulosic_rxnsys.show()
+    ReactionSystem:
+    index  reaction
+    [0]    ParallelReaction (by mol):
+           subindex  stoichiometry              reactant    X[%]
+           [0]       Water + Glucan -> Glucose  Glucan     90.00
+           [1]       Glucan -> 2 Water + HMF    Glucan      2.50
+    [1]    SeriesReaction (by mol):
+           subindex  stoichiometry                 reactant    X[%]
+           [0]       Glucose -> 2 LacticAcid       Glucose     3.00
+           [1]       Glucose -> 2 Ethanol + 2 CO2  Glucose    95.00
+    [2]    Reaction (by mol):
+           stoichiometry       reactant    X[%]
+           Glucose -> Biomass  Glucose   100.00
     
     Compute the flux of glucan through saccharification reactions:
     
