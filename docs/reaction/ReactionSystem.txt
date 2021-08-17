@@ -1,4 +1,4 @@
-SeriesReaction
+ReactionSystem
 --------------
 
 .. autoclass:: thermosteam.reaction.ReactionSystem
