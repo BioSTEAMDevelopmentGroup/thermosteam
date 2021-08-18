@@ -812,7 +812,8 @@ class Stream:
     @property
     def F_vol(self):
         """[float] Total volumetric flow rate in m3/hr."""
-        return 1000. * self.V * self.F_mol
+        F_mol = self.F_mol
+        return 1000. * self.V * F_mol if F_mol else 0.
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol

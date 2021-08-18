@@ -418,7 +418,7 @@ class MultiStream(Stream):
         """[float] Heat capacity flow rate in kJ/hr."""
         C = self._get_cache('C')
         if C is None:
-            self._cache['C'] = C = self.mixture.xCn(self._imol, *self._thermal_condition)
+            self._cache['C'] = C = self.mixture.xCn(self._imol, self.T)
         return C
     @property
     def F_vol(self):
