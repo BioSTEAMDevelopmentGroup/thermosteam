@@ -252,6 +252,8 @@ class MultiStream(Stream):
             stream._thermo = self._thermo
             stream._bubble_point_cache =  self._bubble_point_cache
             stream._dew_point_cache = self._dew_point_cache
+            stream._cache = self._cache
+            stream._cache_key = self._cache_key
             streams[phase] = stream
         return stream
     
@@ -396,7 +398,10 @@ class MultiStream(Stream):
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        return self.mixture.xH(self._imol, *self._thermal_condition)
+        H = self._get_cache('H')
+        if H is None:
+            self._cache['H'] = H = self.mixture.xH(self._imol, *self._thermal_condition)
+        return H
     @H.setter
     def H(self, H):
         self.T = self.mixture.xsolve_T(self._imol, H, *self._thermal_condition)
@@ -404,15 +409,21 @@ class MultiStream(Stream):
     @property
     def S(self):
         """[float] Absolute entropy flow rate in kJ/hr."""
-        return self.mixture.xS(self._imol, *self._thermal_condition)
+        S = self._get_cache('S')
+        if S is None:
+            self._cache['S'] = S = self.mixture.xS(self._imol, *self._thermal_condition)
+        return S
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        return self.mixture.xCn(self._imol, self._thermal_condition.T)
+        C = self._get_cache('C')
+        if C is None:
+            self._cache['C'] = C = self.mixture.xCn(self._imol, *self._thermal_condition)
+        return C
     @property
     def F_vol(self):
         """[float] Total volumetric flow rate in m3/hr."""
-        return 1000. * self.mixture.xV(self._imol, *self._thermal_condition)
+        return 1000. * self.V * self.F_mol
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol
@@ -422,7 +433,15 @@ class MultiStream(Stream):
     @property
     def Hvap(self):
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
-        return self.mixture.Hvap(self._imol['l'], *self._thermal_condition)
+        mol = self._imol['l']
+        T = self._thermal_condition._T
+        Hvap = self._get_cache('Hvap')
+        if Hvap is None:
+            self._cache['Hvap'] = Hvap = sum([
+                i*j.Hvap(T) for i,j in zip(mol, self.chemicals)
+                if i and not j.locked_state
+            ])
+        return Hvap
     
     ### Composition properties ###
     
@@ -442,49 +461,47 @@ class MultiStream(Stream):
     @property
     def V(self):
         """[float] Molar volume [m^3/mol]."""
-        return self.mixture.xV(self._imol.iter_composition(), *self._thermal_condition)
+        V = self._get_cache('V')
+        if V is None:
+            self._cache['V'] = V = self.mixture.xV(self._imol.iter_composition(), *self._thermal_condition)
+        return V
     @property
     def kappa(self):
         """[float] Thermal conductivity [W/m/k]."""
-        return self.mixture.xkappa(self._imol.iter_composition(), *self._thermal_condition)        
+        kappa = self._get_cache('kappa')
+        if kappa is None:
+            self._cache['kappa'] = kappa = self.mixture.xkappa(self._imol.iter_composition(), *self._thermal_condition)
+        return kappa      
     @property
     def Cn(self):
         """[float] Molar heat capacity [J/mol/K]."""
-        return self.mixture.xCn(self._imol.iter_composition(), self.T)
+        Cn = self._get_cache('Cn')
+        if Cn is None:
+            self._cache['Cn'] = Cn = self.mixture.xCn(self._imol.iter_composition(), self.T)
+        return Cn
     @property
     def mu(self):
         """[float] Hydrolic viscosity [Pa*s]."""
-        return self.mixture.xmu(self._imol.iter_composition(), *self._thermal_condition)
+        mu = self._get_cache('mu')
+        if mu is None:
+            self._cache['mu'] = mu = self.mixture.xmu(self._imol.iter_composition(), *self._thermal_condition)
+        return mu
     @property
     def sigma(self):
         """[float] Surface tension [N/m]."""
         mol = self._imol['l']
-        return self.mixture.sigma(mol / mol.sum(), *self._thermal_condition)
+        sigma = self._get_cache('sigma')
+        if sigma is None:
+            self._cache['sigma'] = sigma = self.mixture.sigma(mol / mol.sum(), *self._thermal_condition)
+        return sigma
     @property
     def epsilon(self):
         """[float] Relative permittivity [-]."""
         mol = self._imol['l']
-        return self.mixture.epsilon(mol / mol.sum(), *self._thermal_condition)
-    @property
-    def Cp(self):
-        """[float] Heat capacity [J/g/K]."""
-        return self.mixture.xCp(self._imol.iter_composition(), self.T)
-    @property
-    def alpha(self):
-        """[float] Thermal diffusivity [m^2/s]."""
-        return self.mixture.xalpha(self._imol.iter_composition(), *self._thermal_condition)
-    @property
-    def rho(self):
-        """[float] Density [kg/m^3]."""
-        return self.mixture.xrho(self._imol.iter_composition(), *self._thermal_condition)
-    @property
-    def nu(self):
-        """[float] Kinematic viscosity [m^2/s]."""
-        return self.mixture.xnu(self._imol.iter_composition(), *self._thermal_condition)
-    @property
-    def Pr(self):
-        """[float] Prandtl number [-]."""
-        return self.mixture.xPr(self._imol.iter_composition(), *self._thermal_condition)
+        epsilon = self._get_cache('epsilon')
+        if epsilon is None:
+            self._cache['epsilon'] = epsilon = self.mixture.epsilon(mol / mol.sum(), *self._thermal_condition)
+        return epsilon
         
     ### Methods ###
     

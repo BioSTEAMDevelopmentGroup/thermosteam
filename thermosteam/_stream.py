@@ -236,7 +236,8 @@ class Stream:
     __slots__ = ('_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
                  '_bubble_point_cache', '_dew_point_cache',
                  '_vle_cache', '_lle_cache', '_sle_cache',
-                 '_sink', '_source', '_price', '_link')
+                 '_sink', '_source', '_price', '_link',
+                 '_cache_key', '_cache')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -363,8 +364,6 @@ class Stream:
             self.phases = stream_data._phases
             self._imol.copy_like(stream_data._imol)
             self._thermal_condition.copy_like(stream_data)
-        elif stream_data is None:
-            self.empty()
         else:
             raise ValueError(f'stream_data must be a StreamData object; not {type(stream_data).__name__}')
         
@@ -485,6 +484,8 @@ class Stream:
         """Reset cache regarding equilibrium methods."""
         self._bubble_point_cache = eq.BubblePointCache()
         self._dew_point_cache = eq.DewPointCache()
+        self._cache_key = None, None
+        self._cache = {}
 
     @classmethod
     def _get_flow_name_and_factor(cls, units):
@@ -719,7 +720,7 @@ class Stream:
     @property
     def T(self):
         """[float] Temperature in Kelvin."""
-        return self._thermal_condition.T
+        return self._thermal_condition._T
     @T.setter
     def T(self, T):
         self._thermal_condition.T = T
@@ -727,7 +728,7 @@ class Stream:
     @property
     def P(self):
         """[float] Pressure in Pascal."""
-        return self._thermal_condition.P
+        return self._thermal_condition._P
     @P.setter
     def P(self, P):
         self._thermal_condition.P = P
@@ -811,7 +812,7 @@ class Stream:
     @property
     def F_vol(self):
         """[float] Total volumetric flow rate in m3/hr."""
-        return 1000. * self.mixture.V(self.phase, self.mol, *self._thermal_condition)
+        return 1000. * self.V * self.F_mol
     @F_vol.setter
     def F_vol(self, value):
         F_vol = self.F_vol
@@ -821,7 +822,12 @@ class Stream:
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        return self.mixture.H(self.phase, self.mol, *self._thermal_condition)
+        H = self._get_cache('H')
+        if H is None:
+            self._cache['H'] = H = self.mixture.H(
+                self.phase, self.mol, *self._thermal_condition
+            )
+        return H
     @H.setter
     def H(self, H: float):
         if not H and self.isempty(): return
@@ -866,13 +872,37 @@ class Stream:
     def Hvap(self):
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
         mol = self.mol
-        condition = self._thermal_condition
-        return sum([i*j.Hvap(condition.T) for i,j in zip(mol, self.chemicals) if i and not j.locked_state])
+        T = self._thermal_condition._T
+        Hvap = self._get_cache('Hvap')
+        if Hvap is None:
+            self._cache['Hvap'] = Hvap = sum([
+                i*j.Hvap(T) for i,j in zip(mol, self.chemicals)
+                if i and not j.locked_state
+            ])
+        return Hvap
+    
+    def _get_cache(self, name):
+        cache = self._cache
+        phases = self.phases
+        thermal_condition = self._thermal_condition
+        literal = (phases, thermal_condition._T, thermal_condition._P)
+        data = self._imol._data
+        last_literal, last_data = self._cache_key
+        if literal == last_literal and (data == last_data).all():
+            value = cache.get(name) 
+            return value
+        else:
+            self._cache_key = (literal, data.copy())
+            self._cache.clear()
+            return None
     
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        return self.mixture.Cn(self.phase, self.mol, self.T)
+        C = self._get_cache('C')
+        if C is None:
+            self._cache['C'] = C = self.mixture.Cn(self.phase, self.mol, self.T)
+        return C
     
     ### Composition properties ###
     
@@ -905,57 +935,88 @@ class Stream:
     @property
     def V(self):
         """[float] Molar volume [m^3/mol]."""
-        return self.mixture.V(*self._imol.get_phase_and_composition(),
-                              *self._thermal_condition)
+        V = self._get_cache('V')
+        if V is None:
+            self._cache['V'] = V = self.mixture.V(
+                *self._imol.get_phase_and_composition(),
+                *self._thermal_condition
+            )
+        return V
+        
     @property
     def kappa(self):
         """[float] Thermal conductivity [W/m/k]."""
-        return self.mixture.kappa(*self._imol.get_phase_and_composition(),
-                                  *self._thermal_condition)
+        kappa = self._get_cache('kappa')
+        if kappa is None:
+            self._cache['kappa'] = kappa = self.mixture.kappa(
+                *self._imol.get_phase_and_composition(),
+                *self._thermal_condition
+            )
+        return kappa
     @property
     def Cn(self):
         """[float] Molar heat capacity [J/mol/K]."""
-        return self.mixture.Cn(*self._imol.get_phase_and_composition(), self.T)
+        Cn = self._get_cache('Cn')
+        if Cn is None:
+            self._cache['Cn'] = Cn = self.mixture.Cn(
+                *self._imol.get_phase_and_composition(),
+                self.T
+            )
+        return Cn
     @property
     def mu(self):
         """[float] Hydrolic viscosity [Pa*s]."""
-        return self.mixture.mu(*self._imol.get_phase_and_composition(),
-                               *self._thermal_condition)
+        mu = self._get_cache('mu')
+        if mu is None:
+            self._cache['mu'] = mu = self.mixture.mu(
+                *self._imol.get_phase_and_composition(),
+                *self._thermal_condition
+            )
+        return mu
     @property
     def sigma(self):
         """[float] Surface tension [N/m]."""
         mol = self.mol
-        return self.mixture.sigma(mol / mol.sum(),
-                                  *self._thermal_condition)
+        sigma = self._get_cache('sigma')
+        if sigma is None:
+            self._cache['sigma'] = sigma = self.mixture.sigma(
+                mol / mol.sum(), *self._thermal_condition
+            )
+        return sigma
     @property
     def epsilon(self):
         """[float] Relative permittivity [-]."""
         mol = self.mol
-        return self.mixture.epsilon(mol / mol.sum(), *self._thermal_condition)
+        epsilon = self._get_cache('epsilon')
+        if epsilon is None:
+            self._cache['epsilon'] = epsilon = self.mixture.epsilon(
+                mol / mol.sum(), *self._thermal_condition
+            )
+        return epsilon
     @property
     def Cp(self):
         """[float] Heat capacity [J/g/K]."""
-        return self.mixture.Cp(*self._imol.get_phase_and_composition(), self.T)
+        return self.Cn / self.MW
     @property
     def alpha(self):
         """[float] Thermal diffusivity [m^2/s]."""
-        return self.mixture.alpha(*self._imol.get_phase_and_composition(),
-                                  *self._thermal_condition)
+        return fn.alpha(self.kappa, 
+                        self.rho, 
+                        self.Cp * 1000.)
     @property
     def rho(self):
         """[float] Density [kg/m^3]."""
-        return self.mixture.rho(*self._imol.get_phase_and_composition(), 
-                                *self._thermal_condition)
+        return fn.V_to_rho(self.V, self.MW)
     @property
     def nu(self):
         """[float] Kinematic viscosity [m^2/s]."""
-        return self.mixture.nu(*self._imol.get_phase_and_composition(),
-                               *self._thermal_condition)
+        return fn.mu_to_nu(self.mu, self.rho)
     @property
     def Pr(self):
         """[float] Prandtl number [-]."""
-        return self.mixture.Pr(*self._imol.get_phase_and_composition(),
-                               *self._thermal_condition)
+        return fn.Pr(self.Cp * 1000,
+                     self.kappa, 
+                     self.mu)
     
     ### Stream methods ###
     
@@ -1493,6 +1554,10 @@ class Stream:
         new._thermo = self._thermo
         new._imol = self._imol
         new._thermal_condition = self._thermal_condition
+        new._cache = self._cache
+        new._cache_key = self._cache_key
+        new._bubble_point_cache = self._bubble_point_cache
+        new._dew_point_cache = self._dew_point_cache
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
         new._link = self
