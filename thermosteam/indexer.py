@@ -383,7 +383,7 @@ class ChemicalIndexer(Indexer):
     
     @property
     def phase(self):
-        return self._phase.phase
+        return self._phase._phase
     @phase.setter
     def phase(self, phase):
         self._phase.phase = phase
