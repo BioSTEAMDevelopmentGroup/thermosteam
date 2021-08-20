@@ -1498,10 +1498,10 @@ class Stream:
             if exclude:
                 if isinstance(IDs, str):
                     if IDs in other_chemicals:
-                        other_index = slice()
-                    else:
                         bad_index = other_chemicals.index(IDs)
                         other_index = [i for i in range(other_chemicals.size) if i != bad_index]
+                    else:
+                        other_index = slice()
                 else:
                     bad_index = set([other_chemicals.index(i) for i in IDs if i in other_chemicals])
                     if bad_index:
