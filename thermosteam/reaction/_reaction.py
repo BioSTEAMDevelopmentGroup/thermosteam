@@ -56,26 +56,24 @@ def set_reaction_basis(rxn, basis):
 def as_material_array(material, basis, phases, chemicals):
     isa = isinstance
     if isa(material, np.ndarray):
-        return material
+        return material, None
     elif isa(material, tmo.Stream):
         if (phases or len(material.phases) != 1) and material.phases != phases:
             raise ValueError("reaction and stream phases do not match")
-        if material.chemicals is not chemicals:
-            raise ValueError("reaction and stream chemicals do not match")
+        if material.chemicals is chemicals:
+            old_chemicals = None
+        else:
+            old_chemicals = material.chemicals
+            material.imol.reset_chemicals(chemicals)
         if basis == 'mol':
-            return material.imol.data 
+            return material.imol.data, old_chemicals 
         elif basis == 'wt':
-            return material.imass.data
+            return material.imass.data, old_chemicals
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
         raise ValueError('reaction material must be either an array or a stream')
 
-def get_array_values(array):
-    return array.value if isinstance(array, property_array) else array
-
-def set_array_values(array, values):
-    if array is not values: array[:] = values
 
 # %%
 
@@ -272,6 +270,15 @@ class Reaction:
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
     
+    @property
+    def reaction_chemicals(self):
+        """Return all chemicals involved in the reaction."""
+        return [i for i,j in zip(self._chemicals, self._stoichiometry) if j]
+    
+    def reset_chemicals(self, chemicals):
+        reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
+        return self.__init__(reaction, reactant=self.reactant, X=self.X, basis=self.basis, chemicals=chemicals)
+    
     def __eq__(self, other):
         try:
             return all([
@@ -370,28 +377,31 @@ class Reaction:
         return self
     
     def __call__(self, material):
-        material_array = as_material_array(material,
-                                           self._basis,
-                                           self._phases,
-                                           self._chemicals)
-        values = get_array_values(material_array)
+        material_array, chemicals = as_material_array(
+            material, self._basis, self._phases, self._chemicals
+        )
+        isproperty = isinstance(material_array, property_array)
+        values = material_array.value if isproperty else material_array
         self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             check_material_feasibility(values)
         else:
             fn.remove_negligible_negative_values(values)
-        set_array_values(material_array, values)
+        if isproperty: material_array[:] = values
+        if chemicals: material._imol.reset_chemicals(chemicals)
         
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
-        material_array = as_material_array(material,
+        material_array, chemicals = as_material_array(material,
                                            self._basis,
                                            self._phases,
                                            self._chemicals)
-        values = get_array_values(material_array)
+        isproperty = isinstance(material_array, property_array)
+        values = material_array.value if isproperty else material_array
         self._reaction(values)
         fn.remove_negligible_negative_values(values)
-        set_array_values(material_array, values)
+        if isproperty: material_array[:] = values
+        if chemicals: material._imol.reset_chemicals(chemicals)
     
     def product_yield(self, product, basis=None):
         """Return yield of product per reactant."""
@@ -928,6 +938,11 @@ class ReactionSet:
             return rxnset
     
     @property
+    def reaction_chemicals(self):
+        """Return all chemicals involved in the reaction."""
+        return [i for i,j in zip(self._chemicals, self._stoichiometry.any(axis=0)) if j]
+    
+    @property
     def basis(self):
         """{'mol', 'wt'} Basis of reaction"""
         return self._basis
@@ -1328,12 +1343,11 @@ class ReactionSystem:
             Subindex of reaction to calculate reactant flux.    
         
         """
-        material_array = as_material_array(material,
-                                           self._basis,
-                                           self._phases,
-                                           self._chemicals)
-        values = get_array_values(material_array)
-        preconverted_material = values.copy()
+        material_array, chemicals = as_material_array(
+            material.copy(), self._basis, self._phases, self._chemicals
+        )
+        isproperty = isinstance(material_array, property_array)
+        preconverted_material = material_array.value if isproperty else material_array
         reactions = self.reactions
         for i, rxn in enumerate(reactions):
             if i == index: break

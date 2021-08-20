@@ -205,7 +205,7 @@ class MultiStream(Stream):
         self.reset_cache()
         self._register(ID)
         self._link = None
-            
+        
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
             if phase_flows:
@@ -266,8 +266,8 @@ class MultiStream(Stream):
             stream._thermo = self._thermo
             stream._bubble_point_cache =  self._bubble_point_cache
             stream._dew_point_cache = self._dew_point_cache
-            stream._property_cache = self._property_cache
-            stream._property_cache_key = self._property_cache_key
+            stream._property_cache = {}
+            stream._property_cache_key = None, None
             streams[phase] = stream
         return stream
     

@@ -135,6 +135,13 @@ class SplitIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals, False)        
     
+    def reset_chemicals(self, chemicals):
+        data = np.zeros(chemicals.size, float)
+        for ID, split in zip(self._chemicals.IDs, self._data):
+            if ID in chemicals: data[chemicals.index(ID)] = split
+        self._data = data
+        self._load_chemicals(chemicals)
+    
     @classmethod
     def blank(cls, chemicals=None):
         self = _new(cls)
@@ -266,6 +273,14 @@ class ChemicalIndexer(Indexer):
         else:
             self = cls.blank(phase, chemicals)
         return self
+    
+    def reset_chemicals(self, chemicals):
+        data = np.zeros(chemicals.size, float)
+        for ID, value in zip(self._chemicals.IDs, self._data):
+            if value: data[chemicals.index(ID)] = value
+        self._data = data
+        self._data_cache = {}
+        self._load_chemicals(chemicals)
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phase, self._chemicals, False)
@@ -482,6 +497,18 @@ class MaterialIndexer(Indexer):
                 data[get_phase_index(phase), get_index(IDs)] = row
             if units: self.set_data(data, units)
         return self
+    
+    def reset_chemicals(self, chemicals):
+        shape = N_phases, N_chemicals = (len(self._phases), chemicals.size)
+        IDdata = tuple(zip(self._chemicals.IDs, self._data))
+        data = np.zeros(shape, float)
+        for i in range(N_phases):
+            for ID, value in IDdata:
+                if value: data[i, chemicals.index(ID)] = value
+        self._load_chemicals(chemicals)
+        self._set_cache()
+        self._data = data
+        self._data_cache = {}
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)

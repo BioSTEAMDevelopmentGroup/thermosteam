@@ -879,11 +879,11 @@ class CompiledChemicals(Chemicals):
             isplit[tuple(order)] = split
         elif hasattr(split, '__len__'):
             isplit = SplitIndexer.from_data(np.asarray(split),
-                                                    chemicals=self)
+                                            chemicals=self)
         else:
             split = split * np.ones(self.size)
             isplit = SplitIndexer.from_data(split,
-                                                    chemicals=self)
+                                            chemicals=self)
         return isplit
 
     def index(self, ID):

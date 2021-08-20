@@ -269,6 +269,14 @@ class Stream:
         self._register(ID)
         self._link = None
 
+    def _reset_thermo(self, thermo):
+        self._load_thermo(thermo)
+        imol = self._imol
+        imol.reset_chemicals(thermo.chemicals)
+        self._link = None
+        self._imol.copy_like(imol)
+        self.reset_cache()
+
     def shares_flow_rate_with(self, other):
         """
         Return whether other stream shares data with this one.
@@ -1041,7 +1049,7 @@ class Stream:
         return self._thermal_condition.in_equilibrium(other._thermal_condition)
     
     @classmethod
-    def sum(cls, streams, ID=None, thermo=None):
+    def sum(cls, streams, ID=None, thermo=None, energy_balance=True):
         """
         Return a new Stream object that represents the sum of all given streams.
         
@@ -1071,7 +1079,7 @@ class Stream:
         """
         new = cls(ID, thermo=thermo)
         if streams: new.copy_thermal_condition(streams[0])
-        new.mix_from(streams)
+        new.mix_from(streams, energy_balance)
         return new
     
     def separate_out(self, other, energy_balance=True):
@@ -1122,7 +1130,6 @@ class Stream:
             if self is other: self.empty()
             if energy_balance: H_new = self.H - other.H
             self._imol.separate_out(other._imol)
-            self.sanity_check()
             if energy_balance: self.H = H_new
     
     def mix_from(self, others, energy_balance=True):
@@ -1177,9 +1184,9 @@ class Stream:
         elif N_others == 1:
             self.copy_like(others[0])
         else:
+            if energy_balance: H = sum([i.H for i in others])
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():
-                H = sum([i.H for i in others])
                 try:
                     self.H = H
                 except:
@@ -1188,7 +1195,7 @@ class Stream:
                     self._imol.mix_from([i._imol for i in others])
                     self.H = H
                 
-    def split_to(self, s1, s2, split):
+    def split_to(self, s1, s2, split, energy_balance=True):
         """
         Split molar flow rate from this stream to two others given
         the split fraction or an array of split fractions.
@@ -1217,13 +1224,31 @@ class Stream:
         
         
         """
-        if self is s1: 
-            mol = self.mol.copy()
+        mol = self.mol
+        chemicals = self.chemicals
+        values = mol * split
+        dummy = mol - values
+        if s1.chemicals is chemicals: 
+            s1.mol[:] = values
         else:
-            mol = self.mol
-        
-        s1.mol[:] = dummy = mol * split
-        s2.mol[:] = mol - dummy
+            IDs, values = zip(*[(i, j) for i, j in zip(chemicals.IDs, values) if j])
+            s1.empty()
+            s1.imol[IDs] = values
+        values = dummy
+        if s2.chemicals is chemicals:
+            s2.mol[:] = values
+        else:
+            s2.empty()
+            IDs, values = zip(*[(i, j) for i, j in zip(chemicals.IDs, values) if j])
+            s2.imol[IDs] = values
+        if energy_balance:
+            tc1 = s1._thermal_condition
+            tc2 = s2._thermal_condition
+            tc = self._thermal_condition
+            tc1._T = tc2._T = tc._T
+            tc1._P = tc2._P = tc._P
+            s1.phase = s2.phase = self.phase
+            
         
     def link_with(self, other, flow=True, phase=True, TP=True):
         """
@@ -1373,13 +1398,13 @@ class Stream:
         """
         self._thermal_condition.copy_like(other._thermal_condition)
     
-    def copy_flow(self, stream, IDs=..., *, remove=False, exclude=False):
+    def copy_flow(self, other, IDs=..., *, remove=False, exclude=False):
         """
-        Copy flow rates of stream to self.
+        Copy flow rates of another stream to self.
         
         Parameters
         ----------
-        stream : Stream
+        other : Stream
             Flow rates will be copied from here.
         IDs=... : Iterable[str], defaults to all chemicals.
             Chemical IDs. 
@@ -1453,21 +1478,42 @@ class Stream:
          flow: 0
          
         """
+        other_mol = other.mol
+        other_chemicals = other.chemicals
         chemicals = self.chemicals
-        mol = stream.mol
-        if exclude:
-            IDs = chemicals.get_index(IDs)
-            index = np.ones(chemicals.size, dtype=bool)
-            index[IDs] = False
-        else:
-            index = chemicals.get_index(IDs)
-        
-        self.mol[index] = mol[index]
-        if remove: 
-            if isinstance(stream, tmo.MultiStream):
-                stream.imol.data[:, index] = 0
+        if IDs == ...:
+            if exclude: return 
+            if chemicals is other_chemicals:
+                self.mol[:] = other.mol
             else:
-                mol[index] = 0
+                self.empty()
+                IDs, values = zip(*[(i, j) for i, j in zip(other_chemicals.IDs, other_mol) if j])
+                self.imol[IDs] = values
+            if remove: 
+                if isinstance(other, tmo.MultiStream):
+                    other.imol.data[:] = 0.
+                else:
+                    other_mol[:] = 0.
+        else:
+            if exclude:
+                if isinstance(IDs, str):
+                    other_index, IDs = zip(*[(i,j) for i,j in enumerate(other_chemicals.IDs) if j != IDs])
+                else:
+                    IDs = set(IDs)
+                    other_index, IDs = zip(*[(i,j) for i,j in enumerate(other_chemicals.IDs) if j not in IDs])
+                other_index = list(other_index)
+            else:
+                other_index = other_chemicals.get_index(IDs)
+            if chemicals is other_chemicals:
+                self.mol[other_index] = other_mol[other_index]
+            else:
+                IDs, values = zip(*[(i, j) for i, j in zip(IDs, other_mol[other_index]) if j or i in chemicals])
+                self.imol[IDs] = values
+            if remove: 
+                if isinstance(other, tmo.MultiStream):
+                    other.imol.data[:, other_index] = 0
+                else:
+                    other_mol[other_index] = 0
     
     def copy(self, ID=None):
         """

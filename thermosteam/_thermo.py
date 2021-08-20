@@ -158,6 +158,20 @@ class Thermo:
         setattr(self, 'Phi', Phi)
         setattr(self, 'PCF', PCF)
     
+    def subset(self, chemicals):
+        if chemicals is self.chemicals: return self
+        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
+        chemicals.compile(skip_checks=True)
+        cls = self.__class__
+        new = cls.__new__(cls)
+        setattr = object.__setattr__
+        setattr(new, 'chemicals', chemicals)
+        setattr(new, 'mixture', self.mixture.from_chemicals(chemicals))
+        setattr(new, 'Gamma', self.Gamma)
+        setattr(new, 'Phi', self.Phi)
+        setattr(new, 'PCF', self.PCF)
+        return new
+    
     def ideal(self):
         """Ideal thermodynamic property package."""
         cls = self.__class__

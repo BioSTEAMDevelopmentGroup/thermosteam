@@ -19,7 +19,7 @@ from .exceptions import InfeasibleRegion
 from .equilibrium import phase_fraction as compute_phase_fraction
 
 __all__ = (
-    'split', 'mix_and_split',
+    'mix_and_split',
     'adjust_moisture_content', 
     'mix_and_split_with_moisture_content',
     'partition_coefficients',
@@ -192,52 +192,7 @@ def mix_and_split(ins, top, bottom, split):
     
     """
     top.mix_from(ins)
-    bottom.copy_like(top)
-    top_mol = top.mol
-    top_mol[:] *= split
-    bottom.mol[:] -= top_mol
-
-def split(feed, top, bottom, split):
-    """
-    Run splitter mass and energy balance with mixing all input streams.
-    
-    Parameters
-    ----------
-    feed : Stream
-        Inlet fluid.
-    top : Stream
-        Top inlet fluid.
-    bottom : Stream
-        Bottom inlet fluid
-    split : array_like
-        Component-wise split of feed to the top stream.
-    
-    Examples
-    --------
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-    >>> feed = tmo.Stream(Water=35, Ethanol=10)
-    >>> split = 0.8
-    >>> effluent_a = tmo.Stream('effluent_a')
-    >>> effluent_b = tmo.Stream('effluent_b')
-    >>> tmo.separations.split(feed, effluent_a, effluent_b, split)
-    >>> effluent_a.show()
-    Stream: effluent_a
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water    28
-                     Ethanol  8
-    >>> effluent_b.show()
-    Stream: effluent_b
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water    7
-                     Ethanol  2
-                     
-    """
-    if feed is not top: top.copy_like(feed)
-    bottom.copy_like(top)
-    top_mol = top.mol
-    top_mol[:] *= split
-    bottom.mol[:] -= top_mol
+    top.split_to(top, bottom, split, energy_balance=True)
 
 def phase_split(feed, outlets):
     """
