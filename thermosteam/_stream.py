@@ -1497,18 +1497,18 @@ class Stream:
         else:
             if exclude:
                 if isinstance(IDs, str):
-                    other_index, IDs = zip(*[(i,j) for i,j in enumerate(other_chemicals.IDs) if j != IDs])
+                    bad_index = other_chemicals.index(IDs)
+                    other_index = [i for i in range(other_chemicals.size) if i != bad_index]
                 else:
-                    IDs = set(IDs)
-                    other_index, IDs = zip(*[(i,j) for i,j in enumerate(other_chemicals.IDs) if j not in IDs])
-                other_index = list(other_index)
+                    bad_index = set(other_chemicals.get_index(IDs))
+                    other_index = [i for i in range(other_chemicals.size) if i not in bad_index]
             else:
                 other_index = other_chemicals.get_index(IDs)
             if chemicals is other_chemicals:
                 self.mol[other_index] = other_mol[other_index]
             else:
-                IDs, values = zip(*[(i, j) for i, j in zip(IDs, other_mol[other_index]) if j or i in chemicals])
-                self.imol[IDs] = values
+                CASs = other_chemicals.CASs
+                self.imol[tuple([CASs[i] for i in other_index])] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
                     other.imol.data[:, other_index] = 0
