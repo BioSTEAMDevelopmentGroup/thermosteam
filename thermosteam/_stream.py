@@ -1477,6 +1477,11 @@ class Stream:
          phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
          flow: 0
          
+        Copy flows except except water and remove water:
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        >>> s2.copy_flows(s1, 'Water', exclude=True, remove=True)
+         
         """
         other_mol = other.mol
         other_chemicals = other.chemicals
@@ -1503,7 +1508,7 @@ class Stream:
                     else:
                         other_index = slice()
                 else:
-                    bad_index = set([i for i, j in enumerate(IDs) if j in other_chemicals])
+                    bad_index = set([i for i, j in enumerate(other_chemicals.CASs) if j in other_chemicals])
                     if bad_index:
                         other_index = [i for i in range(other_chemicals.size) if i not in bad_index]
                     else:
