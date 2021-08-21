@@ -137,7 +137,11 @@ class SplitIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self._data
-        self._data = data = np.zeros(chemicals.size, float) if container is None else container
+        if container is None:
+            self._data = data = np.zeros(chemicals.size, float)
+        else:
+            self._data = data = container
+            data[:] = 0.
         for CAS, split in zip(self._chemicals.CASs, old_data):
             if CAS in chemicals: data[chemicals.index(CAS)] = split
         self._load_chemicals(chemicals)
@@ -284,6 +288,7 @@ class ChemicalIndexer(Indexer):
         else:
             data, self._data_cache = container
             self._data =  data
+            data[:] = 0.
         for CAS, value in zip(self._chemicals.CASs, old_data):
             if value: data[chemicals.index(CAS)] = value
         self._load_chemicals(chemicals)
@@ -514,6 +519,7 @@ class MaterialIndexer(Indexer):
             self._data_cache = {}
         else:
             data, cache = container
+            data[:] = 0.
         old_chemicals = self._chemicals
         old_index = range(old_chemicals.size)
         CASs = old_chemicals.CASs

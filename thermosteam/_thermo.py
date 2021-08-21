@@ -161,7 +161,13 @@ class Thermo:
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
+        groups = [(name, index) for name, index in self.chemicals._index.items() 
+                  if isinstance(index, list)]
         chemicals.compile(skip_checks=True)
+        CASs = self.chemicals.CASs
+        for name, index in groups:
+            group_CASs = [CASs[i] for i in index]
+            chemicals.define_group(name, [i for i in group_CASs if i in chemicals])
         cls = self.__class__
         new = cls.__new__(cls)
         setattr = object.__setattr__

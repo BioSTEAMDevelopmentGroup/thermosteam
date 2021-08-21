@@ -271,10 +271,8 @@ class Stream:
 
     def _reset_thermo(self, thermo):
         self._load_thermo(thermo)
-        imol = self._imol
-        imol.reset_chemicals(thermo.chemicals)
+        self._imol.reset_chemicals(thermo.chemicals)
         self._link = None
-        self._imol.copy_like(imol)
         self.reset_cache()
 
     def shares_flow_rate_with(self, other):

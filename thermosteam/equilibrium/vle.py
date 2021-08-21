@@ -755,18 +755,26 @@ class VLE(Equilibrium, phases='lg'):
         H_hat = H/F_mass
         H_hat_bubble = self._H_hat_err_at_T(T_bubble, 0.)
         if H_hat_bubble > H_hat:
-            vapor_mol[index] = 0
-            liquid_mol[index] = mol
-            self._T = thermal_condition.T = self.mixture.xsolve_T(
-                self._phase_data, H, T_bubble, P
+            def f(V):
+                vapor_mol[index] = V * mol
+                liquid_mol[index] = (1 - V) * mol
+                return self.mixture.xH(self._phase_data, T_bubble, P)/self._F_mass - H_hat
+            self._T = thermal_condition.T = T_bubble
+            flx.IQ_interpolation(f,
+                0, 1., f(0), f(1.), V, self.V_tol, self.H_hat_tol, 
+                checkiter=False, checkbounds=False
             )
             return
         H_hat_dew = self._H_hat_err_at_T(T_dew, 0.)
         if H_hat_dew < H_hat:
-            vapor_mol[index] = mol
-            liquid_mol[index] = 0.
-            self._T = thermal_condition.T = self.mixture.xsolve_T(
-                self._phase_data, H, T_dew, P
+            def f(V):
+                vapor_mol[index] = V * mol
+                liquid_mol[index] = (1 - V) * mol
+                return self.mixture.xH(self._phase_data, T_dew, P)/self._F_mass - H_hat
+            self._T = thermal_condition.T = T_dew
+            flx.IQ_interpolation(f,
+                0, 1., f(0), f(1.), V, self.V_tol, self.H_hat_tol, 
+                checkiter=False, checkbounds=False
             )
             return
         else:
