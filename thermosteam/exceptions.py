@@ -30,7 +30,9 @@ class InfeasibleRegion(RuntimeError):
 
 class UndefinedChemical(Exception):
     """Exception regarding undefined chemicals."""
-    def __init__(self, ID): super().__init__(repr(ID))
+    def __init__(self, ID): 
+        self.ID = ID
+        super().__init__(repr(ID))
     
 class UndefinedPhase(Exception):
     """Exception regarding undefined phases."""

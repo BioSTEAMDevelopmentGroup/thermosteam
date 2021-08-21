@@ -61,14 +61,13 @@ def as_material_array(material, basis, phases, chemicals):
         if (phases or len(material.phases) != 1) and material.phases != phases:
             raise ValueError("reaction and stream phases do not match")
         if material.chemicals is chemicals:
-            old_chemicals = None
+            config = None
         else:
-            old_chemicals = material.chemicals
-            material.imol.reset_chemicals(chemicals)
+            config = material.chemicals, material.imol.reset_chemicals(chemicals)
         if basis == 'mol':
-            return material.imol.data, old_chemicals 
+            return material.imol.data, config
         elif basis == 'wt':
-            return material.imass.data, old_chemicals
+            return material.imass.data, config
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
@@ -377,7 +376,7 @@ class Reaction:
         return self
     
     def __call__(self, material):
-        material_array, chemicals = as_material_array(
+        material_array, config = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
         isproperty = isinstance(material_array, property_array)
@@ -388,11 +387,11 @@ class Reaction:
         else:
             fn.remove_negligible_negative_values(values)
         if isproperty: material_array[:] = values
-        if chemicals: material._imol.reset_chemicals(chemicals)
+        if config: material._imol.reset_chemicals(*config)
         
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
-        material_array, chemicals = as_material_array(material,
+        material_array, config = as_material_array(material,
                                            self._basis,
                                            self._phases,
                                            self._chemicals)
@@ -401,7 +400,7 @@ class Reaction:
         self._reaction(values)
         fn.remove_negligible_negative_values(values)
         if isproperty: material_array[:] = values
-        if chemicals: material._imol.reset_chemicals(chemicals)
+        if config: material._imol.reset_chemicals(*config)
     
     def product_yield(self, product, basis=None):
         """Return yield of product per reactant."""
@@ -858,6 +857,9 @@ class ReactionItem(Reaction):
         self._X_index = rxnset._X_index[index]
         self._index = index
     
+    def reset_chemicals(self, chemicals):
+        raise TypeError('cannot reset chemicals of a reaction item')
+    
     @property
     def basis(self):
         """{'mol', 'wt'} Basis of reaction"""
@@ -937,6 +939,14 @@ class ReactionSet:
             rxnset._chemicals = self._chemicals
             return rxnset
     
+    def reset_chemicals(self, chemicals):
+        reactions = [self[i] for i in range(self._stoichiometry.shape[0])]
+        self.__init__(
+            [Reaction(get_stoichiometric_string(i.stoichiometry, i.phases, i.chemicals), 
+                      i.reactant, i.X, chemicals, i.basis, phases=i.phases)
+             for i in reactions]
+        )
+    
     @property
     def reaction_chemicals(self):
         """Return all chemicals involved in the reaction."""
@@ -954,6 +964,10 @@ class ReactionSet:
     def X(self):
         """[1d array] Reaction converions."""
         return self._X
+    @X.setter
+    def X(self, X):
+        """[1d array] Reaction converions."""
+        if X is not self._X: self._X[:] = X
     
     @property
     def chemicals(self):
@@ -996,7 +1010,7 @@ class ReactionSet:
         Xs = self.X
         N = len(Xs)
         maxnumspace = max(length(string(N)) + 1, len(index_name))
-        info += f"\n{index_name}" + " "*(max(2, length(string(N)) + 1)) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
+        info += f"\n{index_name}" + " "*(max(2, length(string(N)))) + "stoichiometry" + " "*(maxrxnlen - 13) + "reactant" + " "*(maxcmplen - 8) + '  X[%]'
         for N, rxn, cmp, X in zip(range(N), rxns, cmps, Xs):
             rxn_spaces = " "*(maxrxnlen - length(rxn))
             cmp_spaces = " "*(maxcmplen - length(cmp))
@@ -1303,6 +1317,13 @@ class ReactionSystem:
     show = Reaction.show
     
     @property
+    def X(self):
+        return [i.X for i in self._reactions]
+    @X.setter
+    def X(self, X):
+        for i, j in zip(self._reactions, X): i.X = j
+    
+    @property
     def reactions(self):
         return self._reactions
     
@@ -1343,7 +1364,7 @@ class ReactionSystem:
             Subindex of reaction to calculate reactant flux.    
         
         """
-        material_array, chemicals = as_material_array(
+        material_array, config = as_material_array(
             material.copy(), self._basis, self._phases, self._chemicals
         )
         isproperty = isinstance(material_array, property_array)

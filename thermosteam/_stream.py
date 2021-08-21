@@ -1231,16 +1231,16 @@ class Stream:
         if s1.chemicals is chemicals: 
             s1.mol[:] = values
         else:
-            IDs, values = zip(*[(i, j) for i, j in zip(chemicals.IDs, values) if j])
+            CASs, values = zip(*[(i, j) for i, j in zip(chemicals.CASs, values) if j])
             s1.empty()
-            s1.imol[IDs] = values
+            s1._imol[CASs] = values
         values = dummy
         if s2.chemicals is chemicals:
             s2.mol[:] = values
         else:
             s2.empty()
-            IDs, values = zip(*[(i, j) for i, j in zip(chemicals.IDs, values) if j])
-            s2.imol[IDs] = values
+            CASs, values = zip(*[(i, j) for i, j in zip(chemicals.CASs, values) if j])
+            s2._imol[CASs] = values
         if energy_balance:
             tc1 = s1._thermal_condition
             tc2 = s2._thermal_condition
@@ -1487,8 +1487,8 @@ class Stream:
                 self.mol[:] = other.mol
             else:
                 self.empty()
-                IDs, values = zip(*[(i, j) for i, j in zip(other_chemicals.IDs, other_mol) if j])
-                self.imol[IDs] = values
+                CASs, values = zip(*[(i, j) for i, j in zip(other_chemicals.CASs, other_mol) if j])
+                self.imol[CASs] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
                     other.imol.data[:] = 0.
@@ -1503,7 +1503,7 @@ class Stream:
                     else:
                         other_index = slice()
                 else:
-                    bad_index = set([other_chemicals.index(i) for i in IDs if i in other_chemicals])
+                    bad_index = set([i for i, j in enumerate(IDs) if j in other_chemicals])
                     if bad_index:
                         other_index = [i for i in range(other_chemicals.size) if i not in bad_index]
                     else:
@@ -1514,7 +1514,7 @@ class Stream:
                 self.mol[other_index] = other_mol[other_index]
             else:
                 CASs = other_chemicals.CASs
-                self.imol[tuple([CASs[i] for i in other_index])] = values
+                self.imol[tuple([CASs[i] for i in other_index])] = other_mol[other_index]
             if remove: 
                 if isinstance(other, tmo.MultiStream):
                     other.imol.data[:, other_index] = 0
@@ -1626,7 +1626,7 @@ class Stream:
         0.0
         
         """
-        self._imol.empty()
+        self._imol._data[:] = 0.
     
     ### Equilibrium ###
     

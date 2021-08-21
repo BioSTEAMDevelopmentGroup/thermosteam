@@ -135,12 +135,13 @@ class SplitIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self._data, self._chemicals, False)        
     
-    def reset_chemicals(self, chemicals):
-        data = np.zeros(chemicals.size, float)
-        for ID, split in zip(self._chemicals.IDs, self._data):
-            if ID in chemicals: data[chemicals.index(ID)] = split
-        self._data = data
+    def reset_chemicals(self, chemicals, container=None):
+        old_data = self._data
+        self._data = data = np.zeros(chemicals.size, float) if container is None else container
+        for CAS, split in zip(self._chemicals.CASs, old_data):
+            if CAS in chemicals: data[chemicals.index(CAS)] = split
         self._load_chemicals(chemicals)
+        return old_data
     
     @classmethod
     def blank(cls, chemicals=None):
@@ -274,13 +275,19 @@ class ChemicalIndexer(Indexer):
             self = cls.blank(phase, chemicals)
         return self
     
-    def reset_chemicals(self, chemicals):
-        data = np.zeros(chemicals.size, float)
-        for ID, value in zip(self._chemicals.IDs, self._data):
-            if value: data[chemicals.index(ID)] = value
-        self._data = data
-        self._data_cache = {}
+    def reset_chemicals(self, chemicals, container=None):
+        old_data = self._data
+        old_container = (old_data, self._data_cache)
+        if container is None:
+            self._data = data = np.zeros(chemicals.size, float)
+            self._data_cache = {}
+        else:
+            data, self._data_cache = container
+            self._data =  data
+        for CAS, value in zip(self._chemicals.CASs, old_data):
+            if value: data[chemicals.index(CAS)] = value
         self._load_chemicals(chemicals)
+        return old_container
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phase, self._chemicals, False)
@@ -336,8 +343,8 @@ class ChemicalIndexer(Indexer):
                 data[:] += idata
             else:
                 other_index, = np.where(idata)
-                IDs = ichemicals.IDs
-                self_index = chemicals.indices([IDs[i] for i in other_index])
+                CASs = ichemicals.CASs
+                self_index = chemicals.indices([CASs[i] for i in other_index])
                 data[self_index] += idata[other_index]
     
     def separate_out(self, other):
@@ -362,8 +369,8 @@ class ChemicalIndexer(Indexer):
         else:
             self.empty()
             other_index, = np.where(other._data)
-            IDs = other.chemicals.IDs
-            self_index = self.chemicals.indices([IDs[i] for i in other_index])
+            CASs = other.chemicals.CASs
+            self_index = self.chemicals.indices([CASs[i] for i in other_index])
             self._data[self_index] = other._data[other_index]
         self.phase = other.phase
     
@@ -498,17 +505,23 @@ class MaterialIndexer(Indexer):
             if units: self.set_data(data, units)
         return self
     
-    def reset_chemicals(self, chemicals):
+    def reset_chemicals(self, chemicals, container=None):
+        old_data = self._data
+        old_data_cache = self._data_cache
         shape = N_phases, N_chemicals = (len(self._phases), chemicals.size)
-        IDdata = tuple(zip(self._chemicals.IDs, self._data))
-        data = np.zeros(shape, float)
+        if container is None:
+            self._data = data = np.zeros(shape, float)
+            self._data_cache = {}
+        old_chemicals = self._chemicals
+        old_index = range(old_chemicals.size)
+        CASs = old_chemicals.CASs
         for i in range(N_phases):
-            for ID, value in IDdata:
-                if value: data[i, chemicals.index(ID)] = value
+            for j in old_index:
+                value = old_data[i, j]
+                if value: data[i, chemicals.index(CASs[j])] = value
         self._load_chemicals(chemicals)
         self._set_cache()
-        self._data = data
-        self._data_cache = {}
+        return (old_data, old_data_cache)
     
     def __reduce__(self):
         return self.from_data, (self._data, self._phases, self._chemicals, False)
