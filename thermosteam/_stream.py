@@ -1480,7 +1480,7 @@ class Stream:
         Copy flows except except water and remove water:
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
-        >>> s2.copy_flows(s1, 'Water', exclude=True, remove=True)
+        >>> s2.copy_flow(s1, 'Water', exclude=True, remove=True)
          
         """
         other_mol = other.mol

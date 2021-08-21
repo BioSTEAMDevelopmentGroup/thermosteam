@@ -46,7 +46,7 @@ def test_reaction():
     stream = tmo.MultiStream(None, l=[('Water', 10)], 
                              thermo=tmo.Thermo(['Water', 'Ethanol']),
                              phases='gl')
-    with pytest.raises(ValueError): reaction(stream)
+    with pytest.raises(tmo.exceptions.UndefinedChemical): reaction(stream)
     
 def test_reaction_enthalpy_balance():
     # Combustion; ensure heat of gas phase reaction without sensible heats is 
