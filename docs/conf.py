@@ -21,7 +21,7 @@ for p in new_path:
 # -- Project information -----------------------------------------------------
 
 project = 'Thermosteam'
-copyright = '2020, Yoel Cortes-Pena'
+copyright = '2020-2021, Yoel Cortes-Pena'
 author = 'Yoel Cortes-Pena'
 nbsphinx_execute = 'never'
 
