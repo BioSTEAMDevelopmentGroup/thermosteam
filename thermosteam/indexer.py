@@ -512,6 +512,8 @@ class MaterialIndexer(Indexer):
         if container is None:
             self._data = data = np.zeros(shape, float)
             self._data_cache = {}
+        else:
+            data, cache = container
         old_chemicals = self._chemicals
         old_index = range(old_chemicals.size)
         CASs = old_chemicals.CASs
