@@ -270,10 +270,14 @@ class Stream:
         self._link = None
 
     def _reset_thermo(self, thermo):
-        self._load_thermo(thermo)
+        self._thermo = thermo
         self._imol.reset_chemicals(thermo.chemicals)
         self._link = None
         self.reset_cache()
+        if hasattr(self, '_streams'):
+            for phase, stream in self._streams.items():
+                stream._imol = self._imol.get_phase(phase)
+                stream._thermo = thermo
 
     def shares_flow_rate_with(self, other):
         """
