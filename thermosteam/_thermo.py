@@ -129,7 +129,7 @@ class Thermo:
         Class for computing poynting correction factors.
     
     """
-    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF') 
+    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF', '_ideal') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
@@ -180,14 +180,17 @@ class Thermo:
     
     def ideal(self):
         """Ideal thermodynamic property package."""
-        cls = self.__class__
-        ideal = cls.__new__(cls)
-        setattr = object.__setattr__
-        setattr(ideal, 'chemicals', self.chemicals)
-        setattr(ideal, 'mixture', self.mixture)
-        setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
-        setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
-        setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
+        ideal = getattr(self, '_ideal', None)
+        if not ideal: 
+            cls = self.__class__
+            ideal = cls.__new__(cls)
+            setattr = object.__setattr__
+            setattr(ideal, 'chemicals', self.chemicals)
+            setattr(ideal, 'mixture', self.mixture)
+            setattr(ideal, 'Gamma', eq.IdealActivityCoefficients)
+            setattr(ideal, 'Phi', eq.IdealFugacityCoefficients)
+            setattr(ideal, 'PCF', eq.IdealPoyintingCorrectionFactors)
+            object.__setattr__(self, '_ideal', ideal)
         return ideal
     
     def as_chemical(self, chemical):

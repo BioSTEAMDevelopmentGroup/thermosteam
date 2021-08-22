@@ -1528,7 +1528,7 @@ class Stream:
                 else:
                     other_mol[other_index] = 0
     
-    def copy(self, ID=None):
+    def copy(self, ID=None, thermo=None):
         """
         Return a copy of the stream.
 
@@ -1554,8 +1554,10 @@ class Stream:
         cls = self.__class__
         new = cls.__new__(cls)
         new._link = new._sink = new._source = None
-        new._thermo = self._thermo
+        new._thermo = thermo or self._thermo
         new._imol = self._imol.copy()
+        if thermo and thermo.chemicals is not self.chemicals:
+            new._imol.reset_chemicals(thermo.chemicals)
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.price = 0
