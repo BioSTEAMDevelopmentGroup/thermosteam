@@ -100,7 +100,7 @@ class Settings:
             Whether to skip checks for missing or invalid properties.
             
         """
-        if not isinstance(thermo, tmo.Thermo):
+        if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
         self._thermo = thermo
     
