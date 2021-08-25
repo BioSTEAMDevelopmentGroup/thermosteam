@@ -32,12 +32,44 @@ def xV_iter(xV, Psat_over_P_phi, T, z, z_light, z_heavy, f_gamma, gamma_args, f_
     x[x < 0.] = 0.
     x = fn.normalize(x)
     Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(x, T, *pcf_args)
-    xV[-1] = V = binary.phase_fraction(z, Ks, V,
+    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V,
                                        z_light,
                                        z_heavy)
+    if V < 0.: V = 0.
+    elif V > 1.: V = 1.
+    xV[-1] = V
     xV[:-1] = z/(1. + V * (Ks - 1.))
     return xV
-    
+
+# @njit(cache=True)    
+def xV_iter_2n(xV, Psat_over_P_phi, T, z, f_gamma, gamma_args, f_pcf, pcf_args):
+    xV = xV.copy()
+    x = xV[:-1]
+    V = xV[-1]
+    x[x < 0.] = 0.
+    x = fn.normalize(x)
+    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(x, T, *pcf_args)
+    V = binary.compute_phase_fraction_2N(z, Ks)
+    if V < 0.: V = 0.
+    elif V > 1.: V = 1.
+    xV[-1] = V
+    xV[:-1] = z/(1. + V * (Ks - 1.))
+    return xV
+
+# @njit(cache=True)
+def xV_iter_3n(xV, Psat_over_P_phi, T, z, f_gamma, gamma_args, f_pcf, pcf_args):
+    xV = xV.copy()
+    x = xV[:-1]
+    V = xV[-1]
+    x[x < 0.] = 0.
+    x = fn.normalize(x)
+    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(x, T, *pcf_args)
+    V = binary.compute_phase_fraction_3N(z, Ks)
+    if V < 0.: V = 0.
+    elif V > 1.: V = 1.
+    xV[-1] = V
+    xV[:-1] = z/(1. + V * (Ks - 1.))
+    return xV
 
 class VLE(Equilibrium, phases='lg'):
     """
@@ -832,10 +864,18 @@ class VLE(Equilibrium, phases='lg'):
         pcf = self._pcf
         x = self._x
         Psat_over_P_phi = Psats_over_P / phi
-        f = xV_iter
+        N = self._N
         z = self._z
-        args = (Psat_over_P_phi, T, z, self._z_light, 
-                self._z_heavy, gamma.f, gamma.args, pcf.f, pcf.args)
+        if N > 3 or self._z_light or self._z_heavy:
+            f = xV_iter
+            args = (Psat_over_P_phi, T, z, self._z_light, 
+                    self._z_heavy, gamma.f, gamma.args, pcf.f, pcf.args)
+        elif N == 2:
+            f = xV_iter_2n
+            args = (Psat_over_P_phi, T, z, gamma.f, gamma.args, pcf.f, pcf.args)
+        elif N == 3:
+            f = xV_iter_3n
+            args = (Psat_over_P_phi, T, z, gamma.f, gamma.args, pcf.f, pcf.args)
         xV = np.zeros(x.size + 1)
         xV[:-1] = x
         xV[-1] = self._V

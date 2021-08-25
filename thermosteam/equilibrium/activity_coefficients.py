@@ -18,7 +18,7 @@
 import numpy as np
 from warnings import warn
 from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG, NISTUFSG, NISTUFIP
-from numba import njit
+from numba import njit, prange
 from .ideal import ideal
 
 __all__ = ('ActivityCoefficients',
@@ -79,7 +79,7 @@ def get_chemgroups(chemicals, field):
             warn(f"{chemical} has no defined {field} groups; "
                   "functional group interactions are ignored",
                   RuntimeWarning, stacklevel=3)
-    return np.array(index, bool), chemgroups
+    return np.where(index)[0], chemgroups
 
 @njit(cache=True)
 def loggammacs_UNIFAC(qs, rs, x):
@@ -112,7 +112,18 @@ def psi_modified_UNIFAC(T, abc):
 def psi_UNIFAC(T, a):
     return np.exp(-a/T)
 
-# @njit(cache=True)
+@njit(cache=True)
+def fill_group_psis(group_psis, psis, group_mask):
+    M = psis.shape[0]
+    N = psis.shape[1]
+    for i in range(M):
+        for j in range(N):
+            if group_mask[i, j]: 
+                group_psis[i, j] = psis[i, j]
+            else:
+                group_psis[i, j] = 0.
+
+@njit(cache=True)
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
                  chemgroups, chem_Qfractions, index):
@@ -120,28 +131,25 @@ def gamma_UNIFAC(x, T, interactions,
     N_chemicals = x.size
     gamma = np.ones(N_chemicals)
     if N_chemicals > 1:
-        x = x[index]
-        xsum = x.sum()
-        if xsum: 
-            x = x / xsum
+        x_sub = np.ones(index.size)
+        for i, j in enumerate(index): x[j] = x_sub[i]
+        xsum = x_sub.sum()
+        if xsum != 0: 
+            x_sub /= xsum
             psis = psi_UNIFAC(T, interactions)
-            M = psis.shape[0]
-            N = psis.shape[1]
-            for i in range(M):
-                for j in range(N):
-                    if group_mask[i, j]: 
-                        group_psis[i, j] = psis[i, j]
-                    else:
-                        group_psis[i, j] = 0.
-            gamma[index] = group_activity_coefficients(x, chemgroups,
-                                        loggammacs_UNIFAC(qs, rs, x),
+            fill_group_psis(group_psis, psis, group_mask)
+            gamma_sub = group_activity_coefficients(x, chemgroups,
+                                        loggammacs_UNIFAC(qs, rs, x_sub),
                                         Qs, psis,
                                         chem_Qfractions,
                                         group_psis)
-    gamma[np.isnan(gamma)] = 1
+        for i, j in enumerate(index): 
+            value = gamma_sub[i]
+            if np.isnan(value): continue
+            gamma[j] = value
     return gamma
 
-# @njit(cache=True)
+@njit(cache=True)
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
                    chemgroups, chem_Qfractions, index):
@@ -149,25 +157,22 @@ def gamma_modified_UNIFAC(x, T, interactions,
     N_chemicals = x.size
     gamma = np.ones(N_chemicals)
     if N_chemicals > 1:
-        x = x[index]
-        xsum = x.sum()
+        x_sub = np.ones(index.size)
+        for i, j in enumerate(index): x_sub[i] = x[j]
+        xsum = x_sub.sum()
         if xsum:
-            x = x / xsum
+            x_sub /= xsum
             psis = psi_modified_UNIFAC(T, interactions)
-            M = psis.shape[0]
-            N = psis.shape[1]
-            for i in range(M):
-                for j in range(N):
-                    if group_mask[i, j]: 
-                        group_psis[i, j] = psis[i, j]
-                    else:
-                        group_psis[i, j] = 0.
-            gamma[index] = group_activity_coefficients(x, chemgroups,
-                                        loggammacs_modified_UNIFAC(qs, rs, x),
+            fill_group_psis(group_psis, psis, group_mask)
+            gamma_sub = group_activity_coefficients(x, chemgroups,
+                                        loggammacs_modified_UNIFAC(qs, rs, x_sub),
                                         Qs, psis,
                                         chem_Qfractions,
                                         group_psis)
-    gamma[np.isnan(gamma)] = 1
+        for i, j in enumerate(index): 
+            value = gamma_sub[i]
+            if np.isnan(value): continue
+            gamma[j] = value
     return gamma
     
     
