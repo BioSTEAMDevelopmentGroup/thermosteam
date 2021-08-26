@@ -9,6 +9,7 @@
 """
 import numpy as np
 import thermosteam as tmo
+import flexsolve as flx
 from thermosteam import functional as fn
 from . import indexer
 from . import equilibrium as eq
@@ -1979,11 +1980,13 @@ class Stream:
     
     def receive_vent(self, other, energy_balance=True):
         """
-        Receive vapors from another stream as if in equilibrium.
+        Receive vapors from another stream by vapor-liquid equilibrium between 
+        a gas and liquid stream assuming only a small amount of chemicals
+        in vapor-liquid equilibrium is present
 
         Examples
         --------
-        Perform vle equilibrium between a gas and liquid stream:
+        The energy balance is performed by default:
         
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol', tmo.Chemical('N2', phase='g')], cache=True)
@@ -1993,9 +1996,9 @@ class Stream:
         >>> s1.receive_vent(s2)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
-         phase: 'g', T: 321.85 K, P: 101325 Pa
-         flow (kmol/hr): Water    0.0954
-                         Ethanol  0.104
+         phase: 'g', T: 323.13 K, P: 101325 Pa
+         flow (kmol/hr): Water    0.0798
+                         Ethanol  0.0889
                          N2       0.739
         
         Set energy balance to false to receive vent isothermally:
@@ -2009,20 +2012,53 @@ class Stream:
         >>> s1.show(flow='kmol/hr')
         Stream: s1
          phase: 'g', T: 330 K, P: 101325 Pa
-         flow (kmol/hr): Water    0.163
-                         Ethanol  0.175
+         flow (kmol/hr): Water    0.111
+                         Ethanol  0.123
                          N2       0.739
         
         """
         assert self.phase == 'g', 'stream must be a gas to receive vent'
-        ms = tmo.MultiStream(None, thermo=self.thermo)
-        ms.mix_from([self, other], energy_balance=energy_balance)
+        ms = tmo.Stream(None, T=self.T, P=self.P, thermo=self.thermo)
+        ms.mix_from([self, other], energy_balance=False)
+        if energy_balance: ms.H = H = self.H + other.H
+        ms.vle._setup()
+        chemicals = ms.vle_chemicals
+        F_l = eq.LiquidFugacities(chemicals, ms.thermo)
+        IDs = tuple([i.ID for i in chemicals])
+        x = other.get_molar_composition(IDs)
+        T = ms.T
+        P = ms.P
+        vapor = ms['g']
+        liquid = ms['l']
+        F_mol_vapor = vapor.F_mol
+        mol_old = liquid.imol[IDs]
         if energy_balance:
-            ms.vle(H=ms.H, P=ms.P)
+            def equilibrium_approximation(T):
+                f_l = F_l(x, T)
+                y = f_l / P
+                mol_new = F_mol_vapor * y
+                vapor.imol[IDs] = mol_new
+                liquid.imol[IDs] = mol_old - mol_new 
+                index = liquid.mol < 0.
+                vapor.mol[index] += liquid.mol[index]
+                liquid.mol[index] = 0
+                ms.H = H 
+                return ms.T
+            flx.wegstein(equilibrium_approximation, T)
         else:
-            ms.vle(T=self.T, P=ms.P)
-        self.copy_like(ms['g'])
-        other.copy_like(ms['l'])
+            f_l = F_l(x, T)
+            y = f_l / P
+            mol_new = F_mol_vapor * y
+            vapor.imol[IDs] = mol_new
+            liquid.imol[IDs] = mol_old - mol_new 
+            index = liquid.mol < 0.
+            vapor.mol[index] += liquid.mol[index]
+            liquid.mol[index] = 0
+        self.copy_like(vapor)
+        other.copy_like(liquid)
+        self.T = other.T = ms.T
+        
+        
         
     ### Casting ###
     
