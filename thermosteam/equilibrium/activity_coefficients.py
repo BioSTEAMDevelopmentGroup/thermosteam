@@ -127,18 +127,18 @@ def fill_group_psis(group_psis, psis, group_mask):
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
                  chemgroups, chem_Qfractions, index):
-    interactions = interactions.copy()
-    N_chemicals = x.size
-    gamma = np.ones(N_chemicals)
+    N_chemicals = index.size
+    gamma = np.ones(x.size)
     if N_chemicals > 1:
-        x_sub = np.ones(index.size)
+        interactions = interactions.copy()
+        x_sub = np.ones(N_chemicals)
         for i, j in enumerate(index): x[j] = x_sub[i]
         xsum = x_sub.sum()
         if xsum != 0: 
             x_sub /= xsum
             psis = psi_UNIFAC(T, interactions)
             fill_group_psis(group_psis, psis, group_mask)
-            gamma_sub = group_activity_coefficients(x, chemgroups,
+            gamma_sub = group_activity_coefficients(x_sub, chemgroups,
                                         loggammacs_UNIFAC(qs, rs, x_sub),
                                         Qs, psis,
                                         chem_Qfractions,
@@ -153,18 +153,18 @@ def gamma_UNIFAC(x, T, interactions,
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
                    chemgroups, chem_Qfractions, index):
-    interactions = interactions.copy()
-    N_chemicals = x.size
-    gamma = np.ones(N_chemicals)
+    N_chemicals = index.size
+    gamma = np.ones(x.size)
     if N_chemicals > 1:
-        x_sub = np.ones(index.size)
+        interactions = interactions.copy()
+        x_sub = np.ones(N_chemicals)
         for i, j in enumerate(index): x_sub[i] = x[j]
         xsum = x_sub.sum()
         if xsum:
             x_sub /= xsum
             psis = psi_modified_UNIFAC(T, interactions)
             fill_group_psis(group_psis, psis, group_mask)
-            gamma_sub = group_activity_coefficients(x, chemgroups,
+            gamma_sub = group_activity_coefficients(x_sub, chemgroups,
                                         loggammacs_modified_UNIFAC(qs, rs, x_sub),
                                         Qs, psis,
                                         chem_Qfractions,
