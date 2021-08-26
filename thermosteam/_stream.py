@@ -1510,7 +1510,8 @@ class Stream:
                     else:
                         other_index = slice()
                 else:
-                    bad_index = set([i for i, j in enumerate(other_chemicals.CASs) if j in other_chemicals])
+                    IDs = [i for i in IDs if i in other_chemicals]
+                    bad_index = set(other_chemicals.indices(IDs))
                     if bad_index:
                         other_index = [i for i in range(other_chemicals.size) if i not in bad_index]
                     else:
@@ -1976,54 +1977,52 @@ class Stream:
         if x.sum() < 1e-12: return 0
         return F_l(x, self.T).sum()
     
-    def receive_vent(self, other, accumulate=False, fraction=1.0):
+    def receive_vent(self, other, energy_balance=True):
         """
         Receive vapors from another stream as if in equilibrium.
 
         Examples
         --------
+        Perform vle equilibrium between a gas and liquid stream:
+        
         >>> import thermosteam as tmo
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol', tmo.Chemical('N2', phase='g')], cache=True)
         >>> tmo.settings.set_thermo(chemicals) 
-        >>> s1 = tmo.Stream('s1', N2=10, units='m3/hr', phase='g', T=330)
+        >>> s1 = tmo.Stream('s1', N2=20, units='m3/hr', phase='g', T=330)
         >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
-        >>> s1.receive_vent(s2, accumulate=True)
+        >>> s1.receive_vent(s2)
+        >>> s1.show(flow='kmol/hr')
+        Stream: s1
+         phase: 'g', T: 321.85 K, P: 101325 Pa
+         flow (kmol/hr): Water    0.0954
+                         Ethanol  0.104
+                         N2       0.739
+        
+        Set energy balance to false to receive vent isothermally:
+            
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol', tmo.Chemical('N2', phase='g')], cache=True)
+        >>> tmo.settings.set_thermo(chemicals) 
+        >>> s1 = tmo.Stream('s1', N2=20, units='m3/hr', phase='g', T=330)
+        >>> s2 = tmo.Stream('s2', Water=10, Ethanol=2, T=330)
+        >>> s1.receive_vent(s2, energy_balance=False)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
          phase: 'g', T: 330 K, P: 101325 Pa
-         flow (kmol/hr): Water    0.0557
-                         Ethanol  0.0616
-                         N2       0.369
+         flow (kmol/hr): Water    0.163
+                         Ethanol  0.175
+                         N2       0.739
+        
         """
-        ms = tmo.MultiStream(None)
         assert self.phase == 'g', 'stream must be a gas to receive vent'
-        chemicals = other.vle_chemicals
-        light_indices = other.chemicals._light_indices
-        if accumulate:
-            self.mol[light_indices] += other.mol[light_indices]
+        ms = tmo.MultiStream(None, thermo=self.thermo)
+        ms.mix_from([self, other], energy_balance=energy_balance)
+        if energy_balance:
+            ms.vle(H=ms.H, P=ms.P)
         else:
-            self.mol[light_indices] = other.mol[light_indices]
-        other.mol[light_indices] = 0
-        F_l = eq.LiquidFugacities(chemicals, other.thermo)
-        IDs = tuple([i.ID for i in chemicals])
-        x = other.get_molar_composition(IDs)
-        T = self.T
-        P = self.P
-        f_l = F_l(x, T)
-        y = f_l / P
-        imol = self.imol
-        mol_old = imol[IDs]
-        mol_new = fraction * self.F_mol * y
-        if accumulate:
-            imol[IDs] += mol_new            
-        else:
-            imol[IDs] = mol_new
-        other.imol[IDs] += mol_old - mol_new 
-        index = other.mol < 0.
-        self.mol[index] += other.mol[index]
-        other.mol[index] = 0
-        ms.mix_from([self, other])
-        self.T = other.T = ms.T
+            ms.vle(T=self.T, P=ms.P)
+        self.copy_like(ms['g'])
+        other.copy_like(ms['l'])
         
     ### Casting ###
     
