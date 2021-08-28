@@ -1523,6 +1523,7 @@ class Stream:
                 self.mol[other_index] = other_mol[other_index]
             else:
                 CASs = other_chemicals.CASs
+                other_index = [i for i in other_index if other_mol[i] or CASs[i] in chemicals]
                 self.imol[tuple([CASs[i] for i in other_index])] = other_mol[other_index]
             if remove: 
                 if isinstance(other, tmo.MultiStream):

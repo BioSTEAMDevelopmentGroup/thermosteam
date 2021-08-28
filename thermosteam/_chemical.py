@@ -857,7 +857,7 @@ class Chemical:
     
     @property
     def synonyms(self):
-        """[str] User-defined synonyms."""
+        """set[str] User-defined synonyms."""
         return self._synonyms
     @synonyms.setter
     def synonyms(self, synonyms):
