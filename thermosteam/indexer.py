@@ -125,11 +125,11 @@ class SplitIndexer(Indexer):
     __slots__ = ('_chemicals',)
 
     def __new__(cls, chemicals=None, **ID_data):
+        self = cls.blank(chemicals)
         if ID_data:
-            chemicals = tmo.settings.get_default_chemicals(chemicals)
-            self = cls.from_data(chemicals.kwarray(ID_data), chemicals)
-        else:
-            self = cls.blank(chemicals)
+            IDs = tuple(ID_data)
+            values = list(ID_data.values())
+            self[IDs] = values
         return self
     
     def __reduce__(self):
@@ -271,12 +271,12 @@ class ChemicalIndexer(Indexer):
     __slots__ = ('_chemicals', '_phase', '_data_cache')
     
     def __new__(cls, phase=NoPhase, units=None, chemicals=None, **ID_data):
+        self = cls.blank(phase, chemicals)
         if ID_data:
-            chemicals = tmo.settings.get_default_chemicals(chemicals)
-            self = cls.from_data(chemicals.kwarray(ID_data), phase, chemicals)
+            IDs = tuple(ID_data)
+            values = list(ID_data.values())
+            self[IDs] = values
             if units: self.set_data(self._data, units)
-        else:
-            self = cls.blank(phase, chemicals)
         return self
     
     def reset_chemicals(self, chemicals, container=None):
@@ -321,14 +321,18 @@ class ChemicalIndexer(Indexer):
         if kind == 0:
             self._data[index] = data
         elif kind == 1:
-            raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+            composition = self.group_compositions[key]
+            self._data[index] = data * composition
         elif kind == 2:
-            for i, k in zip(index, key): 
-                if isinstance(i, list):
-                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
+            local_data = self._data
+            isa = isinstance
+            group_compositions = self.group_compositions
+            for n in range(len(index)):
+                i = index[n]
+                local_data[i] = data[n] * group_compositions[key[n]] if isa(i, list) else data[n]
         else:
             raise IndexError('unknown error')
-            
+    
     def sum_across_phases(self):
         return self._data
     
@@ -500,13 +504,9 @@ class MaterialIndexer(Indexer):
     def __new__(cls, phases=None, units=None, chemicals=None, **phase_data):
         self = cls.blank(phases or phase_data, chemicals)
         if phase_data:
-            data = self._data
-            get_index = self._chemicals.get_index
-            get_phase_index = self.get_phase_index
             for phase, ID_data in phase_data.items():
-                check_phase(phase)
-                IDs, row = zip(*ID_data)
-                data[get_phase_index(phase), get_index(IDs)] = row
+                IDs, data = zip(*ID_data)
+                self[phase, IDs] = data
             if units: self.set_data(data, units)
         return self
     
@@ -771,13 +771,17 @@ class MaterialIndexer(Indexer):
             self._data[index] = data
         elif kind == 1: # Chemical group
             phase, index = index
-            if not sum_across_phases: _, key = key
-            raise IndexError(f"'{key}' is a chemical group; cannot set values by chemical group")
+            _, key = key
+            composition = self.group_compositions[key]
+            self._data[phase, index] = data * composition
         elif kind == 2: # Nested chemical group
-            for i, k in zip(index, key): 
-                if isinstance(i, list):
-                    raise IndexError(f"'{k}' is a chemical group; cannot set values by chemical group")
-            raise IndexError('unknown error')
+            phase, index = index
+            local_data = self._data
+            group_compositions = self.group_compositions
+            isa = isinstance
+            for n in range(len(index)):
+                i = index[n]
+                local_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, list) else data[n]
         else:
             raise IndexError('unknown error')
     
@@ -919,9 +923,10 @@ def _replace_indexer_doc(Indexer, Parent):
     doc = doc[:doc.index("Notes")]
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
     
-def _new_Indexer(name, units):
-    ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), {})
-    MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), {})
+def _new_Indexer(name, units, f_group_composition):
+    dct = {'group_compostions': f_group_composition}
+    ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), dct)
+    MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), dct)
     
     ChemicalIndexerSubclass.__slots__ = \
     MaterialIndexerSubclass.__slots__ = ()
@@ -938,9 +943,23 @@ def _new_Indexer(name, units):
     return ChemicalIndexerSubclass, MaterialIndexerSubclass
 
 ChemicalIndexer._MaterialIndexer = MaterialIndexer
-ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr')
-ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr')
-ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr')
+
+@property
+def group_wt_compositions(self):
+    return self._chemicals._group_wt_compositions
+
+@property
+def group_mol_compositions(self):
+    return self._chemicals._group_mol_compositions
+
+@property
+def group_vol_composition(self):
+    raise AttributeError('cannot set groups by volumetric flow')
+
+ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr', group_mol_compositions)
+ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr', group_wt_compositions)
+ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr', group_vol_composition)
+
 
 # %% Mass flow properties
 

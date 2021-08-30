@@ -254,17 +254,35 @@ class Stream:
                  **chemical_flows):
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
-        self._init_indexer(flow, phase, thermo.chemicals, chemical_flows)
+        chemicals = thermo.chemicals
         self.price = price
-        mol = self.mol
         if units:
             name, factor = self._get_flow_name_and_factor(units)
+            if name == 'mass':
+                group_wt_compositions = chemicals._group_wt_compositions
+                for cID in tuple(chemical_flows):
+                    if cID in group_wt_compositions:
+                        compositions = group_wt_compositions[cID]
+                        group_flow = chemical_flows.pop(cID)
+                        chemical_group = chemicals[cID]
+                        for i in range(len(chemical_group)):
+                            chemical_flows[chemical_group[i]._ID] = group_flow * compositions[i]
+            elif name == 'vol':
+                group_wt_compositions = chemicals._group_wt_compositions
+                for cID in chemical_flows:
+                    if cID in group_wt_compositions:
+                        raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
+            self._init_indexer(flow, phase, chemicals, chemical_flows)
+            mol = self.mol
             flow = getattr(self, name)
+            if total_flow is not None: mol *= total_flow / mol.sum()
             material_data = mol / factor
-            if total_flow: material_data *= total_flow / material_data.sum()
             flow[:] = material_data
-        elif total_flow:
-            mol *= total_flow / mol.sum()
+        else:
+            self._init_indexer(flow, phase, chemicals, chemical_flows)
+            if total_flow:
+                mol = self.mol
+                mol *= total_flow / mol.sum()
         self._sink = self._source = None # For BioSTEAM
         self.reset_cache()
         self._register(ID)

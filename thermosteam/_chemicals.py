@@ -11,6 +11,7 @@ from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
+from collections.abc import Iterable
 import thermosteam as tmo
 import numpy as np
 
@@ -357,7 +358,7 @@ class CompiledChemicals(Chemicals):
     def compile(self, skip_checks=False):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
     
-    def define_group(self, name, IDs):
+    def define_group(self, name, IDs, composition=None, wt=False):
         """
         Define a group of chemicals.
         
@@ -367,6 +368,10 @@ class CompiledChemicals(Chemicals):
             Name of group.
         IDs : List[str]
             IDs of chemicals in the group.
+        composition : List[float], optional
+            Default composition of chemical group. 
+        wt : bool, optional
+            Whether composition is given by weight. Defaults to False.
             
         Examples
         --------
@@ -374,7 +379,7 @@ class CompiledChemicals(Chemicals):
         
         >>> import thermosteam as tmo
         >>> chemicals = tmo.CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
-        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'])
+        >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'], composition=[0.5, 0.5])
         >>> chemicals.get_index('Alcohol')
         [1, 2]
         >>> chemicals.get_index(('Water', 'Alcohol'))
@@ -402,24 +407,23 @@ class CompiledChemicals(Chemicals):
         >>> s2.imol['l', ('Water', 'Alcohol')]
         array([1.322, 0.678])
         
-        Note that groups cannot be set using stream indexers as they represent 
-        the sum of chemicals in the group without a defined composition:
+        Because groups are defined with a composition we can set values by 
+        groups as well:
             
         >>> s1.imol['Alcohol'] = 3.
-        Traceback (most recent call last):
-        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        >>> s1.imol['Ethanol', 'Methanol']
+        array([1.5, 1.5])
         
         >>> s1.imol['Water', 'Alcohol'] = [3., 1.]
-        Traceback (most recent call last):
-        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        >>> s1.imol['Water', 'Ethanol', 'Methanol']
+        array([3. , 0.5, 0.5])
         
-        >>> s2.imol['Alcohol'] = 1.
-        Traceback (most recent call last):
-        IndexError: 'Alcohol' is a chemical group; cannot set values by chemical group
+        >>> s2.imol['l', 'Alcohol'] = 1.
+        >>> s2.imol['l', ('Ethanol', 'Methanol')]
+        array([0.5, 0.5])
         
         For SplitIndexer objects, which reflect the separation of chemicals 
-        in two streams, getting and setting by chemical groups is OK because
-        group names correspond to nested indexes:
+        in two streams, group names correspond to nested indexes (without a composition):
             
         >>> # Create a split-indexer
         >>> indexer = chemicals.isplit(0.7)
@@ -454,7 +458,23 @@ class CompiledChemicals(Chemicals):
         
         """
         IDs = tuple(IDs)
-        index = utils.flattened(self.indices(IDs))
+        if composition is None:
+            composition = np.ones(len(IDs))
+        elif len(composition) != len(IDs): 
+            raise ValueError('length of IDs and composition must be the same')
+        for i in IDs: 
+            if i in self._group_wt_compositions:
+                raise ValueError(f"'{i}' is a group; cannot define new group using other groups")
+        index = self.indices(IDs)
+        composition = np.asarray(composition, float)
+        if wt:
+            composition_wt = composition
+            composition_mol = composition / self.MW[index]
+        else:
+            composition_wt = composition * self.MW[index]
+            composition_mol = composition
+        self._group_wt_compositions[name] = composition_wt / composition_wt.sum()
+        self._group_mol_compositions[name] = composition_mol / composition_mol.sum()
         self._index[name] = index
         self.__dict__[name] = [self.tuple[i] for i in index]
     
@@ -521,6 +541,8 @@ class CompiledChemicals(Chemicals):
         dct['HHV'] = chemical_data_array(chemicals, 'HHV')
         dct['_index'] = index = dict((*zip(CAS, index),
                                       *zip(IDs, index)))
+        dct['_group_wt_compositions'] = {}
+        dct['_group_mol_compositions'] = {}
         dct['_index_cache'] = {}
         repeated_names = set()
         names = set()
@@ -716,8 +738,8 @@ class CompiledChemicals(Chemicals):
         
         Parameters
         ----------
-        ID_data : dict
-                 ID-data pairs.
+        ID_data : dict[str, float]
+            ID-data pairs.
             
         Examples
         --------
@@ -736,9 +758,9 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable
-              Compound IDs.
+            Compound IDs.
         data : array_like
-               Data corresponding to IDs.
+            Data corresponding to IDs.
             
         Examples
         --------
@@ -748,8 +770,16 @@ class CompiledChemicals(Chemicals):
         array([2., 0.])
         
         """
-        array = self.zeros()
-        array[self.get_index(tuple(IDs))] = data
+        array =  np.zeros(self.size) 
+        index, kind = self._get_index_and_kind(IDs)
+        if kind == 0:
+            array[index] = data
+        elif kind == 1:
+            raise ValueError('cannot create array by chemical groups')
+        elif kind == 2:
+            raise ValueError('cannot create array by chemical groups')
+        else:
+            raise IndexError('unknown error')
         return array
 
     def iarray(self, IDs, data):
@@ -759,9 +789,9 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable
-              Chemical IDs.
+            Chemical IDs.
         data : array_like
-               Data corresponding to IDs.
+            Data corresponding to IDs.
             
         Examples
         --------
@@ -793,7 +823,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         ID_data : Dict[str: float]
-              Chemical ID-value pairs.
+            Chemical ID-value pairs.
             
         Examples
         --------

@@ -191,16 +191,40 @@ class MultiStream(Stream):
                  thermo=None, **phase_flows):
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
-        self._init_indexer(flow, phases, thermo.chemicals, phase_flows)
+        chemicals = thermo.chemicals
         self.price = price
         if units:
             name, factor = self._get_flow_name_and_factor(units)
+            if name == 'mass':
+                group_wt_compositions = chemicals._group_wt_compositions
+                for phase, chemical_flows in phase_flows.items():
+                    new_chemical_flows = []
+                    for item in chemical_flows:
+                        cID, value = item
+                        if cID in group_wt_compositions:
+                            compositions = group_wt_compositions[cID]
+                            chemical_group = chemicals[cID]
+                            for i in range(len(chemical_group)):
+                                item = (chemical_group[i]._ID, value * compositions[i])
+                                new_chemical_flows.append(item)
+                        else:
+                            new_chemical_flows.append(item)
+                    phase_flows[phase] = new_chemical_flows
+            elif name == 'vol':
+                group_wt_compositions = chemicals._group_wt_compositions
+                for chemical_flows in phase_flows.values():
+                    for item in chemical_flows:
+                        cID, value = item
+                        if cID in group_wt_compositions:
+                            raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
+            self._init_indexer(flow, phases, chemicals, phase_flows)
             flow = getattr(self, 'i' + name)
             material_data = self._imol._data * factor
             if total_flow: material_data *= total_flow / material_data.sum()
             flow._data[:] = material_data
-        elif total_flow:
-            self._imol._data *= total_flow / self.F_mol
+        else:
+            self._init_indexer(flow, phases, chemicals, phase_flows)
+            if total_flow: self._imol._data *= total_flow / self.F_mol
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
