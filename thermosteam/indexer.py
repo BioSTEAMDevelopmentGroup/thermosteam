@@ -924,7 +924,7 @@ def _replace_indexer_doc(Indexer, Parent):
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
     
 def _new_Indexer(name, units, f_group_composition):
-    dct = {'group_compostions': f_group_composition}
+    dct = {'group_compositions': f_group_composition}
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), dct)
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), dct)
     

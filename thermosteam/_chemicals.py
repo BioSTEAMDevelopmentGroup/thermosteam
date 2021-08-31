@@ -771,7 +771,7 @@ class CompiledChemicals(Chemicals):
         
         """
         array =  np.zeros(self.size) 
-        index, kind = self._get_index_and_kind(IDs)
+        index, kind = self._get_index_and_kind(tuple(IDs))
         if kind == 0:
             array[index] = data
         elif kind == 1:
