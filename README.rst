@@ -86,5 +86,5 @@ Citation
 
 To cite Thermosteam in publications use::
 
-    Cortés-Peña, Y., (2020). Thermosteam: BioSTEAM’s Premier Thermodynamic Engine. 
-    Journal of Open Source Software, 5(56), 2814. https://doi.org/10.21105/joss.02814
+    Cortes-Pena, Y., (2020). Thermosteam: BioSTEAM's Premier Thermodynamic Engine. 
+    Journal of Open Source Software, 5(56), 2814. doi.org/10.21105/joss.02814
