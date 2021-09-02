@@ -289,6 +289,7 @@ class Stream:
         self._link = None
 
     def _reset_thermo(self, thermo):
+        if thermo is self._thermo: return
         self._thermo = thermo
         self._imol.reset_chemicals(thermo.chemicals)
         self._link = None
@@ -1301,7 +1302,6 @@ class Stream:
         'g'
         
         """
-        if not other: other = other.materialize_connection()
         if not isinstance(other._imol, self._imol.__class__):
             at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
@@ -1347,15 +1347,17 @@ class Stream:
         RuntimeError: phase is locked; stream cannot be unlinked
         
         """
-        imol = self._imol
-        if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
-            raise RuntimeError('phase is locked; stream cannot be unlinked')
-        imol._data_cache.clear()
-        imol._data = imol._data.copy()
-        imol._phase = imol._phase.copy()
-        self._thermal_condition = self._thermal_condition.copy()
-        self.reset_cache()
-        self._link = None
+        if self._link:
+            imol = self._imol
+            if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
+                raise RuntimeError('phase is locked; stream cannot be unlinked')
+            imol._data_cache.clear()
+            imol._data = imol._data.copy()
+            imol._phase = imol._phase.copy()
+            self._thermal_condition = self._thermal_condition.copy()
+            self.reset_cache()
+            self._link = None
+        
     
     def copy_like(self, other):
         """
