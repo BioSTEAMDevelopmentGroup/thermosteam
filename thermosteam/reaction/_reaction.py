@@ -1053,7 +1053,7 @@ class ReactionSet:
         phases = self._phases
         rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
         cmps = [ID + ',' + phase for phase, ID in self.reactants] if phases else self.reactants
-        Xs = self.X
+        Xs = 100. * self.X
         data = list(zip(rxns, cmps, Xs))
         df = pd.DataFrame(data, columns=columns, index=index if index else None)
         if isinstance(self, ParallelReaction):
