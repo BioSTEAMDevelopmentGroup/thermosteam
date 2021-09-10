@@ -276,6 +276,7 @@ class Reaction:
         return [i for i,j in zip(self._chemicals, self._stoichiometry) if j]
     
     def reset_chemicals(self, chemicals):
+        if self._chemicals is chemicals: return
         phases = self.phases
         stoichiometry = self._stoichiometry
         reactant = self.reactant
@@ -299,19 +300,6 @@ class Reaction:
         self._chemicals = chemicals
         self._stoichiometry = new_stoichiometry
         self._X_index = X_index
-    
-    def __eq__(self, other):
-        try:
-            return all([
-                self._basis == other._basis,
-                self._phases == other._phases,
-                self._chemicals is other._chemicals,
-                self._X_index == other._X_index,
-                (self._stoichiometry == other._stoichiometry).all(),
-                self._X == other._X,
-            ])
-        except:
-            return False
     
     def copy(self, basis=None):
         """Return copy of Reaction object."""
@@ -876,7 +864,7 @@ class ReactionItem(Reaction):
         Index of reaction.
         
     """
-    __slots__ = ('_index')
+    __slots__ = ('_index', '_parent')
     phases = MaterialIndexer.phases
     
     def __init__(self, rxnset, index):
@@ -887,6 +875,16 @@ class ReactionItem(Reaction):
         self._chemicals = rxnset._chemicals
         self._X_index = rxnset._X_index[index]
         self._index = index
+        self._parent = rxnset
+    
+    def reset_chemicals(self, chemicals):
+        if self._chemicals is chemicals: return
+        parent = self._parent
+        parent.reset_chemicals(chemicals)
+        index = self._index
+        self._stoichiometry = parent._stoichiometry[index]
+        self._X_index = parent._X_index[index]
+        self._chemicals = chemicals
     
     @property
     def basis(self):
@@ -926,8 +924,7 @@ class ReactionSet:
     reactions : Iterable[Reaction]
     
     """
-    __slots__ = Reaction.__slots__
-    __eq__ = Reaction.__eq__
+    __slots__ = (*Reaction.__slots__, '_parent_index')
     copy = Reaction.copy
     phases = MaterialIndexer.phases
     _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
@@ -965,9 +962,18 @@ class ReactionSet:
             rxnset._X = self._X[index]
             rxnset._X_index = self._X_index[index]
             rxnset._chemicals = self._chemicals
+            rxnset._parent_index = (self, index)
             return rxnset
     
     def reset_chemicals(self, chemicals):
+        if chemicals is self._chemicals: return
+        if hasattr(self, '_parent_index'):
+            parent, index = self._parent_index
+            parent.reset_chemicals(chemicals)
+            self._stoichiometry = parent._stoichiometry[index]
+            self._X_index = parent._X_index[index]
+            self._chemicals = parent._chemicals
+            return
         phases = self.phases
         stoichiometry = self._stoichiometry
         reactants = self.reactants
