@@ -44,6 +44,6 @@ def method_P(self, method):
 
 TPDependentProperty.method_P = method_P
 
-VolumeLiquid.ranked_methods.remove('EOS')
-VolumeLiquid.ranked_methods_P.remove('EOS')
-VolumeGas.ranked_methods_P.remove('EOS')
+for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
+    methods.remove('EOS')
+    methods.append('EOS')

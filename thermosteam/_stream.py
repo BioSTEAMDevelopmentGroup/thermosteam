@@ -1347,10 +1347,10 @@ class Stream:
         RuntimeError: phase is locked; stream cannot be unlinked
         
         """
+        imol = self._imol
+        if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
+            raise RuntimeError('phase is locked; stream cannot be unlinked')
         if self._link:
-            imol = self._imol
-            if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
-                raise RuntimeError('phase is locked; stream cannot be unlinked')
             imol._data_cache.clear()
             imol._data = imol._data.copy()
             imol._phase = imol._phase.copy()
