@@ -22,6 +22,7 @@ from .._phase import NoPhase, phase_tuple
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
+import pandas as pd
 
 __all__ = ('Reaction', 'ReactionItem', 'ReactionSet', 
            'ParallelReaction', 'SeriesReaction', 'ReactionSystem',
@@ -205,7 +206,7 @@ class Reaction:
     >>> combustion = mixed_reaction - fermentation
     >>> combustion.show()
     Reaction (by mol):
-     stoichiometry                reactant    X[%]
+     stoichiometry              reactant    X[%]
      Glucose + O2 -> H2O + CO2  Glucose    20.00
     
     When a Reaction object is multiplied (or divided), a new Reaction object
@@ -214,7 +215,7 @@ class Reaction:
     >>> combustion_multiplied = 2 * combustion
     >>> combustion_multiplied.show()
     Reaction (by mol):
-     stoichiometry                reactant    X[%]
+     stoichiometry              reactant    X[%]
      Glucose + O2 -> H2O + CO2  Glucose    40.00
     >>> fermentation_divided = fermentation / 2
     >>> fermentation_divided.show()
@@ -275,8 +276,29 @@ class Reaction:
         return [i for i,j in zip(self._chemicals, self._stoichiometry) if j]
     
     def reset_chemicals(self, chemicals):
-        reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
-        return self.__init__(reaction, reactant=self.reactant, X=self.X, basis=self.basis, chemicals=chemicals)
+        phases = self.phases
+        stoichiometry = self._stoichiometry
+        reactant = self.reactant
+        if phases:
+            M, N = stoichiometry.shape
+            new_stoichiometry = np.zeros([M, chemicals.size])
+            IDs = self._chemicals.IDs
+            for i in range(M):
+                for j in range(N):
+                    value = stoichiometry[i, j]
+                    if value: new_stoichiometry[i, chemicals.index(IDs[j])] = value
+            phase, reactant = reactant
+            X_index = phases.index(phase), chemicals.index(reactant)
+        else:
+            new_stoichiometry = np.zeros(chemicals.size)
+            IDs = self._chemicals.IDs
+            for i in range(len(IDs)):
+                value = stoichiometry[i]
+                if value: new_stoichiometry[chemicals.index(IDs[i])] = value
+            X_index = chemicals.index(reactant)
+        self._chemicals = chemicals
+        self._stoichiometry = new_stoichiometry
+        self._X_index = X_index
     
     def __eq__(self, other):
         try:
@@ -806,6 +828,15 @@ class Reaction:
             raise RuntimeError(f"reactant '{self.reactant}' does not participate in stoichiometric reaction")
         self._stoichiometry /= new_scale
     
+    def to_df(self, index=None):
+        columns = [f'Stoichiometry (by {self.basis})', 'Reactant', 'Conversion [%]']
+        stoichiometry = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
+        reactant = self.reactant
+        conversion = 100. * self.X
+        df = pd.DataFrame(data=[[stoichiometry, reactant, conversion]], columns=columns, index=[index] if index else None)
+        df.index.name = 'Reaction'
+        return df
+    
     def __repr__(self):
         reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
@@ -856,9 +887,6 @@ class ReactionItem(Reaction):
         self._chemicals = rxnset._chemicals
         self._X_index = rxnset._X_index[index]
         self._index = index
-    
-    def reset_chemicals(self, chemicals):
-        raise TypeError('cannot reset chemicals of a reaction item')
     
     @property
     def basis(self):
@@ -940,12 +968,31 @@ class ReactionSet:
             return rxnset
     
     def reset_chemicals(self, chemicals):
-        reactions = [self[i] for i in range(self._stoichiometry.shape[0])]
-        self.__init__(
-            [Reaction(get_stoichiometric_string(i.stoichiometry, i.phases, i.chemicals), 
-                      i.reactant, i.X, chemicals, i.basis, phases=i.phases)
-             for i in reactions]
-        )
+        phases = self.phases
+        stoichiometry = self._stoichiometry
+        reactants = self.reactants
+        if phases:
+            A, B, C = stoichiometry.shape
+            new_stoichiometry = np.zeros([A, B, chemicals.size])
+            IDs = self._chemicals.IDs
+            for i in range(A):
+                for j in range(B):
+                    for k in range(C):
+                        value = stoichiometry[i, j, k]
+                        if value: new_stoichiometry[i, j, chemicals.index(IDs[k])] = value
+            X_index = tuple([(phases.index(i), chemicals.index(j)) for i, j in reactants])
+        else:
+            A, B = stoichiometry.shape
+            new_stoichiometry = np.zeros([A, chemicals.size])
+            IDs = self._chemicals.IDs
+            for i in range(A):
+                for j in range(B):
+                    value = stoichiometry[i, j]
+                    if value: new_stoichiometry[i, chemicals.index(IDs[j])] = value
+            X_index = tuple([chemicals.index(i) for i in reactants])
+        self._chemicals = chemicals
+        self._stoichiometry = new_stoichiometry
+        self._X_index = X_index
     
     @property
     def reaction_chemicals(self):
@@ -993,6 +1040,21 @@ class ReactionSet:
     def MWs(self):
         """[2d array] Molecular weights of all chemicals."""
         return self._chemicals.MW[np.newaxis, :]
+    
+    def to_df(self, index=None):
+        columns = [f'Stoichiometry (by {self.basis})', 'Reactant', 'Conversion [%]']
+        chemicals = self._chemicals
+        phases = self._phases
+        rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
+        cmps = [ID + ',' + phase for phase, ID in self.reactants] if phases else self.reactants
+        Xs = self.X
+        data = list(zip(rxns, cmps, Xs))
+        df = pd.DataFrame(data, columns=columns, index=index if index else None)
+        if isinstance(self, ParallelReaction):
+            df.index.name = 'Parallel reaction'
+        elif isinstance(self, SeriesReaction):
+            df.index.name = 'Reaction in series'
+        return df
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join([repr(i).replace('ReactionItem', 'Reaction') for i in self])}])"
