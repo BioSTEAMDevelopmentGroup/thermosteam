@@ -136,6 +136,21 @@ class Registry: # pragma: no cover
         for dump in self._dumps.values():
             if obj in dump: dump.remove(obj)
     
+    def pop(self, obj):
+        """Remove object from data and return object."""
+        data = self.data
+        if hasattr(obj, '_ID'):
+            ID = obj._ID
+            if ID in data and data[ID] is obj: del data[ID]
+        elif isinstance(obj, str):
+            if obj in data: 
+                ID = obj
+                obj = data[obj]
+                del data[ID]
+        for dump in self._dumps.values():
+            if obj in dump: dump.remove(obj)
+        return obj
+    
     def __contains__(self, obj):
         data = self.data
         if hasattr(obj, '_ID'):
