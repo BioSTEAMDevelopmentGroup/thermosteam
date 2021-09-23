@@ -815,13 +815,34 @@ class VLE(Equilibrium, phases='lg'):
                                      H_hat_bubble - H_hat, H_hat_dew - H_hat,
                                      self._T, self.T_tol, self.H_hat_tol,
                                      (H_hat,), checkiter=False, checkbounds=False)
-            
-            
-            
             # Make sure enthalpy balance is correct
-            self._T = thermal_condition.T = self.mixture.xsolve_T(
-                self._phase_data, H, T, P
-            )
+            try:
+                self._T = thermal_condition.T = self.mixture.xsolve_T(
+                    self._phase_data, H, T, P
+                )
+            except:
+                warn('VLE algorithm failed; resorting to fallback measures to ensure energy balance',
+                     category=RuntimeWarning)
+                def f(V):
+                    vapor_mol[index] = V * mol
+                    liquid_mol[index] = (1 - V) * mol
+                    return self.mixture.xH(self._phase_data, T_dew, P)/self._F_mass - H_hat
+                self._T = thermal_condition.T = T
+                y0 = f(0.)
+                if y0 > 0.:
+                    self._T = thermal_condition.T = self.mixture.xsolve_T(
+                        self._phase_data, H, T, P
+                    )
+                else:
+                    y1 = f(1.)
+                    if y1 < 0.:
+                        self._T = thermal_condition.T = self.mixture.xsolve_T(
+                            self._phase_data, H, T, P
+                        )
+                    else:
+                        flx.IQ_interpolation(f,
+                            0., 1., y0, y1, self._V, self.V_tol, self.H_hat_tol, 
+                        )
         self._H_hat = H_hat
     
     def _estimate_v(self, V, y_bubble):

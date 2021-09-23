@@ -103,7 +103,7 @@ def format_units(units, ends='$', mathrm=True):
 def reformat_units(name):
     left, right = name.split('[')
     units, right = right.split(']')
-    return f"{left} [{format_units(units)}] {right}"
+    return f"{left} [{format_units(units)}]{right}"
 
 format_plot_units = format_units
 
