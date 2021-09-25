@@ -238,7 +238,8 @@ class Stream:
                  '_bubble_point_cache', '_dew_point_cache',
                  '_vle_cache', '_lle_cache', '_sle_cache',
                  '_sink', '_source', '_price', '_link',
-                 '_property_cache_key', '_property_cache')
+                 '_GWPCF', '_FECCF', '_property_cache_key',
+                 '_property_cache')
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -252,6 +253,8 @@ class Stream:
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
                  units=None, price=0., total_flow=None, thermo=None, 
                  **chemical_flows):
+        self._GWPCF = {}
+        self._FECCF = {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
@@ -407,6 +410,99 @@ class Stream:
             self._price = float(price)
         else:
             raise AttributeError(f'price must be finite, not {price}')
+    
+    def get_GWPCF(self, method=None):
+        """
+        Return the global warming potential characterization factor in 
+        (impact/mass chemical)/(impact/mass CO2) given the method name.
+        
+        """
+        if method is None: method = tmo.settings.GWP_method
+        mol = self.mol
+        index, = np.where(mol)
+        chemicals = self.chemicals
+        mass = chemicals.MW * mol
+        F_mass = mass.sum() 
+        if method in self._GWPCF:
+            return self._GWPCF[method]
+        else:
+            chemicals = chemicals.tuple
+            return sum([chemicals[i].get_GWP(method) * mass[i] for i in index]) / F_mass if F_mass else 0.
+    def set_GWPCF(self, value, method=None):
+        """
+        Set the global warming potential characterization factor in 
+        (impact/mass chemical)/(impact/mass CO2) by method name.
+
+        """
+        if method is None: method = tmo.settings.GWP_method
+        self._GWPCF[method] = value
+    
+    def get_GWP(self, method=None):
+        """
+        Return the global warming potential in kg CO2-eq / hr given the 
+        method name.
+        
+        Examples
+        --------
+        >>> from thermosteam import *
+        >>> settings.set_thermo(['Water', 'CH4'])
+        >>> CH4 = Stream(CH4=20)
+        >>> CH4.get_GWP()
+        8021.23
+        
+        """
+        if method is None: method = tmo.settings.GWP_method
+        mol = self.mol
+        index, = np.where(mol)
+        chemicals = self.chemicals
+        mass = chemicals.MW * mol
+        if method in self._GWPCF:
+            GWP = self._GWPCF[method] * mass.sum()
+        else:
+            chemicals = chemicals.tuple
+            GWP = sum([chemicals[i].get_GWP(method) * mass[i] for i in index])
+        return GWP
+    
+    def get_FECCF(self, method=None):
+        """
+        Return the fossil energy consumption characterization factor 
+        in MJ/kg given the method name.
+        
+        """
+        if method is None: method = tmo.settings.FEC_method
+        mol = self.mol
+        index, = np.where(mol)
+        chemicals = self.chemicals
+        mass = chemicals.MW * mol
+        F_mass = mass.sum() 
+        if method in self._FECCF:
+            return self._FECCF[method]
+        else:
+            chemicals = chemicals.tuple
+            return sum([chemicals[i].get_FEC(method) * mass[i] for i in index]) / F_mass if F_mass else 0.
+    def set_FECCF(self, value, method=None):
+        """
+        Set the fossil energy consumption characterization factor 
+        in MJ/kg by method name.
+
+        """
+        if method is None: method = tmo.settings.FEC_method
+        self._FECCF[method] = value
+    
+    def get_FEC(self, method=None):
+        """Return the fossil energy consumption in MJ/hr given the method 
+        name."""
+        if method is None: method = tmo.settings.FEC_method
+        mol = self.mol
+        index, = np.where(mol)
+        chemicals = self.chemicals
+        mass = chemicals.MW * mol
+        if method in self._FECCF:
+            FEC = self._FECCF[method] * mass.sum()
+        else:
+            chemicals = chemicals.tuple
+            FEC = sum([chemicals[i].get_FEC(method) * mass[i] for i in index])
+        return FEC
     
     def isempty(self):
         """
@@ -1571,12 +1667,14 @@ class Stream:
         
         Warnings
         --------
-        Prices are not copied.
+        Prices, LCA characterization factors are not copied are not copied.
         
         """
         cls = self.__class__
         new = cls.__new__(cls)
         new._link = new._sink = new._source = None
+        new._GWPCF = {}
+        new._FECCF = {}
         new._thermo = thermo or self._thermo
         new._imol = self._imol.copy()
         if thermo and thermo.chemicals is not self.chemicals:

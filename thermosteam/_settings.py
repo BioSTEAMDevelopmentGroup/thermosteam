@@ -16,12 +16,17 @@ def raise_no_thermo_error():
                        "use settings.set_thermo")
 
 class Settings:
-    __slots__ = ('_thermo',
-                 '_phase_names',
-                 '_debug',
+    __slots__ = (
+        'GWP_method',
+        'FEC_method',
+        '_thermo',
+        '_phase_names',
+        '_debug',
     )
     
     def __init__(self):
+        self.GWP_method = 'IPCC (2007) 100yr'
+        self.FEC_method = None
         self._thermo = None
         self._debug = False
         self._phase_names = {'s': 'Solid',
@@ -45,8 +50,8 @@ class Settings:
     
     def get_default_thermo(self, thermo):
         """
-        Return a default Thermo object.
-        If `thermo` is a Thermo object, return the same object.
+        Return default Thermo object if `thermo` is None. Otherwise, return 
+        the same object.
         
         """
         return thermo if thermo else self.get_thermo()

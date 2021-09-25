@@ -10,6 +10,7 @@
 import thermosteam as tmo
 from warnings import warn
 from flexsolve import IQ_interpolation, aitken_secant
+from chemicals import GWP
 from chemicals.identifiers import pubchem_db
 from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
                                     Tm as normal_melting_point_temperature,
@@ -471,6 +472,7 @@ class Chemical:
                  '_phase_ref', '_eos', 
                  '_synonyms', *_names, *_groups, 
                  *_handles, *_data,
+                 '_GWP', '_FEC',
                  '_N_solutes')
     
     #: [float] Reference temperature in Kelvin
@@ -614,6 +616,8 @@ class Chemical:
         self._NIST = NISTGroupCounts()
         setfield = setattr
         self._synonyms = set()
+        self._GWP = {}
+        self._FEC = {}
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
@@ -1137,7 +1141,6 @@ class Chemical:
     def Sfus(self, Sfus):
         reset_energy_constant(self, 'Sfus', float(Sfus))
     
-    
     @property
     def omega(self):
         """Accentric factor [-]."""
@@ -1170,6 +1173,77 @@ class Chemical:
     def iscyclic_aliphatic(self, iscyclic_aliphatic):
         reset_constant(self, 'iscyclic_aliphatic', bool(iscyclic_aliphatic))
     
+    def get_GWP(self, method=None):
+        """
+        Return the global warming potential characterization factor in
+        (impact/mass chemical)/(impact/mass CO2).
+        
+        Parameters
+        ----------
+        method : string, optional
+            Accepted methods are IPCC (2007) 100yr',
+            'IPCC (2007) 100yr-SAR', 'IPCC (2007) 20yr', and 'IPCC (2007) 500yr'.
+            Defaults to 'IPCC (2007) 100yr'.
+                              
+        Notes
+        -----
+        All data is from IPCC (2007) [1]_, the official source. Several 
+        chemicals are available in [1]_ are not included here as they do 
+        not have a CAS.
+        
+        References
+        ----------
+        .. [1] IPCC. "2.10.2 Direct Global Warming Potentials - AR4 WGI Chapter 2:
+           Changes in Atmospheric Constituents and in Radiative Forcing." 2007.
+           https://www.ipcc.ch/publications_and_data/ar4/wg1/en/ch2s2-10-2.html.
+        
+        """
+        if method is None: method = tmo.settings.GWP_method
+        try:
+            return self._GWP[method]
+        except:
+            value = GWP(self.CAS, method)
+            if value is None: 
+                raise LookupError(f"method '{method}' not available for chemical '{self.ID}'") from None    
+            self._GWP[method] = value
+            return value
+        
+    def set_GWP(self, GWP, method=None):
+        """
+        Set the global warming potential characterization factor
+        in (impact/mass chemical)/(impact/mass CO2) by method name.
+
+        """
+        if method is None: method = tmo.settings.GWP_method
+        self._GWP[method] = GWP
+    
+    def get_FEC(self, method=None):
+        """
+        Return the fossil energy consumption characterization factor 
+        in MJ/kg.
+        
+        Parameters
+        ----------
+        method : string, optional
+            No methods are available yet.
+        
+        """
+        if method is None: method = tmo.settings.FEC_method
+        try:
+            return self._FEC[method]
+        except:
+            raise LookupError(f"method '{method}' not available for chemical '{self.ID}'") from None
+            self._FEC[method] = value = FEC(self.CAS, method) # TODO: Create function later
+            return value
+    
+    def set_FEC(self, GWP, method=None):
+        """
+        Set the fossil energy consumption characterization factor 
+        in MJ/kg by method name.
+
+        """
+        if method is None: method = tmo.settings.FEC_method
+        self._FEC[method] = GWP
     
     ### Reaction data ###
     
@@ -1335,6 +1409,8 @@ class Chemical:
             Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.
 
         """
+        self._GWP = {}
+        self._FEC = {}
         try:
             info = metadata or pubchem_db.search_CAS(CAS)
         except:
