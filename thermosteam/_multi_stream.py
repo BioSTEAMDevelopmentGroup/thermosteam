@@ -189,8 +189,7 @@ class MultiStream(Stream):
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), 
                  units=None, price=0, total_flow=None,
                  thermo=None, **phase_flows):
-        self._GWPCF = {}
-        self._FECCF = {}
+        self.characterization_factors = {}
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals

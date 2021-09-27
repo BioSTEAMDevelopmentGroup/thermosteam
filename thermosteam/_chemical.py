@@ -10,7 +10,6 @@
 import thermosteam as tmo
 from warnings import warn
 from flexsolve import IQ_interpolation, aitken_secant
-from chemicals import GWP
 from chemicals.identifiers import pubchem_db
 from chemicals.phase_change import (Tb as normal_boiling_point_temperature,
                                     Tm as normal_melting_point_temperature,
@@ -224,7 +223,7 @@ _handles = _model_and_phase_handles + _energy_handles
 
 _data = ('_MW', '_Tm', '_Tb', '_Tt', '_Tc', '_Pt', '_Pc', '_Vc',
          '_Hf', '_S0', '_LHV', '_HHV', '_Hfus', '_Sfus', '_omega', '_dipole',
-         '_similarity_variable', '_iscyclic_aliphatic', '_combustion')
+         '_similarity_variable', '_iscyclic_aliphatic', '_combustion',)
 
 _functor_data = {'MW', 'Tm', 'Tb', 'Tt', 'Pt', 'Tc', 'Pc', 'Vc',
                  'Hfus', 'Sfus', 'omega', 'dipole',
@@ -472,7 +471,6 @@ class Chemical:
                  '_phase_ref', '_eos', 
                  '_synonyms', *_names, *_groups, 
                  *_handles, *_data,
-                 '_GWP', '_FEC',
                  '_N_solutes')
     
     #: [float] Reference temperature in Kelvin
@@ -616,8 +614,6 @@ class Chemical:
         self._NIST = NISTGroupCounts()
         setfield = setattr
         self._synonyms = set()
-        self._GWP = {}
-        self._FEC = {}
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
@@ -1173,59 +1169,6 @@ class Chemical:
     def iscyclic_aliphatic(self, iscyclic_aliphatic):
         reset_constant(self, 'iscyclic_aliphatic', bool(iscyclic_aliphatic))
     
-    def get_GWP(self, method=None):
-        """
-        Return the global warming potential characterization factor in
-        (impact/mass chemical)/(impact/mass CO2) by method name.
-        
-        """
-        if method is None: method = tmo.settings.GWP_method
-        try:
-            return self._GWP[method]
-        except:
-            value = GWP(self.CAS, method)
-            if value is None: 
-                raise LookupError(f"method '{method}' not available for chemical '{self.ID}'") from None    
-            self._GWP[method] = value
-            return value
-        
-    def set_GWP(self, GWP, method=None):
-        """
-        Set the global warming potential characterization factor
-        in (impact/mass chemical)/(impact/mass CO2) by method name.
-
-        """
-        if method is None: method = tmo.settings.GWP_method
-        self._GWP[method] = GWP
-    
-    def get_FEC(self, method=None):
-        """
-        Return the fossil energy consumption characterization factor 
-        in MJ/kg.
-        
-        Parameters
-        ----------
-        method : string, optional
-            No methods are available yet.
-        
-        """
-        if method is None: method = tmo.settings.FEC_method
-        try:
-            return self._FEC[method]
-        except:
-            raise LookupError(f"method '{method}' not available for chemical '{self.ID}'") from None
-            self._FEC[method] = value = FEC(self.CAS, method) # TODO: Create function later
-            return value
-    
-    def set_FEC(self, GWP, method=None):
-        """
-        Set the fossil energy consumption characterization factor 
-        in MJ/kg by method name.
-
-        """
-        if method is None: method = tmo.settings.FEC_method
-        self._FEC[method] = GWP
-    
     ### Reaction data ###
     
     @property
@@ -1390,8 +1333,6 @@ class Chemical:
             Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.
 
         """
-        self._GWP = {}
-        self._FEC = {}
         try:
             info = metadata or pubchem_db.search_CAS(CAS)
         except:
