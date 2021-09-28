@@ -256,7 +256,7 @@ class Stream:
                  units=None, price=0., total_flow=None, thermo=None, 
                  characterization_factors=None, **chemical_flows):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
-        self.characterization_factors = characterization_factors or {}
+        self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals

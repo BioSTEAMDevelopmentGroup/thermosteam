@@ -187,9 +187,9 @@ class MultiStream(Stream):
     """
     __slots__ = ()
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), 
-                 units=None, price=0, total_flow=None,
-                 thermo=None, **phase_flows):
-        self.characterization_factors = {}
+                 units=None, price=0, total_flow=None, thermo=None, 
+                 characterization_factors=None, **phase_flows):
+        self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
