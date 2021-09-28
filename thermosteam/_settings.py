@@ -25,7 +25,7 @@ class Settings:
     )
     
     def __init__(self):
-        self.GWP_method = 'IPCC (2007) 100yr'
+        self.GWP_method = 'IPCC 100yr'
         self.FEC_method = None
         self._thermo = None
         self._debug = False

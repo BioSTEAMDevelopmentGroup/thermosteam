@@ -1176,26 +1176,7 @@ class Chemical:
     def get_GWP(self, method=None):
         """
         Return the global warming potential characterization factor in
-        (impact/mass chemical)/(impact/mass CO2).
-        
-        Parameters
-        ----------
-        method : string, optional
-            Accepted methods are IPCC (2007) 100yr',
-            'IPCC (2007) 100yr-SAR', 'IPCC (2007) 20yr', and 'IPCC (2007) 500yr'.
-            Defaults to 'IPCC (2007) 100yr'.
-                              
-        Notes
-        -----
-        All data is from IPCC (2007) [1]_, the official source. Several 
-        chemicals are available in [1]_ are not included here as they do 
-        not have a CAS.
-        
-        References
-        ----------
-        .. [1] IPCC. "2.10.2 Direct Global Warming Potentials - AR4 WGI Chapter 2:
-           Changes in Atmospheric Constituents and in Radiative Forcing." 2007.
-           https://www.ipcc.ch/publications_and_data/ar4/wg1/en/ch2s2-10-2.html.
+        (impact/mass chemical)/(impact/mass CO2) by method name.
         
         """
         if method is None: method = tmo.settings.GWP_method

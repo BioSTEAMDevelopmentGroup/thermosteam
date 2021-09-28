@@ -10,6 +10,7 @@
 import numpy as np
 import thermosteam as tmo
 import flexsolve as flx
+from warnings import warn
 from thermosteam import functional as fn
 from . import indexer
 from . import equilibrium as eq
@@ -427,7 +428,17 @@ class Stream:
             return self._GWPCF[method]
         else:
             chemicals = chemicals.tuple
-            return sum([chemicals[i].get_GWP(method) * mass[i] for i in index]) / F_mass if F_mass else 0.
+            N = len(index)
+            if N > 1:
+                warn("multiple chemicals present; estimating GWP "
+                     "characterization factor as a weighted average of "
+                     "pure-component characterization factors")
+                return float(sum([chemicals[i].get_GWP(method) * mass[i] for i in index]) / F_mass)
+            if N == 1:
+                return chemicals[index[0]].get_GWP(method)
+            else:
+                return 0.
+            
     def set_GWPCF(self, value, method=None):
         """
         Set the global warming potential characterization factor in 
@@ -448,7 +459,7 @@ class Stream:
         >>> settings.set_thermo(['Water', 'CH4'])
         >>> CH4 = Stream(CH4=20)
         >>> CH4.get_GWP()
-        8021.23
+        8983.7776
         
         """
         if method is None: method = tmo.settings.GWP_method
@@ -457,11 +468,20 @@ class Stream:
         chemicals = self.chemicals
         mass = chemicals.MW * mol
         if method in self._GWPCF:
-            GWP = self._GWPCF[method] * mass.sum()
+            return self._GWPCF[method] * float(mass.sum())
         else:
             chemicals = chemicals.tuple
-            GWP = sum([chemicals[i].get_GWP(method) * mass[i] for i in index])
-        return GWP
+            N = len(index)
+            if N == 1:
+                index, = index
+                return chemicals[index].get_GWP(method) * float(mass[index])
+            elif N > 1:
+                warn("multiple chemicals present; estimating GWP "
+                     "characterization factor as a weighted average of "
+                     "pure-component characterization factors", RuntimeWarning)
+                return sum([chemicals[i].get_GWP(method) * float(mass[i]) for i in index])
+            else:
+                return 0.
     
     def get_FECCF(self, method=None):
         """
@@ -479,7 +499,17 @@ class Stream:
             return self._FECCF[method]
         else:
             chemicals = chemicals.tuple
-            return sum([chemicals[i].get_FEC(method) * mass[i] for i in index]) / F_mass if F_mass else 0.
+            N = len(index)
+            if N > 1:
+                warn("multiple chemicals present; estimating FEC "
+                     "characterization factor as a weighted average of "
+                     "pure-component characterization factors")
+                return float(sum([chemicals[i].get_FEC(method) * mass[i] for i in index]) / F_mass)
+            if N == 1:
+                return chemicals[index[0]].get_FEC(method)
+            else:
+                return 0.
+    
     def set_FECCF(self, value, method=None):
         """
         Set the fossil energy consumption characterization factor 
@@ -498,11 +528,20 @@ class Stream:
         chemicals = self.chemicals
         mass = chemicals.MW * mol
         if method in self._FECCF:
-            FEC = self._FECCF[method] * mass.sum()
+            return self._FECCF[method] * mass.sum()
         else:
             chemicals = chemicals.tuple
-            FEC = sum([chemicals[i].get_FEC(method) * mass[i] for i in index])
-        return FEC
+            N = len(index)
+            if N == 1:
+                index, = index
+                return chemicals[index].get_FEC(method) * float(mass[index])
+            elif N > 1:
+                warn("multiple chemicals present; estimating FEC "
+                     "characterization factor as a weighted average of "
+                     "pure-component characterization factors", RuntimeWarning)
+                return sum([chemicals[i].get_FEC(method) * float(mass[i]) for i in index])
+            else:
+                return 0.
     
     def isempty(self):
         """
