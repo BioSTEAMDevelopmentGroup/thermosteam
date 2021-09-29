@@ -415,7 +415,8 @@ class Stream:
     
     def get_impact(self, key):
         """Return impact rate of given key in impact/hr."""
-        return self.characterization_factors[key] * self.F_mass
+        cfs = self.characterization_factors
+        return cfs[key] * self.F_mass if key in cfs else 0.
     
     def isempty(self):
         """
