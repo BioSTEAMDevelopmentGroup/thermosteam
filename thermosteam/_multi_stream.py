@@ -292,6 +292,7 @@ class MultiStream(Stream):
             stream._bubble_point_cache =  self._bubble_point_cache
             stream._dew_point_cache = self._dew_point_cache
             stream._property_cache = {}
+            stream.characterization_factors = {}
             stream._property_cache_key = None, None
             streams[phase] = stream
         return stream

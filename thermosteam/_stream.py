@@ -1622,6 +1622,7 @@ class Stream:
         imol._data = self._imol._data
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
+        new.characterization_factors = {}
         new._link = self
         return new
     
