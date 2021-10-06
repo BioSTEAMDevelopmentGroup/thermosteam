@@ -549,7 +549,7 @@ class Chemical:
 
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
-              formula=None, **data):
+              formula=None, synonyms=None, **data):
         """
         Return a new Chemical object without any thermodynamic models or data 
         (unless provided).
@@ -612,8 +612,8 @@ class Chemical:
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
         self._NIST = NISTGroupCounts()
+        self.synonyms = synonyms or ()
         setfield = setattr
-        self._synonyms = set()
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
@@ -861,7 +861,7 @@ class Chemical:
         return self._synonyms
     @synonyms.setter
     def synonyms(self, synonyms):
-        self._synonyms = set(synonyms)
+        self._synonyms = set([synonyms]) if isinstance(synonyms, str) else set(synonyms)
     
     @property
     def InChI(self):
@@ -1413,7 +1413,7 @@ class Chemical:
         self._pubchemid = pubchemid
         self._iupac_name = iupac_name
         self._common_name = common_name
-        self._synonyms = set(synonyms or ())
+        self.synonyms = synonyms or ()
         self._formula = formula
         
     def _init_groups(self, InChI_key):

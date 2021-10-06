@@ -24,7 +24,7 @@ def as_IDs(IDs):
         raise ValueError('IDs must be an iterable of strings')
     return IDs
 
-def chemicals_from_data(data):
+def chemicals_from_data(data, all_data):
     new_chemicals = dict(data)
     chemical_copies = {}
     for ID, kwargs in data.items():
@@ -40,9 +40,9 @@ def chemicals_from_data(data):
         try:
             copied_chemical = new_chemicals[copied_ID]
         except KeyError:
-            new_chemicals[copied_ID] = copied_chemical = tmo.Chemical(copied_ID)
+            new_chemicals[copied_ID] = copied_chemical = tmo.Chemical(copied_ID, **all_data[copied_ID])
         new_chemicals[ID] = copied_chemical.copy(ID, **kwargs)
-    return tmo.CompiledChemicals([new_chemicals[i] for i in data])
+    return tmo.Chemicals([new_chemicals[i] for i in data])
 
 
 # %% 
@@ -212,29 +212,8 @@ class ThermoData:
             IDs of chemicals to create. Defaults to all chemicals.
         
         """
-        data = self.chemical_data
-        if IDs: data = {i:data[i] for i in as_IDs(IDs)}
-        chemicals = chemicals_from_data(data)
-        self.set_synonyms(chemicals)
-        return chemicals
-    
-    def set_synonyms(self, chemicals):
-        """
-        Set synonyms to chemicals. 
-        
-        Parameters
-        ----------
-        chemicals : CompiledChemicals
-        
-        """
-        isa = isinstance
-        assert isa(chemicals, tmo.CompiledChemicals), "chemicals must be a CompiledChemicals object"
-        synonym_data = self.synonym_data
-        set_synonym = chemicals.set_synonym
-        for ID, synonyms in synonym_data.items(): 
-            if isa(synonyms, str):
-                set_synonym(ID, synonyms)
-            else:
-                for synonym in as_IDs(synonyms): set_synonym(ID, synonym)
+        all_data = self.chemical_data
+        data = all_data if IDs is None else {i: all_data[i] for i in as_IDs(IDs)}
+        return chemicals_from_data(data, all_data)
 
         

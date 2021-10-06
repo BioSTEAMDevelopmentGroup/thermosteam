@@ -695,8 +695,8 @@ class CompiledChemicals(Chemicals):
         ValueError: synonym 'H2O' already in use by Chemical('Water')
         
         """
-        chemical = getattr(self, ID)
         dct = self.__dict__
+        chemical = dct[ID]
         if synonym in dct and dct[synonym] is not chemical:
             raise ValueError(f"synonym '{synonym}' already in use by {repr(dct[synonym])}")
         else:
