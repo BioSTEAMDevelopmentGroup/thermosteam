@@ -487,10 +487,10 @@ class CompiledChemicals(Chemicals):
         """
         dct = self.__dict__
         chemicals = self.tuple
-        dct['MW'] = chemical_data_array([i.MW for i in chemicals])
-        dct['Hf'] = chemical_data_array([i.Hf for i in chemicals])
-        dct['LHV'] = chemical_data_array([i.LHV for i in chemicals])
-        dct['HHV'] = chemical_data_array([i.HHV for i in chemicals])
+        dct['MW'] = chemical_data_array(chemicals, 'MW')
+        dct['Hf'] = chemical_data_array(chemicals, 'Hf')
+        dct['LHV'] = chemical_data_array(chemicals, 'LHV')
+        dct['HHV'] = chemical_data_array(chemicals, 'HHV')
 
     def get_combustion_reactions(self):
         """
