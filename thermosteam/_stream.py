@@ -1216,6 +1216,7 @@ class Stream:
         elif N_others == 1:
             self.copy_like(others[0])
         else:
+            self.P = others[0].P
             if energy_balance: H = sum([i.H for i in others])
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():

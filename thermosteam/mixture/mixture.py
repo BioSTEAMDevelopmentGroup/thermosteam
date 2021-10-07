@@ -30,6 +30,7 @@ def group_handles_by_phase(phase_handles):
         for phase_handle in phase_handles:
             if iscallable(phase_handle) and hasfield(phase_handle, phase):
                 prop = getfield(phase_handle, phase)
+                if not iscallable(prop): prop = phase_handle
             else:
                 prop = phase_handle
             handles.append(prop)
