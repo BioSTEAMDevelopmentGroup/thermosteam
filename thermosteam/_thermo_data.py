@@ -73,13 +73,6 @@ class ThermoData:
     ...          },
     ...     'Octane': {}
     ...     },
-    ... 'Synonyms': {
-    ...     'Water': 'H2O',
-    ...     'Ethanol': [
-    ...         'CH3CH2OH',
-    ...         'EthylAlcohol',
-    ...         ]
-    ...     },
     ... 'Streams': {
     ...     'process_water': {
     ...         'Water': 500,
@@ -96,7 +89,7 @@ class ThermoData:
     >>> thermo_data = tmo.ThermoData(data)
     >>> chemicals = thermo_data.create_chemicals()
     >>> chemicals
-    CompiledChemicals([Water, Ethanol, O2, Cellulose, Octane])
+    Chemicals([Water, Ethanol, O2, Cellulose, Octane])
     >>> tmo.settings.set_thermo(chemicals)
     >>> thermo_data.create_streams()
     [<Stream: process_water>, <Stream: gasoline>]
@@ -119,17 +112,12 @@ class ThermoData:
             Hf: -975708.8
             default: True
           Octane:
-        Synonyms: 
-          Water: H2O
-          Ethanol: 
-            - CH3CH2OH
-            - EthylAlcohol
     
     Then we could create the chemicals in just a few lines:
     
     >>> # thermo_data = tmo.ThermoData.from_yaml('example_chemicals.yaml')
     >>> # thermo_data.create_chemicals()
-    >>> # CompiledChemicals([Water, Ethanol, O2, Cellulose, Octane])
+    >>> # Chemicals([Water, Ethanol, O2, Cellulose, Octane])
     
     """
     __slots__ = ('data',)
