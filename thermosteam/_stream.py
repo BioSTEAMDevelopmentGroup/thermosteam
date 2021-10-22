@@ -841,7 +841,7 @@ class Stream:
     @property
     def F_mass(self):
         """[float] Total mass flow rate in kg/hr."""
-        return (self.chemicals.MW * self.mol).sum()
+        return np.dot(self.chemicals.MW, self.mol)
     @F_mass.setter
     def F_mass(self, value):
         F_mass = self.F_mass
