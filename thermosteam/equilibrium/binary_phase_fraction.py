@@ -21,7 +21,6 @@ from numba import njit
 
 __all__ = ('phase_fraction', 
            'solve_phase_fraction_Rashford_Rice',
-           'solve_phase_fraction_iteration',
            'phase_composition',
            'compute_phase_fraction_2N', 
            'compute_phase_fraction_3N')
@@ -50,83 +49,9 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
                          'to find phase fraction')
     return as_valid_fraction(phase_fraction)
 
-# @njit(cache=True)
-def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
-    """
-    Return phase fraction for N-component binary phase equilibrium by 
-    accelerated fixed-point iteration. 
-    
-    Notes
-    -----
-    This iterative method was developed by Yoel Cortes-Pena. It can handle 
-    chemicals which do not partition. za and zb are the fraction of 
-    non-partitioning chemicals in phases a and b, respectively. 
-    
-    Examples
-    --------
-    Find the vapor fraction of a mixture of CO2, air, and water. Assume that 
-    air is always a gas, water is always a liquid, but CO2 can partition in both.
-        
-    >>> import numpy as np
-    >>> from thermosteam.equilibrium import (
-    ...     solve_phase_fraction_iteration,
-    ... )
-    >>> F_air = 1
-    >>> F_water = 1
-    >>> F_CO2 = 1
-    >>> F_total = F_air + F_water + F_CO2
-    >>> z_air = F_air / F_total
-    >>> z_water = F_water / F_total
-    >>> zs = np.array([0.333]) # CO2
-    >>> Ks = np.array([0.999]) # CO2
-    >>> phi = solve_phase_fraction_iteration(
-    ...     zs, Ks, za=z_air, zb=z_water
-    ... )
-    >>> phi
-    0.4998
-    
-    """
-    if Ks.max() < 1.0 and not za: return 0.
-    if Ks.min() > 1.0 and not zb: return 1.
-    args = (zs, Ks, za, zb)
-    x0 = 0.
-    x1 = 1.
-    f = compute_phase_fraction_iter
-    y0 = -np.inf if za else f(x0, *args) 
-    y1 = np.inf if zb else f(x1, *args)
-    if y0 > y1 > 0.: return 1
-    if y1 > y0 > 0.: return 0.
-    if y0 < y1 < 0.: return 1.
-    if y1 < y0 < 0.: return 0.
-    if not 0. < guess < 1.: guess = 0.5
-    phi = np.array([guess, 1. - guess])
-    zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
-    N = zs.shape[0]
-    Ks_2d = np.ones([2, N])
-    zs_2d = np.ones([1, N])
-    zs_2d[0, :] = zs
-    Ks_2d[0, :] = Ks
-    Ks_2d[1, :] = 1. / Ks
-    phi = flx.wegstein(f, phi, 1e-16, 
-                       args=(zs_2d, Ks_2d, zc), checkiter=False)
-    return phi[0] / phi.sum()
-
 @njit(cache=True)
 def phase_composition(zs, Ks, phi):
     return zs * Ks / (phi * Ks + (1. - phi))
-
-@njit(cache=True)
-def compute_phase_fraction_iter(phi, zs, Ks, zc):
-    ys = phase_composition(zs, Ks, phi)
-    new_phi = np.zeros(phi.shape)
-    shape = Ks.shape
-    M = shape[0]
-    N = shape[1]
-    for i in range(M):
-        isum = 0.
-        for j in range(N): isum += ys[i, j]
-        new_phi[i] = isum * phi[i] + zc[i, 0]
-    return new_phi
 
 # @njit(cache=True)
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
@@ -138,7 +63,7 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     if Ks.max() < 1.0 and not za: return 0.
     if Ks.min() > 1.0 and not zb: return 1.
     K_minus_1 = Ks - 1.
-    args = (zs, K_minus_1, za, zb)
+    args = (- zs * K_minus_1, K_minus_1, za, zb)
     f = phase_fraction_objective_function
     x0 = 0.
     x1 = 1.
@@ -155,14 +80,12 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
                                 args, checkiter=False)
 
 @njit(cache=True)
-def phase_fraction_objective_function(phi, zs, K_minus_1, za, zb):
+def phase_fraction_objective_function(phi, negative_zs_K_minus_1, K_minus_1, za, zb):
     """Phase fraction objective function."""
-    numerator = - zs * K_minus_1
     denominator = 1. + phi * K_minus_1
-    denominator[denominator < 1e-16] = 1e-16
     a = za/phi if za > 0. else 0.
     b = zb/(1. - phi) if zb > 0. else 0.
-    phi = (numerator / denominator).sum()
+    phi = (negative_zs_K_minus_1 / denominator).sum()
     return phi - a + b
 
 @njit(cache=True)
@@ -325,3 +248,77 @@ def compute_phase_fraction_3N(zs, Ks):
                     - K1K2*z3 - K1K3*z1 - K1K3*z2 - K1K3*z3 + K1z1 + K1z2
                     + K1z3 - K2K3*z1 - K2K3*z2 - K2K3*z3 + K2z1 + K2z2 + K2z3
                     + K3z1 + K3z2 + K3z3 - z1_z2_z3))
+
+# # @njit(cache=True)
+# def solve_phase_fraction_iteration(zs, Ks, guess=0.5, za=0., zb=0.):
+#     """
+#     Return phase fraction for N-component binary phase equilibrium by 
+#     accelerated fixed-point iteration. 
+    
+#     Notes
+#     -----
+#     This iterative method was developed by Yoel Cortes-Pena. It can handle 
+#     chemicals which do not partition. za and zb are the fraction of 
+#     non-partitioning chemicals in phases a and b, respectively. 
+    
+#     Examples
+#     --------
+#     Find the vapor fraction of a mixture of CO2, air, and water. Assume that 
+#     air is always a gas, water is always a liquid, but CO2 can partition in both.
+        
+#     >>> import numpy as np
+#     >>> from thermosteam.equilibrium import (
+#     ...     solve_phase_fraction_iteration,
+#     ... )
+#     >>> F_air = 1
+#     >>> F_water = 1
+#     >>> F_CO2 = 1
+#     >>> F_total = F_air + F_water + F_CO2
+#     >>> z_air = F_air / F_total
+#     >>> z_water = F_water / F_total
+#     >>> zs = np.array([0.333]) # CO2
+#     >>> Ks = np.array([0.999]) # CO2
+#     >>> phi = solve_phase_fraction_iteration(
+#     ...     zs, Ks, za=z_air, zb=z_water
+#     ... )
+#     >>> phi
+#     0.4998
+    
+#     """
+#     if Ks.max() < 1.0 and not za: return 0.
+#     if Ks.min() > 1.0 and not zb: return 1.
+#     args = (zs, Ks, za, zb)
+#     x0 = 0.
+#     x1 = 1.
+#     f = compute_phase_fraction_iter
+#     y0 = -np.inf if za else f(x0, *args) 
+#     y1 = np.inf if zb else f(x1, *args)
+#     if y0 > y1 > 0.: return 1
+#     if y1 > y0 > 0.: return 0.
+#     if y0 < y1 < 0.: return 1.
+#     if y1 < y0 < 0.: return 0.
+#     if not 0. < guess < 1.: guess = 0.5
+#     phi = np.array([guess, 1. - guess])
+#     zc = np.ones([2, 1]); zc[:, 0] = [za, zb]
+#     N = zs.shape[0]
+#     Ks_2d = np.ones([2, N])
+#     zs_2d = np.ones([1, N])
+#     zs_2d[0, :] = zs
+#     Ks_2d[0, :] = Ks
+#     Ks_2d[1, :] = 1. / Ks
+#     phi = flx.wegstein(f, phi, 1e-16, 
+#                        args=(zs_2d, Ks_2d, zc), checkiter=False)
+#     return phi[0] / phi.sum()
+
+# @njit(cache=True)
+# def compute_phase_fraction_iter(phi, zs, Ks, zc):
+#     ys = phase_composition(zs, Ks, phi)
+#     new_phi = np.zeros(phi.shape)
+#     shape = Ks.shape
+#     M = shape[0]
+#     N = shape[1]
+#     for i in range(M):
+#         isum = 0.
+#         for j in range(N): isum += ys[i, j]
+#         new_phi[i] = isum * phi[i] + zc[i, 0]
+#     return new_phi
