@@ -11,6 +11,7 @@ import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemical
+from .base import PhaseHandle
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple, check_phase
 from free_properties import PropertyFactory, property_array
 from collections.abc import Iterable
@@ -1018,14 +1019,14 @@ def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     f_mol = self.mol[self.index] 
     phase = self.phase or self.phase_container.phase
-    V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+    V = getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V
     return 1000. * f_mol * V(*self.TP) if f_mol else 0.
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     if value:
         phase = self.phase or self.phase_container.phase
-        V = getattr(self.V, phase) if hasattr(self.V, phase) else self.V
+        V = getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V
         self.mol[self.index] = value / V(*self.TP) / 1000.
     else:
         self.mol[self.index] = 0.
