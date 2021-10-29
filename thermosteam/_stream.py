@@ -304,6 +304,25 @@ class Stream:
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
 
+    def empty_negative_flows(self):
+        """
+        Replace flows of all components with negative values with 0.
+
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=1, Ethanol=-1)
+        >>> s1.empty_negative_flows()
+        >>> s1.show()
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kmol/hr): Water  1
+
+        """
+        data = self._imol._data
+        data[data < 0.] = 0.
+
     def shares_flow_rate_with(self, other):
         """
         Return whether other stream shares data with this one.

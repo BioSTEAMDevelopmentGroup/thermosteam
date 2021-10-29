@@ -37,12 +37,6 @@ def get_stoichiometric_string(stoichiometry, phases, chemicals):
         return prs.get_stoichiometric_string(stoichiometry, 
                                              chemicals)
 
-def check_material_feasibility(material: np.ndarray):
-    if fn.infeasible(material):
-        raise InfeasibleRegion('not enough reactants; reaction conversion')
-    else:
-        material[material < 0.] = 0. 
-
 def set_reaction_basis(rxn, basis):
     if basis != rxn._basis:
         if basis == 'wt':
@@ -393,7 +387,12 @@ class Reaction:
         values = material_array.value if isproperty else material_array
         self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
-            check_material_feasibility(values)
+            negatives = values < 0.
+            if negatives.any():
+                if values[negatives].sum() < -1e-16:
+                    raise InfeasibleRegion('not enough reactants; reaction conversion')
+                else:
+                    values[negatives] = 0.
         else:
             fn.remove_negligible_negative_values(values)
         if isproperty: material_array[:] = values

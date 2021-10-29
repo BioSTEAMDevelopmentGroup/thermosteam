@@ -153,17 +153,13 @@ def rho_to_V(rho, MW):
 
 @njit(cache=True)
 def remove_negligible_negative_values(material: np.ndarray):
-    material_sum = np.abs(material).sum()
     negative = material < 0.
-    if material_sum > 1e-16:
-        negligible = material / material_sum > -1e-16
-        material[negative & negligible] = 0. 
-    else:
-        material[negative] = 0. 
-
-@njit(cache=True)
-def infeasible(material: np.ndarray):
-    material_sum = np.abs(material).sum()
-    return material_sum > 1e-16 and (material / material_sum < -1e-16).any()
+    if negative.any():
+        material_sum = np.abs(material).sum()
+        if material_sum > 1e-16:
+            negligible = material / material_sum > -1e-16
+            material[negative & negligible] = 0. 
+        else:
+            material[negative] = 0. 
 
 del njit
