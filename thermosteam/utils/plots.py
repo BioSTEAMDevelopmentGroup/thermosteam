@@ -81,7 +81,7 @@ def style_plot_limits(xticks, yticks): # pragma: no cover
     
 def fill_plot(color='k'): # pragma: no cover
     y_lb, y_ub = plt.ylim()
-    plt.fill_between(plt.xlim(), [y_lb], [y_ub], color='k')
+    plt.fill_between(plt.xlim(), [y_lb], [y_ub], color=color)
    
 def set_axes_labels(axes, xlabel, ylabel): # pragma: no cover
     set_axes_xlabels(axes, xlabel)
