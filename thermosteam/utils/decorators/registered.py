@@ -9,7 +9,7 @@
 """
 from ..registry import Registry
 
-__all__ = ('registered', 'unregistered')
+__all__ = ('registered', 'unregistered', 'registered_franchise')
 
 def unregistered(cls):
     cls._register = _pretend_to_register
@@ -81,3 +81,30 @@ def __repr__(self):
 
 def __str__(self):
     return self.ID or "."
+
+def registered_franchise(parent):
+    return lambda cls: _registered_franchise(cls, parent)
+
+def _registered_franchise(cls, parent):
+    cls._franchise_parent = parent
+    cls._register = _franchise_register
+    cls.ID = ID
+    cls.__str__ = __str__
+    cls.__repr__ = __repr__
+    return cls
+
+def _franchise_register(self, ID):
+    parent = self._franchise_parent
+    replace_ticket_number = isinstance(ID, int)
+    if replace_ticket_number: 
+        parent.ticket_numbers[parent.ticket_name] = ID
+    if ID == "" or replace_ticket_number: 
+        registry = parent.registry
+        data = registry.data
+        ID = parent._take_ticket()
+        while ID in data: ID = parent._take_ticket()
+        registry.register(ID, self)
+    elif ID:
+        parent.registry.register_safely(ID, self) 
+    else:
+        self._ID = parent._take_unregistered_ticket()

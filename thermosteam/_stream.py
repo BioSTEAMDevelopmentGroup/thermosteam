@@ -304,6 +304,21 @@ class Stream:
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
 
+    def get_CF(self, key):
+        """
+        Returns the life-cycle characterization factor given the key.
+        """
+        try:
+            return self.characterization_factors[key]
+        except:
+            return 0.
+
+    def set_CF(self, key, value):
+        """
+        Set the life-cycle characterization factor given the key.
+        """
+        self.characterization_factors[key] = value
+
     def empty_negative_flows(self):
         """
         Replace flows of all components with negative values with 0.
