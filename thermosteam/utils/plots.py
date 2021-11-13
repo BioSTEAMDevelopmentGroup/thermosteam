@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from thermosteam.units_of_measure import convert
+
 import matplotlib.pyplot as plt
 from typing import Iterable
 import numpy as np
@@ -41,6 +41,7 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
         width = 6.614
     else:
         if units is not None:
+            from thermosteam.units_of_measure import convert
             width = convert(width, units, 'inch')
     import matplotlib
     params = matplotlib.rcParams
