@@ -7,16 +7,44 @@
 # for license details.
 """
 """
+from thermosteam.units_of_measure import convert
 import matplotlib.pyplot as plt
 from typing import Iterable
+import numpy as np
 
-__all__ = ('style_axis',
-           'style_plot_limits',
-           'fill_plot',
-           'set_axes_labels',
-           'set_axes_xlabels',
-           'set_axes_ylabels',
+__all__ = (
+    'set_font',
+    'set_figure_size',
+    'style_axis',
+    'style_plot_limits',
+    'fill_plot',
+    'set_axes_labels',
+    'set_axes_xlabels',
+    'set_axes_ylabels',
 )   
+
+def set_font(font_size=10, family='sans-serif', font='Arial'):
+    import matplotlib
+    font = {'size': font_size}
+    matplotlib.rc('font', **font)
+    params = matplotlib.rcParams
+    params['font.' + family] = font
+    params['font.family'] = family
+    
+def set_figure_size(width=None, aspect_ratio=None, units=None): 
+    # units default to inch
+    # width defaults 6.614 inches
+    # aspect ratio defaults to 0.65
+    if aspect_ratio is None:
+        aspect_ratio = 0.65
+    if width is None:
+        width = 6.614
+    else:
+        if units is not None:
+            width = convert(width, units, 'inch')
+    import matplotlib
+    params = matplotlib.rcParams
+    params['figure.figsize'] = np.array([width, width * aspect_ratio])
 
 def style_axis(ax=None, xticks=None, yticks=None, 
                xticklabels=True, yticklabels=True,
