@@ -107,12 +107,8 @@ def reformat_units(name):
 
 format_plot_units = format_units
 
-def get_dimensionality(units, cache={}):
-    if units in cache:
-        dim = cache[units]
-    else:
-        cache[units] = dim = ureg._get_dimensionality(to_units_container(units, ureg))
-    return dim
+def get_dimensionality(units):
+    return ureg._get_dimensionality(to_units_container(units, ureg))
 
 # %% Manage conversion factors
 
