@@ -341,7 +341,7 @@ class Chemical:
              Vc: 5.6e-05 m^3/mol
              Hf: -2.8582e+05 J/mol
              S0: 70 J/K/mol
-             LHV: 44011 J/mol
+             LHV: -44011 J/mol
              HHV: 0 J/mol
              Hfus: 6010 J/mol
              Sfus: None
@@ -675,8 +675,8 @@ class Chemical:
                  Vc: 0.000414 m^3/mol
                  Hf: -1.2711e+06 J/mol
                  S0: 0 J/K/mol
-                 LHV: -2.5406e+06 J/mol
-                 HHV: -2.8047e+06 J/mol
+                 LHV: 2.5406e+06 J/mol
+                 HHV: 2.8047e+06 J/mol
                  Hfus: 0 J/mol
                  Sfus: None
                  omega: 2.387
@@ -1389,8 +1389,8 @@ class Chemical:
         based on the molecular formula and the heat of formation."""
         cd = combustion_data(self.atoms, Hf=self._Hf, MW=self._MW, method=method)
         if not self._MW: self._MW = cd.MW
-        self._LHV = cd.LHV
-        self._HHV = cd.HHV
+        self._LHV = - cd.LHV
+        self._HHV = - cd.HHV
         self._combustion = cd.stoichiometry
     
     def reset_free_energies(self):
@@ -1477,8 +1477,8 @@ class Chemical:
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
             cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW, missing_handling='Ash')
-            LHV = cd.LHV
-            HHV = cd.HHV
+            LHV = - cd.LHV
+            HHV = - cd.HHV
             combustion = cd.stoichiometry
         self._LHV = LHV
         self._HHV = HHV
@@ -1849,9 +1849,9 @@ class Chemical:
                     if 'Hf' in properties:
                         self._Hf = cd.Hf
                     if 'HHV' in properties:
-                        self._HHV = cd.HHV
+                        self._HHV = - cd.HHV
                     if 'LHV' in properties:
-                        self._LHV = cd.LHV
+                        self._LHV = - cd.LHV
                     if 'combustion' in properties:
                         self._combustion = stoichiometry
         else:

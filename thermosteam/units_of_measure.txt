@@ -20,3 +20,5 @@ gmol = mol
 lbmol = 453.59237*mol
 MM- = 10**6
 molar = mol/L = M
+CO2e = [CO2] = CO2eq = CO2
+GGE = 114000*Btu

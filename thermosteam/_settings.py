@@ -8,6 +8,7 @@
 """
 """
 import thermosteam as tmo
+from .units_of_measure import AbsoluteUnitsOfMeasure
 
 __all__ = ('settings',)
 
@@ -17,16 +18,14 @@ def raise_no_thermo_error():
 
 class Settings:
     __slots__ = (
-        'GWP_method',
-        'FEC_method',
+        'impact_indicators',
         '_thermo',
         '_phase_names',
         '_debug',
     )
     
     def __init__(self):
-        self.GWP_method = 'IPCC 100yr'
-        self.FEC_method = None
+        self.impact_indicators = {}
         self._thermo = None
         self._debug = False
         self._phase_names = {'s': 'Solid',
@@ -35,6 +34,19 @@ class Settings:
                              'S': 'SOLID',
                              'L': 'LIQUID',
                              'G': 'GAS'}
+    
+    def define_impact_indicator(self, key, units):
+        self.impact_indicators[key] = AbsoluteUnitsOfMeasure(units)
+    
+    def get_impact_indicator_units(self, key):
+        try:
+            return tmo.settings.impact_indicators[key]
+        except KeyError:
+            raise ValueError(
+                f"impact indicator key '{key}' has no defined units; "
+                 "units can be defined through `thermosteam.settings.define_impact_indicator`"
+            )
+    
     @property
     def debug(self):
         """[bool] If True, additional checks may raise errors at runtime."""

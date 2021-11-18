@@ -40,6 +40,7 @@ class StreamData:
     
 # %%
 
+@utils.units_of_measure(thermo_units.stream_units_of_measure)
 @utils.thermo_user
 @utils.registered(ticket_name='s')
 class Stream:
@@ -250,6 +251,8 @@ class Stream:
                                               composition=False,
                                               N=7)
 
+    _units_of_measure = thermo_units.stream_units_of_measure
+
     _flow_cache = {}
 
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
@@ -304,20 +307,58 @@ class Stream:
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
 
-    def get_CF(self, key):
+    def get_CF(self, key, units=None):
         """
-        Returns the life-cycle characterization factor on a kg basis given the key.
+        Returns the life-cycle characterization factor on a kg basis given the
+        impact indicator key.
+        
+        Parameters
+        ----------
+        key : str
+            Key of impact indicator.
+        units : str, optional
+            Units of impact indicator. Before using this argument, the default units 
+            of the impact indicator should be defined with 
+            thermosteam.settings.define_impact_indicator.
+            Units must also be dimensionally consistent with the default units.
+        
         """
         try:
-            return self.characterization_factors[key]
+            value = self.characterization_factors[key]
         except:
             return 0.
-
-    def set_CF(self, key, value):
+        if units is not None:
+            original_units = tmo.settings.get_impact_indicator_units(key)
+            value = original_units.convert(value, units)
+        return value
+    
+    def set_CF(self, key, value, units=None):
         """
-        Set the life-cycle characterization factor on a kg basis given the key.
+        Set the life-cycle characterization factor on a kg basis given the 
+        impact indicator key and the units of measure.
+        
+        Parameters
+        ----------
+        key : str
+            Key of impact indicator.
+        value : float
+            Characterization factor value.
+        units : str, optional
+            Units of impact indicator. Before using this argument, the default units 
+            of the impact indicator should be defined with 
+            thermosteam.settings.define_impact_indicator.
+            Units must also be dimensionally consistent with the default units.
+        
         """
+        if units is not None:
+            original_units = tmo.settings.get_impact_indicator_units(key)
+            value = original_units.unconvert(value, units)
         self.characterization_factors[key] = value
+
+    def get_impact(self, key):
+        """Return hourly rate of the impact indicator given the key."""
+        cfs = self.characterization_factors
+        return cfs[key] * self.F_mass if key in cfs else 0.
 
     def empty_negative_flows(self):
         """
@@ -446,11 +487,6 @@ class Stream:
             self._price = float(price)
         else:
             raise AttributeError(f'price must be finite, not {price}')
-    
-    def get_impact(self, key):
-        """Return impact rate of given key in impact/hr."""
-        cfs = self.characterization_factors
-        return cfs[key] * self.F_mass if key in cfs else 0.
     
     def isempty(self):
         """
@@ -709,65 +745,6 @@ class Stream:
         """
         name, factor = self._get_flow_name_and_factor(units)
         setattr(self, 'F_' + name, value / factor)
-    
-    def get_property(self, name, units):
-        """
-        Return property in requested units.
-
-        Parameters
-        ----------
-        name : str
-            Name of stream property.
-        units : str
-            Units of measure.
-
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
-        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s1.get_property('sigma', 'N/m') # Surface tension
-        0.06384
-
-        """
-        value = getattr(self, name)
-        units_dct = thermo_units.stream_units_of_measure
-        if name in units_dct:
-            original_units = units_dct[name]
-        else:
-            raise ValueError(f"'{name}' is not thermodynamic property")
-        return original_units.convert(value, units)
-    
-    def set_property(self, name, value, units):
-        """
-        Set property in given units.
-
-        Parameters
-        ----------
-        name : str
-            Name of stream property.
-        value : str
-            New value of stream property.
-        units : str
-            Units of measure.
-
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
-        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s1.set_property('P', 2, 'atm')
-        >>> s1.P
-        202650.0
-
-        """
-        units_dct = thermo_units.stream_units_of_measure
-        if name in units_dct:
-            original_units = units_dct[name]
-        else:
-            raise ValueError(f"no property with name '{name}'")
-        value = original_units.unconvert(value, units)
-        setattr(self, name, value)
     
     ### Stream data ###
 

@@ -28,7 +28,6 @@ def get_phase_fraction(stream, phases):
             phase_fraction += imol[phase].sum() 
     return phase_fraction / F_mol
 
-
 class MultiStream(Stream):
     """
     Create a MultiStream object that defines material flow rates for multiple
