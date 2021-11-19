@@ -328,12 +328,14 @@ for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma',
     stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 power_utility_units_of_measure = {
+    'cost': AbsoluteUnitsOfMeasure('USD/hr'),
     'rate': AbsoluteUnitsOfMeasure('kW'),
     'consumption': AbsoluteUnitsOfMeasure('kW'),
     'production': AbsoluteUnitsOfMeasure('kW'),
 }
 
 heat_utility_units_of_measure = {
+    'cost': AbsoluteUnitsOfMeasure('USD/hr'),
     'flow': AbsoluteUnitsOfMeasure('kmol/hr'),
     'duty': AbsoluteUnitsOfMeasure('kJ/hr'),
 }
