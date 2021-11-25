@@ -27,7 +27,7 @@ def define_property(cls, name, units, fget, fset=None):
     if hasattr(cls, name): raise ValueError(f"property with name '{name}' already exists")
     setattr(cls, name, property(fget, fset))
 
-def get_property(self, name, units):
+def get_property(self, name, units=None):
     """
     Return property in requested units.
 
@@ -35,17 +35,20 @@ def get_property(self, name, units):
     ----------
     name : str
         Name of property.
-    units : str
-        Units of measure.
+    units : str, optional
+        Units of measure. Defaults to the property's original units of measure.
 
     """
     value = getattr(self, name)
-    units_dct = self._units_of_measure
-    if name in units_dct:
-        original_units = units_dct[name]
+    if units is None:
+        return value
     else:
-        raise ValueError(f"'{name}' is not a property")
-    return original_units.convert(value, units)
+        units_dct = self._units_of_measure
+        if name in units_dct:
+            original_units = units_dct[name]
+        else:
+            raise ValueError(f"'{name}' is not a property")
+        return original_units.convert(value, units)
 
 def set_property(self, name, value, units):
     """
