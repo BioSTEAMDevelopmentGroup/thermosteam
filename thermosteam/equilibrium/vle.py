@@ -826,8 +826,9 @@ class VLE(Equilibrium, phases='lg'):
                 def f(V):
                     vapor_mol[index] = V * mol
                     liquid_mol[index] = (1 - V) * mol
-                    return self.mixture.xH(self._phase_data, T_dew, P)/self._F_mass - H_hat
+                    return self.mixture.xH(self._phase_data, T, P)/self._F_mass - H_hat
                 self._T = thermal_condition.T = T
+                
                 y0 = f(0.)
                 if y0 > 0.:
                     self._T = thermal_condition.T = self.mixture.xsolve_T(
