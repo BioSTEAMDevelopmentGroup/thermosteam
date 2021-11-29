@@ -23,10 +23,10 @@ __all__ = (
     'set_axes_ylabels',
 )   
 
-def set_font(font_size=10, family='sans-serif', font='Arial'):
+def set_font(size=10, family='sans-serif', font='Arial'):
     import matplotlib
-    font = {'size': font_size}
-    matplotlib.rc('font', **font)
+    fontkwargs = {'size': size}
+    matplotlib.rc('font', **fontkwargs)
     params = matplotlib.rcParams
     params['font.' + family] = font
     params['font.family'] = family
@@ -38,7 +38,7 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
     if aspect_ratio is None:
         aspect_ratio = 0.65
     if width is None:
-        width = 6.614
+        width = 6.6142
     else:
         if units is not None:
             from thermosteam.units_of_measure import convert
