@@ -87,6 +87,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
     axes = {'ax': ax}
     if right:
         x_twin = ax.twinx()
+        ax._cached_xtwin = x_twin
         axes['twinx'] = x_twin 
         plt.sca(x_twin)
         x_twin.tick_params(axis='y', right=True, direction="in", length=4)
@@ -95,13 +96,13 @@ def style_axis(ax=None, xticks=None, yticks=None,
         plt.yticks(yticks, ())
     if top:
         y_twin = ax.twiny()
+        ax._cached_ytwin = y_twin
         axes['twiny'] = y_twin 
         plt.sca(y_twin)
         y_twin.tick_params(axis='x', top=True, direction="in", length=4)
         y_twin.zorder = 2
         plt.xlim(xlim)
         plt.xticks(xticks, ())
-    
     return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
