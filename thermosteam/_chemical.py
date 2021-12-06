@@ -342,7 +342,7 @@ class Chemical:
              Hf: -2.8582e+05 J/mol
              S0: 70 J/K/mol
              LHV: -44011 J/mol
-             HHV: 0 J/mol
+             HHV: -0 J/mol
              Hfus: 6010 J/mol
              Sfus: None
              omega: 0.344
