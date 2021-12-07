@@ -10,6 +10,7 @@
 
 import matplotlib.pyplot as plt
 from typing import Iterable
+import matplotlib.ticker as ticker
 import numpy as np
 
 __all__ = (
@@ -51,7 +52,9 @@ def style_axis(ax=None, xticks=None, yticks=None,
                xticklabels=True, yticklabels=True,
                top=True, right=True, trim_to_limits=False,
                xtick0=True, ytick0=True,
-               xtickf=True, ytickf=True): # pragma: no cover
+               xtickf=True, ytickf=True,
+               offset_xticks=False,
+               xrot=None, ha=None): # pragma: no cover
     if ax is None:
         ax = plt.gca()
     if xticks is None:
@@ -77,9 +80,32 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ytext[0] = ''
     if not ytickf:
         ytext[-1] = ''
-    plt.xticks(xticks, xtext) if xticklabels else plt.xticks(xticks, ())
+    if offset_xticks:
+        xticks_offset = np.array(xticks, float)
+        xticks_offset[:] += 0.5 * np.diff(xticks).mean()
+        ax.tick_params(axis="x", which='major', top=False, direction="inout", 
+                       length=4)
+        ax.tick_params(axis="x", which='minor', top=False, length=0, labelrotation=xrot)
+        if xticklabels:
+            plt.xticks(xticks_offset, ())
+            ax.xaxis.set_minor_locator(ticker.FixedLocator(xticks))
+            ax.xaxis.set_minor_formatter(ticker.FixedFormatter(xticklabels))
+            if ha is not None: 
+                for i in ax.xaxis.get_minorticklabels():
+                    i.set_ha(ha)
+        else:
+            plt.xticks(xticks_offset, ())
+    else:
+        if xticklabels: 
+            plt.xticks(xticks, xtext)
+            if ha is not None: 
+                for i in ax.xaxis.get_majorticklabels():
+                    i.set_ha(ha)
+        else:
+            plt.xticks(xticks, ())
+        ax.tick_params(axis="x", top=False, direction="inout", length=4, 
+                       labelrotation=xrot)
     plt.yticks(yticks, ytext) if yticklabels else plt.yticks(yticks, ())
-    ax.tick_params(axis="x", top=False, direction="inout", length=4)
     ax.tick_params(axis="y", right=False, direction="inout", length=4)
     ax.zorder = 1
     xlim = plt.xlim()
@@ -102,7 +128,10 @@ def style_axis(ax=None, xticks=None, yticks=None,
         y_twin.tick_params(axis='x', top=True, direction="in", length=4)
         y_twin.zorder = 2
         plt.xlim(xlim)
-        plt.xticks(xticks, ())
+        if offset_xticks:
+            plt.xticks(xticks_offset, ())
+        else:
+            plt.xticks(xticks, ())
     return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
