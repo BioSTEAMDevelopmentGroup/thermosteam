@@ -48,13 +48,51 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
     params = matplotlib.rcParams
     params['figure.figsize'] = np.array([width, width * aspect_ratio])
 
+def set_ticks(ax, ticks, which='x', ticklabels=None,
+              labelrotation=0., ha=None, offset=False):
+    if which == 'x':
+        axis = ax.xaxis
+        set_ticks = plt.xticks
+        kwargs = dict(top=False)
+    elif which == 'y':
+        axis = ax.yaxis
+        set_ticks = plt.yticks
+        kwargs = dict(right=False)
+    else:
+        raise ValueError("which must be either 'x' or 'y'")
+    if offset:
+        ax.tick_params(axis=which, which='major', length=4,
+                       direction="inout", **kwargs)
+        ax.tick_params(axis=which, which='minor', length=0,
+                       labelrotation=labelrotation, **kwargs)
+        ticks = np.array(ticks, float)
+        ticks[:] += 0.5 * np.diff(ticks).mean()
+        set_ticks(ticks, ())
+        if ticklabels:
+            axis.set_minor_locator(ticker.FixedLocator(ticks))
+            axis.set_minor_formatter(ticker.FixedFormatter(ticklabels))
+    else:
+        if ticklabels:
+            plt.xticks(ticks, ticklabels)
+        else:
+            set_ticks(ticks, ())
+        ax.tick_params(axis=which, top=False, direction="inout", length=4, 
+                       labelrotation=labelrotation)
+    if ha is not None:
+        for i in axis.get_majorticklabels():
+            i.set_ha(ha)
+    return ticks
+    
+
 def style_axis(ax=None, xticks=None, yticks=None, 
                xticklabels=True, yticklabels=True,
                top=True, right=True, trim_to_limits=False,
                xtick0=True, ytick0=True,
                xtickf=True, ytickf=True,
                offset_xticks=False,
-               xrot=None, ha=None): # pragma: no cover
+               offset_yticks=False,
+               xrot=None, xha=None,
+               yrot=None, yha=None): # pragma: no cover
     if ax is None:
         ax = plt.gca()
     if xticks is None:
@@ -80,33 +118,9 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ytext[0] = ''
     if not ytickf:
         ytext[-1] = ''
-    if offset_xticks:
-        xticks_offset = np.array(xticks, float)
-        xticks_offset[:] += 0.5 * np.diff(xticks).mean()
-        ax.tick_params(axis="x", which='major', top=False, direction="inout", 
-                       length=4)
-        ax.tick_params(axis="x", which='minor', top=False, length=0, labelrotation=xrot)
-        if xticklabels:
-            plt.xticks(xticks_offset, ())
-            ax.xaxis.set_minor_locator(ticker.FixedLocator(xticks))
-            ax.xaxis.set_minor_formatter(ticker.FixedFormatter(xticklabels))
-            if ha is not None: 
-                for i in ax.xaxis.get_minorticklabels():
-                    i.set_ha(ha)
-        else:
-            plt.xticks(xticks_offset, ())
-    else:
-        if xticklabels: 
-            plt.xticks(xticks, xtext)
-            if ha is not None: 
-                for i in ax.xaxis.get_majorticklabels():
-                    i.set_ha(ha)
-        else:
-            plt.xticks(xticks, ())
-        ax.tick_params(axis="x", top=False, direction="inout", length=4, 
-                       labelrotation=xrot)
-    plt.yticks(yticks, ytext) if yticklabels else plt.yticks(yticks, ())
-    ax.tick_params(axis="y", right=False, direction="inout", length=4)
+    
+    xticks = set_ticks(ax, xticks, 'x', xticklabels, xrot, xha, offset_xticks)
+    yticks = set_ticks(ax, yticks, 'y', xticklabels, yrot, yha, offset_yticks)
     ax.zorder = 1
     xlim = plt.xlim()
     ylim = plt.ylim()
@@ -128,10 +142,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
         y_twin.tick_params(axis='x', top=True, direction="in", length=4)
         y_twin.zorder = 2
         plt.xlim(xlim)
-        if offset_xticks:
-            plt.xticks(xticks_offset, ())
-        else:
-            plt.xticks(xticks, ())
+        plt.xticks(xticks, ())
     return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
