@@ -61,23 +61,26 @@ def set_ticks(ax, ticks, which='x', ticklabels=None,
     else:
         raise ValueError("which must be either 'x' or 'y'")
     if offset:
+        ticks = np.array(ticks, float)
+        ticks_offset = np.zeros(len(ticks) - 1)
+        if len(ticks_offset) != 0:
+            ticks_offset[:] = ticks[:-1] + 0.5 * np.diff(ticks)
         ax.tick_params(axis=which, which='major', length=4,
                        direction="inout", **kwargs)
         ax.tick_params(axis=which, which='minor', length=0,
                        labelrotation=labelrotation, **kwargs)
-        ticks = np.array(ticks, float)
-        ticks[:] += 0.5 * np.diff(ticks).mean()
-        set_ticks(ticks, ())
+        set_ticks(ticks_offset, ())
         if ticklabels:
             axis.set_minor_locator(ticker.FixedLocator(ticks))
             axis.set_minor_formatter(ticker.FixedFormatter(ticklabels))
+        ticks = ticks_offset
     else:
         if ticklabels:
-            plt.xticks(ticks, ticklabels)
+            set_ticks(ticks, ticklabels)
         else:
             set_ticks(ticks, ())
-        ax.tick_params(axis=which, top=False, direction="inout", length=4, 
-                       labelrotation=labelrotation)
+        ax.tick_params(axis=which, direction="inout", length=4, 
+                       labelrotation=labelrotation, **kwargs)
     if ha is not None:
         for i in axis.get_majorticklabels():
             i.set_ha(ha)
@@ -104,6 +107,8 @@ def style_axis(ax=None, xticks=None, yticks=None,
         if not any([str(i) for i in ytext]): ytext = yticks
     else:
         ytext = yticklabels if isinstance(yticklabels, Iterable) else list(yticks)
+    # if yticklabels: yticklabels = ytext
+        
     xtext = list(xtext)
     ytext = list(ytext)
     if trim_to_limits:
@@ -120,7 +125,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ytext[-1] = ''
     
     xticks = set_ticks(ax, xticks, 'x', xticklabels, xrot, xha, offset_xticks)
-    yticks = set_ticks(ax, yticks, 'y', xticklabels, yrot, yha, offset_yticks)
+    yticks = set_ticks(ax, yticks, 'y', ytext, yrot, yha, offset_yticks)
     ax.zorder = 1
     xlim = plt.xlim()
     ylim = plt.ylim()
