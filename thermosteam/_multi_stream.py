@@ -853,14 +853,23 @@ class MultiStream(Stream):
     @property
     def vle(self):
         """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
+        phases = self.phases
+        if 'l' not in phases or 'g' not in phases: 
+            self.phases = [*phases, 'l', 'g']
         return self._vle_cache.retrieve()
     @property
     def lle(self):
         """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
+        phases = self.phases
+        if 'l' not in phases or 'L' not in phases: 
+            self.phases = [*phases, 'l', 'L']
         return self._lle_cache.retrieve()
     @property
     def sle(self):
         """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
+        phases = self.phases
+        if 's' not in phases or 'l' not in phases: 
+            self.phases = [*phases, 's', 'l']
         return self._sle_cache.retrieve()
     
     ### Casting ###
