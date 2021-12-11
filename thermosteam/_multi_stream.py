@@ -692,7 +692,12 @@ class MultiStream(Stream):
                     other_data[IDs_index] = excluded_data   
         elif isinstance(other, MultiStream):
             if self.phases != other.phases:
-                raise ValueError('other stream must have the same phases defined to copy flow')
+                # TODO: Prevent having to change phases of streams.
+                self.phases = other.phases = [*self.phases, *other.phases]
+                data = self.imol.data
+                other_data = other.imol.data
+                phase_index = self.imol.get_phase_index(phase)
+                IDs_index = self.chemicals.get_index(IDs)
             data[phase_index, IDs_index] = other_data[phase_index, IDs_index]
             if remove: other_data[phase_index, IDs_index] = 0.
         else:
