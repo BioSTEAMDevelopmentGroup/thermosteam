@@ -48,7 +48,7 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
     params = matplotlib.rcParams
     params['figure.figsize'] = np.array([width, width * aspect_ratio])
 
-def set_ticks(ax, ticks, which='x', ticklabels=None,
+def set_ticks(ax, ticks, which='x', ticklabels=(),
               labelrotation=0., ha=None, offset=False):
     if which == 'x':
         axis = ax.xaxis
@@ -75,10 +75,7 @@ def set_ticks(ax, ticks, which='x', ticklabels=None,
             axis.set_minor_formatter(ticker.FixedFormatter(ticklabels))
         ticks = ticks_offset
     else:
-        if ticklabels:
-            set_ticks(ticks, ticklabels)
-        else:
-            set_ticks(ticks, ())
+        set_ticks(ticks, ticklabels)
         ax.tick_params(axis=which, direction="inout", length=4, 
                        labelrotation=labelrotation, **kwargs)
     if ha is not None:
@@ -101,13 +98,14 @@ def style_axis(ax=None, xticks=None, yticks=None,
     if xticks is None:
         xticks, xtext = plt.xticks()
     else:
-        xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xticks)
+        xtext = xticks
+    xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xtext)
     if yticks is None:
         yticks, ytext = plt.yticks()
         if not any([str(i) for i in ytext]): ytext = yticks
     else:
-        ytext = yticklabels if isinstance(yticklabels, Iterable) else list(yticks)
-    # if yticklabels: yticklabels = ytext
+        ytext = yticks
+    ytext = yticklabels if isinstance(yticklabels, Iterable) else list(ytext)
         
     xtext = list(xtext)
     ytext = list(ytext)
@@ -124,7 +122,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
     if not ytickf:
         ytext[-1] = ''
     
-    xticks = set_ticks(ax, xticks, 'x', xticklabels, xrot, xha, offset_xticks)
+    xticks = set_ticks(ax, xticks, 'x', xtext, xrot, xha, offset_xticks)
     yticks = set_ticks(ax, yticks, 'y', ytext, yrot, yha, offset_yticks)
     ax.zorder = 1
     xlim = plt.xlim()
