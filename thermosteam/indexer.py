@@ -1040,7 +1040,7 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._data_cache[TP]
+        vol = self._data_cache['vol', TP]
     except:
         chemicals = self.chemicals
         mol = self.data
@@ -1048,7 +1048,7 @@ def by_volume(self, TP):
         for i, chem in enumerate(chemicals):
             vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V,
                                             TP, None, self._phase)
-        self._data_cache[TP] = \
+        self._data_cache['vol', TP] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
                                                       self._phase, chemicals,
                                                       False)
