@@ -11,8 +11,12 @@ from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
-from collections.abc import Iterable
+from .base import PhaseHandle
 import thermosteam as tmo
+from chemicals.lennard_jones import Stockmayer, molecular_diameter
+from thermo.unifac import UNIFAC_RQ, Van_der_Waals_volume, Van_der_Waals_area
+from chemicals.utils import Parachor
+import thermo as tm
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
@@ -127,6 +131,142 @@ class Chemicals:
             CASs.add(CAS)
             setfield(self, i.ID, i)
         return self
+    
+    def get_constants_and_properties(self):
+        """Return a tuple of thermo.ChemicalConstantsPackage and 
+        thermo.ChemicalPropertiesPackage objects."""
+        def get_properties(names):
+            getfield = getattr
+            return [[getfield(i, name) for i in chemicals] for name in names]
+        
+        def get_phase_properties(name, phases):
+            getfield = getattr
+            isa = isinstance
+            phase_properties = [[] for i in phases]
+            for chemical in chemicals:
+                handle = getfield(chemical, name)
+                if isa(handle, PhaseHandle):
+                    for i, phase in enumerate(phases):
+                        phase_properties[i].append(getfield(handle, phase))
+                else:
+                    for i in phase_properties: i.append(handle)
+            return phase_properties
+        
+        chemicals = tuple(self)
+        (EnthalpyVaporizations, VaporPressures, SublimationPressures, 
+         EnthalpySublimations, SurfaceTensions, PermittivityLiquids,
+         CASs, MWs, Tms, Tbs, Tcs, Pcs, Vcs, omegas, Zcs, Hfus_Tms, Tts, Pts,
+         dipoles, charges, UNIFAC_groups, UNIFAC_Dortmund_groups, PSRK_groups,
+         similarity_variables, StielPolars) = get_properties(
+             ['Hvap', 'Psat', 'Psub', 'Hsub', 'sigma', 'epsilon',
+              'CAS', 'MW', 'Tm', 'Tb', 'Tc', 'Pc', 'Vc', 'omega', 'Zc', 'Hfus',
+              'Tt', 'Pt', 'dipole', 'charge', 'UNIFAC', 'Dortmund', 'PSRK',
+              'similarity_variable', 'Stiel_Polar']
+        )
+        VolumeGases, VolumeLiquids, VolumeSolids = get_phase_properties('V', 'gls')
+        HeatCapacityGases, HeatCapacityLiquids, HeatCapacitySolids = get_phase_properties('Cn', 'gls')
+        ViscosityGases, ViscosityLiquids = get_phase_properties('Cn', 'gl')
+        ThermalConductivityGases, ThermalConductivityLiquids = get_phase_properties('Cn', 'gl')
+        rhocs = [None if Vc is None else 1.0/Vc for Vc in Vcs]
+        rhocs_mass = [None if None in (rhoc, MW) else rhoc * 1e-3 * MW
+                      for rhoc, MW in zip(rhocs, MWs)]
+        Hfus_Tms_mass = [None if None in (Hfus, MW) else Hfus * 1000.0 / MW
+                         for Hfus, MW in zip(Hfus_Tms, MWs)]
+        Hvap_Tbs = [Hvap(Tb) for Hvap, Tb in zip(EnthalpyVaporizations, Tbs)]
+        Hvap_Tbs_mass = [None if None in (Hvap, MW) else Hvap*1000.0/MW
+                         for Hvap, MW in zip(Hvap_Tbs, Tbs)]
+        N = len(chemicals)
+        N_range = range(N)
+        Vmg_STPs = [VolumeGases[i].TP_dependent_property(298.15, 101325.0)
+                   for i in N_range]
+        rhog_STPs = [1.0/V if V is not None else None for V in Vmg_STPs]
+        rhog_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vmg_STPs, MWs)]
+
+        Vml_Tbs = [VolumeLiquids[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None
+                   for i in N_range]
+        Vml_Tms = [VolumeLiquids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None
+                   for i in N_range]
+        Vml_STPs = [VolumeLiquids[i].T_dependent_property(298.15)
+                   for i in N_range]
+        Vml_60Fs = [VolumeLiquids[i].T_dependent_property(288.7055555555555)
+                   for i in N_range]
+        rhol_STPs = [1.0/V if V is not None else None for V in Vml_STPs]
+        rhol_60Fs = [1.0/V if V is not None else None for V in Vml_60Fs]
+        rhol_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_STPs, MWs)]
+        rhol_60Fs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_60Fs, MWs)]
+        Hsub_Tts = [EnthalpySublimations[i](Tts[i]) if Tts[i] is not None else None
+                    for i in N_range]
+        Hsub_Tts_mass = [Hsub*1000.0/MW if Hsub is not None else None for Hsub, MW in zip(Hsub_Tts, MWs)]
+        Stockmayers = [Stockmayer(Tm=Tms[i], Tb=Tbs[i], Tc=Tcs[i], Zc=Zcs[i], omega=omegas[i], CASRN=CASs[i]) for i in N_range]
+        molecular_diameters = [molecular_diameter(Tc=Tcs[i], Pc=Pcs[i], Vc=Vcs[i], Zc=Zcs[i], omega=omegas[i],
+                                                  Vm=Vml_Tms[i], Vb=Vml_Tbs[i], CASRN=CASs[i]) for i in N_range]
+        Psat_298s = [VaporPressures[i].T_dependent_property(298.15) for i in N_range]
+        Hvap_Tbs = [o.T_dependent_property(Tb) if Tb else None for o, Tb, in zip(EnthalpyVaporizations, Tbs)]
+        Hvap_Tbs_mass =  [Hvap*1000.0/MW if Hvap is not None else None for Hvap, MW in zip(Hvap_Tbs, MWs)]
+
+        Hvap_298s = [o.T_dependent_property(298.15) for o in EnthalpyVaporizations]
+        Hvap_298s_mass =  [Hvap*1000.0/MW if Hvap is not None else None for Hvap, MW in zip(Hvap_298s, MWs)]
+        Vml_Tbs = [VolumeLiquids[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None
+                   for i in N_range]
+        Vml_Tms = [VolumeLiquids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None
+                   for i in N_range]
+        Vml_STPs = [VolumeLiquids[i].T_dependent_property(298.15)
+                   for i in N_range]
+        Vml_60Fs = [VolumeLiquids[i].T_dependent_property(288.7055555555555)
+                   for i in N_range]
+        rhol_STPs = [1.0/V if V is not None else None for V in Vml_STPs]
+        rhol_60Fs = [1.0/V if V is not None else None for V in Vml_60Fs]
+        rhol_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_STPs, MWs)]
+        rhol_60Fs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_60Fs, MWs)]
+        Vms_Tms = [VolumeSolids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None for i in N_range]
+        rhos_Tms = [1.0/V if V is not None else None for V in Vms_Tms]
+        rhos_Tms_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vms_Tms, MWs)]
+        sigma_STPs = [SurfaceTensions[i].T_dependent_property(298.15) for i in N_range]
+        sigma_Tbs = [SurfaceTensions[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None for i in N_range]
+        sigma_Tms = [SurfaceTensions[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None for i in N_range]
+        UNIFAC_Rs, UNIFAC_Qs = [None]*N, [None]*N
+        for i in N_range:
+            groups = UNIFAC_groups[i]
+            if groups is not None:
+                UNIFAC_Rs[i], UNIFAC_Qs[i] = UNIFAC_RQ(groups)
+        Van_der_Waals_volumes = [Van_der_Waals_volume(UNIFAC_Rs[i]) if UNIFAC_Rs[i] is not None else None for i in N_range]
+        Van_der_Waals_areas = [Van_der_Waals_area(UNIFAC_Qs[i]) if UNIFAC_Qs[i] is not None else None for i in N_range]
+        Parachors = [None]*N
+        for i in N_range:
+            try:
+                Parachors[i] = Parachor(sigma=sigma_STPs[i], MW=MWs[i], rhol=rhol_STPs_mass[i], rhog=rhog_STPs_mass[i])
+            except:
+                pass
+        constants = tm.ChemicalConstantsPackage(
+            CASs=CASs, MWs=MWs, Tms=Tms, Tbs=Tbs, Tcs=Tcs, Pcs=Pcs, Vcs=Vcs, omegas=omegas,
+            Zcs=Zcs, rhocs=rhocs, rhocs_mass=rhocs_mass, Hfus_Tms=Hfus_Tms,
+            Hfus_Tms_mass=Hfus_Tms_mass, Hvap_Tbs=Hvap_Tbs, Hvap_Tbs_mass=Hvap_Tbs_mass,
+            Vml_STPs=Vml_STPs, rhol_STPs=rhol_STPs, rhol_STPs_mass=rhol_STPs_mass,
+            Vml_60Fs=Vml_60Fs, rhol_60Fs=rhol_60Fs, rhol_60Fs_mass=rhol_60Fs_mass,
+            Vmg_STPs=Vmg_STPs, rhog_STPs=rhog_STPs, rhog_STPs_mass=rhog_STPs_mass,
+            Tts=Tts, Pts=Pts, Hsub_Tts=Hsub_Tts, Hsub_Tts_mass=Hsub_Tts_mass,
+            Psat_298s=Psat_298s, Hvap_298s=Hvap_298s, Hvap_298s_mass=Hvap_298s_mass,
+            Vml_Tms=Vml_Tms, Vms_Tms=Vms_Tms, rhos_Tms=rhos_Tms, rhos_Tms_mass=rhos_Tms_mass,
+            sigma_STPs=sigma_STPs, sigma_Tbs=sigma_Tbs, sigma_Tms=sigma_Tms,
+            charges=charges, dipoles=dipoles, Stockmayers=Stockmayers,
+            molecular_diameters=molecular_diameters, Van_der_Waals_volumes=Van_der_Waals_volumes,
+            Van_der_Waals_areas=Van_der_Waals_areas, StielPolars=StielPolars,
+            similarity_variables=similarity_variables, phase_STPs=[i.get_phase() for i in chemicals],
+            UNIFAC_Rs=UNIFAC_Rs, UNIFAC_Qs=UNIFAC_Qs, Parachors=Parachors,
+            UNIFAC_groups=UNIFAC_groups, UNIFAC_Dortmund_groups=UNIFAC_Dortmund_groups,
+            PSRK_groups=PSRK_groups,
+        )
+    
+        return constants, tm.PropertyCorrelationsPackage(
+            constants, VaporPressures=VaporPressures, SublimationPressures=SublimationPressures,
+            VolumeGases=VolumeGases, VolumeLiquids=VolumeLiquids, VolumeSolids=VolumeSolids,
+            HeatCapacityGases=HeatCapacityGases, HeatCapacityLiquids=HeatCapacityLiquids, 
+            HeatCapacitySolids=HeatCapacitySolids, ViscosityGases=ViscosityGases, 
+            ViscosityLiquids=ViscosityLiquids, ThermalConductivityGases=ThermalConductivityGases, 
+            ThermalConductivityLiquids=ThermalConductivityLiquids, EnthalpyVaporizations=EnthalpyVaporizations, 
+            EnthalpySublimations=EnthalpySublimations, SurfaceTensions=SurfaceTensions,
+            PermittivityLiquids=PermittivityLiquids
+        )
     
     def __getnewargs__(self):
         return (tuple(self),)
@@ -357,6 +497,15 @@ class CompiledChemicals(Chemicals):
     
     def compile(self, skip_checks=False):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
+    
+    def get_constants_and_properties(self):
+        """Return a tuple of thermo.ChemicalConstantsPackage and 
+        thermo.ChemicalPropertiesPackage objects."""
+        try:
+            return self._constants_and_properties
+        except:
+            self.__dict__['_constants_and_properties'] = cp = super().get_constants_and_properties()
+            return cp
     
     def define_group(self, name, IDs, composition=None, wt=False):
         """

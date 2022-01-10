@@ -32,6 +32,7 @@ from chemicals.reaction import (
 from chemicals.elements import (
     similarity_variable as compute_similarity_variable, 
     molecular_weight as compute_molecular_weight,
+    charge_from_formula,
     atoms_to_Hill,
     get_atoms,
 )
@@ -63,9 +64,10 @@ from chemicals.utils import Z
 from thermo.eos import IG, PR
 from thermo import (
     TDependentProperty, TPDependentProperty,
-    VaporPressure, SublimationPressure,
+    VaporPressure, 
     EnthalpyVaporization,
     SurfaceTension,
+    SublimationPressure, EnthalpySublimation,
     VolumeSolid, VolumeLiquid, VolumeGas, VolumeSupercriticalLiquid,
     HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas,
     ThermalConductivityLiquid, ThermalConductivityGas,
@@ -208,7 +210,7 @@ _groups = ('_Dortmund',
            '_PSRK',
            '_NIST')
 
-_model_handles = ('_Psat', '_Hvap', '_sigma', '_epsilon')
+_model_handles = ('_Psat', '_Hvap', '_sigma', '_epsilon', '_Hsub', '_Psub')
     
 _phase_handles = ('_kappa', '_V', '_Cn', '_mu')
 
@@ -642,6 +644,11 @@ class Chemical:
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         return self
 
+    @property
+    def charge(self):
+        """Charge of chemical as described in the chemcial formula."""
+        return charge_from_formula(self.formula)
+
     def copy(self, ID, CAS=None, **data):
         """
         Return a copy of the chemical with a new ID.
@@ -1003,6 +1010,22 @@ class Chemical:
     @Hvap.setter
     def Hvap(self, value): 
         raise_helpful_handle_error('Hvap', self._Hvap)
+    
+    @property
+    def Hsub(self):
+        """Heat of sublimation [J/mol]."""
+        return self._Hsub
+    @Hsub.setter
+    def Hsub(self, value):
+        raise_helpful_handle_error('Hsub', self._Hsub)
+        
+    @property
+    def Psub(self):
+        """Sublimation pressure [Pa]."""
+        return self._Psub
+    @Psub.setter
+    def Psub(self, value):
+        raise_helpful_handle_error('Psub', self._Psub)
         
     @property
     def sigma(self): 
@@ -1504,7 +1527,7 @@ class Chemical:
         self._V = V = PhaseTPHandle('V', Vs, Vl, Vg)
         if CAS in sugar_solid_densities: Vs.add_method(sugar_solid_densities[CAS])
         
-        # Heat capacity
+        # Sensible heats
         Cns = HeatCapacitySolid(CASRN=CAS, similarity_variable=similarity_variable, MW=MW)
         Cng = HeatCapacityGas(CASRN=CAS, MW=MW, similarity_variable=similarity_variable, 
                               iscyclic_aliphatic=iscyclic_aliphatic)
@@ -1512,11 +1535,19 @@ class Chemical:
                                  similarity_variable=similarity_variable, Cpgm=Cng)
         self._Cn = Cn = PhaseTHandle('Cn', Cns, Cnl, Cng)
         
-        # Heat of vaporization
+        # Latent heats
         Zl = CompressibilityFactor(Vl)
         Zg = CompressibilityFactor(Vg)
-        self._Hvap = EnthalpyVaporization(CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega,
-                                          Zl=Zl, Zg=Zg, similarity_variable=similarity_variable, Psat=Psat)
+        self._Hvap = Hvap = EnthalpyVaporization(
+            CASRN=CAS, Tb=Tb, Tc=Tc, Pc=Pc, omega=omega,
+            Zl=Zl, Zg=Zg, similarity_variable=similarity_variable, Psat=Psat
+        )
+        self._Hsub = Hsub = EnthalpySublimation(
+            CASRN=CAS, Tm=Tm, Tt=Tt, Cpg=Cng, Cps=Cns, Hvap=Hvap
+        )
+        self._Psub = SublimationPressure(
+            CASRN=CAS, Tt=Tt, Pt=Pt, Hsub_t=Hsub(Tm) if Hsub and Tm else None,
+        )
         
         # Viscosity
         mul = ViscosityLiquid(CASRN=CAS, MW=MW, Tm=Tm, Tc=Tc, Pc=Pc, Vc=Vc, 

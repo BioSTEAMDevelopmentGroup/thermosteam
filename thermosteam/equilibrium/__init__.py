@@ -27,6 +27,7 @@ from . import vle
 from . import lle
 from . import sle
 from . import plot_equilibrium
+from . import flash_constructor
 
 __all__ = (*ideal.__all__,
            *domain.__all__,
@@ -40,7 +41,8 @@ __all__ = (*ideal.__all__,
            *poyinting_correction_factors.__all__,
            *binary_phase_fraction.__all__,
            *fugacities.__all__,
-           *plot_equilibrium.__all__)
+           *plot_equilibrium.__all__,
+           *flash_constructor.__all__)
 
 from .ideal import *
 from .domain import *
@@ -55,5 +57,6 @@ from .dew_point import *
 from .bubble_point import *
 from .fugacities import *
 from .plot_equilibrium import *
+from .flash_constructor import *
 
 

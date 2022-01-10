@@ -19,6 +19,7 @@ from collections.abc import Iterable
 from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
+from .constants import g
 
 __all__ = ('Stream', )
 
@@ -238,11 +239,14 @@ class Stream:
                    Ethanol  10
     
     """
-    __slots__ = ('_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
-                 '_bubble_point_cache', '_dew_point_cache',
-                 '_vle_cache', '_lle_cache', '_sle_cache',
-                 '_sink', '_source', '_price', '_link', '_property_cache_key',
-                 '_property_cache', 'characterization_factors')
+    __slots__ = (
+        '_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
+        '_bubble_point_cache', '_dew_point_cache',
+        '_vle_cache', '_lle_cache', '_sle_cache',
+        '_sink', '_source', '_price', '_link', '_property_cache_key',
+        '_property_cache', 'characterization_factors',
+        # '_velocity', '_height'
+    )
     line = 'Stream'
     
     #: [DisplayUnits] Units of measure for IPython display (class attribute)
@@ -257,13 +261,17 @@ class Stream:
 
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
                  units=None, price=0., total_flow=None, thermo=None, 
-                 characterization_factors=None, **chemical_flows):
+                 characterization_factors=None, 
+                 # velocity=0., height=0.,
+                 **chemical_flows):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
         self.price = price
+        # self.velocity = velocity
+        # self.height = height
         if units:
             name, factor = self._get_flow_name_and_factor(units)
             if name == 'mass':
@@ -487,6 +495,38 @@ class Stream:
             self._price = float(price)
         else:
             raise AttributeError(f'price must be finite, not {price}')
+    
+    # @property
+    # def velocity(self):
+    #     """[float] Velocity of stream [m/s]."""
+    #     return self._velocity
+    # @velocity.setter
+    # def velocity(self, velocity):
+    #     if np.isfinite(velocity):
+    #         self._velocity = float(velocity)
+    #     else:
+    #         raise AttributeError(f'velocity must be finite, not {velocity}')
+    
+    # @property
+    # def height(self):
+    #     """[float] Relative height of stream [m]."""
+    #     return self._height
+    # @height.setter
+    # def height(self, height):
+    #     if np.isfinite(height):
+    #         self._height = float(height)
+    #     else:
+    #         raise AttributeError(f'height must be finite, not {height}')
+    
+    # @property
+    # def potential_energy(self):
+    #     """[float] Potential energy flow rate [kW]"""
+    #     return (g * self.height * self.F_mass) / 3.6e6
+    
+    # @property
+    # def kinetic_energy(self):
+    #     """[float] Kinetic energy flow rate [kW]"""
+    #     return 0.5 * self.F_mass / 3.6e6 * self._velocity * self._velocity
     
     def isempty(self):
         """
