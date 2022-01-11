@@ -48,7 +48,7 @@ class FlashConstructor:
     >>> import thermo as tm
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Hexanol'])
-    >>> flashpkg = tmo.equilibrium.FlashConstructor( 
+    >>> flashpkg = tmo.equilibrium.FlashConstructor(
     ...     G=tm.CEOSGas, L=tm.GibbsExcessLiquid, S=tm.GibbsExcessSolid,
     ...     GE=tm.UNIFAC, GEkw=dict(version=1), Gkw=dict(eos_class=tm.PRMIX),
     ... )
@@ -61,7 +61,7 @@ class FlashConstructor:
      [0.027302, 0.972697],
      [0.943926, 0.051944, 0.004129],
      -46646.90)
-    >>> flasher = flashpkg.flasher(['Water', 'Ethanol'])
+    >>> flasher = flashpkg.flasher(['Water', 'Ethanol'], N_liquid=1)
     >>> type(flasher).__name__
     'FlashVL'
     >>> PT = flasher.flash(zs=[0.5, 0.5], T=353, P=101325)
@@ -99,17 +99,11 @@ class FlashConstructor:
         
     @property
     def data(self):
-        return self.chemicals.get_constants_and_properties()
-    
-    def get_constants_and_properties(self, IDs):
-        chemicals = self.chemicals
-        indices = chemicals.get_indicies(IDs)
-        cp = chemicals.get_constants_and_properties()
-        return cp.subset(indices)
+        return tmo.ChemicalData(self.chemicals)
     
     def flasher(self, IDs=None, N_liquid=None, N_solid=None):
         return self._flash_from_data(
-            self.get_constants_and_properties(IDs) if IDs else self.data,
+            self.data[IDs] if IDs else self.data,
             N_liquid, N_solid
         )
 
@@ -127,8 +121,7 @@ class FlashConstructor:
         return self.G.from_data(data, **self.Gkw)
 
     def _flash_from_data(self, data, N_liquid, N_solid):
-        constants, correlations = data
-        N = len(constants.CASs)
+        N = len(data.CASs)
         if N_solid is None: N_solid = 0
         if N_liquid is None: N_liquid = 1
         if N == 0:
@@ -137,8 +130,8 @@ class FlashConstructor:
             )
         elif N == 1: # Pure component
             return FlashPureVLS(
-                constants, 
-                correlations,
+                data, 
+                data,
                 self._gas_from_data(data),
                 [self._liquid_from_data(data)
                   for i in range(N_liquid)],
@@ -153,8 +146,8 @@ class FlashConstructor:
                     'not implemented (yet)'
                 )
             return FlashVL(
-                constants, 
-                correlations,
+                data, 
+                data,
                 self._gas_from_data(data),
                 self._liquid_from_data(data),
                 self.settings,
@@ -166,8 +159,8 @@ class FlashConstructor:
                     'not implemented (yet)'
                 )
             return FlashVLN(
-                constants, 
-                correlations,
+                data, 
+                data,
                 [self._liquid_from_data(data)
                   for i in range(N_liquid)],
                 self._gas_from_data(data),
@@ -189,15 +182,14 @@ def from_data(cls, data,
             Psat_extrapolation='AB',
             equilibrium_basis=None,
             caloric_basis=None):
-    constants, correlations = data
     return cls(
-        correlations.VaporPressures, 
-        VolumeLiquids=correlations.VolumeLiquids,
-        HeatCapacityGases=correlations.HeatCapacityGases,
+        data.VaporPressures, 
+        VolumeLiquids=data.VolumeLiquids,
+        HeatCapacityGases=data.HeatCapacityGases,
         GibbsExcessModel=GibbsExcessModel,
-        eos_pure_instances=[i.eos for i in correlations.VolumeGases],
-        EnthalpyVaporizations=correlations.EnthalpyVaporizations,
-        HeatCapacityLiquids=correlations.HeatCapacityLiquids,
+        eos_pure_instances=[i.eos for i in data.VolumeGases],
+        EnthalpyVaporizations=data.EnthalpyVaporizations,
+        HeatCapacityLiquids=data.HeatCapacityLiquids,
         use_Hvap_caloric=use_Hvap_caloric,
         use_Poynting=use_Poynting,
         use_phis_sat=use_phis_sat,
@@ -210,31 +202,28 @@ def from_data(cls, data,
 @constructor(CEOSGas)
 def from_data(cls, data, eos_class=None):
     from thermo.interaction_parameters import IPDB
-    constants, correlations = data
     if eos_class is None: eos_class = PRMIX
-    kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', constants.CASs, 'kij')
-    eos_kwargs = dict(Tcs=constants.Tcs,
-                      Pcs=constants.Pcs,
-                      omegas=constants.omegas,
+    kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', data.CASs, 'kij')
+    eos_kwargs = dict(Tcs=data.Tcs,
+                      Pcs=data.Pcs,
+                      omegas=data.omegas,
                       kijs=kijs)
-    return cls(eos_class, eos_kwargs, correlations.HeatCapacityGases)
+    return cls(eos_class, eos_kwargs, data.HeatCapacityGases)
 
 @constructor(VirialGas)
 def from_data(cls, data, model=None):
-    constants, correlations = data
     if model is None:
-        model = VirialCorrelationsPitzerCurl(constants.Tcs, constants.Pcs, constants.omegas)
-    return cls(model, HeatCapacityGases=correlations.HeatCapacityGases)
+        model = VirialCorrelationsPitzerCurl(data.Tcs, data.Pcs, data.omegas)
+    return cls(model, HeatCapacityGases=data.HeatCapacityGases)
 
 @constructor(UNIFAC)
 def from_data(cls, data, version=1):
-    constants, correlations = data
     if version == 0:
-        chemgroups = constants.UNIFAC_groups
+        chemgroups = data.UNIFAC_groups
     elif version == 1:
-        chemgroups = constants.UNIFAC_Dortmund_groups
+        chemgroups = data.UNIFAC_Dortmund_groups
     elif version == 2:
-        chemgroups = constants.PSRK_groups
+        chemgroups = data.PSRK_groups
     else:
         raise RuntimeError('chemgroups for version %d not yet implemented' %version)
     N = len(chemgroups)

@@ -255,7 +255,7 @@ class Chemical:
     ----------
     ID : str
         One of the following [-]:
-            * Name, in IUPAC form or common form or a synonym registered in PubChem
+            * Name, in IUPAC form or common form or an alias registered in PubChem
             * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
             * InChI key, prefixed by 'InChIKey='
             * PubChem CID, prefixed by 'PubChem='
@@ -471,7 +471,7 @@ class Chemical:
     """
     __slots__ = ('_ID', '_locked_state', 
                  '_phase_ref', '_eos', 
-                 '_synonyms', *_names, *_groups, 
+                 '_aliases', *_names, *_groups, 
                  *_handles, *_data,
                  '_N_solutes')
     
@@ -551,7 +551,7 @@ class Chemical:
 
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
-              formula=None, synonyms=None, **data):
+              formula=None, aliases=None, **data):
         """
         Return a new Chemical object without any thermodynamic models or data 
         (unless provided).
@@ -614,7 +614,7 @@ class Chemical:
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
         self._NIST = NISTGroupCounts()
-        self.synonyms = synonyms or ()
+        self.aliases = aliases or ()
         setfield = setattr
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
@@ -863,12 +863,14 @@ class Chemical:
     ### Names ###
     
     @property
-    def synonyms(self):
-        """set[str] User-defined synonyms."""
-        return self._synonyms
-    @synonyms.setter
-    def synonyms(self, synonyms):
-        self._synonyms = set([synonyms]) if isinstance(synonyms, str) else set(synonyms)
+    def aliases(self):
+        """set[str] User-defined aliases."""
+        return self._aliases
+    @aliases.setter
+    def aliases(self, aliases):
+        self._aliases = set([aliases]) if isinstance(aliases, str) else set(aliases)
+    
+    synonyms = aliases
     
     @property
     def InChI(self):
@@ -1341,7 +1343,7 @@ class Chemical:
               Tb=None, Tc=None, Pc=None, Vc=None, omega=None,
               Tt=None, Pt=None, Hf=None, S0=None, LHV=None, combustion=None,
               HHV=None, Hfus=None, dipole=None,
-              similarity_variable=None, iscyclic_aliphatic=None, synonyms=None,
+              similarity_variable=None, iscyclic_aliphatic=None, aliases=None,
               *, metadata=None, phase=None):
         """
         Reset all chemical properties.
@@ -1383,7 +1385,7 @@ class Chemical:
             MW = compute_molecular_weight(formula)
         self._init_names(CAS, smiles, InChI, InChI_key, 
                          pubchemid, iupac_name, common_name,
-                         formula, synonyms)
+                         formula, aliases)
         self._init_groups(InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
             self._Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
@@ -1428,7 +1430,7 @@ class Chemical:
     ### Initializers ###
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
-                    pubchemid, iupac_name, common_name, formula, synonyms):
+                    pubchemid, iupac_name, common_name, formula, aliases):
         self._CAS = CAS
         self._smiles = smiles
         self._InChI = InChI
@@ -1436,7 +1438,7 @@ class Chemical:
         self._pubchemid = pubchemid
         self._iupac_name = iupac_name
         self._common_name = common_name
-        self.synonyms = synonyms or ()
+        self.aliases = aliases or ()
         self._formula = formula
         
     def _init_groups(self, InChI_key):

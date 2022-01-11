@@ -435,16 +435,6 @@ class VLE(Equilibrium, phases='lg'):
         elif P > Psat + tol:
             self._liquid_mol[self._index] = self._mol_vle
             self._vapor_mol[self._index] = 0
-        else:
-            pass
-            # raise RuntimeError(
-            #     'VLE of a one component mixture at the bubble point '
-            #     '(which is also the dew point) results in an undetermined '
-            #     'vapor fraction'
-            # )
-            # L_over_F = (P - Psat + tol) / (2 * tol)
-            # self._liquid_mol[self._index] = liq = L_over_F * self._mol_vle
-            # self._vapor_mol[self._index] = self._mol_vle - liq
     
     def _set_TV_chemical(self, T, V):
         # Set vapor fraction

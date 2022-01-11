@@ -38,6 +38,7 @@ from . import (constants,
                separations,
                functors,
 )
+from ._chemical_data import ChemicalData
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals
 from ._thermal_condition import ThermalCondition
@@ -55,7 +56,7 @@ from ._multi_stream import MultiStream
 from .base import functor
 from .reaction import *
 
-__all__ = ('Chemical', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
+__all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
            'IdealThermo', 'Stream', 'MultiStream', 'ThermalCondition', 
            'mixture', 'ThermoData', *reaction.__all__, 'indexer', 'settings', 
            'functor', 'functors', 'chemicals', 'base', 'equilibrium', 

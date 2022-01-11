@@ -11,17 +11,12 @@ from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
-from .base import PhaseHandle
 import thermosteam as tmo
-from chemicals.lennard_jones import Stockmayer, molecular_diameter
-from thermo.unifac import UNIFAC_RQ, Van_der_Waals_volume, Van_der_Waals_area
-from chemicals.utils import Parachor
-import thermo as tm
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
 setattr = object.__setattr__
-
+    
 # %% Functions
 
 def must_compile(*args, **kwargs): # pragma: no cover
@@ -45,7 +40,7 @@ class Chemicals:
     ----------
     chemicals : Iterable[str or :class:`~thermosteam.Chemical`]
         Strings should be one of the following [-]:
-           * Name, in IUPAC form or common form or a synonym registered in PubChem
+           * Name, in IUPAC form or common form or an alias registered in PubChem
            * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
            * InChI key, prefixed by 'InChIKey='
            * PubChem CID, prefixed by 'PubChem='
@@ -131,142 +126,6 @@ class Chemicals:
             CASs.add(CAS)
             setfield(self, i.ID, i)
         return self
-    
-    def get_constants_and_properties(self):
-        """Return a tuple of thermo.ChemicalConstantsPackage and 
-        thermo.ChemicalPropertiesPackage objects."""
-        def get_properties(names):
-            getfield = getattr
-            return [[getfield(i, name) for i in chemicals] for name in names]
-        
-        def get_phase_properties(name, phases):
-            getfield = getattr
-            isa = isinstance
-            phase_properties = [[] for i in phases]
-            for chemical in chemicals:
-                handle = getfield(chemical, name)
-                if isa(handle, PhaseHandle):
-                    for i, phase in enumerate(phases):
-                        phase_properties[i].append(getfield(handle, phase))
-                else:
-                    for i in phase_properties: i.append(handle)
-            return phase_properties
-        
-        chemicals = tuple(self)
-        (EnthalpyVaporizations, VaporPressures, SublimationPressures, 
-         EnthalpySublimations, SurfaceTensions, PermittivityLiquids,
-         CASs, MWs, Tms, Tbs, Tcs, Pcs, Vcs, omegas, Zcs, Hfus_Tms, Tts, Pts,
-         dipoles, charges, UNIFAC_groups, UNIFAC_Dortmund_groups, PSRK_groups,
-         similarity_variables, StielPolars) = get_properties(
-             ['Hvap', 'Psat', 'Psub', 'Hsub', 'sigma', 'epsilon',
-              'CAS', 'MW', 'Tm', 'Tb', 'Tc', 'Pc', 'Vc', 'omega', 'Zc', 'Hfus',
-              'Tt', 'Pt', 'dipole', 'charge', 'UNIFAC', 'Dortmund', 'PSRK',
-              'similarity_variable', 'Stiel_Polar']
-        )
-        VolumeGases, VolumeLiquids, VolumeSolids = get_phase_properties('V', 'gls')
-        HeatCapacityGases, HeatCapacityLiquids, HeatCapacitySolids = get_phase_properties('Cn', 'gls')
-        ViscosityGases, ViscosityLiquids = get_phase_properties('Cn', 'gl')
-        ThermalConductivityGases, ThermalConductivityLiquids = get_phase_properties('Cn', 'gl')
-        rhocs = [None if Vc is None else 1.0/Vc for Vc in Vcs]
-        rhocs_mass = [None if None in (rhoc, MW) else rhoc * 1e-3 * MW
-                      for rhoc, MW in zip(rhocs, MWs)]
-        Hfus_Tms_mass = [None if None in (Hfus, MW) else Hfus * 1000.0 / MW
-                         for Hfus, MW in zip(Hfus_Tms, MWs)]
-        Hvap_Tbs = [Hvap(Tb) for Hvap, Tb in zip(EnthalpyVaporizations, Tbs)]
-        Hvap_Tbs_mass = [None if None in (Hvap, MW) else Hvap*1000.0/MW
-                         for Hvap, MW in zip(Hvap_Tbs, Tbs)]
-        N = len(chemicals)
-        N_range = range(N)
-        Vmg_STPs = [VolumeGases[i].TP_dependent_property(298.15, 101325.0)
-                   for i in N_range]
-        rhog_STPs = [1.0/V if V is not None else None for V in Vmg_STPs]
-        rhog_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vmg_STPs, MWs)]
-
-        Vml_Tbs = [VolumeLiquids[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None
-                   for i in N_range]
-        Vml_Tms = [VolumeLiquids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None
-                   for i in N_range]
-        Vml_STPs = [VolumeLiquids[i].T_dependent_property(298.15)
-                   for i in N_range]
-        Vml_60Fs = [VolumeLiquids[i].T_dependent_property(288.7055555555555)
-                   for i in N_range]
-        rhol_STPs = [1.0/V if V is not None else None for V in Vml_STPs]
-        rhol_60Fs = [1.0/V if V is not None else None for V in Vml_60Fs]
-        rhol_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_STPs, MWs)]
-        rhol_60Fs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_60Fs, MWs)]
-        Hsub_Tts = [EnthalpySublimations[i](Tts[i]) if Tts[i] is not None else None
-                    for i in N_range]
-        Hsub_Tts_mass = [Hsub*1000.0/MW if Hsub is not None else None for Hsub, MW in zip(Hsub_Tts, MWs)]
-        Stockmayers = [Stockmayer(Tm=Tms[i], Tb=Tbs[i], Tc=Tcs[i], Zc=Zcs[i], omega=omegas[i], CASRN=CASs[i]) for i in N_range]
-        molecular_diameters = [molecular_diameter(Tc=Tcs[i], Pc=Pcs[i], Vc=Vcs[i], Zc=Zcs[i], omega=omegas[i],
-                                                  Vm=Vml_Tms[i], Vb=Vml_Tbs[i], CASRN=CASs[i]) for i in N_range]
-        Psat_298s = [VaporPressures[i].T_dependent_property(298.15) for i in N_range]
-        Hvap_Tbs = [o.T_dependent_property(Tb) if Tb else None for o, Tb, in zip(EnthalpyVaporizations, Tbs)]
-        Hvap_Tbs_mass =  [Hvap*1000.0/MW if Hvap is not None else None for Hvap, MW in zip(Hvap_Tbs, MWs)]
-
-        Hvap_298s = [o.T_dependent_property(298.15) for o in EnthalpyVaporizations]
-        Hvap_298s_mass =  [Hvap*1000.0/MW if Hvap is not None else None for Hvap, MW in zip(Hvap_298s, MWs)]
-        Vml_Tbs = [VolumeLiquids[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None
-                   for i in N_range]
-        Vml_Tms = [VolumeLiquids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None
-                   for i in N_range]
-        Vml_STPs = [VolumeLiquids[i].T_dependent_property(298.15)
-                   for i in N_range]
-        Vml_60Fs = [VolumeLiquids[i].T_dependent_property(288.7055555555555)
-                   for i in N_range]
-        rhol_STPs = [1.0/V if V is not None else None for V in Vml_STPs]
-        rhol_60Fs = [1.0/V if V is not None else None for V in Vml_60Fs]
-        rhol_STPs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_STPs, MWs)]
-        rhol_60Fs_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vml_60Fs, MWs)]
-        Vms_Tms = [VolumeSolids[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None for i in N_range]
-        rhos_Tms = [1.0/V if V is not None else None for V in Vms_Tms]
-        rhos_Tms_mass = [1e-3*MW/V if V is not None else None for V, MW in zip(Vms_Tms, MWs)]
-        sigma_STPs = [SurfaceTensions[i].T_dependent_property(298.15) for i in N_range]
-        sigma_Tbs = [SurfaceTensions[i].T_dependent_property(Tbs[i]) if Tbs[i] is not None else None for i in N_range]
-        sigma_Tms = [SurfaceTensions[i].T_dependent_property(Tms[i]) if Tms[i] is not None else None for i in N_range]
-        UNIFAC_Rs, UNIFAC_Qs = [None]*N, [None]*N
-        for i in N_range:
-            groups = UNIFAC_groups[i]
-            if groups is not None:
-                UNIFAC_Rs[i], UNIFAC_Qs[i] = UNIFAC_RQ(groups)
-        Van_der_Waals_volumes = [Van_der_Waals_volume(UNIFAC_Rs[i]) if UNIFAC_Rs[i] is not None else None for i in N_range]
-        Van_der_Waals_areas = [Van_der_Waals_area(UNIFAC_Qs[i]) if UNIFAC_Qs[i] is not None else None for i in N_range]
-        Parachors = [None]*N
-        for i in N_range:
-            try:
-                Parachors[i] = Parachor(sigma=sigma_STPs[i], MW=MWs[i], rhol=rhol_STPs_mass[i], rhog=rhog_STPs_mass[i])
-            except:
-                pass
-        constants = tm.ChemicalConstantsPackage(
-            CASs=CASs, MWs=MWs, Tms=Tms, Tbs=Tbs, Tcs=Tcs, Pcs=Pcs, Vcs=Vcs, omegas=omegas,
-            Zcs=Zcs, rhocs=rhocs, rhocs_mass=rhocs_mass, Hfus_Tms=Hfus_Tms,
-            Hfus_Tms_mass=Hfus_Tms_mass, Hvap_Tbs=Hvap_Tbs, Hvap_Tbs_mass=Hvap_Tbs_mass,
-            Vml_STPs=Vml_STPs, rhol_STPs=rhol_STPs, rhol_STPs_mass=rhol_STPs_mass,
-            Vml_60Fs=Vml_60Fs, rhol_60Fs=rhol_60Fs, rhol_60Fs_mass=rhol_60Fs_mass,
-            Vmg_STPs=Vmg_STPs, rhog_STPs=rhog_STPs, rhog_STPs_mass=rhog_STPs_mass,
-            Tts=Tts, Pts=Pts, Hsub_Tts=Hsub_Tts, Hsub_Tts_mass=Hsub_Tts_mass,
-            Psat_298s=Psat_298s, Hvap_298s=Hvap_298s, Hvap_298s_mass=Hvap_298s_mass,
-            Vml_Tms=Vml_Tms, Vms_Tms=Vms_Tms, rhos_Tms=rhos_Tms, rhos_Tms_mass=rhos_Tms_mass,
-            sigma_STPs=sigma_STPs, sigma_Tbs=sigma_Tbs, sigma_Tms=sigma_Tms,
-            charges=charges, dipoles=dipoles, Stockmayers=Stockmayers,
-            molecular_diameters=molecular_diameters, Van_der_Waals_volumes=Van_der_Waals_volumes,
-            Van_der_Waals_areas=Van_der_Waals_areas, StielPolars=StielPolars,
-            similarity_variables=similarity_variables, phase_STPs=[i.get_phase() for i in chemicals],
-            UNIFAC_Rs=UNIFAC_Rs, UNIFAC_Qs=UNIFAC_Qs, Parachors=Parachors,
-            UNIFAC_groups=UNIFAC_groups, UNIFAC_Dortmund_groups=UNIFAC_Dortmund_groups,
-            PSRK_groups=PSRK_groups,
-        )
-    
-        return constants, tm.PropertyCorrelationsPackage(
-            constants, VaporPressures=VaporPressures, SublimationPressures=SublimationPressures,
-            VolumeGases=VolumeGases, VolumeLiquids=VolumeLiquids, VolumeSolids=VolumeSolids,
-            HeatCapacityGases=HeatCapacityGases, HeatCapacityLiquids=HeatCapacityLiquids, 
-            HeatCapacitySolids=HeatCapacitySolids, ViscosityGases=ViscosityGases, 
-            ViscosityLiquids=ViscosityLiquids, ThermalConductivityGases=ThermalConductivityGases, 
-            ThermalConductivityLiquids=ThermalConductivityLiquids, EnthalpyVaporizations=EnthalpyVaporizations, 
-            EnthalpySublimations=EnthalpySublimations, SurfaceTensions=SurfaceTensions,
-            PermittivityLiquids=PermittivityLiquids
-        )
     
     def __getnewargs__(self):
         return (tuple(self),)
@@ -406,7 +265,7 @@ class CompiledChemicals(Chemicals):
     ----------
     chemicals : Iterable[str or Chemical]
            Strings should be one of the following [-]:
-              * Name, in IUPAC form or common form or a synonym registered in PubChem
+              * Name, in IUPAC form or common form or an alias registered in PubChem
               * InChI name, prefixed by 'InChI=1S/' or 'InChI=1/'
               * InChI key, prefixed by 'InChIKey='
               * PubChem CID, prefixed by 'PubChem='
@@ -487,25 +346,16 @@ class CompiledChemicals(Chemicals):
     def __dir__(self):
         return ('append', 'array', 'compile', 'extend', 
                 'get_combustion_reactions', 'get_index',
-                'get_lle_indices', 'get_synonyms',
+                'get_lle_indices', 'get_aliases',
                 'get_vle_indices', 'iarray', 'ikwarray',
                 'index', 'indices', 'kwarray', 'refresh_constants', 
-                'set_synonym') + self.IDs
+                'set_alias') + self.IDs
     
     def __reduce__(self):
         return CompiledChemicals, (self.tuple,)
     
     def compile(self, skip_checks=False):
         """Do nothing, CompiledChemicals objects are already compiled.""" 
-    
-    def get_constants_and_properties(self):
-        """Return a tuple of thermo.ChemicalConstantsPackage and 
-        thermo.ChemicalPropertiesPackage objects."""
-        try:
-            return self._constants_and_properties
-        except:
-            self.__dict__['_constants_and_properties'] = cp = super().get_constants_and_properties()
-            return cp
     
     def define_group(self, name, IDs, composition=None, wt=False):
         """
@@ -698,7 +548,7 @@ class CompiledChemicals(Chemicals):
         all_names_list = []
         for i in chemicals:
             if not i.iupac_name: i.iupac_name = ()
-            all_names = set([*i.iupac_name, *i.synonyms, i.common_name, i.formula])
+            all_names = set([*i.iupac_name, *i.aliases, i.common_name, i.formula])
             all_names_list.append(all_names)
             for name in all_names:
                 if not name: continue
@@ -710,7 +560,7 @@ class CompiledChemicals(Chemicals):
             ID = i.ID
             for name in all_names:
                 if name and name not in repeated_names:
-                    self.set_synonym(ID, name)
+                    self.set_alias(ID, name)
         vle_chemicals = []
         lle_chemicals = []
         heavy_chemicals = []
@@ -768,9 +618,9 @@ class CompiledChemicals(Chemicals):
         formula_array.setflags(0)
         return formula_array
     
-    def get_parsable_synonym(self, ID):
+    def get_parsable_alias(self, ID):
         """
-        Return a synonym of the given chemical identifier that can be 
+        Return an alias of the given chemical identifier that can be 
         parsed by Python as a variable name
         
         Parameters
@@ -780,21 +630,23 @@ class CompiledChemicals(Chemicals):
             
         Examples
         --------
-        Get parsable synonym of 2,3-Butanediol:
+        Get parsable alias of 2,3-Butanediol:
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['2,3-Butanediol'], cache=True)
-        >>> chemicals.get_parsable_synonym('2,3-Butanediol')
+        >>> chemicals.get_parsable_alias('2,3-Butanediol')
         'C4H10O2'
         
         """
         isvalid = utils.is_valid_ID      
-        for i in self.get_synonyms(ID):
+        for i in self.get_aliases(ID):
             if isvalid(i): return i        
     
-    def get_synonyms(self, ID):
+    get_parsable_synonym = get_parsable_alias
+    
+    def get_aliases(self, ID):
         """
-        Return all synonyms of a chemical.
+        Return all aliases of a chemical.
         
         Parameters
         ----------
@@ -803,55 +655,59 @@ class CompiledChemicals(Chemicals):
             
         Examples
         --------
-        Get all synonyms of water:
+        Get all aliases of water:
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water'], cache=True)
-        >>> synonyms = chemicals.get_synonyms('Water')
-        >>> synonyms.sort()
-        >>> synonyms
+        >>> aliases = chemicals.get_aliases('Water')
+        >>> aliases.sort()
+        >>> aliases
         ['7732-18-5', 'H2O', 'Water', 'oxidane', 'water']
         
         """
         k = self._index[ID]
         return [i for i, j in self._index.items() if j==k] 
 
-    def set_synonym(self, ID, synonym):
+    get_synonyms = get_aliases
+
+    def set_alias(self, ID, alias):
         """
-        Set a new synonym for a chemical.
+        Set a new alias for a chemical.
         
         Parameters
         ----------
         ID : str
             Chemical identifier.
-        synonym : str
+        alias : str
             New identifier for chemical.
             
         Examples
         --------
-        Set new synonym for water:
+        Set new alias for water:
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
-        >>> chemicals.set_synonym('Water', 'H2O')
+        >>> chemicals.set_alias('Water', 'H2O')
         >>> chemicals.H2O is chemicals.Water
         True
         
-        Note that you cannot use one synonym for two chemicals:
+        Note that you cannot use one alias for two chemicals:
         
-        >>> chemicals.set_synonym('Ethanol', 'H2O')
+        >>> chemicals.set_alias('Ethanol', 'H2O')
         Traceback (most recent call last):
-        ValueError: synonym 'H2O' already in use by Chemical('Water')
+        ValueError: alias 'H2O' already in use by Chemical('Water')
         
         """
         dct = self.__dict__
         chemical = dct[ID]
-        if synonym in dct and dct[synonym] is not chemical:
-            raise ValueError(f"synonym '{synonym}' already in use by {repr(dct[synonym])}")
+        if alias in dct and dct[alias] is not chemical:
+            raise ValueError(f"alias '{alias}' already in use by {repr(dct[alias])}")
         else:
-            self._index[synonym] = self._index[ID]
-            dct[synonym] = chemical
-        chemical.synonyms.add(synonym)
+            self._index[alias] = self._index[ID]
+            dct[alias] = chemical
+        chemical.aliases.add(alias)
+    
+    set_synonym = set_alias
     
     def zeros(self):
         """
