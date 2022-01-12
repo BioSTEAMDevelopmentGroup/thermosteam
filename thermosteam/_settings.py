@@ -16,12 +16,17 @@ def raise_no_thermo_error():
     raise RuntimeError("no available 'Thermo' object; "
                        "use settings.set_thermo")
 
+def raise_no_flashpkg_error():
+    raise RuntimeError("no available 'FlashConstructor' object; "
+                       "use settings.set_flashpkg")
+    
 class Settings:
     __slots__ = (
         'impact_indicators',
         '_thermo',
         '_phase_names',
         '_debug',
+        '_flashpkg',
     )
     
     def __init__(self):
@@ -34,6 +39,7 @@ class Settings:
                              'S': 'SOLID',
                              'L': 'LIQUID',
                              'G': 'GAS'}
+        self._flashpkg = None
     
     def define_impact_indicator(self, key, units):
         self.impact_indicators[key] = AbsoluteUnitsOfMeasure(units)
@@ -96,6 +102,29 @@ class Settings:
             mixture = thermo.mixture
         return mixture
     
+    def get_default_flashpkg(self, flashpkg):
+        """
+        Return a default FlashConstructor object.
+        If `flash` is a FlashConstructor object, return the same object.
+        
+        """
+        if not flashpkg: flashpkg = self.get_flashpkg()
+        return flashpkg
+    
+    def get_flashpkg(self):
+        flashpkg = self._flashpkg
+        if not flashpkg: self._flashpkg = flashpkg = tmo.equilibrium.FlashPackage()
+        return flashpkg
+    
+    def get_default_flasher(self, flasher):
+        if not flasher:
+            flashpkg = self.get_flashpkg()
+            return flashpkg.flahser()
+        return flasher
+    
+    def flasher(self, IDs=None, N_liquid=None, N_solid=None):
+        return self.get_flashpkg().flasher(IDs, N_liquid, N_solid)
+    
     def get_thermo(self):
         """Return a default Thermo object."""
         thermo = self._thermo
@@ -120,6 +149,22 @@ class Settings:
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
         self._thermo = thermo
+    
+    def set_flashpkg(self, flashpkg):
+        """
+        Set the default FlashPackage object. 
+        
+        Parameters
+        ----------
+        flashpkg : FlashPackage
+            A FlashPackage object that predefines algorithms for equilibrium 
+            calculations.
+
+        """
+        if isinstance(flashpkg, tmo.equilibrium.FlashPackage):
+            self._flashpkg = flashpkg
+        else:
+            raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
     
     def get_chemicals(self):
         """Return a default Chemicals object."""

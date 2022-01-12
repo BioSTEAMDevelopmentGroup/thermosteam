@@ -24,13 +24,13 @@ class Cache:
     
     def retrieve(self):
         value = self.value
-        if not value:
-            self.value = value = self.load(*self.args)
+        if not value: self.value = value = self.load(*self.args)
         return value
     
     def __call__(self, *args):
         if args == self.args:
-            value = self.retrieve()
+            value = self.value
+            if not value: self.value = value = self.load(*self.args)
         else:
             self.args = args
             self.value = value = self.load(*self.args)

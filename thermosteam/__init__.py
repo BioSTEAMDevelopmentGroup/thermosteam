@@ -47,21 +47,23 @@ from .mixture import Mixture
 from ._thermo import Thermo, IdealThermo
 from ._settings import settings
 from ._thermo_data import ThermoData
-from . import (indexer,
-               reaction,
-               equilibrium
+from . import (
+    indexer,
+    reaction,
+    equilibrium
 )
 from ._stream import Stream
 from ._multi_stream import MultiStream
 from .base import functor
 from .reaction import *
+from .equilibrium import * 
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
            'IdealThermo', 'Stream', 'MultiStream', 'ThermalCondition', 
-           'mixture', 'ThermoData', *reaction.__all__, 'indexer', 'settings', 
-           'functor', 'functors', 'chemicals', 'base', 'equilibrium', 
-           'units_of_measure', 'exceptions', 'functional', 'reaction', 
-           'constants', 'utils', 'separations')
+           'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__, 
+           'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
+           'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
+           'reaction', 'constants', 'utils', 'separations')
 
 def speed_up():
     from warnings import warn
