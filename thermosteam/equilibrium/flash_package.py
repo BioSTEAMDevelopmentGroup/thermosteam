@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 """
+from thermo.interaction_parameters import IPDB
 import thermosteam as tmo
 from thermo.bulk import default_settings
 import thermo as tm
@@ -46,7 +47,7 @@ class FlashPackage:
     --------
     >>> import thermo as tm
     >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Hexanol'])
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Hexane'])
     >>> # VLLE using activity coefficients for the liquid phase 
     >>> # and equations of state for the gas phase.
     >>> flashpkg = tmo.equilibrium.FlashPackage(
@@ -58,10 +59,10 @@ class FlashPackage:
     'FlashVLN'
     >>> PT = flasher.flash(zs=[0.3, 0.2, 0.5], T=330, P=101325)
     >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H())
-    (0.0,
-     [0.027302, 0.972697],
-     [0.943926, 0.051944, 0.004129],
-     -46646.90)
+    (0.75172,
+     [0.7517, 0.2482],
+     [0.7617, 0.2336, 0.0045],
+     -7651.99)
     >>> # VLE using activity coefficients for the liquid phase 
     >>> # and equations of state for the gas phase.
     >>> flasher = flashpkg.flasher(['Water', 'Ethanol'], N_liquid=1)
@@ -69,7 +70,9 @@ class FlashPackage:
     'FlashVL'
     >>> PT = flasher.flash(zs=[0.5, 0.5], T=353, P=101325)
     >>> (PT.VF, PT.gas.zs, PT.H())
-    (0.312, [0.363, 0.636], -25473.987)
+    (0.3127,
+     [0.3634, 0.6365],
+     -25473.98)
     >>> # Single component equilibrium.
     >>> flasher = flashpkg.flasher(['Ethanol']) 
     >>> type(flasher).__name__
@@ -80,21 +83,32 @@ class FlashPackage:
     >>> # VLLE using virial equation of state for the gas phase
     >>> flashpkg.G, flashpkg.Gkw = tm.VirialGas, {}
     >>> flasher = flashpkg.flasher(N_liquid=2)
-    >>> PT = flasher.flash(zs=[0.3, 0.2, 0.5], T=330, P=101325)
-    >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H())
+    >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
+    >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count)
     (0.0,
-     [0.027302, 0.972697],
-     [0.9439261, 0.051944, 0.004129],
-     -46646.90)
+     [0.4754, 0.5245],
+     [0.9183, 0.0808, 0.0008],
+     -33421.13,
+     2)
+    >>> # VLLE using SRK equation of state for the gas phase
+    >>> flashpkg.G, flashpkg.Gkw = tm.CEOSGas, {'eos_class': tm.SRKMIX}
+    >>> flasher = flashpkg.flasher(N_liquid=2)
+    >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
+    >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count)
+    (0.6448,
+     [0.6448, 0.3551],
+     [0.9670, 0.0324, 0.0004],
+     -12434.89,
+     2)
     >>> # VLLE using ideal gas
     >>> flashpkg.G = tm.IdealGas
     >>> flasher = flashpkg.flasher(N_liquid=2)
-    >>> PT = flasher.flash(zs=[0.3, 0.2, 0.5], T=330, P=101325)
+    >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
     >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H())
     (0.0,
-     [0.027302, 0.972697],
-     [0.9439262, 0.051944, 0.004129],
-     -46646.90)
+     [0.4754, 0.5245],
+     [0.9183, 0.0808, 0.0008],
+     -33421.13)
     
     """
     __slots__ = (
@@ -226,13 +240,14 @@ def from_data(cls, data,
 
 @constructor(tm.CEOSGas)
 def from_data(cls, data, eos_class=None):
-    from thermo.interaction_parameters import IPDB
     if eos_class is None: eos_class = tm.PRMIX
-    kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', data.CASs, 'kij')
     eos_kwargs = dict(Tcs=data.Tcs,
                       Pcs=data.Pcs,
-                      omegas=data.omegas,
-                      kijs=kijs)
+                      omegas=data.omegas)
+    try:
+        eos_kwargs['kijs'] = IPDB.get_ip_asymmetric_matrix('ChemSep PR', data.CASs, 'kij')
+    except:
+        pass        
     return cls(eos_class, eos_kwargs, data.HeatCapacityGases)
 
 tm.VirialGas.model_attributes = ('HeatCapacityGases', 'model') # TODO: Add attribute in Caleb's thermo
