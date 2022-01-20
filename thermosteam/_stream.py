@@ -243,7 +243,7 @@ class Stream:
         '_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
-        '_sink', '_source', '_price', '_link', '_property_cache_key',
+        '_sink', '_source', '_price', '_islinked', '_property_cache_key',
         '_property_cache', 'characterization_factors',
         # '_velocity', '_height'
     )
@@ -302,13 +302,13 @@ class Stream:
         self._sink = self._source = None # For BioSTEAM
         self.reset_cache()
         self._register(ID)
-        self._link = None
+        self._islinked = False
 
     def _reset_thermo(self, thermo):
         if thermo is self._thermo: return
         self._thermo = thermo
         self._imol.reset_chemicals(thermo.chemicals)
-        self._link = None
+        self._islinked = False
         self.reset_cache()
         if hasattr(self, '_streams'):
             for phase, stream in self._streams.items():
@@ -1345,6 +1345,11 @@ class Stream:
         TP : bool, defaults to True
             Whether to link the temperature and pressure.
         
+        See Also
+        --------
+        :obj:`~Stream.flow_proxy`
+        :obj:`~Stream.proxy`
+        
         Examples
         --------
         >>> import thermosteam as tmo
@@ -1365,23 +1370,20 @@ class Stream:
             at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
-        if self._link and not (self.source is other.sink or self.sink is other.source):
+        if self._islinked and not (self.source is other.sink or self.sink is other.source):
             raise RuntimeError(f"stream {self} cannot link with stream {other};"
-                               f" {self} already linked with {self._link}")
+                               f" {self} already linked")
         if TP and flow and (phase or self._imol._data.ndim == 2):
             self._imol._data_cache = other._imol._data_cache
         else:
             self._imol._data_cache.clear()
-        
         if TP:
             self._thermal_condition = other._thermal_condition
         if flow:
             self._imol._data = other._imol._data
         if phase and self._imol._data.ndim == 1:
             self._imol._phase = other._imol._phase
-        
-        self._link = other
-        other._link = self
+        self._islinked = other._islinked = True
             
     def unlink(self):
         """
@@ -1409,13 +1411,13 @@ class Stream:
         imol = self._imol
         if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
             raise RuntimeError('phase is locked; stream cannot be unlinked')
-        if self._link:
+        if self._islinked:
             imol._data_cache.clear()
             imol._data = imol._data.copy()
             imol._phase = imol._phase.copy()
             self._thermal_condition = self._thermal_condition.copy()
             self.reset_cache()
-            self._link = None
+            self._islinked = False
         
     
     def copy_like(self, other):
@@ -1635,7 +1637,8 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._link = new._sink = new._source = None
+        new._islinked = False
+        new._sink = new._source = None
         new.characterization_factors = {}
         new._thermo = thermo or self._thermo
         new._imol = self._imol.copy()
@@ -1651,6 +1654,11 @@ class Stream:
     def flow_proxy(self, ID=None):
         """
         Return a new stream that shares flow rate data with this one.
+        
+        See Also
+        --------
+        :obj:`~Stream.link_with`
+        :obj:`~Stream.proxy`
         
         Examples
         --------
@@ -1672,12 +1680,21 @@ class Stream:
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.characterization_factors = {}
-        new._link = self
+        self._islinked = new._islinked = True
         return new
     
     def proxy(self, ID=None):
         """
-        Return a new stream that shares all data with this one.
+        Return a new stream that shares all thermochemical data with this one.
+        
+        See Also
+        --------
+        :obj:`~Stream.link_with`
+        :obj:`~Stream.flow_proxy`
+        
+        Warning
+        -------
+        Price and characterization factor data is not shared
         
         Examples
         --------
@@ -1703,7 +1720,8 @@ class Stream:
         new._dew_point_cache = self._dew_point_cache
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
-        new._link = self
+        new.characterization_factors = {}
+        self._islinked = new._islinked = True
         return new
     
     def empty(self):
@@ -2140,17 +2158,15 @@ class Stream:
         other.copy_like(liquid)
         self.T = other.T = ms.T
         
-        
-        
     ### Casting ###
     
     @property
-    def link(self):
+    def islinked(self):
         """
-        [Stream] Data on the thermal condition and material flow rates may 
-        be shared with this stream.
+        [bool] Whether data regarding the thermal condition, material flow rates,
+        and phases are shared with other streams.
         """
-        return self._link
+        return self._islinked
     
     @property
     def phases(self):
@@ -2159,7 +2175,7 @@ class Stream:
     @phases.setter
     def phases(self, phases):
         if self.phases == phases: return
-        if self._link: self.unlink()
+        if self._islinked: self.unlink()
         if len(phases) == 1:
             self.phase = phases[0]
         else:

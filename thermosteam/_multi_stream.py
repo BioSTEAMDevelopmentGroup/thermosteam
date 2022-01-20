@@ -228,7 +228,7 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._link = None
+        self._islinked = False
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
@@ -284,7 +284,8 @@ class MultiStream(Stream):
             stream = streams[phase]
         else:
             stream = Stream.__new__(Stream)
-            stream._ID = stream._link = stream._sink = stream._source = None
+            stream._ID = stream._sink = stream._source = None
+            stream._islinked = False
             stream._imol = self._imol.get_phase(phase)
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo
@@ -407,7 +408,6 @@ class MultiStream(Stream):
             self.phase = phases[0]
         phases = phase_tuple(phases)
         if phases != self.phases:
-            if self._link: raise RuntimeError('cannot convert linked stream')
             self._imol = self._imol.to_material_indexer(phases)
             self.reset_cache()
     
@@ -665,6 +665,8 @@ class MultiStream(Stream):
         """
         if self.chemicals is not other.chemicals:
             raise ValueError('other stream must have the same chemicals defined to copy flow')
+        other_ismultistream = isinstance(other, MultiStream)
+        if other_ismultistream: self.phases = [*self.phases, *other.phases]
         IDs_index = self.chemicals.get_index(IDs)
         phase_index = self.imol.get_phase_index(phase)
         data = self.imol.data
@@ -673,9 +675,7 @@ class MultiStream(Stream):
             data = self.imol.data
             other_data = other.imol.data
             original_data = data.copy()
-            if isinstance(other, MultiStream):
-                if self.phases != other.phases:
-                    raise ValueError('other stream must have the same phases defined to copy flow')
+            if other_ismultistream:
                 data[:] = other_data
                 data[phase_index, IDs_index] = original_data[phase_index, IDs_index]
                 if remove:
@@ -690,14 +690,7 @@ class MultiStream(Stream):
                     excluded_data = other_data[IDs_index]
                     other_data[:] = 0.
                     other_data[IDs_index] = excluded_data   
-        elif isinstance(other, MultiStream):
-            if self.phases != other.phases:
-                # TODO: Prevent having to change phases of streams.
-                self.phases = other.phases = [*self.phases, *other.phases]
-                data = self.imol.data
-                other_data = other.imol.data
-                phase_index = self.imol.get_phase_index(phase)
-                IDs_index = self.chemicals.get_index(IDs)
+        elif other_ismultistream:
             data[phase_index, IDs_index] = other_data[phase_index, IDs_index]
             if remove: other_data[phase_index, IDs_index] = 0.
         else:
@@ -897,7 +890,6 @@ class MultiStream(Stream):
     @phase.setter
     def phase(self, phase):
         if len(phase) > 1: self.phases = phase
-        if self._link: raise RuntimeError('cannot convert linked stream')
         self._imol = self._imol.to_chemical_indexer(phase)
         self._streams.clear()
         self.__class__ = Stream

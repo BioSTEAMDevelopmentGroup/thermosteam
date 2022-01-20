@@ -101,7 +101,7 @@ class FlashPackage:
      -12434.89,
      2)
     >>> # VLLE using ideal gas
-    >>> flashpkg.G = tm.IdealGas
+    >>> flashpkg.G, flashpkg.Gkw = tm.IdealGas, {}
     >>> flasher = flashpkg.flasher(N_liquid=2)
     >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
     >>> (PT.VF, PT.betas, PT.liquid0.zs, PT.H())

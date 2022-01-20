@@ -338,7 +338,7 @@ class Chemical:
              Tb: 373.12 K
              Tt: 273.15 K
              Tc: 647.14 K
-             Pt: 610.71 Pa
+             Pt: 610 Pa
              Pc: 2.2048e+07 Pa
              Vc: 5.6e-05 m^3/mol
              Hf: -2.8582e+05 J/mol
@@ -432,6 +432,7 @@ class Chemical:
      'ROWLINSON_BONDI',
      'ROWLINSON_POLING',
      'USER_METHOD',
+     'WEBBOOK_SHOMATE',
      'ZABRANSKY_SPLINE_C']
     >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
@@ -551,7 +552,7 @@ class Chemical:
 
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
-              formula=None, aliases=None, **data):
+              formula=None, aliases=None, synonyms=None, **data):
         """
         Return a new Chemical object without any thermodynamic models or data 
         (unless provided).
@@ -609,18 +610,23 @@ class Chemical:
         
         """
         self = super().__new__(cls)
+        self._ID = ID
         self._eos = None
         self._UNIFAC = UNIFACGroupCounts()
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
         self._NIST = NISTGroupCounts()
         self.aliases = aliases or ()
+        if synonyms: 
+            if isinstance(synonyms, str):
+                self.aliases.add(synonyms)
+            else:
+                self.aliases.update(synonyms)
         setfield = setattr
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
         check_valid_ID(ID)
-        self._ID = ID
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID
         for i,j in data.items(): setfield(self, '_' + i , j)
@@ -659,7 +665,7 @@ class Chemical:
         >>> Glucose = tmo.Chemical('Glucose')
         >>> Mannose = Glucose.copy('Mannose')
         >>> Mannose.show()
-        Chemical: Mannose (phase_ref='l')
+        Chemical: Mannose (phase_ref='s')
         [Names]  CAS: Mannose
                  InChI: None
                  InChI_key: None
@@ -673,18 +679,18 @@ class Chemical:
                  PSRK: <1CH2, 4CH, 5OH, 1CHO...
                  NIST: <Empty>
         [Data]   MW: 180.16 g/mol
-                 Tm: None
-                 Tb: 615.69 K
-                 Tt: None
+                 Tm: 419.15 K
+                 Tb: 419.15 K
+                 Tt: 419.15 K
                  Tc: 755 K
-                 Pt: None
+                 Pt: 0.21809 Pa
                  Pc: 4.82e+06 Pa
                  Vc: 0.000414 m^3/mol
                  Hf: -1.2711e+06 J/mol
                  S0: 0 J/K/mol
                  LHV: 2.5406e+06 J/mol
                  HHV: 2.8047e+06 J/mol
-                 Hfus: 0 J/mol
+                 Hfus: 19933 J/mol
                  Sfus: None
                  omega: 2.387
                  dipole: None
@@ -1344,7 +1350,7 @@ class Chemical:
               Tt=None, Pt=None, Hf=None, S0=None, LHV=None, combustion=None,
               HHV=None, Hfus=None, dipole=None,
               similarity_variable=None, iscyclic_aliphatic=None, aliases=None,
-              *, metadata=None, phase=None):
+              synonyms=None, *, metadata=None, phase=None):
         """
         Reset all chemical properties.
 
@@ -1385,7 +1391,7 @@ class Chemical:
             MW = compute_molecular_weight(formula)
         self._init_names(CAS, smiles, InChI, InChI_key, 
                          pubchemid, iupac_name, common_name,
-                         formula, aliases)
+                         formula, aliases, synonyms)
         self._init_groups(InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
             self._Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
@@ -1430,7 +1436,7 @@ class Chemical:
     ### Initializers ###
     
     def _init_names(self, CAS, smiles, InChI, InChI_key,
-                    pubchemid, iupac_name, common_name, formula, aliases):
+                    pubchemid, iupac_name, common_name, formula, aliases, synonyms):
         self._CAS = CAS
         self._smiles = smiles
         self._InChI = InChI
@@ -1439,6 +1445,11 @@ class Chemical:
         self._iupac_name = iupac_name
         self._common_name = common_name
         self.aliases = aliases or ()
+        if synonyms: 
+            if isinstance(synonyms, str):
+                self.aliases.add(synonyms)
+            else:
+                self.aliases.update(synonyms)
         self._formula = formula
         
     def _init_groups(self, InChI_key):

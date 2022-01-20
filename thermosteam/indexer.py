@@ -964,7 +964,8 @@ ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricF
 
 # %% Mass flow properties
 
-@PropertyFactory(slots=('name', 'mol', 'index', 'MW'))
+@PropertyFactory(slots=('name', 'mol', 'index', 'MW'),
+                 units='kg/hr')
 def MassFlowProperty(self):
     """Mass flow (kg/hr)."""
     return self.mol[self.index] * self.MW
@@ -1014,7 +1015,8 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 # %% Volumetric flow properties
 
 @PropertyFactory(slots=('name', 'mol', 'index', 'V',
-                        'TP', 'phase', 'phase_container'))
+                        'TP', 'phase', 'phase_container'),
+                 units='m^3/hr')
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     f_mol = self.mol[self.index] 
