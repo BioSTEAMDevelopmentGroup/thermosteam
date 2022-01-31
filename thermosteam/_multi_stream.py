@@ -219,7 +219,7 @@ class MultiStream(Stream):
                             raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
             self._init_indexer(flow, phases, chemicals, phase_flows)
             flow = getattr(self, 'i' + name)
-            material_data = self._imol._data * factor
+            material_data = self._imol._data / factor
             if total_flow: material_data *= total_flow / material_data.sum()
             flow._data[:] = material_data
         else:

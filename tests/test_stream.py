@@ -109,7 +109,10 @@ def test_multistream():
         stream.set_property('invalid property', 10, 'kg/hr')
     with pytest.raises(ValueError):
         tmo.MultiStream(None, l=[('Water', 1)], units='kg')
-    
+
+    stream.empty()
+    stream = tmo.MultiStream(None, l=[('Water', 1)], T=300, units='g/s')
+    assert stream.F_mass == 1 / 3.6
     stream.empty()
     
     with pytest.raises(AttributeError):
