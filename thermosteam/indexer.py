@@ -423,7 +423,9 @@ class ChemicalIndexer(Indexer):
     def get_phase_and_composition(self):
         """Return phase and composition."""
         data = self._data
-        return self.phase, data / data.sum()
+        total = data.sum()
+        if total <= 0.: raise RuntimeError(f"'{tmo.settings.phase_names[self.phase]}' phase does not exist")
+        return self.phase, data / total
     
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
