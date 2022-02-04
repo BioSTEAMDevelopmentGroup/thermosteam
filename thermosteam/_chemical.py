@@ -58,7 +58,7 @@ from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
 from .units_of_measure import chemical_units_of_measure
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
-from ._phase import check_phase
+from ._phase import check_phase, valid_phases
 from . import units_of_measure as thermo_units
 from chemicals.utils import Z
 from thermo.eos import IG, PR
@@ -502,6 +502,12 @@ class Chemical:
                     data]):
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
+        ID = ID.strip()
+        if not phase and ID[-2] == ',': 
+            phase = ID[-1]
+            if phase not in valid_phases:
+                raise ValueError(f'invalid phase {repr(phase)} encountered while parsing ID')
+            ID = ID[:-2]
         search_ID = search_ID or ID
         if not eos: eos = PR
         if search_db:
