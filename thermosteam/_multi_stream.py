@@ -245,17 +245,25 @@ class MultiStream(Stream):
                 imol = MolarFlowIndexer.from_data(flow, phases, chemicals)
         self._imol = imol
     
-    def _get_property_cache(self, name):
+    def _get_property_cache(self, name, flow=False):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
         data = imol._data
+        total = data.sum()
+        if total == 0.: return 0.
+        composition = data / total
         literal = (imol._phases, thermal_condition._T, thermal_condition._P)
-        last_literal, last_data = self._property_cache_key
-        if literal == last_literal and (data == last_data).all():
-            return property_cache.get(name) 
+        last_literal, last_composition, last_total = self._property_cache_key
+        if literal == last_literal and (composition - last_composition).all():
+            prop = property_cache.get(name)
+            if not prop: return prop
+            if flow:
+                return prop * total / last_total
+            else:
+                return prop
         else:
-            self._property_cache_key = (literal, data.copy())
+            self._property_cache_key = (literal, composition, total)
             property_cache.clear()
             return None
     
@@ -293,7 +301,7 @@ class MultiStream(Stream):
             stream._dew_point_cache = self._dew_point_cache
             stream._property_cache = {}
             stream.characterization_factors = {}
-            stream._property_cache_key = None, None
+            stream._property_cache_key = None, None, None
             streams[phase] = stream
         return stream
     
@@ -437,7 +445,7 @@ class MultiStream(Stream):
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        H = self._get_property_cache('H')
+        H = self._get_property_cache('H', True)
         if H is None:
             self._property_cache['H'] = H = self.mixture.xH(self._imol, *self._thermal_condition)
         return H
@@ -448,14 +456,14 @@ class MultiStream(Stream):
     @property
     def S(self):
         """[float] Absolute entropy flow rate in kJ/hr."""
-        S = self._get_property_cache('S')
+        S = self._get_property_cache('S', True)
         if S is None:
             self._property_cache['S'] = S = self.mixture.xS(self._imol, *self._thermal_condition)
         return S
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        C = self._get_property_cache('C')
+        C = self._get_property_cache('C', True)
         if C is None:
             self._property_cache['C'] = C = self.mixture.xCn(self._imol, self.T)
         return C

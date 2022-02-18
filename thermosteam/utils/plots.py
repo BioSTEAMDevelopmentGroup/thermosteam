@@ -40,6 +40,8 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
         aspect_ratio = 0.65
     if width is None:
         width = 6.6142
+    elif width == 'half':
+        width = 6.6142 / 2
     else:
         if units is not None:
             from thermosteam.units_of_measure import convert

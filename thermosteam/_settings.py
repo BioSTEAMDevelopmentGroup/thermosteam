@@ -131,7 +131,7 @@ class Settings:
         if not thermo: raise_no_thermo_error()
         return thermo
     
-    def set_thermo(self, thermo, cache=None, skip_checks=False):
+    def set_thermo(self, thermo, cache=None, skip_checks=False, ideal=False):
         """
         Set the default Thermo object. If `thermo` is not a Thermo object,
         an attempt is made to convert it to one.
@@ -148,6 +148,7 @@ class Settings:
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
+        if ideal: thermo = thermo.ideal()
         self._thermo = thermo
     
     def set_flashpkg(self, flashpkg):

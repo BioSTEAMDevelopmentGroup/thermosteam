@@ -631,7 +631,7 @@ class Stream:
         """Reset cache regarding equilibrium methods."""
         self._bubble_point_cache = eq.BubblePointCache()
         self._dew_point_cache = eq.DewPointCache()
-        self._property_cache_key = None, None
+        self._property_cache_key = None, None, None
         self._property_cache = {}
 
     @classmethod
@@ -909,7 +909,7 @@ class Stream:
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        H = self._get_property_cache('H')
+        H = self._get_property_cache('H', True)
         if H is None:
             self._property_cache['H'] = H = self.mixture.H(
                 self.phase, self.mol, *self._thermal_condition
@@ -936,7 +936,12 @@ class Stream:
     @property
     def S(self):
         """[float] Absolute entropy flow rate in kJ/hr."""
-        return self.mixture.S(self.phase, self.mol, *self._thermal_condition)
+        S = self._get_property_cache('S', True)
+        if S is None:
+            self._property_cache['S'] = S = self.mixture.S(
+                self.phase, self.mol, *self._thermal_condition
+            )
+        return S
     
     @property
     def Hnet(self):
@@ -960,7 +965,7 @@ class Stream:
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
         mol = self.mol
         T = self._thermal_condition._T
-        Hvap = self._get_property_cache('Hvap')
+        Hvap = self._get_property_cache('Hvap', True)
         if Hvap is None:
             self._property_cache['Hvap'] = Hvap = sum([
                 i*j.Hvap(T) for i,j in zip(mol, self.chemicals)
@@ -968,24 +973,32 @@ class Stream:
             ])
         return Hvap
     
-    def _get_property_cache(self, name):
+    def _get_property_cache(self, name, flow=False):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
         data = imol._data
+        total = data.sum()
+        if total == 0.: return 0.
+        composition = data / total
         literal = (imol._phase._phase, thermal_condition._T, thermal_condition._P)
-        last_literal, last_data = self._property_cache_key
-        if literal == last_literal and (data == last_data).all():
-            return property_cache.get(name) 
+        last_literal, last_composition, last_total = self._property_cache_key
+        if literal == last_literal and (composition == last_composition).all():
+            prop = property_cache.get(name)
+            if not prop: return prop
+            if flow:
+                return prop * total / last_total
+            else:
+                return prop
         else:
-            self._property_cache_key = (literal, data.copy())
+            self._property_cache_key = (literal, composition, total)
             property_cache.clear()
             return None
     
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        C = self._get_property_cache('C')
+        C = self._get_property_cache('C', True)
         if C is None:
             self._property_cache['C'] = C = self.mixture.Cn(self.phase, self.mol, self.T)
         return C
