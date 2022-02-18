@@ -503,7 +503,7 @@ class Chemical:
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
         ID = ID.strip()
-        if not phase and ID[-2] == ',': 
+        if not phase and len(ID) > 2 and ID[-2] == ',':
             phase = ID[-1]
             if phase not in valid_phases:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing ID')
