@@ -15,7 +15,7 @@ def test_stream():
     tmo.settings.set_thermo(['Water'], cache=True)
     stream = tmo.Stream(None, Water=1, T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
-    assert_allclose(stream.epsilon, 77.70030000000003)
+    assert_allclose(stream.epsilon, 77.744307)
     assert_allclose(stream.alpha * 1e6, 0.14330776454124503)
     assert_allclose(stream.nu, 8.799123532986536e-07)
     assert_allclose(stream.Pr, 6.14001869413997)
@@ -77,7 +77,7 @@ def test_multistream():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     stream = tmo.MultiStream(None, l=[('Water', 1)], T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
-    assert_allclose(stream.epsilon, 77.70030000000003)
+    assert_allclose(stream.epsilon, 77.744307)
     assert_allclose(stream.alpha * 1e6, 1.4330776454124502e-01)
     assert_allclose(stream.nu, 8.799123532986536e-07)
     assert_allclose(stream.Pr, 6.14001869413997)
