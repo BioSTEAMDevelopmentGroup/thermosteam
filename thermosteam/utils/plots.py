@@ -113,8 +113,6 @@ def style_axis(ax=None, xticks=None, yticks=None,
     ytext = list(ytext)
     if trim_to_limits:
         style_plot_limits(xticks, yticks)
-        if yticks[0] == 0.:
-            yticks = yticks[1:]
     if not xtick0:
         xtext[0] = ''
     if not xtickf:
