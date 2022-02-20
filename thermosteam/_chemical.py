@@ -7,6 +7,12 @@
 # for license details.
 """
 """
+try:
+    import CoolProp
+except:    
+    add_ID = True
+else:
+    add_ID = False
 import thermosteam as tmo
 from warnings import warn
 from flexsolve import IQ_interpolation, aitken_secant
@@ -728,10 +734,10 @@ class Chemical:
         handles = (self._Psat, self._Hvap, self._sigma, self._epsilon,
                    self._V, self._Cn, self._mu, self._kappa)
         isa = isinstance
-        if self.CAS == self.ID:
-            label = self.CAS
-        else:
+        if add_ID and self.CAS != self.ID:
             label = f"{self.CAS} ({self.ID})"
+        else:
+            label = self.CAS
         for handle in handles:
             if isa(handle, PhaseHandle):
                 for i, j in handle:
