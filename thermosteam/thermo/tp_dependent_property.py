@@ -13,7 +13,28 @@
 # 
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
-from thermo import TPDependentProperty, VolumeLiquid, VolumeGas
+from thermo.volume import COOLPROP, EOS
+from thermo import (
+    TPDependentProperty,
+    VaporPressure, 
+    EnthalpyVaporization,
+    SurfaceTension,
+    SublimationPressure, EnthalpySublimation,
+    VolumeSolid, VolumeLiquid, VolumeGas, VolumeSupercriticalLiquid,
+    HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas,
+    ThermalConductivityLiquid, ThermalConductivityGas,
+    ViscosityLiquid, ViscosityGas,
+    PermittivityLiquid,
+)
+
+subs = (
+    VaporPressure, EnthalpyVaporization,SurfaceTension,
+    SublimationPressure, EnthalpySublimation,
+    VolumeSolid, VolumeLiquid, VolumeGas, VolumeSupercriticalLiquid,
+    HeatCapacitySolid, HeatCapacityLiquid, HeatCapacityGas,
+    ThermalConductivityLiquid, ThermalConductivityGas,
+    ViscosityLiquid, ViscosityGas, PermittivityLiquid,
+)
 
 # Remove cache from call
 def __call__(self, T, P):
@@ -44,6 +65,15 @@ def method_P(self, method):
 
 TPDependentProperty.method_P = method_P
 
+for cls in subs:
+    for i in ('ranked_methods', 'ranked_methods_P'):
+        try:
+            methods = getattr(cls, i)
+            methods.remove(COOLPROP)
+            methods.append(COOLPROP)
+        except:
+            continue
+
 for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
-    methods.remove('EOS')
-    methods.append('EOS')
+    methods.remove(EOS)
+    methods.append(EOS)
