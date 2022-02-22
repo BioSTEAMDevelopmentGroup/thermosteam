@@ -66,13 +66,13 @@ def method_P(self, method):
 TPDependentProperty.method_P = method_P
 
 for cls in subs:
-    for i in ('ranked_methods', 'ranked_methods_P'):
-        try:
-            methods = getattr(cls, i)
-            methods.remove(COOLPROP)
-            methods.append(COOLPROP)
-        except:
-            continue
+    try:
+        methods = cls.ranked_methods
+        methods.remove(COOLPROP)
+        methods.append(COOLPROP)
+    except: pass
+    try: cls.ranked_methods_P.remove(COOLPROP)
+    except: pass
 
 for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
     methods.remove(EOS)
