@@ -112,16 +112,16 @@ class Stream:
     Mass and volumetric flow rates are available as property arrays:
         
     >>> s1.mass
-    property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
+    property_array([20.0, 10.0])
     >>> s1.vol
-    property_array([<Water: 0.02006 m^3/hr>, <Ethanol: 0.012724 m^3/hr>])
+    property_array([0.02006, 0.012724])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
     >>> # Mass flows are always up to date with molar flows
     >>> s1.mol[0] = 1
     >>> s1.mass[0]
-    <Water: 18.015 kg/hr>
+    18.015
     >>> # Changing mass flows changes molar flows
     >>> s1.mass[0] *= 2
     >>> s1.mol[0]
