@@ -43,9 +43,9 @@ def raise_material_indexer_index_error():
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
     try:
-        phase = main_indexer.phase
+        phase = main_indexer._phase.phase
         for i in indexers:
-            if phase != i.phase: return default
+            if phase != i._phase.phase: return default
     except:
         return default
     return phase

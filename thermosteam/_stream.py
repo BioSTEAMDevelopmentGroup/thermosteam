@@ -1225,7 +1225,7 @@ class Stream:
             self._imol.separate_out(other._imol)
             if energy_balance: self.H = H_new
     
-    def mix_from(self, others, energy_balance=True):
+    def mix_from(self, others, energy_balance=True, vle=False):
         """
         Mix all other streams into this one, ignoring its initial contents.
         
@@ -1276,8 +1276,17 @@ class Stream:
             self.empty()
         elif N_others == 1:
             self.copy_like(others[0])
+        elif vle:
+            phases = ''.join([i.phase for i in others])
+            self.phases = tuple(set(phases))
+            self._imol.mix_from([i._imol for i in others])
+            if energy_balance: 
+                H = sum([i.H for i in others])
+                self.vle(H=self.H, P=self.P)
+            else:
+                self.vle(T=self.T, P=self.P)
         else:
-            self.P = others[0].P
+            self.P = min([i.P for i in others])
             if energy_balance: H = sum([i.H for i in others])
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():

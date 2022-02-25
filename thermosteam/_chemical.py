@@ -676,39 +676,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Glucose = tmo.Chemical('Glucose')
         >>> Mannose = Glucose.copy('Mannose')
-        >>> Mannose.show()
-        Chemical: Mannose (phase_ref='s')
-        [Names]  CAS: Mannose
-                 InChI: None
-                 InChI_key: None
-                 common_name: None
-                 iupac_name: None
-                 pubchemid: None
-                 smiles: None
-                 formula: C6H12O6
-        [Groups] Dortmund: <1CH2, 4CH, 1OH(P...
-                 UNIFAC: <1CH2, 4CH, 5OH, 1C...
-                 PSRK: <1CH2, 4CH, 5OH, 1CHO...
-                 NIST: <Empty>
-        [Data]   MW: 180.16 g/mol
-                 Tm: 419.15 K
-                 Tb: 419.15 K
-                 Tt: 419.15 K
-                 Tc: 755 K
-                 Pt: 0.21809 Pa
-                 Pc: 4.82e+06 Pa
-                 Vc: 0.000414 m^3/mol
-                 Hf: -1.2711e+06 J/mol
-                 S0: 0 J/K/mol
-                 LHV: 2.5406e+06 J/mol
-                 HHV: 2.8047e+06 J/mol
-                 Hfus: 19933 J/mol
-                 Sfus: None
-                 omega: 2.387
-                 dipole: None
-                 similarity_variable: 0.13322
-                 iscyclic_aliphatic: 0
-                 combustion: {'CO2': 6, 'O2'...
+        >>> assert Mannose.MW == Glucose.MW
         
         """
         new = super().__new__(self.__class__)
