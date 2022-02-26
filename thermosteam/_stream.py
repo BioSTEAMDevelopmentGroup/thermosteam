@@ -1715,6 +1715,7 @@ class Stream:
         new.reset_cache()
         new.characterization_factors = {}
         self._islinked = new._islinked = True
+        new._user_equilibrium = self._user_equilibrium
         return new
     
     def proxy(self, ID=None):
