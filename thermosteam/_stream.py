@@ -1752,6 +1752,7 @@ class Stream:
         new._property_cache_key = self._property_cache_key
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
+        new._user_equilibrium = self._user_equilibrium
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
         new.characterization_factors = {}
