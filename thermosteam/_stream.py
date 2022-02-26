@@ -322,6 +322,7 @@ class Stream:
     def set_user_equilibrium(self, f):
         self._user_equilibrium = f
         
+    @property
     def has_user_equilibrium(self):
         return self._user_equilibrium is not None
 

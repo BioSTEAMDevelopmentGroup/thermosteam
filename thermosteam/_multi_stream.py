@@ -303,6 +303,7 @@ class MultiStream(Stream):
             stream._property_cache = {}
             stream.characterization_factors = {}
             stream._property_cache_key = None, None, None
+            stream._user_equilibrium = None
             streams[phase] = stream
         return stream
     
