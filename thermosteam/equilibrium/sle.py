@@ -280,7 +280,7 @@ class SLE(Equilibrium, phases='ls'):
                     1e-3, (), 50, checkiter=False
                 )
             else:
-                raise Exception('Unknown')
+                raise Exception('unknown')
     
     def _update_solubility(self, x):
         solute_index = self._solute_index

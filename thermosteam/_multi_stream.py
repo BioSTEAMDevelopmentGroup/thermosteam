@@ -229,6 +229,7 @@ class MultiStream(Stream):
         self.reset_cache()
         self._register(ID)
         self._islinked = False
+        self._user_equilibrium = None
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():

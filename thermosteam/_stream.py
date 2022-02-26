@@ -244,7 +244,7 @@ class Stream:
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_islinked', '_property_cache_key',
-        '_property_cache', 'characterization_factors',
+        '_property_cache', 'characterization_factors', '_user_equilibrium',
         # '_velocity', '_height'
     )
     line = 'Stream'
@@ -303,6 +303,7 @@ class Stream:
         self.reset_cache()
         self._register(ID)
         self._islinked = False
+        self._user_equilibrium = None
 
     def _reset_thermo(self, thermo):
         if thermo is self._thermo: return
@@ -314,6 +315,15 @@ class Stream:
             for phase, stream in self._streams.items():
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
+
+    def user_equilibrium(self, *args, **kwargs):
+        return self._user_equilibrium(self, *args, **kwargs)
+
+    def set_user_equilibrium(self, f):
+        self._user_equilibrium = f
+        
+    def has_user_equilibrium(self):
+        return self._user_equilibrium is not None
 
     def get_CF(self, key, units=None):
         """
@@ -1667,6 +1677,7 @@ class Stream:
         if thermo and thermo.chemicals is not self.chemicals:
             new._imol.reset_chemicals(thermo.chemicals)
         new._thermal_condition = self._thermal_condition.copy()
+        new._user_equilibrium = self._user_equilibrium
         new.reset_cache()
         new.price = 0
         new.ID = ID
