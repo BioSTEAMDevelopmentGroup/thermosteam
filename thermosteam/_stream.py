@@ -305,6 +305,32 @@ class Stream:
         self._islinked = False
         self._user_equilibrium = None
 
+    def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
+        """
+        Convinience method for resetting flow rate data.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=1)
+        >>> s1.reset_flow(Ethanol=1, phase='g', units='kg/hr', total_flow=2)
+        >>> s1.show('cwt')
+        Stream: s1
+         phase: 'g', T: 298.15 K, P: 101325 Pa
+         composition: Ethanol  1
+                      -------  2 kg/hr
+        
+        """
+        imol = self._imol
+        imol.empty()
+        if phase: imol.phase = phase
+        if chemical_flows:
+            keys, values = zip(*chemical_flows.items())
+            self.set_flow(values, units, keys)
+        if total_flow:
+            self.set_total_flow(total_flow, units)
+
     def _reset_thermo(self, thermo):
         if thermo is self._thermo: return
         self._thermo = thermo

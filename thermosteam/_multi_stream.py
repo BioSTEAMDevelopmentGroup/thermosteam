@@ -185,7 +185,7 @@ class MultiStream(Stream):
     
     """
     __slots__ = ()
-    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=('g', 'l'), 
+    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=None, 
                  units=None, price=0, total_flow=None, thermo=None, 
                  characterization_factors=None, **phase_flows):
         self.characterization_factors = {} if characterization_factors is None else {}
@@ -193,6 +193,7 @@ class MultiStream(Stream):
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
         self.price = price
+        phases = set(phase_flows).union(['l', 'g']) if phases is None else phases
         if units:
             name, factor = self._get_flow_name_and_factor(units)
             if name == 'mass':
@@ -230,6 +231,33 @@ class MultiStream(Stream):
         self._register(ID)
         self._islinked = False
         self._user_equilibrium = None
+        
+    def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
+        """
+        Convinience method for resetting flow rate data.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 1)])
+        >>> s1.reset_flow(g=[('Ethanol', 1)], phases='lgs', units='kg/hr', total_flow=2)
+        >>> s1.show('cwt')
+        MultiStream: s1
+         phases: ('g', 'l', 's'), T: 298.15 K, P: 101325 Pa
+         composition: (g) Ethanol  1
+                          -------  2 kg/hr
+        
+        """
+        imol = self._imol
+        imol.empty()
+        self.phases = set(phase_flows).union(['l', 'g']) if phases is None else phases
+        if phase_flows:
+            for phase, data in phase_flows.items():
+                keys, values = zip(*data)
+                self.set_flow(values, units, (phase, keys))
+        if total_flow:
+            self.set_total_flow(total_flow, units)
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
