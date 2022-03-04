@@ -101,13 +101,23 @@ def style_axis(ax=None, xticks=None, yticks=None,
         xticks, xtext = plt.xticks()
     else:
         xtext = xticks
-    xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xtext)
+    if isinstance(xticklabels, Iterable):
+        xtext = xticklabels
+    elif xticklabels:
+        xtext = list(xtext)
+    else:
+        xtext = len(xtext) * ['']
     if yticks is None:
         yticks, ytext = plt.yticks()
         if not any([str(i) for i in ytext]): ytext = yticks
     else:
         ytext = yticks
-    ytext = yticklabels if isinstance(yticklabels, Iterable) else list(ytext)
+    if isinstance(yticklabels, Iterable):
+        ytext = yticklabels
+    elif yticklabels:
+        ytext = list(ytext)
+    else:
+        ytext = len(ytext) * ['']
         
     xtext = list(xtext)
     ytext = list(ytext)
