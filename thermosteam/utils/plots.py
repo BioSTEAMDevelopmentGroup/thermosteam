@@ -97,6 +97,8 @@ def style_axis(ax=None, xticks=None, yticks=None,
                yrot=None, yha=None): # pragma: no cover
     if ax is None:
         ax = plt.gca()
+    else:
+        plt.sca(ax)
     if xticks is None:
         xticks, xtext = plt.xticks()
     else:
