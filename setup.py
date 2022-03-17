@@ -19,7 +19,7 @@ setup(
                       'scipy>=1.5',
                       'thermo>=0.2.9',
                       'IPython>=7.9.0',
-                      'colorpalette>=0.3.1',
+                      'colorpalette>=0.3.3',
                       'pandas>=0.25.2',
                       'matplotlib>=3.1.1',
                       'numpy>=1.18.1,<=1.21',
@@ -55,6 +55,7 @@ setup(
             'units_of_measure.txt',
         ]
     },
+    python_requires='>=3.8',
     platforms=['Windows', 'Mac', 'Linux'],
     author_email='yoelcortes@gmail.com',
     url='https://github.com/BioSTEAMDevelopmentGroup/thermosteam',
