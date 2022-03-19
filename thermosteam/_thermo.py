@@ -7,6 +7,7 @@
 # for license details.
 """
 """
+import thermosteam as tmo
 from . import equilibrium as eq
 from ._chemical import Chemical
 from ._chemicals import Chemicals
@@ -126,7 +127,7 @@ class Thermo:
         Class for computing poynting correction factors.
     
     """
-    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF', '_ideal') 
+    __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF', '_ideal', '_original_thermo') 
     
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
@@ -155,6 +156,15 @@ class Thermo:
         setattr(self, 'Phi', Phi)
         setattr(self, 'PCF', PCF)
         setattr(self, '_ideal', None)
+        setattr(self, '_original_thermo', None)
+    
+    def __enter__(self):
+        self._original_thermo = tmo.settings.get_thermo()
+        tmo.settings.set_thermo(self)
+        return self
+    
+    def __exit__(self):
+        tmo.settings.set_thermo(self._original_thermo)
     
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
@@ -175,6 +185,7 @@ class Thermo:
         setattr(new, 'Phi', self.Phi)
         setattr(new, 'PCF', self.PCF)
         setattr(new, '_ideal', None)
+        setattr(new, '_original_thermo', None)
         return new
     
     def ideal(self):
@@ -186,6 +197,7 @@ class Thermo:
             setattr(ideal, 'chemicals', self.chemicals)
             setattr(ideal, 'mixture', self.mixture)
             setattr(self, '_ideal', ideal)
+            setattr(ideal, '_original_thermo', None)
         return ideal
     
     def as_chemical(self, chemical):
@@ -260,12 +272,14 @@ class IdealThermo:
         Calculates mixture properties.
         
     """
-    __slots__ = ('chemicals', 'mixture') 
+    __slots__ = ('chemicals', 'mixture', '_original_thermo') 
     
     Gamma = eq.IdealActivityCoefficients
     Phi = eq.IdealFugacityCoefficients
     PCF = eq.IdealPoyintingCorrectionFactors
     as_chemical = Thermo.as_chemical
+    __enter__ = Thermo.__enter__
+    __exit__ = Thermo.__exit__
     
     def __init__(self, chemicals, mixture=None,
                  cache=None,
@@ -279,6 +293,7 @@ class IdealThermo:
         setattr = object.__setattr__
         setattr(self, 'chemicals', chemicals)
         setattr(self, 'mixture', mixture)
+        setattr(self, '_original_thermo', None)
     
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
@@ -295,6 +310,7 @@ class IdealThermo:
         setattr = object.__setattr__
         setattr(new, 'chemicals', chemicals)
         setattr(new, 'mixture', self.mixture.from_chemicals(chemicals))
+        setattr(new, '_original_thermo', None)
         return new
     
     def ideal(self):
