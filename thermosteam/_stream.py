@@ -2042,9 +2042,9 @@ class Stream:
         if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
         return z / z_sum
     
-    def get_molar_composition(self, IDs):
+    def get_molar_fraction(self, IDs):
         """
-        Return molar composition of given chemicals.
+        Return molar fraction of given chemicals.
 
         Parameters
         ----------
@@ -2056,7 +2056,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
-        >>> s1.get_molar_composition(('Water', 'Ethanol'))
+        >>> s1.get_mol_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
@@ -2064,9 +2064,11 @@ class Stream:
         if not F_mol: raise RuntimeError(f'{repr(self)} is empty')
         return self.imol[IDs] / F_mol
     
-    def get_mass_composition(self, IDs):
+    get_molar_composition = get_molar_fraction
+    
+    def get_mass_fraction(self, IDs):
         """
-        Return mass composition of given chemicals.
+        Return mass fraction of given chemicals.
 
         Parameters
         ----------
@@ -2078,7 +2080,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
-        >>> s1.get_mass_composition(('Water', 'Ethanol'))
+        >>> s1.get_mass_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
@@ -2086,9 +2088,11 @@ class Stream:
         if not F_mass: raise RuntimeError(f'{repr(self)} is empty')
         return self.imass[IDs] / F_mass
     
-    def get_volumetric_composition(self, IDs):
+    get_mass_composition = get_mass_fraction
+    
+    def get_volumetric_fraction(self, IDs):
         """
-        Return volumetric composition of given chemicals.
+        Return volumetric fraction of given chemicals.
 
         Parameters
         ----------
@@ -2100,13 +2104,15 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
-        >>> s1.get_volumetric_composition(('Water', 'Ethanol'))
+        >>> s1.get_volumetric_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
         F_vol = self.F_vol
         if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
         return self.ivol[IDs] / F_vol
+    
+    get_volumetric_composition = get_volumetric_fraction
     
     def get_concentration(self, IDs):
         """
@@ -2136,7 +2142,7 @@ class Stream:
         chemicals = self.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, self.thermo)
         IDs = tuple([i.ID for i in chemicals])
-        x = self.get_molar_composition(IDs)
+        x = self.get_molar_fraction(IDs)
         if x.sum() < 1e-12: return 0
         return F_l(x, self.T).sum()
     
@@ -2187,7 +2193,7 @@ class Stream:
         chemicals = ms.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, ms.thermo)
         IDs = tuple([i.ID for i in chemicals])
-        x = other.get_molar_composition(IDs)
+        x = other.get_molar_fraction(IDs)
         T = ms.T
         P = ms.P
         vapor = ms['g']

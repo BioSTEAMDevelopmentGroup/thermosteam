@@ -36,6 +36,7 @@ def chemicals_from_data(data, all_data):
         else:
             new_chemicals[ID] = tmo.Chemical(ID)
     for ID, kwargs in chemical_copies.items():
+        kwargs = kwargs.copy()
         copied_ID = kwargs.pop('Copy of')
         try:
             copied_chemical = new_chemicals[copied_ID]
@@ -201,7 +202,7 @@ class ThermoData:
         
         """
         all_data = self.chemical_data
-        data = all_data if IDs is None else {i: all_data[i] for i in as_IDs(IDs)}
+        data = all_data if IDs is None else {i: all_data.get(i) for i in as_IDs(IDs)}
         return chemicals_from_data(data, all_data)
 
         
