@@ -170,6 +170,10 @@ class SLE(Equilibrium, phases='ls'):
         chemicals = self.chemicals
         self._solute_index = solute_index = chemicals.get_index(solute)
         if solubility is not None:
+            solute_index = self._solute_index
+            self._mol_solute = (
+                self._solid_mol[solute_index] + self._liquid_mol[solute_index]
+            )
             self._index = slice(None)
             self._update_solubility(solubility)
             return
