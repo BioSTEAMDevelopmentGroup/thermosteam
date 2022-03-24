@@ -6,7 +6,7 @@ pint>=0.9
 scipy>=1.5 
 thermo>=0.2.9
 IPython>=7.9.0 
-colorpalette>=0.3.1 
+colorpalette>=0.3.3 
 pandas>=0.25.2 
 matplotlib>=3.1.1
 numpy>=1.18.1 
@@ -16,6 +16,7 @@ free_properties>=0.2.6
 flexsolve==0.5.3 
 numba>=0.53.1
 biorefineries>=2.23.0
+biosteam>=2.32.2
 pyglet
 ipykernel
 nbval

@@ -62,7 +62,7 @@ def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
 CAS_water = '7732-18-5'
 
 def mix_and_split_with_moisture_content(ins, retentate, permeate,
-                                        split, moisture_content):
+                                        split, moisture_content, ID=None):
     """
     Run splitter mass and energy balance with mixing all input streams and 
     and ensuring retentate moisture content.
@@ -104,9 +104,9 @@ def mix_and_split_with_moisture_content(ins, retentate, permeate,
 
     """
     mix_and_split(ins, retentate, permeate, split)
-    adjust_moisture_content(retentate, permeate, moisture_content)
+    adjust_moisture_content(retentate, permeate, moisture_content, ID)
 
-def adjust_moisture_content(retentate, permeate, moisture_content):
+def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
     """
     Remove water from permate to adjust retentate moisture content.
     
@@ -147,12 +147,20 @@ def adjust_moisture_content(retentate, permeate, moisture_content):
     """
     F_mass = retentate.F_mass
     mc = moisture_content
-    retentate_water = retentate.imol[CAS_water]
-    dry_mass = F_mass - 18.01528 * retentate_water
-    retentate.imol[CAS_water] = water = (dry_mass * mc/(1-mc))/18.01528
-    permeate.imol[CAS_water] -= (water - retentate_water)
-    if permeate.imol[CAS_water] < 0:
-        raise InfeasibleRegion('not enough water; permeate moisture content')
+    if ID is None: 
+        ID = CAS_water
+        MW = 18.01528
+        retentate_water = retentate.imol[ID]
+        dry_mass = F_mass - MW * retentate_water
+        retentate.imol[ID] = water = (dry_mass * mc/(1-mc)) / MW
+        permeate.imol[ID] -= water - retentate_water
+    else:
+        retentate_moisture = retentate.imass[ID]
+        dry_mass = F_mass - retentate_moisture
+        retentate.imass[ID] = moisture = dry_mass * mc/(1-mc)
+        permeate.imass[ID] -= moisture - retentate_moisture
+    if permeate.imol[ID] < 0:
+        raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
 
 def mix_and_split(ins, top, bottom, split):
     """

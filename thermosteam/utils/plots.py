@@ -40,6 +40,8 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
         aspect_ratio = 0.65
     if width is None:
         width = 6.6142
+    elif width == 'half':
+        width = 6.6142 / 2
     else:
         if units is not None:
             from thermosteam.units_of_measure import convert
@@ -95,24 +97,34 @@ def style_axis(ax=None, xticks=None, yticks=None,
                yrot=None, yha=None): # pragma: no cover
     if ax is None:
         ax = plt.gca()
+    else:
+        plt.sca(ax)
     if xticks is None:
         xticks, xtext = plt.xticks()
     else:
         xtext = xticks
-    xtext = xticklabels if isinstance(xticklabels, Iterable) else list(xtext)
+    if isinstance(xticklabels, Iterable):
+        xtext = xticklabels
+    elif xticklabels:
+        xtext = list(xtext)
+    else:
+        xtext = len(xtext) * ['']
     if yticks is None:
         yticks, ytext = plt.yticks()
         if not any([str(i) for i in ytext]): ytext = yticks
     else:
         ytext = yticks
-    ytext = yticklabels if isinstance(yticklabels, Iterable) else list(ytext)
+    if isinstance(yticklabels, Iterable):
+        ytext = yticklabels
+    elif yticklabels:
+        ytext = list(ytext)
+    else:
+        ytext = len(ytext) * ['']
         
     xtext = list(xtext)
     ytext = list(ytext)
     if trim_to_limits:
         style_plot_limits(xticks, yticks)
-        if yticks[0] == 0.:
-            yticks = yticks[1:]
     if not xtick0:
         xtext[0] = ''
     if not xtickf:

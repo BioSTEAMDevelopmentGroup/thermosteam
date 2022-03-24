@@ -7,6 +7,12 @@
 # for license details.
 """
 """
+try:
+    import CoolProp
+except:    
+    add_ID = True
+else:
+    add_ID = False
 import thermosteam as tmo
 from warnings import warn
 from flexsolve import IQ_interpolation, aitken_secant
@@ -58,7 +64,7 @@ from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
 from .units_of_measure import chemical_units_of_measure
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
-from ._phase import check_phase
+from ._phase import check_phase, valid_phases
 from . import units_of_measure as thermo_units
 from chemicals.utils import Z
 from thermo.eos import IG, PR
@@ -502,6 +508,12 @@ class Chemical:
                     data]):
                 warn('cached chemical returned; additional parameters disregarded')
             return chemical_cache[ID]
+        ID = ID.strip()
+        if not phase and len(ID) > 2 and ID[-2] == ',':
+            phase = ID[-1]
+            if phase not in valid_phases:
+                raise ValueError(f'invalid phase {repr(phase)} encountered while parsing ID')
+            ID = ID[:-2]
         search_ID = search_ID or ID
         if not eos: eos = PR
         if search_db:
@@ -664,39 +676,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Glucose = tmo.Chemical('Glucose')
         >>> Mannose = Glucose.copy('Mannose')
-        >>> Mannose.show()
-        Chemical: Mannose (phase_ref='s')
-        [Names]  CAS: Mannose
-                 InChI: None
-                 InChI_key: None
-                 common_name: None
-                 iupac_name: None
-                 pubchemid: None
-                 smiles: None
-                 formula: C6H12O6
-        [Groups] Dortmund: <1CH2, 4CH, 1OH(P...
-                 UNIFAC: <1CH2, 4CH, 5OH, 1C...
-                 PSRK: <1CH2, 4CH, 5OH, 1CHO...
-                 NIST: <Empty>
-        [Data]   MW: 180.16 g/mol
-                 Tm: 419.15 K
-                 Tb: 419.15 K
-                 Tt: 419.15 K
-                 Tc: 755 K
-                 Pt: 0.21809 Pa
-                 Pc: 4.82e+06 Pa
-                 Vc: 0.000414 m^3/mol
-                 Hf: -1.2711e+06 J/mol
-                 S0: 0 J/K/mol
-                 LHV: 2.5406e+06 J/mol
-                 HHV: 2.8047e+06 J/mol
-                 Hfus: 19933 J/mol
-                 Sfus: None
-                 omega: 2.387
-                 dipole: None
-                 similarity_variable: 0.13322
-                 iscyclic_aliphatic: 0
-                 combustion: {'CO2': 6, 'O2'...
+        >>> assert Mannose.MW == Glucose.MW
         
         """
         new = super().__new__(self.__class__)
@@ -722,10 +702,10 @@ class Chemical:
         handles = (self._Psat, self._Hvap, self._sigma, self._epsilon,
                    self._V, self._Cn, self._mu, self._kappa)
         isa = isinstance
-        if self.CAS == self.ID:
-            label = self.CAS
-        else:
+        if add_ID and self.CAS != self.ID:
             label = f"{self.CAS} ({self.ID})"
+        else:
+            label = self.CAS
         for handle in handles:
             if isa(handle, PhaseHandle):
                 for i, j in handle:

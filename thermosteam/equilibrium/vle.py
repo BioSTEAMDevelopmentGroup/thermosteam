@@ -335,7 +335,7 @@ class VLE(Equilibrium, phases='lg'):
                     thermal_condition.P = P
             elif H_spec:
                 try:
-                    self.set_PH(P, H)
+                    self.set_PH(P, H, stacklevel=1)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.P = P
@@ -730,7 +730,7 @@ class VLE(Equilibrium, phases='lg'):
             liquid_mol[index] = mol - v
             self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
     
-    def set_PH(self, P, H):
+    def set_PH(self, P, H, stacklevel=0):
         self._setup()
         thermal_condition = self._thermal_condition
         thermal_condition.P = self._P = P
@@ -812,7 +812,7 @@ class VLE(Equilibrium, phases='lg'):
                 )
             except:
                 warn('VLE algorithm failed; resorting to fallback measures to ensure energy balance',
-                     category=RuntimeWarning)
+                     category=RuntimeWarning, stacklevel=2+stacklevel)
                 def f(V):
                     vapor_mol[index] = V * mol
                     liquid_mol[index] = (1 - V) * mol

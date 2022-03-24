@@ -45,22 +45,34 @@ class SLE(Equilibrium, phases='ls'):
     >>> settings.set_thermo(['Water', Glucose], cache=True)
     >>> imol = indexer.MolarFlowIndexer(l=[('Water', 10), ('Glucose', 1)], phases=('s', 'l'))
     >>> sle = equilibrium.SLE(imol)
-    >>> sle('Glucose', T=298.15) 
+    >>> sle('Glucose', T=298.15) # Given T
     >>> sle
     SLE(imol=MolarFlowIndexer(
             l=[('Water', 10), ('Glucose', 0.01308)],
             s=[('Glucose', 0.9869)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
-        
+    >>> sle('Glucose', H=0.) # Given H
+    >>> sle    
+    SLE(imol=MolarFlowIndexer(
+            l=[('Water', 10), ('Glucose', 0.01306)],
+            s=[('Glucose', 0.9869)]),
+        thermal_condition=ThermalCondition(T=298.06, P=101325))
+    
     Results may not be too accurate sometimes, but the solubility 
     (mol fraction of solute in solvent) may be specified:
     
-    >>> sle('Glucose', T=298.15, solubility=0.0833)
+    >>> sle('Glucose', T=298.15, solubility=0.0833) # Given T
     >>> sle
     SLE(imol=MolarFlowIndexer(
             l=[('Water', 10), ('Glucose', 0.9087)],
             s=[('Glucose', 0.09131)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
+    >>> sle('Glucose', H=90, solubility=0.0833) # Given H
+    >>> sle
+    SLE(imol=MolarFlowIndexer(
+            l=[('Water', 10), ('Glucose', 0.9087)],
+            s=[('Glucose', 0.09131)]),
+        thermal_condition=ThermalCondition(T=292.41, P=101325))
     
     Solve SLE of tetradecanol in octanol:
         
@@ -68,12 +80,18 @@ class SLE(Equilibrium, phases='ls'):
     >>> settings.set_thermo(['Methanol', 'Tetradecanol'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(l=[('Methanol', 10), ('Tetradecanol', 30)], phases=('s', 'l'))
     >>> sle = equilibrium.SLE(imol)
-    >>> sle('Tetradecanol', T=300)
+    >>> sle('Tetradecanol', T=300) # Given T
     >>> sle
     SLE(imol=MolarFlowIndexer(
             l=[('Methanol', 10), ('Tetradecanol', 19.07)],
             s=[('Tetradecanol', 10.93)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
+    >>> sle('Tetradecanol', H=0.) # Given H
+    >>> sle
+    SLE(imol=MolarFlowIndexer(
+            l=[('Methanol', 10), ('Tetradecanol', 6.116)],
+            s=[('Tetradecanol', 23.88)]),
+        thermal_condition=ThermalCondition(T=287.31, P=101325))
     
     Solve SLE of pure tetradecanol:
     
@@ -81,17 +99,32 @@ class SLE(Equilibrium, phases='ls'):
     >>> settings.set_thermo(['Octanol', 'Tetradecanol'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(l=[('Tetradecanol', 30)], phases=('s', 'l'))
     >>> sle = equilibrium.SLE(imol)
-    >>> sle('Tetradecanol', T=300) # Under melting point
+    >>> sle('Tetradecanol', T=300) # Under melting point given T
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             s=[('Tetradecanol', 30)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
-    >>> sle('Tetradecanol', T=320) # Over melting point
+    >>> sle('Tetradecanol', T=320) # Over melting point given T
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             l=[('Tetradecanol', 30)]),
         thermal_condition=ThermalCondition(T=320.00, P=101325))      
-    
+    >>> sle('Tetradecanol', H=0.) # Under melting point given H
+    >>> sle
+    SLE(imol=MolarFlowIndexer(phases=('l', 's'),
+            s=[('Tetradecanol', 30)]),
+        thermal_condition=ThermalCondition(T=298.15, P=101325))
+    >>> sle('Tetradecanol', H=1000000) # Over melting point given H
+    >>> sle
+    SLE(imol=MolarFlowIndexer(phases=('l', 's'),
+            l=[('Tetradecanol', 30)]),
+        thermal_condition=ThermalCondition(T=317.59, P=101325))  
+    >>> sle('Tetradecanol', H=500000) # At melting point given H
+    >>> sle
+    SLE(imol=MolarFlowIndexer(
+            l=[('Tetradecanol', 13.2)],
+            s=[('Tetradecanol', 16.8)]),
+        thermal_condition=ThermalCondition(T=312.65, P=101325))
     
     """
     __slots__ = ('_x', # [float] Fraction of solute as a solid.
@@ -105,6 +138,7 @@ class SLE(Equilibrium, phases='ls'):
                  '_mol_solute', # [float] Solute molar data.
                  '_solute_index', # [int] Solute index
                  '_solute_gamma_index', # [int] Solute index for activity coefficients
+                 '_phase_data',
                  'activity_coefficient', # [float] Activity coefficient of solute in the liquid; only valid thermo.Gamma is IdealActivityCoefficients.
     )
     
@@ -115,6 +149,7 @@ class SLE(Equilibrium, phases='ls'):
         self._phase_data = tuple(imol)
         self._liquid_mol = liquid_mol = imol['l']
         self._solid_mol = imol['s']
+        self._phase_data = tuple(imol)
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
         self._index = ()
         self._chemical = None
@@ -150,25 +185,37 @@ class SLE(Equilibrium, phases='ls'):
                 self._gamma = thermo.Gamma(eq_chems)
                 self._solute_gamma_index = self._index.index(solute_index)
         
-    def __call__(self, solute, T, P=None, solubility=None):
+    def __call__(self, solute, T=None, P=None, H=None, solubility=None):
         """
         Perform solid-liquid equilibrium.
 
         Parameters
         ----------
-        T : float
+        T : float, optional
             Operating temperature [K].
         P : float, optional
             Operating pressure [Pa].
+        H : float, optional
+            Operating enthalpy [kJ]
         solubility : float, optional
             Mol fraction of solute at maximum solubility.
             
         """
         thermal_condition = self.thermal_condition
-        if P: thermal_condition.P = P
-        thermal_condition.T = T
         chemicals = self.chemicals
+        mixture = self.mixture
+        phase_data = self._phase_data
         self._solute_index = solute_index = chemicals.get_index(solute)
+        T_given = T is not None
+        H_given = H is not None
+        if not (T_given or H_given):
+            raise ValueError('must pass T or H; none passed')
+        if T_given and H_given:
+            raise ValueError('must pass either T or H; not both')
+        if P: thermal_condition.P = P
+        else: P = thermal_condition.P 
+        if T_given: thermal_condition.T = T
+        else: T = thermal_condition.T
         if solubility is not None:
             solute_index = self._solute_index
             self._mol_solute = (
@@ -176,21 +223,68 @@ class SLE(Equilibrium, phases='ls'):
             )
             self._index = slice(None)
             self._update_solubility(solubility)
+            if T_given:
+                thermal_condition.T = T
+            elif H_given:
+                thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+            else:
+                raise Exception('Unknown')
             return
         self._setup()
+        mol_solute = self._mol_solute
         liquid_mol = self._liquid_mol
         solid_mol = self._solid_mol
-        if self._chemical:
-            Tm = self._chemical.Tm
-            if T > Tm:
-                liquid_mol[solute_index] = self._mol_solute
-                solid_mol[solute_index] = 0.
+            
+        if T_given: 
+            if self._chemical:
+                thermal_condition.T = T
+                Tm = self._chemical.Tm
+                if T > Tm:
+                    liquid_mol[solute_index] = mol_solute
+                    solid_mol[solute_index] = 0.
+                else:
+                    liquid_mol[solute_index] = 0.
+                    solid_mol[solute_index] = mol_solute
             else:
+                solubility = self._solve_x(T)
+                self._update_solubility(solubility)
+        elif H_given:
+            if self._chemical:
+                # Set temperature in equilibrium
+                self._thermal_condition.T = T = Tm = self._chemical.Tm
+                
+                # Check if liquid
+                liquid_mol[solute_index] = mol_solute
+                solid_mol[solute_index] = 0.
+                H_liq = mixture.xH(phase_data, T, P)
+                if H >= H_liq:
+                    self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+                    return
+    
+                # Check if subcooled liquid
                 liquid_mol[solute_index] = 0.
-                solid_mol[solute_index] = self._mol_solute
-        else:
-            solubility = self._solve_x(T)
-            self._update_solubility(solubility)
+                solid_mol[solute_index] = mol_solute
+                H_sol = mixture.xH(phase_data, T, P)
+                if H <= H_sol:
+                    self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+                    return
+                
+                # Adjust liquid fraction accordingly
+                L = (H - H_sol)/(H_liq - H_sol)
+                liquid_mol[solute_index] = L * mol_solute
+                solid_mol[solute_index] = mol_solute - liquid_mol[solute_index]
+            elif H_given:
+                def f(T):
+                    solubility = self._solve_x(T)
+                    self._update_solubility(solubility)
+                    return mixture.xsolve_T(phase_data, H, T, P)
+                
+                self._thermal_condition.T = T = flx.aitken(
+                    f, mixture.xsolve_T(phase_data, H, T, P), 
+                    1e-3, (), 50, checkiter=False
+                )
+            else:
+                raise Exception('unknown')
     
     def _update_solubility(self, x):
         solute_index = self._solute_index

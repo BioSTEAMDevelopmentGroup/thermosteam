@@ -112,16 +112,16 @@ class Stream:
     Mass and volumetric flow rates are available as property arrays:
         
     >>> s1.mass
-    property_array([<Water: 20 kg/hr>, <Ethanol: 10 kg/hr>])
+    property_array([20.0, 10.0])
     >>> s1.vol
-    property_array([<Water: 0.02006 m^3/hr>, <Ethanol: 0.012724 m^3/hr>])
+    property_array([0.02006, 0.012724])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
     >>> # Mass flows are always up to date with molar flows
     >>> s1.mol[0] = 1
     >>> s1.mass[0]
-    <Water: 18.015 kg/hr>
+    18.015
     >>> # Changing mass flows changes molar flows
     >>> s1.mass[0] *= 2
     >>> s1.mol[0]
@@ -244,7 +244,7 @@ class Stream:
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_islinked', '_property_cache_key',
-        '_property_cache', 'characterization_factors',
+        '_property_cache', 'characterization_factors', '_user_equilibrium',
         # '_velocity', '_height'
     )
     line = 'Stream'
@@ -303,6 +303,33 @@ class Stream:
         self.reset_cache()
         self._register(ID)
         self._islinked = False
+        self._user_equilibrium = None
+
+    def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
+        """
+        Convinience method for resetting flow rate data.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=1)
+        >>> s1.reset_flow(Ethanol=1, phase='g', units='kg/hr', total_flow=2)
+        >>> s1.show('cwt')
+        Stream: s1
+         phase: 'g', T: 298.15 K, P: 101325 Pa
+         composition: Ethanol  1
+                      -------  2 kg/hr
+        
+        """
+        imol = self._imol
+        imol.empty()
+        if phase: imol.phase = phase
+        if chemical_flows:
+            keys, values = zip(*chemical_flows.items())
+            self.set_flow(values, units, keys)
+        if total_flow:
+            self.set_total_flow(total_flow, units)
 
     def _reset_thermo(self, thermo):
         if thermo is self._thermo: return
@@ -314,6 +341,16 @@ class Stream:
             for phase, stream in self._streams.items():
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
+
+    def user_equilibrium(self, *args, **kwargs):
+        return self._user_equilibrium(self, *args, **kwargs)
+
+    def set_user_equilibrium(self, f):
+        self._user_equilibrium = f
+        
+    @property
+    def has_user_equilibrium(self):
+        return self._user_equilibrium is not None
 
     def get_CF(self, key, units=None):
         """
@@ -631,7 +668,7 @@ class Stream:
         """Reset cache regarding equilibrium methods."""
         self._bubble_point_cache = eq.BubblePointCache()
         self._dew_point_cache = eq.DewPointCache()
-        self._property_cache_key = None, None
+        self._property_cache_key = None, None, None
         self._property_cache = {}
 
     @classmethod
@@ -909,7 +946,7 @@ class Stream:
     @property
     def H(self):
         """[float] Enthalpy flow rate in kJ/hr."""
-        H = self._get_property_cache('H')
+        H = self._get_property_cache('H', True)
         if H is None:
             self._property_cache['H'] = H = self.mixture.H(
                 self.phase, self.mol, *self._thermal_condition
@@ -936,7 +973,12 @@ class Stream:
     @property
     def S(self):
         """[float] Absolute entropy flow rate in kJ/hr."""
-        return self.mixture.S(self.phase, self.mol, *self._thermal_condition)
+        S = self._get_property_cache('S', True)
+        if S is None:
+            self._property_cache['S'] = S = self.mixture.S(
+                self.phase, self.mol, *self._thermal_condition
+            )
+        return S
     
     @property
     def Hnet(self):
@@ -960,7 +1002,7 @@ class Stream:
         """[float] Enthalpy of vaporization flow rate in kJ/hr."""
         mol = self.mol
         T = self._thermal_condition._T
-        Hvap = self._get_property_cache('Hvap')
+        Hvap = self._get_property_cache('Hvap', True)
         if Hvap is None:
             self._property_cache['Hvap'] = Hvap = sum([
                 i*j.Hvap(T) for i,j in zip(mol, self.chemicals)
@@ -968,24 +1010,32 @@ class Stream:
             ])
         return Hvap
     
-    def _get_property_cache(self, name):
+    def _get_property_cache(self, name, flow=False):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
         data = imol._data
+        total = data.sum()
+        if total == 0.: return 0.
+        composition = data / total
         literal = (imol._phase._phase, thermal_condition._T, thermal_condition._P)
-        last_literal, last_data = self._property_cache_key
-        if literal == last_literal and (data == last_data).all():
-            return property_cache.get(name) 
+        last_literal, last_composition, last_total = self._property_cache_key
+        if literal == last_literal and (composition == last_composition).all():
+            prop = property_cache.get(name)
+            if not prop: return prop
+            if flow:
+                return prop * total / last_total
+            else:
+                return prop
         else:
-            self._property_cache_key = (literal, data.copy())
+            self._property_cache_key = (literal, composition, total)
             property_cache.clear()
             return None
     
     @property
     def C(self):
         """[float] Heat capacity flow rate in kJ/hr."""
-        C = self._get_property_cache('C')
+        C = self._get_property_cache('C', True)
         if C is None:
             self._property_cache['C'] = C = self.mixture.Cn(self.phase, self.mol, self.T)
         return C
@@ -1212,7 +1262,7 @@ class Stream:
             self._imol.separate_out(other._imol)
             if energy_balance: self.H = H_new
     
-    def mix_from(self, others, energy_balance=True):
+    def mix_from(self, others, energy_balance=True, vle=False):
         """
         Mix all other streams into this one, ignoring its initial contents.
         
@@ -1263,8 +1313,17 @@ class Stream:
             self.empty()
         elif N_others == 1:
             self.copy_like(others[0])
+        elif vle:
+            phases = ''.join([i.phase for i in others])
+            self.phases = tuple(set(phases))
+            self._imol.mix_from([i._imol for i in others])
+            if energy_balance: 
+                H = sum([i.H for i in others])
+                self.vle(H=self.H, P=self.P)
+            else:
+                self.vle(T=self.T, P=self.P)
         else:
-            self.P = others[0].P
+            self.P = min([i.P for i in others])
             if energy_balance: H = sum([i.H for i in others])
             self._imol.mix_from([i._imol for i in others])
             if energy_balance and not self.isempty():
@@ -1645,6 +1704,7 @@ class Stream:
         if thermo and thermo.chemicals is not self.chemicals:
             new._imol.reset_chemicals(thermo.chemicals)
         new._thermal_condition = self._thermal_condition.copy()
+        new._user_equilibrium = self._user_equilibrium
         new.reset_cache()
         new.price = 0
         new.ID = ID
@@ -1681,6 +1741,7 @@ class Stream:
         new.reset_cache()
         new.characterization_factors = {}
         self._islinked = new._islinked = True
+        new._user_equilibrium = self._user_equilibrium
         return new
     
     def proxy(self, ID=None):
@@ -1718,6 +1779,7 @@ class Stream:
         new._property_cache_key = self._property_cache_key
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
+        new._user_equilibrium = self._user_equilibrium
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
         new.characterization_factors = {}
@@ -1980,9 +2042,9 @@ class Stream:
         if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
         return z / z_sum
     
-    def get_molar_composition(self, IDs):
+    def get_molar_fraction(self, IDs):
         """
-        Return molar composition of given chemicals.
+        Return molar fraction of given chemicals.
 
         Parameters
         ----------
@@ -1994,7 +2056,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
-        >>> s1.get_molar_composition(('Water', 'Ethanol'))
+        >>> s1.get_mol_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
@@ -2002,9 +2064,11 @@ class Stream:
         if not F_mol: raise RuntimeError(f'{repr(self)} is empty')
         return self.imol[IDs] / F_mol
     
-    def get_mass_composition(self, IDs):
+    get_molar_composition = get_molar_fraction
+    
+    def get_mass_fraction(self, IDs):
         """
-        Return mass composition of given chemicals.
+        Return mass fraction of given chemicals.
 
         Parameters
         ----------
@@ -2016,7 +2080,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kg/hr')
-        >>> s1.get_mass_composition(('Water', 'Ethanol'))
+        >>> s1.get_mass_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
@@ -2024,9 +2088,11 @@ class Stream:
         if not F_mass: raise RuntimeError(f'{repr(self)} is empty')
         return self.imass[IDs] / F_mass
     
-    def get_volumetric_composition(self, IDs):
+    get_mass_composition = get_mass_fraction
+    
+    def get_volumetric_fraction(self, IDs):
         """
-        Return volumetric composition of given chemicals.
+        Return volumetric fraction of given chemicals.
 
         Parameters
         ----------
@@ -2038,13 +2104,15 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
-        >>> s1.get_volumetric_composition(('Water', 'Ethanol'))
+        >>> s1.get_volumetric_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """
         F_vol = self.F_vol
         if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
         return self.ivol[IDs] / F_vol
+    
+    get_volumetric_composition = get_volumetric_fraction
     
     def get_concentration(self, IDs):
         """
@@ -2074,7 +2142,7 @@ class Stream:
         chemicals = self.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, self.thermo)
         IDs = tuple([i.ID for i in chemicals])
-        x = self.get_molar_composition(IDs)
+        x = self.get_molar_fraction(IDs)
         if x.sum() < 1e-12: return 0
         return F_l(x, self.T).sum()
     
@@ -2125,7 +2193,7 @@ class Stream:
         chemicals = ms.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, ms.thermo)
         IDs = tuple([i.ID for i in chemicals])
-        x = other.get_molar_composition(IDs)
+        x = other.get_molar_fraction(IDs)
         T = ms.T
         P = ms.P
         vapor = ms['g']
