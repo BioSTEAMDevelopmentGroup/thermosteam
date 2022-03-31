@@ -85,4 +85,4 @@ pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 del np, pd
 
-__version__ = "0.28.6"
+__version__ = "0.28.7"

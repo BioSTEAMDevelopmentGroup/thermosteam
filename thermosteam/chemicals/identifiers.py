@@ -121,10 +121,6 @@ class ChemicalMetadataDB:
             if CAS in CAS_index:
                 obj = CAS_index[CAS]
             else:
-                flat_synonyms = []
-                for name in synonyms:
-                    for name in name.split(';'):
-                        if name: flat_synonyms.append(name)
                 obj = ChemicalMetadata(pubchemid, CAS, formula, float(MW), smiles,
                                        InChI, InChI_key, iupac_name, common_name, synonyms)
                 CAS_index[CAS] = obj
@@ -133,6 +129,10 @@ class ChemicalMetadataDB:
                 InChI_index[InChI] = obj
                 InChI_key_index[InChI_key] = obj
                 formula_index[formula] = obj
+            flat_synonyms = []
+            for name in synonyms:
+                for name in name.split(';'):
+                    if name: flat_synonyms.append(name)
             for name in flat_synonyms:
                 if not name: continue
                 name = name.lower()
