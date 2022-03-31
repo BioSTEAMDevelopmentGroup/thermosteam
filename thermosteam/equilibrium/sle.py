@@ -217,6 +217,10 @@ class SLE(Equilibrium, phases='ls'):
         if T_given: thermal_condition.T = T
         else: T = thermal_condition.T
         if solubility is not None:
+            solute_index = self._solute_index
+            self._mol_solute = (
+                self._solid_mol[solute_index] + self._liquid_mol[solute_index]
+            )
             self._index = slice(None)
             self._update_solubility(solubility)
             if T_given:
