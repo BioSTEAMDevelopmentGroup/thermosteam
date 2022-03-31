@@ -45,14 +45,15 @@ def CAS_from_any(ID):
 
 @forward(identifiers)
 class ChemicalMetadataDB:
-    __slots__ = ('pubchem_index',
-                 'smiles_index',
-                 'InChI_index',
-                 'InChI_key_index',
-                 'name_index',
-                 'CAS_index',
-                 'formula_index',
-                 'unloaded_files',
+    __slots__ = (
+        'pubchem_index',
+        'smiles_index',
+        'InChI_index',
+        'InChI_key_index',
+        'name_index',
+        'CAS_index',
+        'formula_index',
+        'unloaded_files',
     )
     
     cache = {}
