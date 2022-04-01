@@ -1024,7 +1024,7 @@ class MultiStageLLE:
     """
     __slots__ = ('stages', 'index', 'multi_stream', 
                  'carrier_chemical', 'extract_flow_rates', 
-                 'partition_data', '_thermo')
+                 'partition_data', '_thermo', '_K_init')
     
     def __init__(self, N_stages, feed, solvent, carrier_chemical=None,
                  thermo=None, partition_data=None):
@@ -1107,6 +1107,7 @@ class MultiStageLLE:
             IDs = tuple([i.ID for i in lle._lle_chemicals])
             K = lle._K
             phi = lle._phi
+        self._K_init = K
         index = multi_stream.chemicals.get_index(IDs)
         phase_fractions = np.ones(N_stages) * phi
         partition_coefficients = np.ones([K.size, N_stages]) * K[:, np.newaxis]
@@ -1121,14 +1122,29 @@ class MultiStageLLE:
         stages = self.stages
         for i in stages: i.balance_raffinate_flows()
         for i in stages: i.partition(self.partition_data, update=False)
-        K = np.transpose([i.K for i in stages]) 
+        all_chemicals = self.multi_stream.available_chemicals
+        index = {j.ID: i for i, j in enumerate(all_chemicals)}
+        def get_K(stage):
+            Ks = stage.K
+            IDs = stage.IDs
+            Ks_standard = self._K_init.copy()
+            for ID, K in zip(IDs, Ks): Ks_standard[index[ID]] = K
+            return Ks_standard
+            
+        K = np.array([get_K(i) for i in stages], dtype=float)
+        K = np.transpose(K) 
         phi = np.array([i.phi for i in stages])
         index = self.index
         stages = self.stages
         N_stages = len(stages)
-        extract_flow_rates = flow_rates_for_multi_stage_extration_without_side_draws(
-            N_stages, phi, K, self.feed.mol[index], self.solvent.mol[index]
-        )
+        try:
+            extract_flow_rates = flow_rates_for_multi_stage_extration_without_side_draws(
+                N_stages, phi, K, self.feed.mol[index], self.solvent.mol[index]
+            )
+        except:
+            for x in N_stages, phi, K, self.feed.mol[index], self.solvent.mol[index]:
+                print(type(x), repr(x))
+        # print(extract_flow_rates)
         return extract_flow_rates
         
 @njit(cache=True)
@@ -1213,8 +1229,10 @@ def flow_rates_for_multi_stage_extration_without_side_draws(
         Extract flow rates with stages by row and components by column.
 
     """
+    # print('look here, lavanya_s addition')
     phase_fractions[phase_fractions < 1e-16] = 1e-16
     phase_fractions[phase_fractions > 1. - 1e-16] = 1. - 1e-16
+    # print(phase_fractions)
     phase_ratios = phase_fractions / (1. - phase_fractions)
     N_chemicals = feed.size
     extract_flow_rates = np.zeros((N_stages, N_chemicals))
@@ -1222,5 +1240,5 @@ def flow_rates_for_multi_stage_extration_without_side_draws(
         flows_by_stage = single_component_flow_rates_for_multi_stage_lle_without_side_draws(
                 N_stages, phase_ratios, partition_coefficients[i], feed[i], solvent[i]
         ) 
-        extract_flow_rates[:, i] = flows_by_stage
+        extract_flow_rates[:, i] = flows_by_stage    
     return extract_flow_rates
