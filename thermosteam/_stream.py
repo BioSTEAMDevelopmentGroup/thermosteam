@@ -2056,7 +2056,7 @@ class Stream:
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='kmol/hr')
-        >>> s1.get_mol_fraction(('Water', 'Ethanol'))
+        >>> s1.get_molar_fraction(('Water', 'Ethanol'))
         array([0.5 , 0.25])
 
         """

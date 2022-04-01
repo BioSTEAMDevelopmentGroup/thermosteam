@@ -129,19 +129,27 @@ class ChemicalMetadataDB:
                 InChI_index[InChI] = obj
                 InChI_key_index[InChI_key] = obj
                 formula_index[formula] = obj
-            for name in synonyms: 
+            flat_synonyms = []
+            for name in synonyms:
+                for name in name.split(';'):
+                    if name: flat_synonyms.append(name)
+            for name in flat_synonyms:
+                if not name: continue
                 name = name.lower()
-                if name not in name_index: name_index[name] = obj
+                if name not in name_index:
+                    name_index[name] = obj
         f.close()
     
-    def search_index(self, index, key):
-        try: return index[key]
-        except: 
+    
+    def search_index(self, index, key, autoload=None):
+        if key in index:
+            return index[key]
+        elif autoload: 
             files = self.unloaded_files
             if files:
                 self.load(files.pop())
-                self.search_index(index, key)
-    
+                return self.search_index(index, key)
+            
     def search_pubchem(self, pubchem, autoload=None):
         return self.search_index(self.pubchem_index, int(pubchem))
         
@@ -169,18 +177,27 @@ class ChemicalMetadataDB:
             return cache[ID]
         else:
             if len(cache) > 100: cache.clear()
-            cache[ID] = obj = self._search(ID)
+            try:
+                cache[ID] = obj = self._search(ID)
+            except Exception as e:
+                files = self.unloaded_files
+                while files:    
+                    self.load(files.pop())
+                    try: cache[ID] = obj = self._search(ID)
+                    except: pass
+                    else: return obj
+                raise e from None
             return obj
 
     def _search(self, ID):
         if not ID: raise ValueError('ID cannot be empty')
         
         if check_CAS(ID):
-            CAS_lookup = self.search_CAS(ID)
+            CAS_lookup = self.search_CAS(ID, False)
             if CAS_lookup: return CAS_lookup
             
             # Handle the case of synonyms
-            CAS_alternate_loopup = self.search_name(ID)
+            CAS_alternate_loopup = self.search_name(ID, False)
             if CAS_alternate_loopup: return CAS_alternate_loopup
             
             raise LookupError('a valid CAS number was recognized, but its not in the database')
@@ -197,34 +214,34 @@ class ChemicalMetadataDB:
             elif ID_lower[0:8] == 'inchi=1/':
                 inchi_search = ID[8:]
             if inchi_search:
-                inchi_lookup = self.search_InChI(inchi_search)
+                inchi_lookup = self.search_InChI(inchi_search, False)
                 if inchi_lookup: return inchi_lookup
                 raise LookupError('A valid InChI name was recognized, but it is not in the database')
             if ID_lower[0:9] == 'inchikey=':
-                inchi_key_lookup = self.search_InChI_key(ID[9:])
+                inchi_key_lookup = self.search_InChI_key(ID[9:], False)
                 if inchi_key_lookup: return inchi_key_lookup
                 raise LookupError('A valid InChI Key was recognized, but it is not in the database')
         if ID_len > 8:
             if ID_lower[0:8] == 'pubchem=':
-                pubchem_lookup = self.search_pubchem(ID[8:])
+                pubchem_lookup = self.search_pubchem(ID[8:], False)
                 if pubchem_lookup: return pubchem_lookup
                 raise LookupError('A PubChem integer identifier was recognized, but it is not in the database.')
         if ID_len > 7:
             if ID_lower[0:7] == 'smiles=':
-                smiles_lookup = self.search_smiles(ID[7:])
+                smiles_lookup = self.search_smiles(ID[7:], False)
                 if smiles_lookup: return smiles_lookup
                 raise LookupError('A SMILES identifier was recognized, but it is not in the database.')
         
         # Permutate through various name options
         ID_search = spaceout_words(ID).lower()
-        for name in (ID_lower, ID_search):
-            name_lookup = self.search_name(name)
+        for name in (ID_search, ID_lower):
+            name_lookup = self.search_name(name, False)
             if name_lookup: return name_lookup
         
         try: formula = serialize_formula(ID)
         except: pass
         else:
-            formula_query = self.search_formula(formula)
+            formula_query = self.search_formula(formula, False)
             if formula_query: return formula_query
         
         raise LookupError(f'chemical {repr(ID)} not recognized')
