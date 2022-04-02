@@ -327,9 +327,15 @@ class Stream:
         if phase: imol.phase = phase
         if chemical_flows:
             keys, values = zip(*chemical_flows.items())
-            self.set_flow(values, units, keys)
+            if units is None:
+                self.imol[keys] = values
+            else:
+                self.set_flow(values, units, keys)
         if total_flow:
-            self.set_total_flow(total_flow, units)
+            if units is None:
+                self.F_mol = total_flow
+            else:
+                self.set_total_flow(total_flow, units)
 
     def _reset_thermo(self, thermo):
         if thermo is self._thermo: return

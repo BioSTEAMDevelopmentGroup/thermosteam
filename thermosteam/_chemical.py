@@ -1630,7 +1630,13 @@ class Chemical:
             self._H = Enthalpy.functor(Cn, T_ref, H_ref)
             self._S = Entropy.functor(Cn, T_ref, S0)
             Cn_s = Cn_l = Cn_g = Cn
-            has_Cns = has_Cnl = has_Cng = True
+            has_Cns = has_Cnl = has_Cng = False
+            if single_phase == 'l':
+                has_Cnl = True
+            elif single_phase == 's':
+                has_Cns = True
+            elif single_phase == 'g':
+                has_Cng = True    
         else:
             has_Cns = has_Cnl = has_Cng = False
         if phase_ref: phase_ref = phase_ref[0]
@@ -1673,8 +1679,11 @@ class Chemical:
                     else:
                         H_int_T_ref_to_Tb_l = S_int_T_ref_to_Tb_l = None
                     if Tm:
-                        H_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral(Tm, T_ref)
-                        S_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral_over_T(Tm, T_ref)
+                        try:
+                            H_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral(Tm, T_ref)
+                            S_int_Tm_to_T_ref_l = Cn_l.T_dependent_property_integral_over_T(Tm, T_ref)
+                        except:
+                            H_int_Tm_to_T_ref_l = S_int_Tm_to_T_ref_l = None
                     else:
                         H_int_Tm_to_T_ref_l = S_int_Tm_to_T_ref_l = None
                 else:
