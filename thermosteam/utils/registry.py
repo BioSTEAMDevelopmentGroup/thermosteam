@@ -33,6 +33,8 @@ class Registry: # pragma: no cover
 
     __slots__ = ('data', 'safe_to_replace', '_dumps')
 
+    AUTORENAME = False #: Whether to rename objects with conflicting IDs
+
     def untrack(self, objs):
         """
         Mark objects safe to replace, so no warnings are issued if any are 
@@ -44,8 +46,12 @@ class Registry: # pragma: no cover
     def track(self, objs):
         """
         Reregister objects if they are not already in the registry and mark 
-        objects as unsafe to replace, so that warnings can be issued if any are 
+        objects as unsafe to replace so that warnings can be issued if any are 
         replaced.
+        
+        Warning
+        -------
+        Overrides old objects with the same ID.
         
         """
         safe_to_replace = self.safe_to_replace
@@ -82,7 +88,16 @@ class Registry: # pragma: no cover
         if ID in data:
             other = data[ID]
             if obj is not other and other not in self.safe_to_replace:
-                if ID_old:
+                if self.AUTORENAME:
+                    try:
+                        base, num = ID.rsplit('_', 1)
+                        num = int(num)
+                        other.ID = ID + '_' + str(num + 1) 
+                        ID += '_' + str(num + 2)
+                    except:
+                        other.ID = ID + '_1'
+                        ID += '_2'
+                elif ID_old:
                     warning = RuntimeWarning(
                         f"upon renaming, {repr(obj)} replaced {repr(other)} "
                          "in registry"
