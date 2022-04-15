@@ -618,7 +618,7 @@ class MultiStream(Stream):
             s2.phases = phases
             for phase in phases: self[phase].split_to(s1[phase], s2[phase], split)
         else:
-            Stream.split_to(s1, s2, split)
+            Stream.split_to(self, s1, s2, split)
     
     def copy_flow(self, other, phase=..., IDs=..., *, remove=False, exclude=False):
         """
