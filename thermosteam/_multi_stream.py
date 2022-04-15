@@ -599,26 +599,33 @@ class MultiStream(Stream):
         >>> split = chemicals.kwarray(dict(Water=0.5, Ethanol=0.1))
         >>> s.split_to(s1, s2, split)
         >>> s1.show(flow='kg/hr')
-        Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    10
-                       Ethanol  1
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    10
+                           Ethanol  1
         
         >>> s2.show(flow='kg/hr')
-        Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    10
-                       Ethanol  9
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    10
+                           Ethanol  9
         
         
         """
         phases = self.phases
-        if isinstance(s1, MultiStream) or isinstance(s2, MultiStream):
+        if energy_balance or isinstance(s1, MultiStream) or isinstance(s2, MultiStream):
             s1.phases = phases
             s2.phases = phases
             for phase in phases: self[phase].split_to(s1[phase], s2[phase], split)
         else:
             Stream.split_to(self, s1, s2, split)
+            return
+        if energy_balance:
+            tc1 = s1._thermal_condition
+            tc2 = s2._thermal_condition
+            tc = self._thermal_condition
+            tc1._T = tc2._T = tc._T
+            tc1._P = tc2._P = tc._P
     
     def copy_flow(self, other, phase=..., IDs=..., *, remove=False, exclude=False):
         """
