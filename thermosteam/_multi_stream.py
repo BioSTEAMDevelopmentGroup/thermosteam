@@ -582,6 +582,44 @@ class MultiStream(Stream):
         
     ### Methods ###
     
+    def split_to(self, s1, s2, split, energy_balance=True):
+        """
+        Split molar flow rate from this stream to two others given
+        the split fraction or an array of split fractions.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> s = tmo.Stream('s', Water=20, Ethanol=10, units='kg/hr')
+        >>> s.phases = ('l', 'g')
+        >>> s1 = tmo.Stream('s1')
+        >>> s2 = tmo.Stream('s2')
+        >>> split = chemicals.kwarray(dict(Water=0.5, Ethanol=0.1))
+        >>> s.split_to(s1, s2, split)
+        >>> s1.show(flow='kg/hr')
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    10
+                           Ethanol  1
+        
+        >>> s2.show(flow='kg/hr')
+        MultiStream: s2
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water    10
+                           Ethanol  9
+        
+        
+        """
+        phases = self.phases
+        if isinstance(s1, MultiStream) or isinstance(s2, MultiStream):
+            s1.phases = phases
+            s2.phases = phases
+            for phase in phases: self[phase].split_to(s1[phase], s2[phase], split)
+        else:
+            Stream.split_to(s1, s2, split)
+    
     def copy_flow(self, other, phase=..., IDs=..., *, remove=False, exclude=False):
         """
         Copy flow rates of another stream to self.

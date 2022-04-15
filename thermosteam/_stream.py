@@ -2067,8 +2067,7 @@ class Stream:
 
         """
         F_mol = self.F_mol
-        if not F_mol: raise RuntimeError(f'{repr(self)} is empty')
-        return self.imol[IDs] / F_mol
+        return self.imol[IDs] / F_mol if F_mol else 0.
     
     get_molar_composition = get_molar_fraction
     
@@ -2091,8 +2090,7 @@ class Stream:
 
         """
         F_mass = self.F_mass
-        if not F_mass: raise RuntimeError(f'{repr(self)} is empty')
-        return self.imass[IDs] / F_mass
+        return self.imass[IDs] / F_mass if F_mass else 0.
     
     get_mass_composition = get_mass_fraction
     
@@ -2115,8 +2113,7 @@ class Stream:
 
         """
         F_vol = self.F_vol
-        if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
-        return self.ivol[IDs] / F_vol
+        return self.ivol[IDs] / F_vol if F_vol else 0.
     
     get_volumetric_composition = get_volumetric_fraction
     
@@ -2139,8 +2136,7 @@ class Stream:
 
         """
         F_vol = self.F_vol
-        if not F_vol: raise RuntimeError(f'{repr(self)} is empty')
-        return self.imol[IDs] / F_vol
+        return self.imol[IDs] / F_vol if F_vol else 0.
     
     @property
     def P_vapor(self):
