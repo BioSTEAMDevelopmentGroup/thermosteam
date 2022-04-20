@@ -1059,7 +1059,11 @@ class Stream:
     def z_mass(self):
         """[1d array] Mass composition."""
         mass = self.chemicals.MW * self.mol
-        z = mass / mass.sum()
+        F_mass = mass.sum()
+        if F_mass == 0:
+            z = mass
+        else:
+            z = mass / mass.sum()
         z.setflags(0)
         return z
     @property
