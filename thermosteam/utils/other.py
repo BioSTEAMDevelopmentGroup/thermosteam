@@ -8,6 +8,8 @@
 """
 """
 from collections.abc import Iterable
+from math import floor, log10
+import numpy as np
 
 __all__ = (
     'flattened',
@@ -15,7 +17,9 @@ __all__ = (
     'getfields', 
     'setfields', 
     'copy_maybe', 
-    'get_instance'
+    'get_instance',
+    'roundsigfigs',
+    'array_roundsigfigs',
 )
 
 def flattened(lst):
@@ -53,3 +57,47 @@ def get_instance(iterable, cls):
         raise ValueError('instance not found')
     else: # pragma: no cover
         raise ValueError('multiple instances found')
+                
+def roundsigfigs(x, sigfigs=2, index=1):
+    if isinstance(x, Iterable):
+        if isinstance(x, str): return x
+        n = sigfigs - int(floor(log10(abs(x[index])))) - 1 if abs(x[index]) > 1e-12 else 0.
+        try:
+            value = np.round(x, n)
+        except:
+            return np.array(x, dtype=int)
+        if (np.array(value, int) == value).all():
+            return np.array(value, int)
+        else:
+            return value
+    else:
+        n = sigfigs - int(floor(log10(abs(x)))) - 1 if abs(x) > 1e-12 else 0.
+        try:
+            value = round(x, n)
+        except:
+            return int(x)
+        if int(value) == value:
+            return int(value)
+        else:
+            return value
+
+def array_roundsigfigs(arr, sigfigs=2, index=1, inplace=False):
+    if not inplace: arr = arr.copy()
+    for idx, x in np.ndenumerate(arr):
+        if isinstance(x, str): 
+            try:
+                x = float(x)
+            except:
+                arr[idx] = x
+                continue
+        n = sigfigs - int(floor(log10(abs(x)))) - 1 if abs(x) > 1e-12 else 0.
+        try:
+            value = round(x, n)
+        except:
+            arr[idx] = int(x)
+            continue
+        if int(value) == value:
+            arr[idx] = int(value)
+        else:
+            arr[idx] = value
+    return arr
