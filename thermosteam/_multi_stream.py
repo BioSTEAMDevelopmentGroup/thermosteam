@@ -46,7 +46,7 @@ class MultiStream(Stream):
         Temperature [K]. Defaults to 298.15.
     P : float
         Pressure [Pa]. Defaults to 101325.
-    phases : tuple['g', 'l', 's', 'G', 'L', 'S']
+    phases : tuple['g', 'l', 's', 'L', 'S']
         Tuple denoting the phases present. Defaults to ('g', 'l').
     units : str, optional
         Flow rate units of measure (only mass, molar, and

@@ -13,7 +13,7 @@ __all__ = ('Phase', 'LockedPhase', 'NoPhase', 'PhaseIndexer',
            'phase_tuple')
 
 new = object.__new__
-valid_phases = {'s', 'l', 'g', 'S', 'L', 'G'}
+valid_phases = {'s', 'l', 'g', 'S', 'L'}
 
 def check_phase(phase):
     """
@@ -23,13 +23,13 @@ def check_phase(phase):
     --------
     >>> check_phase('q')
     Traceback (most recent call last):
-    RuntimeError: invalid phase 'q' encountered; valid phases are 's', 'l', 'g', 'S', 'L', and 'G'
+    RuntimeError: invalid phase 'q' encountered; valid phases are 's', 'l', 'g', 'S', and 'L'
     
     """
     if phase not in valid_phases:
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "
-            "'s', 'l', 'g', 'S', 'L', and 'G'"
+            "'s', 'l', 'g', 'S', and 'L'"
         )  
 
 def phase_tuple(phases):
@@ -38,7 +38,7 @@ def phase_tuple(phases):
 
     Parameters
     ----------
-    phases : Iterable['s', 'l', 'g', 'S', 'L', or 'G']
+    phases : Iterable['s', 'l', 'g', 'S', or 'L']
 
     Examples
     --------

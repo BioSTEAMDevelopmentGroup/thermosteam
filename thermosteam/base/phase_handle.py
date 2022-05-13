@@ -38,8 +38,6 @@ class PhaseHandle:
     def S(self): return self.s
     @property
     def L(self): return self.l
-    @property
-    def G(self): return self.g
     
     def __iter__(self):
         return iter((('s', self.s), ('l', self.l), ('g', self.g)))

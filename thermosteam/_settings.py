@@ -37,8 +37,7 @@ class Settings:
                              'l': 'Liquid',
                              'g': 'Gas',
                              'S': 'SOLID',
-                             'L': 'LIQUID',
-                             'G': 'GAS'}
+                             'L': 'LIQUID'}
         self._flashpkg = None
     
     def define_impact_indicator(self, key, units):
