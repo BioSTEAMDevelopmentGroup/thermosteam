@@ -248,7 +248,8 @@ class VLE(Equilibrium, phases='lg'):
                  '_F_mol_heavy', # [float] Total moles of heavy chemicals not included in equilibrium calculation.
                  '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
                  '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
-    T_tol = 1e-6
+    maxiter = 50
+    T_tol = 5e-8
     P_tol = 1.
     H_hat_tol = 1e-6
     V_tol = 1e-6
@@ -618,10 +619,13 @@ class VLE(Equilibrium, phases='lg'):
                     v = mol - l
                     P = P_dew
                 else:
-                    P = flx.IQ_interpolation(self._V_err_at_P,
-                                             P_bubble, P_dew, V_bubble - V, V_dew - V,
-                                             self._P, self.P_tol, self.V_tol,
-                                             (V,), checkiter=False, checkbounds=False)
+                    P = flx.IQ_interpolation(
+                        self._V_err_at_P,
+                        P_bubble, P_dew, V_bubble - V, V_dew - V,
+                        self._P, self.P_tol, self.V_tol,
+                        (V,), checkiter=False, checkbounds=False,
+                        maxiter=self.maxiter,
+                    )
                     v = self._v
             
             self._P = thermal_condition.P = P
@@ -665,11 +669,14 @@ class VLE(Equilibrium, phases='lg'):
         self._refresh_v(V, y_bubble)
         F_mass = self._F_mass
         H_hat = H/F_mass
-        P = flx.IQ_interpolation(self._H_hat_err_at_P,
-                        P_bubble, P_dew,
-                        H_bubble/F_mass - H_hat, H_dew/F_mass - H_hat,
-                        self._P, self.P_tol, self.H_hat_tol,
-                        (H_hat,), checkiter=False, checkbounds=False)
+        P = flx.IQ_interpolation(
+            self._H_hat_err_at_P,
+            P_bubble, P_dew,
+            H_bubble/F_mass - H_hat, H_dew/F_mass - H_hat,
+            self._P, self.P_tol, self.H_hat_tol,
+            (H_hat,), checkiter=False, checkbounds=False,
+            maxiter=self.maxiter,
+        )
         self._P = self._thermal_condition.P = P   
         self._thermal_condition.T = T
     
@@ -719,10 +726,13 @@ class VLE(Equilibrium, phases='lg'):
                     v = mol - l
                     T = T_dew
                 else:
-                    T = flx.IQ_interpolation(self._V_err_at_T,
-                                             T_bubble, T_dew, V_bubble - V, V_dew - V,
-                                             self._T, self.T_tol, self.V_tol,
-                                             (V,), checkiter=False, checkbounds=False)
+                    T = flx.IQ_interpolation(
+                        self._V_err_at_T,
+                        T_bubble, T_dew, V_bubble - V, V_dew - V,
+                        self._T, self.T_tol, self.V_tol,
+                        (V,), checkiter=False, checkbounds=False,
+                        maxiter=self.maxiter,
+                    )
                 
                     v = self._v
             self._T = thermal_condition.T = T
@@ -784,7 +794,8 @@ class VLE(Equilibrium, phases='lg'):
             self._T = thermal_condition.T = T_bubble
             flx.IQ_interpolation(f,
                 0, 1., f(0), f(1.), V, self.V_tol, self.H_hat_tol, 
-                checkiter=False, checkbounds=False
+                checkiter=False, checkbounds=False,
+                maxiter=self.maxiter,
             )
             return
         H_hat_dew = self._H_hat_err_at_T(T_dew, 0.)
@@ -796,7 +807,8 @@ class VLE(Equilibrium, phases='lg'):
             self._T = thermal_condition.T = T_dew
             flx.IQ_interpolation(f,
                 0, 1., f(0), f(1.), V, self.V_tol, self.H_hat_tol, 
-                checkiter=False, checkbounds=False
+                checkiter=False, checkbounds=False,
+                maxiter=self.maxiter,
             )
             return
         else:
@@ -832,7 +844,8 @@ class VLE(Equilibrium, phases='lg'):
                         )
                     else:
                         flx.IQ_interpolation(f,
-                            0., 1., y0, y1, self._V, self.V_tol, self.H_hat_tol, 
+                            0., 1., y0, y1, self._V, self.V_tol, self.H_hat_tol,
+                            maxiter=self.maxiter, 
                         )
         self._H_hat = H_hat
     
