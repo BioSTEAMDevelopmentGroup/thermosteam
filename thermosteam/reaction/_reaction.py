@@ -389,7 +389,10 @@ class Reaction:
         if tmo.reaction.CHECK_FEASIBILITY:
             negatives = values < 0.
             if negatives.any():
-                if values[negatives].sum() < -1e-16:
+                if values[negatives].sum() < -1e-12:
+                    X_net = self.X_net()
+                    for ID, X in X_net.items():
+                        if X > 1.: RuntimeError(f"conversion of '{ID}' is over 100%")
                     raise InfeasibleRegion('not enough reactants; reaction conversion')
                 else:
                     values[negatives] = 0.
