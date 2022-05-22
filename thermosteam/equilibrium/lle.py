@@ -103,7 +103,7 @@ class LLE(Equilibrium, phases='lL'):
         self.temperature_cache_tolerance = temperature_cache_tolerance
         self._lle_chemicals = None
     
-    def __call__(self, T, P=None, top_chemical=None):
+    def __call__(self, T, P=None, l_chemical=None):
         """
         Perform liquid-liquid equilibrium.
 
@@ -113,7 +113,7 @@ class LLE(Equilibrium, phases='lL'):
             Operating temperature [K].
         P : float, optional
             Operating pressure [Pa].
-        top_chemical : str, optional
+        l_chemical : str, optional
             Identifier of chemical that will be favored in the "liquid" phase.
             
         """
@@ -138,14 +138,14 @@ class LLE(Equilibrium, phases='lL'):
                 mol_L = solve_lle_liquid_mol(mol, T, gamma.f, gamma.args,
                                              **self.differential_evolution_options)
                 mol_l = mol - mol_L
-                if top_chemical:
+                if l_chemical:
                     MW = self.chemicals.MW[index]
                     mass_L = mol_L * MW
                     mass_l = mol_l * MW
                     IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                    top_chemical_index = IDs[top_chemical]
-                    C_L = mass_L[top_chemical_index] / mass_L.sum()
-                    C_l = mass_l[top_chemical_index] / mass_l.sum()
+                    l_chemical_index = IDs[l_chemical]
+                    C_L = mass_L[l_chemical_index] / mass_L.sum()
+                    C_l = mass_l[l_chemical_index] / mass_l.sum()
                     top_L = C_L > C_l
                     if top_L: mol_l, mol_L = mol_L, mol_l
                 F_mol_l = mol_l.sum()
