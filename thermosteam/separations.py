@@ -29,7 +29,6 @@ __all__ = (
     'material_balance',
     'StageEquilibrium',
     'MultiStageEquilibrium',
-    'single_component_flow_rates_for_multi_stage_equilibrium_with_side_draws',
     'flow_rates_for_multi_stage_equilibrum_with_side_draws',
     'chemical_splits',
     'phase_fraction',
@@ -967,12 +966,16 @@ class StageEquilibrium:
         total_mol = sum([i.mol for i in other_feeds], feed.mol)
         ms = self.multi_stream
         top, bottom = ms
-        top_mol = top.mol
-        bottom_mol = bottom.mol
-        handle_infeasible_flow_rates(bottom_mol, total_mol, self.strict_infeasibility_check, 2)
-        bottom_mol[:] = total_mol - top_mol
-        bottom_mol *= top_split
-        bottom_mol *= bottom_split
+        top_mol = top.mol / top_split
+        handle_infeasible_flow_rates(top_mol, total_mol, self.strict_infeasibility_check, 2)
+        top.mol = top_mol * top_split
+        bottom.mol[:] = (total_mol - top_mol) * bottom_split
+        
+    def update_splits(self, top_split, bottom_split):
+        ms = self.multi_stream
+        top, bottom = ms
+        top.mol *= top_split
+        bottom.mol *= bottom_split
         
     @property
     def IDs(self):
@@ -1068,12 +1071,47 @@ class MultiStageEquilibrium:
     1.0
     >>> stages.raffinate.imol['Water'] / feed.imol['Water'] # Carrier remains in raffinate
     1.0
-        
+       
+    Simulate with a feed at the 4th stage:
+    
+    >>> N_stages = 5
+    >>> dilute_feed = tmo.Stream('dilute_feed', Water=100, Methanol=2)
+    >>> stages = tmo.separations.MultiStageEquilibrium(N_stages, [feed, dilute_feed, solvent], 
+    ...     feed_stages=[0, 3, -1],
+    ...     phases=('L', 'l'),
+    ...     partition_data={
+    ...         'K': np.array([1.38]),
+    ...         'IDs': ('Methanol',),
+    ...         'raffinate_chemicals': ('Water',),
+    ...         'extract_chemicals': ('Octanol',),
+    ...     }
+    ... )
+    >>> stages.simulate_multi_stage_equilibrium_with_side_draws()
+    >>> stages.extract.imol['Methanol'] / (feed.imol['Methanol'] + dilute_feed.imol['Methanol']) # Recovery
+    0.93
+    
+    Simulate with a 60% extract side draw at the 2nd stage:
+    
+    >>> N_stages = 5
+    >>> stages = tmo.separations.MultiStageEquilibrium(N_stages, [feed, solvent],                         
+    ...     top_side_draws=[(1, 0.6)],
+    ...     phases=('L', 'l'),
+    ...     partition_data={
+    ...         'K': np.array([1.38]),
+    ...         'IDs': ('Methanol',),
+    ...         'raffinate_chemicals': ('Water',),
+    ...         'extract_chemicals': ('Octanol',),
+    ...     }
+    ... )
+    >>> stages.simulate_multi_stage_equilibrium_with_side_draws()
+    >>> (extract_side_draw,),  raffinate_side_draws = stages.get_side_draws()
+    >>> (stages.extract.imol['Methanol'] + extract_side_draw.imol['Methanol']) / feed.imol['Methanol'] # Recovery
+    
     """
     __slots__ = ('stages', 'multi_stream', 'iter', 'solvent', 'feeds', 'feed_stages', 'P',
                  'partition_data', 'top_side_draws', 'bottom_side_draws',
                  'maxiter', 'molar_tolerance', 'relative_molar_tolerance',
-                 '_thermo', '_iter_args', '_update_args')
+                 '_thermo', '_iter_args', '_update_args', '_top_only')
     
     default_maxiter = 10
     default_molar_tolerance = 0.1
@@ -1123,6 +1161,39 @@ class MultiStageEquilibrium:
         for i, j in top: t[i] = j
         for i, j in bottom: b[i] = j
         
+    def get_side_draws(self, top_streams=None, bottom_streams=None):
+        top_index, = np.where(self.top_side_draws != 0.)
+        if top_streams is None: top_streams = [tmo.Stream(None) for i in top_index]
+        stages = self.stages
+        top, bottom = self.multi_stream.phases
+        for i, index in enumerate(top_index):
+            s = self.top_side_draws[index]
+            top_streams[i].mol = (s / (1 - s)) * stages[index].multi_stream[top].mol 
+        bottom_index, = np.where(self.top_side_draws != 0.)
+        if bottom_streams is None: bottom_streams = [tmo.Stream(None) for i in bottom_index]
+        for i, index in enumerate(top_index):
+            s = self.bottom_side_draws[index]
+            bottom_streams[i].mol = (s / (1 - s)) * stages[index].multi_stream[bottom].mol 
+        return top_streams, bottom_streams
+    
+    def _get_net_feeds(self):
+        feed, *other_feeds = self.feeds
+        return sum([i.mol for i in other_feeds], feed.mol)
+    
+    def _get_net_outlets(self):
+        top_index, = np.where(self.top_side_draws != 0.)
+        stages = self.stages
+        top, bottom = self.multi_stream.phases
+        mol = self.stages[0].multi_stream[top].mol + self.stages[-1].multi_stream[bottom].mol
+        for index in top_index:
+            s = self.top_side_draws[index]
+            mol += (s / (1 - s)) * stages[index].multi_stream[top].mol 
+        bottom_index, = np.where(self.bottom_side_draws != 0.)
+        for index in bottom_index:
+            s = self.bottom_side_draws[index]
+            mol += (s / (1 - s)) * stages[index].multi_stream[bottom].mol 
+        return mol
+    
     def __len__(self):
         return len(self.stages)
     def __iter__(self):
@@ -1143,14 +1214,35 @@ class MultiStageEquilibrium:
     def liquid(self):
         return self.stages[-1].liquid
     
+    def correct_overall_mass_balance(self):
+        top, bottom = self.multi_stream.phases
+        stages = self.stages
+        mol = self._get_net_outlets()
+        mol[mol == 0] = 1
+        factor = self._get_net_feeds() / mol
+        stages[0].multi_stream[top].mol *= factor
+        stages[-1].multi_stream[bottom].mol *= factor
+        n = len(stages) - 1
+        for i, s in enumerate(self.top_side_draws):
+            if s and i != 0: stages[i].multi_stream[top].mol *= factor
+        for i, s in enumerate(self.bottom_side_draws):
+            if s and i != n: stages[i].multi_stream[bottom].mol *= factor
+    
     def update_multi_stage_equilibrium_with_side_draws(self, top_flow_rates):
-        phase = self.multi_stream.phases[0]
+        top, bottom = self.multi_stream.phases
         stages = self.stages
         range_stages = range(len(stages))
         top_splits, bottom_splits, index = self._update_args
         for i in range_stages:
-            stages[i].multi_stream[phase].mol[index] = top_flow_rates[i]
-        for i in range_stages: stages[i].balance_flows(top_splits[i], bottom_splits[i])
+            s = stages[i].multi_stream[top]
+            s.mol[index] = top_flow_rates[i]
+            if self._top_only:
+                IDs, flows = self._top_only
+                s.imol[IDs] = flows
+            s.mol *= top_splits[i]
+        self.correct_overall_mass_balance()
+        for i in range_stages:
+            stages[i].balance_flows(top_splits[i], bottom_splits[i])
             
     def simulate_multi_stage_equilibrium_with_side_draws(self):
         f = self.multi_stage_equilibrium_with_side_draws_iter
@@ -1174,6 +1266,7 @@ class MultiStageEquilibrium:
         if eq == 'lle':
             self.solvent = solvent = self.solvent or feeds[-1].main_chemical
             for i in stages: i.solvent = solvent
+        self._top_only = None
         if self.partition_data: 
             data = self.partition_data
             IDs = data['IDs']
@@ -1187,6 +1280,7 @@ class MultiStageEquilibrium:
                 phase = ms.phases[0]
                 top_flows = ms.imol[top_chemicals]
                 for i in stages: i.multi_stream.imol[phase, top_chemicals] = top_flows
+                self._top_only = top_chemicals, top_flows
             if bottom_chemicals:
                 phase = ms.phases[1]
                 bottom_flows = ms.imol[bottom_chemicals]
@@ -1252,6 +1346,7 @@ class MultiStageEquilibrium:
              or rmol_error > self.relative_molar_tolerance)
         )
         return new_top_flow_rates, not_converged
+
 
 # %% General functional algorithms based on MESH equations to solve multi-stage 
 
@@ -1324,5 +1419,5 @@ def flow_rates_for_multi_stage_equilibrum_with_side_draws(
     d = feed_flows.copy()
     for i in range(N_stages-1):
         c[i] = bsplit[i + 1]
-        a[i] = asplit[i] * component_ratios[i] 
+        a[i] = asplit[i] *  component_ratios[i] 
     return solve_TDMA(a, b, c, d)
