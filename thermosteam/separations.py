@@ -870,26 +870,22 @@ def _vle_phi_K(vapor, liquid):
     phi = F_vapor / (F_vapor + F_liquid)
     y = vapor / F_vapor
     x = liquid / F_liquid
-    return phi, x / y 
+    return phi, y / x 
 
 @thermo_user
 class StageEquilibrium:
-    __slots__ = ('feeds', 'multi_stream', 'top_split', 'bottom_split',
-                 'carrier_chemical', '_thermo', '_phi', '_K', '_IDs',)
+    __slots__ = ('feeds', 'multi_stream', 'solvent', '_thermo', '_phi', '_K', '_IDs',)
     
     strict_infeasibility_check = False
     
-    def __init__(self, T=298.15, P=101325, feeds=None, phases=None, top_split=1.,
-                 bottom_split=1., solvent=None, thermo=None, carrier_chemical=None):
+    def __init__(self, T=298.15, P=101325, feeds=None, phases=None, thermo=None, solvent=None):
         if feeds is None: feeds = []
         self.feeds = feeds
-        self.top_split = top_split
-        self.bottom_split = bottom_split
         thermo = self._load_thermo(thermo)
         self.multi_stream = tmo.MultiStream(
             None, T=T, P=P, phases=phases or ('g', 'l'), thermo=thermo
         )
-        self.carrier_chemical = carrier_chemical
+        self.solvent = solvent
         self._phi = None
         self._IDs = None
         self._K = None
@@ -939,10 +935,10 @@ class StageEquilibrium:
             self._K = K = partition_data['K']
             self._IDs = IDs = partition_data['IDs']
             args = (IDs, K, self._phi or partition_data['phi'], 
-                    partition_data.get('raffinate_chemicals') or partition_data.get('liquid_chemicals'),
                     partition_data.get('extract_chemicals') or partition_data.get('vapor_chemicals'),
+                    partition_data.get('raffinate_chemicals') or partition_data.get('liquid_chemicals'),
                     self.strict_infeasibility_check, stacklevel+1)
-            self._phi = partition(ms, bottom, top, *args)
+            self._phi = partition(ms, top, bottom, *args)
         else:
             if eq == 'vle':               
                 eq = ms.vle
@@ -952,7 +948,7 @@ class StageEquilibrium:
                 phi, K_new = _vle_phi_K(vle._vapor_mol[index], vle._liquid_mol[index])
             elif eq == 'lle':
                 eq = ms.lle
-                eq(self.T, P, l_chemical=self.carrier_chemical or bottom.main_chemical)
+                eq(self.T, P, top_chemical=self.solvent or top.main_chemical)
                 IDs_last = self._IDs
                 IDs = tuple([i.ID for i in eq._lle_chemicals])
                 K_new = eq._K
@@ -972,10 +968,10 @@ class StageEquilibrium:
         ms = self.multi_stream
         top, bottom = ms
         top_mol = top.mol
-        handle_infeasible_flow_rates(top_mol, total_mol, self.strict_infeasibility_check, 2)
         bottom_mol = bottom.mol
+        handle_infeasible_flow_rates(bottom_mol, total_mol, self.strict_infeasibility_check, 2)
         bottom_mol[:] = total_mol - top_mol
-        top_mol *= top_split
+        bottom_mol *= top_split
         bottom_mol *= bottom_split
         
     @property
@@ -1007,11 +1003,11 @@ class MultiStageEquilibrium:
         Respective stage where feeds enter. Defaults to (0, -1).
     partition_data : {'IDs': tuple[str], 'K': 1d array}, optional
         IDs of chemicals in equilibrium and partition coefficients (molar 
-        composition ratio of the raffinate over the extract). If given,
+        composition ratio of the extract over the raffinate or vapor over liquid). If given,
         The mixer-settlers will be modeled with these constants. Otherwise,
         partition coefficients are computed based on temperature and composition.
-    carrier_chemical : str
-        Name of main chemical in the feed (which is not selectively extracted by the solvent).
+    solvent : str
+        Name of main chemical in the solvent.
         
     Examples
     --------
@@ -1029,7 +1025,7 @@ class MultiStageEquilibrium:
     >>> stages.extract.imol['Octanol'] / solvent.imol['Octanol'] # Solvent stays in extract
     0.99
     >>> stages.raffinate.imol['Water'] / feed.imol['Water'] # Carrier remains in raffinate
-    0.82
+    0.80
     
     Simulate 10-stage extraction with user defined partition coefficients:
     
@@ -1040,9 +1036,9 @@ class MultiStageEquilibrium:
     >>> solvent = tmo.Stream('solvent', Octanol=5000)
     >>> stages = tmo.separations.MultiStageEquilibrium(N_stages, [feed, solvent], phases=('L', 'l'),
     ...     partition_data={
-    ...         'K': np.array([6.894, 0.7244, 3.381e-04]),
+    ...         'K': np.array([1.451e-01, 1.380e+00, 2.958e+03]),
     ...         'IDs': ('Water', 'Methanol', 'Octanol'),
-    ...         'phi': 0.4100271108219455 # Initial phase fraction guess. This is optional.
+    ...         'phi': 0.5899728891780545, # Initial phase fraction guess. This is optional.
     ...     }
     ... )
     >>> stages.simulate_multi_stage_equilibrium_with_side_draws()
@@ -1059,7 +1055,7 @@ class MultiStageEquilibrium:
     >>> N_stages = 20
     >>> stages = tmo.separations.MultiStageEquilibrium(N_stages, [feed, solvent], phases=('L', 'l'),
     ...     partition_data={
-    ...         'K': np.array([0.7244]),
+    ...         'K': np.array([1.38]),
     ...         'IDs': ('Methanol',),
     ...         'raffinate_chemicals': ('Water',),
     ...         'extract_chemicals': ('Octanol',),
@@ -1074,13 +1070,18 @@ class MultiStageEquilibrium:
     1.0
         
     """
-    __slots__ = ('stages', 'index', 'multi_stream', 
-                 'carrier_chemical', 'top_flow_rates', 'feeds', 'feed_stages', 'P',
-                 'partition_data', 'feed_flows', 'top_splits', 'bottoms_splits',
-                 '_thermo', '_K_init')
+    __slots__ = ('stages', 'multi_stream', 'iter', 'solvent', 'feeds', 'feed_stages', 'P',
+                 'partition_data', 'top_side_draws', 'bottom_side_draws',
+                 'maxiter', 'molar_tolerance', 'relative_molar_tolerance',
+                 '_thermo', '_iter_args', '_update_args')
+    
+    default_maxiter = 10
+    default_molar_tolerance = 0.1
+    default_relative_molar_tolerance = 0.001
     
     def __init__(self, N_stages, feeds, feed_stages=(0, -1), phases=None, P=101325,
-                 top_splits=(), bottoms_splits=(), partition_data=None, thermo=None, carrier_chemical=None):
+                 top_side_draws=(), bottom_side_draws=(), partition_data=None,
+                 thermo=None, solvent=None):
         thermo = self._load_thermo(thermo)
         if phases is None: phases = ('g', 'l')
         self.multi_stream = tmo.MultiStream(None, P=P, phases=phases, thermo=thermo)
@@ -1088,18 +1089,15 @@ class MultiStageEquilibrium:
         phases = self.multi_stream.phases # Corrected order
         self.stages = stages = [
             StageEquilibrium(
-                thermo=thermo, phases=phases, carrier_chemical=carrier_chemical,
+                thermo=thermo, phases=phases, solvent=solvent,
             )
             for i in range(N_stages)
         ]
-        self.carrier_chemical = carrier_chemical
+        self.solvent = solvent
         self.partition_data = partition_data
-        self.top_splits = tsplit = np.ones(N_stages)
-        self.bottoms_splits = bsplit = np.ones(N_stages)
         self.feeds = feeds
         self.feed_stages = feed_stages
-        for i, j in top_splits: tsplit[i] = j
-        for i, j in bottoms_splits: bsplit[i] = j
+        self.reset_side_draws(top_side_draws, bottom_side_draws)
         top, bottom = phases
         for i in range(N_stages-1):
             stage = stages[i]
@@ -1108,6 +1106,22 @@ class MultiStageEquilibrium:
             next_stage.feeds.append(stage.multi_stream[bottom])
         for feed, stage in zip(feeds, feed_stages):
             stages[stage].feeds.append(feed)
+        
+        #: [int] Maximum number of iterations.
+        self.maxiter = self.default_maxiter
+
+        #: [float] Molar tolerance (kmol/hr)
+        self.molar_tolerance = self.default_molar_tolerance
+
+        #: [float] Relative molar tolerance
+        self.relative_molar_tolerance = self.default_relative_molar_tolerance
+        
+    def reset_side_draws(self, top, bottom):
+        N_stages = len(self.stages)
+        self.top_side_draws = t = np.zeros(N_stages)
+        self.bottom_side_draws = b = t.copy()
+        for i, j in top: t[i] = j
+        for i, j in bottom: b[i] = j
         
     def __len__(self):
         return len(self.stages)
@@ -1130,25 +1144,25 @@ class MultiStageEquilibrium:
         return self.stages[-1].liquid
     
     def update_multi_stage_equilibrium_with_side_draws(self, top_flow_rates):
-        index = self.index
-        top = self.multi_stream.phases[0]
+        phase = self.multi_stream.phases[0]
         stages = self.stages
         range_stages = range(len(stages))
+        top_splits, bottom_splits, index = self._update_args
         for i in range_stages:
-            stages[i].multi_stream[top].mol[index] = top_flow_rates[i]
-        top_splits = self.top_splits 
-        bottoms_splits = self.bottoms_splits 
-        for i in range_stages: stages[i].balance_flows(top_splits[i], bottoms_splits[i])
+            stages[i].multi_stream[phase].mol[index] = top_flow_rates[i]
+        for i in range_stages: stages[i].balance_flows(top_splits[i], bottom_splits[i])
             
     def simulate_multi_stage_equilibrium_with_side_draws(self):
         f = self.multi_stage_equilibrium_with_side_draws_iter
         top_flow_rates = self.initialize_multi_stage_equilibrium_with_side_draws()
-        self.top_flow_rates = top_flow_rates = flx.wegstein(f, top_flow_rates, xtol=0.1, maxiter=10, checkiter=False)
+        top_flow_rates = flx.conditional_wegstein(f, top_flow_rates)
         self.update_multi_stage_equilibrium_with_side_draws(top_flow_rates)
     
     def initialize_multi_stage_equilibrium_with_side_draws(self):
+        self.iter = 1
         ms = self.multi_stream
-        ms.mix_from(self.feeds)
+        feeds = self.feeds
+        ms.mix_from(feeds)
         top, bottom = ms
         stages = self.stages
         N_stages = len(stages)
@@ -1157,6 +1171,9 @@ class MultiStageEquilibrium:
             i.multi_stream.T = T
             i.multi_stream.empty()
         eq = 'vle' if ms.phases == ('g', 'l') else 'lle'
+        if eq == 'lle':
+            self.solvent = solvent = self.solvent or feeds[-1].main_chemical
+            for i in stages: i.solvent = solvent
         if self.partition_data: 
             data = self.partition_data
             IDs = data['IDs']
@@ -1164,8 +1181,8 @@ class MultiStageEquilibrium:
             phi = data.get('phi') or top.imol[IDs].sum() / ms.imol[IDs].sum()
             top_chemicals = data.get('extract_chemicals') or data.get('vapor_chemicals')
             bottom_chemicals = data.get('raffinate_chemicals') or data.get('liquid_chemicals')
-            data['phi'] = phi = partition(ms, bottom, top, IDs, K, phi,
-                                          bottom_chemicals, top_chemicals)
+            data['phi'] = phi = partition(ms, top, bottom, IDs, K, phi,
+                                          top_chemicals, bottom_chemicals)
             if top_chemicals:
                 phase = ms.phases[0]
                 top_flows = ms.imol[top_chemicals]
@@ -1183,89 +1200,80 @@ class MultiStageEquilibrium:
             phi, K = _vle_phi_K(vle._vapor_mol[index], vle._liquid_mol[index])
         elif eq == 'lle':
             lle = ms.lle
-            carrier_chemical = self.carrier_chemical or bottom.main_chemical
-            for i in stages: i.carrier_chemical = carrier_chemical
-            lle(ms.T, l_chemical=carrier_chemical)
+            lle(ms.T, top_chemical=solvent)
             IDs = tuple([i.ID for i in lle._lle_chemicals])
             K = lle._K
             phi = lle._phi
-        self._K_init = K
-        self.index = index = ms.chemicals.get_index(IDs)
+        index = index = ms.chemicals.get_index(IDs)
         phase_fractions = np.ones(N_stages) * phi
         N_chemicals = K.size
-        partition_coefficients = np.ones([N_chemicals, N_stages]) * K[:, np.newaxis]
-        self.feed_flows = feed_flows = np.zeros([N_chemicals, N_stages])
+        partition_coefficients = np.ones([N_stages, N_chemicals]) * K[np.newaxis, :]
+        feed_flows = feed_flows = np.zeros([N_stages, N_chemicals])
         feeds = self.feeds
         feed_stages = self.feed_stages
         for feed, stage in zip(feeds, feed_stages):
-            feed_flows[:, stage] += feed.mol[index]
-        extract_flow_rates = flow_rates_for_multi_stage_equilibrum_with_side_draws(
-            phase_fractions, partition_coefficients, feed_flows, self.top_splits, self.bottoms_splits
+            feed_flows[stage, :] += feed.mol[index]
+        top_splits = 1. - self.top_side_draws
+        bottom_splits = 1. - self.bottom_side_draws
+        top_flow_rates = flow_rates_for_multi_stage_equilibrum_with_side_draws(
+            phase_fractions, partition_coefficients, feed_flows, -top_splits, -bottom_splits,
         )
-        return extract_flow_rates
+        self._iter_args = (feed_flows, -top_splits, -bottom_splits)
+        self._update_args = (top_splits, bottom_splits, index)
+        return top_flow_rates
     
-    def multi_stage_equilibrium_with_side_draws_iter(self, extract_flow_rates):
-        self.update_multi_stage_equilibrium_with_side_draws(extract_flow_rates)
+    def multi_stage_equilibrium_with_side_draws_iter(self, top_flow_rates):
+        self.iter += 1
+        self.update_multi_stage_equilibrium_with_side_draws(top_flow_rates)
         stages = self.stages
         P = self.P
         for i in stages: i.partition(self.partition_data, update=False, P=P)
-        K = np.array([i.K for i in stages], dtype=float)
-        K = np.transpose(K) 
-        phi = np.array([i.phi for i in stages])
-        extract_flow_rates = flow_rates_for_multi_stage_equilibrum_with_side_draws(
-            phi, K, self.feed_flows, self.top_splits, self.bottoms_splits
+        K = np.array([i._K for i in stages], dtype=float) 
+        phi = np.array([i._phi for i in stages], dtype=float)
+        new_top_flow_rates = flow_rates_for_multi_stage_equilibrum_with_side_draws(
+            phi, K, *self._iter_args,
         )
-        return extract_flow_rates
+        mol = top_flow_rates[0] 
+        mol_new = new_top_flow_rates[0]
+        mol_errors = np.abs(mol - mol_new)
+        positive_index = mol_errors > 1e-16
+        mol_errors = mol_errors[positive_index]
+        if mol_errors.size == 0:
+            mol_error = 0.
+            rmol_error = 0.
+        else:
+            mol_error = mol_errors.max()
+            if mol_error > 1e-12:
+                rmol_error = (mol_errors / np.maximum.reduce([np.abs(mol[positive_index]), np.abs(mol_new[positive_index])])).max()
+            else:
+                rmol_error = 0.
+        not_converged = (
+            self.iter < self.maxiter and (mol_error > self.molar_tolerance
+             or rmol_error > self.relative_molar_tolerance)
+        )
+        return new_top_flow_rates, not_converged
 
 # %% General functional algorithms based on MESH equations to solve multi-stage 
 
 @njit(cache=True)
-def single_component_flow_rates_for_multi_stage_equilibrium_with_side_draws(
-        N_stages,
-        phase_ratios,
-        partition_coefficients, 
-        feed_flows,
-        asplit,
-        bsplit,
-    ):
+def solve_TDMA(a, b, c, d): # Tridiagonal matrix solver
     """
-    Solve flow rates for a single component across equilibrium stages
-    with side draws. 
-
-    Parameters
-    ----------
-    N_stages : int
-        Number of stages.
-    phase_ratios : 1d array
-        Phase ratios by stage. The phase ratio for a given stage is 
-        defined as F_a / F_b; where F_a and F_b are the flow rates 
-        of phase a (raffinate or liquid) and b (extract or vapor) leaving the stage 
-        respectively.
-    partition_coefficients : 1d array
-        Partition coefficients by stage. The partition coefficient for a given
-        stage is defined as x_a / x_b; where x_a and x_b are the fraction of
-        the component in each phase leaving the stage.
-    feed_flows : Iterable [1d array]
-        Flow rates of all components feed across stages. Shape should be 
-        N_chemicals by N_stages.
-    asplit : 1d array
-        1 minus side draw split from phase a by stage.
-    bsplit : 1d array
-        1 minus side draw split from phase b by stage.
-
-    Returns
-    -------
-    extract_flow_rates : 1d array
-        Extract component flow rates by stage.
-
+    http://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
+    http://www.cfd-online.com/Wiki/Tridiagonal_matrix_algorithm_-_TDMA_(Thomas_algorithm)
     """
-    component_ratios = phase_ratios * partition_coefficients
-    A = np.eye(N_stages) * (1 + component_ratios) 
-    for i in range(N_stages-1):
-        i_next = i + 1
-        A[i, i_next] = -bsplit[i_next]
-        A[i_next, i] = -asplit[i] * component_ratios[i]
-    return np.linalg.solve(A, feed_flows)
+    n = d.shape[0] - 1 # number of equations minus 1
+    for i in range(n):
+        inext = i + 1
+        m = a[i] / b[i]
+        b[inext] = b[inext] - m * c[i] 
+        d[inext] = d[inext] - m * d[i]
+        
+    b[n] = d[n] / b[n]
+
+    for i in range(n-1, -1, -1):
+        b[i] = (d[i] - c[i] * b[i+1]) / b[i]
+    
+    return b
 
 @njit(cache=True)
 def flow_rates_for_multi_stage_equilibrum_with_side_draws(
@@ -1276,7 +1284,7 @@ def flow_rates_for_multi_stage_equilibrum_with_side_draws(
         bsplit,
     ):
     """
-    Solve flow rates for a single component across a equilibrium stages with side draws. 
+    Solve b-phase flow rates for a single component across equilibrium stages with side draws. 
 
     Parameters
     ----------
@@ -1286,32 +1294,35 @@ def flow_rates_for_multi_stage_equilibrum_with_side_draws(
         of phase a (raffinate or liquid) and b (extract or vapor) leaving the stage 
         respectively.
     partition_coefficients : Iterable[1d array]
-        Partition coefficients with components by row and stages by column.
+        Partition coefficients with stages by row and components by column.
         The partition coefficient for a component in a given stage is defined 
         as x_a / x_b; where x_a and x_b are the fraction of the component in 
         phase a (raffinate or liquid) and b (extract or vapor) leaving the stage.
     feed_flows : Iterable [1d array]
         Flow rates of all components feed across stages. Shape should be 
-        N_chemicals by N_stages.
+        (N_stages, N_chemicals).
     asplit : 1d array
-        1 minus side draw split from phase a by stage.
+        Side draw split from phase a minus 1 by stage.
     bsplit : 1d array
-        1 minus side draw split from phase b by stage.
+        Side draw split from phase b minus 1 by stage.
 
     Returns
     -------
-    extract_flow_rates : 2d array
-        Extract flow rates with stages by row and components by column.
+    flow_rates_a : 2d array
+        Flow rates of phase a with stages by row and components by column.
 
     """
     phase_fractions[phase_fractions < 1e-16] = 1e-16
     phase_fractions[phase_fractions > 1. - 1e-16] = 1. - 1e-16
     phase_ratios = phase_fractions / (1. - phase_fractions)
-    N_chemicals, N_stages = partition_coefficients.shape
-    extract_flow_rates = np.zeros((N_stages, N_chemicals))
-    for i in range(N_chemicals):
-        flows_by_stage = single_component_flow_rates_for_multi_stage_equilibrium_with_side_draws(
-                N_stages, phase_ratios, partition_coefficients[i], feed_flows[i], asplit, bsplit,
-        ) 
-        extract_flow_rates[:, i] = flows_by_stage    
-    return extract_flow_rates
+    N_stages, N_chemicals = partition_coefficients.shape
+    phase_ratios = np.expand_dims(phase_ratios, -1)
+    component_ratios = 1 / (phase_ratios * partition_coefficients)
+    b = 1. +  component_ratios
+    a = b.copy()
+    c = b.copy()
+    d = feed_flows.copy()
+    for i in range(N_stages-1):
+        c[i] = bsplit[i + 1]
+        a[i] = asplit[i] * component_ratios[i] 
+    return solve_TDMA(a, b, c, d)
