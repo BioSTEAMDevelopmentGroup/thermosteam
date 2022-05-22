@@ -931,6 +931,20 @@ class MultiStream(Stream):
     
     ### Equilibrium ###
     
+    # @property
+    # def equilibrium(self):
+    #     """[Equilibrium] An object that can perform equilibrium on the stream."""
+    #     phases = self.phases
+    #     if phases == ('g', 'l'):
+    #         cache = self._vle_cache
+    #     elif phases == ('l', 'L'):
+    #         cache = self._lle_cache
+    #     elif phases == ('l', 's'):
+    #         cache = self._sle_cache
+    #     else:
+    #         return None
+    #     return cache.retrieve()
+        
     @property
     def vle(self):
         """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
