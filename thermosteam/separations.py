@@ -14,6 +14,7 @@ from numba import njit
 import thermosteam as tmo
 import flexsolve as flx
 import numpy as np
+import pandas as pd
 from .utils import thermo_user
 from .exceptions import InfeasibleRegion
 from .equilibrium import phase_fraction as compute_phase_fraction
@@ -1088,7 +1089,7 @@ class MultiStageEquilibrium:
     ... )
     >>> stages.simulate_multi_stage_equilibrium_with_side_draws()
     >>> stages.extract.imol['Methanol'] / (feed.imol['Methanol'] + dilute_feed.imol['Methanol']) # Recovery
-    0.93
+    0.91
     
     Simulate with a 60% extract side draw at the 2nd stage:
     
@@ -1106,6 +1107,7 @@ class MultiStageEquilibrium:
     >>> stages.simulate_multi_stage_equilibrium_with_side_draws()
     >>> (extract_side_draw,),  raffinate_side_draws = stages.get_side_draws()
     >>> (stages.extract.imol['Methanol'] + extract_side_draw.imol['Methanol']) / feed.imol['Methanol'] # Recovery
+    1.0
     
     """
     __slots__ = ('stages', 'multi_stream', 'iter', 'solvent', 'feeds', 'feed_stages', 'P',
@@ -1194,6 +1196,18 @@ class MultiStageEquilibrium:
             mol += (s / (1 - s)) * stages[index].multi_stream[bottom].mol 
         return mol
     
+    def material_errors(self):
+        errors = []
+        stages = self.stages
+        top_splits, bottom_splits, index = self._update_args
+        columns = self.multi_stream.chemicals.IDs
+        for i in range(len(stages)):
+            stage = stages[i]
+            top, bottom = stage.multi_stream
+            mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
+            errors.append(sum([i.mol for i in stage.feeds]) - mol)
+        return pd.DataFrame(errors, columns=columns)
+        
     def __len__(self):
         return len(self.stages)
     def __iter__(self):
@@ -1240,9 +1254,17 @@ class MultiStageEquilibrium:
                 IDs, flows = self._top_only
                 s.imol[IDs] = flows
             s.mol *= top_splits[i]
-        self.correct_overall_mass_balance()
         for i in range_stages:
             stages[i].balance_flows(top_splits[i], bottom_splits[i])
+        self.correct_overall_mass_balance()
+        for i in (*reversed(range_stages), *range_stages):
+            stage = stages[i]
+            top, bottom = stage.multi_stream
+            mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
+            mol[mol == 0] = 1
+            factor = sum([i.mol for i in stage.feeds]) / mol
+            stage.multi_stream.imol.data[:] *= factor
+        self.correct_overall_mass_balance()
             
     def simulate_multi_stage_equilibrium_with_side_draws(self):
         f = self.multi_stage_equilibrium_with_side_draws_iter
