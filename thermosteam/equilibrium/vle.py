@@ -423,7 +423,7 @@ class VLE(Equilibrium, phases='lg'):
     @property
     def thermal_condition(self):
         return self._thermal_condition
-
+    
     ### Single component equilibrium case ###
         
     def _set_thermal_condition_chemical(self, T, P):

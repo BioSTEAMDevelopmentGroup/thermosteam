@@ -72,7 +72,8 @@ class LLE(Equilibrium, phases='lL'):
     >>> settings.set_thermo(['Water', 'Ethanol', 'Octane', 'Hexane'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30)],
-    ...             L=[('Octane', 40), ('Hexane', 1)])
+    ...             L=[('Octane', 40), ('Hexane', 1)]
+    ...)
     >>> lle = equilibrium.LLE(imol)
     >>> lle(T=360)
     >>> lle
@@ -96,8 +97,8 @@ class LLE(Equilibrium, phases='lL'):
                                       'tol': 0.002}
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
-                 composition_cache_tolerance=1e-6,
-                 temperature_cache_tolerance=1e-6):
+                 composition_cache_tolerance=1e-5,
+                 temperature_cache_tolerance=1e-3):
         super().__init__(imol, thermal_condition, thermo)
         self.composition_cache_tolerance = composition_cache_tolerance
         self.temperature_cache_tolerance = temperature_cache_tolerance
@@ -114,7 +115,7 @@ class LLE(Equilibrium, phases='lL'):
         P : float, optional
             Operating pressure [Pa].
         top_chemical : str, optional
-            Identifier of chemical that will be favored in the "liquid" phase.
+            Identifier of chemical that will be favored in the "LIQUID" phase.
             
         """
         thermal_condition = self._thermal_condition
@@ -129,7 +130,7 @@ class LLE(Equilibrium, phases='lL'):
                 and T - self._T < self.temperature_cache_tolerance 
                 and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
                 K = self._K 
-                phi = phase_fraction(z_mol, K, self._phi)
+                self._phi = phi = phase_fraction(z_mol, K, self._phi)
                 y = z_mol * K / (phi * K + (1 - phi))
                 mol_l = y * phi * F_mol
                 mol_L = mol - mol_l
@@ -146,16 +147,15 @@ class LLE(Equilibrium, phases='lL'):
                     top_chemical_index = IDs[top_chemical]
                     C_L = mass_L[top_chemical_index] / mass_L.sum()
                     C_l = mass_l[top_chemical_index] / mass_l.sum()
-                    top_L = C_L > C_l
-                    if top_L: mol_l, mol_L = mol_L, mol_l
+                    if C_L < C_l: mol_l, mol_L = mol_L, mol_l
                 F_mol_l = mol_l.sum()
                 z_mol_l = mol_l / F_mol_l
                 F_mol_L = mol_L.sum()
                 z_mol_L = mol_L / F_mol_L
                 z_mol_L[z_mol_L < 1e-16] = 1e-16
-                K = z_mol_l / z_mol_L
+                K = z_mol_L / z_mol_l
                 self._K = K
-                self._phi = F_mol_l / (F_mol_l + F_mol_L)
+                self._phi = F_mol_L / (F_mol_L + F_mol_l)
                 self._lle_chemicals = lle_chemicals
                 self._z_mol = z_mol
                 self._T = T
