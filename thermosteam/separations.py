@@ -630,8 +630,7 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     else:
         ms = feed.copy()
     ms.lle(feed.T, top_chemical=top_chemical)
-    top_phase = 'l'
-    bottom_phase = 'L'
+    top_phase, bottom_phase = ms.phases
     if not top_chemical:
         rho_l = ms['l'].rho
         rho_L = ms['L'].rho
@@ -1129,7 +1128,8 @@ class MultiStageEquilibrium:
     >>> (stages.extract.imol['Methanol'] + extract_side_draw.imol['Methanol']) / feed.imol['Methanol'] # Recovery
     1.0
     
-    Simulate distillation column with 6 stages, a 0.673 reflux ratio and feed at stage 3:
+    Simulate distillation column with 9 stages, a 0.673 reflux ratio, 
+    2.57 boilup ratio, and feed at stage 4:
     
     >>> settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = Stream('feed', Ethanol=80, Water=100, T=80.215 + 273.15)
@@ -1152,11 +1152,15 @@ class MultiStageEquilibrium:
     default_molar_tolerance = 0.1
     default_relative_molar_tolerance = 0.001
     
-    def __init__(self, N_stages, feeds, feed_stages=(0, -1), phases=None, P=101325,
-                 top_side_draws=(), bottom_side_draws=(), specifications=(), partition_data=None, 
+    def __init__(self, N_stages, feeds, feed_stages=None, phases=None, P=101325,
+                 top_side_draws=None, bottom_side_draws=None, specifications=None, partition_data=None, 
                  thermo=None, solvent=None):
         thermo = self._load_thermo(thermo)
         if phases is None: phases = ('g', 'l')
+        if specifications is None: specifications = ()
+        if top_side_draws is None: top_side_draws = ()
+        if bottom_side_draws is None: bottom_side_draws = ()
+        if feed_stages is None: feed_stages = (0, -1)
         self.multi_stream = tmo.MultiStream(None, P=P, phases=phases, thermo=thermo)
         self.P = P
         phases = self.multi_stream.phases # Corrected order
@@ -1205,9 +1209,9 @@ class MultiStageEquilibrium:
         for i, index in enumerate(top_index):
             s = self.top_side_draws[index]
             top_streams[i].mol = (s / (1 - s)) * stages[index].multi_stream[top].mol 
-        bottom_index, = np.where(self.top_side_draws != 0.)
+        bottom_index, = np.where(self.bottom_side_draws != 0.)
         if bottom_streams is None: bottom_streams = [tmo.Stream(None) for i in bottom_index]
-        for i, index in enumerate(top_index):
+        for i, index in enumerate(bottom_index):
             s = self.bottom_side_draws[index]
             bottom_streams[i].mol = (s / (1 - s)) * stages[index].multi_stream[bottom].mol 
         return top_streams, bottom_streams
