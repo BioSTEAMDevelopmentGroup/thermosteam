@@ -1132,6 +1132,7 @@ class MultiStageEquilibrium:
     Simulate distillation column with 9 stages, a 0.673 reflux ratio, 
     2.57 boilup ratio, and feed at stage 4:
     
+    >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     >>> feed = tmo.Stream('feed', Ethanol=80, Water=100, T=80.215 + 273.15)
     >>> stages = tmo.separations.MultiStageEquilibrium(9, [feed], [4],
@@ -1140,13 +1141,13 @@ class MultiStageEquilibrium:
     ... )
     >>> stages.simulate()
     >>> stages.vapor.imol['Ethanol'] / feed.imol['Ethanol'] # Recovery
-    0.68
+    0.83
     
     
     """
     __slots__ = ('stages', 'multi_stream', 'iter', 'solvent', 'feeds', 'feed_stages', 'P',
                  'partition_data', 'top_side_draws', 'bottom_side_draws', 'specifications',
-                 'maxiter', 'molar_tolerance', 'relative_molar_tolerance',
+                 'maxiter', 'molar_tolerance', 'relative_molar_tolerance', 'use_cache',
                  '_thermo', '_iter_args', '_update_args', '_top_only')
     
     default_maxiter = 20
@@ -1353,8 +1354,15 @@ class MultiStageEquilibrium:
             elif eq == 'vle': # TODO: Figure our better way to initialize
                 vle = ms.vle
                 vle(P=self.P, H=ms.H)
+                dp = ms.dew_point_at_P()
+                T_top = dp.T
+                bp = ms.bubble_point_at_P()
+                T_bot = bp.T
+                dT_stage = (T_bot - T_top) / N_stages
+                for i in range(N_stages):
+                    stages[i].multi_stream.T = T_top - i * dT_stage
                 index = vle._index
-                phi, K = _vle_phi_K(vle._vapor_mol[index], vle._liquid_mol[index])
+                K = bp.y / dp.x
                 phi = 0.5
             elif eq == 'lle':
                 lle = ms.lle
@@ -1422,7 +1430,7 @@ class MultiStageEquilibrium:
 
 # %% General functional algorithms based on MESH equations to solve multi-stage 
 
-# @njit(cache=True)
+@njit(cache=True)
 def solve_TDMA(a, b, c, d): # Tridiagonal matrix solver
     """
     http://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
@@ -1442,7 +1450,7 @@ def solve_TDMA(a, b, c, d): # Tridiagonal matrix solver
     
     return b
 
-# @njit(cache=True)
+@njit(cache=True)
 def flow_rates_for_multi_stage_equilibrium(
         phase_fractions,
         partition_coefficients, 
