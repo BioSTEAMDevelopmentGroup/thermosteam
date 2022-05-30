@@ -975,6 +975,34 @@ class Stream:
                                           *self._thermal_condition)
 
     @property
+    def h(self):
+        """[float] Specific enthalpy in kJ/kmol."""
+        h = self._get_property_cache('H', False)
+        if h is None:
+            self._property_cache['H'] = h = self.mixture.H(
+                *self._imol.get_phase_and_composition(), *self._thermal_condition
+            )
+        return h
+    @h.setter
+    def h(self, h: float):
+        if not h and self.isempty(): return
+        z_mol = self.z_mol
+        try: self.T = self.mixture.solve_T(self.phase, z_mol, h,
+                                           *self._thermal_condition)
+        except Exception as error: # pragma: no cover
+            phase = self.phase.lower()
+            if phase == 'g':
+                # Maybe too little heat, liquid must be present
+                self.phase = 'l'
+            elif phase == 'l':
+                # Maybe too much heat, gas must be present
+                self.phase = 'g'
+            else:
+                raise error
+            self.T = self.mixture.solve_T(self.phase, z_mol, h,
+                                          *self._thermal_condition)
+            
+    @property
     def S(self):
         """[float] Absolute entropy flow rate in kJ/hr."""
         S = self._get_property_cache('S', True)

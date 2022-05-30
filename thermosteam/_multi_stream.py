@@ -479,7 +479,20 @@ class MultiStream(Stream):
         return H
     @H.setter
     def H(self, H):
+        if not H and self.isempty(): return
         self.T = self.mixture.xsolve_T(self._imol, H, *self._thermal_condition)
+
+    @property
+    def h(self):
+        """[float] Specific enthalpy in kJ/kmol."""
+        h = self._get_property_cache('H', False)
+        if h is None:
+            self._property_cache['H'] = h = self.mixture.xH(self._imol.iter_composition(), *self._thermal_condition)
+        return h
+    @h.setter
+    def h(self, h: float):
+        if not h and self.isempty(): return
+        self.T = self.mixture.xsolve_T(self._imol.iter_composition(), h, *self._thermal_condition)
 
     @property
     def S(self):
