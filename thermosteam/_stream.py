@@ -243,7 +243,7 @@ class Stream:
         '_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
-        '_sink', '_source', '_price', '_islinked', '_property_cache_key',
+        '_sink', '_source', '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', '_user_equilibrium',
         # '_velocity', '_height'
     )
@@ -302,7 +302,6 @@ class Stream:
         self._sink = self._source = None # For BioSTEAM
         self.reset_cache()
         self._register(ID)
-        self._islinked = False
         self._user_equilibrium = None
 
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
@@ -341,7 +340,6 @@ class Stream:
         if thermo is self._thermo: return
         self._thermo = thermo
         self._imol.reset_chemicals(thermo.chemicals)
-        self._islinked = False
         self.reset_cache()
         if hasattr(self, '_streams'):
             for phase, stream in self._streams.items():
@@ -1439,9 +1437,6 @@ class Stream:
             at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
-        if self._islinked and not (self.source is other.sink or self.sink is other.source):
-            raise RuntimeError(f"stream {self} cannot link with stream {other};"
-                               f" {self} already linked")
         if TP and flow and (phase or self._imol._data.ndim == 2):
             self._imol._data_cache = other._imol._data_cache
         else:
@@ -1452,7 +1447,6 @@ class Stream:
             self._imol._data = other._imol._data
         if phase and self._imol._data.ndim == 1:
             self._imol._phase = other._imol._phase
-        self._islinked = other._islinked = True
             
     def unlink(self):
         """
@@ -1480,15 +1474,12 @@ class Stream:
         imol = self._imol
         if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
             raise RuntimeError('phase is locked; stream cannot be unlinked')
-        if self._islinked:
-            imol._data_cache.clear()
-            imol._data = imol._data.copy()
-            imol._phase = imol._phase.copy()
-            self._thermal_condition = self._thermal_condition.copy()
-            self.reset_cache()
-            self._islinked = False
+        imol._data_cache.clear()
+        imol._data = imol._data.copy()
+        imol._phase = imol._phase.copy()
+        self._thermal_condition = self._thermal_condition.copy()
+        self.reset_cache()
         
-    
     def copy_like(self, other):
         """
         Copy all conditions of another stream.
@@ -1706,7 +1697,6 @@ class Stream:
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._islinked = False
         new._sink = new._source = None
         new.characterization_factors = {}
         new._thermo = thermo or self._thermo
@@ -1750,7 +1740,6 @@ class Stream:
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.characterization_factors = {}
-        self._islinked = new._islinked = True
         new._user_equilibrium = self._user_equilibrium
         return new
     
@@ -1793,7 +1782,6 @@ class Stream:
         try: new._vle_cache = self._vle_cache
         except AttributeError: pass
         new.characterization_factors = {}
-        self._islinked = new._islinked = True
         return new
     
     def empty(self):
@@ -2235,21 +2223,12 @@ class Stream:
     ### Casting ###
     
     @property
-    def islinked(self):
-        """
-        [bool] Whether data regarding the thermal condition, material flow rates,
-        and phases are shared with other streams.
-        """
-        return self._islinked
-    
-    @property
     def phases(self):
         """tuple[str] All phases present."""
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
         if self.phases == phases: return
-        if self._islinked: self.unlink()
         if len(phases) == 1:
             self.phase = phases[0]
         else:

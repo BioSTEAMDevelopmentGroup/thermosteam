@@ -229,7 +229,6 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._islinked = False
         self._user_equilibrium = None
         
     def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
@@ -322,7 +321,6 @@ class MultiStream(Stream):
         else:
             stream = Stream.__new__(Stream)
             stream._ID = stream._sink = stream._source = None
-            stream._islinked = False
             stream._imol = self._imol.get_phase(phase)
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo

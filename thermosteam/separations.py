@@ -874,7 +874,7 @@ def _vle_phi_K(vapor, liquid):
 @thermo_user
 class StageEquilibrium:
     __slots__ = ('feeds', 'multi_stream', 'vle_specifications', 'specification', 
-                 '_thermo', '_phi', '_K', '_IDs',)
+                 '_thermo', 'phi', 'K', 'IDs',)
     
     strict_infeasibility_check = False
     
@@ -886,9 +886,9 @@ class StageEquilibrium:
             None, phases=phases or ('g', 'l'), thermo=thermo
         )
         self.specification = specification
-        self._phi = None
-        self._IDs = None
-        self._K = None
+        self.phi = None
+        self.IDs = None
+        self.K = None
     
     @property
     def extract(self):
@@ -918,68 +918,80 @@ class StageEquilibrium:
     def P(self, P):
         self.multi_stream.P = P
         
-    def partition(self, partition_data=None, update=True, stacklevel=1, P=None, solvent=None):
+    def partition_lle(self, partition_data=None, stacklevel=1, P=None, solvent=None):
         ms = self.multi_stream
-        if not update: data = ms.get_data()
-        phases = ms.phases
-        if phases == ('g', 'l'):
-            ms.mix_from(self.feeds, energy_balance=True)
-            eq = 'vle'
-        elif phases == ('L', 'l'):
-            ms.mix_from(self.feeds, energy_balance=False)
-            eq = 'lle'
-        else:
-            raise NotImplementedError(f'equilibrium with {phases} not implemented yet')
+        data = ms._imol._data.copy()
+        ms.mix_from(self.feeds, energy_balance=False)
         top, bottom = ms
         if partition_data:
-            self._K = K = partition_data['K']
-            self._IDs = IDs = partition_data['IDs']
-            args = (IDs, K, self._phi or partition_data['phi'], 
+            self.K = K = partition_data['K']
+            self.IDs = IDs = partition_data['IDs']
+            args = (IDs, K, self.phi or partition_data['phi'], 
                     partition_data.get('extract_chemicals') or partition_data.get('vapor_chemicals'),
                     partition_data.get('raffinate_chemicals') or partition_data.get('liquid_chemicals'),
                     self.strict_infeasibility_check, stacklevel+1)
-            self._phi = partition(ms, top, bottom, *args)
+            self.phi = partition(ms, top, bottom, *args)
         else:
-            if eq == 'vle':               
-                eq = ms.vle
-                if self.specification:
-                    name, value = self.specification
-                else:
-                    name = 'Duty'
-                    value = 0
-                if name == 'Duty':
-                    spec = {'H': ms.H + value}
-                elif name == 'Reflux':
-                    spec = {'V': 1 / (value + 1)}
-                elif name == 'Boilup':
-                    spec = {'V': 1 / (1/value + 1)}
-                else:
-                    spec = {name: value}
-                eq(P=P, **spec)
-                IDs = tuple([i.ID for i in ms.vle_chemicals])
-                index = eq._index
-                phi, K_new = _vle_phi_K(eq._vapor_mol[index], eq._liquid_mol[index])
-            elif eq == 'lle':
-                eq = ms.lle
-                if self.specification:
-                    name, value = self.specification
-                else:
-                    name = 'T'
-                    value = ms.T
-                spec = {name: value}
-                eq(**spec, P=P, top_chemical=solvent)
-                IDs_last = self._IDs
-                IDs = tuple([i.ID for i in eq._lle_chemicals])
-                K_new = eq._K
-                phi = eq._phi
-            IDs_last = self._IDs
+            eq = ms.lle
+            if self.specification:
+                name, value = self.specification
+            else:
+                name = 'T'
+                value = ms.T
+            spec = {name: value}
+            lle_chemicals, K_new, phi = eq(**spec, P=P, top_chemical=solvent, update=False)
+            IDs_last = self.IDs
+            IDs = tuple([i.ID for i in lle_chemicals])
+            IDs_last = self.IDs
             if IDs_last and IDs_last != IDs:
-                Ks = self._K
+                Ks = self.K
                 for ID, K in zip(IDs, K_new): Ks[IDs_last.index(ID)] = K
             else:
-                self._K = K_new
-                self._IDs = IDs
-            self._phi = phi
+                self.K = K_new
+                self.IDs = IDs
+                self.phi = phi
+        ms._imol._data[:] = data
+        
+    def partition_vle(self, partition_data=None, update=True, stacklevel=1, P=None, solvent=None):
+        raise NotImplementedError('equilibrium with vle not implemented yet')
+        ms = self.multi_stream
+        if not update: data = ms.get_data()
+        top, bottom = ms
+        if partition_data:
+            self.K = K = partition_data['K']
+            self.IDs = IDs = partition_data['IDs']
+            args = (IDs, K, self.phi or partition_data['phi'], 
+                    partition_data.get('extract_chemicals') or partition_data.get('vapor_chemicals'),
+                    partition_data.get('raffinate_chemicals') or partition_data.get('liquid_chemicals'),
+                    self.strict_infeasibility_check, stacklevel+1)
+            self.phi = partition(ms, top, bottom, *args)
+        else:
+            eq = ms.vle
+            if self.specification:
+                name, value = self.specification
+            else:
+                name = 'Duty'
+                value = 0
+            if name == 'Duty':
+                spec = {'H': ms.H + value}
+            elif name == 'Reflux':
+                spec = {'V': 1 / (value + 1)}
+            elif name == 'Boilup':
+                spec = {'V': 1 / (1/value + 1)}
+            else:
+                spec = {name: value}
+            eq(P=P, **spec)
+            IDs = tuple([i.ID for i in ms.vle_chemicals])
+            index = eq._index
+            phi, K_new = _vle_phi_K(eq._vapor_mol[index], eq._liquid_mol[index])
+            IDs_last = self.IDs
+            if IDs_last and IDs_last != IDs:
+                Ks = self.K
+                for ID, K in zip(IDs, K_new): Ks[IDs_last.index(ID)] = K
+            else:
+                self.K = K_new
+                self.IDs = IDs
+            self.phi = phi
         if not update: ms.set_data(data)
         
     def balance_flows(self, top_split, bottom_split):
@@ -997,16 +1009,6 @@ class StageEquilibrium:
         top, bottom = ms
         top.mol *= top_split
         bottom.mol *= bottom_split
-        
-    @property
-    def IDs(self):
-        return self._IDs
-    @property
-    def phi(self):
-        return self._phi
-    @property
-    def K(self):
-        return self._K
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T}, P={self.P})"
@@ -1128,20 +1130,6 @@ class MultiStageEquilibrium:
     >>> (extract_side_draw,),  raffinate_side_draws = stages.get_side_draws()
     >>> (stages.extract.imol['Methanol'] + extract_side_draw.imol['Methanol']) / feed.imol['Methanol'] # Recovery
     1.0
-    
-    Simulate distillation column with 9 stages, a 0.673 reflux ratio, 
-    2.57 boilup ratio, and feed at stage 4:
-    
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-    >>> feed = tmo.Stream('feed', Ethanol=80, Water=100, T=80.215 + 273.15)
-    >>> stages = tmo.separations.MultiStageEquilibrium(9, [feed], [4],
-    ...     specifications=[(0, ('Reflux', 0.673)), (-1, ('Boilup', 2.58))],
-    ...     phases=('g', 'l'),
-    ... )
-    >>> stages.simulate()
-    >>> stages.vapor.imol['Ethanol'] / feed.imol['Ethanol'] # Recovery
-    0.83
     
     
     """
@@ -1327,6 +1315,7 @@ class MultiStageEquilibrium:
             self.solvent = solvent = self.solvent or feeds[-1].main_chemical
             for i in stages: i.multi_stream.T = ms.T
         else:
+            raise NotImplementedError("vle not yet implemented")
             self.solvent = None
         self._top_only = None
         data = self.partition_data
@@ -1334,10 +1323,10 @@ class MultiStageEquilibrium:
             top_chemicals = data.get('extract_chemicals') or data.get('vapor_chemicals')
             bottom_chemicals = data.get('raffinate_chemicals') or data.get('liquid_chemicals')
         if self.use_cache and all([not i.multi_stream.isempty() for i in stages]): # Use last set of data
-            for i in stages: i.partition(self.partition_data, update=False, P=self.P, solvent=self.solvent)
-            partition_coefficients = np.array([i._K for i in stages], dtype=float) 
-            phase_fractions = np.array([i._phi for i in stages], dtype=float)
-            IDs = stages[0]._IDs
+            for i in stages: i.partition_lle(self.partition_data, P=self.P, solvent=self.solvent)
+            partition_coefficients = np.array([i.K for i in stages], dtype=float) 
+            phase_fractions = np.array([i.phi for i in stages], dtype=float)
+            IDs = stages[0].IDs
             index = ms.chemicals.get_index(IDs)
             N_chemicals = partition_coefficients.shape[1]
         else:
@@ -1351,20 +1340,7 @@ class MultiStageEquilibrium:
                 data['phi'] = phi = partition(ms, top, bottom, IDs, K, phi,
                                               top_chemicals, bottom_chemicals)
                 index = ms.chemicals.get_index(IDs)
-            elif eq == 'vle': # TODO: Figure our better way to initialize
-                vle = ms.vle
-                vle(P=self.P, H=ms.H)
-                dp = ms.dew_point_at_P()
-                T_top = dp.T
-                bp = ms.bubble_point_at_P()
-                T_bot = bp.T
-                dT_stage = (T_bot - T_top) / N_stages
-                for i in range(N_stages):
-                    stages[i].multi_stream.T = T_top - i * dT_stage
-                index = vle._index
-                K = bp.y / dp.x
-                phi = 0.5
-            elif eq == 'lle':
+            else:
                 lle = ms.lle
                 lle(ms.T, top_chemical=solvent)
                 IDs = tuple([i.ID for i in lle._lle_chemicals])
@@ -1401,9 +1377,11 @@ class MultiStageEquilibrium:
         self.update(top_flow_rates)
         stages = self.stages
         P = self.P
-        for i in stages: i.partition(self.partition_data, update=False, P=P, solvent=self.solvent)
-        K = np.array([i._K for i in stages], dtype=float) 
-        phi = np.array([i._phi for i in stages], dtype=float)
+        eq = 'vle' if self.multi_stream.phases[0] == 'g' else 'lle'
+        if eq == 'vle': raise NotImplementedError("vle not yet implemented")
+        for i in stages: i.partition_lle(self.partition_data, P=P, solvent=self.solvent)
+        K = np.array([i.K for i in stages], dtype=float) 
+        phi = np.array([i.phi for i in stages], dtype=float)
         new_top_flow_rates = flow_rates_for_multi_stage_equilibrium(
             phi, K, *self._iter_args,
         )

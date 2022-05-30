@@ -73,7 +73,7 @@ class LLE(Equilibrium, phases='lL'):
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30)],
     ...             L=[('Octane', 40), ('Hexane', 1)]
-    ...)
+    ... )
     >>> lle = equilibrium.LLE(imol)
     >>> lle(T=360)
     >>> lle
@@ -104,7 +104,7 @@ class LLE(Equilibrium, phases='lL'):
         self.temperature_cache_tolerance = temperature_cache_tolerance
         self._lle_chemicals = None
     
-    def __call__(self, T, P=None, top_chemical=None):
+    def __call__(self, T, P=None, top_chemical=None, update=True):
         """
         Perform liquid-liquid equilibrium.
 
@@ -116,11 +116,16 @@ class LLE(Equilibrium, phases='lL'):
             Operating pressure [Pa].
         top_chemical : str, optional
             Identifier of chemical that will be favored in the "LIQUID" phase.
+        update : bool, optional
+            Whether to update material flows, temperature and pressure. If False,
+            returns the chemicals in liquid-liquid equilibrium, 
+            partition coefficients, and phase fraction.
             
         """
-        thermal_condition = self._thermal_condition
-        thermal_condition.T = T
-        if P: thermal_condition.P = P
+        if update:
+            thermal_condition = self._thermal_condition
+            thermal_condition.T = T
+            if P: thermal_condition.P = P
         imol = self._imol
         mol, index, lle_chemicals = self.get_liquid_mol_data()
         F_mol = mol.sum()
@@ -159,6 +164,7 @@ class LLE(Equilibrium, phases='lL'):
                 self._lle_chemicals = lle_chemicals
                 self._z_mol = z_mol
                 self._T = T
+            if not update: return self._lle_chemicals, self._K, self._phi
             imol['l'][index] = mol_l
             imol['L'][index] = mol_L
         
