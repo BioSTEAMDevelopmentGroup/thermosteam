@@ -1143,7 +1143,7 @@ class MultiStageEquilibrium:
     
     def __init__(self, N_stages, feeds, feed_stages=None, phases=None, P=101325,
                  top_side_draws=None, bottom_side_draws=None, specifications=None, partition_data=None, 
-                 thermo=None, solvent=None):
+                 thermo=None, solvent=None, use_cache=None):
         thermo = self._load_thermo(thermo)
         if phases is None: phases = ('g', 'l')
         if specifications is None: specifications = ()
@@ -1187,7 +1187,7 @@ class MultiStageEquilibrium:
         #: [float] Relative molar tolerance
         self.relative_molar_tolerance = self.default_relative_molar_tolerance
         
-        self.use_cache = True
+        self.use_cache = True if use_cache else False
         
     def reset_side_draws(self, top, bottom):
         N_stages = len(self.stages)
