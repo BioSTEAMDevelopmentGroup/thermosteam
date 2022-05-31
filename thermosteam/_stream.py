@@ -1903,7 +1903,7 @@ class Stream:
         DewPoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals.retrieve(IDs) if IDs else self.vle_chemicals
+        chemicals = self.chemicals[IDs] if IDs else self.vle_chemicals
         dp = self._dew_point_cache(chemicals, self._thermo)
         return dp
     
