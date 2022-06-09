@@ -1145,6 +1145,7 @@ class MultiStageEquilibrium:
                  top_side_draws=None, bottom_side_draws=None, specifications=None, partition_data=None, 
                  thermo=None, solvent=None, use_cache=None):
         thermo = self._load_thermo(thermo)
+        # For VLE look for best published algorithm (don't try simple methods that fail often)
         if phases is None: phases = ('g', 'l')
         if specifications is None: specifications = ()
         if top_side_draws is None: top_side_draws = ()

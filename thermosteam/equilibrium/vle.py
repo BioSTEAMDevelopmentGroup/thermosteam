@@ -253,6 +253,8 @@ class VLE(Equilibrium, phases='lg'):
     P_tol = 1.
     H_hat_tol = 1e-6
     V_tol = 1e-6
+    x_tol = 1e-12
+    y_tol = 1e-12
     
     def __init__(self, imol=None, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
@@ -904,7 +906,7 @@ class VLE(Equilibrium, phases='lg'):
         xV = np.zeros(x.size + 1)
         xV[:-1] = x
         xV[-1] = self._V
-        xV = flx.aitken(f, xV, 1e-12, args, checkiter=False, 
+        xV = flx.aitken(f, xV, self.x_tol, args, checkiter=False, 
                        checkconvergence=False, convergenceiter=5)
         x = xV[:-1]
         self._V = V = xV[-1]
@@ -926,7 +928,7 @@ class VLE(Equilibrium, phases='lg'):
         if isinstance(self._phi, IdealFugacityCoefficients):
             y = self._y_iter(self._y, Psats_over_P, T, P)
         else:
-            y = flx.aitken(self._y_iter, self._y, 1e-12,
+            y = flx.aitken(self._y_iter, self._y, self.y_tol,
                            args=(Psats_over_P, T, P),
                            checkiter=False, 
                            checkconvergence=False, 

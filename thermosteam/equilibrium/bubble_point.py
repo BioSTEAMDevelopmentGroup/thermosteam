@@ -88,6 +88,8 @@ class BubblePoint:
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
+    T_tol = 1e-9
+    P_tol = 1e-3
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
@@ -140,7 +142,7 @@ class BubblePoint:
         fmin = f(Tmax, *args)
         if fmin > 0.: return Tmax, y
         T = flx.IQ_interpolation(f, Tmin, Tmax, fmax, fmin, 
-                                 None, 1e-9, 5e-12, args, 
+                                 None, self.T_tol, 5e-12, args, 
                                  checkiter=False,
                                  checkbounds=False)
         return T, y
@@ -207,13 +209,13 @@ class BubblePoint:
             args = (P, z_over_P, z_norm, y)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
-                                      1e-9, 5e-12, args,
+                                      self.T_tol, 5e-12, args,
                                       checkiter=False)
             except (InfeasibleRegion, DomainError):
                 Tmin = self.Tmin; Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
-                                         T_guess, 1e-9, 5e-12, args, 
+                                         T_guess, self.T_tol, 5e-12, args, 
                                          checkiter=False, checkbounds=False)
         return T, fn.normalize(y)
     
@@ -263,13 +265,13 @@ class BubblePoint:
             P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
             args = (T, z_Psat_gamma_pcf, y)
             try:
-                P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
+                P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
             except (InfeasibleRegion, DomainError):
                 Pmin = self.Pmin; Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),
-                                         P_guess, 1e-3, 5e-12, args,
+                                         P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False)
         return P, fn.normalize(y)
     

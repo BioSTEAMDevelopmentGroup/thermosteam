@@ -101,6 +101,8 @@ class DewPoint:
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
                  'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
+    T_tol = 1e-9
+    P_tol = 1e-3
     def __init__(self, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
@@ -160,7 +162,7 @@ class DewPoint:
         fmax = f(Tmax, *args)
         if fmax < 0.: return Tmax, x
         T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, 
-                                 None, 1e-9, 5e-12, args,
+                                 None, self.T_tol, 5e-12, args,
                                  checkiter=False, checkbounds=False)
         return T, x
     
@@ -226,7 +228,7 @@ class DewPoint:
             args = (P, z_norm, zP, x)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
-                                      1e-9, 5e-12, args,
+                                      self.T_tol, 5e-12, args,
                                       checkiter=False)
             except (InfeasibleRegion, DomainError):
                 Tmin = self.Tmin
@@ -283,14 +285,14 @@ class DewPoint:
             args = (T, z_norm, z_over_Psats, x)
             f = self._P_error
             try:
-                P = flx.aitken_secant(f, P_guess, P_guess-10, 1e-3, 5e-12, args,
+                P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,
                                       checkiter=False)
             except (InfeasibleRegion, DomainError):
                 Pmin = self.Pmin
                 Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                          f(Pmin, *args), f(Pmax, *args),
-                                         P_guess, 1e-3, 5e-12, args,
+                                         P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False)
         return P, fn.normalize(x)
     

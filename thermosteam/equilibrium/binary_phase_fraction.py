@@ -133,9 +133,9 @@ def compute_phase_fraction_3N(zs, Ks):
     K2K3z2 = K2K3*z2
     K2K3z3 = K2K3*z3
     
-    K12 = K1**2
-    K22 = K2**2
-    K32 = K3**2
+    K12 = K1 * K1
+    K22 = K2 * K2
+    K32 = K3 * K3
     
     K12K2 = K12*K2
     K12K3 = K12*K3
@@ -153,9 +153,9 @@ def compute_phase_fraction_3N(zs, Ks):
     
     
     z1_z2_z3 = z1 + z2 + z3
-    z12 = z1**2
-    z22 = z2**2
-    z32 = z3**2
+    z12 = z1 * z1
+    z22 = z2 * z2
+    z32 = z3 * z3
     z1z2 = z1*z2
     z1z3 = z1*z3
     z2z3 = z2*z3
