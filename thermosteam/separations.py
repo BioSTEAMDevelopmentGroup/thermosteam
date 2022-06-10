@@ -1315,6 +1315,8 @@ class MultiStageEquilibrium:
         N_stages = len(stages)
         top_phase, bottom_phase = ms.phases
         eq = 'vle' if top_phase == 'g' else 'lle'
+        ms.mix_from(feeds)
+        ms.P = self.P
         if eq == 'lle':
             self.solvent = solvent = self.solvent or feeds[-1].main_chemical
             for i in stages: i.multi_stream.T = ms.T
@@ -1323,8 +1325,6 @@ class MultiStageEquilibrium:
         if data:
             top_chemicals = data.get('extract_chemicals') or data.get('vapor_chemicals')
             bottom_chemicals = data.get('raffinate_chemicals') or data.get('liquid_chemicals')
-        ms.mix_from(feeds)
-        ms.P = self.P
         if self.use_cache and all([not i.multi_stream.isempty() for i in stages]): # Use last set of data
             if eq == 'lle':
                 IDs = data['IDs'] if data else [i.ID for i in ms.lle_chemicals]
@@ -1381,7 +1381,7 @@ class MultiStageEquilibrium:
                 self._top_only = top_chemicals, top_flows
             if bottom_chemicals:
                 bottom_flows = sum([i.imol[bottom_chemicals] for i in feeds])
-                for i in stages: i.multi_stream.imol[bottom_phase, top_chemicals] = bottom_flows
+                for i in stages: i.multi_stream.imol[bottom_phase, bottom_chemicals] = bottom_flows
         feed_flows = feed_flows = np.zeros([N_stages, N_chemicals])
         feeds = self.feeds
         feed_stages = self.feed_stages
