@@ -24,6 +24,13 @@ __all__ = (
     'set_axes_ylabels',
 )   
 
+plt.rcParams.update({
+    "figure.facecolor": (1, 1, 1, 0.95),
+    "axes.facecolor": (1, 1, 1, 0.95),
+    "legend.facecolor": (1, 1, 1, 0.95),
+    "savefig.facecolor": (1, 1, 1, 0.95),
+})
+
 def set_font(size=10, family='sans-serif', font='Arial'):
     import matplotlib
     fontkwargs = {'size': size}

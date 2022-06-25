@@ -62,7 +62,9 @@ def format_units_power(units, isnumerator=True, mathrm=True):
         units, power = units.split('^')
         units = format_degrees(units)
         if mathrm: units = '\mathrm{' + units + '}'
+        power, *other = power.split(' ', 1)
         units += '^{' + (power if isnumerator else '-' + power) + '}'
+        if other: units += other[0]
     else:
         units = format_degrees(units)
         if mathrm: 

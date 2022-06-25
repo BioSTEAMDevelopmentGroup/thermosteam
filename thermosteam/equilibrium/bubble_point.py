@@ -279,143 +279,143 @@ class BubblePoint:
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
     
-# class BubblePointBeta:
-#     """
-#     Create a BubblePointBeta object that returns bubble point values when
-#     called with a composition and either a temperture (T) or pressure (P).
+class BubblePointBeta:
+    """
+    Create a BubblePointBeta object that returns bubble point values when
+    called with a composition and either a temperture (T) or pressure (P).
     
-#     Parameters
-#     ----------
-#     flasher=None : :class:`~thermo.Flash`, optional
+    Parameters
+    ----------
+    flasher=None : :class:`~thermo.Flash`, optional
     
-#     Examples
-#     --------
-#     >>> import thermosteam as tmo
-#     >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-#     >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
-#     >>> molar_composition = (0.5, 0.5)
-#     >>> # Solve bubble point at constant temperature
-#     >>> bp = BP(z=molar_composition, T=355)
-#     >>> bp
-#     BubblePointValues(T=355.00, P=109755, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
-#     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
-#     >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
-#     (355, 109755, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
-#     >>> # Solve bubble point at constant pressure
-#     >>> BP(z=molar_composition, P=101325)
-#     BubblePointValues(T=352.95, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
+    >>> molar_composition = (0.5, 0.5)
+    >>> # Solve bubble point at constant temperature
+    >>> bp = BP(z=molar_composition, T=355)
+    >>> bp
+    BubblePointValues(T=355.00, P=109755, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
+    >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
+    (355, 109755, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    >>> # Solve bubble point at constant pressure
+    >>> BP(z=molar_composition, P=101325)
+    BubblePointValues(T=352.95, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
     
-#     """
-#     __slots__ = ('chemicals', 'IDs', 'flasher')
-#     _cached = {}
-#     def __init__(self, chemicals=(), flasher=None):
-#         self.chemicals = chemicals
-#         self.IDs = [i.ID for i in chemicals]
-#         self.flasher = flasher or settings.flasher()
+    """
+    __slots__ = ('chemicals', 'IDs', 'flasher')
+    _cached = {}
+    def __init__(self, chemicals=(), flasher=None):
+        self.chemicals = chemicals
+        self.IDs = [i.ID for i in chemicals]
+        self.flasher = flasher or settings.flasher()
     
-#     __call__ = BubblePoint.__call__
+    __call__ = BubblePoint.__call__
     
-#     def solve_Ty(self, z, P):
-#         """
-#         Bubble point at given composition and pressure.
+    def solve_Ty(self, z, P):
+        """
+        Bubble point at given composition and pressure.
 
-#         Parameters
-#         ----------
-#         z : ndarray
-#             Molar composition.
-#         P : float
-#             Pressure [Pa].
+        Parameters
+        ----------
+        z : ndarray
+            Molar composition.
+        P : float
+            Pressure [Pa].
         
-#         Returns
-#         -------
-#         T : float 
-#             Bubble point temperature [K].
-#         y : ndarray
-#             Vapor phase molar composition.
+        Returns
+        -------
+        T : float 
+            Bubble point temperature [K].
+        y : ndarray
+            Vapor phase molar composition.
 
-#         Examples
-#         --------
-#         >>> import thermosteam as tmo
-#         >>> import numpy as np
-#         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
-#         >>> tmo.settings.set_thermo(chemicals)
-#         >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
-#         >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
-#         (353.7543, array([0.381, 0.619]))
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> import numpy as np
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
+        >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
+        (353.7543, array([0.381, 0.619]))
         
-#         """
-#         positives = z > 0.
-#         N = positives.sum()
-#         if N == 0:
-#             raise ValueError('no components present')
-#         if N == 1:
-#             T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
-#             y = z.copy()
-#         else:
-#             results = self.flasher.flash(P=P, VF=0., zs=z.tolist())
-#             y = np.array(results.gas.zs)
-#             T = results.T
-#         return T, fn.normalize(y)
+        """
+        positives = z > 0.
+        N = positives.sum()
+        if N == 0:
+            raise ValueError('no components present')
+        if N == 1:
+            T = self.chemicals.tuple[fn.first_true_index(positives)].Tsat(P)
+            y = z.copy()
+        else:
+            results = self.flasher.flash(P=P, VF=0., zs=z.tolist())
+            y = np.array(results.gas.zs)
+            T = results.T
+        return T, fn.normalize(y)
     
-#     def solve_Py(self, z, T):
-#         """
-#         Bubble point at given composition and temperature.
+    def solve_Py(self, z, T):
+        """
+        Bubble point at given composition and temperature.
 
-#         Parameters
-#         ----------
-#         z : ndarray
-#             Molar composition.
-#         T : float
-#             Temperature [K].
+        Parameters
+        ----------
+        z : ndarray
+            Molar composition.
+        T : float
+            Temperature [K].
         
-#         Returns
-#         -------
-#         P : float
-#             Bubble point pressure [Pa].
-#         y : ndarray
-#             Vapor phase molar composition.
+        Returns
+        -------
+        P : float
+            Bubble point pressure [Pa].
+        y : ndarray
+            Vapor phase molar composition.
 
-#         Examples
-#         --------
-#         >>> import thermosteam as tmo
-#         >>> import numpy as np
-#         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
-#         >>> tmo.settings.set_thermo(chemicals)
-#         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
-#         >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)
-#         (91830.9798, array([0.419, 0.581]))
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> import numpy as np
+        >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
+        >>> tmo.settings.set_thermo(chemicals)
+        >>> BP = tmo.equilibrium.BubblePoint(chemicals)
+        >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)
+        (91830.9798, array([0.419, 0.581]))
         
-#         """
-#         positives = z > 0.
-#         N = positives.sum()
-#         if N == 0:
-#             raise ValueError('no components present')
-#         if N == 1:
-#             P = self.chemicals[fn.first_true_index(positives)].Psat(T)
-#             y = z.copy()
-#         else:
-#             if T > self.Tmax: T = self.Tmax
-#             elif T < self.Tmin: T = self.Tmin
-#             Psat = np.array([i(T) for i in self.Psats])
-#             z_norm = z / z.sum()
-#             z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
-#             f = self._P_error
-#             P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
-#             args = (T, z_Psat_gamma_pcf, y)
-#             try:
-#                 P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
-#                                       args, checkiter=False)
-#             except (InfeasibleRegion, DomainError):
-#                 Pmin = self.Pmin; Pmax = self.Pmax
-#                 P = flx.IQ_interpolation(f, Pmin, Pmax,
-#                                          f(Pmin, *args), f(Pmax, *args),
-#                                          P_guess, 1e-3, 5e-12, args,
-#                                          checkiter=False, checkbounds=False)
-#         return P, fn.normalize(y)
+        """
+        positives = z > 0.
+        N = positives.sum()
+        if N == 0:
+            raise ValueError('no components present')
+        if N == 1:
+            P = self.chemicals[fn.first_true_index(positives)].Psat(T)
+            y = z.copy()
+        else:
+            if T > self.Tmax: T = self.Tmax
+            elif T < self.Tmin: T = self.Tmin
+            Psat = np.array([i(T) for i in self.Psats])
+            z_norm = z / z.sum()
+            z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
+            f = self._P_error
+            P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
+            args = (T, z_Psat_gamma_pcf, y)
+            try:
+                P = flx.aitken_secant(f, P_guess, P_guess-1, 1e-3, 1e-9,
+                                      args, checkiter=False)
+            except (InfeasibleRegion, DomainError):
+                Pmin = self.Pmin; Pmax = self.Pmax
+                P = flx.IQ_interpolation(f, Pmin, Pmax,
+                                          f(Pmin, *args), f(Pmax, *args),
+                                          P_guess, 1e-3, 5e-12, args,
+                                          checkiter=False, checkbounds=False)
+        return P, fn.normalize(y)
     
-#     def __repr__(self):
-#         chemicals = ", ".join([i.ID for i in self.chemicals])
-#         return f"{type(self).__name__}([{chemicals}])"
+    def __repr__(self):
+        chemicals = ", ".join([i.ID for i in self.chemicals])
+        return f"{type(self).__name__}([{chemicals}])"
     
 class BubblePointCache(Cache): load = BubblePoint
 del Cache
