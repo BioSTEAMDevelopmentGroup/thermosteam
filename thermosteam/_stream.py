@@ -304,6 +304,22 @@ class Stream:
         self._register(ID)
         self._user_equilibrium = None
 
+    def rescale(self, ratio):
+        """
+        Rescale flow rate by given ratio.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=1)
+        >>> s1.rescale(100)
+        >>> s1.F_mol
+        100.0
+        
+        """
+        self._imol._data[:] *= ratio
+
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
         """
         Convinience method for resetting flow rate data.
