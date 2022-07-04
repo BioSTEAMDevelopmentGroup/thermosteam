@@ -196,8 +196,8 @@ class Stream:
     
     The bubble point results contain all results as attributes:
     
-    >>> bp.T # Temperature [K]
-    357.06934405521304
+    >>> tmo.docround(bp.T) # Temperature [K]
+    357.0693
     >>> bp.y # Vapor composition
     array([0.49, 0.51])
     

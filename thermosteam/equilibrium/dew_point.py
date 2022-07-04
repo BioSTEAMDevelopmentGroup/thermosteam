@@ -207,8 +207,8 @@ class DewPoint:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
-        >>> DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325)
-        (357.41997923563923, array([0.849, 0.151]))
+        >>> tmo.docround(DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325))
+        (357.42, array([0.849, 0.151]))
         
         """
         positives = z > 0.
@@ -264,8 +264,8 @@ class DewPoint:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
-        >>> DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28)
-        (82548.78268818153, array([0.852, 0.148]))
+        >>> tmo.docround(DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28))
+        (82548.7827, array([0.852, 0.148]))
  
        """
         positives = z > 0.

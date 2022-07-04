@@ -244,8 +244,8 @@ class BubblePoint:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
-        >>> BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28)
-        (91888.14286421462, array([0.419, 0.581]))
+        >>> tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
+        (91888.1429, array([0.419, 0.581]))
         
         """
         positives = z > 0.
