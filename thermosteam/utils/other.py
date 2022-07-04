@@ -85,7 +85,7 @@ def roundsigfigs(x, sigfigs=2, index=1):
 def docround(obj, n=4):
     """Function to round recursively."""
     if isinstance(obj, np.ndarray):
-        return np.round(obj)
+        return np.round(obj, n)
     elif isinstance(obj, Iterable):
         values = [docround(i, n) for i in obj]
         return obj.__class__(values)
