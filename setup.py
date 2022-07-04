@@ -22,7 +22,7 @@ setup(
                       'colorpalette>=0.3.3',
                       'pandas>=0.25.2',
                       'matplotlib>=3.1.1',
-                      'numpy==1.20.3',
+                      'numpy==1.22.0',
                       'xlrd>=1.2.0',
                       'openpyxl>=3.0.0',
                       'free_properties>=0.3.4',
