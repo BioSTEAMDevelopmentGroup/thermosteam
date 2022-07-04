@@ -15,7 +15,7 @@ setup(
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst', encoding='utf-8').read(),
     author='Yoel Cortes-Pena',
-    install_requires=['numpy==1.22',
+    install_requires=['numpy>=1.22',
                       'pint>=0.9',
                       'scipy>=1.5',
                       'thermo>=0.2.9',
