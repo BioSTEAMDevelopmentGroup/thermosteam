@@ -519,7 +519,7 @@ class Reaction:
                          CH4  4.5
                          O2   96
                          CO2  0.5
-                         H2O  108    
+                         H2O  108
         
         Sequential combustion of CH4 and CO:
         

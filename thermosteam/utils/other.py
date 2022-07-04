@@ -20,6 +20,7 @@ __all__ = (
     'get_instance',
     'roundsigfigs',
     'array_roundsigfigs',
+    'docround',
 )
 
 def flattened(lst):
@@ -80,6 +81,16 @@ def roundsigfigs(x, sigfigs=2, index=1):
             return int(value)
         else:
             return value
+
+def docround(obj, n=4):
+    """Function to round recursively."""
+    if isinstance(obj, np.ndarray):
+        return np.round(obj)
+    elif isinstance(obj, Iterable):
+        values = [docround(i, n) for i in obj]
+        return obj.__class__(values)
+    else:
+        return round(obj, n)   
 
 def array_roundsigfigs(arr, sigfigs=2, index=1, inplace=False):
     if not inplace: arr = arr.copy()

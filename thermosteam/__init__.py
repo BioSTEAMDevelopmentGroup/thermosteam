@@ -39,6 +39,7 @@ from . import (
     separations,
     functors,
 )
+from .utils import docround
 from ._chemical_data import ChemicalData
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals

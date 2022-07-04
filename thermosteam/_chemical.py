@@ -373,10 +373,10 @@ class Chemical:
         
     >>> # Vapor pressure (Pa)
     >>> Water.Psat(T=373.15)
-    101284.55
+    101417.99665995422
     >>> # Surface tension (N/m)
     >>> Water.sigma(T=298.15)
-    0.07205
+    0.07197220523022962
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
     1.806...e-05
@@ -401,9 +401,7 @@ class Chemical:
     Temperature dependent properties are managed by objects:
     
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, 
-                  Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC",
-                  method="WAGNER_MCGARRY")
+    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="IAPWS")
 
     Phase dependent properties have attributes with model handles for each phase:
 
@@ -810,7 +808,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.get_property('sigma', 'N/m', 300.) # Surface tension
-        0.07176
+        0.07168596252716256
 
         >>> Water.get_property('rho', 'g/cm3', 'l', 300., 101325) # Density
         0.9962

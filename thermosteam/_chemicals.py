@@ -404,7 +404,7 @@ class CompiledChemicals(Chemicals):
         >>> s2.imol['l', 'Alcohol']
         0.678
         >>> s2.imol['l', ('Water', 'Alcohol')]
-        array([1.322, 0.678])
+        array([1.321, 0.679])
         
         Because groups are defined with a composition we can set values by 
         groups as well:
