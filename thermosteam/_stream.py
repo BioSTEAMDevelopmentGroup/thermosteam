@@ -209,10 +209,10 @@ class Stream:
     >>> s1.show()
     MultiStream: s1
      phases: ('g', 'l'), T: 364.76 K, P: 101325 Pa
-     flow (kg/hr): (g) Water    8.51
-                       Ethanol  8.82
-                   (l) Water    11.5
-                       Ethanol  1.18
+     flow (kmol/hr): (g) Water    0.472
+                         Ethanol  0.192
+                     (l) Water    0.638
+                         Ethanol  0.0256
     
     Note that the stream is a now a MultiStream object to manage multiple phases.
     Each phase can be accessed separately too:
@@ -220,14 +220,14 @@ class Stream:
     >>> s1['l'].show()
     Stream: 
      phase: 'l', T: 364.76 K, P: 101325 Pa
-     flow (kg/hr): Water    11.5
-                   Ethanol  1.18
+     flow (kmol/hr): Water    0.638
+                     Ethanol  0.0256
     
     >>> s1['g'].show()
     Stream: 
      phase: 'g', T: 364.76 K, P: 101325 Pa
-     flow (kg/hr): Water    8.51
-                   Ethanol  8.82
+     flow (kmol/hr): Water    0.472
+                     Ethanol  0.192
     
     We can convert a MultiStream object back to a Stream object by setting the phase:
         
@@ -438,7 +438,7 @@ class Stream:
         >>> s1.show()
         Stream: s1
          phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  18
+         flow (kmol/hr): Water  1
 
         """
         data = self._imol._data
@@ -508,13 +508,13 @@ class Stream:
         >>> stream.show()
         Stream: stream
          phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  180
+         flow (kmol/hr): Water  10
         >>> stream.set_data(data_vle)
         >>> stream.show()
         MultiStream: stream
          phases: ('g', 'l'), T: 373.12 K, P: 101325 Pa
-         flow (kg/hr): (g) Water  90.1
-                       (l) Water  90.1
+         flow (kmol/hr): (g) Water  5
+                         (l) Water  5
         
         Note that only StreamData objects are valid for this method:
         
@@ -1659,7 +1659,7 @@ class Stream:
         >>> s2.show()
         Stream: s2
          phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  180
+         flow (kmol/hr): Water  10
         >>> s1.show()
         MultiStream: s1
          phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa

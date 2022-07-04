@@ -190,13 +190,13 @@ def mix_and_split(ins, top, bottom, split):
     >>> effluent_a.show()
     Stream: effluent_a
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    504
-                   Ethanol  369
+     flow (kmol/hr): Water    28
+                     Ethanol  8
     >>> effluent_b.show()
     Stream: effluent_b
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    126
-                   Ethanol  92.1
+     flow (kmol/hr): Water    7
+                     Ethanol  2
     
     """
     top.mix_from(ins)
@@ -232,13 +232,13 @@ def phase_split(feed, outlets):
     >>> vapor.show()
     Stream: vapor
      phase: 'g', T: 353.86 K, P: 101325 Pa
-     flow (kg/hr): Water    69.6
-                   Ethanol  283
+     flow (kmol/hr): Water    3.86
+                     Ethanol  6.14
     >>> liquid.show()
     Stream: liquid
      phase: 'l', T: 353.86 K, P: 101325 Pa
-     flow (kg/hr): Water    111
-                   Ethanol  178
+     flow (kmol/hr): Water    6.14
+                     Ethanol  3.86
     
     Note that the number of phases in the feed should be equal to the number of 
     outlets:
@@ -508,14 +508,14 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    139
-                   Ethanol  566
-                   O2       3.2
+     flow (kmol/hr): Water    7.73
+                     Ethanol  12.3
+                     O2       0.1
     >>> bottom.show()
     Stream: bottom
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    221
-                   Ethanol  356
+     flow (kmol/hr): Water    12.3
+                     Ethanol  7.72
     >>> feed = tmo.Stream('feed', Water=20, Ethanol=20, NaCl=0.1, O2=0.1)
     >>> tmo.separations.partition(feed, top, bottom, IDs, K, 
     ...                           top_chemicals=('O2',),
@@ -524,15 +524,15 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    139
-                   Ethanol  566
-                   O2       3.2
+     flow (kmol/hr): Water    7.73
+                     Ethanol  12.3
+                     O2       0.1
     >>> bottom.show()
     Stream: bottom
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    221
-                   Ethanol  356
-                   NaCl     5.84
+     flow (kmol/hr): Water    12.3
+                     Ethanol  7.72
+                     NaCl     0.1
 
     """
     feed_mol = feed.mol
@@ -594,15 +594,15 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    63.9
-                   Ethanol  39.7
-                   Octanol  2.6e+03
+     flow (kmol/hr): Water    3.55
+                     Ethanol  0.861
+                     Octanol  20
     >>> bottom.show()
     Stream: bottom
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    296
-                   Ethanol  6.42
-                   Octanol  0.532
+     flow (kmol/hr): Water    16.5
+                     Ethanol  0.139
+                     Octanol  0.00409
     
     Assume that 1% of the feed is not in equilibrium (possibly due to poor mixing):
         
@@ -616,12 +616,12 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> ms.show()
     MultiStream: ms
      phases: ('L', 'l'), T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): (L) Water    63.9
-                       Ethanol  39.7
-                       Octanol  2.6e+03
-                   (l) Water    296
-                       Ethanol  6.42
-                       Octanol  0.532
+     flow (kmol/hr): (L) Water    3.55
+                         Ethanol  0.861
+                         Octanol  20
+                     (l) Water    16.5
+                         Ethanol  0.139
+                         Octanol  0.00409
     
     """
     if multi_stream:
@@ -691,13 +691,13 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     >>> vapor.show()
     Stream: top
      phase: 'g', T: 353.86 K, P: 101325 Pa
-     flow (kg/hr): Water    139
-                   Ethanol  565
+     flow (kmol/hr): Water    7.73
+                     Ethanol  12.3
     >>> liquid.show()
     Stream: bottom
      phase: 'l', T: 353.86 K, P: 101325 Pa
-     flow (kg/hr): Water    221
-                   Ethanol  356
+     flow (kmol/hr): Water    12.3
+                     Ethanol  7.73
     
     It is also possible to save flow rate data in a multi-stream as well:
         
@@ -706,10 +706,10 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     >>> ms.show()
     MultiStream: ms
      phases: ('g', 'l'), T: 353.86 K, P: 101325 Pa
-     flow (kg/hr): (g) Water    139
-                       Ethanol  565
-                   (l) Water    221
-                       Ethanol  356
+     flow (kmol/hr): (g) Water    7.73
+                         Ethanol  12.3
+                     (l) Water    12.3
+                         Ethanol  7.73
     
     """
     if multi_stream:

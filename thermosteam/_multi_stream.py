@@ -169,13 +169,13 @@ class MultiStream(Stream):
     >>> s1['l'].show()
     Stream: 
      phase: 'l', T: 365 K, P: 101325 Pa
-     flow (kg/hr): Water    11.1
-                   Ethanol  1.08
+     flow (kmol/hr): Water    0.616
+                     Ethanol  0.0235
     >>> s1['g'].show()
     Stream: 
      phase: 'g', T: 365 K, P: 101325 Pa
-     flow (kg/hr): Water    8.91
-                   Ethanol  8.92
+     flow (kmol/hr): Water    0.494
+                     Ethanol  0.194
     
     Note that the phase cannot be changed:
     

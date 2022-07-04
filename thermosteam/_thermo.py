@@ -83,10 +83,10 @@ class Thermo:
     >>> stream.show()
     MultiStream: stream
      phases: ('g', 'l'), T: 361 K, P: 101325 Pa
-     flow (kg/hr): (g) Ethanol  1.5e+03
-                       Water    317
-                   (l) Ethanol  3.1e+03
-                       Water    1.48e+03
+     flow (kmol/hr): (g) Ethanol  32.6
+                         Water    17.6
+                     (l) Ethanol  67.4
+                         Water    82.4
     >>> # Modified Roult's law:                 
     >>> tmo.settings.set_thermo(thermo)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
@@ -94,8 +94,8 @@ class Thermo:
     >>> stream.show()
     MultiStream: stream
      phases: ('g', 'l'), T: 360 K, P: 101325 Pa
-     flow (kg/hr): (g) Ethanol  4.61e+03
-                       Water    1.8e+03
+     flow (kmol/hr): (g) Ethanol  100
+                         Water    100
     
     Thermodynamic property packages are pickleable:
         

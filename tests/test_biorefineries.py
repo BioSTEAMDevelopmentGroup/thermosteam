@@ -9,9 +9,7 @@
 """
 from biorefineries.tests.test_biorefineries import (
     test_sugarcane,
-    test_lipidcane,
     test_cornstover,
-    test_LAOs
 )
 
 # To run these following tests, you'll need to get the github version.
