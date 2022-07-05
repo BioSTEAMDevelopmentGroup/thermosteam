@@ -6,7 +6,7 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
    :target: https://pypi.python.org/pypi/thermosteam
    :alt: Version_status
 .. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-   :target: https://thermosteam.readthedocs.io/en/latest/
+   :target: https://biosteam.readthedocs.io/en/latest/API/thermosteam/index.html
    :alt: Documentation
 .. image:: https://img.shields.io/pypi/pyversions/thermosteam.svg
    :target: https://pypi.python.org/pypi/thermosteam
@@ -60,7 +60,7 @@ Documentation
 
 Thermosteam's documentation is available on the web:
 
-    http://thermosteam.readthedocs.io/
+    https://biosteam.readthedocs.io/en/latest/API/thermosteam/index.html
 
 Bug reports
 -----------
