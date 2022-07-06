@@ -1390,6 +1390,7 @@ class ReactionSystem:
         
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
+    chemicals = Reaction.chemicals
     __call__ = Reaction.__call__
     show = Reaction.show
     
