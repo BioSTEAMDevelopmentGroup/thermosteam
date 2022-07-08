@@ -261,7 +261,7 @@ class Stream:
 
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
                  units=None, price=0., total_flow=None, thermo=None, 
-                 characterization_factors=None, 
+                 characterization_factors=None, vlle=False,
                  # velocity=0., height=0.,
                  **chemical_flows):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
@@ -272,8 +272,6 @@ class Stream:
         self.price = price
         # self.velocity = velocity
         # self.height = height
-        autodetermine_phases = phase is None 
-        if autodetermine_phases: phase = 'l'
         if units:
             name, factor = self._get_flow_name_and_factor(units)
             if name == 'mass':
@@ -286,8 +284,6 @@ class Stream:
                         for i in range(len(chemical_group)):
                             chemical_flows[chemical_group[i]._ID] = group_flow * compositions[i]
             elif name == 'vol':
-                if autodetermine_phases: 
-                    raise ValueError('cannot set volumetric flow without specifying phase')
                 group_wt_compositions = chemicals._group_wt_compositions
                 for cID in chemical_flows:
                     if cID in group_wt_compositions:
@@ -307,7 +303,7 @@ class Stream:
         self.reset_cache()
         self._register(ID)
         self._user_equilibrium = None
-        if autodetermine_phases: 
+        if vlle: 
             self.vlle(T, P)
             data = self._imol._data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
@@ -1877,7 +1873,7 @@ class Stream:
         
         Warning
         -------
-        This method is may be as slow as 500 ms.
+        This method is may be as slow as 1 second.
         
         """
         self.phases = ('L', 'g', 'l')

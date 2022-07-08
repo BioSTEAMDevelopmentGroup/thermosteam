@@ -10,6 +10,26 @@
 import pytest
 from numpy.testing import assert_allclose
 
+def test_equilibrium():
+    import thermosteam as tmo
+    tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'])
+    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
+    assert_allclose(s.mol, [1, 1, 2]) # mass balance
+    assert_allclose(s.imol['l'] + s.imol['L'], [0.529, 0.373, 1.751], rtol=1e-2)
+    assert_allclose(s.imol['g'], [0.471, 0.627, 0.249], rtol=1e-2) # Convergence
+    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
+    assert set(s.phases) == set(['l', 'L']) # No gas phase
+    assert_allclose(s.mol, [1, 1, 2]) # mass balance
+    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=360)
+    assert set(s.phases) == set(['l', 'g']) # No second liquid phase
+    assert_allclose(s.mol, [1, 1, 2]) # mass balance
+    assert_allclose(s.imol['g'], [0.955, 0.95 , 0.734], rtol=1e-2) # Convergence
+    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=380)
+    assert s.phases == ('g',) # Only one phase
+    s = tmo.MultiStream(None, l=[('Water', 1), ('Ethanol', 1), ('Octane', 2)], vlle=True, T=380)
+    assert s.phase == 'g' # Only one phase
+    assert set(s.phases) == set(['L', 'l', 'g']) # All three phases can still be used
+
 def test_stream():
     import thermosteam as tmo
     tmo.settings.set_thermo(['Water'], cache=True)
@@ -170,3 +190,4 @@ def test_multistream():
 if __name__ == '__main__':
     test_stream()
     test_multistream()
+    test_equilibrium()

@@ -187,7 +187,7 @@ class MultiStream(Stream):
     __slots__ = ()
     def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=None, 
                  units=None, price=0, total_flow=None, thermo=None, 
-                 characterization_factors=None, **phase_flows):
+                 characterization_factors=None, vlle=False, **phase_flows):
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
@@ -230,6 +230,7 @@ class MultiStream(Stream):
         self.reset_cache()
         self._register(ID)
         self._user_equilibrium = None
+        if vlle: self.vlle(T, P)
         
     def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
         """
