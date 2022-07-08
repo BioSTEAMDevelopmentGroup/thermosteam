@@ -1893,15 +1893,11 @@ class Stream:
         data = imol._data
         net_chemical_flows = data.sum(axis=0)
         total_flow = net_chemical_flows.sum()
-        data[:] = 0
-        data[2] = net_chemical_flows / total_flow # Move all flows to 'l' phase and normalize
-        n = [0]
-        nonzero = net_chemical_flows > 0
+        zeros = net_chemical_flows == 0
         def f(x):
-            n[0] += 1
             x[x < 0] = 1e-6
             xsum = x.sum(axis=0) 
-            xsum[nonzero] = 1
+            xsum[zeros] = 1
             data[:] = x * net_chemical_flows / x.sum() 
             lle(T=T, P=P)
             net_phase_flows = data.sum(axis=1, keepdims=True)
