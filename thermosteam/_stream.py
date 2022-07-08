@@ -309,7 +309,8 @@ class Stream:
         self._user_equilibrium = None
         if autodetermine_phases: 
             self.vlle(T, P)
-            self.phases = self.phase
+            data = self._imol._data
+            self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
     def rescale(self, ratio):
         """
@@ -1881,16 +1882,16 @@ class Stream:
         
         """
         self.phases = ('L', 'g', 'l')
-        vle = eq.VLE(self._imol,
+        imol = self.imol
+        vle = eq.VLE(imol,
                      self._thermal_condition,
                      self._thermo, 
                      self._bubble_point_cache,
                      self._dew_point_cache)
-        lle = eq.LLE(self._imol,
+        lle = eq.LLE(imol,
                      self._thermal_condition,
                      self._thermo)
         lle(T=T, P=P)
-        imol = self.imol
         data = imol._data
         net_phase_flows = data.sum(axis=1, keepdims=True)
         net_phase_flows[net_phase_flows == 0] = 1
@@ -1898,7 +1899,7 @@ class Stream:
         if np.abs(compositions[0] - compositions[2]).sum() < 1e-3: # Perform VLE on one liquid phase
             net_chemical_flows = data.sum(axis=0)
             data[:] = 0.
-            data[2] = net_chemical_flows 
+            data[2] = net_chemical_flows # All flows must be in the 'l' phase for VLE
             vle(T=T, P=P)
         else: # Perform VLE on each liquid phase
             vle(T=T, P=P)
