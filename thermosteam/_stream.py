@@ -1902,7 +1902,7 @@ class Stream:
             vle(T=T, P=P)
         else: # Perform VLE on each liquid phase
             vle(T=T, P=P)
-            data[2], data[0] = data[0], data[2]
+            data[2], data[0] = data[0].copy(), data[2].copy()
             vle(T=T, P=P)
 
     @property
