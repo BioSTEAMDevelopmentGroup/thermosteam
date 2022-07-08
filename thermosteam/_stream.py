@@ -1893,26 +1893,22 @@ class Stream:
         data = imol._data
         net_chemical_flows = data.sum(axis=0)
         total_flow = net_chemical_flows.sum()
-        zeros = net_chemical_flows == 0
         def f(x):
-            x[x < 0] = 1e-6
-            xsum = x.sum(axis=0) 
-            xsum[zeros] = 1
-            data[:] = x * net_chemical_flows / x.sum() 
+            data[:] = x 
             lle(T=T, P=P)
             net_phase_flows = data.sum(axis=1, keepdims=True)
             net_phase_flows[net_phase_flows == 0] = 1
             compositions = data / net_phase_flows
             if np.abs(compositions[0] - compositions[2]).sum() < 1e-3: # Perform VLE on one liquid phase
-                data[:] = 0.
-                data[2] = net_chemical_flows # All flows must be in the 'l' phase for VLE
+                data[2] += data[0] # All flows must be in the 'l' phase for VLE
+                data[0] = 0.
                 vle(T=T, P=P)
             else: # Perform VLE on each liquid phase
                 vle(T=T, P=P)
                 data[2], data[0] = data[0].copy(), data[2].copy()
                 vle(T=T, P=P)
             return data.copy()
-        data[:] = flx.aitken(f, data.copy(), xtol=1e-3) * total_flow
+        data[:] = flx.fixed_point(f, data.copy() / total_flow, xtol=1e-3, checkiter=False) * total_flow
 
     @property
     def vle_chemicals(self):
