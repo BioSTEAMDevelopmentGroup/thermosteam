@@ -59,8 +59,8 @@ class Stream:
         If no ID is given, stream will be registered with a unique ID.
     flow : Iterable[float], optional
         All flow rates corresponding to chemical `IDs`.
-    phase : 'l', 'g', or 's'
-        Either gas (g), liquid (l), or solid (s). Defaults to 'l'.
+    phase : 'l', 'g', 's', or None
+        'g' for gas, 'l' for liquid, 's' for solid, and None to autodetermine. Defaults to 'l'.
     T : float
         Temperature [K]. Defaults to 298.15.
     P : float
@@ -261,7 +261,7 @@ class Stream:
 
     def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
                  units=None, price=0., total_flow=None, thermo=None, 
-                 characterization_factors=None, 
+                 characterization_factors=None, vlle=False,
                  # velocity=0., height=0.,
                  **chemical_flows):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
@@ -303,6 +303,10 @@ class Stream:
         self.reset_cache()
         self._register(ID)
         self._user_equilibrium = None
+        if vlle: 
+            self.vlle(T, P)
+            data = self._imol._data
+            self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
     def rescale(self, ratio):
         """
@@ -1862,6 +1866,45 @@ class Stream:
         """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
         self.phases = ('s', 'l')
         return self.sle
+
+    def vlle(self, T, P):
+        """
+        Estimate vapor-liquid-liquid equilibrium.
+        
+        Warning
+        -------
+        This method is may be as slow as 1 second.
+        
+        """
+        self.phases = ('L', 'g', 'l')
+        imol = self.imol
+        vle = eq.VLE(imol,
+                     self._thermal_condition,
+                     self._thermo, 
+                     self._bubble_point_cache,
+                     self._dew_point_cache)
+        lle = eq.LLE(imol,
+                     self._thermal_condition,
+                     self._thermo)
+        data = imol._data
+        net_chemical_flows = data.sum(axis=0)
+        total_flow = net_chemical_flows.sum()
+        def f(x):
+            data[:] = x 
+            lle(T=T, P=P)
+            net_phase_flows = data.sum(axis=1, keepdims=True)
+            net_phase_flows[net_phase_flows == 0] = 1
+            compositions = data / net_phase_flows
+            if np.abs(compositions[0] - compositions[2]).sum() < 1e-3: # Perform VLE on one liquid phase
+                data[2] += data[0] # All flows must be in the 'l' phase for VLE
+                data[0] = 0.
+                vle(T=T, P=P)
+            else: # Perform VLE on each liquid phase
+                vle(T=T, P=P)
+                data[2], data[0] = data[0].copy(), data[2].copy()
+                vle(T=T, P=P)
+            return data.copy()
+        data[:] = flx.fixed_point(f, data.copy() / total_flow, xtol=1e-3, checkiter=False) * total_flow
 
     @property
     def vle_chemicals(self):
