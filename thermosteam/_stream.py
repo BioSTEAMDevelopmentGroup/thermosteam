@@ -59,8 +59,8 @@ class Stream:
         If no ID is given, stream will be registered with a unique ID.
     flow : Iterable[float], optional
         All flow rates corresponding to chemical `IDs`.
-    phase : 'l', 'g', or 's'
-        Either gas (g), liquid (l), or solid (s). Defaults to 'l'.
+    phase : 'l', 'g', 's', or None
+        'g' for gas, 'l' for liquid, 's' for solid, and None to autodetermine. Defaults to 'l'.
     T : float
         Temperature [K]. Defaults to 298.15.
     P : float
@@ -272,6 +272,8 @@ class Stream:
         self.price = price
         # self.velocity = velocity
         # self.height = height
+        autodetermine_phases = phase is None 
+        if autodetermine_phases: phase = 'l'
         if units:
             name, factor = self._get_flow_name_and_factor(units)
             if name == 'mass':
@@ -284,6 +286,8 @@ class Stream:
                         for i in range(len(chemical_group)):
                             chemical_flows[chemical_group[i]._ID] = group_flow * compositions[i]
             elif name == 'vol':
+                if autodetermine_phases: 
+                    raise ValueError('cannot set volumetric flow without specifying phase')
                 group_wt_compositions = chemicals._group_wt_compositions
                 for cID in chemical_flows:
                     if cID in group_wt_compositions:
@@ -303,6 +307,9 @@ class Stream:
         self.reset_cache()
         self._register(ID)
         self._user_equilibrium = None
+        if autodetermine_phases: 
+            self.vlle(T, P)
+            self.phases = self.phase
 
     def rescale(self, ratio):
         """
@@ -1862,6 +1869,41 @@ class Stream:
         """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
         self.phases = ('s', 'l')
         return self.sle
+
+    def vlle(self, T, P):
+        """
+        Estimate vapor-liquid-liquid equilibrium through one LLE simulation,
+        then one VLE simulation on each liquid phase.
+        
+        Warning
+        -------
+        This method is experimental and only provides a preliminary estimate.
+        
+        """
+        self.phases = ('L', 'g', 'l')
+        vle = eq.VLE(self._imol,
+                     self._thermal_condition,
+                     self._thermo, 
+                     self._bubble_point_cache,
+                     self._dew_point_cache)
+        lle = eq.LLE(self._imol,
+                     self._thermal_condition,
+                     self._thermo)
+        lle(T=T, P=P)
+        imol = self.imol
+        data = imol._data
+        net_phase_flows = data.sum(axis=1, keepdims=True)
+        net_phase_flows[net_phase_flows == 0] = 1
+        compositions = data / net_phase_flows
+        if np.abs(compositions[0] - compositions[2]).sum() < 1e-3: # Perform VLE on one liquid phase
+            net_chemical_flows = data.sum(axis=0)
+            data[:] = 0.
+            data[2] = net_chemical_flows 
+            vle(T=T, P=P)
+        else: # Perform VLE on each liquid phase
+            vle(T=T, P=P)
+            data[2], data[0] = data[0], data[2]
+            vle(T=T, P=P)
 
     @property
     def vle_chemicals(self):

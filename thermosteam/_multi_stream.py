@@ -994,13 +994,15 @@ class MultiStream(Stream):
     @property
     def phase(self):
         imol = self._imol
-        return ''.join([phases[0] for phases in ('gG', 'lL', 'sS') if not imol.phases_are_empty(phases)])
+        return ''.join([phases[0] for phases in ('g', 'lL', 'sS') if not imol.phases_are_empty(phases)])
     @phase.setter
     def phase(self, phase):
-        if len(phase) > 1: self.phases = phase
-        self._imol = self._imol.to_chemical_indexer(phase)
-        self._streams.clear()
-        self.__class__ = Stream
+        if len(phase) > 1: 
+            self.phases = phase
+        else:
+            self._imol = self._imol.to_chemical_indexer(phase)
+            self._streams.clear()
+            self.__class__ = Stream
     
     ### Representation ###
     

@@ -253,7 +253,7 @@ class ChemicalIndexer(Indexer):
     
     Parameters
     ----------
-    phase : [str or PhaseContainer] {'s', 'l', 'g', 'S', 'L', 'G'}
+    phase : [str or PhaseContainer] {'s', 'l', 'g', 'S', 'L'}
         Phase of data.
     units : str
         Units of measure of input data. 
