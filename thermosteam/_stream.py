@@ -1889,7 +1889,8 @@ class Stream:
         data = imol._data
         net_chemical_flows = data.sum(axis=0)
         total_flow = net_chemical_flows.sum()
-        def f(x):
+        def f(x, done=[False]):
+            if done[0]: return x
             data[:] = x 
             lle(T=T, P=P)
             net_phase_flows = data.sum(axis=1, keepdims=True)
@@ -1899,12 +1900,14 @@ class Stream:
                 data[2] += data[0] # All flows must be in the 'l' phase for VLE
                 data[0] = 0.
                 vle(T=T, P=P)
+                done[0] = True
+                return data
             else: # Perform VLE on each liquid phase
                 vle(T=T, P=P)
                 data[2], data[0] = data[0].copy(), data[2].copy()
                 vle(T=T, P=P)
             return data.copy()
-        data[:] = flx.fixed_point(f, data.copy() / total_flow, xtol=1e-3, checkiter=False) * total_flow
+        data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False) * total_flow
 
     @property
     def vle_chemicals(self):
