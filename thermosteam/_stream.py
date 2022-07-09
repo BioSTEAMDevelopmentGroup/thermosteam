@@ -1873,7 +1873,7 @@ class Stream:
         
         Warning
         -------
-        This method is may be as slow as 1 second.
+        This method may be as slow as 1 second.
         
         """
         self.phases = ('L', 'g', 'l')
