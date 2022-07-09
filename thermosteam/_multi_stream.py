@@ -57,6 +57,9 @@ class MultiStream(Stream):
         Total flow rate.
     thermo : :class:`~thermosteam.Thermo`
         Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
+    vlle : bool, optional
+        Whether to run rigorous phase equilibrium to determine phases. 
+        Defaults to False.
     **phase_flow : tuple[str, float]
         phase-(ID, flow) pairs.
     

@@ -59,8 +59,8 @@ class Stream:
         If no ID is given, stream will be registered with a unique ID.
     flow : Iterable[float], optional
         All flow rates corresponding to chemical `IDs`.
-    phase : 'l', 'g', 's', or None
-        'g' for gas, 'l' for liquid, 's' for solid, and None to autodetermine. Defaults to 'l'.
+    phase : {'l', 'g', 's'}
+        'g' for gas, 'l' for liquid, and 's' for solid. Defaults to 'l'.
     T : float
         Temperature [K]. Defaults to 298.15.
     P : float
@@ -77,6 +77,9 @@ class Stream:
         `biosteam.settings.get_thermo()`.
     characterization_factors : dict, optional
         Characterization factors for life cycle assessment.
+    vlle : bool, optional
+        Whether to run rigorous phase equilibrium to determine phases. 
+        Defaults to False.
     **chemical_flows : float
         ID - flow pairs.
     
