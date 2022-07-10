@@ -41,7 +41,7 @@ def xV_iter(xV, Psat_over_P_phi, T, z, z_light, z_heavy, f_gamma, gamma_args, f_
     xV[:-1] = z/(1. + V * (Ks - 1.))
     return xV
 
-# @njit(cache=True)    
+@njit(cache=True)    
 def xV_iter_2n(xV, Psat_over_P_phi, T, z, f_gamma, gamma_args, f_pcf, pcf_args):
     xV = xV.copy()
     x = xV[:-1]
@@ -56,7 +56,7 @@ def xV_iter_2n(xV, Psat_over_P_phi, T, z, f_gamma, gamma_args, f_pcf, pcf_args):
     xV[:-1] = z/(1. + V * (Ks - 1.))
     return xV
 
-# @njit(cache=True)
+@njit(cache=True)
 def xV_iter_3n(xV, Psat_over_P_phi, T, z, f_gamma, gamma_args, f_pcf, pcf_args):
     xV = xV.copy()
     x = xV[:-1]
