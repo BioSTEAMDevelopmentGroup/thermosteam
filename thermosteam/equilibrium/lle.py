@@ -15,7 +15,7 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
-# @njit(cache=True)
+@njit(cache=True)
 def liquid_activities(mol_L, T, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
     if total_mol_L:
@@ -32,6 +32,7 @@ def gibbs_free_energy_of_liquid(mol_L, xgamma):
     g_mix = (mol_L * np.log(xgamma)).sum()
     return g_mix
 
+@njit(cache=True)
 def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
     mol_l = mol - mol_L
     xgamma_l = liquid_activities(mol_l, T, f_gamma, gamma_args)
@@ -94,7 +95,7 @@ class LLE(Equilibrium, phases='lL'):
     )
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
-                                      'tol': 0.002}
+                                      'tol': 1e-6}
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
                  composition_cache_tolerance=1e-5,
@@ -129,6 +130,7 @@ class LLE(Equilibrium, phases='lL'):
         imol = self._imol
         mol, index, lle_chemicals = self.get_liquid_mol_data()
         F_mol = mol.sum()
+        mol = mol / F_mol # Normalize first
         if F_mol:
             z_mol = mol / F_mol
             if (self._lle_chemicals == lle_chemicals 
@@ -137,7 +139,7 @@ class LLE(Equilibrium, phases='lL'):
                 K = self._K 
                 self._phi = phi = phase_fraction(z_mol, K, self._phi)
                 y = z_mol * K / (phi * K + (1 - phi))
-                mol_l = y * phi * F_mol
+                mol_l = y * phi
                 mol_L = mol - mol_l
             else:
                 gamma = self.thermo.Gamma(lle_chemicals)
@@ -165,8 +167,8 @@ class LLE(Equilibrium, phases='lL'):
                 self._z_mol = z_mol
                 self._T = T
             if not update: return self._lle_chemicals, self._K, self._phi
-            imol['l'][index] = mol_l
-            imol['L'][index] = mol_L
+            imol['l'][index] = mol_l * F_mol
+            imol['L'][index] = mol_L * F_mol
         
     def get_liquid_mol_data(self):
         # Get flow rates
