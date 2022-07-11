@@ -130,9 +130,8 @@ class LLE(Equilibrium, phases='lL'):
         imol = self._imol
         mol, index, lle_chemicals = self.get_liquid_mol_data()
         F_mol = mol.sum()
-        mol = mol / F_mol # Normalize first
-        if F_mol:
-            z_mol = mol / F_mol
+        if F_mol and len(lle_chemicals) > 1:
+            z_mol = mol = mol / F_mol # Normalize first
             if (self._lle_chemicals == lle_chemicals 
                 and T - self._T < self.temperature_cache_tolerance 
                 and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):

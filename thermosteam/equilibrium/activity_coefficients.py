@@ -249,6 +249,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
         else:
             self = super().__new__(cls)
         index, chemgroups = get_chemgroups(chemicals, self.group_name)
+        if len(index) <= 1: return IdealActivityCoefficients(chemicals)
         self._index = index
         all_groups = set()
         for groups in chemgroups: all_groups.update(groups)
