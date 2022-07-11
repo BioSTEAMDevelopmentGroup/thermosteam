@@ -402,7 +402,7 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     >>> # RuntimeWarning: O2 has no defined Dortmund groups; 
     >>> # functional group interactions are ignored
     >>> Gamma([0.5, 0.5], 350.) 
-    array([1., 1.])
+    1.0
     
     """
     __slots__ = ()

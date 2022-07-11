@@ -15,8 +15,8 @@ def test_equilibrium():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'])
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
-    assert_allclose(s.imol['l'] + s.imol['L'], [0.529, 0.373, 1.751], rtol=1e-2)
-    assert_allclose(s.imol['g'], [0.471, 0.627, 0.249], rtol=1e-2) # Convergence
+    assert_allclose(s.imol['l'] + s.imol['L'], [0.537583, 0.383255, 1.755296], rtol=1e-2)
+    assert_allclose(s.imol['g'], [0.462, 0.617, 0.245], rtol=1e-2) # Convergence
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
