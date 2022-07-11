@@ -103,8 +103,10 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     plt.figure()
     plt.xlim([0, 1])
     plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label="vapor")
-    plt.plot(zs_a, ms, c=lc if lc is not None else colors.green.RGBn, label='liquid')
-    if yticks is not None: plt.yticks(yticks)
+    plt.plot(zs_a, ms, c=lc if lc is not None else colors.blue.RGBn, label='liquid')
+    plt.ylim([ms.min(), ms.max()])
+    if yticks is None: yticks, ytext = plt.yticks()
+        
     plt.legend()
     plt.xlabel(f'{chemical_a} molar fraction')
     plt.ylabel(ylabel)
