@@ -7,6 +7,7 @@
 # for license details.
 """
 """
+from scipy.optimize import differential_evolution
 import flexsolve as flx
 from numba import njit
 from warnings import warn
@@ -216,38 +217,41 @@ class VLE(Equilibrium, phases='lg'):
         thermal_condition=ThermalCondition(T=300.00, P=101325))
 
     """
-    __slots__ = ('_T', # [float] Temperature [K].
-                 '_P', # [float] Pressure [Pa].
-                 '_H_hat', # [float] Specific enthalpy [kJ/kg].
-                 '_V', # [float] Molar vapor fraction.
-                 '_dew_point', # [DewPoint] Solves for dew point.
-                 '_bubble_point', # [BubblePoint] Solves for bubble point.
-                 '_x', # [1d array] Vapor composition.
-                 '_y', # [1d array] Liquid composition.
-                 '_z_last', # tuple[1d array] Last bulk composition.
-                 '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
-                 '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
-                 '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
-                 '_liquid_mol', # [1d array] Liquid molar data.
-                 '_vapor_mol', # [1d array] Vapor molar data.
-                 '_phase_data', # tuple[str, 1d array] Phase-data pairs.
-                 '_v',  # [1d array] Molar vapor data in equilibrium.
-                 '_index', # [1d array] Index of chemicals in equilibrium.
-                 '_F_mass', # [float] Total mass data.
-                 '_chemical', # [Chemical] Single chemical in equilibrium.
-                 '_mol_vle', # [1d array] Moles of chemicals in VLE calculations.
-                 '_N', # [int] Number of chemicals in equilibrium.
-                 '_z', # [1d array] Molar composition of chemicals in equilibrium
-                 '_z_norm', # [1d array] Normalized molar composition of chemicals in equilibrium
-                 '_z_light', # [1d array] Molar composition of light chemicals not included in equilibrium calculation.
-                 '_z_heavy', # [1d array] Molar composition of heavy chemicals not included in equilibrium calculation.
-                 '_nonzero', # [1d array(bool)] Chemicals present in the mixture
-                 '_F_mol', # [float] Total moles of chemicals (accounting for dissociation).
-                 '_F_mol_vle', # [float] Total moles in equilibrium.
-                 '_F_mol_light', # [float] Total moles of gas chemicals not included in equilibrium calculation.
-                 '_F_mol_heavy', # [float] Total moles of heavy chemicals not included in equilibrium calculation.
-                 '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
-                 '_bubble_point_cache') # [Cache] Retrieves the BubblePoint object if arguments are the same.
+    __slots__ = (
+        'method', # [str] Method for solving equilibrium.
+        '_T', # [float] Temperature [K].
+        '_P', # [float] Pressure [Pa].
+        '_H_hat', # [float] Specific enthalpy [kJ/kg].
+        '_V', # [float] Molar vapor fraction.
+        '_dew_point', # [DewPoint] Solves for dew point.
+        '_bubble_point', # [BubblePoint] Solves for bubble point.
+        '_x', # [1d array] Vapor composition.
+        '_y', # [1d array] Liquid composition.
+        '_z_last', # tuple[1d array] Last bulk composition.
+        '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
+        '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
+        '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
+        '_liquid_mol', # [1d array] Liquid molar data.
+        '_vapor_mol', # [1d array] Vapor molar data.
+        '_phase_data', # tuple[str, 1d array] Phase-data pairs.
+        '_v',  # [1d array] Molar vapor data in equilibrium.
+        '_index', # [1d array] Index of chemicals in equilibrium.
+        '_F_mass', # [float] Total mass data.
+        '_chemical', # [Chemical] Single chemical in equilibrium.
+        '_mol_vle', # [1d array] Moles of chemicals in VLE calculations.
+        '_N', # [int] Number of chemicals in equilibrium.
+        '_z', # [1d array] Molar composition of chemicals in equilibrium
+        '_z_norm', # [1d array] Normalized molar composition of chemicals in equilibrium
+        '_z_light', # [1d array] Molar composition of light chemicals not included in equilibrium calculation.
+        '_z_heavy', # [1d array] Molar composition of heavy chemicals not included in equilibrium calculation.
+        '_nonzero', # [1d array(bool)] Chemicals present in the mixture
+        '_F_mol', # [float] Total moles of chemicals (accounting for dissociation).
+        '_F_mol_vle', # [float] Total moles in equilibrium.
+        '_F_mol_light', # [float] Total moles of gas chemicals not included in equilibrium calculation.
+        '_F_mol_heavy', # [float] Total moles of heavy chemicals not included in equilibrium calculation.
+        '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
+        '_bubble_point_cache' # [Cache] Retrieves the BubblePoint object if arguments are the same.
+    )
     maxiter = 50
     T_tol = 5e-8
     P_tol = 1.
@@ -255,9 +259,13 @@ class VLE(Equilibrium, phases='lg'):
     V_tol = 1e-6
     x_tol = 1e-12
     y_tol = 1e-12
-    
+    default_method = 'fixed-point'
+    differential_evolution_options = {'seed': 0,
+                                      'popsize': 12,
+                                      'tol': 1e-6}
     def __init__(self, imol=None, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
+        self.method = self.default_method
         self._T = self._P = self._H_hat = self._V = 0
         self._dew_point_cache = dew_point_cache or DewPointCache()
         self._bubble_point_cache = bubble_point_cache or BubblePointCache()
@@ -907,7 +915,7 @@ class VLE(Equilibrium, phases='lg'):
         xV[:-1] = x
         xV[-1] = self._V
         xV = flx.aitken(f, xV, self.x_tol, args, checkiter=False, 
-                       checkconvergence=False, convergenceiter=5)
+                        checkconvergence=False, convergenceiter=5)
         x = xV[:-1]
         self._V = V = xV[-1]
         x[x < 1e-32] = 1e-32
@@ -922,22 +930,84 @@ class VLE(Equilibrium, phases='lg'):
     
     def _solve_v(self, T, P):
         """Solve for vapor mol"""
-        Psats_over_P = np.array([i(T) for i in
-                                 self._bubble_point.Psats]) / P
-        self._T = T
-        if isinstance(self._phi, IdealFugacityCoefficients):
-            y = self._y_iter(self._y, Psats_over_P, T, P)
+        method = self.method
+        if method == 'differential-evolution':
+            gamma = self._gamma
+            pcf = self._pcf
+            phi = self._phi
+            Psats = np.array([i(T) for i in self._bubble_point.Psats]) 
+            F_mol_vle = self._F_mol_vle
+            mol_vle = self._mol_vle
+            z = mol_vle / F_mol_vle
+            v = F_mol_vle * solve_vle_vapor_mol_differential_evolution(
+                z, T, gamma.f, gamma.args, pcf.f, pcf.args, P, Psats, phi.f, phi.args, 
+                **self.differential_evolution_options,
+            )
+            self._z_last = z
+        elif method == 'fixed-point':
+            Psats_over_P = np.array([i(T) for i in
+                                     self._bubble_point.Psats]) / P
+            self._T = T
+            if isinstance(self._phi, IdealFugacityCoefficients):
+                y = self._y_iter(self._y, Psats_over_P, T, P)
+            else:
+                y = flx.aitken(self._y_iter, self._y, self.y_tol,
+                               args=(Psats_over_P, T, P),
+                               checkiter=False, 
+                               checkconvergence=False, 
+                               convergenceiter=5)
+            self._v = v = self._F_mol * self._V * y
+            mask = v > self._mol_vle
+            v[mask] = self._mol_vle[mask]
+            v[v < 0.] = 0.
         else:
-            y = flx.aitken(self._y_iter, self._y, self.y_tol,
-                           args=(Psats_over_P, T, P),
-                           checkiter=False, 
-                           checkconvergence=False, 
-                           convergenceiter=5)
-        self._v = v = self._F_mol * self._V * y
-        mask = v > self._mol_vle
-        v[mask] = self._mol_vle[mask]
-        v[v < 0.] = 0.
+            raise RuntimeError(f"invalid method '{method}'")
         return v
 
 class VLECache(Cache): load = VLE
 del Cache, Equilibrium
+
+@njit(cache=True)
+def liquid_fugacity(mol_L, T, Psats, f_gamma, gamma_args, f_pcf, pcf_args):
+    total_mol_L = mol_L.sum()
+    if total_mol_L:
+        x = mol_L / total_mol_L
+        fugacity = x * f_gamma(x, T, *gamma_args) * Psats * f_pcf(x, T, *pcf_args)
+    else:
+        fugacity = np.ones_like(mol_L)
+    return fugacity 
+
+@njit(cache=True)
+def vapor_fugacity(mol_v, T, P, f_phi, phi_args):
+    total_mol_v = mol_v.sum()
+    if total_mol_v:
+        y = mol_v / total_mol_v
+        fugacity = y * P * f_phi(y, T, P, *phi_args)
+    else:
+        fugacity = np.ones_like(mol_v)
+    return fugacity
+
+@njit(cache=True)
+def gibbs_free_energy(mol, fugacity):
+    fugacity[fugacity <= 0] = 1
+    g_mix = (mol * np.log(fugacity)).sum()
+    return g_mix
+
+@njit(cache=True)
+def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args):
+    mol_l = mol - mol_v
+    g_mix_l = gibbs_free_energy(mol_l, liquid_fugacity(mol_l, T, Psats, f_gamma, gamma_args, f_pcf, pcf_args))
+    g_mix_g = gibbs_free_energy(mol_v, vapor_fugacity(mol_v, T, P, f_phi, phi_args))
+    g_mix = g_mix_l + g_mix_g
+    return g_mix
+
+def solve_vle_vapor_mol_differential_evolution(
+        mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args, 
+        **differential_evolution_options
+    ):
+    args = (mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args)
+    bounds = np.zeros([mol.size, 2])
+    bounds[:, 1] = mol
+    result = differential_evolution(vle_objective_function, bounds, args,
+                                    **differential_evolution_options)
+    return result.x

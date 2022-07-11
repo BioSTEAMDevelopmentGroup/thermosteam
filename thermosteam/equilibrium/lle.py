@@ -11,6 +11,7 @@ from numba import njit
 from ..utils import Cache
 from .equilibrium import Equilibrium
 from .binary_phase_fraction import phase_fraction
+from scipy.optimize import differential_evolution
 import numpy as np
 
 __all__ = ('LLE', 'LLECache')
@@ -43,7 +44,6 @@ def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
     return g_mix
 
 def solve_lle_liquid_mol(mol, T, f_gamma, gamma_args, **differential_evolution_options):
-    from scipy.optimize import differential_evolution
     args = (mol, T, f_gamma, gamma_args)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol
