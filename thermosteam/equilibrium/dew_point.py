@@ -219,8 +219,6 @@ class DewPoint:
             T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
             x = z.copy()
         else:
-            # if P > self.Pmax: P = self.Pmax
-            # elif P < self.Pmin: P = self.Pmin
             f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
@@ -276,8 +274,6 @@ class DewPoint:
             P = self.chemicals[fn.first_true_index(z)].Psat(T)
             x = z.copy()
         else:
-            # if T > self.Tmax: T = self.Tmax
-            # elif T < self.Tmin: T = self.Tmin
             z_norm = z/z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z/Psats
