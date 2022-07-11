@@ -34,10 +34,10 @@ def vle_domain(chemicals):
 
     """
     Psats = [i.Psat for i in chemicals]
-    Tmax_Psat = min([i.Tmax for i in Psats])
+    Tmax_Psat = max([i.Tmax for i in Psats])
     Tmax = min(Tmax_Psat, Tmax_limit) - 1e-2
     
-    Tmin_Psat = max([i.Tmin for i in Psats])
+    Tmin_Psat = min([i.Tmin for i in Psats])
     Tmin = max(Tmin_Psat, Tmin_limit) + 1e-2
     
     return (Tmin, Tmax)
