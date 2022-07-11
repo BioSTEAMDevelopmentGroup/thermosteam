@@ -20,7 +20,7 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-# @njit(cache=True)
+@njit(cache=True)
 def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
@@ -219,8 +219,8 @@ class DewPoint:
             T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
             x = z.copy()
         else:
-            if P > self.Pmax: P = self.Pmax
-            elif P < self.Pmin: P = self.Pmin
+            # if P > self.Pmax: P = self.Pmax
+            # elif P < self.Pmin: P = self.Pmin
             f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
@@ -276,8 +276,8 @@ class DewPoint:
             P = self.chemicals[fn.first_true_index(z)].Psat(T)
             x = z.copy()
         else:
-            if T > self.Tmax: T = self.Tmax
-            elif T < self.Tmin: T = self.Tmin
+            # if T > self.Tmax: T = self.Tmax
+            # elif T < self.Tmin: T = self.Tmin
             z_norm = z/z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z/Psats

@@ -1899,7 +1899,9 @@ class Stream:
             net_phase_flows = data.sum(axis=1, keepdims=True)
             net_phase_flows[net_phase_flows == 0] = 1
             compositions = data / net_phase_flows
-            if np.abs(compositions[0] - compositions[2]).sum() < 1e-3: # Perform VLE on one liquid phase
+            if (np.abs(compositions[0] - compositions[2]).sum() < 1e-3
+                or compositions[0].sum() < 1e-6
+                or compositions[2].sum() < 1e-6): # Perform VLE on one liquid phase
                 data[2] += data[0] # All flows must be in the 'l' phase for VLE
                 data[0] = 0.
                 vle(T=T, P=P)
@@ -2286,14 +2288,14 @@ class Stream:
         vapor = ms['g']
         liquid = ms['l']
         F_mol_vapor = vapor.F_mol
-        mol_old = liquid.imol[IDs]
+        mol = liquid.imol[IDs] + vapor.imol[IDs]
         if energy_balance:
             def equilibrium_approximation(T):
                 f_l = F_l(x, T)
                 y = f_l / P
-                mol_new = F_mol_vapor * y
-                vapor.imol[IDs] = mol_new
-                liquid.imol[IDs] = mol_old - mol_new 
+                mol_v = F_mol_vapor * y
+                vapor.imol[IDs] = mol_v
+                liquid.imol[IDs] = mol - mol_v 
                 index = liquid.mol < 0.
                 vapor.mol[index] += liquid.mol[index]
                 liquid.mol[index] = 0
@@ -2303,9 +2305,9 @@ class Stream:
         else:
             f_l = F_l(x, T)
             y = f_l / P
-            mol_new = F_mol_vapor * y
-            vapor.imol[IDs] = mol_new
-            liquid.imol[IDs] = mol_old - mol_new 
+            mol_v = F_mol_vapor * y
+            vapor.imol[IDs] = mol_v
+            liquid.imol[IDs] = mol - mol_v 
             index = liquid.mol < 0.
             vapor.mol[index] += liquid.mol[index]
             liquid.mol[index] = 0

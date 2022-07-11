@@ -12,7 +12,7 @@ __all__ = (
     'vle_domain',
 )
 
-Tmin_limit = 200.
+Tmin_limit = 50.
 Tmax_limit = 1000.
 
 def vle_domain(chemicals):
@@ -39,4 +39,5 @@ def vle_domain(chemicals):
     
     Tmin_Psat = max([i.Tmin for i in Psats])
     Tmin = max(Tmin_Psat, Tmin_limit) + 1e-2
+    
     return (Tmin, Tmax)
