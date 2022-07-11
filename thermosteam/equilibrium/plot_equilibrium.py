@@ -52,7 +52,8 @@ def as_thermo(thermo, chemicals): # pragma: no cover
 
 # %% Plot functions
 
-def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo=None): # pragma: no cover
+def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, thermo=None,
+                                   yticks=None): # pragma: no cover
     """
     Plot the binary phase envelope of two chemicals at a given temperature or pressure.
 
@@ -64,8 +65,10 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo
         Temperature [K]. 
     P : float, optional
         Pressure [Pa]. 
-    color : str, optional
-        Color of line plot.
+    vc : str, optional
+        Color of vapor line.
+    lc : str, optional
+        Color of liquid line.
     thermo : Thermo, optional
         Thermodynamic property package.
 
@@ -79,7 +82,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo
     """
     thermo = as_thermo(thermo, chemicals)
     chemical_a, chemical_b = chemicals = [thermo.as_chemical(i) for i in chemicals]
-    BP = BubblePoint(chemicals, thermo)
+    BP = tmo.BubblePoint(chemicals, thermo)
     zs_a = np.linspace(0, 1)
     zs_b = 1 - zs_a
     zs = np.vstack([zs_a, zs_b]).transpose()
@@ -99,15 +102,13 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, color=None, thermo
     ys_a = np.array([bp.y[0] for bp in bps])
     plt.figure()
     plt.xlim([0, 1])
-    if color is None: color = colors.neutral_shade.RGBn
-    plt.plot(ys_a, ms, c=color,
-             label=f"{chemical_a}-{chemical_b} Phase Envelope")
-    plt.plot(zs_a, ms, c=color)
+    plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label="vapor")
+    plt.plot(zs_a, ms, c=lc if lc is not None else colors.green.RGBn, label='liquid')
+    if yticks is not None: plt.yticks(yticks)
     plt.legend()
     plt.xlabel(f'{chemical_a} molar fraction')
     plt.ylabel(ylabel)
-    style_axis(xticks=np.linspace(0, 1, 5),
-                   yticks=np.linspace(ms.min(), ms.max(), 5))
+    style_axis(xticks=np.linspace(0, 1, 5), yticks=yticks)
     
 def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None, color=None,
                              tie_line_points=None,
