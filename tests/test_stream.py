@@ -8,10 +8,10 @@
 """
 """
 import pytest
+import thermosteam as tmo
 from numpy.testing import assert_allclose
 
-def test_equilibrium():
-    import thermosteam as tmo
+def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'])
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
@@ -29,9 +29,51 @@ def test_equilibrium():
     s = tmo.MultiStream(None, l=[('Water', 1), ('Ethanol', 1), ('Octane', 2)], vlle=True, T=380)
     assert s.phase == 'g' # Only one phase
     assert set(s.phases) == set(['L', 'l', 'g']) # All three phases can still be used
+    
+def test_critical():
+    tmo.settings.set_thermo(['CO2', 'O2', 'CH4'])
+    
+    # Three components
+    s = tmo.Stream(None, CO2=1, O2=1, CH4=2, vlle=True, T=350)
+    assert s.phase == 'g'
+    vapor_fraction = 0.5
+    s.vle(V=vapor_fraction, P=101325)
+    assert_allclose(s.vapor_fraction, vapor_fraction)
+    assert_allclose(s.mol, [1, 1, 2])
+    assert_allclose(s['g'].z_mol, [0.0006053116760182865, 0.43970244158393407, 0.5596922467400477], rtol=1e-2)
+    
+    bp = s.bubble_point_at_P()
+    assert_allclose(bp.T, 102.62052288398583, rtol=1e-3)
+    assert_allclose(bp.y, [3.803565920764843e-05, 0.7778539445712263, 0.222108019769566], rtol=1e-2)
+    
+    dp = s.dew_point_at_P()
+    assert_allclose(dp.T, 164.2843303081629, rtol=1e-3)
+    assert_allclose(dp.x, [0.9697130577019155, 0.0034114070277255068, 0.02687553527035907], rtol=1e-2)
+    
+    s = tmo.Stream(None, CO2=1, O2=1, CH4=2, vlle=True, T=80)
+    s.phase == 'l'
+    
+    # Two components
+    s = tmo.Stream(None, CO2=1, O2=1, vlle=True, T=350)
+    assert s.phase == 'g'
+    vapor_fraction = 0.5
+    s.vle(V=vapor_fraction, P=101325)
+    assert_allclose(s.vapor_fraction, vapor_fraction)
+    assert_allclose(s.mol, [1, 1, 0])
+    assert_allclose(s['g'].z_mol, [0.03330754277536625, 0.9666924572246337, 0.0], rtol=1e-2)
+    
+    bp = s.bubble_point_at_P()
+    assert_allclose(bp.T, 97.37091146329703, rtol=1e-3)
+    assert_allclose(bp.y, [2.614648198782934e-05, 0.999973853518012], rtol=1e-2)
+    
+    dp = s.dew_point_at_P()
+    assert_allclose(dp.T, 173.64797757499818, rtol=1e-3)
+    assert_allclose(dp.x, [0.9951836814710002, 0.004816318528999781], rtol=1e-2)
+    
+    s = tmo.Stream(None, CO2=1, O2=1, vlle=True, T=80)
+    s.phase == 'l'
 
 def test_stream():
-    import thermosteam as tmo
     tmo.settings.set_thermo(['Water'], cache=True)
     stream = tmo.Stream(None, Water=1, T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
@@ -93,7 +135,6 @@ def test_stream():
     assert_allclose(s_eq.H, H_sum, rtol=1e-3)    
         
 def test_multistream():
-    import thermosteam as tmo
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     stream = tmo.MultiStream(None, l=[('Water', 1)], T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
@@ -190,4 +231,5 @@ def test_multistream():
 if __name__ == '__main__':
     test_stream()
     test_multistream()
-    test_equilibrium()
+    test_vlle()
+    test_critical()
