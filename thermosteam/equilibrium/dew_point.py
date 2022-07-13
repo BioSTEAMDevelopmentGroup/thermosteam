@@ -153,8 +153,8 @@ class DewPoint:
     
     def _Tx_ideal(self, zP):
         f = self._T_error_ideal
-        Tmin = self.Tmin
-        Tmax = self.Tmax
+        Tmin = self.Tmin + 10.
+        Tmax = self.Tmax - 10.
         x = zP.copy() 
         args = (zP, x)
         fmin = f(Tmin, *args)

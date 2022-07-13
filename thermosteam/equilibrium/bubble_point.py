@@ -135,8 +135,8 @@ class BubblePoint:
         f = self._T_error_ideal
         y = z_over_P.copy()
         args = (z_over_P, y)
-        Tmin = self.Tmin
-        Tmax = self.Tmax
+        Tmin = self.Tmin + 10
+        Tmax = self.Tmax - 10
         fmax = f(Tmin, *args)
         if fmax < 0.: return Tmin, y
         fmin = f(Tmax, *args)
