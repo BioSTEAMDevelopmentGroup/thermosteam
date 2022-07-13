@@ -31,7 +31,7 @@ plt.rcParams.update({
     "savefig.facecolor": (1, 1, 1, 0.95),
 })
 
-def set_font(size=10, family='sans-serif', font='Arial'):
+def set_font(size=8, family='sans-serif', font='Arial'):
     import matplotlib
     fontkwargs = {'size': size}
     matplotlib.rc('font', **fontkwargs)

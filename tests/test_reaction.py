@@ -85,6 +85,54 @@ def test_reaction_enthalpy_balance():
     Hf = feed.Hnet
     assert_allclose(Hf - H0, H2.LHV)
     
+def test_reaction_enthalpy_with_phases():
+    # Ensure liquid reference phase is accounted for
+    tmo.settings.set_thermo(['H2O', 'Methane', 'CO2', 'O2', 'H2'], cache=True)
+    combustion = tmo.Reaction('Methane,g + O2,g -> H2O,l + CO2,g',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -890590.0)
+    
+    combustion = tmo.Reaction('Methane,g + O2,g -> H2O,s + CO2,g',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -902610.0)
+    
+    tmo.settings.set_thermo(['H2O', 'Methane', 'CO2', 'O2', 'H2'])
+    combustion = tmo.Reaction('Methane,g + O2,g -> H2O,g + CO2,g',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -802852.2585390429)
+    
+    # Ensure gas reference phase is accounted for
+    combustion = tmo.Reaction('Methane,g + O2,g -> H2O,l + CO2,l',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -895850.4976790915)
+    
+    combustion = tmo.Reaction('Methane,g + O2,g -> H2O,s + CO2,s',
+                              reactant='Methane', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -916890.4976790915)
+    
+    # Ensure solid reference phase is accounted for
+    tmo.settings.set_thermo(['H2O', 'Glucose', 'CO2', 'O2', 'H2'], cache=True)
+    combustion = tmo.Reaction('Glucose,s + O2,g -> H2O,g + CO2,g',
+                              reactant='Glucose', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -2541480.7756171282)
+    
+    tmo.settings.set_thermo(['H2O', 'Glucose', 'CO2', 'O2', 'H2'], cache=True)
+    combustion = tmo.Reaction('Glucose,l + O2,g -> H2O,g + CO2,g',
+                              reactant='Glucose', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -2561413.7756171282)
+    
+    combustion = tmo.Reaction('Glucose,g + O2,g -> H2O,g + CO2,g',
+                              reactant='Glucose', X=1,
+                              correct_atomic_balance=True)
+    assert_allclose(combustion.dH, -2787650.3239119546)
+    
 def test_repr():
     cal2joule = 4.184
     Glucan = tmo.Chemical('Glucan', search_db=False, formula='C6H10O5', Hf=-233200*cal2joule, phase='s', default=True)
@@ -112,3 +160,4 @@ def test_repr():
 if __name__ == '__main__':
     test_reaction()
     test_reaction_enthalpy_balance()
+    test_reaction_enthalpy_with_phases()

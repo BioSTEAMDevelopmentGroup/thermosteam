@@ -573,17 +573,48 @@ class Reaction:
         
         Warning
         -------
-        Latents heats of vaporization are not accounted for; only heats of 
-        formation are included in this term. Note that heats of vaporization
-        are temperature dependent and cannot be calculated using a Reaction
-        object.
-        
+        This property also accounts for:
+        * Latent heats (at 298.15 K) when phases are specified.
+        * The extent of reaction, `X`.
+        * The basis of the reaction (by mol or by wt)
+
         """
-        if self._basis == 'mol':
-            Hfs = self._chemicals.Hf
-        else:
-            Hfs = self._chemicals.Hf / self.MWs
-        return self.X * (Hfs * self._stoichiometry).sum()
+        chemicals = self._chemicals
+        stoichiometry = self._stoichiometry
+        phases = self.phases
+        Hfs = chemicals.Hf
+        if phases:
+            H_latent = np.zeros_like(stoichiometry)
+            for i, phase in enumerate(self.phases):
+                for j, chemical in enumerate(chemicals):
+                    phase_ref = chemical.phase_ref
+                    if phase_ref != phase and stoichiometry[i, j] != 0.:
+                        if phase_ref == 'l':
+                            if phase == 'g':
+                                H_latent[i, j] = chemical.Hvap(298.15)
+                            elif phase == 's':
+                                H_latent[i, j] = -chemical.Hfus
+                            else:
+                                raise RuntimeError(f"invalid phase '{phase}'")
+                        elif phase_ref == 'g':
+                            if phase == 'l':
+                                H_latent[i, j] = -chemical.Hvap(298.15)
+                            elif phase == 's':
+                                H_latent[i, j] = -(chemical.Hvap(298.15) + chemical.Hfus)
+                            else:
+                                raise RuntimeError(f"invalid phase '{phase}'")
+                        elif phase_ref == 's':
+                            if phase == 'l':
+                                H_latent[i, j] = chemical.Hfus
+                            elif phase == 'g':
+                                H_latent[i, j] = chemical.Hfus + chemical.Hvap(298.15)
+                            else:
+                                raise RuntimeError(f"invalid phase '{phase}'")
+                        else:
+                            raise RuntimeError(f"invalid reference phase '{phase_ref}'")
+            Hfs = Hfs + H_latent
+        if self._basis == 'wt': Hfs = Hfs / self.MWs
+        return self.X * (Hfs * stoichiometry).sum()
     
     @property
     def X(self):
