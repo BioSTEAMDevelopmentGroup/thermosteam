@@ -200,8 +200,6 @@ class BubblePoint:
             T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
             y = z.copy()
         else:
-            if P > self.Pmax: P = self.Pmax
-            elif P < self.Pmin: P = self.Pmin
             f = self._T_error
             z_norm = z / z.sum()
             z_over_P = z/P

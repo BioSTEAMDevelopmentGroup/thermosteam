@@ -311,6 +311,21 @@ class Stream:
             data = self._imol._data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
+    @classmethod
+    def from_data(cls, data, ID=None, price=0., characterization_factors=None, thermo=None):
+        self = cls.__new__(cls)
+        self.__init__(
+            ID, 
+            characterization_factors=characterization_factors, 
+            price=price,
+            thermo=thermo,
+        )
+        self.set_data(data)
+        return self
+
+    def __reduce__(self):
+        return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
+
     def rescale(self, ratio):
         """
         Rescale flow rate by given ratio.
