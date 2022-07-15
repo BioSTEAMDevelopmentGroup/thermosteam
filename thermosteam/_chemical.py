@@ -687,6 +687,7 @@ class Chemical:
             setfield(new, field, None)
         new._ID = ID
         new._CAS = CAS or ID
+        new._aliases = set()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
                            new.Tb, new.eos, new.phase_ref)
