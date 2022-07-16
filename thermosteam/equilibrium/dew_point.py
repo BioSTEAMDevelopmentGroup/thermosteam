@@ -20,7 +20,7 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-@njit(cache=True)
+# @njit(cache=True)
 def x_iter(x, x_gamma_poyinting, T, f_gamma, gamma_args, f_pcf, pcf_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
