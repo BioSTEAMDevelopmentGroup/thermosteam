@@ -252,13 +252,13 @@ class VLE(Equilibrium, phases='lg'):
         '_dew_point_cache', # [Cache] Retrieves the DewPoint object if arguments are the same.
         '_bubble_point_cache' # [Cache] Retrieves the BubblePoint object if arguments are the same.
     )
-    maxiter = 50
+    maxiter = 20
     T_tol = 5e-8
     P_tol = 1.
     H_hat_tol = 1e-6
     V_tol = 1e-6
-    x_tol = 1e-12
-    y_tol = 1e-12
+    x_tol = 1e-9
+    y_tol = 1e-9
     default_method = 'fixed-point'
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
@@ -915,7 +915,8 @@ class VLE(Equilibrium, phases='lg'):
         xV[:-1] = x
         xV[-1] = self._V
         xV = flx.aitken(f, xV, self.x_tol, args, checkiter=False, 
-                        checkconvergence=False, convergenceiter=5)
+                        checkconvergence=False, convergenceiter=5,
+                        maxiter=self.maxiter)
         x = xV[:-1]
         self._V = V = xV[-1]
         x[x < 1e-32] = 1e-32
@@ -955,7 +956,8 @@ class VLE(Equilibrium, phases='lg'):
                                args=(Psats_over_P, T, P),
                                checkiter=False, 
                                checkconvergence=False, 
-                               convergenceiter=5)
+                               convergenceiter=5,
+                               maxiter=self.maxiter)
             self._v = v = self._F_mol * self._V * y
             mask = v > self._mol_vle
             v[mask] = self._mol_vle[mask]

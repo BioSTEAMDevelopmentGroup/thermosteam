@@ -102,7 +102,7 @@ sugar_solid_densities = {
 }
 
 class CompressibilityFactor:
-    __slots__ = ('V')
+    __slots__ = ('V',)
     
     def __init__(self, V):
         self.V = V
