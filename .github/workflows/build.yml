@@ -55,9 +55,6 @@ jobs:
         python -m pip install wheel
         pip install git+https://github.com/BioSTEAMDevelopmentGroup/Bioindustrial-Park.git
         pip install -r requirements_test.txt
-    - name: Test with numba
-      run: |
-        pytest . -v --disable-numba=0
     - name: Test without numba
       run: |
         pytest . -v --disable-numba=1 --cov-report html --cov=thermosteam --cov-report  term-missing -m "not slow"
