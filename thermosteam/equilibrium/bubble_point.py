@@ -276,7 +276,8 @@ class BubblePoint:
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
-    
+
+
 class BubblePointBeta:
     """
     Create a BubblePointBeta object that returns bubble point values when
