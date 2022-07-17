@@ -1016,6 +1016,14 @@ class ReactionSet:
             rxnset._parent_index = (self, index)
             return rxnset
     
+    def _rescale(self):
+        """Scale stoichiometry to a per reactant basis."""
+        stoichiometry = self._stoichiometry
+        M, N = stoichiometry.shape
+        new_scale = np.zeros([M, 1])
+        for index in enumerate(self._X_index): new_scale[index[0], 0] = -stoichiometry[index] 
+        self._stoichiometry /= new_scale
+    
     def reset_chemicals(self, chemicals):
         if chemicals is self._chemicals: return
         if hasattr(self, '_parent_index'):
@@ -1037,7 +1045,7 @@ class ReactionSet:
                     for k in range(C):
                         value = stoichiometry[i, j, k]
                         if value: new_stoichiometry[i, j, chemicals.index(IDs[k])] = value
-            X_index = tuple([(phases.index(i), chemicals.index(j)) for i, j in reactants])
+            X_index = [(phases.index(i), chemicals.index(j)) for i, j in reactants]
         else:
             A, B = stoichiometry.shape
             new_stoichiometry = np.zeros([A, chemicals.size])
@@ -1046,7 +1054,7 @@ class ReactionSet:
                 for j in range(B):
                     value = stoichiometry[i, j]
                     if value: new_stoichiometry[i, chemicals.index(IDs[j])] = value
-            X_index = tuple([chemicals.index(i) for i in reactants])
+            X_index = [chemicals.index(i) for i in reactants]
         self._chemicals = chemicals
         self._stoichiometry = new_stoichiometry
         self._X_index = X_index
