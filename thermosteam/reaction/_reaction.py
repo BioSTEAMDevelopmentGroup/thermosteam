@@ -565,6 +565,17 @@ class Reaction:
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
     
+    def X_net(self, indexer=False):
+        """Return net reaction conversion of reactants as a dictionary or
+        a ChemicalIndexer if indexer is True."""
+        X_net = {self.reactant: self.X}
+        if indexer:
+            chemicals = self.chemicals
+            data = chemicals.kwarray(X_net)
+            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+        else:
+            return X_net
+    
     @property
     def dH(self):
         """
