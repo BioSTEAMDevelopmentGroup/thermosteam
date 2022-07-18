@@ -163,7 +163,9 @@ class Chemicals:
     
     def append(self, chemical):
         """Append a Chemical."""
-        if not isinstance(chemical, Chemical):
+        if isinstance(chemical, str):
+            chemical = Chemical(chemical)
+        elif not isinstance(chemical, Chemical):
             raise TypeError("only 'Chemical' objects can be appended, "
                            f"not '{type(chemical).__name__}'")
         ID = chemical.ID
@@ -342,6 +344,9 @@ class CompiledChemicals(Chemicals):
             chemicals.compile(cache)
             self = cache[chemicals_tuple] = chemicals
         return self
+    
+    def __hash__(self):
+        return hash(self.IDs)
     
     def __dir__(self):
         return ('append', 'array', 'compile', 'extend', 
