@@ -871,6 +871,9 @@ class Reaction:
         columns = [f'Stoichiometry (by {self.basis})', 'Reactant', 'Conversion [%]']
         stoichiometry = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         reactant = self.reactant
+        if self.phases: 
+            phase, reactant = reactant
+            reactant += ',' + phase
         conversion = 100. * self.X
         df = pd.DataFrame(data=[[stoichiometry, reactant, conversion]], columns=columns, index=[index] if index else None)
         df.index.name = 'Reaction'
