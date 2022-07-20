@@ -1603,6 +1603,8 @@ class Chemical:
                 self._Tb = Tb = self.Tsat(101325)
             except:
                 self._Tb = Tb = None
+        else:
+            self._Tb = Tb = None
         omega = self._omega
         if not omega and Pc and Tc:
             if Psat: 
