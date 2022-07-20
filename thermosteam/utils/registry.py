@@ -31,7 +31,7 @@ def check_valid_ID(ID):
 
 class Registry: # pragma: no cover
 
-    __slots__ = ('data', 'safe_to_replace', '_dumps')
+    __slots__ = ('data', 'safe_to_replace', 'context_levels')
 
     AUTORENAME = False #: Whether to rename objects with conflicting IDs
 
@@ -63,7 +63,7 @@ class Registry: # pragma: no cover
     def __init__(self, objs=None):
         self.data = {i.ID: i for i in objs} if objs else {}
         self.safe_to_replace = set()
-        self._dumps = {}
+        self.context_levels = []
 
     def search(self, ID):
         """Return object given ID. If ID not in registry, return None."""
@@ -123,15 +123,14 @@ class Registry: # pragma: no cover
         
     def _close_registration(self, ID, obj):
         self.data[ID] = obj
-        for i in self._dumps.values(): 
-            if obj not in i: i.append(obj)
+        for i in self.context_levels: i.append(obj)
         obj._ID = ID
     
-    def _open_dump(self, key):
-        self._dumps[key] = []
+    def open_context_level(self):
+        self.context_levels.append([])
         
-    def _close_dump(self, key):
-        return self._dumps.pop(key)
+    def close_context_level(self):
+        return self.context_levels.pop()
     
     def clear(self):
         """Clear data."""
@@ -148,7 +147,7 @@ class Registry: # pragma: no cover
                 ID = obj
                 obj = data[obj]
                 del data[ID]
-        for dump in self._dumps.values():
+        for dump in self.context_levels:
             if obj in dump: dump.remove(obj)
     
     def pop(self, obj):
@@ -162,7 +161,7 @@ class Registry: # pragma: no cover
                 ID = obj
                 obj = data[obj]
                 del data[ID]
-        for dump in self._dumps.values():
+        for dump in self.context_levels:
             if obj in dump: dump.remove(obj)
         return obj
     
