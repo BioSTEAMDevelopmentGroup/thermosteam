@@ -455,7 +455,7 @@ class VLE(Equilibrium, phases='lg'):
         
     def _set_PV_chemical(self, P, V):
         # Set vapor fraction
-        self._T = self._thermal_condition.T = self._chemical.Tsat(P)
+        self._T = self._thermal_condition.T = self._chemical.Tsat(P, check_validity=False)
         self._vapor_mol[self._index] = self._mol_vle * V
         self._liquid_mol[self._index] = self._mol_vle - self._vapor_mol[self._index]
         
@@ -469,7 +469,7 @@ class VLE(Equilibrium, phases='lg'):
         mixture = thermo.mixture
         
         # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P)
+        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P, check_validity=False)
         
         # Check if super heated vapor
         vapor_mol[index] = mol

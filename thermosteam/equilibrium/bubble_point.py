@@ -197,7 +197,7 @@ class BubblePoint:
         if N == 0:
             raise ValueError('no components present')
         if N == 1:
-            T = self.chemicals[fn.first_true_index(positives)].Tsat(P)
+            T = self.chemicals[fn.first_true_index(positives)].Tsat(P, check_validity=False)
             y = z.copy()
         else:
             f = self._T_error
@@ -349,7 +349,7 @@ class BubblePointBeta:
         if N == 0:
             raise ValueError('no components present')
         if N == 1:
-            T = self.chemicals.tuple[fn.first_true_index(positives)].Tsat(P)
+            T = self.chemicals.tuple[fn.first_true_index(positives)].Tsat(P, check_validity=False)
             y = z.copy()
         else:
             results = self.flasher.flash(P=P, VF=0., zs=z.tolist())

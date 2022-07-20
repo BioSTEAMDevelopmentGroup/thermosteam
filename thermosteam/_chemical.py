@@ -1296,10 +1296,14 @@ class Chemical:
     
     ### Data solvers ###
 
-    def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None):
+    def Tsat(self, P, Tguess=None, Tmin=None, Tmax=None, *, check_validity=True):
         """Return the saturated temperature (in Kelvin) given the pressure (in Pascal)."""
         Tb = self._Tb
         Psat = self._Psat
+        if check_validity and P >= self._Pc:
+            raise ValueError(
+                'pressure, P, cannot be above the supercritical pressure, Pc'
+            )
         if not Psat: return None
         if not Tmin: Tmin = Psat.Tmin + 1.
         if not Tmax: Tmax = Psat.Tmax - 1.
@@ -1596,7 +1600,7 @@ class Chemical:
         Tb = self._Tb
         if not Tb:
             try:
-                self._Tb = Tb = self.Tsat(101325)
+                self._Tb = Tb = self.Tsat(101325, check_validity=False)
             except:
                 self._Tb = Tb = None
             
