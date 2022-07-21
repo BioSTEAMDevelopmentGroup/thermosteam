@@ -44,7 +44,7 @@ from chemicals.elements import (
 )
 from chemicals.dipole import dipole_moment
 from .free_energy import (
-    Enthalpy, Entropy,
+    Enthalpy, Entropy, EntropyGas,
     EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas,
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas,
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas,
@@ -1628,7 +1628,10 @@ class Chemical:
         elif Cn and single_phase:
             self._phase_ref = single_phase
             self._H = Enthalpy.functor(Cn, T_ref, H_ref)
-            self._S = Entropy.functor(Cn, T_ref, S0)
+            if single_phase == 'g':
+                self._S = EntropyGas.functor(Cn, T_ref, P_ref, S0)
+            else:
+                self._S = Entropy.functor(Cn, T_ref, P_ref, S0)
             Cn_s = Cn_l = Cn_g = Cn
             has_Cns = has_Cnl = has_Cng = False
             if single_phase == 'l':

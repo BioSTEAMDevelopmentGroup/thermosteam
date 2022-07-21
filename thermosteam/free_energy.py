@@ -21,6 +21,10 @@ def Enthalpy(T, Cn, T_ref, H_ref):
 def Entropy(T, Cn, T_ref, S0):
     return S0 + Cn.T_dependent_property_integral_over_T(T_ref, T)
 
+@functor(var='S')
+def EntropyGas(T, P, Cn, T_ref, P_ref, S0):
+    return S0 + Cn.T_dependent_property_integral_over_T(T_ref, T) - R*log(P/P_ref)
+
 @functor(var='H.l')
 def Liquid_Enthalpy_Ref_Liquid(T, Cn_l, T_ref, H_ref):
     """Enthapy (kJ/kmol) disregarding pressure and assuming the specified phase."""

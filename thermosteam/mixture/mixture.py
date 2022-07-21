@@ -9,6 +9,7 @@
 """
 import flexsolve as flx
 import numpy as np
+from math import exp
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
 from ..base import PhaseMixtureHandle
@@ -58,13 +59,21 @@ def build_ideal_PhaseTPMixtureHandle(chemicals, var):
 
 # %% Energy balance
 
-def iter_temperature(T, H, H_model, phase, mol, P, Cn):
-    # Used to solve for ethalpy at given temperature
+def iter_T_at_HP(T, H, H_model, phase, mol, P, Cn):
+    # Used to solve for temperature at given ethalpy 
     return T + (H - H_model(phase, mol, T, P)) / Cn
 
-def xiter_temperature(T, H, H_model, phase_mol, P, Cn):
-    # Used to solve for ethalpy at given temperature
+def xiter_T_at_HP(T, H, H_model, phase_mol, P, Cn):
+    # Used to solve for temperature at given ethalpy 
     return T + (H - H_model(phase_mol, T, P)) / Cn
+
+def iter_T_at_SP(T, S, S_model, phase, mol, P, Cn):
+    # Used to solve for temperature at given entropy 
+    return T + exp((S - S_model(phase, mol, T, P)) / Cn)
+
+def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn):
+    # Used to solve for temperature at given entropy 
+    return T + exp((S - S_model(phase_mol, T, P)) / Cn)
 
 
 # %% Ideal mixture
@@ -326,17 +335,28 @@ class Mixture:
             S += self._S_excess(phase, mol, T, P)
         return S
     
-    def solve_T(self, phase, mol, H, T_guess, P):
+    def solve_T_at_HP(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         args = (H, self.H, phase, mol, P, self.Cn(phase, mol, T_guess))
-        return flx.aitken(iter_temperature, T_guess, 1e-6, args, 50, checkiter=False)
+        return flx.aitken(iter_T_at_HP, T_guess, 1e-6, args, 50, checkiter=False)
         
-    def xsolve_T(self, phase_mol, H, T_guess, P):
+    def xsolve_T_at_HP(self, phase_mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         phase_mol = tuple(phase_mol)
         args = (H, self.xH, phase_mol, P, self.xCn(phase_mol, T_guess))
-        return flx.aitken(xiter_temperature, T_guess, 1e-6, args, 50, checkiter=False)
+        return flx.aitken(xiter_T_at_HP, T_guess, 1e-6, args, 50, checkiter=False)
+    
+    def solve_T_at_SP(self, phase, mol, H, T_guess, P):
+        """Solve for temperature in Kelvin."""
+        args = (H, self.H, phase, mol, P, self.Cn(phase, mol, T_guess))
+        return flx.aitken(iter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=False)
         
+    def xsolve_T_at_SP(self, phase_mol, S, T_guess, P):
+        """Solve for temperature in Kelvin."""
+        phase_mol = tuple(phase_mol)
+        args = (S, self.xS, phase_mol, P, self.xCn(phase_mol, T_guess))
+        return flx.aitken(xiter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=False)
+    
     def xCn(self, phase_mol, T):
         """Multi-phase mixture heat capacity [J/mol/K]."""
         return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])

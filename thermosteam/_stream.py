@@ -997,8 +997,10 @@ class Stream:
     @H.setter
     def H(self, H: float):
         if not H and self.isempty(): return
-        try: self.T = self.mixture.solve_T(self.phase, self.mol, H,
-                                           *self._thermal_condition)
+        try: 
+            self.T = self.mixture.solve_T_at_HP(
+                self.phase, self.mol, H, *self._thermal_condition
+            )
         except Exception as error: # pragma: no cover
             phase = self.phase.lower()
             if phase == 'g':
@@ -1009,8 +1011,9 @@ class Stream:
                 self.phase = 'g'
             else:
                 raise error
-            self.T = self.mixture.solve_T(self.phase, self.mol, H,
-                                          *self._thermal_condition)
+            self.T = self.mixture.solve_T_at_HP(
+                self.phase, self.mol, H, *self._thermal_condition
+            )
 
     @property
     def h(self):
@@ -1025,8 +1028,10 @@ class Stream:
     def h(self, h: float):
         if not h and self.isempty(): return
         z_mol = self.z_mol
-        try: self.T = self.mixture.solve_T(self.phase, z_mol, h,
-                                           *self._thermal_condition)
+        try: 
+            self.T = self.mixture.solve_T_at(
+                self.phase, z_mol, h, *self._thermal_condition
+            )
         except Exception as error: # pragma: no cover
             phase = self.phase.lower()
             if phase == 'g':
@@ -1037,8 +1042,9 @@ class Stream:
                 self.phase = 'g'
             else:
                 raise error
-            self.T = self.mixture.solve_T(self.phase, z_mol, h,
-                                          *self._thermal_condition)
+            self.T = self.mixture.solve_T(
+                self.phase, z_mol, h, *self._thermal_condition
+            )
             
     @property
     def S(self):
@@ -1049,7 +1055,26 @@ class Stream:
                 self.phase, self.mol, *self._thermal_condition
             )
         return S
-    
+    @S.setter
+    def S(self, S: float):
+        if not S and self.isempty(): return
+        try: 
+            self.T = self.mixture.solve_T_at_SP(
+                self.phase, self.mol, S, *self._thermal_condition
+            )
+        except Exception as error: # pragma: no cover
+            phase = self.phase.lower()
+            if phase == 'g':
+                # Maybe too little heat, liquid must be present
+                self.phase = 'l'
+            elif phase == 'l':
+                # Maybe too much heat, gas must be present
+                self.phase = 'g'
+            else:
+                raise error
+            self.S = self.mixture.solve_T_at_SP(
+                self.phase, self.mol, S, *self._thermal_condition
+            )
     @property
     def Hnet(self):
         """[float] Total enthalpy flow rate (including heats of formation) in kJ/hr."""

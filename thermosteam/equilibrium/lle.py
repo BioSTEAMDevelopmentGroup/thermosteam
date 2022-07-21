@@ -16,15 +16,13 @@ import numpy as np
 
 __all__ = ('LLE', 'LLECache')
 
+# TODO: SUBMIT ISSUE TO NUMBA
 @njit(cache=True)
 def liquid_activities(mol_L, T, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
-    if total_mol_L:
-        x = mol_L / total_mol_L
-        gamma = f_gamma(x, T, *gamma_args)
-        xgamma = x * gamma
-    else:
-        xgamma = np.ones_like(mol_L)
+    x = mol_L / total_mol_L
+    gamma = f_gamma(x, T, *gamma_args)
+    xgamma = x * gamma
     return xgamma
 
 @njit(cache=True)
@@ -36,10 +34,16 @@ def gibbs_free_energy_of_liquid(mol_L, xgamma):
 @njit(cache=True)
 def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
     mol_l = mol - mol_L
-    xgamma_l = liquid_activities(mol_l, T, f_gamma, gamma_args)
-    xgamma_L = liquid_activities(mol_L, T, f_gamma, gamma_args)
-    g_mix_l = gibbs_free_energy_of_liquid(mol_l, xgamma_l)
-    g_mix_L = gibbs_free_energy_of_liquid(mol_L, xgamma_L)
+    if mol_l.sum() == 0.:
+        g_mix_l = 0.
+    else:
+        xgamma_l = liquid_activities(mol_l, T, f_gamma, gamma_args)
+        g_mix_l = gibbs_free_energy_of_liquid(mol_l, xgamma_l)
+    if mol_L.sum() == 0.:
+        g_mix_L = 0.
+    else:
+        xgamma_L = liquid_activities(mol_L, T, f_gamma, gamma_args)
+        g_mix_L = gibbs_free_energy_of_liquid(mol_L, xgamma_L)
     g_mix = g_mix_l + g_mix_L
     return g_mix
 
