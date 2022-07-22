@@ -132,6 +132,19 @@ class Registry: # pragma: no cover
     def close_context_level(self):
         return self.context_levels.pop()
     
+    def get_context_level(self, level=None):
+        if level is None:
+            objs = list(self)
+        else:
+            context_levels = self.context_levels
+            N_levels = len(context_levels)
+            if (level > 0 and level >= N_levels
+                or level < 0 and -level > N_levels):
+                objs = list(self)
+            else:
+                objs = context_levels[level]
+        return objs
+    
     def clear(self):
         """Clear data."""
         self.data.clear()
