@@ -346,9 +346,9 @@ class Mixture:
         args = (H, self.xH, phase_mol, P, self.xCn(phase_mol, T_guess))
         return flx.aitken(xiter_T_at_HP, T_guess, 1e-6, args, 50, checkiter=False)
     
-    def solve_T_at_SP(self, phase, mol, H, T_guess, P):
+    def solve_T_at_SP(self, phase, mol, S, T_guess, P):
         """Solve for temperature in Kelvin."""
-        args = (H, self.H, phase, mol, P, self.Cn(phase, mol, T_guess))
+        args = (S, self.S, phase, mol, P, self.Cn(phase, mol, T_guess))
         return flx.aitken(iter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=False)
         
     def xsolve_T_at_SP(self, phase_mol, S, T_guess, P):
