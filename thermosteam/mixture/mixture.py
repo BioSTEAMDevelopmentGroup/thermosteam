@@ -69,11 +69,11 @@ def xiter_T_at_HP(T, H, H_model, phase_mol, P, Cn):
 
 def iter_T_at_SP(T, S, S_model, phase, mol, P, Cn):
     # Used to solve for temperature at given entropy 
-    return T + exp((S - S_model(phase, mol, T, P)) / Cn)
+    return T * exp((S - S_model(phase, mol, T, P)) / Cn)
 
 def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn):
     # Used to solve for temperature at given entropy 
-    return T + exp((S - S_model(phase_mol, T, P)) / Cn)
+    return T * exp((S - S_model(phase_mol, T, P)) / Cn)
 
 
 # %% Ideal mixture
