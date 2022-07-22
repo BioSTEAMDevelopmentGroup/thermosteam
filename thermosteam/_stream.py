@@ -1029,7 +1029,7 @@ class Stream:
         if not h and self.isempty(): return
         z_mol = self.z_mol
         try: 
-            self.T = self.mixture.solve_T_at(
+            self.T = self.mixture.solve_T_at_HP(
                 self.phase, z_mol, h, *self._thermal_condition
             )
         except Exception as error: # pragma: no cover
@@ -1042,7 +1042,7 @@ class Stream:
                 self.phase = 'g'
             else:
                 raise error
-            self.T = self.mixture.solve_T(
+            self.T = self.mixture.solve_T_at_HP(
                 self.phase, z_mol, h, *self._thermal_condition
             )
             

@@ -280,7 +280,7 @@ class SLE(Equilibrium, phases='ls'):
                     return mixture.xsolve_T(phase_data, H, T, P)
                 
                 self._thermal_condition.T = T = flx.aitken(
-                    f, mixture.xsolve_T(phase_data, H, T, P), 
+                    f, mixture.xsolve_T_at_HP(phase_data, H, T, P),
                     1e-3, (), 50, checkiter=False
                 )
             else:
