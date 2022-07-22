@@ -329,7 +329,7 @@ class Mixture:
         return H
     
     def S(self, phase, mol, T, P):
-        """Return entropy in [J/mol]."""
+        """Return entropy in [J/mol/K]."""
         S = self._S(phase, mol, T, P)
         if self.include_excess_energies:
             S += self._S_excess(phase, mol, T, P)
@@ -371,7 +371,7 @@ class Mixture:
         return H_total
     
     def xS(self, phase_mol, T, P):
-        """Multi-phase mixture entropy [J/mol]."""
+        """Multi-phase mixture entropy [J/mol/K]."""
         S = self._S
         S_total = sum([S(phase, mol, T, P) for phase, mol in phase_mol])
         if self.include_excess_energies:
