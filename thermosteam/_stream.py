@@ -1048,7 +1048,7 @@ class Stream:
             
     @property
     def S(self):
-        """[float] Absolute entropy flow rate in kJ/hr."""
+        """[float] Absolute entropy flow rate in kJ/hr/K."""
         S = self._get_property_cache('S', True)
         if S is None:
             self._property_cache['S'] = S = self.mixture.S(
