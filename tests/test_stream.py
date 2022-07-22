@@ -227,9 +227,22 @@ def test_multistream():
     stream = tmo.MultiStream(None, l=[('Water', 1)], T=300, units='g/s')
     assert stream.get_flow('g/s', 'Water') == stream.F_mass / 3.6 == 1.
     stream.empty()    
+
+def test_mixture():
+    tmo.settings.set_thermo(['Water'], cache=True)
+
+    # test solve_T_at_xx
+    T_expected = 298
+    s5 = tmo.Stream('s5', T=T_expected, P=1e5, Water=1)
+    Th = s5.mixture.solve_T_at_HP(phase=s5.phase, mol=s5.mol, H=s5.H, T_guess=s5.T, P=s5.P)
+    assert_allclose(T_expected, Th, rtol=1e-3)
+    Ts = s5.mixture.solve_T_at_SP(phase=s5.phase, mol=s5.mol, S=s5.S, T_guess=s5.T, P=s5.P)
+    assert_allclose(T_expected, Ts, rtol=1e-3)
+    pass
     
 if __name__ == '__main__':
     test_stream()
     test_multistream()
     test_vlle()
     test_critical()
+    test_mixture()
