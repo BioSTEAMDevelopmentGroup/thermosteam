@@ -322,7 +322,7 @@ class Mixture:
         """Return entropy in [J/mol/K]."""
         total_mol = mol.sum()
         if total_mol == 0. : return 0.
-        S = self._S(phase, mol, T, P) + (mol * log(mol / total_mol)).sum()
+        S = self._S(phase, mol, T, P)
         if self.include_excess_energies:
             S += self._S_excess(phase, mol, T, P)
         return S
