@@ -9,11 +9,11 @@
 """
 import flexsolve as flx
 import numpy as np
-from math import exp
+from math import exp, log
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
 from ..base import PhaseMixtureHandle
-from .ideal_mixture_model import IdealTMixtureModel, IdealTPMixtureModel
+from .ideal_mixture_model import IdealTMixtureModel, IdealTPMixtureModel, IdealEntropyModel
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture',)
@@ -37,23 +37,13 @@ def group_handles_by_phase(phase_handles):
             handles.append(prop)
     return handles_by_phase
     
-def build_ideal_PhaseTMixtureHandle(chemicals, var):
+def build_ideal_PhaseMixtureHandle(chemicals, var, Model):
     setfield = object.__setattr__
     getfield = getattr
     phase_handles = [getfield(i, var) for i in chemicals]
     new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
     for phase, handles in group_handles_by_phase(phase_handles).items():
-        setfield(new, phase, IdealTMixtureModel(handles, var))
-    setfield(new, 'var', var)
-    return new
-
-def build_ideal_PhaseTPMixtureHandle(chemicals, var):
-    setfield = object.__setattr__
-    getfield = getattr
-    phase_handles = [getfield(i, var) for i in chemicals]
-    new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
-    for phase, handles in group_handles_by_phase(phase_handles).items():
-        setfield(new, phase, IdealTPMixtureModel(handles, var))
+        setfield(new, phase, Model(handles, var))
     setfield(new, 'var', var)
     return new
 
@@ -227,14 +217,14 @@ class Mixture:
                 chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
                 MWs = chemical_data_array(chemicals, 'MW')
             getfield = getattr
-            Cn =  build_ideal_PhaseTMixtureHandle(chemicals, 'Cn')
-            H =  build_ideal_PhaseTPMixtureHandle(chemicals, 'H')
-            S = build_ideal_PhaseTPMixtureHandle(chemicals, 'S')
-            H_excess = build_ideal_PhaseTPMixtureHandle(chemicals, 'H_excess')
-            S_excess = build_ideal_PhaseTPMixtureHandle(chemicals, 'S_excess')
-            mu = build_ideal_PhaseTPMixtureHandle(chemicals, 'mu')
-            V = build_ideal_PhaseTPMixtureHandle(chemicals, 'V')
-            kappa = build_ideal_PhaseTPMixtureHandle(chemicals, 'kappa')
+            Cn =  build_ideal_PhaseMixtureHandle(chemicals, 'Cn', IdealTMixtureModel)
+            H =  build_ideal_PhaseMixtureHandle(chemicals, 'H', IdealTMixtureModel)
+            S = build_ideal_PhaseMixtureHandle(chemicals, 'S', IdealEntropyModel)
+            H_excess = build_ideal_PhaseMixtureHandle(chemicals, 'H_excess', IdealTPMixtureModel)
+            S_excess = build_ideal_PhaseMixtureHandle(chemicals, 'S_excess', IdealTPMixtureModel)
+            mu = build_ideal_PhaseMixtureHandle(chemicals, 'mu', IdealTPMixtureModel)
+            V = build_ideal_PhaseMixtureHandle(chemicals, 'V', IdealTPMixtureModel)
+            kappa = build_ideal_PhaseMixtureHandle(chemicals, 'kappa', IdealTPMixtureModel)
             Hvap = IdealTMixtureModel([getfield(i, 'Hvap') for i in chemicals], 'Hvap')
             sigma = IdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
             epsilon = IdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
@@ -330,7 +320,9 @@ class Mixture:
     
     def S(self, phase, mol, T, P):
         """Return entropy in [J/mol/K]."""
-        S = self._S(phase, mol, T, P)
+        total_mol = mol.sum()
+        if total_mol == 0. : return 0.
+        S = self._S(phase, mol, T, P) + (mol * log(mol / total_mol)).sum()
         if self.include_excess_energies:
             S += self._S_excess(phase, mol, T, P)
         return S

@@ -134,6 +134,12 @@ class VLE(Equilibrium, phases='lg'):
             l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
+    Equilibrium given entropy and pressure:
+    
+    >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
+    >>> vle(S=S, P=101325)
+    >>> vle
+    
     Equilibrium given vapor fraction and temperature:
     
     >>> vle(V=0.5, T=363.88)
@@ -185,6 +191,13 @@ class VLE(Equilibrium, phases='lg'):
             l=[('Water', 176.6), ('Ethanol', 3.564), ('Methanol', 6.428), ('Propanol', 0.1031), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.51, P=101325))
     
+    >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
+    >>> vle(S=S, P=101325)
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
+            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
+    
     >>> vle(V=0.5, T=363.88)
     >>> vle
     VLE(imol=MolarFlowIndexer(
@@ -198,6 +211,13 @@ class VLE(Equilibrium, phases='lg'):
             g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.48), ('Propanol', 0.8958), ('O2', 10)],
             l=[('Water', 177.3), ('Ethanol', 3.604), ('Methanol', 6.517), ('Propanol', 0.1042), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=106857))
+
+    >>> vle(S=S, T=363.88)
+    >>> vle 
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
+            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
 
     The presence of a non-partitioning gaseous chemical will result in some
     evaporation, even if the tempeture is below the saturated bubble point:
@@ -222,6 +242,7 @@ class VLE(Equilibrium, phases='lg'):
         '_T', # [float] Temperature [K].
         '_P', # [float] Pressure [Pa].
         '_H_hat', # [float] Specific enthalpy [kJ/kg].
+        '_S_hat', # [float] Specific entropy [kJ/K/kg].
         '_V', # [float] Molar vapor fraction.
         '_dew_point', # [DewPoint] Solves for dew point.
         '_bubble_point', # [BubblePoint] Solves for bubble point.
@@ -256,6 +277,7 @@ class VLE(Equilibrium, phases='lg'):
     T_tol = 5e-8
     P_tol = 1.
     H_hat_tol = 1e-6
+    S_hat_tol = 1e-6
     V_tol = 1e-6
     x_tol = 1e-9
     y_tol = 1e-9
@@ -279,23 +301,25 @@ class VLE(Equilibrium, phases='lg'):
         self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
         self._index = ()
     
-    def __call__(self, P=None, H=None, T=None, V=None, x=None, y=None):
+    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, x=None, y=None):
         """
         Perform vapor-liquid equilibrium.
 
         Parameters
         ----------
-        P=None : float
-            Operating pressure [Pa].
-        H=None : float
-            Enthalpy [kJ/hr].
-        T=None : float
+        T : float, optional
             Operating temperature [K].
-        V=None : float
+        P : float, optional
+            Operating pressure [Pa].
+        V : float, optional
             Molar vapor fraction.
-        x=None : float
+        H : float, optional
+            Enthalpy [kJ/hr].
+        S : float, optional
+            Entropy [kJ/hr/K]
+        x : float, optional
             Molar composition of liquid (for binary mixtures).
-        y=None : float
+        y : float, optional
             Molar composition of vapor (for binary mixtures).
         
         Notes
@@ -310,11 +334,12 @@ class VLE(Equilibrium, phases='lg'):
         P_spec = P is not None
         V_spec = V is not None
         H_spec = H is not None
+        S_spec = S is not None
         x_spec = x is not None
         y_spec = y is not None
-        N_specs = (P_spec + H_spec + T_spec + V_spec + x_spec + y_spec)
+        N_specs = (T_spec + P_spec + V_spec + H_spec + S_spec + x_spec + y_spec)
         assert N_specs == 2, ("must pass two and only two of the following "
-                              "specifications: T, P, V, H, x, y")
+                              "specifications: T, P, V, H, S, x, y")
         
         # Run equilibrium
         if T_spec:
@@ -333,6 +358,8 @@ class VLE(Equilibrium, phases='lg'):
                     thermal_condition.T = T
             elif H_spec:
                 self.set_TH(T, H)
+            elif S_spec:
+                self.set_TS(T, S)
             elif x_spec:
                 self.set_Tx(T, np.asarray(x))
             else: # y_spec
@@ -350,11 +377,30 @@ class VLE(Equilibrium, phases='lg'):
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.P = P
-                    thermal_condition.T = self.mixture.xH(self._phase_data, T, P)
+                    thermal_condition.T = self.mixture.xsolve_H_at_TP(self._phase_data, T, P)
+            elif S_spec:
+                try:
+                    self.set_PS(P, S)
+                except:
+                    try:
+                        self.set_PS(P, S, stacklevel=1)
+                    except NoEquilibrium:
+                        thermal_condition = self._thermal_condition
+                        thermal_condition.P = P
+                        thermal_condition.T = self.mixture.xsolve_S_at_TP(self._phase_data, T, P)
             elif x_spec:
                 self.set_Px(P, np.asarray(x))
             else: # y_spec
                 self.set_Py(P, np.asarray(y))
+        elif S_spec: # pragma: no cover
+            if y_spec:
+                raise NotImplementedError('specification S and y is invalid')
+            elif x_spec:
+                raise NotImplementedError('specification S and x is invalid')
+            elif H_spec:
+                raise NotImplementedError('specification H and S is invalid')
+            else: # V_spec
+                raise NotImplementedError('specification V and S not implemented')
         elif H_spec: # pragma: no cover
             if y_spec:
                 raise NotImplementedError('specification H and y is invalid')
@@ -524,6 +570,71 @@ class VLE(Equilibrium, phases='lg'):
         vapor_mol[index] = mol*V
         liquid_mol[index] = mol - vapor_mol[index]
         
+    def _set_PS_chemical(self, P, S): 
+        mol = self._mol_vle
+        index = self._index
+        vapor_mol = self._vapor_mol
+        liquid_mol = self._liquid_mol
+        thermo = self._thermo
+        phase_data = self._phase_data
+        mixture = thermo.mixture
+        
+        # Set temperature in equilibrium
+        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P, check_validity=False)
+        
+        # Check if super heated vapor
+        vapor_mol[index] = mol
+        liquid_mol[index] = 0
+        S_dew = mixture.xS(phase_data, T, P)
+        if S >= S_dew:
+            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            return
+
+        # Check if subcooled liquid
+        vapor_mol[index] = 0
+        liquid_mol[index] = mol
+        S_bubble = mixture.xS(phase_data, T, P)
+        if S <= S_bubble:
+            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            return
+        
+        # Adjust vapor fraction accordingly
+        V = (S - S_bubble)/(S_dew - S_bubble)
+        vapor_mol[index] = mol*V
+        liquid_mol[index] = mol - vapor_mol[index]
+        
+    def _set_TS_chemical(self, T, S):
+        index = self._index
+        mol = self._mol_vle
+        vapor_mol = self._vapor_mol
+        liquid_mol = self._liquid_mol
+        mixture = self._thermo.mixture
+        phase_data = self._phase_data
+        
+        # Set Pressure in equilibrium
+        self._thermal_condition.P = P = self._chemical.Psat(T)
+        
+        # Check if super heated vapor
+        vapor_mol[index] = mol
+        liquid_mol[index] = 0
+        S_dew = mixture.xS(phase_data, T, P)
+        if S >= S_dew:
+            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            return
+
+        # Check if subcooled liquid
+        vapor_mol[index] = 0
+        liquid_mol[index] = mol
+        S_bubble = mixture.xS(phase_data, T, P)
+        if S <= S_bubble:
+            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            return
+        
+        # Adjust vapor fraction accordingly
+        V = (S - S_bubble)/(S_dew - S_bubble)
+        vapor_mol[index] = mol*V
+        liquid_mol[index] = mol - vapor_mol[index]
+        
     def _lever_rule(self, x, y):
         split_frac = (self._z[0]-x[0])/(y[0]-x[0])
         if not -0.00001 < split_frac < 1.00001:
@@ -586,6 +697,7 @@ class VLE(Equilibrium, phases='lg'):
         self._vapor_mol[self._index] = v
         self._liquid_mol[self._index] = self._mol_vle - v
         self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
+        self._S_hat = self.mixture.xS(self._phase_data, T, P)/self._F_mass
         
     def set_TV(self, T, V):
         self._setup()
@@ -690,6 +802,53 @@ class VLE(Equilibrium, phases='lg'):
         self._P = self._thermal_condition.P = P   
         self._thermal_condition.T = T
     
+    def set_TS(self, T, S):
+        self._setup()
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 1: return self._set_TS_chemical(T, S)
+        self._T = T
+        index = self._index
+        mol = self._mol_vle
+        vapor_mol = self._vapor_mol
+        liquid_mol = self._liquid_mol
+        phase_data = self._phase_data
+        
+        # Check if super heated vapor
+        P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        vapor_mol[index] = mol
+        liquid_mol[index] = 0
+        S_dew = self.mixture.xS(phase_data, T, P_dew)
+        dS_dew = (S - S_dew)
+        if dS_dew >= 0:
+            raise InfeasibleRegion(f'T={T:.3g} and S={S:.3g}')
+
+        # Check if subcooled liquid
+        P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
+        vapor_mol[index] = 0
+        liquid_mol[index] = mol
+        S_bubble = self.mixture.xS(phase_data, T, P_bubble)
+        dS_bubble = (S - S_bubble)
+        if dS_bubble <= 0:
+            raise InfeasibleRegion(f'T={T:.3g} and S={S:.3g}')
+
+        # Guess overall vapor fraction, and vapor flow rates
+        V = dS_bubble/(S_dew - S_bubble)
+        
+        # Guess composition in the vapor is a weighted average of boiling points
+        self._refresh_v(V, y_bubble)
+        F_mass = self._F_mass
+        S_hat = S/F_mass
+        P = flx.IQ_interpolation(
+            self._S_hat_err_at_P,
+            P_bubble, P_dew,
+            S_bubble/F_mass - S_hat, S_dew/F_mass - S_hat,
+            self._P, self.P_tol, self.S_hat_tol,
+            (S_hat,), checkiter=False, checkbounds=False,
+            maxiter=self.maxiter,
+        )
+        self._P = self._thermal_condition.P = P   
+        self._thermal_condition.T = T
+    
     def set_PV(self, P, V):
         self._setup()
         self._thermal_condition.P = self._P = P
@@ -749,6 +908,115 @@ class VLE(Equilibrium, phases='lg'):
             vapor_mol[index] = v
             liquid_mol[index] = mol - v
             self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
+    
+    def set_PS(self, P, S, stacklevel=0):
+        self._setup()
+        thermal_condition = self._thermal_condition
+        thermal_condition.P = self._P = P
+        if self._N == 0: 
+            thermal_condition.T = self.mixture.xsolve_T_at_SP(
+                self._phase_data, S, thermal_condition.T, P
+            )
+            return
+        if self._N == 1: return self._set_PS_chemical(P, S)
+        
+        # Setup bounderies
+        index = self._index
+        mol = self._mol_vle
+        vapor_mol = self._vapor_mol
+        liquid_mol = self._liquid_mol
+        
+        # Check if subcooled liquid
+        T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
+        if self._F_mol_light: T_bubble = self._bubble_point.Tmin
+        vapor_mol[index] = 0
+        liquid_mol[index] = mol
+        S_bubble = self.mixture.xS(self._phase_data, T_bubble, P)
+        dS_bubble = S - S_bubble
+        if dS_bubble <= 0:
+            thermal_condition.T = self.mixture.xsolve_T_at_SP(self._phase_data, S, T_bubble, P)
+            return
+        
+        # Check if super heated vapor
+        T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
+        if self._F_mol_heavy or T_dew < T_bubble: T_dew = self._dew_point.Tmax
+        vapor_mol[index] = mol
+        liquid_mol[index] = 0
+        S_dew = self.mixture.xS(self._phase_data, T_dew, P)
+        dS_dew = S - S_dew
+        if dS_dew >= 0:
+            thermal_condition.T = self.mixture.xsolve_T_at_SP(self._phase_data, S, T_dew, P)
+            return
+        
+        # Guess T, overall vapor fraction, and vapor flow rates
+        V = dS_bubble/(S_dew - S_bubble)
+        self._refresh_v(V, y_bubble)
+        
+        F_mass = self._F_mass
+        S_hat = S/F_mass
+        S_hat_bubble = self._S_hat_err_at_T(T_bubble, 0.)
+        if S_hat_bubble > S_hat:
+            def f(V):
+                vapor_mol[index] = V * mol
+                liquid_mol[index] = (1 - V) * mol
+                return self.mixture.xS(self._phase_data, T_bubble, P)/self._F_mass - S_hat
+            self._T = thermal_condition.T = T_bubble
+            flx.IQ_interpolation(f,
+                0, 1., f(0), f(1.), V, self.V_tol, self.S_hat_tol, 
+                checkiter=False, checkbounds=False,
+                maxiter=self.maxiter,
+            )
+            return
+        S_hat_dew = self._S_hat_err_at_T(T_dew, 0.)
+        if S_hat_dew < S_hat:
+            def f(V):
+                vapor_mol[index] = V * mol
+                liquid_mol[index] = (1 - V) * mol
+                return self.mixture.xS(self._phase_data, T_dew, P)/self._F_mass - S_hat
+            self._T = thermal_condition.T = T_dew
+            flx.IQ_interpolation(f,
+                0, 1., f(0), f(1.), V, self.V_tol, self.S_hat_tol, 
+                checkiter=False, checkbounds=False,
+                maxiter=self.maxiter,
+            )
+            return
+        else:
+            T = flx.IQ_interpolation(self._S_hat_err_at_T,
+                                     T_bubble, T_dew, 
+                                     S_hat_bubble - S_hat, S_hat_dew - S_hat,
+                                     self._T, self.T_tol, self.S_hat_tol,
+                                     (S_hat,), checkiter=False, checkbounds=False)
+            # Make sure S balance is correct
+            try:
+                self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
+                    self._phase_data, S, T, P
+                )
+            except:
+                warn('VLE algorithm failed; resorting to fallback measures to ensure energy balance',
+                     category=RuntimeWarning, stacklevel=2+stacklevel)
+                def f(V):
+                    vapor_mol[index] = V * mol
+                    liquid_mol[index] = (1 - V) * mol
+                    return self.mixture.xS(self._phase_data, T, P)/self._F_mass - S_hat
+                self._T = thermal_condition.T = T
+                
+                y0 = f(0.)
+                if y0 > 0.:
+                    self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
+                        self._phase_data, S, T, P
+                    )
+                else:
+                    y1 = f(1.)
+                    if y1 < 0.:
+                        self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
+                            self._phase_data, S, T, P
+                        )
+                    else:
+                        flx.IQ_interpolation(f,
+                            0., 1., y0, y1, self._V, self.V_tol, self.S_hat_tol,
+                            maxiter=self.maxiter, 
+                        )
+        self._S_hat = S_hat
     
     def set_PH(self, P, H, stacklevel=0):
         self._setup()
@@ -827,7 +1095,7 @@ class VLE(Equilibrium, phases='lg'):
                                      H_hat_bubble - H_hat, H_hat_dew - H_hat,
                                      self._T, self.T_tol, self.H_hat_tol,
                                      (H_hat,), checkiter=False, checkbounds=False)
-            # Make sure enthalpy balance is correct
+            # Make sure H balance is correct
             try:
                 self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
                     self._phase_data, H, T, P
@@ -886,6 +1154,18 @@ class VLE(Equilibrium, phases='lg'):
         self._liquid_mol[self._index] = self._mol_vle - self._v
         self._H_hat = self.mixture.xH(self._phase_data, self._T, P)/self._F_mass
         return self._H_hat - H_hat
+    
+    def _S_hat_err_at_T(self, T, S_hat):
+        self._vapor_mol[self._index] = self._solve_v(T, self._P)
+        self._liquid_mol[self._index] = self._mol_vle - self._v
+        self._S_hat = self.mixture.xS(self._phase_data, T, self._P)/self._F_mass
+        return self._S_hat - S_hat
+    
+    def _S_hat_err_at_P(self, P, S_hat):
+        self._vapor_mol[self._index] = self._solve_v(self._T , P)
+        self._liquid_mol[self._index] = self._mol_vle - self._v
+        self._S_hat = self.mixture.xS(self._phase_data, self._T, P)/self._F_mass
+        return self._S_hat - S_hat
     
     def _V_err_at_P(self, P, V):
         return self._solve_v(self._T , P).sum()/self._F_mol_vle - V
