@@ -18,10 +18,11 @@ def unregistered(cls):
 def registered(ticket_name):
     return lambda cls: _registered(cls, ticket_name)
 
-def _registered(cls, ticket_name):
+def _registered(cls, ticket_name, autonumber=True):
     cls.registry = Registry()
     cls.ticket_name = ticket_name
     cls.ticket_numbers = {}
+    cls.autonumber = autonumber
     cls.unregistered_ticket_number = 0
     cls._take_unregistered_ticket = _take_unregistered_ticket
     cls._take_ticket = _take_ticket
@@ -56,13 +57,18 @@ def _register(self, ID):
     if ID == "" or replace_ticket_number: 
         registry = self.registry
         data = registry.data
-        ID = self._take_ticket()
-        while ID in data: ID = self._take_ticket()
+        if self.autonumber:
+            ID = self._take_ticket()
+            while ID in data: ID = self._take_ticket()
+        else:
+            ID = self.ticket_name
         registry.register(ID, self)
     elif ID:
         self.registry.register_safely(ID, self) 
-    else:
+    elif self.autonumber: 
         self._ID = self._take_unregistered_ticket()
+    else:
+        self._ID = self.ticket_name + '.'
 
 def _pretend_to_register(self, ID):
     self._ID = ID

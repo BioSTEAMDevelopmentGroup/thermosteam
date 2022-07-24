@@ -696,8 +696,6 @@ class VLE(Equilibrium, phases='lg'):
         v = self._solve_v(T, P)
         self._vapor_mol[self._index] = v
         self._liquid_mol[self._index] = self._mol_vle - v
-        self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
-        self._S_hat = self.mixture.xS(self._phase_data, T, P)/self._F_mass
         
     def set_TV(self, T, V):
         self._setup()
