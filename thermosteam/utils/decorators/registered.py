@@ -57,12 +57,12 @@ def _register(self, ID):
     if ID == "" or replace_ticket_number: 
         registry = self.registry
         data = registry.data
-        if self.autonumber:
+        if self.autonumber or replace_ticket_number:
             ID = self._take_ticket()
             while ID in data: ID = self._take_ticket()
+            registry.register(ID, self)
         else:
-            ID = self.ticket_name
-        registry.register(ID, self)
+            self.registry.register_safely(self.ticket_name, self) 
     elif ID:
         self.registry.register_safely(ID, self) 
     elif self.autonumber: 
