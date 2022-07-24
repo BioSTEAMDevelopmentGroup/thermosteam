@@ -638,7 +638,7 @@ class VLE(Equilibrium, phases='lg'):
     def _lever_rule(self, x, y):
         split_frac = (self._z[0]-x[0])/(y[0]-x[0])
         if not -0.00001 < split_frac < 1.00001:
-            InfeasibleRegion('phase composition')
+            raise InfeasibleRegion('phase composition')
         if split_frac > 1:
             split_frac = 1
         elif split_frac < 0:
