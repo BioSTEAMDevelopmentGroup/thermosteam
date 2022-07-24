@@ -377,7 +377,6 @@ class VLE(Equilibrium, phases='lg'):
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.P = P
-                    thermal_condition.T = self.mixture.xsolve_H_at_TP(self._phase_data, T, P)
             elif S_spec:
                 try:
                     self.set_PS(P, S, stacklevel=1)
@@ -387,7 +386,6 @@ class VLE(Equilibrium, phases='lg'):
                     except NoEquilibrium:
                         thermal_condition = self._thermal_condition
                         thermal_condition.P = P
-                        thermal_condition.T = self.mixture.xsolve_S_at_TP(self._phase_data, T, P)
             elif x_spec:
                 self.set_Px(P, np.asarray(x))
             else: # y_spec
