@@ -145,7 +145,7 @@ class SplitIndexer(Indexer):
             data[:] = 0.
         for CAS, split in zip(self._chemicals.CASs, old_data):
             if CAS in chemicals: data[chemicals.index(CAS)] = split
-        self._load_chemicals(chemicals)
+        self._chemicals = chemicals
         return old_data
     
     @classmethod
@@ -292,7 +292,7 @@ class ChemicalIndexer(Indexer):
             data[:] = 0.
         for CAS, value in zip(self._chemicals.CASs, old_data):
             if value: data[chemicals.index(CAS)] = value
-        self._load_chemicals(chemicals)
+        self._chemicals = chemicals
         return old_container
     
     def __reduce__(self):
