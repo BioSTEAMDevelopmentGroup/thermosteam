@@ -52,28 +52,28 @@ def build_ideal_PhaseMixtureHandle(chemicals, var, Model):
 def iter_T_at_HP(T, H, H_model, phase, mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given ethalpy 
     counter, Cn = Cn_cache
-    if counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
     Cn_cache[0] += 1
     return T + (H - H_model(phase, mol, T, P)) / Cn
 
 def xiter_T_at_HP(T, H, H_model, phase_mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given ethalpy 
     counter, Cn = Cn_cache
-    if counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
     Cn_cache[0] += 1
     return T + (H - H_model(phase_mol, T, P)) / Cn
 
 def iter_T_at_SP(T, S, S_model, phase, mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given entropy 
     counter, Cn = Cn_cache
-    if counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
     Cn_cache[0] += 1
     return T * exp((S - S_model(phase, mol, T, P)) / Cn)
 
 def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given entropy 
     counter, Cn = Cn_cache
-    if counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
     Cn_cache[0] += 1
     return T * exp((S - S_model(phase_mol, T, P)) / Cn)
 
