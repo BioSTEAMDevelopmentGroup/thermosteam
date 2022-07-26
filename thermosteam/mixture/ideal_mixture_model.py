@@ -10,7 +10,9 @@
 from ..base import display_asfunctor
 from math import log
 
-__all__ = ('IdealTMixtureModel', 'IdealTPMixtureModel', 'IdealEntropyModel')
+__all__ = (
+    'IdealTMixtureModel', 'IdealTPMixtureModel', 'IdealEntropyModel'
+)
 
 class IdealTPMixtureModel:
     """
@@ -83,11 +85,11 @@ class IdealEntropyModel:
     
     Examples
     --------
-    >>> from thermosteam.mixture import SMixtureModel
+    >>> from thermosteam.mixture import IdealEntropyModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
     >>> models = [i.S.l for i in chemicals]
-    >>> mixture_model = SMixtureModel(models, 'S')
+    >>> mixture_model = IdealEntropyModel(models, 'S')
     >>> mixture_model
     <SMixtureModel(mol, T, P) -> S [kJ/K/mol]>
     >>> mixture_model([0.2, 0.8], 350, 101325)

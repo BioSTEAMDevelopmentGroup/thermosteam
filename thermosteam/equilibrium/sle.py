@@ -226,7 +226,7 @@ class SLE(Equilibrium, phases='ls'):
             if T_given:
                 thermal_condition.T = T
             elif H_given:
-                thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+                thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
             else:
                 raise Exception('Unknown')
             return
@@ -258,7 +258,7 @@ class SLE(Equilibrium, phases='ls'):
                 solid_mol[solute_index] = 0.
                 H_liq = mixture.xH(phase_data, T, P)
                 if H >= H_liq:
-                    self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+                    self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
                     return
     
                 # Check if subcooled liquid
@@ -266,7 +266,7 @@ class SLE(Equilibrium, phases='ls'):
                 solid_mol[solute_index] = mol_solute
                 H_sol = mixture.xH(phase_data, T, P)
                 if H <= H_sol:
-                    self._thermal_condition.T = mixture.xsolve_T(phase_data, H, T, P)
+                    self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
                     return
                 
                 # Adjust liquid fraction accordingly
@@ -277,7 +277,7 @@ class SLE(Equilibrium, phases='ls'):
                 def f(T):
                     solubility = self._solve_x(T)
                     self._update_solubility(solubility)
-                    return mixture.xsolve_T(phase_data, H, T, P)
+                    return mixture.xsolve_T_at_HP(phase_data, H, T, P)
                 
                 self._thermal_condition.T = T = flx.aitken(
                     f, mixture.xsolve_T_at_HP(phase_data, H, T, P),

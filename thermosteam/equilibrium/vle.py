@@ -139,6 +139,10 @@ class VLE(Equilibrium, phases='lg'):
     >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
     >>> vle(S=S, P=101325)
     >>> vle
+    VLE(imol=MolarFlowIndexer(
+            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
+            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given vapor fraction and temperature:
     

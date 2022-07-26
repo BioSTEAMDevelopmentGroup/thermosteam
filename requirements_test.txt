@@ -15,8 +15,6 @@ openpyxl>=3.0.0
 free_properties>=0.2.6
 flexsolve==0.5.3 
 numba>=0.55.2
-biorefineries>=2.23.0
-biosteam>=2.32.2
 pyglet
 ipykernel
 nbval
