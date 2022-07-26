@@ -91,7 +91,7 @@ class IdealEntropyModel:
     >>> models = [i.S.l for i in chemicals]
     >>> mixture_model = IdealEntropyModel(models, 'S')
     >>> mixture_model
-    <IdealEntropyModel(mol, T, P) -> S [kJ/K/mol]>
+    <IdealEntropyModel(mol, T, P) -> S [J/K/mol]>
     >>> mixture_model([0.2, 0.8], 350, 101325)
     5.376...e-05
     
