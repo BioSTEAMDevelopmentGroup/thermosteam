@@ -94,7 +94,7 @@ class IdealEntropyModel:
     >>> mixture_model
     <IdealEntropyModel(mol, T, P) -> S [J/K/mol]>
     >>> mixture_model(np.array([0.2, 0.8]), 350, 101325)
-    5.376...e-05
+    160.3
     
     """
     __slots__ = IdealTPMixtureModel.__slots__
