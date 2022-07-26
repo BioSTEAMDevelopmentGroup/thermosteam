@@ -1783,7 +1783,7 @@ class Stream:
         
         Warnings
         --------
-        Prices, LCA characterization factors are not copied are not copied.
+        Prices, and LCA characterization factors are not copied are not copied.
         
         """
         cls = self.__class__
