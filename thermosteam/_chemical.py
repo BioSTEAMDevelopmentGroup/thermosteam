@@ -67,7 +67,7 @@ from . import functional as fn
 from ._phase import check_phase, valid_phases
 from . import units_of_measure as thermo_units
 from chemicals.utils import Z
-from thermo.eos import IG, PR
+from thermo.eos import IG, PR, SRK
 from thermo import (
     TDependentProperty, TPDependentProperty,
     VaporPressure, 
@@ -480,6 +480,8 @@ class Chemical:
                  *_handles, *_data,
                  '_N_solutes')
     
+    #: [thermo.GEOS] Default EOS for pure components
+    EOS_default = PR
     #: [float] Reference temperature in Kelvin
     T_ref = 298.15
     #: [float] Reference pressure in Pascal
@@ -513,7 +515,6 @@ class Chemical:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing ID')
             ID = ID[:-2]
         search_ID = search_ID or ID
-        if not eos: eos = PR
         if search_db:
             metadata = pubchem_db.search(search_ID)
             data['metadata'] = metadata
@@ -552,7 +553,7 @@ class Chemical:
         return self
 
     @classmethod
-    def new(cls, ID, CAS, eos=PR, phase_ref=None, phase=None, **data):
+    def new(cls, ID, CAS, eos=None, phase_ref=None, phase=None, **data):
         """Create a new chemical from data without searching through
         the database, and load all possible models from given data."""
         self = super().__new__(cls)
@@ -641,7 +642,7 @@ class Chemical:
         self._CAS = CAS or ID
         for i,j in data.items(): setfield(self, '_' + i , j)
         if formula: self.formula = formula
-        self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
+        self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._estimate_missing_properties(None)
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
@@ -1325,7 +1326,7 @@ class Chemical:
 
     ### Reinitializers ###
     
-    def reset(self, CAS, eos=PR, phase_ref=None,
+    def reset(self, CAS, eos=None, phase_ref=None,
               smiles=None, InChI=None, InChI_key=None,
               pubchemid=None, iupac_name=None, common_name=None,
               formula=None, MW=None, Tm=None,
@@ -1410,7 +1411,7 @@ class Chemical:
     def reset_free_energies(self):
         """Reset the `H`, `S`, `H_excess`, and `S_excess` functors."""
         if not self._eos:
-            self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
+            self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                             self._Tm, self._Tb, self._eos, self._phase_ref)
@@ -1504,7 +1505,7 @@ class Chemical:
         self._combustion = combustion
 
     def _init_eos(self, eos, Tc, Pc, omega):
-        self._eos = create_eos(eos, Tc, Pc, omega)
+        self._eos = create_eos(eos or self.EOS_default, Tc, Pc, omega)
 
     def _init_handles(self, CAS, MW, Tm, Tb, Pt, Tt, Tc, Pc, Zc, Vc, omega,
                       dipole, similarity_variable, iscyclic_aliphatic, eos,
@@ -1904,7 +1905,7 @@ class Chemical:
         if 'phase_ref' in properties:
             self._phase_ref = 'l'
         if 'eos' in properties:
-            self._eos = create_eos(PR, self._Tc, self._Pc, self._omega)
+            self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         if 'Cn' in properties:
             MW = self._MW
             Cn = self._Cn
