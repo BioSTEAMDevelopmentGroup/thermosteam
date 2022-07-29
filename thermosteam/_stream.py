@@ -1129,7 +1129,7 @@ class Stream:
     
     @property
     def C(self):
-        """[float] Heat capacity flow rate in kJ/hr."""
+        """[float] Isobaric heat capacity flow rate in kJ/hr."""
         C = self._get_property_cache('C', True)
         if C is None:
             self._property_cache['C'] = C = self.mixture.Cn(self.phase, self.mol, self.T)
@@ -1190,7 +1190,7 @@ class Stream:
         return kappa
     @property
     def Cn(self):
-        """[float] Molar heat capacity [J/mol/K]."""
+        """[float] Molar isobaric heat capacity [J/mol/K]."""
         Cn = self._get_property_cache('Cn')
         if Cn is None:
             self._property_cache['Cn'] = Cn = self.mixture.Cn(
@@ -1230,7 +1230,7 @@ class Stream:
         return epsilon
     @property
     def Cp(self):
-        """[float] Heat capacity [J/g/K]."""
+        """[float] Isobaric heat capacity [J/g/K]."""
         return self.Cn / self.MW
     @property
     def alpha(self):
