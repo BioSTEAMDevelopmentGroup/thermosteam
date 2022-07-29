@@ -89,7 +89,7 @@ class Mixture:
     rule : str
         Description of mixing rules used.
     Cn : function(phase, mol, T)
-        Molar heat capacity mixture model [J/mol/K].
+        Molar isobaric heat capacity mixture model [J/mol/K].
     H : function(phase, mol, T)
         Enthalpy mixture model [J/mol].
     S : function(phase, mol, T, P)
@@ -135,7 +135,7 @@ class Mixture:
         Whether to include excess energies
         in enthalpy and entropy calculations.
     Cn(phase, mol, T) : 
-        Mixture molar heat capacity [J/mol/K].
+        Mixture molar isobaric heat capacity [J/mol/K].
     mu(phase, mol, T, P) : 
         Mixture dynamic viscosity [Pa*s].
     V(phase, mol, T, P) : 
@@ -257,7 +257,7 @@ class Mixture:
         return fn.V_to_rho(self.V(phase, mol, T, P), MW) if MW else 0.
     
     def Cp(self, phase, mol, T):
-        """Mixture heat capacity [J/g/K]"""
+        """Mixture isobaric heat capacity [J/g/K]"""
         MW = self.MW(mol)
         return self.Cn(phase, mol, T) / MW if MW else 0.
     
@@ -286,7 +286,7 @@ class Mixture:
         return sum([self.rho(phase, mol, T, P) for phase, mol in phase_mol])
     
     def xCp(self, phase_mol, T):
-        """Multi-phase mixture heat capacity [kg/m3]."""
+        """Multi-phase mixture isobaric heat capacity [J/g/K]."""
         return sum([self.Cp(phase, mol, T) for phase, mol in phase_mol])
     
     def xalpha(self, phase_mol, T, P):
@@ -362,7 +362,7 @@ class Mixture:
         return flx.aitken(xiter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=True)
     
     def xCn(self, phase_mol, T):
-        """Multi-phase mixture heat capacity [J/mol/K]."""
+        """Multi-phase mixture molar isobaric heat capacity [J/mol/K]."""
         return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])
     
     def xH(self, phase_mol, T, P):
