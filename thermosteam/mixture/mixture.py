@@ -219,7 +219,6 @@ class Mixture:
         752.513
         
         """
-        
         if rule == 'ideal':
             isa = isinstance
             if isa(chemicals, CompiledChemicals):
@@ -326,8 +325,7 @@ class Mixture:
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         H = self._H(phase, mol, T)
-        if self.include_excess_energies:
-            H += self._H_excess(phase, mol, T, P)
+        if self.include_excess_energies: H += self._H_excess(phase, mol, T, P)
         return H
     
     def S(self, phase, mol, T, P):
