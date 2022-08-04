@@ -1115,7 +1115,7 @@ class Stream:
     
     @property
     def C(self):
-        """[float] Heat capacity flow rate in kJ/hr."""
+        """[float] Isobaric heat capacity flow rate in kJ/hr."""
         return self._get_property('Cn', flow=True)
     
     ### Composition properties ###
@@ -1161,8 +1161,9 @@ class Stream:
         return self._get_property('kappa')
     @property
     def Cn(self):
-        """[float] Molar heat capacity [J/mol/K]."""
+        """[float] Molar isobaric heat capacity [J/mol/K]."""
         return self._get_property('Cn')
+
     @property
     def mu(self):
         """[float] Hydrolic viscosity [Pa*s]."""
@@ -1177,7 +1178,7 @@ class Stream:
         return self._get_property('epsilon', nophase=True)
     @property
     def Cp(self):
-        """[float] Heat capacity [J/g/K]."""
+        """[float] Isobaric heat capacity [J/g/K]."""
         return self.Cn / self.MW
     @property
     def alpha(self):
