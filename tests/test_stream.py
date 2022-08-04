@@ -228,6 +228,17 @@ def test_multistream():
     assert stream.get_flow('g/s', 'Water') == stream.F_mass / 3.6 == 1.
     stream.empty()    
 
+def test_stream_property_cache():
+    tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    s = tmo.Stream(None, Water=2, T=299.15)
+    
+    # Cache is being used to retrieve flow properties; make sure results are scaled properly
+    prop_IDs = ['h', 'Cn']
+    flow_IDs = ['H', 'C']
+    prop_values = [getattr(s, i) for i in prop_IDs]
+    flow_values = [getattr(s, i) for i in flow_IDs]
+    assert_allclose(flow_values, [i*s.F_mol for i in prop_values])
+
 def test_mixture():
     tmo.settings.set_thermo(['Water'], cache=True)
 
@@ -244,5 +255,6 @@ if __name__ == '__main__':
     test_stream()
     test_multistream()
     test_vlle()
+    test_stream_property_cache()
     test_critical()
     test_mixture()

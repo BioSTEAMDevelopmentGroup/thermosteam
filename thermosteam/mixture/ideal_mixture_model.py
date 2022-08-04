@@ -11,7 +11,8 @@ from ..base import display_asfunctor
 from math import log
 
 __all__ = (
-    'IdealTMixtureModel', 'IdealTPMixtureModel', 'IdealEntropyModel'
+    'IdealTMixtureModel', 'IdealTPMixtureModel', 'IdealEntropyModel',
+    'IdealHvapModel',
 )
 
 class IdealTPMixtureModel:
@@ -104,6 +105,7 @@ class IdealEntropyModel:
     def __call__(self, mol, T, P):
         total_mol = mol.sum()
         return sum([j * i(T, P) + j * log(j / total_mol) for i, j in zip(self.models, mol) if j])
+    
 
 class IdealTMixtureModel:
     """
@@ -145,3 +147,18 @@ class IdealTMixtureModel:
 
     def __call__(self, mol, T, P=None):
         return sum([j * i(T) for i, j in zip(self.models, mol) if j])
+
+class IdealHvapModel:
+    __slots__ = ('chemicals',)
+    var = 'Hvap'
+
+    def __init__(self, chemicals):
+        self.chemicals = chemicals
+
+    def __call__(self, mol, T, P=None):
+        return sum([
+            i * j.Hvap(T) for i, j in zip(mol, self.chemicals)
+            if i and not j.locked_state
+        ])
+    
+    __repr__ = IdealTPMixtureModel.__repr__

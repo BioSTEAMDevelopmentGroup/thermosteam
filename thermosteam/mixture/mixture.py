@@ -9,11 +9,16 @@
 """
 import flexsolve as flx
 import numpy as np
-from math import exp, log
+from math import exp
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
 from ..base import PhaseMixtureHandle
-from .ideal_mixture_model import IdealTMixtureModel, IdealTPMixtureModel, IdealEntropyModel
+from .ideal_mixture_model import (
+    IdealTMixtureModel, 
+    IdealTPMixtureModel, 
+    IdealEntropyModel, 
+    IdealHvapModel
+)
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture',)
@@ -236,7 +241,7 @@ class Mixture:
             mu = build_ideal_PhaseMixtureHandle(chemicals, 'mu', IdealTPMixtureModel)
             V = build_ideal_PhaseMixtureHandle(chemicals, 'V', IdealTPMixtureModel)
             kappa = build_ideal_PhaseMixtureHandle(chemicals, 'kappa', IdealTPMixtureModel)
-            Hvap = IdealTMixtureModel([getfield(i, 'Hvap') for i in chemicals], 'Hvap')
+            Hvap = IdealHvapModel(chemicals)
             sigma = IdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
             epsilon = IdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
             return cls(rule, Cn, H, S, H_excess, S_excess,
@@ -255,7 +260,7 @@ class Mixture:
         MW = self.MW(mol)
         return fn.V_to_rho(self.V(phase, mol, T, P), MW) if MW else 0.
     
-    def Cp(self, phase, mol, T):
+    def Cp(self, phase, mol, T, P=None):
         """Mixture heat capacity [J/g/K]"""
         MW = self.MW(mol)
         return self.Cn(phase, mol, T) / MW if MW else 0.
@@ -284,7 +289,7 @@ class Mixture:
         """Multi-phase mixture density [kg/m3]."""
         return sum([self.rho(phase, mol, T, P) for phase, mol in phase_mol])
     
-    def xCp(self, phase_mol, T):
+    def xCp(self, phase_mol, T, P=None):
         """Multi-phase mixture heat capacity [kg/m3]."""
         return sum([self.Cp(phase, mol, T) for phase, mol in phase_mol])
     
@@ -359,7 +364,7 @@ class Mixture:
         args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
         return flx.aitken(xiter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=True)
     
-    def xCn(self, phase_mol, T):
+    def xCn(self, phase_mol, T, P=None):
         """Multi-phase mixture heat capacity [J/mol/K]."""
         return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])
     
