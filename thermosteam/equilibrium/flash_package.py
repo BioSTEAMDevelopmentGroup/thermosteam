@@ -86,7 +86,7 @@ class FlashPackage:
     >>> flasher = flashpkg.flasher(N_liquid=2)
     >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
     >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count])
-    [0.6451, [0.6451, 0.3549], [0.9671, 0.0325, 0.0005], -12431.5087, 2]
+    [0.0, [0.4754, 0.5246], [0.9183, 0.0808, 0.0008], -33426.8213, 2]
     >>> # VLLE using ideal gas
     >>> flashpkg.G, flashpkg.Gkw = tm.IdealGas, {}
     >>> flasher = flashpkg.flasher(N_liquid=2)
