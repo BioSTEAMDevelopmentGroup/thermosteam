@@ -395,14 +395,14 @@ class Chemical:
     Temperature dependent properties are managed by objects:
     
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="IAPWS")
+    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="IAPWS")
 
     Phase dependent properties have attributes with model handles for each phase:
 
     >>> Water.V
     <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
     >>> # Water.V.l
-    >>> # VolumeLiquid(CASRN="7732-18-5 (Water)", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6-05, Zc=0.2294727, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
+    >>> # VolumeLiquid(CASRN="7732-18-5", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6-05, Zc=0.2294727, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
     
     A new model can be added easily using `add_method`, for example:
         
@@ -410,7 +410,7 @@ class Chemical:
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
     >>> Water.Psat.add_method(f=User_antoine_model, Tmin=273.20, Tmax=473.20)
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5 (Water)", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
+    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
 
     The `add_method` method is a high level interface that even lets you create a constant model:
         
