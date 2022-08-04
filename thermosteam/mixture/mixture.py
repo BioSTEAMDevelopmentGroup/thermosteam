@@ -364,7 +364,7 @@ class Mixture:
         args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
         return flx.aitken(xiter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=True)
     
-    def xCn(self, phase_mol, T):
+    def xCn(self, phase_mol, T, P=None):
         """Multi-phase mixture molar isobaric heat capacity [J/mol/K]."""
         return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])
     
