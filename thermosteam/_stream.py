@@ -1101,14 +1101,15 @@ class Stream:
             if name in property_cache and literal == last_literal and (composition == last_composition).all():
                 value = property_cache[name]
             else:
+                property_cache.clear()
                 self._property_cache_key = (literal, composition)
                 calculate = getattr(self.mixture, name)
                 if nophase:
-                    self._property_cache[name] = value = calculate(
+                    property_cache[name] = value = calculate(
                         composition, *self.thermal_condition
                     )
                 else:
-                    self._property_cache[name] = value = calculate(
+                    property_cache[name] = value = calculate(
                         phase, composition, *self.thermal_condition
                     )
         return value * total if flow else value

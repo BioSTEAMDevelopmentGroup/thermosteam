@@ -238,6 +238,20 @@ def test_stream_property_cache():
     prop_values = [getattr(s, i) for i in prop_IDs]
     flow_values = [getattr(s, i) for i in flow_IDs]
     assert_allclose(flow_values, [i*s.F_mol for i in prop_values])
+    
+    # Make sure cache is being cleared when conditions are changed between evaluations.
+    # This is done by computing a property at one temperature, another property at new temperature,
+    # then the first property at the new temperature.
+    def getprop(name, T, clear_cache):
+        s.T = T
+        if clear_cache: s._property_cache.clear()
+        return getattr(s, name)
+    
+    IDs = ['H', 'C', 'H']
+    Ts = [298.15, 310, 310]
+    values = [getprop(i, T, True) for i, T in zip(IDs, Ts)]
+    values_cache = [getprop(i, T, False) for i, T in zip(IDs, Ts)]
+    assert_allclose(values, values_cache)
 
 def test_mixture():
     tmo.settings.set_thermo(['Water'], cache=True)
