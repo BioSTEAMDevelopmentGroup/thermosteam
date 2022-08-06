@@ -1114,7 +1114,7 @@ class Stream:
                 property_cache[name] = value = calculate(
                     phase, composition, *self.thermal_condition
                 )
-        return value * total if flow else value
+            return value * total if flow else value
     
     @property
     def C(self):
