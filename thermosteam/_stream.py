@@ -1098,20 +1098,22 @@ class Stream:
                 phase = imol._phase._phase
                 literal = (phase, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition = self._property_cache_key
-            if name in property_cache and literal == last_literal and (composition == last_composition).all():
-                value = property_cache[name]
+            if literal == last_literal and (composition == last_composition).all():
+                if name in property_cache: 
+                    value = property_cache[name]
+                    return value * total if flow else value
             else:
                 property_cache.clear()
-                self._property_cache_key = (literal, composition)
-                calculate = getattr(self.mixture, name)
-                if nophase:
-                    property_cache[name] = value = calculate(
-                        composition, *self.thermal_condition
-                    )
-                else:
-                    property_cache[name] = value = calculate(
-                        phase, composition, *self.thermal_condition
-                    )
+            self._property_cache_key = (literal, composition)
+            calculate = getattr(self.mixture, name)
+            if nophase:
+                property_cache[name] = value = calculate(
+                    composition, *self.thermal_condition
+                )
+            else:
+                property_cache[name] = value = calculate(
+                    phase, composition, *self.thermal_condition
+                )
         return value * total if flow else value
     
     @property
