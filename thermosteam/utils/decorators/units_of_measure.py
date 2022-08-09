@@ -8,6 +8,7 @@
 """
 """
 import thermosteam as tmo
+from typing import Optional
 
 __all__ = ('units_of_measure',)
 
@@ -27,7 +28,7 @@ def define_property(cls, name, units, fget, fset=None):
     if hasattr(cls, name): raise ValueError(f"property with name '{name}' already exists")
     setattr(cls, name, property(fget, fset))
 
-def get_property(self, name, units=None):
+def get_property(self, name: str, units: Optional[str]=None):
     """
     Return property in requested units.
 
@@ -50,7 +51,7 @@ def get_property(self, name, units=None):
             raise ValueError(f"'{name}' is not a property")
         return original_units.convert(value, units)
 
-def set_property(self, name, value, units):
+def set_property(self, name: str, value: float, units: Optional[str]=None):
     """
     Set property in given units.
 
@@ -58,7 +59,7 @@ def set_property(self, name, value, units):
     ----------
     name : str
         Name of property.
-    value : str
+    value : float
         New value of property.
     units : str
         Units of measure.
@@ -66,8 +67,9 @@ def set_property(self, name, value, units):
     """
     units_dct = self._units_of_measure
     if name in units_dct:
-        original_units = units_dct[name]
-        value = original_units.unconvert(value, units)
+        if units is not None:
+            original_units = units_dct[name]
+            value = original_units.unconvert(value, units)
         setattr(self, name, value)
     else:
         raise ValueError(f"no property with name '{name}'")
