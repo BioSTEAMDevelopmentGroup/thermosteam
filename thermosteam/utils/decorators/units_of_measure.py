@@ -34,9 +34,9 @@ def get_property(self, name: str, units: Optional[str]=None):
 
     Parameters
     ----------
-    name : str
+    name :
         Name of property.
-    units : str, optional
+    units : 
         Units of measure. Defaults to the property's original units of measure.
 
     """
@@ -57,11 +57,11 @@ def set_property(self, name: str, value: float, units: Optional[str]=None):
 
     Parameters
     ----------
-    name : str
+    name : 
         Name of property.
-    value : float
+    value : 
         New value of property.
-    units : str
+    units : 
         Units of measure.
 
     """
