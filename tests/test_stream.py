@@ -12,7 +12,7 @@ import thermosteam as tmo
 from numpy.testing import assert_allclose
 
 def test_vlle():
-    tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'])
+    tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
     assert_allclose(s.imol['l'] + s.imol['L'], [0.537583, 0.383255, 1.755296], rtol=5e-2)
@@ -30,8 +30,15 @@ def test_vlle():
     assert s.phase == 'g' # Only one phase
     assert set(s.phases) == set(['L', 'l', 'g']) # All three phases can still be used
     
+def stream_methods():
+    tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    s1 = tmo.Stream(None, Water=1, Ethanol=1, phase='l')
+    s2 = tmo.Stream(None, Water=100, Ethanol=100, phase='g')
+    s3 = tmo.Stream.sum([s1, s2], vle=True)
+    assert_allclost([s3.T, s3.vapor_fraction], [356.42348688162764, 0.9159452891657182])
+
 def test_critical():
-    tmo.settings.set_thermo(['CO2', 'O2', 'CH4'])
+    tmo.settings.set_thermo(['CO2', 'O2', 'CH4'], cache=True)
     
     # Three components
     s = tmo.Stream(None, CO2=1, O2=1, CH4=2, vlle=True, T=350)

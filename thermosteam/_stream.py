@@ -1229,7 +1229,7 @@ class Stream:
         return self._thermal_condition.in_equilibrium(other._thermal_condition)
     
     @classmethod
-    def sum(cls, streams, ID=None, thermo=None, energy_balance=True):
+    def sum(cls, streams, ID=None, thermo=None, energy_balance=True, vle=False):
         """
         Return a new Stream object that represents the sum of all given streams.
         
@@ -1259,7 +1259,7 @@ class Stream:
         """
         new = cls(ID, thermo=thermo)
         if streams: new.copy_thermal_condition(streams[0])
-        new.mix_from(streams, energy_balance)
+        new.mix_from(streams, energy_balance, vle)
         return new
     
     def separate_out(self, other, energy_balance=True):
