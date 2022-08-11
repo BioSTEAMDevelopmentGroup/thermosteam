@@ -545,8 +545,7 @@ class CompiledChemicals(Chemicals):
         dct['LHV'] = chemical_data_array(chemicals, 'LHV')
         dct['HHV'] = chemical_data_array(chemicals, 'HHV')
         dct['_index'] = index = dict((*zip(CAS, index),
-                                      *zip(IDs, index),
-                                      *zip(chemicals, index)))
+                                      *zip(IDs, index)))
         dct['_group_wt_compositions'] = {}
         dct['_group_mol_compositions'] = {}
         dct['_index_cache'] = {}
@@ -673,7 +672,7 @@ class CompiledChemicals(Chemicals):
         
         """
         k = self._index[ID]
-        return [i for i, j in self._index.items() if j==k and isinstance(i, str)] 
+        return [i for i, j in self._index.items() if j==k] 
 
     get_synonyms = get_aliases
 
@@ -950,9 +949,14 @@ class CompiledChemicals(Chemicals):
         
         >>> chemicals.index('7732-18-5')
         0
-
+        
+        Indices by chemical:
+        
+        >>> chemicals.index(chemicals.Water)
+        0
+            
         """
-        try: return self._index[ID]
+        try: return self._index[ID._ID if isinstance(ID, Chemical) else ID]
         except KeyError:
             raise UndefinedChemical(ID)
 
@@ -978,11 +982,17 @@ class CompiledChemicals(Chemicals):
         
         >>> chemicals.indices(['7732-18-5', '64-17-5'])
         [0, 1]
+        
+        Indices by chemical:
+        
+        >>> chemicals.indices([chemicals.Water, chemicals.Ethanol])
+        [0, 1]
 
         """
+        isa = isinstance
+        dct = self._index
         try:
-            dct = self._index
-            return [dct[i] for i in IDs]
+            return [dct[i._ID] if isa(i, Chemical) else dct[i] for i in IDs]
         except KeyError as key_error:
             raise UndefinedChemical(key_error.args[0])
     
@@ -1053,14 +1063,14 @@ class CompiledChemicals(Chemicals):
         TypeError: only strings, sequences, and ellipsis are valid index keys
 
         """
-        if isinstance(IDs, str):
+        if isinstance(IDs, (str, Chemical)):
             return self.index(IDs)
         elif IDs is ...:
             return slice(None)
         elif isinstance(IDs, Sequence):
             return self.indices(IDs)
         else: # pragma: no cover
-            raise TypeError("only strings, tuples, and ellipsis are valid index keys")    
+            raise TypeError("only strings, chemicals, sequences, and ellipsis are valid index keys")    
     
     def _get_index_and_kind(self, key):
         index_cache = self._index_cache
