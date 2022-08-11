@@ -8,9 +8,9 @@
 """
 """
 from .utils import colors
-import flexsolve as flx
 
-__all__ = ('UndefinedChemical',
+__all__ = ('UndefinedChemicalAlias',
+           'UndefinedChemical',
            'UndefinedPhase',
            'DimensionError',
            'InfeasibleRegion',
@@ -28,11 +28,13 @@ class InfeasibleRegion(RuntimeError):
         if msg is None: msg = region + ' is infeasible'
         super().__init__(msg)
 
-class UndefinedChemical(Exception):
+class UndefinedChemicalAlias(Exception):
     """Exception regarding undefined chemicals."""
     def __init__(self, ID): 
         self.ID = ID
         super().__init__(repr(ID))
+    
+UndefinedChemical = UndefinedChemicalAlias # Alias for backwards compatibility
     
 class UndefinedPhase(Exception):
     """Exception regarding undefined phases."""

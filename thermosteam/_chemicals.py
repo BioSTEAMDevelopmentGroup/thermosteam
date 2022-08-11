@@ -8,7 +8,7 @@
 """
 """
 from . import utils
-from .exceptions import UndefinedChemical
+from .exceptions import UndefinedChemicalAlias
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
 from collections.abc import Sequence
@@ -108,11 +108,11 @@ class Chemicals:
     >>> 'Butane' in chemicals
     False
     
-    An attempt to access a non-existent chemical raises an UndefinedChemical error:
+    An attempt to access a non-existent chemical raises an UndefinedChemicalAlias error:
     
     >>> chemicals['Butane']
     Traceback (most recent call last):
-    UndefinedChemical: 'Butane'
+    UndefinedChemicalAlias: 'Butane'
     
     """
     def __new__(cls, chemicals, cache=False):
@@ -154,7 +154,7 @@ class Chemicals:
             else:
                 return [dct[i] for i in key]
         except KeyError as key_error:
-            raise UndefinedChemical(key_error.args[0])
+            raise UndefinedChemicalAlias(key_error.args[0])
     
     def copy(self):
         """Return a copy."""
@@ -949,16 +949,11 @@ class CompiledChemicals(Chemicals):
         
         >>> chemicals.index('7732-18-5')
         0
-        
-        Indices by chemical:
-        
-        >>> chemicals.index(chemicals.Water)
-        0
             
         """
-        try: return self._index[ID._ID if isinstance(ID, Chemical) else ID]
+        try: return self._index[ID]
         except KeyError:
-            raise UndefinedChemical(ID)
+            raise UndefinedChemicalAlias(ID)
 
     def indices(self, IDs):
         """
@@ -982,19 +977,13 @@ class CompiledChemicals(Chemicals):
         
         >>> chemicals.indices(['7732-18-5', '64-17-5'])
         [0, 1]
-        
-        Indices by chemical:
-        
-        >>> chemicals.indices([chemicals.Water, chemicals.Ethanol])
-        [0, 1]
 
         """
-        isa = isinstance
         dct = self._index
         try:
-            return [dct[i._ID] if isa(i, Chemical) else dct[i] for i in IDs]
+            return [dct[i] for i in IDs]
         except KeyError as key_error:
-            raise UndefinedChemical(key_error.args[0])
+            raise UndefinedChemicalAlias(key_error.args[0])
     
     def available_indices(self, IDs):
         """

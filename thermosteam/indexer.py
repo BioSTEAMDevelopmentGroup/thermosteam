@@ -10,11 +10,11 @@
 import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedChemical
+from .exceptions import UndefinedChemicalAlias
 from .base import PhaseHandle
-from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple, check_phase
+from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
 from free_properties import PropertyFactory, property_array
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 import numpy as np
 
 __all__ = (
@@ -795,7 +795,7 @@ class MaterialIndexer(Indexer):
         except KeyError:
             try:
                 index, kind = self._chemicals._get_index_and_kind(key)
-            except UndefinedChemical as error:
+            except UndefinedChemicalAlias as error:
                 index, kind = self._get_index_and_kind(key, error)
                 sum_across_phases = False
             else:
@@ -809,7 +809,7 @@ class MaterialIndexer(Indexer):
             except KeyError:
                 try:
                     index, kind = self._chemicals._get_index_and_kind(key)
-                except UndefinedChemical as error:
+                except UndefinedChemicalAlias as error:
                     index, kind = self._get_index_and_kind(key, error)
                     sum_across_phases = False
                 else:
