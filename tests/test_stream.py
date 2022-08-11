@@ -35,7 +35,7 @@ def stream_methods():
     s1 = tmo.Stream(None, Water=1, Ethanol=1, phase='l')
     s2 = tmo.Stream(None, Water=100, Ethanol=100, phase='g')
     s3 = tmo.Stream.sum([s1, s2], vle=True)
-    assert_allclost([s3.T, s3.vapor_fraction], [356.42348688162764, 0.9159452891657182])
+    assert_allclose([s3.T, s3.vapor_fraction], [356.42348688162764, 0.9159452891657182])
 
 def test_critical():
     tmo.settings.set_thermo(['CO2', 'O2', 'CH4'], cache=True)
@@ -276,6 +276,7 @@ if __name__ == '__main__':
     test_stream()
     test_multistream()
     test_vlle()
+    stream_methods()
     test_stream_property_cache()
     test_critical()
     test_mixture()
