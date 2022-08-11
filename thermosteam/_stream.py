@@ -7,19 +7,24 @@
 # for license details.
 """
 """
+from __future__ import annotations
 import numpy as np
 import thermosteam as tmo
 import flexsolve as flx
-from warnings import warn
-from thermosteam import functional as fn
+from thermosteam import functional as fn, Thermo
 from . import indexer
 from . import equilibrium as eq
 from . import units_of_measure as thermo_units
-from collections.abc import Iterable
 from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
-from .constants import g
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+    from free_properties import property_array
+    from typing import Optional, Literal, Sequence, Iterable
+    import biosteam as bst
+# from .constants import g
 
 __all__ = ('Stream', )
 
@@ -54,30 +59,30 @@ class Stream:
 
     Parameters
     ----------
-    ID : str, optional
+    ID : 
         A unique identification. If ID is None, stream will not be registered.
         If no ID is given, stream will be registered with a unique ID.
-    flow : Iterable[float], optional
-        All flow rates corresponding to chemical `IDs`.
-    phase : {'l', 'g', 's'}
+    flow : 
+        All flow rates corresponding to defined chemicals.
+    phase : 
         'g' for gas, 'l' for liquid, and 's' for solid. Defaults to 'l'.
-    T : float
+    T : 
         Temperature [K]. Defaults to 298.15.
-    P : float
+    P : 
         Pressure [Pa]. Defaults to 101325.
-    units : str, optional
+    units : 
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid). Defaults to 'kmol/hr'.
-    price : float, optional
+    price : 
         Price per unit mass [USD/kg]. Defaults to 0.
-    total_flow : float, optional
+    total_flow : 
         Total flow rate.
-    thermo : :class:`~thermosteam.Thermo`, optional
+    thermo : 
         Thermo object to initialize input and output streams. Defaults to
         `biosteam.settings.get_thermo()`.
-    characterization_factors : dict, optional
+    characterization_factors : 
         Characterization factors for life cycle assessment.
-    vlle : bool, optional
+    vlle : 
         Whether to run rigorous phase equilibrium to determine phases. 
         Defaults to False.
     **chemical_flows : float
@@ -262,11 +267,19 @@ class Stream:
 
     _flow_cache = {}
 
-    def __init__(self, ID= '', flow=(), phase='l', T=298.15, P=101325.,
-                 units=None, price=0., total_flow=None, thermo=None, 
-                 characterization_factors=None, vlle=False,
+    def __init__(self, ID: str='', 
+                 flow: Sequence[float]=(),
+                 phase: Optional[Literal['s', 'l', 'g']]='l',
+                 T: Optional[float]=298.15,
+                 P: Optional[float]=101325.,
+                 units: Optional[str]=None,
+                 price: Optional[float]=0.,
+                 total_flow: Optional[float]=None, 
+                 thermo: Optional[Thermo]=None, 
+                 characterization_factors: Optional[dict[str, float]]=None,
+                 vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
-                 **chemical_flows):
+                 **chemical_flows: float):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
@@ -391,19 +404,19 @@ class Stream:
         self._user_equilibrium = f
         
     @property
-    def has_user_equilibrium(self):
+    def has_user_equilibrium(self) -> bool:
         return self._user_equilibrium is not None
 
-    def get_CF(self, key, units=None):
+    def get_CF(self, key: str, units: Optional[str]=None):
         """
         Returns the life-cycle characterization factor on a kg basis given the
         impact indicator key.
         
         Parameters
         ----------
-        key : str
+        key : 
             Key of impact indicator.
-        units : str, optional
+        units : 
             Units of impact indicator. Before using this argument, the default units 
             of the impact indicator should be defined with 
             thermosteam.settings.define_impact_indicator.
@@ -419,18 +432,18 @@ class Stream:
             value = original_units.convert(value, units)
         return value
     
-    def set_CF(self, key, value, units=None):
+    def set_CF(self, key: str, value: float, units: Optional[str]=None):
         """
         Set the life-cycle characterization factor on a kg basis given the 
         impact indicator key and the units of measure.
         
         Parameters
         ----------
-        key : str
+        key : 
             Key of impact indicator.
-        value : float
+        value : 
             Characterization factor value.
-        units : str, optional
+        units : 
             Units of impact indicator. Before using this argument, the default units 
             of the impact indicator should be defined with 
             thermosteam.settings.define_impact_indicator.
@@ -565,8 +578,8 @@ class Stream:
             raise ValueError(f'stream_data must be a StreamData object; not {type(stream_data).__name__}')
         
     @property
-    def price(self):
-        """[float] Price of stream per unit mass [USD/kg]."""
+    def price(self) -> float:
+        """Price of stream per unit mass [USD/kg]."""
         return self._price
     @price.setter
     def price(self, price):
@@ -576,8 +589,8 @@ class Stream:
             raise AttributeError(f'price must be finite, not {price}')
     
     # @property
-    # def velocity(self):
-    #     """[float] Velocity of stream [m/s]."""
+    # def velocity(self) -> float:
+    #     """Velocity of stream [m/s]."""
     #     return self._velocity
     # @velocity.setter
     # def velocity(self, velocity):
@@ -587,8 +600,8 @@ class Stream:
     #         raise AttributeError(f'velocity must be finite, not {velocity}')
     
     # @property
-    # def height(self):
-    #     """[float] Relative height of stream [m]."""
+    # def height(self) -> float:
+    #     """Relative height of stream [m]."""
     #     return self._height
     # @height.setter
     # def height(self, height):
@@ -598,13 +611,13 @@ class Stream:
     #         raise AttributeError(f'height must be finite, not {height}')
     
     # @property
-    # def potential_energy(self):
-    #     """[float] Potential energy flow rate [kW]"""
+    # def potential_energy(self) -> float:
+    #     """Potential energy flow rate [kW]"""
     #     return (g * self.height * self.F_mass) / 3.6e6
     
     # @property
     # def kinetic_energy(self):
-    #     """[float] Kinetic energy flow rate [kW]"""
+    #     """Kinetic energy flow rate [kW]"""
     #     return 0.5 * self.F_mass / 3.6e6 * self._velocity * self._velocity
     
     def isempty(self):
@@ -642,15 +655,15 @@ class Stream:
         if material[material < 0.].any(): raise InfeasibleRegion('negative material flow rate')
 
     @property
-    def vapor_fraction(self):
+    def vapor_fraction(self) -> float:
         """Molar vapor fraction."""
         return 1.0 if self.phase in 'gG' else 0.0
     @property
-    def liquid_fraction(self):
+    def liquid_fraction(self) -> float:
         """Molar liquid fraction."""
         return 1.0 if self.phase in 'lL' else 0.0
     @property
-    def solid_fraction(self):
+    def solid_fraction(self) -> float:
         """Molar solid fraction."""
         return 1.0 if self.phase in 'sS' else 0.0
 
@@ -663,8 +676,8 @@ class Stream:
         return bool(self._source and not self._sink)
 
     @property
-    def main_chemical(self):
-        """[str] ID of chemical with the largest mol fraction in stream."""
+    def main_chemical(self) -> str:
+        """ID of chemical with the largest mol fraction in stream."""
         return self.chemicals.tuple[self.mol.argmax()].ID
 
     def disconnect_source(self):
@@ -768,15 +781,15 @@ class Stream:
         """
         return array_to_atoms(self.chemicals.formula_array @ self.mol)
 
-    def get_flow(self, units, key=...):
+    def get_flow(self, units: str, key: Optional[Sequence[str]|str]=...):
         """
         Return an flow rates in requested units.
         
         Parameters
         ----------
-        units : str
+        units : 
             Units of measure.
-        key : tuple[str] or str, optional
+        key : 
             Chemical identifiers.
 
         Examples
@@ -792,17 +805,17 @@ class Stream:
         indexer = getattr(self, 'i' + name)
         return factor * indexer[key]
     
-    def set_flow(self, data, units, key=...):
+    def set_flow(self, data: NDArray[float]|float, units: str, key: Optional[Sequence[str]|str]=...):
         """
         Set flow rates in given units.
 
         Parameters
         ----------
-        data : 1d ndarray or float
+        data : 
             Flow rate data.
-        units : str
+        units : 
             Units of measure.
-        key : Iterable[str] or str, optional
+        key : 
             Chemical identifiers.
 
         Examples
@@ -819,13 +832,13 @@ class Stream:
         indexer = getattr(self, 'i' + name)
         indexer[key] = np.asarray(data, dtype=float) / factor
     
-    def get_total_flow(self, units):
+    def get_total_flow(self, units: str):
         """
         Get total flow rate in given units.
 
         Parameters
         ----------
-        units : str
+        units : 
             Units of measure.
 
         Examples
@@ -841,15 +854,15 @@ class Stream:
         flow = getattr(self, 'F_' + name)
         return factor * flow
     
-    def set_total_flow(self, value, units):
+    def set_total_flow(self, value: float, units: str):
         """
         Set total flow rate in given units keeping the composition constant.
 
         Parameters
         ----------
-        value : float
+        value : 
             New total flow rate.
-        units : str
+        units : 
             Units of measure.
 
         Examples
@@ -868,40 +881,40 @@ class Stream:
     ### Stream data ###
 
     @property
-    def source(self):
-        """[Unit] Outlet location."""
+    def source(self) -> bst.Unit:
+        """Outlet location."""
         return self._source
     @property
-    def sink(self):
-        """[Unit] Inlet location."""
+    def sink(self) -> bst.Unit:
+        """Inlet location."""
         return self._sink
 
     @property
-    def thermal_condition(self):
+    def thermal_condition(self) -> tmo.ThermalCondition:
         """
-        [ThermalCondition] Contains the temperature and pressure conditions 
+        Contains the temperature and pressure conditions 
         of the stream.
         """
         return self._thermal_condition
 
     @property
-    def T(self):
-        """[float] Temperature in Kelvin."""
+    def T(self) -> float:
+        """Temperature in Kelvin."""
         return self._thermal_condition._T
     @T.setter
     def T(self, T):
         self._thermal_condition._T = float(T)
     
     @property
-    def P(self):
-        """[float] Pressure in Pascal."""
+    def P(self) -> float:
+        """Pressure in Pascal."""
         return self._thermal_condition._P
     @P.setter
     def P(self, P):
         self._thermal_condition._P = float(P)
     
     @property
-    def phase(self):
+    def phase(self) -> str:
         """Phase of stream."""
         return self._imol._phase._phase
     @phase.setter
@@ -909,8 +922,8 @@ class Stream:
         self._imol._phase.phase = phase
     
     @property
-    def mol(self):
-        """[array] Molar flow rates in kmol/hr."""
+    def mol(self) -> NDArray[float]:
+        """Molar flow rates in kmol/hr."""
         return self._imol._data
     @mol.setter
     def mol(self, value):
@@ -918,8 +931,8 @@ class Stream:
         if mol is not value: mol[:] = value
     
     @property
-    def mass(self):
-        """[property_array] Mass flow rates in kg/hr."""
+    def mass(self) -> property_array:
+        """Mass flow rates in kg/hr."""
         return self.imass._data
     @mass.setter
     def mass(self, value):
@@ -927,8 +940,8 @@ class Stream:
         if mass is not value: mass[:] = value
     
     @property
-    def vol(self):
-        """[property_array] Volumetric flow rates in m3/hr."""
+    def vol(self) -> property_array:
+        """Volumetric flow rates in m3/hr."""
         return self.ivol._data
     @vol.setter
     def vol(self, value):
@@ -937,28 +950,28 @@ class Stream:
             vol[:] = value
         
     @property
-    def imol(self):
-        """[Indexer] Flow rate indexer with data in kmol/hr."""
+    def imol(self) -> indexer.Indexer:
+        """Flow rate indexer with data in kmol/hr."""
         return self._imol
     @property
-    def imass(self):
-        """[Indexer] Flow rate indexer with data in kg/hr."""
+    def imass(self) -> indexer.Indexer:
+        """Flow rate indexer with data in kg/hr."""
         return self._imol.by_mass()
     @property
-    def ivol(self):
-        """[Indexer] Flow rate indexer with data in m3/hr."""
+    def ivol(self) -> indexer.Indexer:
+        """Flow rate indexer with data in m3/hr."""
         return self._imol.by_volume(self._thermal_condition)
     
     ### Net flow properties ###
     
     @property
-    def cost(self):
-        """[float] Total cost of stream in USD/hr."""
+    def cost(self) -> float:
+        """Total cost of stream in USD/hr."""
         return self.price * self.F_mass
     
     @property
-    def F_mol(self):
-        """[float] Total molar flow rate in kmol/hr."""
+    def F_mol(self) -> float:
+        """Total molar flow rate in kmol/hr."""
         return self._imol._data.sum()
     @F_mol.setter
     def F_mol(self, value):
@@ -966,8 +979,8 @@ class Stream:
         if not F_mol: raise AttributeError("undefined composition; cannot set flow rate")
         self._imol._data[:] *= value/F_mol
     @property
-    def F_mass(self):
-        """[float] Total mass flow rate in kg/hr."""
+    def F_mass(self) -> float:
+        """Total mass flow rate in kg/hr."""
         return np.dot(self.chemicals.MW, self.mol)
     @F_mass.setter
     def F_mass(self, value):
@@ -975,8 +988,8 @@ class Stream:
         if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
         self.imol._data[:] *= value/F_mass
     @property
-    def F_vol(self):
-        """[float] Total volumetric flow rate in m3/hr."""
+    def F_vol(self) -> float:
+        """Total volumetric flow rate in m3/hr."""
         F_mol = self.F_mol
         return 1000. * self.V * F_mol if F_mol else 0.
     @F_vol.setter
@@ -986,8 +999,8 @@ class Stream:
         self.imol._data[:] *= value / F_vol
     
     @property
-    def H(self):
-        """[float] Enthalpy flow rate in kJ/hr."""
+    def H(self) -> float:
+        """Enthalpy flow rate in kJ/hr."""
         return self._get_property('H', flow=True)
     @H.setter
     def H(self, H: float):
@@ -1011,8 +1024,8 @@ class Stream:
             )
 
     @property
-    def h(self):
-        """[float] Specific enthalpy in kJ/kmol."""
+    def h(self) -> float:
+        """Specific enthalpy in kJ/kmol."""
         return self._get_property('H')
     @h.setter
     def h(self, h: float):
@@ -1037,8 +1050,8 @@ class Stream:
             )
             
     @property
-    def S(self):
-        """[float] Absolute entropy flow rate in kJ/hr/K."""
+    def S(self) -> float:
+        """Absolute entropy flow rate in kJ/hr/K."""
         return self._get_property('S', flow=True)
     @S.setter
     def S(self, S: float):
@@ -1061,25 +1074,25 @@ class Stream:
                 self.phase, self.mol, S, *self._thermal_condition
             )
     @property
-    def Hnet(self):
-        """[float] Total enthalpy flow rate (including heats of formation) in kJ/hr."""
+    def Hnet(self) -> float:
+        """Total enthalpy flow rate (including heats of formation) in kJ/hr."""
         return self.H + self.Hf
     
     @property
-    def Hf(self):
-        """[float] Enthalpy of formation flow rate in kJ/hr."""
+    def Hf(self) -> float:
+        """Enthalpy of formation flow rate in kJ/hr."""
         return (self.chemicals.Hf * self.mol).sum()
     @property
-    def LHV(self):
-        """[float] Lower heating value flow rate in kJ/hr."""
+    def LHV(self) -> float:
+        """Lower heating value flow rate in kJ/hr."""
         return (self.chemicals.LHV * self.mol).sum()    
     @property
-    def HHV(self):
-        """[float] Higher heating value flow rate in kJ/hr."""
+    def HHV(self) -> float:
+        """Higher heating value flow rate in kJ/hr."""
         return (self.chemicals.HHV * self.mol).sum()    
     @property
-    def Hvap(self):
-        """[float] Enthalpy of vaporization flow rate in kJ/hr."""
+    def Hvap(self) -> float:
+        """Enthalpy of vaporization flow rate in kJ/hr."""
         return self._get_property('Hvap', flow=True, nophase=True)
     
     def _get_property(self, name, flow=False, nophase=False):
@@ -1117,22 +1130,22 @@ class Stream:
             return value * total if flow else value
     
     @property
-    def C(self):
-        """[float] Isobaric heat capacity flow rate in kJ/hr."""
+    def C(self) -> float:
+        """Isobaric heat capacity flow rate in kJ/hr."""
         return self._get_property('Cn', flow=True)
     
     ### Composition properties ###
     
     @property
-    def z_mol(self):
-        """[1d array] Molar composition."""
+    def z_mol(self) -> NDArray[float]:
+        """Molar composition."""
         mol = self.mol
         z = mol / mol.sum()
         z.setflags(0)
         return z
     @property
-    def z_mass(self):
-        """[1d array] Mass composition."""
+    def z_mass(self) -> NDArray[float]:
+        """Mass composition."""
         mass = self.chemicals.MW * self.mol
         F_mass = mass.sum()
         if F_mass == 0:
@@ -1142,64 +1155,64 @@ class Stream:
         z.setflags(0)
         return z
     @property
-    def z_vol(self):
-        """[1d array] Volumetric composition."""
+    def z_vol(self) -> NDArray[float]:
+        """Volumetric composition."""
         vol = 1. * self.vol
         z = vol / vol.sum()
         z.setflags(0)
         return z
     
     @property
-    def MW(self):
-        """[float] Overall molecular weight."""
+    def MW(self) -> float:
+        """Overall molecular weight."""
         return self.mixture.MW(self.mol)
     @property
-    def V(self):
-        """[float] Molar volume [m^3/mol]."""
+    def V(self) -> float:
+        """Molar volume [m^3/mol]."""
         return self._get_property('V')
         
     @property
-    def kappa(self):
-        """[float] Thermal conductivity [W/m/k]."""
+    def kappa(self) -> float:
+        """Thermal conductivity [W/m/k]."""
         return self._get_property('kappa')
     @property
-    def Cn(self):
-        """[float] Molar isobaric heat capacity [J/mol/K]."""
+    def Cn(self) -> float:
+        """Molar isobaric heat capacity [J/mol/K]."""
         return self._get_property('Cn')
 
     @property
-    def mu(self):
-        """[float] Hydrolic viscosity [Pa*s]."""
+    def mu(self) -> float:
+        """Hydrolic viscosity [Pa*s]."""
         return self._get_property('mu')
     @property
-    def sigma(self):
-        """[float] Surface tension [N/m]."""
+    def sigma(self) -> float:
+        """Surface tension [N/m]."""
         return self._get_property('sigma', nophase=True)
     @property
-    def epsilon(self):
-        """[float] Relative permittivity [-]."""
+    def epsilon(self) -> float:
+        """Relative permittivity [-]."""
         return self._get_property('epsilon', nophase=True)
     @property
-    def Cp(self):
-        """[float] Isobaric heat capacity [J/g/K]."""
+    def Cp(self) -> float:
+        """Isobaric heat capacity [J/g/K]."""
         return self.Cn / self.MW
     @property
-    def alpha(self):
-        """[float] Thermal diffusivity [m^2/s]."""
+    def alpha(self) -> float:
+        """Thermal diffusivity [m^2/s]."""
         return fn.alpha(self.kappa, 
                         self.rho, 
                         self.Cp * 1000.)
     @property
-    def rho(self):
-        """[float] Density [kg/m^3]."""
+    def rho(self) -> float:
+        """Density [kg/m^3]."""
         return fn.V_to_rho(self.V, self.MW)
     @property
-    def nu(self):
-        """[float] Kinematic viscosity [m^2/s]."""
+    def nu(self) -> float:
+        """Kinematic viscosity [m^2/s]."""
         return fn.mu_to_nu(self.mu, self.rho)
     @property
-    def Pr(self):
-        """[float] Prandtl number [-]."""
+    def Pr(self) -> float:
+        """Prandtl number [-]."""
         return fn.Pr(self.Cp * 1000,
                      self.kappa, 
                      self.mu)
@@ -1207,8 +1220,8 @@ class Stream:
     ### Stream methods ###
     
     @property
-    def available_chemicals(self):
-        """list[Chemical] All chemicals with nonzero flow."""
+    def available_chemicals(self) -> list[tmo.Chemical]:
+        """All chemicals with nonzero flow."""
         return [i for i, j in zip(self.chemicals, self.mol) if j]
     
     def in_thermal_equilibrium(self, other):
@@ -1440,19 +1453,22 @@ class Stream:
             s1.phase = s2.phase = self.phase
             
         
-    def link_with(self, other, flow=True, phase=True, TP=True):
+    def link_with(self, other: Stream, 
+                  flow: Optional[bool]=True,
+                  phase: Optional[bool]=True, 
+                  TP: Optional[bool]=True):
         """
         Link with another stream.
         
         Parameters
         ----------
-        other : Stream
-        flow : bool, defaults to True
-            Whether to link the flow rate data.
-        phase : bool, defaults to True
-            Whether to link the phase.
-        TP : bool, defaults to True
-            Whether to link the temperature and pressure.
+        other : 
+        flow :
+            Whether to link the flow rate data. Defaults to True.
+        phase : 
+            Whether to link the phase. Defaults to True.
+        TP : 
+            Whether to link the temperature and pressure. Defaults to True.
         
         See Also
         --------
@@ -1584,19 +1600,23 @@ class Stream:
         """
         self._thermal_condition.copy_like(other._thermal_condition)
     
-    def copy_flow(self, other, IDs=..., *, remove=False, exclude=False):
+    def copy_flow(self, 
+                  other: Stream, 
+                  IDs: Optional[Sequence[str]|str]=..., *,
+                  remove: Optional[bool]=False,
+                  exclude: Optional[bool]=False):
         """
         Copy flow rates of another stream to self.
         
         Parameters
         ----------
-        other : Stream
+        other : 
             Flow rates will be copied from here.
-        IDs=... : Iterable[str], defaults to all chemicals.
+        IDs : 
             Chemical IDs. 
-        remove=False: bool, optional
+        remove : 
             If True, copied chemicals will be removed from `stream`.
-        exclude=False: bool, optional
+        exclude :
             If True, exclude designated chemicals when copying.
         
         Examples
@@ -1664,6 +1684,7 @@ class Stream:
          flow: 0
          
         Copy flows except except water and remove water:
+            
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_flow(s1, 'Water', exclude=True, remove=True)
@@ -1844,20 +1865,20 @@ class Stream:
     ### Equilibrium ###
     
     @property
-    def vle(self):
-        """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
+    def vle(self) -> eq.VLE:
+        """An object that can perform vapor-liquid equilibrium on the stream."""
         self.phases = ('g', 'l')
         return self.vle
 
     @property
-    def lle(self):
-        """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
+    def lle(self) -> eq.LLE:
+        """An object that can perform liquid-liquid equilibrium on the stream."""
         self.phases = ('L', 'l')
         return self.lle
     
     @property
-    def sle(self):
-        """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
+    def sle(self) -> eq.SLE:
+        """An object that can perform solid-liquid equilibrium on the stream."""
         self.phases = ('s', 'l')
         return self.sle
 
@@ -1906,28 +1927,28 @@ class Stream:
         data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False) * total_flow
 
     @property
-    def vle_chemicals(self):
-        """list[Chemical] Chemicals cabable of liquid-liquid equilibrium."""
+    def vle_chemicals(self) -> list[tmo.Chemical]:
+        """Chemicals cabable of liquid-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.get_vle_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
     @property
-    def lle_chemicals(self):
-        """list[Chemical] Chemicals cabable of vapor-liquid equilibrium."""
+    def lle_chemicals(self) -> list[tmo.Chemical]:
+        """Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.get_lle_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
-    def get_bubble_point(self, IDs=None):
+    def get_bubble_point(self, IDs: Optional[Iterable[str]]=None):
         """
         Return a BubblePoint object capable of computing bubble points.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        IDs : 
             Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
             
         Examples
@@ -1943,13 +1964,13 @@ class Stream:
         bp = self._bubble_point_cache(chemicals, self._thermo)
         return bp
     
-    def get_dew_point(self, IDs=None):
+    def get_dew_point(self, IDs: Optional[Iterable[str]]=None):
         """
         Return a DewPoint object capable of computing dew points.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        IDs :
             Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
             
         Examples
@@ -1965,13 +1986,15 @@ class Stream:
         dp = self._dew_point_cache(chemicals, self._thermo)
         return dp
     
-    def bubble_point_at_T(self, T=None, IDs=None):
+    def bubble_point_at_T(self, T: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
         """
         Return a BubblePointResults object with all data on the bubble point at constant temperature.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        T :
+            Temperature [K].
+        IDs : 
             Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
             
         Examples
@@ -1987,13 +2010,13 @@ class Stream:
         z = self.get_normalized_mol(bp.IDs)
         return bp(z, T=T or self.T)
     
-    def bubble_point_at_P(self, P=None, IDs=None):
+    def bubble_point_at_P(self, P: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
         """
         Return a BubblePointResults object with all data on the bubble point at constant pressure.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        IDs :
             Chemicals that participate in equilibrium. Defaults to all chemicals in equilibrium.
             
         Examples
@@ -2009,14 +2032,14 @@ class Stream:
         z = self.get_normalized_mol(bp.IDs)
         return bp(z, P=P or self.P)
     
-    def dew_point_at_T(self, T=None, IDs=None):
+    def dew_point_at_T(self, T: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
         """
         Return a DewPointResults object with all data on the dew point
         at constant temperature.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        IDs : 
             Chemicals that participate in equilibrium. Defaults to all
             chemicals in equilibrium.
             
@@ -2033,14 +2056,14 @@ class Stream:
         z = self.get_normalized_mol(dp.IDs)
         return dp(z, T=T or self.T)
     
-    def dew_point_at_P(self, P=None, IDs=None):
+    def dew_point_at_P(self, P: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
         """
         Return a DewPointResults object with all data on the dew point
         at constant pressure.
         
         Parameters
         ----------
-        IDs : Iterable[str], optional
+        IDs : 
             Chemicals that participate in equilibrium. Defaults to all
             chemicals in equilibrium.
             
@@ -2057,13 +2080,13 @@ class Stream:
         z = self.get_normalized_mol(dp.IDs)
         return dp(z, P=P or self.P)
     
-    def get_normalized_mol(self, IDs):
+    def get_normalized_mol(self, IDs: Sequence[str]):
         """
         Return normalized molar fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -2080,13 +2103,13 @@ class Stream:
         if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
         return z / z_sum
     
-    def get_normalized_mass(self, IDs):
+    def get_normalized_mass(self, IDs: Sequence[str]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -2103,13 +2126,13 @@ class Stream:
         if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
         return z / z_sum
     
-    def get_normalized_vol(self, IDs):
+    def get_normalized_vol(self, IDs: Sequence[str]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -2126,13 +2149,13 @@ class Stream:
         if not z_sum: raise RuntimeError(f'{repr(self)} is empty')
         return z / z_sum
     
-    def get_molar_fraction(self, IDs):
+    def get_molar_fraction(self, IDs: Sequence[str]):
         """
         Return molar fraction of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -2149,13 +2172,13 @@ class Stream:
     
     get_molar_composition = get_molar_fraction
     
-    def get_mass_fraction(self, IDs):
+    def get_mass_fraction(self, IDs: Sequence[str]):
         """
         Return mass fraction of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -2172,13 +2195,13 @@ class Stream:
     
     get_mass_composition = get_mass_fraction
     
-    def get_volumetric_fraction(self, IDs):
+    def get_volumetric_fraction(self, IDs: Sequence[str]):
         """
         Return volumetric fraction of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -2195,13 +2218,13 @@ class Stream:
     
     get_volumetric_composition = get_volumetric_fraction
     
-    def get_concentration(self, IDs):
+    def get_concentration(self, IDs: Sequence[str]):
         """
         Return concentration of given chemicals in kmol/m3.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -2217,7 +2240,7 @@ class Stream:
         return self.imol[IDs] / F_vol if F_vol else 0.
     
     @property
-    def P_vapor(self):
+    def P_vapor(self) -> float:
         """Vapor pressure of liquid."""
         chemicals = self.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, self.thermo)
@@ -2309,8 +2332,8 @@ class Stream:
     ### Casting ###
     
     @property
-    def phases(self):
-        """tuple[str] All phases present."""
+    def phases(self) -> tuple[str, ...]:
+        """All phases present."""
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
@@ -2433,45 +2456,48 @@ class Stream:
               + beginning
               + flow_rates)
 
-    def show(self, layout=None, T=None, P=None, flow=None, composition=None, N=None, IDs=None):
+    def show(self, 
+             layout: Optional[str]=None,
+             T: Optional[str]=None,
+             P: Optional[str]=None,
+             flow: Optional[str]=None, 
+             composition: Optional[bool]=None, 
+             N: Optional[int]=None, 
+             IDs: Optional[Sequence[str]]=None):
         """
         Print all specifications.
         
         Parameters
         ----------
-        layout : str, optional
+        layout : 
             Convenience paramater for passing `flow`, `composition`, and `N`. 
             Must have the form {'c' or ''}{'wt', 'mol' or 'vol'}{# or ''}.
             For example: 'cwt100' corresponds to compostion=True, flow='kg/hr', 
             and N=100.
-        T : str, optional
+        T : 
             Temperature units.
-        P : str, optional
+        P : 
             Pressure units.
-        flow : str, optional
+        flow : 
             Flow rate units.
-        composition : bool, optional
+        composition : 
             Whether to show composition.
-        N : int, optional
+        N : 
             Number of compounds to display.
-        IDs : tuple[str], optional
-            IDs of compounds to display. Defaults to all chemicals
-            .
-        Notes
-        -----
-        Default values are stored in `Stream.display_units`.
+        IDs : 
+            IDs of compounds to display. Defaults to all chemicals.
         
         """
         print(self._info(layout, T, P, flow, composition, N, IDs))
     _ipython_display_ = show
     
-    def print(self, units=None):
+    def print(self, units: Optional[str]=None):
         """
         Print in a format that you can use recreate the stream.
         
         Parameters
         ----------
-        units : str, optional
+        units : 
             Units of measure for material flow rates. Defaults to 'kmol/hr'
         
         Examples
