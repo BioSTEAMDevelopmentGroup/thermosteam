@@ -1369,7 +1369,7 @@ class Stream:
             self._imol.mix_from([i._imol for i in others])
             if energy_balance: 
                 H = sum([i.H for i in others])
-                self.vle(H=self.H, P=self.P)
+                self.vle(H=H, P=self.P)
             else:
                 self.vle(T=self.T, P=self.P)
         else:
