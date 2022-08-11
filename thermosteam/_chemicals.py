@@ -11,6 +11,7 @@ from . import utils
 from .exceptions import UndefinedChemical
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
+from collections.abc import Sequence
 import thermosteam as tmo
 import numpy as np
 
@@ -544,7 +545,8 @@ class CompiledChemicals(Chemicals):
         dct['LHV'] = chemical_data_array(chemicals, 'LHV')
         dct['HHV'] = chemical_data_array(chemicals, 'HHV')
         dct['_index'] = index = dict((*zip(CAS, index),
-                                      *zip(IDs, index)))
+                                      *zip(IDs, index),
+                                      *zip(chemicals, index)))
         dct['_group_wt_compositions'] = {}
         dct['_group_mol_compositions'] = {}
         dct['_index_cache'] = {}
@@ -671,7 +673,7 @@ class CompiledChemicals(Chemicals):
         
         """
         k = self._index[ID]
-        return [i for i, j in self._index.items() if j==k] 
+        return [i for i, j in self._index.items() if j==k and isinstance(i, str)] 
 
     get_synonyms = get_aliases
 
@@ -1026,7 +1028,7 @@ class CompiledChemicals(Chemicals):
 
         Examples
         --------
-        Get multiple indices with a tuple of IDs:
+        Get multiple indices with a tuple/list of IDs:
         
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
@@ -1044,27 +1046,28 @@ class CompiledChemicals(Chemicals):
         >>> chemicals.get_index(...)
         slice(None, None, None)
 
-        Anything else returns an error:
+        Collections (without an order) raise an error:
         
-        >>> chemicals.get_index(['Water', 'Ethanol'])
+        >>> chemicals.get_index({'Water', 'Ethanol'})
         Traceback (most recent call last):
-        TypeError: only strings, tuples, and ellipsis are valid index keys
+        TypeError: only strings, sequences, and ellipsis are valid index keys
 
         """
         if isinstance(IDs, str):
             return self.index(IDs)
-        elif isinstance(IDs, tuple):
-            return self.indices(IDs)
         elif IDs is ...:
             return slice(None)
+        elif isinstance(IDs, Sequence):
+            return self.indices(IDs)
         else: # pragma: no cover
             raise TypeError("only strings, tuples, and ellipsis are valid index keys")    
     
     def _get_index_and_kind(self, key):
         index_cache = self._index_cache
-        if key in index_cache:
+        try:
+            if key.__hash__ is None: key = tuple(key)
             return index_cache[key]
-        else:
+        except KeyError:
             isa = isinstance
             kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
             if isa(key, str):
@@ -1077,8 +1080,10 @@ class CompiledChemicals(Chemicals):
             elif key is ...:
                 index = slice(None)
             else: # pragma: no cover
-                raise TypeError("only strings, tuples, and ellipsis are valid index keys")
+                raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
             index_cache[key] = index, kind
+        except TypeError:
+            raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
         return index, kind
     
     def __len__(self):

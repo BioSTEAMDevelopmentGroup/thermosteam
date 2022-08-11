@@ -215,16 +215,22 @@ def test_multistream():
     assert_allclose(other.P, stream.P)
     
     # Indexing
+    c = stream.chemicals
     assert_allclose(stream.imol['Water'], 10.)
     assert_allclose(stream.imol['Water', 'Ethanol'], [10., 0.])
+    assert_allclose(stream.imol[['Water', 'Ethanol']], [10., 0.])
+    assert_allclose(stream.imol[c.Water, c.Ethanol], [10., 0.])
+    assert_allclose(stream.imol['l', ['Water', 'Ethanol']], stream.imol['l', ('Water', 'Ethanol')])
     UndefinedChemical = tmo.exceptions.UndefinedChemical
     UndefinedPhase = tmo.exceptions.UndefinedPhase
     with pytest.raises(UndefinedChemical):
         stream.imol['Octanol']
     with pytest.raises(UndefinedChemical):
         stream.imol['l', 'Octanol']
-    with pytest.raises(TypeError):
+    with pytest.raises(UndefinedChemical):
         stream.imol['l', ['Octanol', 'Water']]
+    with pytest.raises(TypeError):
+        stream.imol['l', ['Octanol', ['Water']]]
     with pytest.raises(IndexError):
         stream.imol[None, 'Octanol']
     with pytest.raises(UndefinedPhase):

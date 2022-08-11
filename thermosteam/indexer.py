@@ -14,7 +14,7 @@ from .exceptions import UndefinedChemical
 from .base import PhaseHandle
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple, check_phase
 from free_properties import PropertyFactory, property_array
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 import numpy as np
 
 __all__ = (
@@ -38,7 +38,7 @@ _new = object.__new__
 def raise_material_indexer_index_error():
     raise IndexError("index by [phase, IDs] where phase is a "
                      "(str, ellipsis, or missing), and IDs is a "
-                     "(str, tuple(str), ellipisis, or missing)")
+                     "(str, tuple[str], ellipisis, or missing)")
 
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
@@ -790,7 +790,7 @@ class MaterialIndexer(Indexer):
     
     def _get_index_data(self, key):
         cache = self._index_cache
-        try: 
+        try:
             index_data = cache[key]
         except KeyError:
             try:
@@ -803,7 +803,21 @@ class MaterialIndexer(Indexer):
             cache[key] = index_data = (index, kind, sum_across_phases)
             utils.trim_cache(cache)
         except TypeError:
-            raise TypeError("only strings, tuples, and ellipsis are valid index keys")
+            try:
+                key = tuple([i if i.__hash__ else tuple(i) for i in key])
+                index_data = cache[key]
+            except KeyError:
+                try:
+                    index, kind = self._chemicals._get_index_and_kind(key)
+                except UndefinedChemical as error:
+                    index, kind = self._get_index_and_kind(key, error)
+                    sum_across_phases = False
+                else:
+                    sum_across_phases = True
+                cache[key] = index_data = (index, kind, sum_across_phases)
+                utils.trim_cache(cache)
+            except TypeError:
+                raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
         return index_data
     
     def _get_index_and_kind(self, phase_IDs, undefined_chemical_error):
