@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from numpy.typing import NDArray
     from free_properties import property_array
-    from typing import Optional, Literal, Sequence, Iterable
+    from typing import Optional, Sequence, Iterable
     import biosteam as bst
 # from .constants import g
 
@@ -269,7 +269,7 @@ class Stream:
 
     def __init__(self, ID: str='', 
                  flow: Sequence[float]=(),
-                 phase: Optional[Literal['s', 'l', 'g']]='l',
+                 phase: Optional[str]='l',
                  T: Optional[float]=298.15,
                  P: Optional[float]=101325.,
                  units: Optional[str]=None,

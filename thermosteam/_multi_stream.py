@@ -7,6 +7,8 @@
 # for license details.
 """
 """
+from __future__ import annotations
+from ._thermo import Thermo
 from ._stream import Stream
 from ._thermal_condition import ThermalCondition
 from .indexer import MolarFlowIndexer
@@ -14,6 +16,11 @@ from ._phase import phase_tuple
 from . import equilibrium as eq
 from . import utils
 import numpy as np
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+    from free_properties import property_array
+    from typing import Optional, Sequence
 
 __all__ = ('MultiStream', )
 
@@ -37,27 +44,27 @@ class MultiStream(Stream):
 
     Parameters
     ----------
-    ID : str, optional
+    ID : 
         A unique identification. If ID is None, stream will not be registered.
         If no ID is given, stream will be registered with a unique ID.
-    flow : 2d array, optional
+    flow : 
         All flow rates corresponding to `phases` by row and chemical IDs by column.
-    T : float
+    T : 
         Temperature [K]. Defaults to 298.15.
-    P : float
+    P : 
         Pressure [Pa]. Defaults to 101325.
-    phases : tuple['g', 'l', 's', 'L', 'S']
+    phases : 
         Tuple denoting the phases present. Defaults to ('g', 'l').
-    units : str, optional
+    units : 
         Flow rate units of measure (only mass, molar, and
         volumetric flow rates are valid). Defaults to 'kmol/hr'.
-    price : float, optional
+    price : 
         Price per unit mass [USD/kg]. Defaults to 0.
-    total_flow : float, optional
+    total_flow : 
         Total flow rate.
-    thermo : :class:`~thermosteam.Thermo`
+    thermo : 
         Thermodynamic equilibrium package. Defaults to `thermosteam.settings.get_thermo()`.
-    vlle : bool, optional
+    vlle :
         Whether to run rigorous phase equilibrium to determine phases. 
         Defaults to False.
     **phase_flow : tuple[str, float]
@@ -188,9 +195,19 @@ class MultiStream(Stream):
     
     """
     __slots__ = ()
-    def __init__(self, ID="", flow=(), T=298.15, P=101325., phases=None, 
-                 units=None, price=0, total_flow=None, thermo=None, 
-                 characterization_factors=None, vlle=False, **phase_flows):
+    def __init__(self, 
+                 ID: Optional[str]="",
+                 flow: Optional[Sequence[float]]=(), 
+                 T: Optional[float]=298.15, 
+                 P: Optional[float]=101325.,
+                 phases: Optional[Sequence[str]]=None, 
+                 units: Optional[str]=None, 
+                 price: Optional[float]=0,
+                 total_flow: Optional[float]=None, 
+                 thermo: Optional[Thermo]=None, 
+                 characterization_factors: Optional[dict[str, float]]=None, 
+                 vlle: Optional[bool]=False, 
+                 **phase_flows: tuple[str, float]):
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
@@ -448,7 +465,7 @@ class MultiStream(Stream):
     ### Stream data ###
     
     @property
-    def phases(self):
+    def phases(self) -> tuple[str, ...]:
         """tuple[str] All phases avaiable."""
         return self._imol._phases
     @phases.setter
@@ -463,20 +480,20 @@ class MultiStream(Stream):
     ### Flow properties ###
             
     @property
-    def mol(self):
-        """[Array] Chemical molar flow rates (total of all phases)."""
+    def mol(self) -> NDArray[float]:
+        """Chemical molar flow rates (total of all phases)."""
         mol = self._imol._data.sum(0)
         mol.setflags(0)
         return mol
     @property
-    def mass(self):
-        """[Array] Chemical mass flow rates (total of all phases)."""
+    def mass(self) -> NDArray[float]:
+        """Chemical mass flow rates (total of all phases)."""
         mass = self.mol * self.chemicals.MW
         mass.setflags(0)
         return mass
     @property
-    def vol(self):
-        """[Array] Chemical volumetric flow rates (total of all phases)."""
+    def vol(self) -> NDArray[float]:
+        """Chemical volumetric flow rates (total of all phases)."""
         vol = self.ivol._data.sum(0)
         vol.setflags(0)
         return vol
@@ -484,8 +501,8 @@ class MultiStream(Stream):
     ### Net flow properties ###
     
     @property
-    def H(self):
-        """[float] Enthalpy flow rate in kJ/hr."""
+    def H(self) -> float:
+        """Enthalpy flow rate in kJ/hr."""
         return self._get_property('H', True)
     @H.setter
     def H(self, H):
@@ -495,8 +512,8 @@ class MultiStream(Stream):
         )
 
     @property
-    def h(self):
-        """[float] Specific enthalpy in kJ/kmol."""
+    def h(self) -> float:
+        """Specific enthalpy in kJ/kmol."""
         return self._get_property('H')
     @h.setter
     def h(self, h: float):
@@ -506,8 +523,8 @@ class MultiStream(Stream):
         )
 
     @property
-    def S(self):
-        """[float] Absolute entropy flow rate in kJ/hr."""
+    def S(self) -> float:
+        """Absolute entropy flow rate in kJ/hr."""
         return self._get_property('S', True)
     @S.setter
     def S(self, S):
@@ -516,23 +533,18 @@ class MultiStream(Stream):
             self._imol, S, *self._thermal_condition
         )
     
-    @property
-    def Hvap(self):
-        """[float] Enthalpy of vaporization flow rate in kJ/hr."""
-        return self._get_property('Hvap', True)
-    
     ### Composition properties ###
     
     @property
-    def vapor_fraction(self):
+    def vapor_fraction(self) -> float:
         """Molar vapor fraction."""
         return get_phase_fraction(self, 'gG')
     @property
-    def liquid_fraction(self):
+    def liquid_fraction(self) -> float:
         """Molar liquid fraction."""
         return get_phase_fraction(self, 'lL')
     @property
-    def solid_fraction(self):
+    def solid_fraction(self) -> float:
         """Molar solid fraction."""
         return get_phase_fraction(self, 'sS')
         
@@ -739,13 +751,13 @@ class MultiStream(Stream):
                 data[other_phase_index, IDs_index] = other_data[IDs_index]
                 if remove: other_data[IDs_index] = 0.
     
-    def get_normalized_mol(self, IDs):
+    def get_normalized_mol(self, IDs: tuple[str, ...]):
         """
         Return normalized molar fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -761,13 +773,13 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_normalized_vol(self, IDs):
+    def get_normalized_vol(self, IDs: tuple[str, ...]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -783,13 +795,13 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_normalized_mass(self, IDs):
+    def get_normalized_mass(self, IDs: tuple[str, ...]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals to be normalized.
 
         Examples
@@ -805,13 +817,13 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_molar_composition(self, IDs):
+    def get_molar_composition(self, IDs: tuple[str, ...]):
         """
         Return molar composition of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -825,13 +837,13 @@ class MultiStream(Stream):
         """
         return self.imol[..., IDs].sum(0)/self.F_mol
     
-    def get_mass_composition(self, IDs):
+    def get_mass_composition(self, IDs: tuple[str, ...]):
         """
         Return mass composition of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -845,13 +857,13 @@ class MultiStream(Stream):
         """
         return self.imass[..., IDs].sum(0)/self.F_mass
     
-    def get_volumetric_composition(self, IDs):
+    def get_volumetric_composition(self, IDs: tuple[str, ...]):
         """
         Return volumetric composition of given chemicals.
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -871,7 +883,7 @@ class MultiStream(Stream):
 
         Parameters
         ----------
-        IDs : tuple[str]
+        IDs : 
             IDs of chemicals.
 
         Examples
@@ -902,22 +914,22 @@ class MultiStream(Stream):
     #     return cache.retrieve()
         
     @property
-    def vle(self):
-        """[VLE] An object that can perform vapor-liquid equilibrium on the stream."""
+    def vle(self) -> eq.VLE:
+        """An object that can perform vapor-liquid equilibrium on the stream."""
         phases = self.phases
         if 'l' not in phases or 'g' not in phases: 
             self.phases = [*phases, 'l', 'g']
         return self._vle_cache.retrieve()
     @property
-    def lle(self):
-        """[LLE] An object that can perform liquid-liquid equilibrium on the stream."""
+    def lle(self) -> eq.LLE:
+        """An object that can perform liquid-liquid equilibrium on the stream."""
         phases = self.phases
         if 'l' not in phases or 'L' not in phases: 
             self.phases = [*phases, 'l', 'L']
         return self._lle_cache.retrieve()
     @property
-    def sle(self):
-        """[SLE] An object that can perform solid-liquid equilibrium on the stream."""
+    def sle(self) -> eq.SLE:
+        """An object that can perform solid-liquid equilibrium on the stream."""
         phases = self.phases
         if 's' not in phases or 'l' not in phases: 
             self.phases = [*phases, 's', 'l']
@@ -937,7 +949,7 @@ class MultiStream(Stream):
             raise RuntimeError('multiple phases present; cannot convert to single phase stream')
     
     @property
-    def phase(self):
+    def phase(self) -> str:
         imol = self._imol
         return ''.join([phases[0] for phases in ('g', 'lL', 'sS') if not imol.phases_are_empty(phases)])
     @phase.setter
