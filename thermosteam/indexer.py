@@ -38,7 +38,7 @@ _new = object.__new__
 def raise_material_indexer_index_error():
     raise IndexError("index by [phase, IDs] where phase is a "
                      "(str, ellipsis, or missing), and IDs is a "
-                     "(str, tuple[str], ellipisis, or missing)")
+                     "(str, Sequence[str], ellipisis, or missing)")
 
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
