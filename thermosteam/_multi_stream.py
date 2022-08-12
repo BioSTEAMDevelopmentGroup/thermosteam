@@ -19,8 +19,7 @@ import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from numpy.typing import NDArray
-    from free_properties import property_array
-    from typing import Optional, Sequence
+    from typing import Optional, Sequence, Dict, Tuple
 
 __all__ = ('MultiStream', )
 
@@ -205,9 +204,9 @@ class MultiStream(Stream):
                  price: Optional[float]=0,
                  total_flow: Optional[float]=None, 
                  thermo: Optional[Thermo]=None, 
-                 characterization_factors: Optional[dict[str, float]]=None, 
+                 characterization_factors: Optional[Dict[str, float]]=None, 
                  vlle: Optional[bool]=False, 
-                 **phase_flows: tuple[str, float]):
+                 **phase_flows: Tuple[str, float]):
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
@@ -466,7 +465,7 @@ class MultiStream(Stream):
     
     @property
     def phases(self) -> tuple[str, ...]:
-        """tuple[str] All phases avaiable."""
+        """All phases avaiable."""
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
@@ -502,7 +501,7 @@ class MultiStream(Stream):
     
     @property
     def H(self) -> float:
-        """Enthalpy flow rate in kJ/hr."""
+        """Enthalpy flow rate [kJ/hr]."""
         return self._get_property('H', True)
     @H.setter
     def H(self, H):
@@ -524,7 +523,7 @@ class MultiStream(Stream):
 
     @property
     def S(self) -> float:
-        """Absolute entropy flow rate in kJ/hr."""
+        """Absolute entropy flow rate [kJ/hr]."""
         return self._get_property('S', True)
     @S.setter
     def S(self, S):
@@ -595,20 +594,24 @@ class MultiStream(Stream):
             tc1._T = tc2._T = tc._T
             tc1._P = tc2._P = tc._P
     
-    def copy_flow(self, other, phase=..., IDs=..., *, remove=False, exclude=False):
+    def copy_flow(self, 
+                  other: Stream, 
+                  phase: Optional[Sequence[str]|str]=...,
+                  IDs: Optional[Sequence[str]|str]=..., *,
+                  remove: Optional[bool]=False,
+                  exclude: Optional[bool]=False):
         """
         Copy flow rates of another stream to self.
         
         Parameters
         ----------
-        other : Stream
+        other : 
             Flow rates will be copied from here.
-        phase : str or Ellipsis
-        IDs=None : iterable[str], defaults to all chemicals.
-            Chemical IDs. 
-        remove=False: bool, optional
+        IDs : 
+            Chemical IDs. Defaults to all chemicals.
+        remove : 
             If True, copied chemicals will be removed from `stream`.
-        exclude=False: bool, optional
+        exclude :
             If True, exclude designated chemicals when copying.
         
         Notes
@@ -751,7 +754,7 @@ class MultiStream(Stream):
                 data[other_phase_index, IDs_index] = other_data[IDs_index]
                 if remove: other_data[IDs_index] = 0.
     
-    def get_normalized_mol(self, IDs: tuple[str, ...]):
+    def get_normalized_mol(self, IDs: Sequence[str]):
         """
         Return normalized molar fractions of given chemicals. The sum of the result is always 1.
 
@@ -773,7 +776,7 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_normalized_vol(self, IDs: tuple[str, ...]):
+    def get_normalized_vol(self, IDs: Sequence[str]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
@@ -795,7 +798,7 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_normalized_mass(self, IDs: tuple[str, ...]):
+    def get_normalized_mass(self, IDs: Sequence[str]):
         """
         Return normalized mass fractions of given chemicals. The sum of the result is always 1.
 
@@ -817,7 +820,7 @@ class MultiStream(Stream):
         z /= z.sum()
         return z
     
-    def get_molar_composition(self, IDs: tuple[str, ...]):
+    def get_molar_composition(self, IDs: Sequence[str]):
         """
         Return molar composition of given chemicals.
 
@@ -837,7 +840,7 @@ class MultiStream(Stream):
         """
         return self.imol[..., IDs].sum(0)/self.F_mol
     
-    def get_mass_composition(self, IDs: tuple[str, ...]):
+    def get_mass_composition(self, IDs: Sequence[str]):
         """
         Return mass composition of given chemicals.
 
@@ -857,7 +860,7 @@ class MultiStream(Stream):
         """
         return self.imass[..., IDs].sum(0)/self.F_mass
     
-    def get_volumetric_composition(self, IDs: tuple[str, ...]):
+    def get_volumetric_composition(self, IDs: Sequence[str]):
         """
         Return volumetric composition of given chemicals.
 

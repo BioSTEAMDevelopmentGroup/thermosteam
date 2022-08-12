@@ -267,7 +267,7 @@ class Stream:
 
     _flow_cache = {}
 
-    def __init__(self, ID: str='', 
+    def __init__(self, ID: Optional[str]='', 
                  flow: Sequence[float]=(),
                  phase: Optional[str]='l',
                  T: Optional[float]=298.15,
@@ -279,7 +279,7 @@ class Stream:
                  characterization_factors: Optional[dict[str, float]]=None,
                  vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
-                 **chemical_flows: float):
+                 **chemical_flows:float):
         #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
         self.characterization_factors = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
@@ -1080,19 +1080,19 @@ class Stream:
     
     @property
     def Hf(self) -> float:
-        """Enthalpy of formation flow rate in kJ/hr."""
+        """Enthalpy of formation flow rate [kJ/hr]."""
         return (self.chemicals.Hf * self.mol).sum()
     @property
     def LHV(self) -> float:
-        """Lower heating value flow rate in kJ/hr."""
+        """Lower heating value flow rate [kJ/hr]."""
         return (self.chemicals.LHV * self.mol).sum()    
     @property
     def HHV(self) -> float:
-        """Higher heating value flow rate in kJ/hr."""
+        """Higher heating value flow rate [kJ/hr]."""
         return (self.chemicals.HHV * self.mol).sum()    
     @property
     def Hvap(self) -> float:
-        """Enthalpy of vaporization flow rate in kJ/hr."""
+        """Enthalpy of vaporization flow rate [kJ/hr]."""
         return self._get_property('Hvap', flow=True, nophase=True)
     
     def _get_property(self, name, flow=False, nophase=False):
@@ -1131,7 +1131,7 @@ class Stream:
     
     @property
     def C(self) -> float:
-        """Isobaric heat capacity flow rate in kJ/hr."""
+        """Isobaric heat capacity flow rate [kJ/K/hr]."""
         return self._get_property('Cn', flow=True)
     
     ### Composition properties ###
