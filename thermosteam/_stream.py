@@ -1051,7 +1051,7 @@ class Stream:
             
     @property
     def S(self) -> float:
-        """Absolute entropy flow rate [kJ/hr]/K."""
+        """Absolute entropy flow rate [kJ/hr/K]."""
         return self._get_property('S', flow=True)
     @S.setter
     def S(self, S: float):
