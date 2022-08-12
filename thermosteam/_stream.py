@@ -280,8 +280,8 @@ class Stream:
                  vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
                  **chemical_flows:float):
-        #: dict[obj, float] Characterization factors for life cycle assessment in impact / kg.
-        self.characterization_factors = {} if characterization_factors is None else {}
+        #: Characterization factors for life cycle assessment [impact/kg].
+        self.characterization_factors: dict[str, float] = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
@@ -899,7 +899,7 @@ class Stream:
 
     @property
     def T(self) -> float:
-        """Temperature in Kelvin."""
+        """Temperature [K]."""
         return self._thermal_condition._T
     @T.setter
     def T(self, T):
@@ -907,7 +907,7 @@ class Stream:
     
     @property
     def P(self) -> float:
-        """Pressure in Pascal."""
+        """Pressure [Pa]."""
         return self._thermal_condition._P
     @P.setter
     def P(self, P):
@@ -923,7 +923,7 @@ class Stream:
     
     @property
     def mol(self) -> NDArray[float]:
-        """Molar flow rates in kmol/hr."""
+        """Molar flow rates [kmol/hr]."""
         return self._imol._data
     @mol.setter
     def mol(self, value):
@@ -932,7 +932,7 @@ class Stream:
     
     @property
     def mass(self) -> property_array:
-        """Mass flow rates in kg/hr."""
+        """Mass flow rates [kg/hr]."""
         return self.imass._data
     @mass.setter
     def mass(self, value):
@@ -941,7 +941,7 @@ class Stream:
     
     @property
     def vol(self) -> property_array:
-        """Volumetric flow rates in m3/hr."""
+        """Volumetric flow rates [m3/hr]."""
         return self.ivol._data
     @vol.setter
     def vol(self, value):
@@ -951,27 +951,27 @@ class Stream:
         
     @property
     def imol(self) -> indexer.Indexer:
-        """Flow rate indexer with data in kmol/hr."""
+        """Flow rate indexer with data [kmol/hr]."""
         return self._imol
     @property
     def imass(self) -> indexer.Indexer:
-        """Flow rate indexer with data in kg/hr."""
+        """Flow rate indexer with data [kg/hr]."""
         return self._imol.by_mass()
     @property
     def ivol(self) -> indexer.Indexer:
-        """Flow rate indexer with data in m3/hr."""
+        """Flow rate indexer with data [m3/hr]."""
         return self._imol.by_volume(self._thermal_condition)
     
     ### Net flow properties ###
     
     @property
     def cost(self) -> float:
-        """Total cost of stream in USD/hr."""
+        """Total cost of stream [USD/hr]."""
         return self.price * self.F_mass
     
     @property
     def F_mol(self) -> float:
-        """Total molar flow rate in kmol/hr."""
+        """Total molar flow rate [kmol/hr]."""
         return self._imol._data.sum()
     @F_mol.setter
     def F_mol(self, value):
@@ -980,7 +980,7 @@ class Stream:
         self._imol._data[:] *= value/F_mol
     @property
     def F_mass(self) -> float:
-        """Total mass flow rate in kg/hr."""
+        """Total mass flow rate [kg/hr]."""
         return np.dot(self.chemicals.MW, self.mol)
     @F_mass.setter
     def F_mass(self, value):
@@ -989,7 +989,7 @@ class Stream:
         self.imol._data[:] *= value/F_mass
     @property
     def F_vol(self) -> float:
-        """Total volumetric flow rate in m3/hr."""
+        """Total volumetric flow rate [m3/hr]."""
         F_mol = self.F_mol
         return 1000. * self.V * F_mol if F_mol else 0.
     @F_vol.setter
@@ -1000,7 +1000,7 @@ class Stream:
     
     @property
     def H(self) -> float:
-        """Enthalpy flow rate in kJ/hr."""
+        """Enthalpy flow rate [kJ/hr]."""
         return self._get_property('H', flow=True)
     @H.setter
     def H(self, H: float):
@@ -1025,7 +1025,7 @@ class Stream:
 
     @property
     def h(self) -> float:
-        """Specific enthalpy in kJ/kmol."""
+        """Specific enthalpy [kJ/kmol]."""
         return self._get_property('H')
     @h.setter
     def h(self, h: float):
@@ -1051,7 +1051,7 @@ class Stream:
             
     @property
     def S(self) -> float:
-        """Absolute entropy flow rate in kJ/hr/K."""
+        """Absolute entropy flow rate [kJ/hr]/K."""
         return self._get_property('S', flow=True)
     @S.setter
     def S(self, S: float):
@@ -1075,7 +1075,7 @@ class Stream:
             )
     @property
     def Hnet(self) -> float:
-        """Total enthalpy flow rate (including heats of formation) in kJ/hr."""
+        """Total enthalpy flow rate (including heats of formation) [kJ/hr]."""
         return self.H + self.Hf
     
     @property
