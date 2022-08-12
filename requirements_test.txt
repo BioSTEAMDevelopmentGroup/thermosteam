@@ -8,7 +8,7 @@ IPython>=7.9.0
 colorpalette>=0.3.3 
 pandas>=0.25.2 
 matplotlib>=3.1.1
-numpy==1.22
+numpy>=1.22
 xlrd==1.2.0
 openpyxl>=3.0.0 
 free_properties>=0.2.6
