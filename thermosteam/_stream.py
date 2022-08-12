@@ -257,7 +257,7 @@ class Stream:
     )
     line = 'Stream'
     
-    #: [DisplayUnits] Units of measure for IPython display (class attribute)
+    #: Units of measure for IPython display (class attribute)
     display_units = thermo_units.DisplayUnits(T='K', P='Pa',
                                               flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                               composition=False,
