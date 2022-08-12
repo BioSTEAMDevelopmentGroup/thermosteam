@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from numpy.typing import NDArray
     from free_properties import property_array
-    from typing import Optional, Sequence, Iterable
+    from typing import Optional, Sequence
     import biosteam as bst
 # from .constants import g
 
@@ -1942,7 +1942,7 @@ class Stream:
         indices = chemicals.get_lle_indices(self.mol != 0)
         return [chemicals_tuple[i] for i in indices]
     
-    def get_bubble_point(self, IDs: Optional[Iterable[str]]=None):
+    def get_bubble_point(self, IDs: Optional[Sequence[str]]=None):
         """
         Return a BubblePoint object capable of computing bubble points.
         
@@ -1964,7 +1964,7 @@ class Stream:
         bp = self._bubble_point_cache(chemicals, self._thermo)
         return bp
     
-    def get_dew_point(self, IDs: Optional[Iterable[str]]=None):
+    def get_dew_point(self, IDs: Optional[Sequence[str]]=None):
         """
         Return a DewPoint object capable of computing dew points.
         
@@ -1986,7 +1986,7 @@ class Stream:
         dp = self._dew_point_cache(chemicals, self._thermo)
         return dp
     
-    def bubble_point_at_T(self, T: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
+    def bubble_point_at_T(self, T: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
         Return a BubblePointResults object with all data on the bubble point at constant temperature.
         
@@ -2010,7 +2010,7 @@ class Stream:
         z = self.get_normalized_mol(bp.IDs)
         return bp(z, T=T or self.T)
     
-    def bubble_point_at_P(self, P: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
+    def bubble_point_at_P(self, P: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
         Return a BubblePointResults object with all data on the bubble point at constant pressure.
         
@@ -2032,7 +2032,7 @@ class Stream:
         z = self.get_normalized_mol(bp.IDs)
         return bp(z, P=P or self.P)
     
-    def dew_point_at_T(self, T: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
+    def dew_point_at_T(self, T: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
         Return a DewPointResults object with all data on the dew point
         at constant temperature.
@@ -2056,7 +2056,7 @@ class Stream:
         z = self.get_normalized_mol(dp.IDs)
         return dp(z, T=T or self.T)
     
-    def dew_point_at_P(self, P: Optional[float]=None, IDs: Optional[Iterable[str]]=None):
+    def dew_point_at_P(self, P: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
         Return a DewPointResults object with all data on the dew point
         at constant pressure.
