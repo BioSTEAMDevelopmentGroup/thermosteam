@@ -417,9 +417,10 @@ class MultiStream(Stream):
         units : 
             Units of measure.
         key : 
-            Index key as tuple(phase, IDs), phase, or IDs where:
-            * phase: str, ellipsis, or missing.
-            * IDs: str, tuple(str), ellipisis, or missing.
+            Index key as (phase, IDs), phase, or IDs where:
+            
+            * phase is a str, ellipsis, or missing.
+            * IDs is a str, Sequence[str], ellipisis, or missing.
 
         Examples
         --------
@@ -445,9 +446,10 @@ class MultiStream(Stream):
         units :
             Units of measure.
         key : 
-            Index key as tuple(phase, IDs), phase, or IDs where:
-            * phase: str, ellipsis, or missing.
-            * IDs: str, tuple(str), ellipisis, or missing.
+            Index key as (phase, IDs), phase, or IDs where:
+            
+            * phase is a str, ellipsis, or missing.
+            * IDs is a str, Sequence[str], ellipisis, or missing.
 
         Examples
         --------
