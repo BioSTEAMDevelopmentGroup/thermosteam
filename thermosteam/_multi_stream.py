@@ -196,7 +196,7 @@ class MultiStream(Stream):
     __slots__ = ()
     def __init__(self, 
                  ID: Optional[str]="",
-                 flow: Optional[Sequence[float]]=(), 
+                 flow: Optional[Sequence]=(), 
                  T: Optional[float]=298.15, 
                  P: Optional[float]=101325.,
                  phases: Optional[Sequence[str]]=None, 
@@ -408,15 +408,16 @@ class MultiStream(Stream):
     
     ### Property getters ###
     
-    def get_flow(self, units, key=...):
+    def get_flow(self, units: str, key=...):
         """
         Return an array of flow rates in requested units.
         
         Parameters
         ----------
-        units : str
+        units : 
             Units of measure.
-        key : tuple(phase, IDs), phase, or IDs
+        key : 
+            Index key as tuple(phase, IDs), phase, or IDs where:
             * phase: str, ellipsis, or missing.
             * IDs: str, tuple(str), ellipisis, or missing.
 
@@ -433,17 +434,18 @@ class MultiStream(Stream):
         indexer = getattr(self, 'i' + name)
         return factor * indexer[key]
     
-    def set_flow(self, data, units, key=...):
+    def set_flow(self, data: NDArray[float]|float, units: str, key=...):
         """
         Set flow rates in given units.
 
         Parameters
         ----------
-        data : 1d ndarray or float
+        data : 
             Flow rate data.
-        units : str
+        units :
             Units of measure.
-        key : tuple(phase, IDs), phase, or IDs
+        key : 
+            Index key as tuple(phase, IDs), phase, or IDs where:
             * phase: str, ellipsis, or missing.
             * IDs: str, tuple(str), ellipisis, or missing.
 
