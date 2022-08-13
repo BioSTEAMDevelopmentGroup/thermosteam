@@ -26,6 +26,8 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
+__version__ = "0.28.13"
+
 from . import thermo
 del thermo
 from . import (
@@ -47,7 +49,7 @@ from ._thermal_condition import ThermalCondition
 from . import mixture
 from .mixture import Mixture
 from ._thermo import Thermo, IdealThermo
-from ._settings import settings
+from ._settings import settings, ProcessSettings
 from ._thermo_data import ThermoData
 from . import (
     indexer,
@@ -61,7 +63,7 @@ from .reaction import *
 from .equilibrium import * 
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
-           'IdealThermo', 'Stream', 'MultiStream', 'ThermalCondition', 
+           'IdealThermo', 'Stream', 'MultiStream', 'ThermalCondition', 'ProcessSettings',
            'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__, 
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
@@ -86,4 +88,3 @@ pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 del np, pd
 
-__version__ = "0.28.13"

@@ -14,7 +14,7 @@ from .units_of_measure import AbsoluteUnitsOfMeasure
 try: import biosteam as bst
 except: pass
 
-__all__ = ('settings',)
+__all__ = ('settings', 'ProcessSettings')
 
 def raise_no_thermo_error():
     raise RuntimeError("no available 'Thermo' object; "
@@ -24,66 +24,12 @@ def raise_no_flashpkg_error():
     raise RuntimeError("no available 'FlashPackage' object; "
                        "use settings.set_flashpkg to set the default flash package object")
     
-class Settings:
-    """
-    A compilation of all settings that may affect BioSTEAM results, including
-    thermodynamic property packages, utility agents, and characterization factors.
-    
-    Examples
-    --------
-    >>> from biosteam import settings, Stream
-    >>> # Set/get Chemical Engineering Plant Cost Index (CEPCI)
-    >>> settings.CEPCI # Defaults to average for year 2017
-    567.5
-    
-    >>> # All cooling agents
-    >>> settings.cooling_agents
-    [<UtilityAgent: cooling_water>,
-     <UtilityAgent: chilled_water>,
-     <UtilityAgent: chilled_brine>,
-     <UtilityAgent: propane>]
-    
-    >>> # All heating agents
-    >>> settings.heating_agents
-    [<UtilityAgent: low_pressure_steam>,
-     <UtilityAgent: medium_pressure_steam>,
-     <UtilityAgent: high_pressure_steam>]
-    
-    >>> # Set property package
-    >>> settings.set_thermo(['Water'], cache=True)
-    >>> settings.thermo
-    Thermo(
-        chemicals=CompiledChemicals([Water]),
-        mixture=Mixture(
-            rule='ideal', ...
-            include_excess_energies=False
-        ),
-        Gamma=DortmundActivityCoefficients,
-        Phi=IdealFugacityCoefficients,
-        PCF=IdealPoyintingCorrectionFactors
-    )
-    
-    >>> # Defined chemicals
-    >>> settings.chemicals
-    CompiledChemicals([Water])
-    
-    >>> # Defined mixture property algorithm
-    >>> settings.mixture
-    Mixture(
-        rule='ideal', ...
-        include_excess_energies=False
-    )
-    
-    >>> # Create stream with default property package
-    >>> stream = Stream('stream', Water=2)
-    >>> stream.thermo is settings.thermo
-    True
-    
-    """
+class ProcessSettings:
     __slots__ = (
         '_thermo',
         '_flashpkg',
     )
+    
     def __new__(cls):
         return settings
     
@@ -100,29 +46,55 @@ class Settings:
         """Utility characterization factor data (value and units) by agent ID 
         and impact key."""
         return bst.HeatUtility.characterization_factors
+    @utility_characterization_factors.setter
+    def utility_characterization_factors(self, utility_characterization_factors):
+        bst.HeatUtility.characterization_factors = utility_characterization_factors
     
     @property
     def cooling_agents(self) -> list[bst.UtilityAgent]:
         """All cooling utilities available."""
         return bst.HeatUtility.cooling_agents
+    @cooling_agents.setter
+    def cooling_agents(self, cooling_agents):
+        bst.HeatUtility.cooling_agents = cooling_agents
         
     @property
     def heating_agents(self) -> list[bst.UtilityAgent]:
         """All heating utilities available."""
         return bst.HeatUtility.heating_agents
-    
+    @heating_agents.setter
+    def heating_agents(self, heating_agents):
+        bst.HeatUtility.heating_agents = heating_agents
+        
     @property
     def stream_utility_prices(self) -> dict[str, float]:
         """Price of stream utilities [USD/kg] which are defined as 
         inlets and outlets to unit operations."""
         return bst.stream_utility_prices
+    @stream_utility_prices.setter
+    def stream_utility_prices(self, stream_utility_prices):
+        bst.stream_utility_prices = stream_utility_prices
     
+    @property
     def impact_indicators(self) -> dict[str, str]:
         """User-defined impact indicators and their units of measure."""
         return bst.impact_indicators
+    @impact_indicators.setter
+    def impact_indicators(self, impact_indicators):
+        bst.impact_indicators = impact_indicators
+    
+    @property
+    def electricity_price(self) -> float:
+        """Electricity price [USD/kWhr]"""
+        return bst.PowerUtility.price
+    @electricity_price.setter
+    def electricity_price(self, electricity_price):
+        """Electricity price [USD/kWhr]"""
+        bst.PowerUtility.price = electricity_price
     
     def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
-                   cache: Optional[bool]=None, skip_checks: Optional[bool]=False, 
+                   cache: Optional[bool]=None,
+                   skip_checks: Optional[bool]=False, 
                    ideal: Optional[bool]=False):
         """
         Set the default :class:`~thermosteam.Thermo` object. If `thermo` is 
@@ -149,6 +121,8 @@ class Settings:
     
     def get_thermo(self): # For backwards compatibility
         return self.thermo
+    def get_chemicals(self): # For backwards compatibility
+        return self.chemicals
     
     @property
     def thermo(self) -> tmo.Thermo:
@@ -302,8 +276,70 @@ class Settings:
             self._flashpkg = flashpkg
         else:
             raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
+
+
+settings: ProcessSettings
+"""
+A compilation of all settings that may affect BioSTEAM results, including
+thermodynamic property packages, utility agents, and characterization factors.
+
+Examples
+--------
+Access or change the Chemical Engineering Plant Cost Index (CEPCI):
     
-    def __repr__(self): # pragma: no cover
-        return "biosteam.settings"
+>>> from biosteam import settings, Stream
+>>> settings.CEPCI # Defaults to average for year 2017
+567.5
+
+Access or change cooling agents:
     
-settings = object.__new__(Settings)
+>>> settings.cooling_agents
+[<UtilityAgent: cooling_water>,
+ <UtilityAgent: chilled_water>,
+ <UtilityAgent: chilled_brine>,
+ <UtilityAgent: propane>]
+
+Access or change heating agents:
+    
+>>> settings.heating_agents
+[<UtilityAgent: low_pressure_steam>,
+ <UtilityAgent: medium_pressure_steam>,
+ <UtilityAgent: high_pressure_steam>]
+
+Access or change the thermodynamic property package:
+    
+>>> settings.set_thermo(['Water'], cache=True)
+>>> settings.thermo
+Thermo(
+    chemicals=CompiledChemicals([Water]),
+    mixture=Mixture(
+        rule='ideal', ...
+        include_excess_energies=False
+    ),
+    Gamma=DortmundActivityCoefficients,
+    Phi=IdealFugacityCoefficients,
+    PCF=IdealPoyintingCorrectionFactors
+)
+
+Access defined chemicals:
+    
+>>> settings.chemicals
+CompiledChemicals([Water])
+
+Access defined mixture property algorithm:
+    
+>>> settings.mixture
+Mixture(
+    rule='ideal', ...
+    include_excess_energies=False
+)
+
+Create stream with default property package:
+    
+>>> stream = Stream('stream', Water=2)
+>>> stream.thermo is settings.thermo
+True
+
+"""
+
+settings = object.__new__(ProcessSettings)
