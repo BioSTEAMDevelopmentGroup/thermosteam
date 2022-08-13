@@ -232,8 +232,10 @@ class ProcessSettings:
         This method is not yet ready for users.
         
         """
-        flashpkg = self._flashpkg
-        if not flashpkg: self._flashpkg = flashpkg = tmo.equilibrium.FlashPackage()
+        try:
+            flashpkg = self._flashpkg
+        except AttributeError:
+            self._flashpkg = flashpkg = tmo.equilibrium.FlashPackage()
         return flashpkg
     
     def get_default_flasher(self, flasher):
