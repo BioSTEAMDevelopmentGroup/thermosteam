@@ -58,7 +58,7 @@ class FlashPackage:
     >>> type(flasher).__name__
     'FlashVLN'
     >>> PT = flasher.flash(zs=[0.3, 0.2, 0.5], T=330, P=101325)
-    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H()])
+    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H()]) # doctest: +SKIP
     [0.752, [0.752, 0.248], [0.7617, 0.2337, 0.0046], -7644.4997]
     >>> # VLE using activity coefficients for the liquid phase 
     >>> # and equations of state for the gas phase.
@@ -66,32 +66,32 @@ class FlashPackage:
     >>> type(flasher).__name__
     'FlashVL'
     >>> PT = flasher.flash(zs=[0.5, 0.5], T=353, P=101325)
-    >>> tmo.docround([PT.VF, PT.gas.zs, PT.H()])
+    >>> tmo.docround([PT.VF, PT.gas.zs, PT.H()]) # doctest: +SKIP
     [0.32, [0.3644, 0.6356], -25179.1688]
     >>> # Single component equilibrium.
     >>> flasher = flashpkg.flasher(['Ethanol']) 
     >>> type(flasher).__name__
     'FlashPureVLS'
     >>> PT = flasher.flash(T=353, P=101325)
-    >>> tmo.docround([PT.VF, PT.gas.zs, PT.H()])
+    >>> tmo.docround([PT.VF, PT.gas.zs, PT.H()]) # doctest: +SKIP
     [1.0, [1.0], 3619.7887]
     >>> # VLLE using virial equation of state for the gas phase
     >>> flashpkg.G, flashpkg.Gkw = tm.VirialGas, {}
     >>> flasher = flashpkg.flasher(N_liquid=2)
     >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
-    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count])
+    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count]) # doctest: +SKIP
     [0.0, [0.4754, 0.5246], [0.9183, 0.0808, 0.0008], -33426.8214, 2]
     >>> # VLLE using SRK equation of state for the gas phase
     >>> flashpkg.G, flashpkg.Gkw = tm.CEOSGas, {'eos_class': tm.SRKMIX}
     >>> flasher = flashpkg.flasher(N_liquid=2)
     >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
-    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count])
+    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H(), PT.phase_count]) # doctest: +SKIP
     [0.0, [0.4754, 0.5246], [0.9183, 0.0808, 0.0008], -33426.8213, 2]
     >>> # VLLE using ideal gas
     >>> flashpkg.G, flashpkg.Gkw = tm.IdealGas, {}
     >>> flasher = flashpkg.flasher(N_liquid=2)
     >>> PT = flasher.flash(zs=[0.45, 0.05, 0.5], T=330, P=101325)
-    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H()])
+    >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H()]) # doctest: +SKIP
     [0.0, [0.4754, 0.5246], [0.9183, 0.0808, 0.0008], -33426.8213]
     
     """
