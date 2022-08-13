@@ -31,6 +31,14 @@ __all__ = (
     'VolumetricFlowProperty'
 )
 
+phase_names = {
+    'g': 'Gas',
+    'l': 'Liquid',
+    's': 'Solid',
+    'L': 'LIQUID',
+    'S': 'SOLID',
+}
+
 # %% Utilities
 
 _new = object.__new__
@@ -424,7 +432,7 @@ class ChemicalIndexer(Indexer):
         """Return phase and composition."""
         data = self._data
         total = data.sum()
-        if total <= 0.: raise RuntimeError(f"'{tmo.settings.phase_names[self.phase]}' phase does not exist")
+        if total <= 0.: raise RuntimeError(f"'{phase_names[self.phase]}' phase does not exist")
         return self.phase, data / total
     
     def __format__(self, tabs=""):
@@ -1091,7 +1099,7 @@ def by_volume(self, TP):
         for i, phase in enumerate(phases):
             for j, chem in enumerate(chemicals):
                 index = i, j
-                phase_name = tmo.settings._phase_names[phase]
+                phase_name = phase_names[phase]
                 vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
                                                     mol, index, chem.V, TP, phase)
         self._data_cache[TP] = \
