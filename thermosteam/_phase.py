@@ -23,13 +23,14 @@ def check_phase(phase):
     --------
     >>> check_phase('q')
     Traceback (most recent call last):
-    RuntimeError: invalid phase 'q' encountered; valid phases are 's', 'l', 'g', 'S', and 'L'
+    RuntimeError: invalid phase 'q' encountered; valid phases are 
+    's' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)
     
     """
     if phase not in valid_phases:
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "
-            "'s', 'l', 'g', 'S', and 'L'"
+            "'s' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)"
         )  
 
 def phase_tuple(phases):

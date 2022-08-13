@@ -7,40 +7,188 @@
 # for license details.
 """
 """
+from __future__ import annotations
 import thermosteam as tmo
+from typing import Optional, Iterable
 from .units_of_measure import AbsoluteUnitsOfMeasure
+try: import biosteam as bst
+except: pass
 
 __all__ = ('settings',)
 
 def raise_no_thermo_error():
     raise RuntimeError("no available 'Thermo' object; "
-                       "use settings.set_thermo")
+                       "use settings.set_thermo to set the default thermo object")
 
 def raise_no_flashpkg_error():
-    raise RuntimeError("no available 'FlashConstructor' object; "
-                       "use settings.set_flashpkg")
+    raise RuntimeError("no available 'FlashPackage' object; "
+                       "use settings.set_flashpkg to set the default flash package object")
     
 class Settings:
-    __slots__ = (
-        'impact_indicators',
-        '_thermo',
-        '_phase_names',
-        '_debug',
-        '_flashpkg',
+    """
+    A compilation of all settings that may affect BioSTEAM results, including
+    thermodynamic property packages, utility agents, and characterization factors.
+    
+    Examples
+    --------
+    >>> from biosteam import settings, Stream
+    >>> # Set/get Chemical Engineering Plant Cost Index (CEPCI)
+    >>> settings.CEPCI # Defaults to average for year 2017
+    567.5
+    
+    >>> # All cooling agents
+    >>> settings.cooling_agents
+    [<UtilityAgent: cooling_water>,
+     <UtilityAgent: chilled_water>,
+     <UtilityAgent: chilled_brine>,
+     <UtilityAgent: propane>]
+    
+    >>> # All heating agents
+    >>> settings.heating_agents
+    [<UtilityAgent: low_pressure_steam>,
+     <UtilityAgent: medium_pressure_steam>,
+     <UtilityAgent: high_pressure_steam>]
+    
+    >>> # Set property package
+    >>> settings.set_thermo(['Water'], cache=True)
+    >>> settings.thermo
+    Thermo(
+        chemicals=CompiledChemicals([Water]),
+        mixture=Mixture(
+            rule='ideal', ...
+            include_excess_energies=False
+        ),
+        Gamma=DortmundActivityCoefficients,
+        Phi=IdealFugacityCoefficients,
+        PCF=IdealPoyintingCorrectionFactors
     )
     
-    def __init__(self):
-        self.impact_indicators = {}
-        self._thermo = None
-        self._debug = False
-        self._phase_names = {'s': 'Solid',
-                             'l': 'Liquid',
-                             'g': 'Gas',
-                             'S': 'SOLID',
-                             'L': 'LIQUID'}
-        self._flashpkg = None
+    >>> # Defined chemicals
+    >>> settings.chemicals
+    CompiledChemicals([Water])
     
-    def define_impact_indicator(self, key, units):
+    >>> # Defined mixture property algorithm
+    >>> settings.mixture
+    Mixture(
+        rule='ideal', ...
+        include_excess_energies=False
+    )
+    
+    >>> # Create stream with default property package
+    >>> stream = Stream('stream', Water=2)
+    >>> stream.thermo is settings.thermo
+    True
+    
+    """
+    __slots__ = (
+        '_thermo',
+        '_flashpkg',
+    )
+    def __new__(cls):
+        return settings
+    
+    @property
+    def CEPCI(self) -> float:
+        """Chemical engineering plant cost index (defaults to 567.5 at 2017)."""
+        return bst.CE
+    @CEPCI.setter
+    def CEPCI(self, CEPCI):
+        bst.CE = CEPCI
+    
+    @property
+    def utility_characterization_factors(self) ->  dict[tuple[str, str], tuple[float, AbsoluteUnitsOfMeasure]]:
+        """Utility characterization factor data (value and units) by agent ID 
+        and impact key."""
+        return bst.HeatUtility.characterization_factors
+    
+    @property
+    def cooling_agents(self) -> list[bst.UtilityAgent]:
+        """All cooling utilities available."""
+        return bst.HeatUtility.cooling_agents
+        
+    @property
+    def heating_agents(self) -> list[bst.UtilityAgent]:
+        """All heating utilities available."""
+        return bst.HeatUtility.heating_agents
+    
+    @property
+    def stream_utility_prices(self) -> dict[str, float]:
+        """Price of stream utilities [USD/kg] which are defined as 
+        inlets and outlets to unit operations."""
+        return bst.stream_utility_prices
+    
+    def impact_indicators(self) -> dict[str, str]:
+        """User-defined impact indicators and their units of measure."""
+        return bst.impact_indicators
+    
+    def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
+                   cache: Optional[bool]=None, skip_checks: Optional[bool]=False, 
+                   ideal: Optional[bool]=False):
+        """
+        Set the default :class:`~thermosteam.Thermo` object. If `thermo` is 
+        not a :class:`~thermosteam.Thermo` object, an attempt is made to 
+        convert it to one.
+        
+        Parameters
+        ----------
+        thermo : 
+            Thermodynamic property package.
+        cache : 
+            Wether or not to use cached chemicals.
+        skip_checks : 
+            Whether to skip checks for missing or invalid properties.
+        ideal :
+            Whether to use ideal phase equilibrium and mixture property 
+            algorithms.
+            
+        """
+        if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
+            thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
+        if ideal: thermo = thermo.ideal()
+        self._thermo = thermo
+    
+    def get_thermo(self): # For backwards compatibility
+        return self.thermo
+    
+    @property
+    def thermo(self) -> tmo.Thermo:
+        """Default thermodynamic property package."""
+        try:
+            return self._thermo
+        except AttributeError:
+            raise_no_thermo_error()
+    
+    @property
+    def chemicals(self) -> tmo.Chemicals:
+        """Default chemicals."""
+        return self.thermo.chemicals
+    
+    @property
+    def mixture(self) -> tmo.Mixture:
+        """Default mixture package."""
+        return self.thermo.mixture
+    
+    def define_impact_indicator(self, key: str, units: str):
+        """
+        Define the units of measure for an LCA impact indicator key.
+        
+        Parameters
+        ----------
+        key : 
+            Name of impact indicator.
+        units :
+            Units of measure for impact indicator.
+            
+        Notes
+        -----
+        LCA displacement allocation tables use the impact indicator units of 
+        measure defined here.
+        
+        Examples
+        --------
+        :doc:`../tutorial/Life_cycle_assessment`
+        
+        """
         self.impact_indicators[key] = AbsoluteUnitsOfMeasure(units)
     
     def get_impact_indicator_units(self, key):
@@ -52,103 +200,88 @@ class Settings:
                  "units can be defined through `thermosteam.settings.define_impact_indicator`"
             )
     
-    @property
-    def debug(self):
-        """[bool] If True, additional checks may raise errors at runtime."""
-        return self._debug
-    @debug.setter
-    def debug(self, debug):
-        self._debug = bool(debug)
-    
-    @property
-    def phase_names(self):
-        """[dict] All phase definitions."""
-        return self._phase_names
-    
     def get_default_thermo(self, thermo):
         """
-        Return default Thermo object if `thermo` is None. Otherwise, return 
-        the same object.
+        Return the default :class:`~thermosteam.Thermo` object if `thermo` is None.
+        Otherwise, return the same object. Otherwise, of `thermo` is a 
+        :class:`~thermosteam.Thermo` object, return the same object.
         
         """
-        return thermo if thermo else self.get_thermo()
+        if thermo is None:
+            thermo = self.thermo
+        elif not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
+            raise ValueError("thermo must be a 'Thermo' object")
+        return thermo
     
     def get_default_chemicals(self, chemicals):
         """
-        Return a default CompiledChemicals object.
-        If `chemicals` is a Chemicals object, return the same object.
+        Return the default :class:`~thermosteam.Chemicals` object is chemicals
+        is None. Otherwise, if `chemicals` is a :class:`~thermosteam.Chemicals` 
+        object, return the same object.
         
         """
         if isinstance(chemicals, tmo.Chemicals):
             chemicals.compile()
-        elif not chemicals:
-            thermo = settings._thermo
-            if not thermo: raise_no_thermo_error()
-            chemicals = thermo.chemicals
+        elif chemicals is None:
+            chemicals = self.chemicals
         else:
             raise ValueError("chemicals must be a 'Chemicals' object")
         return chemicals
     
     def get_default_mixture(self, mixture):
         """
-        Return a default Mixture object.
-        If `mixture` is a Mixture object, return the same object.
+        Return a default :class:`~thermosteam.Mixture` object.
+        Otherwise, if `mixture` is a :class:`~thermosteam.Mixture` object,
+        return the same object.
         
         """
-        if not mixture:
-            thermo = settings.thermo
-            if not thermo: raise_no_thermo_error()
-            mixture = thermo.mixture
+        if mixture is None:
+            mixture = self.mixture
+        elif not isinstance(mixture, tmo.Mixture):
+            raise ValueError("chemicals must be a 'Mixture' object")
         return mixture
     
     def get_default_flashpkg(self, flashpkg):
         """
-        Return a default FlashConstructor object.
-        If `flash` is a FlashConstructor object, return the same object.
+        Warnings
+        --------
+        This method is not yet ready for users.
         
         """
         if not flashpkg: flashpkg = self.get_flashpkg()
         return flashpkg
     
     def get_flashpkg(self):
+        """
+        Warnings
+        --------
+        This method is not yet ready for users.
+        
+        """
         flashpkg = self._flashpkg
         if not flashpkg: self._flashpkg = flashpkg = tmo.equilibrium.FlashPackage()
         return flashpkg
     
     def get_default_flasher(self, flasher):
+        """
+        Warnings
+        --------
+        This method is not yet ready for users.
+        
+        """
         if not flasher:
             flashpkg = self.get_flashpkg()
             return flashpkg.flahser()
         return flasher
     
     def flasher(self, IDs=None, N_liquid=None, N_solid=None):
-        return self.get_flashpkg().flasher(IDs, N_liquid, N_solid)
-    
-    def get_thermo(self):
-        """Return a default Thermo object."""
-        thermo = self._thermo
-        if not thermo: raise_no_thermo_error()
-        return thermo
-    
-    def set_thermo(self, thermo, cache=None, skip_checks=False, ideal=False):
         """
-        Set the default Thermo object. If `thermo` is not a Thermo object,
-        an attempt is made to convert it to one.
+        Warnings
+        --------
+        This method is not yet ready for users.
         
-        Parameters
-        ----------
-        thermo : Thermo or Iterable[Chemical or str]
-            A Thermo object or iterable of chemicals or chemical IDs.
-        cache : bool, optional
-            Wether or not to use cached chemicals.
-        skip_checks : bool, optional
-            Whether to skip checks for missing or invalid properties.
-            
         """
-        if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
-            thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
-        if ideal: thermo = thermo.ideal()
-        self._thermo = thermo
+        return self.get_flashpkg().flasher(IDs, N_liquid, N_solid)
     
     def set_flashpkg(self, flashpkg):
         """
@@ -160,18 +293,17 @@ class Settings:
             A FlashPackage object that predefines algorithms for equilibrium 
             calculations.
 
+        Warnings
+        --------
+        This method is not yet ready for users.
+        
         """
         if isinstance(flashpkg, tmo.equilibrium.FlashPackage):
             self._flashpkg = flashpkg
         else:
             raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
     
-    def get_chemicals(self):
-        """Return a default Chemicals object."""
-        thermo = self.get_thermo()
-        return thermo.chemicals
-    
     def __repr__(self): # pragma: no cover
-        return "<Settings>"
+        return "biosteam.settings"
     
-settings = Settings()
+settings = object.__new__(Settings)
