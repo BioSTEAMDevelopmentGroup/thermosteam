@@ -25,6 +25,68 @@ def raise_no_flashpkg_error():
                        "use settings.set_flashpkg to set the default flash package object")
     
 class ProcessSettings:
+    """
+    A compilation of all settings that may affect BioSTEAM results, including
+    thermodynamic property packages, utility agents, and characterization factors.
+
+    Examples
+    --------
+    Access or change the Chemical Engineering Plant Cost Index (CEPCI):
+        
+    >>> from biosteam import settings, Stream
+    >>> settings.CEPCI # Defaults to average for year 2017
+    567.5
+
+    Access or change cooling agents:
+        
+    >>> settings.cooling_agents
+    [<UtilityAgent: cooling_water>,
+     <UtilityAgent: chilled_water>,
+     <UtilityAgent: chilled_brine>,
+     <UtilityAgent: propane>]
+
+    Access or change heating agents:
+        
+    >>> settings.heating_agents
+    [<UtilityAgent: low_pressure_steam>,
+     <UtilityAgent: medium_pressure_steam>,
+     <UtilityAgent: high_pressure_steam>]
+
+    Access or change the thermodynamic property package:
+        
+    >>> settings.set_thermo(['Water'], cache=True)
+    >>> settings.thermo
+    Thermo(
+        chemicals=CompiledChemicals([Water]),
+        mixture=Mixture(
+            rule='ideal', ...
+            include_excess_energies=False
+        ),
+        Gamma=DortmundActivityCoefficients,
+        Phi=IdealFugacityCoefficients,
+        PCF=IdealPoyintingCorrectionFactors
+    )
+
+    Access defined chemicals:
+        
+    >>> settings.chemicals
+    CompiledChemicals([Water])
+
+    Access defined mixture property algorithm:
+        
+    >>> settings.mixture
+    Mixture(
+        rule='ideal', ...
+        include_excess_energies=False
+    )
+
+    Create stream with default property package:
+        
+    >>> stream = Stream('stream', Water=2)
+    >>> stream.thermo is settings.thermo
+    True
+
+    """
     __slots__ = (
         '_thermo',
         '_flashpkg',
@@ -280,68 +342,4 @@ class ProcessSettings:
             raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
 
 
-settings: ProcessSettings
-"""
-A compilation of all settings that may affect BioSTEAM results, including
-thermodynamic property packages, utility agents, and characterization factors.
-
-Examples
---------
-Access or change the Chemical Engineering Plant Cost Index (CEPCI):
-    
->>> from biosteam import settings, Stream
->>> settings.CEPCI # Defaults to average for year 2017
-567.5
-
-Access or change cooling agents:
-    
->>> settings.cooling_agents
-[<UtilityAgent: cooling_water>,
- <UtilityAgent: chilled_water>,
- <UtilityAgent: chilled_brine>,
- <UtilityAgent: propane>]
-
-Access or change heating agents:
-    
->>> settings.heating_agents
-[<UtilityAgent: low_pressure_steam>,
- <UtilityAgent: medium_pressure_steam>,
- <UtilityAgent: high_pressure_steam>]
-
-Access or change the thermodynamic property package:
-    
->>> settings.set_thermo(['Water'], cache=True)
->>> settings.thermo
-Thermo(
-    chemicals=CompiledChemicals([Water]),
-    mixture=Mixture(
-        rule='ideal', ...
-        include_excess_energies=False
-    ),
-    Gamma=DortmundActivityCoefficients,
-    Phi=IdealFugacityCoefficients,
-    PCF=IdealPoyintingCorrectionFactors
-)
-
-Access defined chemicals:
-    
->>> settings.chemicals
-CompiledChemicals([Water])
-
-Access defined mixture property algorithm:
-    
->>> settings.mixture
-Mixture(
-    rule='ideal', ...
-    include_excess_energies=False
-)
-
-Create stream with default property package:
-    
->>> stream = Stream('stream', Water=2)
->>> stream.thermo is settings.thermo
-True
-
-"""
-
-settings = object.__new__(ProcessSettings)
+settings: ProcessSettings = object.__new__(ProcessSettings)
