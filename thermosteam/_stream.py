@@ -2218,26 +2218,37 @@ class Stream:
     
     get_volumetric_composition = get_volumetric_fraction
     
-    def get_concentration(self, IDs: Sequence[str]):
+    def get_concentration(self, IDs: Sequence[str], units: Optional[str]=None):
         """
-        Return concentration of given chemicals in kmol/m3.
+        Return concentration of given chemicals.
 
         Parameters
         ----------
         IDs : 
             IDs of chemicals.
+        units :
+            Units of measure. Defaults to kmol/m3.
 
         Examples
         --------
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
-        >>> s1.get_concentration(('Water', 'Ethanol'))
+        >>> s1.get_concentration(['Water', 'Ethanol']) # kg/m3
         array([27.672,  4.265])
-
+        
+        >>> s1.get_concentration(['Water', 'Ethanol'], 'g/L')
+        array([498.512, 196.479])
+        
         """
         F_vol = self.F_vol
-        return self.imol[IDs] / F_vol if F_vol else 0.
+        if F_vol == 0.: return 0.
+        if units is None:
+            return self.imol[IDs] / F_vol 
+        else:
+            num, denum = units.split('/')
+            return self.get_flow(num+'/hr', IDs) / self.get_total_flow(denum+'/hr')
+        
     
     @property
     def P_vapor(self) -> float:

@@ -884,12 +884,13 @@ class MultiStream(Stream):
         """
         return self.ivol[..., IDs].sum(0)/self.F_vol
     
-    def get_concentration(self, phase, IDs):
+    def get_concentration(self, phase: str, IDs: Sequence[str]|str, units: Optional[str]=None):
         """
         Return concentration of given chemicals in kmol/m3.
 
         Parameters
         ----------
+        phase :
         IDs : 
             IDs of chemicals.
 
@@ -901,7 +902,18 @@ class MultiStream(Stream):
         >>> s1.get_concentration('l', ('Water', 'Ethanol'))
         array([27.672,  4.265])
 
+        >>> s1.get_concentration('l', ('Water', 'Ethanol'), 'g/L')
+        array([498.512, 196.479])
+
         """
+        F_vol = self.F_vol
+        if F_vol == 0.: return 0.
+        if units is None:
+            return self.imol[IDs] / F_vol 
+        else:
+            num, denum = units.split('/')
+            return self.get_flow(num + '/hr', (phase, IDs)) / self.get_total_flow(denum + '/hr')
+        
         return self.imol[phase, IDs] / self.F_vol
     
     ### Equilibrium ###
