@@ -344,5 +344,5 @@ class ProcessSettings:
         else:
             raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
 
-
+#: 
 settings: ProcessSettings = object.__new__(ProcessSettings)
