@@ -74,7 +74,7 @@ class ProcessSettings:
 
     Access defined mixture property algorithm:
         
-    >>> settings.mixture
+    >>> settings.mixture.show()
     Mixture(
         rule='ideal', ...
         include_excess_energies=False
