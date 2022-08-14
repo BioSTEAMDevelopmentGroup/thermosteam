@@ -79,7 +79,7 @@ class Stream:
         Total flow rate.
     thermo : 
         Thermo object to initialize input and output streams. Defaults to
-        `biosteam.settings.get_thermo()`.
+        :meth:`settings.thermo <thermosteam._settings.ProcessSettings.thermo>`.
     characterization_factors : 
         Characterization factors for life cycle assessment.
     vlle : 
@@ -753,7 +753,7 @@ class Stream:
 
     def get_atomic_flow(self, symbol):
         """
-        Return flow rate of atom in kmol / hr given the atomic symbol.
+        Return flow rate of atom [kmol / hr] given the atomic symbol.
         
         Examples
         --------
@@ -770,7 +770,7 @@ class Stream:
 
     def get_atomic_flows(self):
         """
-        Return dictionary of atomic flow rates in kmol / hr.
+        Return dictionary of atomic flow rates [kmol / hr].
         
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water'], cache=True)
