@@ -30,6 +30,7 @@ __all__ = ('Stream', )
 
 # %% Utilities
 
+impact_indicator_basis = tmo.units_of_measure.AbsoluteUnitsOfMeasure('kg')
 mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
@@ -407,7 +408,7 @@ class Stream:
     def has_user_equilibrium(self) -> bool:
         return self._user_equilibrium is not None
 
-    def get_CF(self, key: str, units: Optional[str]=None):
+    def get_CF(self, key: str, basis : Optional[str]=None, units: Optional[str]=None):
         """
         Returns the life-cycle characterization factor on a kg basis given the
         impact indicator key.
@@ -416,10 +417,13 @@ class Stream:
         ----------
         key : 
             Key of impact indicator.
-        units : 
+        basis :
+            Basis of characterization factor. Mass is the only valid dimension (for now). 
+            Defaults to 'kg'.
+        units :
             Units of impact indicator. Before using this argument, the default units 
             of the impact indicator should be defined with 
-            thermosteam.settings.define_impact_indicator.
+            :meth:`settings.define_impact_indicator <thermosteam._settings.ProcessSettings.define_impact_indicator>`.
             Units must also be dimensionally consistent with the default units.
         
         """
@@ -430,9 +434,11 @@ class Stream:
         if units is not None:
             original_units = tmo.settings.get_impact_indicator_units(key)
             value = original_units.convert(value, units)
+        if basis is not None:
+            value /= impact_indicator_basis.conversion_factor(basis)
         return value
     
-    def set_CF(self, key: str, value: float, units: Optional[str]=None):
+    def set_CF(self, key: str, value: float, basis : Optional[str]=None, units: Optional[str]=None):
         """
         Set the life-cycle characterization factor on a kg basis given the 
         impact indicator key and the units of measure.
@@ -443,16 +449,21 @@ class Stream:
             Key of impact indicator.
         value : 
             Characterization factor value.
-        units : 
+        basis :
+            Basis of characterization factor. Mass is the only valid dimension (for now). 
+            Defaults to 'kg'.
+        units :
             Units of impact indicator. Before using this argument, the default units 
             of the impact indicator should be defined with 
-            thermosteam.settings.define_impact_indicator.
+            :meth:`settings.define_impact_indicator <thermosteam._settings.ProcessSettings.define_impact_indicator>`.
             Units must also be dimensionally consistent with the default units.
         
         """
         if units is not None:
             original_units = tmo.settings.get_impact_indicator_units(key)
             value = original_units.unconvert(value, units)
+        if basis is not None:
+            value *= impact_indicator_basis.conversion_factor(basis)
         self.characterization_factors[key] = value
 
     def get_impact(self, key):

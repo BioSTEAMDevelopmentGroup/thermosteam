@@ -217,8 +217,11 @@ class ProcessSettings:
             
         Notes
         -----
-        LCA displacement allocation tables use the impact indicator units of 
-        measure defined here.
+        This method is useful for setting characterization factors of 
+        streams and utilities in different units of measure.
+        
+        LCA displacement allocation tables also use the impact indicator 
+        units of measure defined here.
         
         Examples
         --------
@@ -233,7 +236,7 @@ class ProcessSettings:
         except KeyError:
             raise ValueError(
                 f"impact indicator key '{key}' has no defined units; "
-                 "units can be defined through `thermosteam.settings.define_impact_indicator`"
+                 "units can be defined through `settings.define_impact_indicator`"
             )
     
     def get_default_thermo(self, thermo):
