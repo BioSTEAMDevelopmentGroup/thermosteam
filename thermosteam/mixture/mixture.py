@@ -399,7 +399,7 @@ class Mixture:
         return sum([self.kappa(phase, mol, T, P) for phase, mol in phase_mol])
     
     def __repr__(self):
-        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}(rule={repr(self.rule)}, ... include_excess_energies={self.include_excess_energies})"
     
     def _info(self):
         return (f"{type(self).__name__}(\n"
