@@ -55,7 +55,7 @@ class ProcessSettings:
     Access or change the thermodynamic property package:
         
     >>> settings.set_thermo(['Water'], cache=True)
-    >>> settings.thermo
+    >>> settings.thermo.show()
     Thermo(
         chemicals=CompiledChemicals([Water]),
         mixture=Mixture(

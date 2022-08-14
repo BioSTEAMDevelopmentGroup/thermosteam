@@ -46,9 +46,7 @@ class Thermo:
     
     >>> import thermosteam as tmo
     >>> thermo = tmo.Thermo(['Ethanol', 'Water'], cache=True)
-    >>> thermo
-    Thermo(chemicals=CompiledChemicals([Ethanol, Water]), mixture=Mixture(rule='ideal', ..., include_excess_energies=False), Gamma=DortmundActivityCoefficients, Phi=IdealFugacityCoefficients, PCF=IdealPoyintingCorrectionFactors)
-    >>> thermo.show() # May be easier to read
+    >>> thermo.show() 
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
         mixture=Mixture(
