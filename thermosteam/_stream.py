@@ -1394,27 +1394,28 @@ class Stream:
             self.empty()
         elif N_others == 1:
             self.copy_like(others[0])
-        elif vle:
-            phases = ''.join([i.phase for i in others])
-            self.phases = tuple(set(phases))
-            self._imol.mix_from([i._imol for i in others])
-            if energy_balance: 
-                H = sum([i.H for i in others])
-                self.vle(H=H, P=self.P)
-            else:
-                self.vle(T=self.T, P=self.P)
         else:
-            self.P = min([i.P for i in others])
-            if energy_balance: H = sum([i.H for i in others])
-            self._imol.mix_from([i._imol for i in others])
-            if energy_balance and not self.isempty():
-                try:
-                    self.H = H
-                except:
-                    phases = ''.join([i.phase for i in others])
-                    self.phases = tuple(set(phases))
-                    self._imol.mix_from([i._imol for i in others])
-                    self.H = H
+            P = min([i.P for i in others])
+            if vle:
+                phases = ''.join([i.phase for i in others])
+                self.phases = tuple(set(phases))
+                self._imol.mix_from([i._imol for i in others])
+                if energy_balance: 
+                    H = sum([i.H for i in others])
+                    self.vle(H=H, P=P)
+                else:
+                    self.vle(T=self.T, P=P)
+            else:
+                if energy_balance: H = sum([i.H for i in others])
+                self._imol.mix_from([i._imol for i in others])
+                if energy_balance and not self.isempty():
+                    try:
+                        self.H = H
+                    except:
+                        phases = ''.join([i.phase for i in others])
+                        self.phases = tuple(set(phases))
+                        self._imol.mix_from([i._imol for i in others])
+                        self.H = H
                 
     def split_to(self, s1, s2, split, energy_balance=True):
         """
