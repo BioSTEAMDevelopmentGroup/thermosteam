@@ -36,6 +36,10 @@ def stream_methods():
     s2 = tmo.Stream(None, Water=100, Ethanol=100, phase='g')
     s3 = tmo.Stream.sum([s1, s2], vle=True)
     assert_allclose([s3.T, s3.vapor_fraction], [356.42348688162764, 0.9159452891657182])
+    s1.P = 101325 * 5
+    s2.P = 101325 * 2
+    s3.mix_from([s1, s2], vle=True)
+    assert s3.P == min([s1.P, s2.P])
 
 def test_critical():
     tmo.settings.set_thermo(['CO2', 'O2', 'CH4'], cache=True)
