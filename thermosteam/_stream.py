@@ -1347,6 +1347,14 @@ class Stream:
         """
         Mix all other streams into this one, ignoring its initial contents.
         
+        Notes
+        -----
+        When streams at different pressures are mixed, BioSTEAM assumes valves 
+        reduce the pressure of the streams being mixed to prevent backflow 
+        (pressure needs to decrease in the direction of flow according to 
+        Bernoulli's principle). The outlet pressure will be the minimum pressure
+        of all streams being mixed.
+        
         Examples
         --------
         Mix two streams with the same thermodynamic property package:
