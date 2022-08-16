@@ -308,21 +308,24 @@ class MultiStream(Stream):
             else:
                 literal = (imol._phases, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition = self._property_cache_key
-            if name in property_cache and literal == last_literal and (composition == last_composition).all():
-                value = property_cache.get(name)
+            if literal == last_literal and (composition == last_composition).all():
+                if name in property_cache:
+                    value = property_cache.get(name)
+                    return value * total if flow else value
             else:
-                self._property_cache_key = (literal, composition)
-                if nophase:
-                    calculate = getattr(self.mixture, name)
-                    self._property_cache[name] = value = calculate(
-                        composition.sum(axis=0), *self.thermal_condition
-                    )
-                else:
-                    calculate = getattr(self.mixture, 'x' + name)
-                    self._property_cache[name] = value = calculate(
-                        zip(imol._phases, composition), *self.thermal_condition
-                    )
-        return value * total if flow else value
+                property_cache.clear()
+            self._property_cache_key = (literal, composition)
+            if nophase:
+                calculate = getattr(self.mixture, name)
+                self._property_cache[name] = value = calculate(
+                    composition.sum(axis=0), *self.thermal_condition
+                )
+            else:
+                calculate = getattr(self.mixture, 'x' + name)
+                self._property_cache[name] = value = calculate(
+                    zip(imol._phases, composition), *self.thermal_condition
+                )
+            return value * total if flow else value
     
     def reset_cache(self):
         """Reset cache regarding equilibrium methods."""
