@@ -37,20 +37,21 @@ class LiquidFugacities:
     LiquidFugacities([Water, Ethanol])
     >>> # Compute liquid fugacities
     >>> liquid_molar_composition = np.array([0.72, 0.28])
-    >>> f_l = F_l(x=liquid_molar_composition, T=355)
+    >>> f_l = F_l(x=liquid_molar_composition, T=355, P=101325.)
     >>> f_l
     array([43338.226, 58056.67 ])
     
     """
-    __slots__ = ('gamma', 'chemicals')
+    __slots__ = ('gamma', 'chemicals', 'pcf')
     
     def __init__(self, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
         self.gamma = thermo.Gamma(chemicals)
+        self.pcf = thermo.PCF(chemicals)
     
-    def __call__(self, x, T):
-        return x * self.gamma(x, T) * np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+    def __call__(self, x, T, P=101325.):
+        return x * self.gamma(x, T) * self.pcf(T, P) * np.array([i.Psat(T) for i in self.chemicals], dtype=float)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
@@ -86,16 +87,15 @@ class GasFugacities:
     array([43569.7, 57755.2])
 
     """
-    __slots__ = ('phi', 'pcf', 'chemicals')
+    __slots__ = ('phi', 'chemicals')
     
     def __init__(self, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
-        self.pcf = thermo.PCF(chemicals)
         self.phi = thermo.Phi(chemicals)
     
     def __call__(self, y, T, P):
-        return P * self.pcf(y, T) * self.phi(y, T, P) * y
+        return P * self.phi(y, T, P) * y
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

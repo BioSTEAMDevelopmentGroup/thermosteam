@@ -18,8 +18,8 @@ class PoyintingCorrectionFactors:
     __init__(self, chemicals: Iterable[:class:`~thermosteam.Chemical`]):
         Should use pure component data from chemicals to setup future calculations of Poyinting correction factors.
     
-    __call__(self, y: 1d array, T: float):
-        Should accept an array of vapor molar compositions `y`, and temperature `T` (in Kelvin), and return an array of Poyinting correction factors. Note that the molar compositions must be in the same order as the chemicals defined when creating the PoyintingCorrectionFactors object.
+    __call__(self, T: float, P: float):
+        Should accept the temperature `T` (in Kelvin) and pressure `P` (in Pascal), and return an array of Poyinting correction factors. 
         
     """
     __slots__ = ()
@@ -50,5 +50,5 @@ class IdealPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     def chemicals(self, chemicals):
         self._chemicals = tuple(chemicals)
 
-    def __call__(self, y, T):
+    def __call__(self, T, P):
         return 1.

@@ -117,13 +117,13 @@ class BubblePoint:
         y_phi =  (z_over_P
                   * np.array([i(T) for i in self.Psats])
                   * self.gamma(z_norm, T) 
-                  * self.pcf(z_norm, T))
+                  * self.pcf(T, P))
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
-    def _P_error(self, P, T, z_Psat_gamma_pcf, y):
+    def _P_error(self, P, T, z_Psat_gamma, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        y_phi = z_Psat_gamma_pcf / P
+        y_phi = z_Psat_gamma * self.pcf(T, P) / P
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
         
@@ -258,10 +258,10 @@ class BubblePoint:
             elif T < self.Tmin: T = self.Tmin
             Psat = np.array([i(T) for i in self.Psats])
             z_norm = z / z.sum()
-            z_Psat_gamma_pcf = z * Psat * self.gamma(z_norm, T) * self.pcf(z_norm, T)
+            z_Psat_gamma = z * Psat * self.gamma(z_norm, T)
             f = self._P_error
-            P_guess, y = self._Py_ideal(z_Psat_gamma_pcf)
-            args = (T, z_Psat_gamma_pcf, y)
+            P_guess, y = self._Py_ideal(z_Psat_gamma)
+            args = (T, z_Psat_gamma, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
