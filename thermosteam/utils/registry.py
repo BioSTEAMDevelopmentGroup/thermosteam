@@ -139,7 +139,7 @@ class Registry: # pragma: no cover
         else:
             context_levels = self.context_levels
             N_levels = len(context_levels)
-            if (level > 0 and level >= N_levels
+            if (level >= 0 and level >= N_levels
                 or level < 0 and -level > N_levels):
                 objs = list(self)
             else:

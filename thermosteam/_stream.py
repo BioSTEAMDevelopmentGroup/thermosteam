@@ -691,13 +691,6 @@ class Stream:
         """ID of chemical with the largest mol fraction in stream."""
         return self.chemicals.tuple[self.mol.argmax()].ID
 
-    def replace(self, stream):
-        """Replace stream unit connections with another."""
-        source = self.source
-        if source: source.replace(self, stream)
-        sink = self.sink
-        if sink: sink.replace(self, stream)
-
     def disconnect_source(self):
         """Disconnect stream from source."""
         source = self._source
