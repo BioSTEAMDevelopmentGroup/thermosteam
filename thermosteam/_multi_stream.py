@@ -323,7 +323,7 @@ class MultiStream(Stream):
             else:
                 calculate = getattr(self.mixture, 'x' + name)
                 self._property_cache[name] = value = calculate(
-                    zip(imol._phases, composition), *self.thermal_condition
+                    list(zip(imol._phases, composition)), *self.thermal_condition
                 )
             return value * total if flow else value
     
