@@ -1120,6 +1120,10 @@ class Stream:
                 literal = (thermal_condition._T, thermal_condition._P)
             else:
                 phase = imol._phase._phase
+                # increase solver stability by setting phase = 'g' for T>Tc
+                Tcmax = max([c.Tc or 0 for c in self.imol.chemicals])
+                if self.T > Tcmax:
+                    phase = 'g'
                 literal = (phase, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition = self._property_cache_key
             if literal == last_literal and (composition == last_composition).all():
