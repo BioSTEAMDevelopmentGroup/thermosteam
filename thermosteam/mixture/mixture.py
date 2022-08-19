@@ -157,6 +157,8 @@ class Mixture:
         Component molecular weights [g/mol].
     
     """
+    maxiter = 20
+    T_tol = 1e-6
     __slots__ = ('rule',
                  'rigorous_energy_balance',
                  'include_excess_energies',
@@ -336,7 +338,7 @@ class Mixture:
     def S(self, phase, mol, T, P):
         """Return entropy in [J/mol/K]."""
         total_mol = mol.sum()
-        if total_mol == 0. : return 0.
+        if total_mol == 0.: return 0.
         S = self._S(phase, mol, T, P)
         if self.include_excess_energies:
             S += self._S_excess(phase, mol, T, P)
@@ -345,24 +347,56 @@ class Mixture:
     def solve_T_at_HP(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         args = (H, self.H, phase, mol, P, self.Cn, [0, None])
-        return flx.aitken(iter_T_at_HP, T_guess, 1e-6, args, 50, checkiter=True)
+        T_guess = flx.aitken(iter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+        T = iter_T_at_HP(T_guess, *args)
+        return (
+            flx.aitken_secant(
+                lambda T: self.H(phase, mol, T, P) - H,
+                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+            )
+            if abs(T - T_guess) < self.T_tol else T
+        )
         
     def xsolve_T_at_HP(self, phase_mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         phase_mol = tuple(phase_mol)
         args = (H, self.xH, phase_mol, P, self.xCn, [0, None])
-        return flx.aitken(xiter_T_at_HP, T_guess, 1e-6, args, 50, checkiter=True)
+        T_guess = flx.aitken(xiter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+        T = xiter_T_at_HP(T_guess, *args)
+        return (
+            flx.aitken_secant(
+                lambda T: self.xH(phase_mol, T, P) - H,
+                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+            )
+            if abs(T - T_guess) < self.T_tol else T
+        )
     
     def solve_T_at_SP(self, phase, mol, S, T_guess, P):
         """Solve for temperature in Kelvin."""
         args = (S, self.S, phase, mol, P, self.Cn, [0, None])
-        return flx.aitken(iter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=True)
+        T_guess = flx.aitken(iter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+        T = iter_T_at_SP(T_guess, *args)
+        return (
+            flx.aitken_secant(
+                lambda T: self.S(phase, mol, T, P) - S,
+                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+            )
+            if abs(T - T_guess) < self.T_tol else T
+        )
         
     def xsolve_T_at_SP(self, phase_mol, S, T_guess, P):
         """Solve for temperature in Kelvin."""
         phase_mol = tuple(phase_mol)
         args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
-        return flx.aitken(xiter_T_at_SP, T_guess, 1e-6, args, 50, checkiter=True)
+        T_guess = flx.aitken(xiter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+        T = xiter_T_at_SP(T_guess, *args)
+        return (
+            flx.aitken_secant(
+                lambda T: self.xS(phase_mol, T, P) - S,
+                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+            )
+            if abs(T - T_guess) < self.T_tol else T
+        )
     
     def xCn(self, phase_mol, T, P=None):
         """Multi-phase mixture molar isobaric heat capacity [J/mol/K]."""
@@ -371,6 +405,7 @@ class Mixture:
     def xH(self, phase_mol, T, P):
         """Multi-phase mixture enthalpy [J/mol]."""
         H = self._H
+        phase_mol = tuple(phase_mol)
         H_total = sum([H(phase, mol, T) for phase, mol in phase_mol])
         if self.include_excess_energies:
             H_excess = self._H_excess
@@ -380,6 +415,7 @@ class Mixture:
     def xS(self, phase_mol, T, P):
         """Multi-phase mixture entropy [J/mol/K]."""
         S = self._S
+        phase_mol = tuple(phase_mol)
         S_total = sum([S(phase, mol, T, P) for phase, mol in phase_mol])
         if self.include_excess_energies:
             S_excess = self._S_excess
