@@ -1499,7 +1499,7 @@ class Chemical:
         Vs = VolumeSolid(CAS, MW, Tt, Vml_Tm)
         Vg = VolumeGas(MW=MW, Tc=Tc, Pc=Pc, omega=omega, dipole=dipole,
                        eos=[eos], CASRN=CAS)
-        self._V = V = PhaseTPHandle(self, 'V', Vs, Vl, Vg)
+        self._V = V = PhaseTPHandle('V', Vs, Vl, Vg, Tc)
         if CAS in sugar_solid_densities: Vs.add_method(sugar_solid_densities[CAS])
         
         # Sensible heats
@@ -1508,7 +1508,7 @@ class Chemical:
                               iscyclic_aliphatic=iscyclic_aliphatic)
         Cnl = HeatCapacityLiquid(CASRN=CAS, Tc=Tc, omega=omega, MW=MW, 
                                  similarity_variable=similarity_variable, Cpgm=Cng)
-        self._Cn = Cn = PhaseTHandle(self, 'Cn', Cns, Cnl, Cng)
+        self._Cn = Cn = PhaseTHandle('Cn', Cns, Cnl, Cng, Tc)
         
         # Latent heats
         Zl = CompressibilityFactor(Vl)
@@ -1529,7 +1529,7 @@ class Chemical:
                               omega=omega, Psat=Psat, Vml=V.l)
         mug = ViscosityGas(CASRN=CAS, MW=MW, Tc=Tc, Pc=Pc, Zc=Zc, dipole=dipole,
                            Vmg=Vg)
-        self._mu = mu = PhaseTPHandle(self, 'mu', mul, mul, mug)
+        self._mu = mu = PhaseTPHandle('mu', mul, mul, mug, Tc)
         
         # Conductivity
         kappal = ThermalConductivityLiquid(CASRN=CAS, MW=MW, Tm=Tm, Tb=Tb, 
@@ -1537,7 +1537,7 @@ class Chemical:
         kappag = ThermalConductivityGas(CASRN=CAS, MW=MW, Tb=Tb, Tc=Tc, Pc=Pc, 
                                         Vc=Vc, Zc=Zc, omega=omega, dipole=dipole, 
                                         Vmg=V.g, Cpgm=Cn.g, mug=mu.g)
-        self._kappa = PhaseTPHandle(self, 'kappa', kappal, kappal, kappag)
+        self._kappa = PhaseTPHandle('kappa', kappal, kappal, kappag, Tc)
         
         # Surface tension
         Hvap_Tb = self._Hvap(Tb) if Tb else None
@@ -1594,6 +1594,7 @@ class Chemical:
         P_ref = self.P_ref
         T_ref = self.T_ref
         H_ref = self.H_ref
+        Tc = self._Tc
         S0 = 0. # Replaced later in _init_reactions method
         single_phase = self._locked_state
         if isinstance(Cn, PhaseHandle):
@@ -1710,51 +1711,51 @@ class Chemical:
                     sdata = (Cn_s, T_ref, H_ref)
                     ldata = (Cn_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
                     gdata = (Cn_g, H_int_T_ref_to_Tm_s, Hfus, H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref)
-                    self._H = EnthalpyRefSolid(self, sdata, ldata, gdata)
+                    self._H = EnthalpyRefSolid(sdata, ldata, gdata, Tc)
                     sdata = (Cn_s, T_ref, S0)
                     ldata = (Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S0)
                     gdata = (Cn_g, S_int_T_ref_to_Tm_s, Sfus, S_int_Tm_to_Tb_l, Svap_Tb, Tb, P_ref, S0)
-                    self._S = EntropyRefSolid(self, sdata, ldata, gdata)
+                    self._S = EntropyRefSolid(sdata, ldata, gdata, Tc)
                 elif phase_ref == 'l':
                     sdata = (Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref)
                     ldata = (Cn_l, T_ref, H_ref)
                     gdata = (Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, Tb, H_ref)
-                    self._H = EnthalpyRefLiquid(self, sdata, ldata, gdata)
+                    self._H = EnthalpyRefLiquid(sdata, ldata, gdata, Tc)
                     sdata = (Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0)
                     ldata = (Cn_l, T_ref, S0)
                     gdata = (Cn_g, S_int_T_ref_to_Tb_l, Svap_Tb, Tb, P_ref, S0)
-                    self._S = EntropyRefLiquid(self, sdata, ldata, gdata)
+                    self._S = EntropyRefLiquid(sdata, ldata, gdata, Tc)
                 elif phase_ref == 'g':
                     sdata = (Cn_s, H_int_Tb_to_T_ref_g, Hvap_Tb, H_int_Tm_to_Tb_l, Hfus, Tm, H_ref)
                     ldata = (Cn_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref)
                     gdata = (Cn_g, T_ref, H_ref)
-                    self._H = EnthalpyRefGas(self, sdata, ldata, gdata)
+                    self._H = EnthalpyRefGas(sdata, ldata, gdata, Tc)
                     sdata = (Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, S_int_Tm_to_Tb_l, Sfus, Tm, S0)
                     ldata = (Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S0)
                     gdata = (Cn_g, T_ref, P_ref, S0)
-                    self._S = EntropyRefGas(self, sdata, ldata, gdata)
+                    self._S = EntropyRefGas(sdata, ldata, gdata, Tc)
             
             # Excess energies
             if phase_ref == 's':
-                self._H_excess = ExcessEnthalpyRefSolid(self, (), (), ())
-                self._S_excess = ExcessEntropyRefSolid(self, (), (), ())
+                self._H_excess = ExcessEnthalpyRefSolid((), (), (), Tc)
+                self._S_excess = ExcessEntropyRefSolid((), (), (), Tc)
             elif phase_ref == 'l':
                 gdata = (eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep_Tb_Pb_g)
-                self._H_excess = ExcessEnthalpyRefLiquid(self, (), (), gdata)
+                self._H_excess = ExcessEnthalpyRefLiquid((), (), gdata, Tc)
                 gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
-                self._S_excess = ExcessEntropyRefLiquid(self, (), (), gdata)
+                self._S_excess = ExcessEntropyRefLiquid((), (), gdata, Tc)
             elif phase_ref == 'g':
                 ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g)
                 gdata = (eos, H_dep_ref_g)
-                self._H_excess = ExcessEnthalpyRefGas(self, (), ldata, gdata)
+                self._H_excess = ExcessEnthalpyRefGas((), ldata, gdata, Tc)
                 ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g)
                 gdata = (eos, S_dep_ref_g)
-                self._S_excess = ExcessEntropyRefGas(self, (), ldata, gdata)
+                self._S_excess = ExcessEntropyRefGas((), ldata, gdata, Tc)
                 
             if single_phase:
                 getfield = getattr
-                self._H_excess = getfield(self._H_excess, single_phase)
-                self._S_excess = getfield(self._S_excess, single_phase)
+                self._H_excess = getfield(self._H_excess, single_phase, Tc)
+                self._S_excess = getfield(self._S_excess, single_phase, Tc)
         else:
             self._H = self._S = self._S_excess = self._H_excess = None
             

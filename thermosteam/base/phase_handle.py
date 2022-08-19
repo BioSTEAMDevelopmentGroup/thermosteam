@@ -25,15 +25,15 @@ __all__ = ('PhaseHandle',
 @read_only
 @functor_lookalike
 class PhaseHandle:
-    __slots__ = ('chemical', 'var', 's', 'l', 'g')
+    __slots__ = ('Tc', 'var', 's', 'l', 'g')
     
-    def __init__(self, chemical, var, s, l, g):
+    def __init__(self, var, s, l, g, Tc=None):
         setattr = object.__setattr__
-        setattr(self, 'chemical', chemical)
         setattr(self, 'var', var)
         setattr(self, 's', s)
         setattr(self, 'l', l)
         setattr(self, 'g', g)
+        setattr(self, 'Tc', Tc)
     
     @property
     def S(self): return self.s
@@ -48,7 +48,7 @@ class PhaseHandle:
     
     def copy(self):
         return self.__class__(
-            self.chemical, self.var, self.s.copy(), self.l.copy(), self.g.copy()
+            self.var, self.s.copy(), self.l.copy(), self.g.copy(), self.Tc,
         )
     __copy__ = copy
     
@@ -63,8 +63,7 @@ class PhaseTHandle(PhaseHandle):
     __slots__ = ()
     
     def __call__(self, phase, T, P=None):
-        Tc = self.chemical.Tc
-        if Tc is not None and T > Tc: phase = 'g'
+        if self.Tc is not None and T > self.Tc: phase = 'g'
         return getattr(self, phase)(T)
     
     
@@ -72,14 +71,13 @@ class PhaseTPHandle(PhaseHandle):
     __slots__ = ()
     
     def __call__(self, phase, T, P):
-        Tc = self.chemical.Tc
-        if Tc is not None and T > Tc: phase = 'g'
+        if self.Tc is not None and T > self.Tc: phase = 'g'
         return getattr(self, phase)(T, P)
 
 
 # %% Mixture
     
-class PhaseMixtureHandle(PhaseHandle):
+class PhaseMixtureHandle(PhaseHandle): #: Not currently in use
     __slots__ = ()
     
     def __call__(self, phase, z, T, P=None):
@@ -97,7 +95,7 @@ class PhaseFunctorBuilder:
         self.l = l
         self.g = g
         
-    def __call__(self, chemical, sdata, ldata, gdata):
+    def __call__(self, sdata, ldata, gdata, Tc):
         phases = ('s', 'g', 'l')
         builders = (self.s, self.g, self.l)
         phases_data = (sdata, gdata, ldata)
@@ -106,7 +104,7 @@ class PhaseFunctorBuilder:
             if builder:
                 functor = builder.from_args(data)
                 slg[phase] = functor
-        return self.PhaseHandle(chemical, self.var, **slg)
+        return self.PhaseHandle(self.var, **slg, Tc=Tc)
 
 
 class PhaseTFunctorBuilder(PhaseFunctorBuilder):
