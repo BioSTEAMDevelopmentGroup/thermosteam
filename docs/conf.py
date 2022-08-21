@@ -8,5 +8,5 @@ extensions = [
 ]
 
 redirects = {
-    "*": "https://biosteam.readthedocs.io",
+    "*": "https://biosteam.readthedocs.io/en/latest/API/thermosteam/index.html",
 }
