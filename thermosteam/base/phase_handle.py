@@ -76,12 +76,43 @@ class PhaseTPHandle(PhaseHandle):
 
 
 # %% Mixture
+
+@cucumber
+@read_only
+@functor_lookalike
+class PhaseMixtureHandle:
+    __slots__ = ('var', 's', 'l', 'g')
     
-class PhaseMixtureHandle(PhaseHandle): #: Not currently in use
-    __slots__ = ()
+    def __init__(self, var, s, l, g):
+        setattr = object.__setattr__
+        setattr(self, 'var', var)
+        setattr(self, 's', s)
+        setattr(self, 'l', l)
+        setattr(self, 'g', g)
     
     def __call__(self, phase, z, T, P=None):
         return getattr(self, phase)(z, T, P)
+
+    @property
+    def S(self): return self.s
+    @property
+    def L(self): return self.l
+    
+    def __iter__(self):
+        return iter((('s', self.s), ('l', self.l), ('g', self.g)))
+    
+    def __bool__(self):
+        return any((self.s, self.l, self.g)) 
+    
+    def copy(self):
+        return self.__class__(
+            self.var, self.s.copy(), self.l.copy(), self.g.copy(),
+        )
+    __copy__ = copy
+    
+    def show(self):
+        print(self)
+    _ipython_display_ = show
 
 
 # %% Builders

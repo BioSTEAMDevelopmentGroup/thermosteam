@@ -544,7 +544,8 @@ class MultiStream(Stream):
     @property
     def vapor_fraction(self) -> float:
         """Molar vapor fraction."""
-        return get_phase_fraction(self, 'gG')
+        return self.imol['g'].sum() / F_mol if 'g' in self._phases and (F_mol:=self.F_mol) != 0. else 0.
+        
     @property
     def liquid_fraction(self) -> float:
         """Molar liquid fraction."""
