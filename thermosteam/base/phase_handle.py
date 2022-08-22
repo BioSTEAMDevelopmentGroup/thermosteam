@@ -11,9 +11,11 @@ from .functor import functor_lookalike
 from ..utils import read_only, cucumber
 
 __all__ = ('PhaseHandle',
+           'MockPhaseHandle',
+           'MockPhaseTHandle',
+           'MockPhaseTPHandle',
            'PhaseTHandle', 
            'PhaseTPHandle',
-           'PhaseMixtureHandle',
            'PhaseFunctorBuilder',
            'PhaseTFunctorBuilder',
            'PhaseTPFunctorBuilder')
@@ -56,7 +58,45 @@ class PhaseHandle:
         print(self)
     _ipython_display_ = show
 
-
+@cucumber
+@read_only
+@functor_lookalike
+class MockPhaseHandle:
+    __slots__ = ('var', 'model')
+    
+    def __init__(self, var, model):
+        setattr = object.__setattr__
+        setattr(self, 'var', var)
+        setattr(self, 'model', model)
+    
+    @property
+    def S(self): return self.model
+    @property
+    def L(self): return self.model
+    @property
+    def s(self): return self.model
+    @property
+    def l(self): return self.model
+    @property
+    def g(self): return self.model
+    
+    def __iter__(self):
+        return iter((('s', self.model), ('l', self.model), ('g', self.model)))
+    
+    def __bool__(self):
+        return bool(self.model)
+    
+    def copy(self):
+        return self.__class__(
+            self.var, self.model.copy(), 
+        )
+    __copy__ = copy
+    
+    def show(self):
+        print(self)
+    _ipython_display_ = show
+    
+    
 # %% Pure component
 
 class PhaseTHandle(PhaseHandle):
@@ -75,45 +115,18 @@ class PhaseTPHandle(PhaseHandle):
         return getattr(self, phase)(T, P)
 
 
-# %% Mixture
-
-@cucumber
-@read_only
-@functor_lookalike
-class PhaseMixtureHandle:
-    __slots__ = ('var', 's', 'l', 'g')
+class MockPhaseTHandle(MockPhaseHandle):
+    __slots__ = ()
     
-    def __init__(self, var, s, l, g):
-        setattr = object.__setattr__
-        setattr(self, 'var', var)
-        setattr(self, 's', s)
-        setattr(self, 'l', l)
-        setattr(self, 'g', g)
+    def __call__(self, phase, T, P=None):
+        return self.model(T)
     
-    def __call__(self, phase, z, T, P=None):
-        return getattr(self, phase)(z, T, P)
-
-    @property
-    def S(self): return self.s
-    @property
-    def L(self): return self.l
     
-    def __iter__(self):
-        return iter((('s', self.s), ('l', self.l), ('g', self.g)))
+class MockPhaseTPHandle(MockPhaseHandle):
+    __slots__ = ()
     
-    def __bool__(self):
-        return any((self.s, self.l, self.g)) 
-    
-    def copy(self):
-        return self.__class__(
-            self.var, self.s.copy(), self.l.copy(), self.g.copy(),
-        )
-    __copy__ = copy
-    
-    def show(self):
-        print(self)
-    _ipython_display_ = show
-
+    def __call__(self, phase, T, P):
+        return self.model(T, P)
 
 # %% Builders
 

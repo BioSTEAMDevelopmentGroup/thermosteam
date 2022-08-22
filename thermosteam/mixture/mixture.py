@@ -12,8 +12,9 @@ import numpy as np
 from math import exp
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
-from ..base import PhaseMixtureHandle
+from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle
 from .ideal_mixture_model import (
+    SinglePhaseIdealTMixtureModel,
     IdealTMixtureModel, 
     IdealTPMixtureModel, 
     IdealEntropyModel, 
@@ -25,32 +26,21 @@ __all__ = ('Mixture',)
 
 # %% Functions for building mixture models
 
-def group_handles_by_phase(phase_handles):
-    hasfield = hasattr
+def create_mixture_model(chemicals, var, Model):
     getfield = getattr
-    iscallable = callable
-    handles_by_phase = {'s': [],
-                        'l': [],
-                        'g': []}
-    for phase, handles in handles_by_phase.items():
-        for phase_handle in phase_handles:
-            if iscallable(phase_handle) and hasfield(phase_handle, phase):
-                prop = getfield(phase_handle, phase)
-                if not iscallable(prop): prop = phase_handle
-            else:
-                prop = phase_handle
-            handles.append(prop)
-    return handles_by_phase
+    isa = isinstance
+    handles = []
+    for chemical in chemicals:
+        obj = getfield(chemical, var)
+        if isa(obj, PhaseHandle):
+            phase_handle = obj
+        elif var in ('Cn', 'H'):
+            phase_handle = MockPhaseTHandle(var, obj)
+        else:
+            phase_handle = MockPhaseTPHandle(var, obj)
+        handles.append(phase_handle)
+    return Model(handles, var)
     
-def build_ideal_PhaseMixtureHandle(chemicals, var, Model):
-    setfield = object.__setattr__
-    getfield = getattr
-    phase_handles = [getfield(i, var) for i in chemicals]
-    new = PhaseMixtureHandle.__new__(PhaseMixtureHandle)
-    for phase, handles in group_handles_by_phase(phase_handles).items():
-        setfield(new, phase, Model(handles, var))
-    setfield(new, 'var', var)
-    return new
 
 # %% Energy balance
 
@@ -235,17 +225,17 @@ class Mixture:
                 chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
                 MWs = chemical_data_array(chemicals, 'MW')
             getfield = getattr
-            Cn =  build_ideal_PhaseMixtureHandle(chemicals, 'Cn', IdealTMixtureModel)
-            H =  build_ideal_PhaseMixtureHandle(chemicals, 'H', IdealTMixtureModel)
-            S = build_ideal_PhaseMixtureHandle(chemicals, 'S', IdealEntropyModel)
-            H_excess = build_ideal_PhaseMixtureHandle(chemicals, 'H_excess', IdealTPMixtureModel)
-            S_excess = build_ideal_PhaseMixtureHandle(chemicals, 'S_excess', IdealTPMixtureModel)
-            mu = build_ideal_PhaseMixtureHandle(chemicals, 'mu', IdealTPMixtureModel)
-            V = build_ideal_PhaseMixtureHandle(chemicals, 'V', IdealTPMixtureModel)
-            kappa = build_ideal_PhaseMixtureHandle(chemicals, 'kappa', IdealTPMixtureModel)
+            Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+            H =  create_mixture_model(chemicals, 'H', IdealTMixtureModel)
+            S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
+            H_excess = create_mixture_model(chemicals, 'H_excess', IdealTPMixtureModel)
+            S_excess = create_mixture_model(chemicals, 'S_excess', IdealTPMixtureModel)
+            mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
+            V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
+            kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
             Hvap = IdealHvapModel(chemicals)
-            sigma = IdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
-            epsilon = IdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+            sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+            epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
             return cls(rule, Cn, H, S, H_excess, S_excess,
                        mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
         else:

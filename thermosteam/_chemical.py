@@ -424,14 +424,7 @@ class Chemical:
     Choose what model to use through the `method` attribute:
     
     >>> list(sorted(Water.Cn.l.all_methods))
-    ['CRCSTD',
-     'DADGOSTAR_SHAW',
-     'POLING_CONST',
-     'ROWLINSON_BONDI',
-     'ROWLINSON_POLING',
-     'USER_METHOD',
-     'WEBBOOK_SHOMATE',
-     'ZABRANSKY_SPLINE_C']
+    ['COOLPROP', 'CRCSTD', 'DADGOSTAR_SHAW', 'POLING_CONST', 'ROWLINSON_BONDI', 'ROWLINSON_POLING', 'USER_METHOD', 'WEBBOOK_SHOMATE', 'ZABRANSKY_SPLINE_C']
     >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
     .. note::

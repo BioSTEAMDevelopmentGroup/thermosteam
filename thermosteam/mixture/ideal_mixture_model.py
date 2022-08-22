@@ -42,22 +42,22 @@ class IdealTPMixtureModel:
     >>> from thermosteam.mixture import IdealTPMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
-    >>> models = [i.V.l for i in chemicals]
+    >>> models = [i.V for i in chemicals]
     >>> mixture_model = IdealTPMixtureModel(models, 'V')
     >>> mixture_model
-    <IdealTPMixtureModel(mol, T, P) -> V [m^3/mol]>
+    <IdealTPMixtureModel(phase, mol, T, P) -> V [m^3/mol]>
     >>> mixture_model([0.2, 0.8], 350, 101325)
     5.376...e-05
     
     """
-    __slots__ = ('var', 'models',)
+    __slots__ = ('var', 'models')
 
     def __init__(self, models, var):
         self.models = tuple(models)
         self.var = var
 
-    def __call__(self, mol, T, P):
-        return sum([j * i(T, P) for i, j in zip(self.models, mol) if j])
+    def __call__(self, phase, mol, T, P):
+        return sum([j * i(phase, T, P) for i, j in zip(self.models, mol) if j])
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
@@ -90,10 +90,10 @@ class IdealEntropyModel:
     >>> from thermosteam import Chemicals
     >>> import numpy as np
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
-    >>> models = [i.S.l for i in chemicals]
+    >>> models = [i.S for i in chemicals]
     >>> mixture_model = IdealEntropyModel(models, 'S')
     >>> mixture_model
-    <IdealEntropyModel(mol, T, P) -> S [J/K/mol]>
+    <IdealEntropyModel(phase, mol, T, P) -> S [J/K/mol]>
     >>> mixture_model(np.array([0.2, 0.8]), 350, 101325)
     160.3
     
@@ -102,9 +102,9 @@ class IdealEntropyModel:
     __init__ = IdealTPMixtureModel.__init__
     __repr__ = IdealTPMixtureModel.__repr__
 
-    def __call__(self, mol, T, P):
+    def __call__(self, phase, mol, T, P):
         total_mol = mol.sum()
-        return sum([j * i(T, P) + j * log(j / total_mol) for i, j in zip(self.models, mol) if j])
+        return sum([j * i(phase, T, P) + j * log(j / total_mol) for i, j in zip(self.models, mol) if j])
     
 
 class IdealTMixtureModel:
@@ -133,10 +133,51 @@ class IdealTMixtureModel:
     >>> from thermosteam.mixture import IdealTMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
-    >>> models = [i.Psat for i in chemicals]
-    >>> mixture_model = IdealTMixtureModel(models, 'Psat')
+    >>> models = [i.Cn for i in chemicals]
+    >>> mixture_model = IdealTMixtureModel(models, 'Cn')
     >>> mixture_model
-    <IdealTMixtureModel(mol, T, P=None) -> Psat [Pa]>
+    <IdealTMixtureModel(phase, mol, T, P=None) -> Cn [J/mol/K]>
+    >>> mixture_model([0.2, 0.8], 350)
+    84914.8703877987
+    
+    """
+    __slots__ = IdealTPMixtureModel.__slots__
+    __init__ = IdealTPMixtureModel.__init__
+    __repr__ = IdealTPMixtureModel.__repr__
+
+    def __call__(self, phase, mol, T, P=None):
+        return sum([j * i(phase, T) for i, j in zip(self.models, mol) if j])
+
+class SinglePhaseIdealTMixtureModel:
+    """
+    Create an SinglePhaseIdealTMixtureModel object that calculates mixture properties
+    based on the molar weighted sum of pure chemical properties.
+    
+    Parameters
+    ----------
+    models : Iterable[function(T, P)]
+        Chemical property functions of temperature and pressure.
+    var : str
+        Description of thermodynamic variable returned.
+    
+    Notes
+    -----
+    :class:`Mixture` objects can contain IdealMixtureModel objects to establish
+    as mixture model for thermodynamic properties.
+    
+    See also
+    --------
+    :class:`Mixture`
+    
+    Examples
+    --------
+    >>> from thermosteam.mixture import IdealTMixtureModel
+    >>> from thermosteam import Chemicals
+    >>> chemicals = Chemicals(['Water', 'Ethanol'])
+    >>> models = [i.Psat for i in chemicals]
+    >>> mixture_model = SinglePhaseIdealTMixtureModel(models, 'Psat')
+    >>> mixture_model
+    <SinglePhaseIdealTMixtureModel(mol, T, P=None) -> Psat [Pa]>
     >>> mixture_model([0.2, 0.8], 350)
     84914.8703877987
     
@@ -147,6 +188,53 @@ class IdealTMixtureModel:
 
     def __call__(self, mol, T, P=None):
         return sum([j * i(T) for i, j in zip(self.models, mol) if j])
+
+class SinglePhaseIdealTPMixtureModel:
+    """
+    Create an IdealTPMixtureModel object that calculates mixture properties
+    based on the molar weighted sum of pure chemical properties.
+    
+    Parameters
+    ----------
+    models : Iterable[function(T, P)]
+        Chemical property functions of temperature and pressure.
+    var : str
+        Description of thermodynamic variable returned.
+    
+    Notes
+    -----
+    :class:`Mixture` objects can contain IdealMixtureModel objects to establish
+    as mixture model for thermodynamic properties.
+    
+    See also
+    --------
+    :class:`Mixture`
+    :func:`~.mixture_builders.ideal_mixture`
+    
+    Examples
+    --------
+    >>> from thermosteam.mixture import SinglePhaseIdealTPMixtureModel
+    >>> from thermosteam import Chemicals
+    >>> chemicals = Chemicals(['Water', 'Ethanol'])
+    >>> models = [i.sigma for i in chemicals]
+    >>> mixture_model = SinglePhaseIdealTPMixtureModel(models, 'sigma')
+    >>> mixture_model
+    <SinglePhaseIdealTPMixtureModel(mol, T, P) -> sigma [N/m]>
+    >>> mixture_model([0.2, 0.8], 350, 101325)
+    5.376...e-05
+    
+    """
+    __slots__ = ('var', 'models')
+
+    def __init__(self, models, var):
+        self.models = tuple(models)
+        self.var = var
+
+    def __call__(self, mol, T, P):
+        return sum([j * i(T, P) for i, j in zip(self.models, mol) if j])
+    
+    def __repr__(self):
+        return f"<{display_asfunctor(self)}>"
 
 class IdealHvapModel:
     __slots__ = ('chemicals',)
