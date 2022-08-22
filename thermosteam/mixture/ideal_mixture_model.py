@@ -12,7 +12,7 @@ from math import log
 
 __all__ = (
     'IdealTMixtureModel', 'IdealTPMixtureModel', 'IdealEntropyModel',
-    'IdealHvapModel',
+    'IdealHvapModel', 'SinglePhaseIdealTMixtureModel', 'SinglePhaseIdealTPMixtureModel',
 )
 
 class IdealTPMixtureModel:
@@ -46,7 +46,7 @@ class IdealTPMixtureModel:
     >>> mixture_model = IdealTPMixtureModel(models, 'V')
     >>> mixture_model
     <IdealTPMixtureModel(phase, mol, T, P) -> V [m^3/mol]>
-    >>> mixture_model([0.2, 0.8], 350, 101325)
+    >>> mixture_model('l', [0.2, 0.8], 350, 101325)
     5.376...e-05
     
     """
@@ -94,7 +94,7 @@ class IdealEntropyModel:
     >>> mixture_model = IdealEntropyModel(models, 'S')
     >>> mixture_model
     <IdealEntropyModel(phase, mol, T, P) -> S [J/K/mol]>
-    >>> mixture_model(np.array([0.2, 0.8]), 350, 101325)
+    >>> mixture_model('l', np.array([0.2, 0.8]), 350, 101325)
     160.3
     
     """
@@ -137,8 +137,8 @@ class IdealTMixtureModel:
     >>> mixture_model = IdealTMixtureModel(models, 'Cn')
     >>> mixture_model
     <IdealTMixtureModel(phase, mol, T, P=None) -> Cn [J/mol/K]>
-    >>> mixture_model([0.2, 0.8], 350)
-    84914.8703877987
+    >>> mixture_model('l', [0.2, 0.8], 350)
+    125.2
     
     """
     __slots__ = IdealTPMixtureModel.__slots__
@@ -171,7 +171,7 @@ class SinglePhaseIdealTMixtureModel:
     
     Examples
     --------
-    >>> from thermosteam.mixture import IdealTMixtureModel
+    >>> from thermosteam.mixture import SinglePhaseIdealTMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
     >>> models = [i.Psat for i in chemicals]
@@ -216,10 +216,10 @@ class SinglePhaseIdealTPMixtureModel:
     >>> from thermosteam.mixture import SinglePhaseIdealTPMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
-    >>> models = [i.sigma for i in chemicals]
-    >>> mixture_model = SinglePhaseIdealTPMixtureModel(models, 'sigma')
+    >>> models = [i.V.l for i in chemicals]
+    >>> mixture_model = SinglePhaseIdealTPMixtureModel(models, 'V')
     >>> mixture_model
-    <SinglePhaseIdealTPMixtureModel(mol, T, P) -> sigma [N/m]>
+    <SinglePhaseIdealTPMixtureModel(mol, T, P) -> V [m^3/mol]>
     >>> mixture_model([0.2, 0.8], 350, 101325)
     5.376...e-05
     
