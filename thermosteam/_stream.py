@@ -1597,6 +1597,9 @@ class Stream:
             else:
                 self.phases = other.phases
                 imol = other._imol
+        elif isinstance(self, tmo.MultiStream) and other.phase not in self.phases:
+            self.phases = (other.phase, *self.phases)
+            imol = other._imol
         else:
             imol = other._imol
         self._imol.copy_like(imol)
@@ -1887,18 +1890,21 @@ class Stream:
     @property
     def vle(self) -> eq.VLE:
         """An object that can perform vapor-liquid equilibrium on the stream."""
+        if self.phase == 's': self.phase = 'l'
         self.phases = ('g', 'l')
         return self.vle
 
     @property
     def lle(self) -> eq.LLE:
         """An object that can perform liquid-liquid equilibrium on the stream."""
+        if self.phase not in ('l', 'L'): self.phase = 'l'
         self.phases = ('L', 'l')
         return self.lle
     
     @property
     def sle(self) -> eq.SLE:
         """An object that can perform solid-liquid equilibrium on the stream."""
+        if self.phase not in ('l', 's'): self.phase = 'l'
         self.phases = ('s', 'l')
         return self.sle
 

@@ -152,14 +152,18 @@ def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
         MW = 18.01528
         retentate_water = retentate.imol[ID]
         dry_mass = F_mass - MW * retentate_water
-        retentate.imol[ID] = water = (dry_mass * mc/(1-mc)) / MW
-        permeate.imol[ID] -= water - retentate_water
+        key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
+        retentate.imol[key] = water = (dry_mass * mc/(1-mc)) / MW    
+        key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
+        permeate.imol[key] -= water - retentate_water
     else:
         retentate_moisture = retentate.imass[ID]
         dry_mass = F_mass - retentate_moisture
-        retentate.imass[ID] = moisture = dry_mass * mc/(1-mc)
-        permeate.imass[ID] -= moisture - retentate_moisture
-    if permeate.imol[ID] < 0:
+        key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
+        retentate.imass[key] = moisture = dry_mass * mc/(1-mc)
+        key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
+        permeate.imass[key] -= moisture - retentate_moisture
+    if permeate.imol[key] < 0:
         raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
 
 def mix_and_split(ins, top, bottom, split):
