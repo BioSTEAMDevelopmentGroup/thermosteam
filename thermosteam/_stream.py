@@ -2352,7 +2352,7 @@ class Stream:
                 liquid.mol[index] = 0
                 ms.H = H 
                 return ms.T
-            flx.wegstein(equilibrium_approximation, T)
+            flx.wegstein(equilibrium_approximation, T, xtol=1e-4, maxiter=100)
         else:
             f_l = F_l(x, T)
             y = f_l / P
