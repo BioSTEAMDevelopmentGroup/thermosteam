@@ -304,6 +304,26 @@ def test_mixture():
     Ts = s5.mixture.solve_T_at_SP(phase=s5.phase, mol=s5.mol, S=s5.S, T_guess=s5.T, P=s5.P)
     assert_allclose(T_expected, Ts, rtol=1e-3)
     pass
+
+def test_vle_critical_pure_component():
+    N2 = tmo.Chemical('N2', cache=True)
+    tmo.settings.set_thermo([N2])
+    s = tmo.Stream(None, N2=1)
+    
+    # Under critical point, liquid is fine
+    s.vle(T=N2.Tc - 1e-6, P=2 * N2.Pc)
+    assert s.phase == 'l'
+    
+    # Beyond critical point, always model as a gas
+    s.vle(T=N2.Tc, P=0.5 * N2.Pc)
+    assert s.phase == 'g'
+    s.vle(T=N2.Tc, P=2 * N2.Pc)
+    assert s.phase == 'g'
+    s.vle(P=N2.Pc, H=s.H + 10)
+    assert s.phase == 'g'
+    s.vle(P=N2.Pc, S=s.S + 10)
+    assert s.phase == 'g'
+    
     
 if __name__ == '__main__':
     test_stream()
@@ -311,5 +331,6 @@ if __name__ == '__main__':
     test_vlle()
     stream_methods()
     test_stream_property_cache()
+    test_vle_critical_pure_component()
     test_critical()
     test_mixture()

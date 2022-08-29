@@ -484,15 +484,20 @@ class VLE(Equilibrium, phases='lg'):
     ### Single component equilibrium case ###
         
     def _set_thermal_condition_chemical(self, T, P):
-        # Either liquid or gas
-        Psat = self._chemical.Psat(T)
-        tol = 1e-3
-        if P < Psat - tol:
+        chemical = self._chemical
+        if T >= chemical.Tc: 
             self._liquid_mol[self._index] = 0
             self._vapor_mol[self._index] = self._mol_vle
-        elif P > Psat + tol:
-            self._liquid_mol[self._index] = self._mol_vle
-            self._vapor_mol[self._index] = 0
+        else:
+            # Either liquid or gas
+            Psat = chemical.Psat(T)
+            tol = 1e-3
+            if P < Psat - tol:
+                self._liquid_mol[self._index] = 0
+                self._vapor_mol[self._index] = self._mol_vle
+            elif P > Psat + tol:
+                self._liquid_mol[self._index] = self._mol_vle
+                self._vapor_mol[self._index] = 0
     
     def _set_TV_chemical(self, T, V):
         # Set vapor fraction
@@ -514,9 +519,13 @@ class VLE(Equilibrium, phases='lg'):
         thermo = self._thermo
         phase_data = self._phase_data
         mixture = thermo.mixture
+        chemical = self._chemical
         
         # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P, check_validity=False)
+        self._T = self._thermal_condition.T = T = (
+            # Maximally the critical temperature in equilibrium
+            chemical.Tsat(P, check_validity=False) if P < chemical.Pc else chemical.Tc
+        )
         
         # Check if super heated vapor
         vapor_mol[index] = mol
@@ -555,7 +564,8 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[index] = 0
         H_dew = mixture.xH(phase_data, T, P)
         if H >= H_dew:
-            self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
+            raise NotImplementedError('cannot solve for pressure yet')
+            self._thermal_condition.P = mixture.xsolve_P_at_HT(phase_data, H, T, P)
             return
 
         # Check if subcooled liquid
@@ -563,7 +573,8 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[index] = mol
         H_bubble = mixture.xH(phase_data, T, P)
         if H <= H_bubble:
-            self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
+            raise NotImplementedError('cannot solve for pressure yet')
+            self._thermal_condition.P = mixture.xsolve_P_at_HT(phase_data, H, T, P)
             return
         
         # Adjust vapor fraction accordingly
@@ -579,9 +590,13 @@ class VLE(Equilibrium, phases='lg'):
         thermo = self._thermo
         phase_data = self._phase_data
         mixture = thermo.mixture
+        chemical = self._chemical
         
         # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = self._chemical.Tsat(P, check_validity=False)
+        self._T = self._thermal_condition.T = T = (
+            # Maximally the critical temperature in equilibrium
+            chemical.Tsat(P, check_validity=False) if P < chemical.Pc else chemical.Tc
+        )
         
         # Check if super heated vapor
         vapor_mol[index] = mol
@@ -620,7 +635,8 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[index] = 0
         S_dew = mixture.xS(phase_data, T, P)
         if S >= S_dew:
-            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            raise NotImplementedError('cannot solve for pressure yet')
+            self._thermal_condition.P = mixture.xsolve_P_at_ST(phase_data, S, T, P)
             return
 
         # Check if subcooled liquid
@@ -628,7 +644,8 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[index] = mol
         S_bubble = mixture.xS(phase_data, T, P)
         if S <= S_bubble:
-            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
+            raise NotImplementedError('cannot solve for pressure yet')
+            self._thermal_condition.P = mixture.xsolve_P_at_ST(phase_data, S, T, P)
             return
         
         # Adjust vapor fraction accordingly
