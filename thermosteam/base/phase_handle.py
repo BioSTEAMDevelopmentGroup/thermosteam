@@ -101,17 +101,19 @@ class MockPhaseHandle:
 
 class PhaseTHandle(PhaseHandle):
     __slots__ = ()
+    force_gas_critical_phase = False
     
     def __call__(self, phase, T, P=None):
-        if self.Tc is not None and T > self.Tc: phase = 'g'
+        if self.force_gas_critical_phase and T > self.Tc: phase = 'g'
         return getattr(self, phase)(T)
     
     
 class PhaseTPHandle(PhaseHandle):
     __slots__ = ()
+    force_gas_critical_phase = False
     
     def __call__(self, phase, T, P):
-        if self.Tc is not None and T > self.Tc: phase = 'g'
+        if self.force_gas_critical_phase and T > self.Tc: phase = 'g'
         return getattr(self, phase)(T, P)
 
 
