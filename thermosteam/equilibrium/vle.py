@@ -522,10 +522,7 @@ class VLE(Equilibrium, phases='lg'):
         chemical = self._chemical
         
         # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = (
-            # Maximally the critical temperature in equilibrium
-            chemical.Tsat(P, check_validity=False) if P < chemical.Pc else chemical.Tc
-        )
+        self._T = self._thermal_condition.T = T = chemical.Tsat(P, check_validity=False) 
         
         # Check if super heated vapor
         vapor_mol[index] = mol
@@ -593,10 +590,7 @@ class VLE(Equilibrium, phases='lg'):
         chemical = self._chemical
         
         # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = (
-            # Maximally the critical temperature in equilibrium
-            chemical.Tsat(P, check_validity=False) if P < chemical.Pc else chemical.Tc
-        )
+        self._T = self._thermal_condition.T = T = chemical.Tsat(P, check_validity=False)
         
         # Check if super heated vapor
         vapor_mol[index] = mol
