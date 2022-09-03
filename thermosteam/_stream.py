@@ -1591,15 +1591,12 @@ class Stream:
 
         """
         if isinstance(other, tmo.MultiStream):
-            phase = other.phase
+            phase = other.phases[0]
             if len(phase) == 1:
                 imol = other._imol.to_chemical_indexer(phase)
             else:
                 self.phases = other.phases
                 imol = other._imol
-        elif isinstance(self, tmo.MultiStream) and other.phase not in self.phases:
-            self.phases = (other.phase, *self.phases)
-            imol = other._imol
         else:
             imol = other._imol
         self._imol.copy_like(imol)

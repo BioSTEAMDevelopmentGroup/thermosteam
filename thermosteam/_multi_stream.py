@@ -602,6 +602,49 @@ class MultiStream(Stream):
             tc1._T = tc2._T = tc._T
             tc1._P = tc2._P = tc._P
     
+    def copy_like(self, other):
+        """
+        Copy all conditions of another stream.
+
+        Examples
+        --------
+        Copy data from another stream with the same property package:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
+        >>> s1.copy_like(s2)
+        >>> s1.show(flow='kg/hr')
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water  2
+         
+        Copy data from another stream with a different property package:
+        
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> s2 = tmo.Stream('s2', Water=2, units='kg/hr')
+        >>> s1.copy_like(s2)
+        >>> s1.show(flow='kg/hr')
+        MultiStream: s1
+         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): (l) Water  2
+
+        """
+        if isinstance(other, MultiStream):
+            self.phases = other.phases
+            imol = other._imol
+        elif other.phase not in self.phases:
+            self.phases = (other.phase, *self.phases)
+            imol = other._imol
+        else:
+            imol = other._imol
+        self._imol.copy_like(imol)
+        self._thermal_condition.copy_like(other._thermal_condition)
+    
     def copy_flow(self, 
                   other: Stream, 
                   phase: Optional[Sequence[str]|str]=...,
