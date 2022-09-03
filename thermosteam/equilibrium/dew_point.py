@@ -217,7 +217,7 @@ class DewPoint:
             raise ValueError('no positive components present')
         if N == 1:
             chemical = self.chemicals[fn.first_true_index(positives)]
-            T = chemical.Tsat(P, check_validity=False) if P < chemical.Pc else chemical.Tc
+            T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             x = z.copy()
         else:
             f = self._T_error
