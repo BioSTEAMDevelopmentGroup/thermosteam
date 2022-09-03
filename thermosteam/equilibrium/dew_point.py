@@ -266,14 +266,14 @@ class DewPoint:
         >>> tmo.docround(DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28))
         (82548.7827, array([0.852, 0.148]))
  
-       """
+        """
         positives = z > 0.
         N = positives.sum()
         if N == 0:
             raise ValueError('no positive components present')
         if N == 1:
             chemical = self.chemicals[fn.first_true_index(z)]
-            P = chemical.Psat(T) if T > chemical.Tc else chemical.Pc
+            P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             x = z.copy()
         else:
             z_norm = z/z.sum()
