@@ -1120,17 +1120,17 @@ class VLE(Equilibrium, phases='lg'):
                 self._T = thermal_condition.T = T
                 
                 y0 = f(0.)
-                if y0 > 0.:
+                if y0 > self.H_hat_tol:
                     self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
                         self._phase_data, H, T, P
                     )
-                else:
+                elif y0 < -self.H_hat_tol:
                     y1 = f(1.)
-                    if y1 < 0.:
+                    if y1 < -self.H_hat_tol:
                         self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
                             self._phase_data, H, T, P
                         )
-                    else:
+                    elif y1 > self.H_hat_tol:
                         flx.IQ_interpolation(f,
                             0., 1., y0, y1, self._V, self.V_tol, self.H_hat_tol,
                             maxiter=self.maxiter, 
