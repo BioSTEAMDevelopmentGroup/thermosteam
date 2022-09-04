@@ -22,11 +22,11 @@ def get_excess_energy(eos, T, P, free_energy, phase):
         return getattr(eos, name)
 
 @functor(var='H')
-def Enthalpy(T, Cn, T_ref, H_ref):
+def Enthalpy(T, P, Cn, T_ref, H_ref):
     return H_ref + Cn.T_dependent_property_integral(T_ref, T)
 
 @functor(var='S')
-def Entropy(T, Cn, T_ref, S0):
+def Entropy(T, P, Cn, T_ref, S0):
     return S0 + Cn.T_dependent_property_integral_over_T(T_ref, T)
 
 @functor(var='S')
@@ -34,12 +34,12 @@ def EntropyGas(T, P, Cn, T_ref, P_ref, S0):
     return S0 + Cn.T_dependent_property_integral_over_T(T_ref, T) - R*log(P/P_ref)
 
 @functor(var='H.l')
-def Liquid_Enthalpy_Ref_Liquid(T, Cn_l, T_ref, H_ref):
+def Liquid_Enthalpy_Ref_Liquid(T, P, Cn_l, T_ref, H_ref):
     """Enthapy (kJ/kmol) disregarding pressure and assuming the specified phase."""
     return H_ref + Cn_l.T_dependent_property_integral(T_ref, T)
 
 @functor(var='H.l')
-def Liquid_Enthalpy_Ref_Gas(T, Cn_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref):
+def Liquid_Enthalpy_Ref_Gas(T, P, Cn_l, H_int_Tb_to_T_ref_g, Hvap_Tb, Tb, H_ref):
     return H_ref - H_int_Tb_to_T_ref_g - Hvap_Tb + Cn_l.T_dependent_property_integral(Tb, T)
     
 @functor(var='H.l')
@@ -47,71 +47,71 @@ def Liquid_Enthalpy_Ref_Solid(T, Cn_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref):
     return H_ref + H_int_T_ref_to_Tm_s + Hfus + Cn_l.T_dependent_property_integral(Tm, T)
     
 @functor(var='H.s')
-def Solid_Enthalpy_Ref_Solid(T, Cn_s, T_ref, H_ref):
+def Solid_Enthalpy_Ref_Solid(T, P, Cn_s, T_ref, H_ref):
     return H_ref + Cn_s.T_dependent_property_integral(T_ref, T)
 
 @functor(var='H.s')
-def Solid_Enthalpy_Ref_Liquid(T, Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref):
+def Solid_Enthalpy_Ref_Liquid(T, P, Cn_s, H_int_Tm_to_T_ref_l, Hfus, Tm, H_ref):
     return H_ref - H_int_Tm_to_T_ref_l - Hfus + Cn_s.T_dependent_property_integral(Tm, T)
 
 @functor(var='H.s')
-def Solid_Enthalpy_Ref_Gas(T, Cn_s, H_int_Tb_to_T_ref_g, Hvap_Tb,
+def Solid_Enthalpy_Ref_Gas(T, P, Cn_s, H_int_Tb_to_T_ref_g, Hvap_Tb,
                            H_int_Tm_to_Tb_l, Hfus, Tm, H_ref):
     return H_ref - H_int_Tb_to_T_ref_g - Hvap_Tb - H_int_Tm_to_Tb_l - Hfus + Cn_s.T_dependent_property_integral(Tm, T)
     
 @functor(var='H.g')
-def Gas_Enthalpy_Ref_Gas(T, Cn_g, T_ref, H_ref):
+def Gas_Enthalpy_Ref_Gas(T, P, Cn_g, T_ref, H_ref):
     return H_ref + Cn_g.T_dependent_property_integral(T_ref, T)
 
 @functor(var='H.g')
-def Gas_Enthalpy_Ref_Liquid(T, Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, 
+def Gas_Enthalpy_Ref_Liquid(T, P, Cn_g, H_int_T_ref_to_Tb_l, Hvap_Tb, 
                             Tb, H_ref):
     return H_ref + H_int_T_ref_to_Tb_l + Hvap_Tb + Cn_g.T_dependent_property_integral(Tb, T)
 
 @functor(var='H.g')
-def Gas_Enthalpy_Ref_Solid(T, Cn_g, H_int_T_ref_to_Tm_s, Hfus,
+def Gas_Enthalpy_Ref_Solid(T, P, Cn_g, H_int_T_ref_to_Tm_s, Hfus,
                            H_int_Tm_to_Tb_l, Hvap_Tb, Tb, H_ref):
     return H_ref + H_int_T_ref_to_Tm_s + Hfus + H_int_Tm_to_Tb_l + Hvap_Tb + Cn_g.T_dependent_property_integral(Tb, T)
 
 
-EnthalpyRefLiquid = PhaseTFunctorBuilder('H',
+EnthalpyRefLiquid = PhaseTPFunctorBuilder('H',
                                         Solid_Enthalpy_Ref_Liquid.functor,
                                         Liquid_Enthalpy_Ref_Liquid.functor,
                                         Gas_Enthalpy_Ref_Liquid.functor)
 
-EnthalpyRefSolid = PhaseTFunctorBuilder('H',
+EnthalpyRefSolid = PhaseTPFunctorBuilder('H',
                                        Solid_Enthalpy_Ref_Solid.functor,
                                        Liquid_Enthalpy_Ref_Solid.functor,
                                        Gas_Enthalpy_Ref_Solid.functor)
 
-EnthalpyRefGas = PhaseTFunctorBuilder('H',
+EnthalpyRefGas = PhaseTPFunctorBuilder('H',
                                      Solid_Enthalpy_Ref_Gas.functor,
                                      Liquid_Enthalpy_Ref_Gas.functor,
                                      Gas_Enthalpy_Ref_Gas.functor)
 
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Liquid(T, Cn_l, T_ref, S0):
+def Liquid_Entropy_Ref_Liquid(T, P, Cn_l, T_ref, S0):
     """Enthapy (kJ/kmol) disregarding pressure and assuming the specified phase."""
     return S0 + Cn_l.T_dependent_property_integral_over_T(T_ref, T)
 
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Gas(T, Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S0):
+def Liquid_Entropy_Ref_Gas(T, P, Cn_l, S_int_Tb_to_T_ref_g, Svap_Tb, Tb, S0):
     return S0 - S_int_Tb_to_T_ref_g - Svap_Tb + Cn_l.T_dependent_property_integral_over_T(Tb, T)
     
 @functor(var='S.l')
-def Liquid_Entropy_Ref_Solid(T, Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S0):
+def Liquid_Entropy_Ref_Solid(T, P, Cn_l, S_int_T_ref_to_Tm_s, Sfus, Tm, S0):
     return S0 + S_int_T_ref_to_Tm_s + Sfus + Cn_l.T_dependent_property_integral_over_T(Tm, T)
     
 @functor(var='S.s')
-def Solid_Entropy_Ref_Solid(T, Cn_s, T_ref, S0):
+def Solid_Entropy_Ref_Solid(T, P, Cn_s, T_ref, S0):
     return S0 + Cn_s.T_dependent_property_integral_over_T(T_ref, T)
 
 @functor(var='S.s')
-def Solid_Entropy_Ref_Liquid(T, Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0):
+def Solid_Entropy_Ref_Liquid(T, P, Cn_s, S_int_Tm_to_T_ref_l, Sfus, Tm, S0):
     return S0 - S_int_Tm_to_T_ref_l - Sfus + Cn_s.T_dependent_property_integral_over_T(Tm, T)
 
 @functor(var='S.s')
-def Solid_Entropy_Ref_Gas(T, Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, 
+def Solid_Entropy_Ref_Gas(T, P, Cn_s, S_int_Tb_to_T_ref_g, Svap_Tb, 
                           S_int_Tm_to_Tb_l, Sfus, Tm, S0):
     return S0 - S_int_Tb_to_T_ref_g - Svap_Tb - S_int_Tm_to_Tb_l - Sfus + Cn_s.T_dependent_property_integral_over_T(Tm, T)
     
@@ -245,7 +245,7 @@ def Excess_Gas_Entropy_Ref_Liquid(T, P, eos, S_dep_T_ref_Pb,
     return S_dep_T_ref_Pb - S_dep_ref_l + S_dep_g - S_dep_Tb_Pb_g
 
 @functor(var='S.g')
-def Excess_Gas_Entropy_Ref_Solid(T):
+def Excess_Gas_Entropy_Ref_Solid(T, P):
     return 0
 
 ExcessEntropyRefLiquid = PhaseTPFunctorBuilder('S_excess',

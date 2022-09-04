@@ -34,7 +34,7 @@ def create_mixture_model(chemicals, var, Model):
         obj = getfield(chemical, var)
         if isa(obj, PhaseHandle):
             phase_handle = obj
-        elif var in ('Cn', 'H'):
+        elif var == 'Cn':
             phase_handle = MockPhaseTHandle(var, obj)
         else:
             phase_handle = MockPhaseTPHandle(var, obj)
@@ -226,7 +226,7 @@ class Mixture:
                 MWs = chemical_data_array(chemicals, 'MW')
             getfield = getattr
             Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
-            H =  create_mixture_model(chemicals, 'H', IdealTMixtureModel)
+            H =  create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
             S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
             H_excess = create_mixture_model(chemicals, 'H_excess', IdealTPMixtureModel)
             S_excess = create_mixture_model(chemicals, 'S_excess', IdealTPMixtureModel)
@@ -321,7 +321,7 @@ class Mixture:
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
-        H = self._H(phase, mol, T)
+        H = self._H(phase, mol, T, P)
         if self.include_excess_energies: H += self._H_excess(phase, mol, T, P)
         return H
     
@@ -396,7 +396,7 @@ class Mixture:
         """Multi-phase mixture enthalpy [J/mol]."""
         H = self._H
         phase_mol = tuple(phase_mol)
-        H_total = sum([H(phase, mol, T) for phase, mol in phase_mol])
+        H_total = sum([H(phase, mol, T, P) for phase, mol in phase_mol])
         if self.include_excess_energies:
             H_excess = self._H_excess
             H_total += sum([H_excess(phase, mol, T, P) for phase, mol in phase_mol])

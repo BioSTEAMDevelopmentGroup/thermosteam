@@ -107,6 +107,25 @@ class CompressibilityFactor:
     def __repr__(self):
         return f"{type(self).__name__}(self.V)"
 
+try:
+    from CoolProp.CoolProp import PropsSI
+except:
+    pass
+else:
+    class CoolPropFreeEnergy:
+        __slots__ = ('_ref', 'cache', 'name', 'CAS', 'MW')
+        
+        def __init__(self, CAS, name, MW):
+            self.CAS = CAS
+            self.name = name
+            self.cache = (None, None)
+            self._ref = PropsSI(self.name, 'T', 298.15, 'P', 101325., self.CAS) / 1000. * MW
+            self.MW = MW
+        
+        def __call__(self, T, P):
+            return PropsSI(self.name, 'T', T, 'P', P, self.CAS) * self.MW / 1000. - self._ref
+
+
 # %% Filling missing properties
 
 def get_chemical_data(chemical):
@@ -487,7 +506,7 @@ class Chemical:
                 default=False, phase=None, search_db=True, 
                 V=None, Cn=None, mu=None, Cp=None, rho=None,
                 sigma=None, kappa=None, epsilon=None, Psat=None,
-                Hvap=None, **data):
+                Hvap=None, method=None, **data):
         chemical_cache = cls.chemical_cache
         if (cache or cls.cache) and ID in chemical_cache:
             if any([search_ID, eos, phase_ref, CAS, default, phase, 
@@ -537,7 +556,48 @@ class Chemical:
                 for i in chemical_cache:
                     del chemical_cache[i]
                     break
+        if method: self.set_method(method)
         return self
+
+    def set_method(self, method):
+        for name in _model_handles:
+            model_handle = getattr(self, name)
+            if method not in model_handle.all_methods: continue
+            model_handle.method = method
+        for name in _phase_handles:
+            obj = getattr(self, name)
+            if method in model_handle.all_methods: 
+                if isinstance(obj, PhaseHandle):
+                    for phase, model_handle in obj:
+                        model_handle.method = method
+                        
+                else:
+                    obj.method = method
+            if hasattr(model_handle, 'all_methods_P') and method in model_handle.all_methods_P: 
+                if isinstance(obj, PhaseHandle):
+                    for phase, model_handle in obj:
+                        model_handle.method_P = method
+                else:
+                    obj.method_P = method
+        
+    def use_coolprop_free_energies(self):
+        setattr = object.__setattr__
+        for name in ('_H', '_S'):
+            obj = getattr(self, name)
+            # Phase determined by coolprop
+            cpfe = CoolPropFreeEnergy(self.CAS, name.strip('_'), self.MW)
+            if isinstance(obj, PhaseHandle):
+                for phase, model_handle in obj: setattr(obj, phase, cpfe)
+            else:
+                setattr(obj, phase, cpfe)
+        # Excess energies are always included
+        f = lambda T, P: 0.
+        for name in ('_H_excess', '_S_excess'):
+            obj = getattr(self, name)
+            if isinstance(obj, PhaseHandle):
+                for phase, model_handle in obj: setattr(obj, phase, f)
+            else:
+                setattr(obj, phase, f)
 
     @classmethod
     def new(cls, ID, CAS, eos=None, phase_ref=None, phase=None, **data):

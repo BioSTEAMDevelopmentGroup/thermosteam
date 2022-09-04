@@ -112,7 +112,7 @@ class PhaseTPHandle(PhaseHandle):
     __slots__ = ()
     force_gas_critical_phase = False
     
-    def __call__(self, phase, T, P):
+    def __call__(self, phase, T, P=None):
         if self.force_gas_critical_phase and T > self.Tc: phase = 'g'
         return getattr(self, phase)(T, P)
 
