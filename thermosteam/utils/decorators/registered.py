@@ -27,6 +27,7 @@ def _registered(cls, ticket_name, autonumber=True):
     cls._take_unregistered_ticket = _take_unregistered_ticket
     cls._take_ticket = _take_ticket
     cls._register = _register
+    cls.register_alias = register_alias
     cls.ID = ID
     cls.__repr__ = __repr__
     cls.__str__ = __str__
@@ -81,6 +82,9 @@ def ID(self):
 @ID.setter
 def ID(self, ID):
     self._register(ID)
+    
+def register_alias(self, alias):
+    self.registry.register_alias_safely(alias, self) 
     
 def __repr__(self):
     return f"<{type(self).__name__}: {self.ID}>"

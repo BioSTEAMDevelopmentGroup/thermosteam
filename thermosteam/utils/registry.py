@@ -28,6 +28,12 @@ def check_valid_ID(ID):
             'ID may only contain letters, numbers, and/or underscores; '
             'no special characters or spaces'
         )
+        
+def check_valid_alias(alias):
+    if not isinstance(alias, str):
+        raise RuntimeError(f"alias must be a string, not a '{type(alias).__name__}' object")
+    if not alias[0].isalpha():
+        raise RuntimeError("alias must start with a letter")
 
 class Registry: # pragma: no cover
 
@@ -115,6 +121,24 @@ class Registry: # pragma: no cover
         """Register object without warnings or checks."""
         self._open_registration(ID, obj)
         self._close_registration(ID, obj)
+        
+    def register_alias_safely(self, alias, obj):
+        """Register object safely, with checks and due warnings."""
+        check_valid_alias(alias)
+        data = self.data
+        if alias in data:
+            other = data[alias]
+            if obj is not other and other not in self.safe_to_replace:
+                warning = RuntimeWarning(
+                    f"alias {repr(alias)} of {repr(other)} has been replaced in registry with {repr(obj)}"
+                )
+                warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+        self.register_alias(alias, obj)
+        
+    def register_alias(self, alias, obj):
+        """Register object alias without warnings or checks."""
+        self.data[alias] = obj
+        for i in self.context_levels: i.append(obj)
         
     def _open_registration(self, ID, obj):
         data = self.data
