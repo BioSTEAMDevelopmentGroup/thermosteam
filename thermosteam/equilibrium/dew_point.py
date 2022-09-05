@@ -21,16 +21,15 @@ __all__ = ('DewPoint', 'DewPointCache')
 # %% Solvers
 
 # @njit(cache=True)
-def x_iter(x, x_gamma_poyinting, T, P, f_gamma, gamma_args, f_pcf, pcf_args):
+def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
     x[mask] = 1e-32
     x = fn.normalize(x)
     gamma = f_gamma(x, T, *gamma_args)
-    pcf = f_pcf(T, P, *pcf_args)
-    denominator = gamma * pcf
+    denominator = gamma
     try:
-        x = x_gamma_poyinting / denominator
+        x = x_gamma / denominator
     except: 
         raise Exception('liquid phase composition is infeasible')
     if (np.abs(x) > 1e16).any():
@@ -38,13 +37,13 @@ def x_iter(x, x_gamma_poyinting, T, P, f_gamma, gamma_args, f_pcf, pcf_args):
     return x
 
 # @njit(cache=True)
-def solve_x(x_guess, x_gamma_poyinting, T, P, f_gamma, gamma_args, f_pcf, pcf_args):
-    args = (x_gamma_poyinting, T, P, f_gamma, gamma_args, f_pcf, pcf_args)
+def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
+    args = (x_gamma, T, P, f_gamma, gamma_args)
     try:
         x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
                          checkconvergence=False, convergenceiter=3)
     except:
-        return x_gamma_poyinting
+        return x_gamma
     return x
 
 # %% Dew point values container
@@ -125,18 +124,18 @@ class DewPoint:
             self.chemicals = chemicals
             cached[key] = self
     
-    def _solve_x(self, x_gamma_pcf, T, P, x):
+    def _solve_x(self, x_gamma, T, P, x):
         gamma = self.gamma
-        pcf = self.pcf
-        return solve_x(x, x_gamma_pcf, T, P, gamma.f, gamma.args, pcf.f, pcf.args)
+        return solve_x(x, x_gamma, T, P, gamma.f, gamma.args)
     
     def _T_error(self, T, P, z_norm, zP, x):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
         phi = self.phi(z_norm, T, P)
-        x_gamma_pcf = phi * zP / Psats
-        x[:] = self._solve_x(x_gamma_pcf, T, P, x)
+        pcf = self.pcf(T, P, Psats)
+        x_gamma = phi * zP / Psats / pcf
+        x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
     def _T_error_ideal(self, T, zP, x):
@@ -145,10 +144,10 @@ class DewPoint:
         x[:] = zP / Psats
         return 1 - x.sum()
     
-    def _P_error(self, P, T, z_norm, z_over_Psats, x):
+    def _P_error(self, P, T, z_norm, z_over_Psats, Psats, x):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        x_gamma_pcf = z_over_Psats * P * self.phi(z_norm, T, P)
-        x[:] = self._solve_x(x_gamma_pcf, T, P, x)
+        x_gamma = z_over_Psats * P * self.phi(z_norm, T, P) / self.pcf(T, P, Psats)
+        x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
     def _Tx_ideal(self, zP):
@@ -280,7 +279,7 @@ class DewPoint:
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z/Psats
             P_guess, x = self._Px_ideal(z_over_Psats)
-            args = (T, z_norm, z_over_Psats, x)
+            args = (T, z_norm, z_over_Psats, Psats, x)
             f = self._P_error
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,

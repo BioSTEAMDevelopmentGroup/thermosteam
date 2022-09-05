@@ -17,7 +17,7 @@ from .equilibrium import Equilibrium
 from .dew_point import DewPointCache
 from .bubble_point import BubblePointCache
 from .fugacity_coefficients import IdealFugacityCoefficients
-from .poyinting_correction_factors import IdealPoyintingCorrectionFactors
+from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from . import activity_coefficients as ac
 from .. import functional as fn
 from ..utils import Cache
@@ -26,13 +26,13 @@ import numpy as np
 __all__ = ('VLE', 'VLECache')
 
 # @njit(cache=True)
-def xV_iter(xV, Psat_over_P_phi, T, P, z, z_light, z_heavy, f_gamma, gamma_args, f_pcf, pcf_args):
+def xV_iter(xV, pcf_Psat_over_P_phi, T, P, z, z_light, z_heavy, f_gamma, gamma_args):
     xV = xV.copy()
     x = xV[:-1]
     V = xV[-1]
     x[x < 0.] = 0.
     x = fn.normalize(x)
-    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(T, P, *pcf_args)
+    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
     V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
     if V < 0.: V = 0.
     elif V > 1.: V = 1.
@@ -41,13 +41,13 @@ def xV_iter(xV, Psat_over_P_phi, T, P, z, z_light, z_heavy, f_gamma, gamma_args,
     return xV
 
 @njit(cache=True)    
-def xV_iter_2n(xV, Psat_over_P_phi, T, P, z, f_gamma, gamma_args, f_pcf, pcf_args):
+def xV_iter_2n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
     xV = xV.copy()
     x = xV[:-1]
     V = xV[-1]
     x[x < 0.] = 0.
     x = fn.normalize(x)
-    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(T, P, *pcf_args)
+    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
     V = binary.compute_phase_fraction_2N(z, Ks)
     if V < 0.: V = 0.
     elif V > 1.: V = 1.
@@ -56,13 +56,13 @@ def xV_iter_2n(xV, Psat_over_P_phi, T, P, z, f_gamma, gamma_args, f_pcf, pcf_arg
     return xV
 
 @njit(cache=True)
-def xV_iter_3n(xV, Psat_over_P_phi, T, P, z, f_gamma, gamma_args, f_pcf, pcf_args):
+def xV_iter_3n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
     xV = xV.copy()
     x = xV[:-1]
     V = xV[-1]
     x[x < 0.] = 0.
     x = fn.normalize(x)
-    Ks = Psat_over_P_phi * f_gamma(x, T, *gamma_args) * f_pcf(T, P, *pcf_args)
+    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
     V = binary.compute_phase_fraction_3N(z, Ks)
     if V < 0.: V = 0.
     elif V > 1.: V = 1.
@@ -887,8 +887,8 @@ class VLE(Equilibrium, phases='lg'):
             T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
             T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
             self._refresh_v(V, y_bubble)
-            if self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
-            if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
+            if self._F_mol_heavy: T_dew = 0.9 * T_dew + 0.1 * self._dew_point.Tmax
+            if self._F_mol_light: T_bubble = 0.9 * T_bubble + 0.1 * self._bubble_point.Tmin
             V_bubble = self._V_err_at_T(T_bubble, 0.)
             if V_bubble > V:
                 F_mol_vapor = self._F_mol * V
@@ -938,7 +938,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if subcooled liquid
         T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-        if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
+        if self._F_mol_light: T_bubble = 0.9 * T_bubble + 0.1 * self._bubble_point.Tmin
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         S_bubble = self.mixture.xS(self._phase_data, T_bubble, P)
@@ -949,7 +949,11 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-        if self._F_mol_heavy or T_dew < T_bubble: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
+        if T_dew <= T_bubble: 
+            T_dew, T_bubble = T_bubble, T_dew
+            T_dew += 0.5
+            T_bubble -= 0.5
+        if self._F_mol_heavy: T_dew = 0.9 * T_dew + 0.1 * self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         S_dew = self.mixture.xS(self._phase_data, T_dew, P)
@@ -1047,7 +1051,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if subcooled liquid
         T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-        if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
+        if self._F_mol_light: T_bubble = 0.9 * T_bubble + 0.1 * self._bubble_point.Tmin
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         H_bubble = self.mixture.xH(self._phase_data, T_bubble, P)
@@ -1062,7 +1066,7 @@ class VLE(Equilibrium, phases='lg'):
             T_dew, T_bubble = T_bubble, T_dew
             T_dew += 0.5
             T_bubble -= 0.5
-        if self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
+        if self._F_mol_heavy: T_dew = 0.9 * T_dew + 0.1 * self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = self.mixture.xH(self._phase_data, T_dew, P)
@@ -1186,24 +1190,23 @@ class VLE(Equilibrium, phases='lg'):
     def _V_err_at_T(self, T, V):
         return self._solve_v(T, self._P).sum()/self._F_mol_vle  - V
     
-    def _y_iter(self, y, Psats_over_P, T, P):
+    def _y_iter(self, y, Psats, Psats_over_P, T, P):
         phi = self._phi(y, T, P)
         gamma = self._gamma
-        pcf = self._pcf
         x = self._x
-        Psat_over_P_phi = Psats_over_P / phi
+        pcf_Psat_over_P_phi = self._pcf(T, P, Psats) * Psats_over_P / phi
         N = self._N
         z = self._z
         if N > 3 or self._z_light or self._z_heavy:
             f = xV_iter
-            args = (Psat_over_P_phi, T, P, z, self._z_light, 
-                    self._z_heavy, gamma.f, gamma.args, pcf.f, pcf.args)
+            args = (pcf_Psat_over_P_phi, T, P, z, self._z_light, 
+                    self._z_heavy, gamma.f, gamma.args)
         elif N == 2:
             f = xV_iter_2n
-            args = (Psat_over_P_phi, T, P, z, gamma.f, gamma.args, pcf.f, pcf.args)
+            args = (pcf_Psat_over_P_phi, T, P, z, gamma.f, gamma.args)
         elif N == 3:
             f = xV_iter_3n
-            args = (Psat_over_P_phi, T, P, z, gamma.f, gamma.args, pcf.f, pcf.args)
+            args = (pcf_Psat_over_P_phi, T, P, z, gamma.f, gamma.args)
         xV = np.zeros(x.size + 1)
         xV[:-1] = x
         xV[-1] = self._V
@@ -1227,26 +1230,27 @@ class VLE(Equilibrium, phases='lg'):
         method = self.method
         if method == 'differential-evolution':
             gamma = self._gamma
-            pcf = self._pcf
             phi = self._phi
             Psats = np.array([i(T) for i in self._bubble_point.Psats]) 
+            pcf = self._pcf(T, P, Psats)
             F_mol_vle = self._F_mol_vle
             mol_vle = self._mol_vle
             z = mol_vle / F_mol_vle
             v = F_mol_vle * solve_vle_vapor_mol_differential_evolution(
-                z, T, gamma.f, gamma.args, pcf.f, pcf.args, P, Psats, phi.f, phi.args, 
+                z, T, gamma.f, gamma.args, pcf, P, Psats, phi.f, phi.args, 
                 **self.differential_evolution_options,
             )
             self._z_last = z
         elif method == 'fixed-point':
-            Psats_over_P = np.array([i(T) for i in
-                                     self._bubble_point.Psats]) / P
+            Psats = np.array([i(T) for i in
+                              self._bubble_point.Psats])
+            Psats_over_P = Psats / P
             self._T = T
             if isinstance(self._phi, IdealFugacityCoefficients):
-                y = self._y_iter(self._y, Psats_over_P, T, P)
+                y = self._y_iter(self._y, Psats, Psats_over_P, T, P)
             else:
                 y = flx.aitken(self._y_iter, self._y, self.y_tol,
-                               args=(Psats_over_P, T, P),
+                               args=(Psats, Psats_over_P, T, P),
                                checkiter=False, 
                                checkconvergence=False, 
                                convergenceiter=5,
@@ -1263,11 +1267,11 @@ class VLECache(Cache): load = VLE
 del Cache, Equilibrium
 
 @njit(cache=True)
-def liquid_fugacity(mol_L, T, Psats, f_gamma, gamma_args, f_pcf, pcf_args):
+def liquid_fugacity(mol_L, T, pcf_Psats, f_gamma, gamma_args):
     total_mol_L = mol_L.sum()
     if total_mol_L:
         x = mol_L / total_mol_L
-        fugacity = x * f_gamma(x, T, *gamma_args) * Psats * f_pcf(x, T, *pcf_args)
+        fugacity = x * f_gamma(x, T, *gamma_args) * pcf_Psats
     else:
         fugacity = np.ones_like(mol_L)
     return fugacity 
@@ -1289,18 +1293,18 @@ def gibbs_free_energy(mol, fugacity):
     return g_mix
 
 @njit(cache=True)
-def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args):
+def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args):
     mol_l = mol - mol_v
-    g_mix_l = gibbs_free_energy(mol_l, liquid_fugacity(mol_l, T, Psats, f_gamma, gamma_args, f_pcf, pcf_args))
+    g_mix_l = gibbs_free_energy(mol_l, liquid_fugacity(mol_l, T, pcf_Psats, f_gamma, gamma_args))
     g_mix_g = gibbs_free_energy(mol_v, vapor_fugacity(mol_v, T, P, f_phi, phi_args))
     g_mix = g_mix_l + g_mix_g
     return g_mix
 
 def solve_vle_vapor_mol_differential_evolution(
-        mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args, 
+        mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args, 
         **differential_evolution_options
     ):
-    args = (mol, T, f_gamma, gamma_args, f_pcf, pcf_args, P, Psats, f_phi, phi_args)
+    args = (mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol
     result = differential_evolution(vle_objective_function, bounds, args,

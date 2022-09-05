@@ -64,7 +64,7 @@ class ProcessSettings:
         ),
         Gamma=DortmundActivityCoefficients,
         Phi=IdealFugacityCoefficients,
-        PCF=IdealPoyintingCorrectionFactors
+        PCF=MockPoyintingCorrectionFactors
     )
 
     Access defined chemicals:

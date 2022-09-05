@@ -51,7 +51,8 @@ class LiquidFugacities:
         self.pcf = thermo.PCF(chemicals)
     
     def __call__(self, x, T, P=101325.):
-        return x * self.gamma(x, T) * self.pcf(T, P) * np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+        Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+        return x * self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

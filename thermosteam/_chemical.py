@@ -419,7 +419,7 @@ class Chemical:
     Phase dependent properties have attributes with model handles for each phase:
 
     >>> Water.V
-    <PhaseTPHandle(phase, T, P) -> V [m^3/mol]>
+    <PhaseTPHandle(phase, T, P=None) -> V [m^3/mol]>
     >>> # Water.V.l
     >>> # VolumeLiquid(CASRN="7732-18-5", MW=18.01528, Tb=373.124, Tc=647.14, Pc=22048320.0, Vc=5.6-05, Zc=0.2294727, omega=0.344, dipole=1.85, Psat=VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="WAGNER_MCGARRY"), eos=[PR(Tc=647.14, Pc=22048320.0, omega=0.344, T=298.15, P=101325.0)], extrapolation="constant", method="VDI_PPDS", method_P="COSTALD_COMPRESSED", tabular_extrapolation_permitted=True)
     
@@ -442,7 +442,7 @@ class Chemical:
 
     Choose what model to use through the `method` attribute:
     
-    >>> list(sorted(Water.Cn.l.all_methods))
+    >>> list(sorted(Water.Cn.l.all_methods)) # doctest: +SKIP
     ['COOLPROP', 'CRCSTD', 'DADGOSTAR_SHAW', 'POLING_CONST', 'ROWLINSON_BONDI', 'ROWLINSON_POLING', 'USER_METHOD', 'WEBBOOK_SHOMATE', 'ZABRANSKY_SPLINE_C']
     >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
@@ -2072,7 +2072,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> N2 = Chemical('N2')
         >>> N2.at_state(phase='g')
-        >>> N2.H(298.15) # No longer a function of phase
+        >>> N2.H(298.15, None) # No longer a function of phase
         0.0
         """
         if copy:

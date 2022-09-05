@@ -127,7 +127,7 @@ class MockPhaseTHandle(MockPhaseHandle):
 class MockPhaseTPHandle(MockPhaseHandle):
     __slots__ = ()
     
-    def __call__(self, phase, T, P):
+    def __call__(self, phase, T, P=None):
         return self.model(T, P)
 
 # %% Builders

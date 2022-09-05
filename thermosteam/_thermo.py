@@ -55,7 +55,7 @@ class Thermo:
         ),
         Gamma=DortmundActivityCoefficients,
         Phi=IdealFugacityCoefficients,
-        PCF=IdealPoyintingCorrectionFactors
+        PCF=MockPoyintingCorrectionFactors
     )
     
     Note that the Dortmund-UNIFAC is the default activity coefficient model. 
@@ -108,7 +108,7 @@ class Thermo:
         ),
         Gamma=DortmundActivityCoefficients,
         Phi=IdealFugacityCoefficients,
-        PCF=IdealPoyintingCorrectionFactors
+        PCF=MockPoyintingCorrectionFactors
     )
     
     Attributes
@@ -130,7 +130,7 @@ class Thermo:
     def __init__(self, chemicals, mixture=None,
                  Gamma=eq.DortmundActivityCoefficients,
                  Phi=eq.IdealFugacityCoefficients,
-                 PCF=eq.IdealPoyintingCorrectionFactors,
+                 PCF=eq.MockPoyintingCorrectionFactors,
                  cache=None,
                  skip_checks=False):
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
@@ -274,7 +274,7 @@ class IdealThermo:
     
     Gamma = eq.IdealActivityCoefficients
     Phi = eq.IdealFugacityCoefficients
-    PCF = eq.IdealPoyintingCorrectionFactors
+    PCF = eq.MockPoyintingCorrectionFactors
     as_chemical = Thermo.as_chemical
     __enter__ = Thermo.__enter__
     __exit__ = Thermo.__exit__

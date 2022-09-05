@@ -6,7 +6,7 @@ Created on Thu Apr 29 08:43:40 2021
 """
 from numba import njit
 
-__all__ = ('ideal_coefficient',)
+__all__ = ('ideal',)
 
 def ideal(cls):
     cls.f = ideal_coefficient

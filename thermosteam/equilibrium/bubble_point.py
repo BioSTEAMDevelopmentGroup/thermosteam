@@ -114,21 +114,22 @@ class BubblePoint:
     
     def _T_error(self, T, P, z_over_P, z_norm, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
+        Psats = np.array([i(T) for i in self.Psats], dtype=float)
         y_phi =  (z_over_P
-                  * np.array([i(T) for i in self.Psats])
+                  * Psats
                   * self.gamma(z_norm, T) 
-                  * self.pcf(T, P))
+                  * self.pcf(T, P, Psats))
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
-    def _P_error(self, P, T, z_Psat_gamma, y):
+    def _P_error(self, P, T, z_Psat_gamma, Psats, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        y_phi = z_Psat_gamma * self.pcf(T, P) / P
+        y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
         
     def _T_error_ideal(self, T, z_over_P, y):
-        y[:] = z_over_P * np.array([i(T) for i in self.Psats])
+        y[:] = z_over_P * np.array([i(T) for i in self.Psats], dtype=float)
         return 1 - y.sum()
     
     def _Ty_ideal(self, z_over_P):
@@ -263,7 +264,7 @@ class BubblePoint:
             z_Psat_gamma = z * Psat * self.gamma(z_norm, T)
             f = self._P_error
             P_guess, y = self._Py_ideal(z_Psat_gamma)
-            args = (T, z_Psat_gamma, y)
+            args = (T, z_Psat_gamma, Psat, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
