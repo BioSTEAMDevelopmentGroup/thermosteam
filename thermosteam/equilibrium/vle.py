@@ -783,7 +783,7 @@ class VLE(Equilibrium, phases='lg'):
         H_dew = self.mixture.xH(phase_data, T, P_dew)
         dH_dew = (H - H_dew)
         if dH_dew >= 0:
-            raise InfeasibleRegion(f'T={T:.3g} and H={H:.3g}')
+            raise NotImplementedError('cannot solve for pressure yet')
 
         # Check if subcooled liquid
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
@@ -792,7 +792,7 @@ class VLE(Equilibrium, phases='lg'):
         H_bubble = self.mixture.xH(phase_data, T, P_bubble)
         dH_bubble = (H - H_bubble)
         if dH_bubble <= 0:
-            raise InfeasibleRegion(f'T={T:.3g} and H={H:.3g}')
+            raise NotImplementedError('cannot solve for pressure yet')
 
         # Guess overall vapor fraction, and vapor flow rates
         V = dH_bubble/(H_dew - H_bubble)
@@ -830,7 +830,7 @@ class VLE(Equilibrium, phases='lg'):
         S_dew = self.mixture.xS(phase_data, T, P_dew)
         dS_dew = (S - S_dew)
         if dS_dew >= 0:
-            raise InfeasibleRegion(f'T={T:.3g} and S={S:.3g}')
+            raise NotImplementedError('cannot solve for pressure yet')
 
         # Check if subcooled liquid
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
@@ -839,7 +839,7 @@ class VLE(Equilibrium, phases='lg'):
         S_bubble = self.mixture.xS(phase_data, T, P_bubble)
         dS_bubble = (S - S_bubble)
         if dS_bubble <= 0:
-            raise InfeasibleRegion(f'T={T:.3g} and S={S:.3g}')
+            raise NotImplementedError('cannot solve for pressure yet')
 
         # Guess overall vapor fraction, and vapor flow rates
         V = dS_bubble/(S_dew - S_bubble)
@@ -887,8 +887,8 @@ class VLE(Equilibrium, phases='lg'):
             T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
             T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
             self._refresh_v(V, y_bubble)
-            if self._F_mol_heavy: T_dew = self._dew_point.Tmax
-            if self._F_mol_light: T_bubble = self._bubble_point.Tmin
+            if self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
+            if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
             V_bubble = self._V_err_at_T(T_bubble, 0.)
             if V_bubble > V:
                 F_mol_vapor = self._F_mol * V
@@ -938,7 +938,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if subcooled liquid
         T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-        if self._F_mol_light: T_bubble = self._bubble_point.Tmin
+        if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         S_bubble = self.mixture.xS(self._phase_data, T_bubble, P)
@@ -949,7 +949,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-        if self._F_mol_heavy or T_dew < T_bubble: T_dew = self._dew_point.Tmax
+        if self._F_mol_heavy or T_dew < T_bubble: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         S_dew = self.mixture.xS(self._phase_data, T_dew, P)
@@ -1047,7 +1047,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if subcooled liquid
         T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-        if self._F_mol_light: T_bubble = self._bubble_point.Tmin
+        if self._F_mol_light: T_bubble = 0.8 * T_bubble + 0.2 * self._bubble_point.Tmin
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         H_bubble = self.mixture.xH(self._phase_data, T_bubble, P)
@@ -1058,7 +1058,8 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-        if self._F_mol_heavy or T_dew < T_bubble: T_dew = self._dew_point.Tmax
+        if T_dew < T_bubble: T_dew = self._dew_point.Tmax
+        elif self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = self.mixture.xH(self._phase_data, T_dew, P)
@@ -1118,7 +1119,6 @@ class VLE(Equilibrium, phases='lg'):
                     liquid_mol[index] = (1 - V) * mol
                     return self.mixture.xH(self._phase_data, T, P)/self._F_mass - H_hat
                 self._T = thermal_condition.T = T
-                
                 y0 = f(0.)
                 if y0 > 0:
                     self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
