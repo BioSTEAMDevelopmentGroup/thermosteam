@@ -128,11 +128,14 @@ class Thermo:
     __slots__ = ('chemicals', 'mixture', 'Gamma', 'Phi', 'PCF', '_ideal', '_original_thermo') 
     
     def __init__(self, chemicals, mixture=None,
-                 Gamma=eq.DortmundActivityCoefficients,
-                 Phi=eq.IdealFugacityCoefficients,
-                 PCF=eq.MockPoyintingCorrectionFactors,
+                 Gamma=None,
+                 Phi=None,
+                 PCF=None,
                  cache=None,
                  skip_checks=False):
+        if Gamma is None: Gamma = eq.DortmundActivityCoefficients
+        if Phi is None: Phi = eq.IdealFugacityCoefficients
+        if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if not mixture:
             mixture = Mixture.from_chemicals(chemicals)

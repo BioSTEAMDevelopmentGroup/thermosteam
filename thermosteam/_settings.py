@@ -155,9 +155,14 @@ class ProcessSettings:
         bst.PowerUtility.price = electricity_price
     
     def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
-                   cache: Optional[bool]=None,
-                   skip_checks: Optional[bool]=False, 
-                   ideal: Optional[bool]=False):
+            mixture: Optional=None,
+            Gamma: Optional=None,
+            Phi: Optional=None,
+            PCF: Optional=None,
+            cache: Optional[bool]=None,
+            skip_checks: Optional[bool]=False, 
+            ideal: Optional[bool]=False,
+        ):
         """
         Set the default :class:`~thermosteam.Thermo` object. If `thermo` is 
         not a :class:`~thermosteam.Thermo` object, an attempt is made to 
@@ -174,10 +179,17 @@ class ProcessSettings:
         ideal :
             Whether to use ideal phase equilibrium and mixture property 
             algorithms.
+        Gamma : :class:`~thermosteam.equilibrium.activity_coefficients.ActivityCoefficients` subclass, optional
+            Class for computing activity coefficients.
+        Phi : :class:`~thermosteam.equilibrium.fugacity_coefficients.FugacityCoefficients` subclass, optional
+            Class for computing fugacity coefficients.
+        PCF : :class:`~thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors` subclass, optional
+            Class for computing poynting correction factors.
             
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
-            thermo = tmo.Thermo(thermo, cache=cache, skip_checks=skip_checks)
+            thermo = tmo.Thermo(thermo, mixture=mixture, cache=cache, skip_checks=skip_checks,
+                                Gamma=Gamma, Phi=Phi, PCF=PCF)
         if ideal: thermo = thermo.ideal()
         self._thermo = thermo
     

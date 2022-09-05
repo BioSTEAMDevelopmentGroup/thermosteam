@@ -60,13 +60,15 @@ class MockPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     """
     __slots__ = ('_chemicals',)
     
-    def __call__(self, T, P, Psats):
+    def __call__(self, T, P, Psats=None):
         return 1.
 
 
 @njit(cache=True)
 def ideal_gas_poyinting_correction_factors(T, P, vls, Psats):
-    return np.exp(vls / (R * T) * (P - Psats))
+    dP = P - Psats
+    dP[dP < 0.] = 0.
+    return np.exp(vls / (R * T) * dP)
 
 class IdealGasPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     """Create an IdealGasPoyintingCorrectionFactors object that estimates 
@@ -81,6 +83,8 @@ class IdealGasPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     """
     __slots__ = ('_chemicals',)
 
-    def __call__(self, T, P, Psats):
-        vls = np.array([i.V('l', T, P) for i in self._chemicals])
+    def __call__(self, T, P, Psats=None):
+        vls = np.array([i.V('l', T, P) for i in self._chemicals], dtype=float)
+        if Psats is None:
+            Psats = np.array([i.Psat(T) for i in self._chemicals], dtype=float)
         return ideal_gas_poyinting_correction_factors(T, P, vls, Psats)
