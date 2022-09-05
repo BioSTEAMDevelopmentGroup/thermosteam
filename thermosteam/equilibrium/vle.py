@@ -995,41 +995,58 @@ class VLE(Equilibrium, phases='lg'):
             )
             return
         else:
-            T = flx.IQ_interpolation(self._S_hat_err_at_T,
-                                     T_bubble, T_dew, 
-                                     S_hat_bubble - S_hat, S_hat_dew - S_hat,
-                                     self._T, self.T_tol, self.S_hat_tol,
-                                     (S_hat,), checkiter=False, checkbounds=False)
-            # Make sure S balance is correct
-            try:
+            self._T = thermal_condition.T = T = flx.IQ_interpolation(
+                self._S_hat_err_at_T, T_bubble, T_dew, 
+                S_hat_bubble - S_hat, S_hat_dew - S_hat,
+                self._T, self.T_tol, self.S_hat_tol,
+                (S_hat,), checkiter=False, checkbounds=False,
+                maxiter=self.maxiter
+            )
+            # Make sure energy balance is correct by vaporizing a fraction
+            # of the liquid or condensing a fraction of the vapor
+            mol_liq = liquid_mol.copy()
+            mol_liq[:] = 0.
+            mol_liq[index] = liquid_mol[index]
+            mol_gas= vapor_mol.copy()
+            mol_gas[:] = 0.
+            mol_gas[index] = vapor_mol[index]
+            S_gas = self.mixture.S('g', mol_gas, T, P)
+            S_liq = self.mixture.S('l', mol_liq, T, P)
+            S_current = self.mixture.xS(self._phase_data, T, P)
+            if S_current > S: # Condense a fraction of the vapor
+                # Energy balance: S = f * S_condense + S_current
+                S_condense = self.mixture.S('l', mol_gas, T, P) - S_gas
+                try:
+                    f = (S - S_current) / S_condense
+                except: # Floating point errors
+                    f = 0
+                else:
+                    if f < 0.:
+                        f = 0.
+                    else:
+                        if f > 1.: f = 1.
+                        condensed = f * mol_gas[index]
+                        liquid_mol[index] += condensed
+                        vapor_mol[index] -= condensed 
+            else: # Vaporize a fraction of the liquid
+                # Energy balance: S = f * S_vaporise + S_current
+                S_vaporise = self.mixture.S('g', mol_liq, T, P) - S_liq
+                try:
+                    f = (S - S_current) / S_vaporise
+                except: # Floating point errors
+                    f = 0
+                else:
+                    if f < 0.:
+                        f = 0.
+                    else:
+                        if f > 1.: f = 1.
+                        vaporised = f * mol_liq[index]
+                        vapor_mol[index] += vaporised
+                        liquid_mol[index] -= vaporised
+            if f == 0. or f == 1.:
                 self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
                     self._phase_data, S, T, P
                 )
-            except:
-                warn('VLE algorithm failed; resorting to fallback measures to ensure energy balance',
-                     category=RuntimeWarning, stacklevel=2+stacklevel)
-                def f(V):
-                    vapor_mol[index] = V * mol
-                    liquid_mol[index] = (1 - V) * mol
-                    return self.mixture.xS(self._phase_data, T, P)/self._F_mass - S_hat
-                self._T = thermal_condition.T = T
-                
-                y0 = f(0.)
-                if y0 > 0.:
-                    self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
-                        self._phase_data, S, T, P
-                    )
-                else:
-                    y1 = f(1.)
-                    if y1 < 0.:
-                        self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
-                            self._phase_data, S, T, P
-                        )
-                    else:
-                        flx.IQ_interpolation(f,
-                            0., 1., y0, y1, self._V, self.V_tol, self.S_hat_tol,
-                            maxiter=self.maxiter, 
-                        )
         self._S_hat = S_hat
     
     def set_PH(self, P, H, stacklevel=0):
@@ -1108,40 +1125,58 @@ class VLE(Equilibrium, phases='lg'):
             )
             return
         else:
-            T = flx.IQ_interpolation(self._H_hat_err_at_T,
-                                     T_bubble, T_dew, 
-                                     H_hat_bubble - H_hat, H_hat_dew - H_hat,
-                                     self._T, self.T_tol, self.H_hat_tol,
-                                     (H_hat,), checkiter=False, checkbounds=False)
-            # Make sure H balance is correct
-            try:
+            self._T = thermal_condition.T = T = flx.IQ_interpolation(
+                self._H_hat_err_at_T, T_bubble, T_dew, 
+                H_hat_bubble - H_hat, H_hat_dew - H_hat,
+                self._T, self.T_tol, self.H_hat_tol,
+                (H_hat,), checkiter=False, checkbounds=False,
+                maxiter=self.maxiter
+            )
+            # Make sure energy balance is correct by vaporizing a fraction
+            # of the liquid or condensing a fraction of the vapor
+            mol_liq = liquid_mol.copy()
+            mol_liq[:] = 0.
+            mol_liq[index] = liquid_mol[index]
+            mol_gas= vapor_mol.copy()
+            mol_gas[:] = 0.
+            mol_gas[index] = vapor_mol[index]
+            H_gas = self.mixture.H('g', mol_gas, T, P)
+            H_liq = self.mixture.H('l', mol_liq, T, P)
+            H_current = self.mixture.xH(self._phase_data, T, P)
+            if H_current > H: # Condense a fraction of the vapor
+                # Energy balance: H = f * H_condense + H_current
+                H_condense = self.mixture.H('l', mol_gas, T, P) - H_gas
+                try:
+                    f = (H - H_current) / H_condense
+                except: # Floating point errors
+                    f = 0
+                else:
+                    if f < 0.:
+                        f = 0.
+                    else:
+                        if f > 1.: f = 1.
+                        condensed = f * mol_gas[index]
+                        liquid_mol[index] += condensed
+                        vapor_mol[index] -= condensed 
+            else: # Vaporize a fraction of the liquid
+                # Energy balance: H = f * H_vaporise + H_current
+                H_vaporise = self.mixture.H('g', mol_liq, T, P) - H_liq
+                try:
+                    f = (H - H_current) / H_vaporise
+                except: # Floating point errors
+                    f = 0
+                else:
+                    if f < 0.:
+                        f = 0.
+                    else:
+                        if f > 1.: f = 1.
+                        vaporised = f * mol_liq[index]
+                        vapor_mol[index] += vaporised
+                        liquid_mol[index] -= vaporised
+            if f == 0. or f == 1.:
                 self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
                     self._phase_data, H, T, P
                 )
-            except:
-                warn('VLE algorithm failed; resorting to fallback measures to ensure energy balance',
-                     category=RuntimeWarning, stacklevel=2+stacklevel)
-                def f(V):
-                    vapor_mol[index] = V * mol
-                    liquid_mol[index] = (1 - V) * mol
-                    return self.mixture.xH(self._phase_data, T, P)/self._F_mass - H_hat
-                self._T = thermal_condition.T = T
-                y0 = f(0.)
-                if y0 > 0:
-                    self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
-                        self._phase_data, H, T, P
-                    )
-                elif y0 < 0:
-                    y1 = f(1.)
-                    if y1 < 0.:
-                        self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
-                            self._phase_data, H, T, P
-                        )
-                    elif y1 > 0.:
-                        flx.IQ_interpolation(f,
-                            0., 1., y0, y1, self._V, self.V_tol, self.H_hat_tol,
-                            maxiter=self.maxiter, 
-                        )
         self._H_hat = H_hat
     
     def _estimate_v(self, V, y_bubble):
