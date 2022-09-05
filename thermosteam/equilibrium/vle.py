@@ -1058,8 +1058,11 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-        if T_dew < T_bubble: T_dew = self._dew_point.Tmax
-        elif self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
+        if T_dew <= T_bubble: 
+            T_dew, T_bubble = T_bubble, T_dew
+            T_dew += 0.5
+            T_bubble -= 0.5
+        if self._F_mol_heavy: T_dew = 0.8 * T_dew + 0.2 * self._dew_point.Tmax
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = self.mixture.xH(self._phase_data, T_dew, P)
