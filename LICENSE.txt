@@ -2,7 +2,7 @@
 The Thermosteam project is under the University of Illinois/NCSA Open Source License
 ===================================================================================================
 
-Copyright (c) 2019-2021 Yoel Cortes-Peña. All rights reserved.
+Copyright (c) 2019-2022 Yoel Cortes-Peña. All rights reserved.
 
 Developed by: Yoel Cortes-Peña
               University of Illinois at Urbana-Champaign
