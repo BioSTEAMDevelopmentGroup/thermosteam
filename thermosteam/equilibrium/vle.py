@@ -1023,11 +1023,13 @@ class VLE(Equilibrium, phases='lg'):
                 else:
                     if f < 0.:
                         f = 0.
-                    else:
+                    elif f > 0.:
                         if f > 1.: f = 1.
                         condensed = f * mol_gas[index]
                         liquid_mol[index] += condensed
                         vapor_mol[index] -= condensed 
+                    else:
+                        f = 0.
             else: # Vaporize a fraction of the liquid
                 # Energy balance: S = f * S_vaporise + S_current
                 S_vaporise = self.mixture.S('g', mol_liq, T, P) - S_liq
@@ -1038,11 +1040,13 @@ class VLE(Equilibrium, phases='lg'):
                 else:
                     if f < 0.:
                         f = 0.
-                    else:
+                    elif f > 0.:
                         if f > 1.: f = 1.
                         vaporised = f * mol_liq[index]
                         vapor_mol[index] += vaporised
                         liquid_mol[index] -= vaporised
+                    else:
+                        f = 0.
             if f == 0. or f == 1.:
                 self._T = thermal_condition.T = self.mixture.xsolve_T_at_SP(
                     self._phase_data, S, T, P
@@ -1153,11 +1157,13 @@ class VLE(Equilibrium, phases='lg'):
                 else:
                     if f < 0.:
                         f = 0.
-                    else:
+                    elif f > 0.:
                         if f > 1.: f = 1.
                         condensed = f * mol_gas[index]
                         liquid_mol[index] += condensed
                         vapor_mol[index] -= condensed 
+                    else:
+                        f = 0
             else: # Vaporize a fraction of the liquid
                 # Energy balance: H = f * H_vaporise + H_current
                 H_vaporise = self.mixture.H('g', mol_liq, T, P) - H_liq
@@ -1168,11 +1174,13 @@ class VLE(Equilibrium, phases='lg'):
                 else:
                     if f < 0.:
                         f = 0.
-                    else:
+                    elif f > 0.:
                         if f > 1.: f = 1.
                         vaporised = f * mol_liq[index]
                         vapor_mol[index] += vaporised
                         liquid_mol[index] -= vaporised
+                    else:
+                        f = 0
             if f == 0. or f == 1.:
                 self._T = thermal_condition.T = self.mixture.xsolve_T_at_HP(
                     self._phase_data, H, T, P
