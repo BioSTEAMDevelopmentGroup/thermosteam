@@ -639,7 +639,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance')
         >>> Substance.show()
-        Chemical: Substance (phase_ref=None)
+        Chemical: Substance (phase_ref='l')
         [Names]  CAS: Substance
                  InChI: None
                  InChI_key: None
