@@ -1785,14 +1785,14 @@ class Chemical:
                 self._S = Entropy.functor(Cn, T_ref, S0)
                 # Excess energies
                 if phase_ref == 's':
-                    self._H_excess = Excess_Solid_Enthalpy_Ref_Solid()
-                    self._S_excess = Excess_Solid_Entropy_Ref_Solid()
+                    self._H_excess = Excess_Solid_Enthalpy_Ref_Solid.functor()
+                    self._S_excess = Excess_Solid_Entropy_Ref_Solid.functor()
                 elif phase_ref == 'l':
-                    self._H_excess = Excess_Liquid_Enthalpy_Ref_Liquid()
-                    self._S_excess = Excess_Liquid_Entropy_Ref_Liquid()
+                    self._H_excess = Excess_Liquid_Enthalpy_Ref_Liquid.functor()
+                    self._S_excess = Excess_Liquid_Entropy_Ref_Liquid.functor()
                 elif phase_ref == 'g':
-                    self._H_excess = Excess_Gas_Enthalpy_Ref_Gas(eos, H_dep_ref_g)
-                    self._S_excess = Excess_Gas_Entropy_Ref_Gas(eos, S_dep_ref_g)
+                    self._H_excess = Excess_Gas_Enthalpy_Ref_Gas.functor(eos, H_dep_ref_g)
+                    self._S_excess = Excess_Gas_Entropy_Ref_Gas.functor(eos, S_dep_ref_g)
             else:
                 if phase_ref == 's':
                     sdata = (Cn_s, T_ref, H_ref)
