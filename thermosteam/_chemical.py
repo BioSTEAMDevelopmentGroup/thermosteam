@@ -706,7 +706,7 @@ class Chemical:
         self._locked_state = None
         self._estimate_missing_properties(self.Psat)
         if phase: 
-            self.at_state(phase)
+            self.at_state(phase, reset_free_energies=False)
         else:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
         self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
@@ -1436,7 +1436,7 @@ class Chemical:
         self._locked_state = None
         self._estimate_missing_properties(self._Psat)
         if phase:
-            self.at_state(phase)
+            self.at_state(phase, reset_free_energies=False)
         else:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
         self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
@@ -2090,7 +2090,7 @@ class Chemical:
     def N_solutes(self, N_solutes):
         self._N_solutes = int(N_solutes)
     
-    def at_state(self, phase, copy=False):
+    def at_state(self, phase, copy=False, reset_free_energies=True):
         """
         Set the state of chemical.
         
@@ -2118,6 +2118,8 @@ class Chemical:
                 return         
         else:
             lock_phase(self, phase)
+        if reset_free_energies:
+            self.reset_free_energies()
     
     def show(self):
         """Print all specifications"""
