@@ -709,11 +709,11 @@ class Chemical:
             self.at_state(phase)
         else:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
-        if free_energies:
-            self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                                self._Tm, self._Tb, self._eos, self._phase_ref)
         self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
                              self._combustion, self.atoms)
+        if free_energies:
+            self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
+                                self._Tm, self._Tb, self._eos, self._phase_ref, self._S0)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         return self
@@ -748,7 +748,7 @@ class Chemical:
         new._aliases = set()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         new._init_energies(new.Cn, new.Hvap, new.Psat, new.Hfus, new.Sfus, new.Tm,
-                           new.Tb, new.eos, new.phase_ref)
+                           new.Tb, new.eos, new.phase_ref, new.S0)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         for i,j in data.items(): setfield(new, i , j)
         return new
@@ -1439,10 +1439,10 @@ class Chemical:
             self.at_state(phase)
         else:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
+        self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if free_energies:
             self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                                self._Tm, self._Tb, self._eos, self._phase_ref)
-        self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
+                                self._Tm, self._Tb, self._eos, self._phase_ref, self._S0)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
@@ -1475,7 +1475,7 @@ class Chemical:
             self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, self._phase_ref)
+                            self._Tm, self._Tb, self._eos, self._phase_ref, self._S0)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
     ### Initializers ###
@@ -1554,7 +1554,7 @@ class Chemical:
             S0 = absolute_entropy_of_formation(self._CAS, self._phase_ref,
                                                Svap_298K, self.Sfus) or 0.
         self._Hf = Hf
-        self.S0 = S0
+        self._S0 = S0
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
             cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW, missing_handling='Ash')
@@ -1671,14 +1671,12 @@ class Chemical:
                 omega = acentric_factor_LK(Tb, Tc, Pc)
             self._omega = omega
 
-    def _init_energies(self, Cn, Hvap, Psat, Hfus, Sfus, Tm, Tb, eos, 
-                       phase_ref=None):        
+    def _init_energies(self, Cn, Hvap, Psat, Hfus, Sfus, Tm, Tb, eos, phase_ref, S0):        
         # Reference
         P_ref = self.P_ref
         T_ref = self.T_ref
         H_ref = self.H_ref
         Tc = self._Tc
-        S0 = 0. # Replaced later in _init_reactions method
         single_phase = self._locked_state
         if isinstance(Cn, PhaseHandle):
             Cn_s = Cn.s
