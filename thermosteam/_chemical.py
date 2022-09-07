@@ -2030,7 +2030,7 @@ class Chemical:
         
         """
         getfield = getattr
-        return [i for i in (properties or _checked_properties) if not getfield(self, i)]
+        return [i for i in (properties or _checked_properties) if not getfield(self, i, None)]
     
     def copy_models_from(self, other, names=None):
         """Copy models from other."""
