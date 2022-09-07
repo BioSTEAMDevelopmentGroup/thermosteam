@@ -1685,7 +1685,7 @@ class Chemical:
             has_Cns = bool(Cn_s)
             has_Cnl = bool(Cn_l)
             has_Cng = bool(Cn_g)
-        elif Cn and single_phase:
+        elif single_phase:
             self._H = Enthalpy.functor(Cn, T_ref, H_ref)
             if single_phase == 'g':
                 self._S = EntropyGas.functor(Cn, T_ref, P_ref, S0)
@@ -1694,11 +1694,11 @@ class Chemical:
             Cn_s = Cn_l = Cn_g = Cn
             has_Cns = has_Cnl = has_Cng = False
             if single_phase == 'l':
-                has_Cnl = True
+                has_Cnl = bool(Cn_l)
             elif single_phase == 's':
-                has_Cns = True
+                has_Cns = bool(Cn_s)
             elif single_phase == 'g':
-                has_Cng = True    
+                has_Cng = bool(Cn_g)  
         else:
             has_Cns = has_Cnl = has_Cng = False
         if any((has_Cns, has_Cnl, has_Cng)):
@@ -1782,13 +1782,13 @@ class Chemical:
                 self._H = Enthalpy.functor(Cn, T_ref, H_ref)
                 self._S = Entropy.functor(Cn, T_ref, S0)
                 # Excess energies
-                if phase_ref == 's':
+                if single_phase == 's':
                     self._H_excess = Excess_Solid_Enthalpy_Ref_Solid.functor()
                     self._S_excess = Excess_Solid_Entropy_Ref_Solid.functor()
-                elif phase_ref == 'l':
+                elif single_phase == 'l':
                     self._H_excess = Excess_Liquid_Enthalpy_Ref_Liquid.functor()
                     self._S_excess = Excess_Liquid_Entropy_Ref_Liquid.functor()
-                elif phase_ref == 'g':
+                elif single_phase == 'g':
                     self._H_excess = Excess_Gas_Enthalpy_Ref_Gas.functor(eos, H_dep_ref_g)
                     self._S_excess = Excess_Gas_Entropy_Ref_Gas.functor(eos, S_dep_ref_g)
             else:
@@ -2106,16 +2106,18 @@ class Chemical:
             new = self.copy(self._ID)
             new.at_state(phase)
             return new
+        if phase: 
+            phase = phase[0].lower()
+        else:
+            raise ValueError(f"invalid phase {repr(phase)}")
         locked_state = self._locked_state
         if locked_state:
             if locked_state != phase:
                 raise TypeError(f"{self}'s state is already locked")   
             else:
                 return         
-        elif phase:
-            lock_phase(self, phase)
         else:
-            raise ValueError(f"invalid phase {repr(phase)}")
+            lock_phase(self, phase)
     
     def show(self):
         """Print all specifications"""
@@ -2152,7 +2154,6 @@ class Chemical:
         return f"Chemical('{self}')"
     
 def lock_phase(chemical, phase):
-    phase = phase[0]
     check_phase(phase)
     getfield = getattr
     setfield = object.__setattr__
