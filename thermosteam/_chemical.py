@@ -42,7 +42,13 @@ from .free_energy import (
     EnthalpyRefSolid, EnthalpyRefLiquid, EnthalpyRefGas,
     EntropyRefSolid, EntropyRefLiquid, EntropyRefGas,
     ExcessEnthalpyRefSolid, ExcessEnthalpyRefLiquid, ExcessEnthalpyRefGas,
-    ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas
+    ExcessEntropyRefSolid, ExcessEntropyRefLiquid, ExcessEntropyRefGas,
+    Excess_Solid_Enthalpy_Ref_Solid,
+    Excess_Solid_Entropy_Ref_Solid,
+    Excess_Liquid_Enthalpy_Ref_Liquid,
+    Excess_Liquid_Entropy_Ref_Liquid,
+    Excess_Gas_Enthalpy_Ref_Gas,
+    Excess_Gas_Entropy_Ref_Gas
 )
 from .equilibrium.unifac import (
     DDBST_UNIFAC_assignments, 
@@ -524,10 +530,9 @@ class Chemical:
         if search_db:
             metadata = pubchem_db.search(search_ID)
             data['metadata'] = metadata
-            self = cls.new(ID, metadata.CASs, eos, phase_ref, phase,
-                           **data)
+            self = cls.new(ID, metadata.CASs, eos, phase_ref, phase, free_energies=False, **data)
         else:
-            self = cls.blank(ID, CAS, phase_ref, phase=phase, **data)
+            self = cls.blank(ID, CAS, phase_ref, phase=phase, free_energies=False, **data)
         if phase:
             if mu: self._mu.add_method(mu)
             if Cn: self._Cn.add_method(Cn)
@@ -557,6 +562,7 @@ class Chemical:
                     del chemical_cache[i]
                     break
         if method: self.set_method(method)
+        self.reset_free_energies()
         return self
 
     def set_method(self, method):
@@ -610,7 +616,7 @@ class Chemical:
 
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
-              formula=None, aliases=None, synonyms=None, **data):
+              formula=None, aliases=None, synonyms=None, free_energies=True, **data):
         """
         Return a new Chemical object without any thermodynamic models or data 
         (unless provided).
@@ -698,10 +704,14 @@ class Chemical:
                            self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
                            self._Hfus)
         self._locked_state = None
-        if phase: self.at_state(phase)
         self._estimate_missing_properties(self.Psat)
-        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, self._phase_ref)
+        if phase: 
+            self.at_state(phase)
+        else:
+            self._set_phase_ref(phase_ref, self._Tm, self._Tb)
+        if free_energies:
+            self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
+                                self._Tm, self._Tb, self._eos, self._phase_ref)
         self._init_reactions(self._Hf, self._S0, self._LHV, self._HHV, 
                              self._combustion, self.atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
@@ -1365,7 +1375,9 @@ class Chemical:
               Tt=None, Pt=None, Hf=None, S0=None, LHV=None, combustion=None,
               HHV=None, Hfus=None, dipole=None,
               similarity_variable=None, iscyclic_aliphatic=None, aliases=None,
-              synonyms=None, *, metadata=None, phase=None):
+              synonyms=None, *, metadata=None, phase=None,
+              free_energies=True,
+        ):
         """
         Reset all chemical properties.
 
@@ -1422,13 +1434,31 @@ class Chemical:
                            self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
                            self._Hfus)
         self._locked_state = None
-        if phase: self.at_state(phase)
         self._estimate_missing_properties(self._Psat)
-        self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                            self._Tm, self._Tb, self._eos, phase_ref)
+        if phase:
+            self.at_state(phase)
+        else:
+            self._set_phase_ref(phase_ref, self._Tm, self._Tb)
+        if free_energies:
+            self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
+                                self._Tm, self._Tb, self._eos, phase_ref)
         self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
+
+    def _set_phase_ref(self, phase_ref, Tm, Tb):
+        if phase_ref:
+            # "Liquid", "Solid", and "Gas" are also valid arguments
+            phase_ref = phase_ref[0].lower()
+        else:
+            T_ref = self.T_ref
+            if Tm and T_ref <= Tm:
+                phase_ref = 's'
+            elif Tb and T_ref >= Tb:
+                phase_ref = 'g'
+            else:
+                phase_ref = 'l'
+        self._phase_ref = phase_ref
 
     def reset_combustion_data(self, method="Stoichiometry"):
         """Reset combustion data (LHV, HHV, and combution attributes)
@@ -1658,7 +1688,6 @@ class Chemical:
             has_Cnl = bool(Cn_l)
             has_Cng = bool(Cn_g)
         elif Cn and single_phase:
-            self._phase_ref = single_phase
             self._H = Enthalpy.functor(Cn, T_ref, H_ref)
             if single_phase == 'g':
                 self._S = EntropyGas.functor(Cn, T_ref, P_ref, S0)
@@ -1674,16 +1703,7 @@ class Chemical:
                 has_Cng = True    
         else:
             has_Cns = has_Cnl = has_Cng = False
-        if phase_ref: phase_ref = phase_ref[0]
-        self._phase_ref = phase_ref
         if any((has_Cns, has_Cnl, has_Cng)):
-            if not phase_ref:
-                if Tm and T_ref <= Tm:
-                    self._phase_ref = phase_ref = 's'
-                elif Tb and T_ref >= Tb:
-                    self._phase_ref = phase_ref = 'g'
-                else:
-                    self._phase_ref = phase_ref = 'l'
             if Hvap:
                 Hvap_Tb = Hvap(Tb) if Tb else None
                 Svap_Tb = Hvap_Tb / Tb if Hvap_Tb else None
@@ -1759,7 +1779,21 @@ class Chemical:
                     H_dep_Tb_Pb_g = 0.
             
             # Enthalpy and Entropy
-            if not single_phase:
+            if single_phase:
+                # Reference state does not matter because phase will not change
+                self._H = Enthalpy.functor(Cn, T_ref, H_ref)
+                self._S = Entropy.functor(Cn, T_ref, S0)
+                # Excess energies
+                if phase_ref == 's':
+                    self._H_excess = Excess_Solid_Enthalpy_Ref_Solid()
+                    self._S_excess = Excess_Solid_Entropy_Ref_Solid()
+                elif phase_ref == 'l':
+                    self._H_excess = Excess_Liquid_Enthalpy_Ref_Liquid()
+                    self._S_excess = Excess_Liquid_Entropy_Ref_Liquid()
+                elif phase_ref == 'g':
+                    self._H_excess = Excess_Gas_Enthalpy_Ref_Gas(eos, H_dep_ref_g)
+                    self._S_excess = Excess_Gas_Entropy_Ref_Gas(eos, S_dep_ref_g)
+            else:
                 if phase_ref == 's':
                     sdata = (Cn_s, T_ref, H_ref)
                     ldata = (Cn_l, H_int_T_ref_to_Tm_s, Hfus, Tm, H_ref)
@@ -1788,27 +1822,22 @@ class Chemical:
                     gdata = (Cn_g, T_ref, P_ref, S0)
                     self._S = EntropyRefGas(sdata, ldata, gdata, Tc)
             
-            # Excess energies
-            if phase_ref == 's':
-                self._H_excess = ExcessEnthalpyRefSolid((), (), (), Tc)
-                self._S_excess = ExcessEntropyRefSolid((), (), (), Tc)
-            elif phase_ref == 'l':
-                gdata = (eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep_Tb_Pb_g)
-                self._H_excess = ExcessEnthalpyRefLiquid((), (), gdata, Tc)
-                gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
-                self._S_excess = ExcessEntropyRefLiquid((), (), gdata, Tc)
-            elif phase_ref == 'g':
-                ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g)
-                gdata = (eos, H_dep_ref_g)
-                self._H_excess = ExcessEnthalpyRefGas((), ldata, gdata, Tc)
-                ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g)
-                gdata = (eos, S_dep_ref_g)
-                self._S_excess = ExcessEntropyRefGas((), ldata, gdata, Tc)
-                
-            if single_phase:
-                getfield = getattr
-                self._H_excess = getfield(self._H_excess, single_phase, Tc)
-                self._S_excess = getfield(self._S_excess, single_phase, Tc)
+                # Excess energies
+                if phase_ref == 's':
+                    self._H_excess = ExcessEnthalpyRefSolid((), (), (), Tc)
+                    self._S_excess = ExcessEntropyRefSolid((), (), (), Tc)
+                elif phase_ref == 'l':
+                    gdata = (eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep_Tb_Pb_g)
+                    self._H_excess = ExcessEnthalpyRefLiquid((), (), gdata, Tc)
+                    gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
+                    self._S_excess = ExcessEntropyRefLiquid((), (), gdata, Tc)
+                elif phase_ref == 'g':
+                    ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g)
+                    gdata = (eos, H_dep_ref_g)
+                    self._H_excess = ExcessEnthalpyRefGas((), ldata, gdata, Tc)
+                    ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g)
+                    gdata = (eos, S_dep_ref_g)
+                    self._S_excess = ExcessEntropyRefGas((), ldata, gdata, Tc)
         else:
             self._H = self._S = self._S_excess = self._H_excess = None
             
@@ -2141,11 +2170,8 @@ def lock_phase(chemical, phase):
         if hasfield(phase_property, phase):
             functor = getfield(phase_property, phase)
             setfield(chemical, field, functor)
-    Cn = chemical.Cn
+    # Reference state does not matter because phase will not change
     chemical._phase_ref = phase
-    chemical._H = Enthalpy.functor(Cn, chemical.T_ref, chemical.H_ref)
-    S0 = chemical._S0 if hasfield(chemical, '_S0') else 0.
-    chemical._S = Entropy.functor(Cn, chemical.T_ref, S0)
     chemical._locked_state = phase
 
 # # Fire Safety Limits
