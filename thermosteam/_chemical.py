@@ -1441,7 +1441,7 @@ class Chemical:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
         if free_energies:
             self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
-                                self._Tm, self._Tb, self._eos, phase_ref)
+                                self._Tm, self._Tb, self._eos, self._phase_ref)
         self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
