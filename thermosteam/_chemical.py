@@ -551,10 +551,10 @@ class Chemical:
         if epsilon: self._epsilon.add_method(epsilon)
         if Psat: self._Psat.add_method(Psat)
         if Hvap: self._Hvap.add_method(Hvap)
-        if default: self.default()
         if phase:
             if Cp: self._Cn.add_method(Cp * self._MW)
             if rho: self._V.add_method(fn.rho_to_V(rho, self._MW))
+        if default: self.default()
         if cache:
             chemical_cache[ID] = self
             if len(chemical_cache) > 100:
@@ -1977,7 +1977,7 @@ class Chemical:
                 Cn_phase = getfield(Cn, phase_ref)
                 Cn_phase.add_method(4.18*MW)
             self.reset_free_energies()
-        if not self._H:
+        if not getattr(self, '_H', None):
             self.reset_free_energies()
         missing = set(properties)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
