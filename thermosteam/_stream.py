@@ -2520,7 +2520,7 @@ class Stream:
         return pd.DataFrame(data, columns=[self.ID.replace('_', ' ')], 
                             index=pd.MultiIndex.from_tuples(index))
         
-    def _info(self, layout, T, P, flow, composition, N, IDs, df):
+    def _info(self, layout, T, P, flow, composition, N, IDs, df=False):
         """Return string with all specifications."""
         flow, composition, N = self._translate_layout(layout, flow, composition, N)
         if not IDs:
