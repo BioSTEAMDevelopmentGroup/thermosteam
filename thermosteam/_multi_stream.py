@@ -15,6 +15,7 @@ from .indexer import MolarFlowIndexer
 from ._phase import phase_tuple
 from . import equilibrium as eq
 from . import utils
+from .indexer import nonzeros
 import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -1029,31 +1030,18 @@ class MultiStream(Stream):
     
     ### Representation ###
     
-    def _info(self, layout, T, P, flow, composition, N, IDs):
+    def _info_str(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
         """Return string with all specifications."""
-        flow, composition, N = self._translate_layout(layout, flow, composition, N)
-        from .indexer import nonzeros
-        if not IDs: IDs = self.chemicals.IDs
         basic_info = self._basic_info()
-        all_IDs, _ = nonzeros(IDs, self.imol[IDs])
-        all_IDs = tuple(all_IDs)
-        display_units = self.display_units
-        T_units = T or display_units.T
-        P_units = P or display_units.P
-        flow_units = flow or display_units.flow
-        N_max = display_units.N if N is None else N
-        if composition is None: composition = display_units.composition
         basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
         N_all_IDs = len(all_IDs)
         if N_all_IDs == 0:
             return basic_info + ' flow: 0' 
 
         # Length of chemical column
-        all_lengths = [len(i) for i in all_IDs]
+        all_lengths = [len(i) for i in all_IDs[:N_max]]
         maxlen = max(all_lengths) 
-
-        name, factor = self._get_flow_name_and_factor(flow_units)
-        indexer = getattr(self, 'i' + name)
+        
         if composition:
             first_line = " composition:"
         else:
@@ -1084,9 +1072,10 @@ class MultiStream(Stream):
             for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
                 if i: flow_rates += new_line    
-                flow_rates += f'{IDs[i]} ' + spaces + f' {data[i]:.3g}'
+                flow_rates += f'{IDs[i]}' + spaces + f'{data[i]:.3g}'
             if too_many_chemicals:
-                flow_rates += new_line + '...'
+                spaces = ' ' * (maxlen - 3)
+                flow_rates += new_line + '... ' + spaces + f' {data[N_max:].sum():.3g}'
             if composition:
                 dashes = '-' * maxlen
                 flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"

@@ -8,6 +8,7 @@
 """
 """
 from __future__ import annotations
+import pandas as pd
 import numpy as np
 import thermosteam as tmo
 import flexsolve as flx
@@ -18,7 +19,9 @@ from . import units_of_measure as thermo_units
 from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
+from .indexer import nonzeros
 from typing import TYPE_CHECKING
+from ._phase import valid_phases
 if TYPE_CHECKING:
     from numpy.typing import NDArray
     from free_properties import property_array
@@ -2433,38 +2436,18 @@ class Stream:
             if layout.isdigit():
                 N = int(layout)
         return flow, composition, N
-    
-    def _info(self, layout, T, P, flow, composition, N, IDs):
-        """Return string with all specifications."""
-        flow, composition, N = self._translate_layout(layout, flow, composition, N)
-        from .indexer import nonzeros
+
+    def _info_str(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
         basic_info = self._basic_info()
-        if not IDs:
-            IDs = self.chemicals.IDs
-            data = self.imol.data
-        else:
-            data = self.imol[IDs]
-        IDs, data = nonzeros(IDs, data)
-        IDs = tuple(IDs)
-        display_units = self.display_units
-        T_units = T or display_units.T
-        P_units = P or display_units.P
-        flow_units = flow or display_units.flow
-        N_max = display_units.N if N is None else N
         basic_info += self._info_phaseTP(self.phase, T_units, P_units)
         if N_max == 0:
             return basic_info[:-1]
-        composition = display_units.composition if composition is None else composition 
-        N_IDs = len(IDs)
+        N_IDs = len(all_IDs)
         if N_IDs == 0:
             return basic_info + ' flow: 0' 
-        
-        # Start of third line (flow rates)
-        name, factor = self._get_flow_name_and_factor(flow_units)
-        indexer = getattr(self, 'i' + name)
             
         # Remaining lines (all flow rates)
-        flow_array = factor * indexer[IDs]
+        flow_array = factor * indexer[all_IDs]
         if composition:
             total_flow = flow_array.sum()
             beginning = " composition: "
@@ -2474,21 +2457,88 @@ class Stream:
             beginning = f' flow ({flow_units}): '
             new_line = '\n' + len(beginning) * ' '
         flow_rates = ''
-        lengths = [len(i) for i in IDs]
-        maxlen = max(lengths) + 2
         too_many_chemicals = N_IDs > N_max
-        N = N_max if too_many_chemicals else N_IDs
-        for i in range(N):
+        if not too_many_chemicals: N_max = N_IDs
+        lengths = [len(i) for i in all_IDs[:N_max]]
+        maxlen = max(lengths) + 2
+        for i in range(N_max):
             spaces = ' ' * (maxlen - lengths[i])
             if i: flow_rates += new_line
-            flow_rates += IDs[i] + spaces + f'{flow_array[i]:.3g}'
-        if too_many_chemicals: flow_rates += new_line + '...'
+            flow_rates += all_IDs[i] + spaces + f'{flow_array[i]:.3g}'
+        if too_many_chemicals: 
+            spaces = ' ' * (maxlen - 3)
+            flow_rates += new_line + '...' + spaces + f'{flow_array[N_max:].sum():.3g}'
         if composition:
             dashes = '-' * (maxlen - 2)
             flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
         return (basic_info 
               + beginning
               + flow_rates)
+    
+    def _info_df(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
+        if not all_IDs:
+            return pd.DataFrame([0], columns=[self.ID.replace('_', ' ')], index=['Flow'])
+        T = thermo_units.convert(self.T, 'K', T_units)
+        P = thermo_units.convert(self.P, 'Pa', P_units)
+        data = []
+        index = []
+        index.append((f"Temperature [{T_units}]", ''))
+        data.append(f"{T:.3g}")
+        index.append((f"Pressure [{P_units}]", ''))
+        data.append(f"{int(P)}")
+        for phase in self.phases:
+            if indexer.data.ndim == 2:
+                flow_array = factor * indexer[phase, all_IDs]
+            else:
+                flow_array = factor * indexer[all_IDs]
+            phase = valid_phases[phase]
+            if phase.islower(): phase = phase.capitalize()
+            if composition:
+                total_flow = flow_array.sum()
+                index.append((f"{phase} [{flow_units}]", ''))
+                data.append(f"{total_flow:.3g}")
+                comp_array = flow_array / total_flow
+                for i, (ID, comp) in enumerate(zip(all_IDs, comp_array)):
+                    if not comp: continue
+                    if i >= N_max:
+                        index.append(("Composition", '(remainder)'))
+                        data.append(f"{comp_array[N_max:].sum():.3g}")
+                        break
+                    else:
+                        index.append(("Composition", ID))
+                        data.append(f"{comp:.3g}")
+            else:   
+                for i, (ID, flow) in enumerate(zip(all_IDs, flow_array)):
+                    if not flow: continue
+                    if i >= N_max:
+                        index.append((f"{phase} [{flow_units}]", '(remainder)'))
+                        data.append(f"{flow_array[N_max:].sum():.3g}")
+                        break
+                    else:
+                        index.append((f"{phase} [{flow_units}]", ID))
+                        data.append(f"{flow:.3g}")
+        return pd.DataFrame(data, columns=[self.ID.replace('_', ' ')], 
+                            index=pd.MultiIndex.from_tuples(index))
+        
+    def _info(self, layout, T, P, flow, composition, N, IDs, df):
+        """Return string with all specifications."""
+        flow, composition, N = self._translate_layout(layout, flow, composition, N)
+        if not IDs:
+            IDs = self.chemicals.IDs
+            data = self.mol
+        else:
+            data = self.imol[IDs]
+        IDs, data = nonzeros(IDs, data)
+        IDs = tuple(IDs)
+        display_units = self.display_units
+        T_units = T or display_units.T
+        P_units = P or display_units.P
+        flow_units = flow or display_units.flow
+        N_max = display_units.N if N is None else N
+        composition = display_units.composition if composition is None else composition
+        name, factor = self._get_flow_name_and_factor(flow_units)
+        indexer = getattr(self, 'i' + name)
+        return (self._info_df if df else self._info_str)(T_units, P_units, flow_units, composition, N_max, IDs, indexer, factor)
 
     def show(self, 
              layout: Optional[str]=None,
@@ -2497,7 +2547,8 @@ class Stream:
              flow: Optional[str]=None, 
              composition: Optional[bool]=None, 
              N: Optional[int]=None, 
-             IDs: Optional[Sequence[str]]=None):
+             IDs: Optional[Sequence[str]]=None,
+             df: Optional[bool]=None):
         """
         Print all specifications.
         
@@ -2520,9 +2571,11 @@ class Stream:
             Number of compounds to display.
         IDs : 
             IDs of compounds to display. Defaults to all chemicals.
+        df :
+            Whether to return a pandas DataFrame.
         
         """
-        print(self._info(layout, T, P, flow, composition, N, IDs))
+        print(self._info(layout, T, P, flow, composition, N, IDs, df))
     _ipython_display_ = show
     
     def print(self, units: Optional[str]=None):

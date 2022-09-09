@@ -10,10 +10,16 @@
 from .exceptions import UndefinedPhase
 
 __all__ = ('Phase', 'LockedPhase', 'NoPhase', 'PhaseIndexer',
-           'phase_tuple')
+           'phase_tuple', 'valid_phases')
 
 new = object.__new__
-valid_phases = {'s', 'l', 'g', 'S', 'L'}
+valid_phases = {
+    's': 'solid',
+    'l': 'liquid',
+    'g': 'gas',
+    'S': 'SOLID',
+    'L': 'LIQUID',
+}
 
 def check_phase(phase):
     """
