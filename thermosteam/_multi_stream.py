@@ -265,8 +265,8 @@ class MultiStream(Stream):
         >>> s1.show('cwt')
         MultiStream: s1
          phases: ('g', 'l', 's'), T: 298.15 K, P: 101325 Pa
-         composition: (g) Ethanol  1
-                          -------  2 kg/hr
+         composition (%): (g) Ethanol  100
+                              ---------  2 kg/hr
         
         """
         imol = self._imol
@@ -1040,10 +1040,10 @@ class MultiStream(Stream):
 
         # Length of chemical column
         all_lengths = [len(i) for i in all_IDs[:N_max]]
-        maxlen = max(all_lengths) 
+        maxlen = max(all_lengths) + 2
         
         if composition:
-            first_line = " composition:"
+            first_line = " composition (%):"
         else:
             first_line = f' flow ({flow_units}):'
         first_line_spaces = len(first_line)*" "
@@ -1056,7 +1056,7 @@ class MultiStream(Stream):
             if not IDs: continue
             if composition:
                 total_flow = data.sum()
-                data = data/total_flow
+                data = 100 * data/total_flow
         
             # Get basic structure for phase data            
             beginning = (first_line or first_line_spaces) + f' ({phase}) '

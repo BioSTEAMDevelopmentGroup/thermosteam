@@ -112,9 +112,9 @@ class Stream:
     >>> s1.show(composition=True, flow='kg/hr') # Its also possible to show by composition
     Stream: s1
      phase: 'l', T: 298.15 K, P: 101325 Pa
-     composition: Water    0.667
-                  Ethanol  0.333
-                  -------  30 kg/hr
+     composition (%): Water    66.7
+                      Ethanol  33.3
+                      -------  30 kg/hr
     
     All flow rates are stored as an array in the `mol` attribute:
     
@@ -372,8 +372,8 @@ class Stream:
         >>> s1.show('cwt')
         Stream: s1
          phase: 'g', T: 298.15 K, P: 101325 Pa
-         composition: Ethanol  1
-                      -------  2 kg/hr
+         composition (%): Ethanol  100
+                          -------  2 kg/hr
         
         """
         imol = self._imol
@@ -2450,9 +2450,9 @@ class Stream:
         flow_array = factor * indexer[all_IDs]
         if composition:
             total_flow = flow_array.sum()
-            beginning = " composition: "
-            new_line = '\n' + 14 * ' '
-            flow_array = flow_array/total_flow
+            beginning = " composition (%): "
+            new_line = '\n' + len(beginning) * ' '
+            flow_array = 100 * flow_array/total_flow
         else:
             beginning = f' flow ({flow_units}): '
             new_line = '\n' + len(beginning) * ' '
@@ -2497,15 +2497,15 @@ class Stream:
                 total_flow = flow_array.sum()
                 index.append((f"{phase} [{flow_units}]", ''))
                 data.append(f"{total_flow:.3g}")
-                comp_array = flow_array / total_flow
+                comp_array = 100 * flow_array / total_flow
                 for i, (ID, comp) in enumerate(zip(all_IDs, comp_array)):
                     if not comp: continue
                     if i >= N_max:
-                        index.append(("Composition", '(remainder)'))
+                        index.append(("Composition [%]", '(remainder)'))
                         data.append(f"{comp_array[N_max:].sum():.3g}")
                         break
                     else:
-                        index.append(("Composition", ID))
+                        index.append(("Composition [%]", ID))
                         data.append(f"{comp:.3g}")
             else:   
                 for i, (ID, flow) in enumerate(zip(all_IDs, flow_array)):
