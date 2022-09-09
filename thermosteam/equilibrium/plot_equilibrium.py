@@ -100,10 +100,11 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
         raise AssertionError("must pass either T or P")
     ms = np.array(ms)
     ys_a = np.array([bp.y[0] for bp in bps])
+    top, bottom = (chemical_a, chemical_b) if ys_a.mean() > 0.5 else (chemical_a, chemical_b)
     plt.figure()
     plt.xlim([0, 1])
-    plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label="vapor")
-    plt.plot(zs_a, ms, c=lc if lc is not None else colors.blue.RGBn, label='liquid')
+    plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label=f"{top}-rich vapor")
+    plt.plot(zs_a, ms, c=lc if lc is not None else colors.blue.RGBn, label=f'{bottom}-rich liquid')
     plt.ylim([ms.min(), ms.max()])
     if yticks is None: yticks, ytext = plt.yticks()
         
