@@ -2485,7 +2485,7 @@ class Stream:
         index.append((f"Temperature [{T_units}]", ''))
         data.append(f"{T:.3g}")
         index.append((f"Pressure [{P_units}]", ''))
-        data.append(f"{int(P)}")
+        data.append(f"{P:.6g}")
         for phase in self.phases:
             if indexer.data.ndim == 2:
                 flow_array = factor * indexer[phase, all_IDs]
@@ -2539,6 +2539,39 @@ class Stream:
         name, factor = self._get_flow_name_and_factor(flow_units)
         indexer = getattr(self, 'i' + name)
         return (self._info_df if df else self._info_str)(T_units, P_units, flow_units, composition, N_max, IDs, indexer, factor)
+    
+    def _get_tooltip_string(self, format, full):
+        if format not in ('html', 'svg'): return ''
+        if self.isempty():
+            tooltip = '(empty)'
+        elif format == 'html' and full:
+            df = self._info(None, None, None, None, None, None, None, df=True)
+            tooltip = (
+                " " + # makes sure graphviz does not try to parse the string as HTML
+                df.to_html(justify='unset'). # unset makes sure that table header style can be overwritten in CSS
+                replace("\n", "").replace("  ", "") # makes sure tippy.js does not add any whitespaces
+            )
+        else:
+            newline = '<br>' if format == 'html' else '\n'
+            display_units = self.display_units
+            T_units = display_units.T
+            P_units = display_units.P
+            flow_units = display_units.flow
+            T = thermo_units.convert(self.T, 'K', T_units)
+            P = thermo_units.convert(self.P, 'Pa', P_units)
+            tooltip = (
+                f"Temperature: {T:.3g} {T_units}{newline}"
+                f"Pressure: {P:.6g} {P_units}"
+            )
+            for phase in self.phases:
+                stream = self[phase] if self.imol.data.ndim == 2 else self
+                flow = stream.get_total_flow(flow_units)
+                phase = valid_phases[phase]
+                if phase.islower(): phase = phase.capitalize()
+                tooltip += f"{newline}{phase} flow: {flow:.3g} {flow_units}"
+            if format == 'html':
+                tooltip = " " + tooltip
+        return tooltip
 
     def show(self, 
              layout: Optional[str]=None,
