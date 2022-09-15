@@ -37,7 +37,7 @@ def check_valid_alias(alias):
 
 class Registry: # pragma: no cover
 
-    __slots__ = ('data', 'safe_to_replace', 'context_levels')
+    __slots__ = ('data', 'safe_to_replace', 'context_levels', 'registered_objects')
 
     AUTORENAME = False #: Whether to rename objects with conflicting IDs
 
@@ -70,6 +70,7 @@ class Registry: # pragma: no cover
         self.data = {i.ID: i for i in objs} if objs else {}
         self.safe_to_replace = set()
         self.context_levels = []
+        self.registered_objects = set()
 
     def search(self, ID):
         """Return object given ID. If ID not in registry, return None."""
@@ -147,8 +148,10 @@ class Registry: # pragma: no cover
         return ID_old
         
     def _close_registration(self, ID, obj):
+        if obj not in self.registered_objects:
+            for i in self.context_levels: 
+                i.append(obj)
         self.data[ID] = obj
-        for i in self.context_levels: i.append(obj)
         obj._ID = ID
     
     def open_context_level(self):
@@ -187,6 +190,7 @@ class Registry: # pragma: no cover
                 del data[ID]
         for dump in self.context_levels:
             if obj in dump: dump.remove(obj)
+        self.registered_objects.discard(obj)
     
     def pop(self, obj):
         """Remove object from data and return object."""
