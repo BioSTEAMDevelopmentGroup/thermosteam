@@ -149,6 +149,7 @@ class Registry: # pragma: no cover
         
     def _close_registration(self, ID, obj):
         if obj not in self.registered_objects:
+            self.registered_objects.add(obj)
             for i in self.context_levels: 
                 i.append(obj)
         self.data[ID] = obj
