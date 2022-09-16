@@ -903,6 +903,20 @@ class Stream:
         """Inlet location."""
         return self._sink
 
+    def get_downstream_units(self, ends=None, facilities=True):
+        """Return a set of all units downstream."""
+        sink = self._sink
+        units = sink.get_downstream_units(ends, facilities)
+        units.add(sink)
+        return units
+    
+    def get_upstream_units(self, ends=None, facilities=True):
+        """Return a set of all units upstream."""
+        source = self._source
+        units = source.get_upstream_units(ends, facilities)
+        units.add(source)
+        return units
+
     @property
     def thermal_condition(self) -> tmo.ThermalCondition:
         """
