@@ -355,7 +355,7 @@ class ChemicalIndexer(Indexer):
         chemicals = self._chemicals
         data = self._data
         sc_data = [] # Same chemicals
-        other_data = [] # Differnt chemicals
+        other_data = [] # Different chemicals
         repeated_data = 0
         for i in others:
             idata = i.sum_across_phases()
