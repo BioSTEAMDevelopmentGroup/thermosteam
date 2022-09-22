@@ -440,12 +440,7 @@ class ChemicalIndexer(Indexer):
         elif repeated_data > 1:
             data[:] *= repeated_data
         for i in sc_data: data[:] += i
-        for args in other_data: 
-            try:
-                sum_chemical_index(data, *args)
-            except:
-                print(args)
-                breakpoint()
+        for args in other_data: sum_chemical_index(data, *args)
     
     def separate_out(self, other):
         if self._chemicals is other._chemicals:
