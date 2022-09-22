@@ -7,6 +7,7 @@
 # for license details.
 """
 """
+import numpy as np
 import thermosteam as tmo
 from . import equilibrium as eq
 from ._chemical import Chemical
@@ -15,7 +16,6 @@ from .mixture import Mixture
 from .utils import read_only, cucumber
 
 __all__ = ('Thermo', 'IdealThermo')
-
 
 @cucumber # Just means you can pickle it
 @read_only
@@ -170,8 +170,9 @@ class Thermo:
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
+        ndarray = np.ndarray
         groups = [(name, index) for name, index in self.chemicals._index.items() 
-                  if isinstance(index, list)]
+                  if isinstance(index, ndarray)]
         chemicals.compile(skip_checks=True)
         CASs = self.chemicals.CASs
         for name, index in groups:
@@ -299,8 +300,9 @@ class IdealThermo:
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
+        ndarray = np.ndarray
         groups = [(name, index) for name, index in self.chemicals._index.items() 
-                  if isinstance(index, list)]
+                  if isinstance(index, ndarray)]
         chemicals.compile(skip_checks=True)
         CASs = self.chemicals.CASs
         for name, index in groups:

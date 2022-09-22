@@ -471,6 +471,8 @@ class CompiledChemicals(Chemicals):
             if i in self._group_wt_compositions:
                 raise ValueError(f"'{i}' is a group; cannot define new group using other groups")
         index = self.indices(IDs)
+        self.__dict__[name] = [self.tuple[i] for i in index]
+        self._index[name] = np.array(index, dtype=int)
         composition = np.asarray(composition, float)
         if wt:
             composition_wt = composition
@@ -480,8 +482,6 @@ class CompiledChemicals(Chemicals):
             composition_mol = composition
         self._group_wt_compositions[name] = composition_wt / composition_wt.sum()
         self._group_mol_compositions[name] = composition_mol / composition_mol.sum()
-        self._index[name] = index
-        self.__dict__[name] = [self.tuple[i] for i in index]
     
     def refresh_constants(self):
         """
@@ -1069,18 +1069,24 @@ class CompiledChemicals(Chemicals):
         except KeyError:
             isa = isinstance
             kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
+            ndarray = np.ndarray
             if isa(key, str):
                 index = self.index(key)
-                if isa(index, list): kind = 1 
+                if isa(index, ndarray): kind = 1 
             elif isa(key, tuple):
                 index = self.indices(key)
                 for i in index:
-                    if isa(i, list): kind = 2
+                    if isa(i, ndarray): 
+                        kind = 2
+                        break
+                else:
+                    index = np.array(index, dtype=int)
             elif key is ...:
                 index = slice(None)
             else: # pragma: no cover
                 raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
             index_cache[key] = index, kind
+            if len(index_cache) > 1000: index_cache.pop(index_cache.__iter__().__next__())
         except TypeError:
             raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
         return index, kind

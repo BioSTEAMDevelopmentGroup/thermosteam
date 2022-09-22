@@ -40,6 +40,39 @@ phase_names = {
     'S': 'SOLID',
 }
 
+# %% Numba acceleration
+
+@njit(cache=True)
+def sum_chemical_index(data, other, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[left_index[i]] += other[right_index[i]]
+
+@njit(cache=True)
+def sum_material_index(data, other, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[:, left_index[i]] += other[:, right_index[i]]
+
+@njit(cache=True)
+def sum_phase_material_index(data, other, phase_index, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[phase_index, left_index[i]] += other[right_index[i]]
+    
+@njit(cache=True)
+def copy_chemical_index(data, other, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[left_index[i]] = other[right_index[i]]
+
+@njit(cache=True)
+def copy_material_index(data, other, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[:, left_index[i]] = other[:, right_index[i]]
+
+@njit(cache=True)
+def copy_phase_material_index(data, other, phase_index, left_index, right_index):
+    N = left_index.size
+    for i in range(N): data[phase_index, left_index[i]] = other[right_index[i]]
+
+
 # %% Utilities
 
 _new = object.__new__
@@ -62,6 +95,35 @@ def find_main_phase(indexers, default):
 def nonzeros(IDs, data):
     index, = np.where(data != 0)
     return [IDs[i] for i in index], data[index]
+
+def index_overlap(left_chemicals, right_chemicals, right_data):
+    right_index, = np.where(right_data)
+    CASs_all = right_chemicals.CASs
+    CASs = tuple([CASs_all[i] for i in right_index])
+    cache = left_chemicals._index_cache
+    if CASs in cache:
+        left_index, kind = cache[CASs]
+        if kind:
+            raise RuntimeError('conflict in chemical groups and aliases between property packages')
+        else:
+            return left_index, right_index
+    else:
+        dct = left_chemicals._index
+        N = len(CASs)
+        left_index = np.zeros(N, dtype=int)
+        isa = isinstance
+        ndarray = np.ndarray
+        for i in range(N):
+            CAS = CASs[i]
+            if CAS in dct:
+                index = dct[CAS]
+                if isa(index, ndarray): raise RuntimeError('conflict in chemical groups and aliases between property packages')
+                left_index[i] = index
+            else:
+                raise UndefinedChemicalAlias(CAS)
+        cache[CASs] = (left_index, 0)
+        if len(cache) > 1000: cache.pop(cache.__iter__().__next__())
+        return left_index, right_index
 
 # %% Abstract indexer
     
@@ -317,8 +379,9 @@ class ChemicalIndexer(Indexer):
             arr = np.zeros(len(index))
             data = self._data
             isa = isinstance
+            ndarray = np.ndarray
             for d, s in enumerate(index):
-                if isa(s, list): 
+                if isa(s, ndarray): 
                     arr[d] = data[s].sum()
                 else:
                     arr[d] = data[s]
@@ -337,9 +400,10 @@ class ChemicalIndexer(Indexer):
             local_data = self._data
             isa = isinstance
             group_compositions = self.group_compositions
+            ndarray = np.ndarray
             for n in range(len(index)):
                 i = index[n]
-                local_data[i] = data[n] * group_compositions[key[n]] if isa(i, list) else data[n]
+                local_data[i] = data[n] * group_compositions[key[n]] if isa(i, ndarray) else data[n]
         else:
             raise IndexError('unknown error')
     
@@ -357,37 +421,39 @@ class ChemicalIndexer(Indexer):
         sc_data = [] # Same chemicals
         other_data = [] # Different chemicals
         repeated_data = 0
+        base = data.base
         for i in others:
-            idata = i.sum_across_phases()
             if i is self:
                 repeated_data += 1
-            elif i._chemicals is chemicals:
-                sc_data.append(idata)
             else:
-                index_right, = np.where(idata)
-                CASs = i._chemicals.CASs
-                index_left = chemicals.indices([CASs[i] for i in index_right])
-                other_data.append(
-                    (idata, index_left, index_right)
-                )
+                idata = i.sum_across_phases()
+                if idata.base is base or idata is base: idata = idata.copy()
+                ichemicals = i._chemicals
+                if ichemicals is chemicals:
+                    sc_data.append(idata)
+                else:
+                    other_data.append(
+                        (idata, *index_overlap(chemicals, ichemicals, idata))
+                    )
         if repeated_data == 0:
             data[:] = 0.
         elif repeated_data > 1:
             data[:] *= repeated_data
-        for i in sc_data: 
-            data[:] += i
-        for idata, index_left, index_right in other_data: 
-            data[index_left] += idata[index_right]
+        for i in sc_data: data[:] += i
+        for args in other_data: 
+            try:
+                sum_chemical_index(data, *args)
+            except:
+                print(args)
+                breakpoint()
     
     def separate_out(self, other):
         if self._chemicals is other._chemicals:
             self._data[:] -= other.sum_across_phases()
         else:
-            idata = other._data
-            other_index, = np.where(idata)
-            CASs = other._chemicals.CASs
-            self_index = self._chemicals.indices([CASs[i] for i in other_index])
-            self._data[self_index] -= idata[other_index]
+            other_data = other._data
+            left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+            self._data[left_index] -= other_data[right_index]
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
@@ -400,10 +466,8 @@ class ChemicalIndexer(Indexer):
             self._data[:] = other._data
         else:
             self.empty()
-            other_index, = np.where(other._data)
-            CASs = other.chemicals.CASs
-            self_index = self.chemicals.indices([CASs[i] for i in other_index])
-            self._data[self_index] = other._data[other_index]
+            other_data = other._data
+            copy_chemical_index(self._data, other_data, *index_overlap(self._chemicals, other._chemicals, other_data))
         self.phase = other.phase
     
     def _copy_without_data(self):
@@ -578,20 +642,16 @@ class MaterialIndexer(Indexer):
             if self.chemicals is other.chemicals:
                 self._data[phase_index, :] = other_data
             else:
-                other_index, = np.where(other_data)
-                CASs = other.chemicals.CASs
-                self_index = self.chemicals.indices([CASs[i] for i in other_index])
-                self._data[phase_index, self_index] += other._data[other_index]
+                other_data = other._data
+                left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+                copy_phase_material_index(self._data, other_data, phase_index, *index_overlap(self._chemicals, other._chemicals, other_data))
         else:
             if self.chemicals is other.chemicals:
                 self._data[:] = other._data
             else:
                 self.empty()
                 other_data = other._data
-                other_index, = np.where(other_data.any(0))
-                CASs = other.chemicals.CASs
-                self_index = self.chemicals.indices([CASs[i] for i in other_index])
-                self._data[:, self_index] = other_data[:, other_index]
+                copy_material_index(self._data, other_data, *index_overlap(self._chemicals, other._chemicals, other_data.any(0)))
     
     def mix_from(self, others):
         isa = isinstance
@@ -603,65 +663,58 @@ class MaterialIndexer(Indexer):
         spsc_data = [] # Same phases, same chemicals
         sp_data = [] # Same phases, different chemicals
         opsc_data = [] # One phase, same chemicals
-        op_data = [] # One phase, different chemicalss
+        op_data = [] # One phase, different chemicals
         for i in others:
             if i is self:
                 repeated_data += 1
-            elif isa(i, MaterialIndexer):
-                idata = i._data
-                if phases == i.phases:
-                    if chemicals is i.chemicals:
-                        spsc_data.append(idata)
-                    else:
-                        right_index, = np.where(idata.any(0))
-                        CASs = i.chemicals.CASs
-                        left_index = chemicals.indices([CASs[i] for i in right_index])
-                        sp_data.append(
-                            (idata, left_index, right_index)
-                        )
-                else:
-                    if chemicals is i.chemicals:
-                        for phase, idata in zip(i.phases, idata):
-                            if not idata.any(): continue
-                            opsc_data.append(
-                                (idata, get_phase_index(i.phase))
-                            )
-                    else:
-                        for phase, idata in zip(i.phases, idata):
-                            if not idata.any(): continue
-                            right_index, = np.where(idata)
-                            CASs = i.chemicals.CASs
-                            left_index = chemicals.indices([CASs[i] for i in right_index])
-                            op_data.append(
-                                (idata, (get_phase_index(phase), left_index), right_index)
-                            )
-            elif isa(i, ChemicalIndexer):
+            else:
                 idata = i._data
                 if idata.base is data: idata = idata.copy()
-                if chemicals is i.chemicals:
-                    opsc_data.append(
-                        (idata, get_phase_index(i.phase))
-                    )
+                ichemicals = i._chemicals
+                if isa(i, MaterialIndexer):
+                    if phases == i.phases:
+                        if chemicals is ichemicals:
+                            spsc_data.append(idata)
+                        else:
+                            left_index, right_index = index_overlap(chemicals, ichemicals, idata.any(0))
+                            sp_data.append(
+                                (idata, left_index, right_index)
+                            )
+                    else:
+                        if chemicals is ichemicals:
+                            for phase, idata in zip(i.phases, idata):
+                                if not idata.any(): continue
+                                opsc_data.append(
+                                    (idata, get_phase_index(i.phase))
+                                )
+                        else:
+                            for phase, idata in zip(i.phases, idata):
+                                if not idata.any(): continue
+                                left_index, right_index = index_overlap(chemicals, ichemicals, idata)
+                                op_data.append(
+                                    (idata, get_phase_index(phase), left_index, right_index)
+                                )
+                elif isa(i, ChemicalIndexer):
+                    if idata.base is data: idata = idata.copy()
+                    if chemicals is ichemicals:
+                        opsc_data.append(
+                            (idata, get_phase_index(i.phase))
+                        )
+                    else:
+                        left_index, right_index = index_overlap(chemicals, ichemicals, idata)
+                        op_data.append(
+                            (idata, get_phase_index(phase), left_index, right_index)
+                        )
                 else:
-                    right_index, = np.where(idata != 0.)
-                    CASs = i.chemicals.CASs
-                    left_index = chemicals.indices([CASs[i] for i in right_index])
-                    op_data.append(
-                        (idata, (get_phase_index(phase), left_index), right_index)
-                    )
-            else:
-                raise ValueError("can only mix from chemical or material indexers")
-            if repeated_data == 0:
-                data[:] = 0.
-            elif repeated_data > 1:
-                data[:] *= repeated_data
-            for idata in spsc_data: data[:] += idata
-            for idata, left_index, right_index in sp_data: 
-                data[:, left_index] += idata[:, right_index]
-            for idata, left_index in opsc_data: 
-                data[left_index, :] += idata
-            for idata, index_left, index_right in op_data:
-                data[index_left] += idata[index_right]
+                    raise ValueError("can only mix from chemical or material indexers")
+        if repeated_data == 0:
+            data[:] = 0.
+        elif repeated_data > 1:
+            data[:] *= repeated_data
+        for i in spsc_data: data[:] += i
+        for args in sp_data: sum_material_index(data, *args)
+        for idata, left_index in opsc_data: data[left_index, :] += idata
+        for args in op_data: sum_phase_material_index(data, *args)
     
     def separate_out(self, other):
         isa = isinstance
@@ -799,17 +852,18 @@ class MaterialIndexer(Indexer):
                 data = self._data
                 isa = isinstance
                 phase, index = index
+                ndarray = np.ndarray
                 if phase == slice(None):
                     values = np.zeros([len(self.phases), len(index)])
                     for d, s in enumerate(index):
-                        if isa(s, list): 
+                        if isa(s, ndarray): 
                             values[:, d] = data[phase, s].sum(1)
                         else:
                             values[:, d] = data[phase, s]
                 else:
                     values = np.zeros(len(index))
                     for d, s in enumerate(index):
-                        if isa(s, list): 
+                        if isa(s, ndarray): 
                             values[d] = data[phase, s].sum()
                         else:
                             values[d] = data[phase, s]
@@ -832,9 +886,10 @@ class MaterialIndexer(Indexer):
             local_data = self._data
             group_compositions = self.group_compositions
             isa = isinstance
+            ndarray = np.ndarray
             for n in range(len(index)):
                 i = index[n]
-                local_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, list) else data[n]
+                local_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, ndarray) else data[n]
         else:
             raise IndexError('unknown error')
     

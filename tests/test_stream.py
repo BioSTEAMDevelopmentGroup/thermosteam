@@ -293,6 +293,19 @@ def test_stream_property_cache():
     values_cache = [getprop(i, T, False) for i, T in zip(IDs, Ts)]
     assert_allclose(values, values_cache)
 
+def test_mixing_balance():
+    tmo.settings.set_thermo(['Water'], cache=True)
+    ms = tmo.MultiStream(None, l=[('Water', 1)], g=[('Water', 2)])
+    streams = [ms['g'], ms['l'], ms['l']]
+    total_flow = sum([i.imol['Water'] for i in streams])
+    ms.mix_from(streams)
+    assert ms.imol['Water'] == total_flow
+    ms.imol['g', 'Water'] = 0.
+    streams = [ms, ms['l'], ms['l']]
+    total_flow = sum([i.imol['Water'] for i in streams])
+    ms['l'].mix_from(streams)
+    assert ms['l'].imol['Water'] == total_flow
+
 def test_mixture():
     tmo.settings.set_thermo(['Water'], cache=True)
 
@@ -328,6 +341,7 @@ def test_vle_critical_pure_component():
 if __name__ == '__main__':
     test_stream()
     test_multistream()
+    test_mixing_balance()
     test_vlle()
     stream_methods()
     test_stream_property_cache()
