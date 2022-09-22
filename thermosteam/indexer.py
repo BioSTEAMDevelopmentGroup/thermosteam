@@ -638,7 +638,6 @@ class MaterialIndexer(Indexer):
                 self._data[phase_index, :] = other_data
             else:
                 other_data = other._data
-                left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
                 copy_phase_material_index(self._data, other_data, phase_index, *index_overlap(self._chemicals, other._chemicals, other_data))
         else:
             if self.chemicals is other.chemicals:
@@ -671,9 +670,8 @@ class MaterialIndexer(Indexer):
                         if chemicals is ichemicals:
                             spsc_data.append(idata)
                         else:
-                            left_index, right_index = index_overlap(chemicals, ichemicals, idata.any(0))
                             sp_data.append(
-                                (idata, left_index, right_index)
+                                (idata, *index_overlap(chemicals, ichemicals, idata.any(0)))
                             )
                     else:
                         if chemicals is ichemicals:
@@ -685,9 +683,8 @@ class MaterialIndexer(Indexer):
                         else:
                             for phase, idata in zip(i.phases, idata):
                                 if not idata.any(): continue
-                                left_index, right_index = index_overlap(chemicals, ichemicals, idata)
                                 op_data.append(
-                                    (idata, get_phase_index(phase), left_index, right_index)
+                                    (idata, get_phase_index(phase), *index_overlap(chemicals, ichemicals, idata))
                                 )
                 elif isa(i, ChemicalIndexer):
                     if idata.base is data: idata = idata.copy()
@@ -696,9 +693,8 @@ class MaterialIndexer(Indexer):
                             (idata, get_phase_index(i.phase))
                         )
                     else:
-                        left_index, right_index = index_overlap(chemicals, ichemicals, idata)
                         op_data.append(
-                            (idata, get_phase_index(phase), left_index, right_index)
+                            (idata, get_phase_index(phase), *index_overlap(chemicals, ichemicals, idata))
                         )
                 else:
                     raise ValueError("can only mix from chemical or material indexers")
