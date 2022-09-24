@@ -68,3 +68,9 @@ class ThermalCondition:
         
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.6g})"
+    
+class MockThermalCondition:
+    __slots__ = ()
+    def in_equilibrium(self, other): return False
+
+mock_thermal_condition = MockThermalCondition()    

@@ -14,15 +14,20 @@
 #     import chemicals
 #     import chemicals.numba as numba
 #     Module = type(chemicals)
-#     def update_module(module, other):
+#     try: numba.Lastovka_Shaw # First autoload with __getattr__
+#     except: pass
+#     def update_module(module, other,
+#             ignored=chemicals.utils.numba_cache_blacklisted,
+#         ):
 #         dct = module.__dict__
 #         isa = isinstance
+#         isfunc = callable
 #         for i, j in other.__dict__.items():
-#             if i[:2] != '__'  and i in dct:
-#                 if isa(j, Module) and 'chemicals.' in j.__name__:
-#                     update_module(dct[i], j)
-#                 else:
-#                     dct[i] = j
+#             if i not in dct or i in ignored: continue
+#             if isa(j, Module) and 'chemicals.' in j.__name__:
+#                 update_module(dct[i], j)
+#             else:
+#                 if isfunc(j) and 'numba' in repr(j.__class__): dct[i] = j
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals

@@ -1149,11 +1149,11 @@ class Stream:
             calculate = getattr(self.mixture, name)
             if nophase:
                 property_cache[name] = value = calculate(
-                    composition, *self.thermal_condition
+                    composition, *self._thermal_condition
                 )
             else:
                 property_cache[name] = value = calculate(
-                    phase, composition, *self.thermal_condition
+                    phase, composition, *self._thermal_condition
                 )
             return value * total if flow else value
     

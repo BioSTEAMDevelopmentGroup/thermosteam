@@ -8,6 +8,7 @@
 """
 """
 import thermosteam as tmo
+from ._thermal_condition import mock_thermal_condition
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemicalAlias
@@ -1126,22 +1127,33 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 
 # %% Volumetric flow properties
 
+TP_V = (mock_thermal_condition, None) # Initial cache for molar volume
+
 @PropertyFactory(slots=('name', 'mol', 'index', 'V',
-                        'TP', 'phase', 'phase_container'),
+                        'TP', 'phase', 'phase_container', 'cache'),
                  units='m^3/hr')
 def VolumetricFlowProperty(self):
     """Volumetric flow (m^3/hr)."""
     f_mol = self.mol[self.index] 
-    phase = self.phase or self.phase_container.phase
-    V = getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V
-    return 1000. * f_mol * V(*self.TP) if f_mol else 0.
+    if f_mol:
+        TP, V = self.cache
+        if not TP.in_equilibrium(self.TP):
+            phase = self.phase or self.phase_container.phase
+            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
+            self.cache = (self.TP.copy(), V)
+        return f_mol * V
+    else:
+        return 0.
     
 @VolumetricFlowProperty.setter
 def VolumetricFlowProperty(self, value):
     if value:
-        phase = self.phase or self.phase_container.phase
-        V = getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V
-        self.mol[self.index] = value / V(*self.TP) / 1000.
+        TP, V = self.cache
+        if not TP.in_equilibrium(self.TP):
+            phase = self.phase or self.phase_container.phase
+            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
+            self.cache = (self.TP.copy(), V)
+        self.mol[self.index] = value / V
     else:
         self.mol[self.index] = 0.
 
@@ -1161,7 +1173,7 @@ def by_volume(self, TP):
         vol = np.zeros_like(mol, dtype=object)
         for i, chem in enumerate(chemicals):
             vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V,
-                                            TP, None, self._phase)
+                                            TP, None, self._phase, TP_V)
         self._data_cache['vol', TP] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
                                                       self._phase, chemicals,
@@ -1189,7 +1201,8 @@ def by_volume(self, TP):
                 index = i, j
                 phase_name = phase_names[phase]
                 vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
-                                                    mol, index, chem.V, TP, phase)
+                                                    mol, index, chem.V, TP, phase,
+                                                    TP_V)
         self._data_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(property_array(vol),
                                               phases, chemicals,
