@@ -1120,7 +1120,7 @@ class CompiledChemicals(Chemicals):
         [0, 2]
         
         """
-        return [i for i, j in enumerate(self._has_vle & nonzeros) if j]
+        return np.array([i for i, j in enumerate(self._has_vle & nonzeros) if j], int)
     
     def get_lle_indices(self, nonzeros):
         """
@@ -1136,7 +1136,7 @@ class CompiledChemicals(Chemicals):
         [0, 2]
         
         """
-        return [i for i, j in enumerate(self._has_lle & nonzeros) if j]
+        return np.array([i for i, j in enumerate(self._has_lle & nonzeros) if j], int)
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"

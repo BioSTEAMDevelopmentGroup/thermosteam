@@ -70,6 +70,11 @@ def xV_iter_3n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
     xV[:-1] = z/(1. + V * (Ks - 1.))
     return xV
 
+@njit(cache=True)
+def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
+    vapor_mol[index] = vapor_data
+    liquid_mol[index] = total_data - vapor_data
+
 class VLE(Equilibrium, phases='lg'):
     """
     Create a VLE object that performs vapor-liquid equilibrium when called.
@@ -971,8 +976,7 @@ class VLE(Equilibrium, phases='lg'):
         S_hat_bubble = self._S_hat_err_at_T(T_bubble, 0.)
         if S_hat_bubble > S_hat:
             def f(V):
-                vapor_mol[index] = V * mol
-                liquid_mol[index] = (1 - V) * mol
+                set_flows(vapor_mol, liquid_mol, index, V * mol, mol)
                 return self.mixture.xS(self._phase_data, T_bubble, P)/self._F_mass - S_hat
             self._T = thermal_condition.T = T_bubble
             flx.IQ_interpolation(f,
@@ -984,8 +988,7 @@ class VLE(Equilibrium, phases='lg'):
         S_hat_dew = self._S_hat_err_at_T(T_dew, 0.)
         if S_hat_dew < S_hat:
             def f(V):
-                vapor_mol[index] = V * mol
-                liquid_mol[index] = (1 - V) * mol
+                set_flows(vapor_mol, liquid_mol, index, V * mol, mol)
                 return self.mixture.xS(self._phase_data, T_dew, P)/self._F_mass - S_hat
             self._T = thermal_condition.T = T_dew
             flx.IQ_interpolation(f,
@@ -1105,8 +1108,7 @@ class VLE(Equilibrium, phases='lg'):
         H_hat_bubble = self._H_hat_err_at_T(T_bubble, 0.)
         if H_hat_bubble > H_hat:
             def f(V):
-                vapor_mol[index] = V * mol
-                liquid_mol[index] = (1 - V) * mol
+                set_flows(vapor_mol, liquid_mol, index, V * mol, mol)
                 return self.mixture.xH(self._phase_data, T_bubble, P)/self._F_mass - H_hat
             self._T = thermal_condition.T = T_bubble
             flx.IQ_interpolation(f,
@@ -1118,8 +1120,7 @@ class VLE(Equilibrium, phases='lg'):
         H_hat_dew = self._H_hat_err_at_T(T_dew, 0.)
         if H_hat_dew < H_hat:
             def f(V):
-                vapor_mol[index] = V * mol
-                liquid_mol[index] = (1 - V) * mol
+                set_flows(vapor_mol, liquid_mol, index, V * mol, mol)
                 return self.mixture.xH(self._phase_data, T_dew, P)/self._F_mass - H_hat
             self._T = thermal_condition.T = T_dew
             flx.IQ_interpolation(f,
@@ -1204,26 +1205,26 @@ class VLE(Equilibrium, phases='lg'):
             self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
     def _H_hat_err_at_T(self, T, H_hat):
-        self._vapor_mol[self._index] = self._solve_v(T, self._P)
-        self._liquid_mol[self._index] = self._mol_vle - self._v
+        set_flows(self._vapor_mol, self._liquid_mol, self._index, 
+                  self._solve_v(T, self._P), self._mol_vle)
         self._H_hat = self.mixture.xH(self._phase_data, T, self._P)/self._F_mass
         return self._H_hat - H_hat
     
     def _H_hat_err_at_P(self, P, H_hat):
-        self._vapor_mol[self._index] = self._solve_v(self._T , P)
-        self._liquid_mol[self._index] = self._mol_vle - self._v
+        set_flows(self._vapor_mol, self._liquid_mol, self._index,
+                  self._solve_v(self._T, P), self._mol_vle)
         self._H_hat = self.mixture.xH(self._phase_data, self._T, P)/self._F_mass
         return self._H_hat - H_hat
     
     def _S_hat_err_at_T(self, T, S_hat):
-        self._vapor_mol[self._index] = self._solve_v(T, self._P)
-        self._liquid_mol[self._index] = self._mol_vle - self._v
+        set_flows(self._vapor_mol, self._liquid_mol, self._index,
+                  self._solve_v(T, self._P), self._mol_vle)
         self._S_hat = self.mixture.xS(self._phase_data, T, self._P)/self._F_mass
         return self._S_hat - S_hat
     
     def _S_hat_err_at_P(self, P, S_hat):
-        self._vapor_mol[self._index] = self._solve_v(self._T , P)
-        self._liquid_mol[self._index] = self._mol_vle - self._v
+        set_flows(self._vapor_mol, self._liquid_mol, self._index,
+                  self._solve_v(self._T, P), self._mol_vle)
         self._S_hat = self.mixture.xS(self._phase_data, self._T, P)/self._F_mass
         return self._S_hat - S_hat
     

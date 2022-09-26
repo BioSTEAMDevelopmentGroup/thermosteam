@@ -45,8 +45,7 @@ phase_names = {
 
 @njit(cache=True)
 def sum_chemical_index(data, other, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[left_index[i]] += other[right_index[i]]
+    data[left_index] += other[right_index]
 
 @njit(cache=True)
 def sum_material_index(data, other, left_index, right_index):
@@ -60,13 +59,11 @@ def sum_phase_material_index(data, other, phase_index, left_index, right_index):
     
 @njit(cache=True)
 def copy_chemical_index(data, other, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[left_index[i]] = other[right_index[i]]
+    data[left_index] = other[right_index]
 
 @njit(cache=True)
 def copy_material_index(data, other, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[:, left_index[i]] = other[:, right_index[i]]
+    data[:, left_index] = other[:, right_index]
 
 @njit(cache=True)
 def copy_phase_material_index(data, other, phase_index, left_index, right_index):
