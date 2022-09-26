@@ -49,13 +49,7 @@ def sum_chemical_index(data, other, left_index, right_index):
 
 @njit(cache=True)
 def sum_material_index(data, other, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[:, left_index[i]] += other[:, right_index[i]]
-
-@njit(cache=True)
-def sum_phase_material_index(data, other, phase_index, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[phase_index, left_index[i]] += other[right_index[i]]
+    data[:, left_index] += other[:, right_index]
     
 @njit(cache=True)
 def copy_chemical_index(data, other, left_index, right_index):
@@ -64,12 +58,6 @@ def copy_chemical_index(data, other, left_index, right_index):
 @njit(cache=True)
 def copy_material_index(data, other, left_index, right_index):
     data[:, left_index] = other[:, right_index]
-
-@njit(cache=True)
-def copy_phase_material_index(data, other, phase_index, left_index, right_index):
-    N = left_index.size
-    for i in range(N): data[phase_index, left_index[i]] = other[right_index[i]]
-
 
 # %% Utilities
 
@@ -636,7 +624,7 @@ class MaterialIndexer(Indexer):
                 self._data[phase_index, :] = other_data
             else:
                 other_data = other._data
-                copy_phase_material_index(self._data, other_data, phase_index, *index_overlap(self._chemicals, other._chemicals, other_data))
+                copy_chemical_index(self._data[phase_index], other_data, *index_overlap(self._chemicals, other._chemicals, other_data))
         else:
             if self.chemicals is other.chemicals:
                 self._data[:] = other._data
@@ -682,7 +670,7 @@ class MaterialIndexer(Indexer):
                             for phase, idata in zip(i.phases, idata):
                                 if not idata.any(): continue
                                 op_data.append(
-                                    (idata, get_phase_index(phase), *index_overlap(chemicals, ichemicals, idata))
+                                    (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
                                 )
                 elif isa(i, ChemicalIndexer):
                     if idata.base is data: idata = idata.copy()
@@ -692,7 +680,7 @@ class MaterialIndexer(Indexer):
                         )
                     else:
                         op_data.append(
-                            (idata, get_phase_index(phase), *index_overlap(chemicals, ichemicals, idata))
+                            (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
                         )
                 else:
                     raise ValueError("can only mix from chemical or material indexers")
@@ -703,7 +691,7 @@ class MaterialIndexer(Indexer):
         for i in spsc_data: data[:] += i
         for args in sp_data: sum_material_index(data, *args)
         for idata, left_index in opsc_data: data[left_index, :] += idata
-        for args in op_data: sum_phase_material_index(data, *args)
+        for phase_index, args in op_data: sum_chemical_index(data[phase_index], *args)
     
     def separate_out(self, other):
         isa = isinstance

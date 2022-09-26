@@ -710,9 +710,7 @@ class VLE(Equilibrium, phases='lg'):
         dP = (P_bubble - P_dew)
         V = (P - P_dew) / dP if dP > 1. else 0.5
         self._refresh_v(V, y_bubble)
-        v = self._solve_v(T, P)
-        self._vapor_mol[self._index] = v
-        self._liquid_mol[self._index] = self._mol_vle - v
+        set_flows(self._vapor_mol, self._liquid_mol, self._index, self._solve_v(T, P), self._mol_vle)
         
     def set_TV(self, T, V):
         self._setup()
@@ -766,8 +764,7 @@ class VLE(Equilibrium, phases='lg'):
                     v = self._v
             
             self._P = thermal_condition.P = P
-            self._vapor_mol[self._index] = v
-            self._liquid_mol[self._index] = mol - v
+            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol)
             self._H_hat = self.mixture.xH(self._phase_data, T, P) / self._F_mass
 
     def set_TH(self, T, H):
@@ -920,8 +917,7 @@ class VLE(Equilibrium, phases='lg'):
                 
                     v = self._v
             self._T = thermal_condition.T = T
-            vapor_mol[index] = v
-            liquid_mol[index] = mol - v
+            set_flows(vapor_mol, liquid_mol, index, v, mol)
             self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
     
     def set_PS(self, P, S, stacklevel=0):
