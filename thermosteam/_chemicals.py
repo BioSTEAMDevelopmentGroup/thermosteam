@@ -12,6 +12,7 @@ from .exceptions import UndefinedChemicalAlias
 from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
 from collections.abc import Sequence
+from numbers import Number
 import thermosteam as tmo
 import numpy as np
 
@@ -672,7 +673,8 @@ class CompiledChemicals(Chemicals):
         
         """
         k = self._index[ID]
-        return [i for i, j in self._index.items() if j==k] 
+        isa = isinstance
+        return [i for i, j in self._index.items() if isa(j, Number) and (j==k)]
 
     get_synonyms = get_aliases
 
