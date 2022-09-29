@@ -16,6 +16,48 @@ except: pass
 
 __all__ = ('settings', 'ProcessSettings')
 
+# %% Excecutables for dynamic programing of new stream utilities
+
+get_unit_utility_flow_executable = '''
+def {flowmethname}(self):
+    """Return the {docname} flow rate [kg/hr]."""
+    flow = 0.
+    if {name} in self._inlet_utility_indices:
+        flow += self._ins[self._inlet_utility_indices[{name}]].F_mass
+    if {name} in self._outlet_utility_indices:
+        flow += self._outs[self._outlet_utility_indices[{name}]].F_mass
+    return flow
+
+bst.Unit.{flowmethname} = {flowmethname}
+'''
+
+get_unit_utility_cost_executable = '''
+def {costmethname}(self):
+    """Return the {docname} cost [USD/hr]."""
+    return bst.stream_utility_prices[name] * self.{flowmethname}()
+
+bst.Unit.{costmethname} = {costmethname}
+'''
+
+get_system_utility_flow_executable = '''
+def {flowmethname}(self):
+    """Return the {docname} flow rate [kg/yr]."""
+    return sum([i.get_utility_flow({name}) for i in self.cost_units]) * self.operating_hours
+
+bst.System.{flowmethname} = {flowmethname}
+'''
+
+get_system_utility_cost_executable = '''
+def {costmethname}(self):
+    """Return the {docname} cost [USD/yr]."""
+    return bst.stream_utility_prices[name] * self.{flowmethname}()
+
+bst.System.{costmethname} = {costmethname}
+'''
+
+
+# %%
+
 def raise_no_thermo_error():
     raise RuntimeError("no available 'Thermo' object; "
                        "use settings.set_thermo to set the default thermo object")
@@ -23,6 +65,8 @@ def raise_no_thermo_error():
 def raise_no_flashpkg_error():
     raise RuntimeError("no available 'FlashPackage' object; "
                        "use settings.set_flashpkg to set the default flash package object")
+    
+# %%
     
 class ProcessSettings:
     """
@@ -153,6 +197,37 @@ class ProcessSettings:
     def electricity_price(self, electricity_price):
         """Electricity price [USD/kWhr]"""
         bst.PowerUtility.price = electricity_price
+    
+    def register_utility(self, name, price):
+        """Register new stream utility in BioSTEAM given the name and the price 
+        [USD/kg]."""
+        if name not in bst.stream_utility_prices:
+            docname = name.lower()
+            methname = docname.replace(' ', '_')
+            flowmethname = f"get_{methname}_flow"
+            costmethname = f"get_{methname}_cost"
+            repname = repr(name)
+            globs = {'bst': bst}
+            flow_kwargs = dict(
+                flowmethname=flowmethname,
+                docname=docname,
+                name=repname,
+            )
+            cost_kwargs = dict(
+                costmethname=costmethname,
+                flowmethname=flowmethname,
+                docname=docname,
+                name=repname,
+            )
+            
+            # Unit
+            exec(get_unit_utility_flow_executable.format(**flow_kwargs), globs)
+            exec(get_unit_utility_cost_executable.format(**cost_kwargs), globs)
+            
+            # System
+            exec(get_system_utility_flow_executable.format(**flow_kwargs), globs)
+            exec(get_system_utility_flow_executable.format(**cost_kwargs), globs)
+        bst.stream_utility_prices[name] = price
     
     def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
             mixture: Optional=None,
