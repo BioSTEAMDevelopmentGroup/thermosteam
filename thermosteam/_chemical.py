@@ -552,8 +552,9 @@ class Chemical:
         if Psat: self._Psat.add_method(Psat)
         if Hvap: self._Hvap.add_method(Hvap)
         if phase:
-            if Cp: self._Cn.add_method(Cp * self._MW)
-            if rho: self._V.add_method(fn.rho_to_V(rho, self._MW))
+            MW = self._MW
+            if Cp: self._Cn.add_method(Cp if MW is None else Cp * MW)
+            if rho: self._V.add_method(fn.rho_to_V(rho, 1.) if MW is None else fn.rho_to_V(rho, MW))
         if default: self.default()
         if cache:
             chemical_cache[ID] = self

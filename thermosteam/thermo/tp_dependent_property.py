@@ -74,7 +74,8 @@ for cls in subs:
     try: cls.ranked_methods_P.remove(COOLPROP)
     except: pass
 
-VolumeLiquid.property_max = 1
+VolumeLiquid.property_max = 1e6
+VolumeSolid.property_max = 1e6
 
 for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
     methods.remove(EOS)
