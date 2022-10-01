@@ -1187,7 +1187,7 @@ def by_volume(self, TP):
                 phase_name = phase_names[phase]
                 vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
                                                     mol, index, chem.V, TP, phase,
-                                                    TP_V)
+                                                    None, TP_V)
         self._data_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(property_array(vol),
                                               phases, chemicals,
