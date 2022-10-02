@@ -87,7 +87,10 @@ def register_alias(self, alias):
     self.registry.register_alias_safely(alias, self) 
     
 def __repr__(self):
-    return f"<{type(self).__name__}: {self.ID}>"
+    if self.ID:
+        return f'<{type(self).__name__}: {self.ID}>'
+    else:
+        return f'<{type(self).__name__}>'
 
 def __str__(self):
     return self.ID or "."
