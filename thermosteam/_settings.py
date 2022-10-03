@@ -226,7 +226,7 @@ class ProcessSettings:
             
             # System
             exec(get_system_utility_flow_executable.format(**flow_kwargs), globs)
-            exec(get_system_utility_flow_executable.format(**cost_kwargs), globs)
+            exec(get_system_utility_cost_executable.format(**cost_kwargs), globs)
         bst.stream_utility_prices[name] = price
     
     def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
