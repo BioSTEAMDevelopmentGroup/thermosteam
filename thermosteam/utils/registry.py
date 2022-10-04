@@ -163,13 +163,13 @@ class Registry: # pragma: no cover
     
     def get_context_level(self, level=None):
         if level is None:
-            objs = list(self)
+            objs = list(self.data.values())
         else:
             context_levels = self.context_levels
             N_levels = len(context_levels)
             if (level >= 0 and level >= N_levels
                 or level < 0 and -level > N_levels):
-                objs = list(self)
+                objs = list(self.data.values())
             else:
                 objs = context_levels[level]
         return objs
