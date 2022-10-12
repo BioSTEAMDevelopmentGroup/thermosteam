@@ -11,7 +11,7 @@ import numpy as np
 import flexsolve as flx
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
-from ..exceptions import InfeasibleRegion, DomainError
+from ..exceptions import InfeasibleRegion
 from .. import functional as fn
 from ..utils import fill_like, Cache
 from .._settings import settings
@@ -211,7 +211,7 @@ class BubblePoint:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
                                       checkiter=False)
-            except (InfeasibleRegion, DomainError):
+            except RuntimeError:
                 Tmin = self.Tmin; Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
@@ -268,7 +268,7 @@ class BubblePoint:
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
-            except (InfeasibleRegion, DomainError):
+            except RuntimeError:
                 Pmin = self.Pmin; Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),

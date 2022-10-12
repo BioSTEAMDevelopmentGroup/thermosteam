@@ -11,7 +11,7 @@ import numpy as np
 import flexsolve as flx
 from numba import njit
 from .. import functional as fn
-from ..exceptions import DomainError, InfeasibleRegion
+from ..exceptions import InfeasibleRegion
 from ..utils import fill_like, Cache
 from .._settings import settings
 from .domain import vle_domain
@@ -20,7 +20,7 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-# @njit(cache=True)
+@njit(cache=True)
 def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
@@ -228,7 +228,7 @@ class DewPoint:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
                                       checkiter=False)
-            except (InfeasibleRegion, DomainError):
+            except RuntimeError:
                 Tmin = self.Tmin
                 Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
@@ -284,7 +284,7 @@ class DewPoint:
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,
                                       checkiter=False)
-            except (InfeasibleRegion, DomainError):
+            except RuntimeError:
                 Pmin = self.Pmin
                 Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax, 

@@ -14,7 +14,6 @@ __all__ = ('UndefinedChemicalAlias',
            'UndefinedPhase',
            'DimensionError',
            'InfeasibleRegion',
-           'DomainError',
            'InvalidMethod',
            'NoEquilibrium',
            'message_with_object_stamp',
@@ -45,12 +44,6 @@ class NoEquilibrium(Exception):
 
 class DimensionError(ValueError):
     """ValueError regarding wrong dimensions."""
-
-class DomainError(ValueError):
-    """ValueError regarding an attempt to evaluate a model out of its domain."""
-    def __init__(self, msg, **data):
-        super().__init__(msg)
-        self.__dict__.update(data)
 
 class InvalidMethod(ValueError):
     """ValueError regarding an attempt to evaluate an invalid method."""

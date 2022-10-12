@@ -146,7 +146,7 @@ class Phase:
         self._phase = phase
     
     def copy(self):
-        return self.__class__(self.phase)
+        return Phase(self.phase)
     __copy__ = copy
     
     def __repr__(self):
