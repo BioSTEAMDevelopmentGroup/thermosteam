@@ -48,6 +48,16 @@ def test_reaction():
                              phases='gl')
     with pytest.raises(tmo.exceptions.UndefinedChemical): reaction(stream)
     
+    # Test errors with chemical groups
+    tmo.settings.chemicals.define_group('CriticalGases', ['H2', 'O2'])
+    with pytest.raises(ValueError): 
+        reaction = tmo.Reaction('H2O -> CriticalGases', reactant='H2O',
+                                correct_atomic_balance=True, X=0.7)
+        
+    with pytest.raises(tmo.exceptions.UndefinedChemical): 
+        reaction = tmo.Reaction('H2O -> UnknownChemical', reactant='H2O',
+                                correct_atomic_balance=True, X=0.7)
+    
 def test_reaction_enthalpy_balance():
     # Combustion; ensure heat of gas phase reaction without sensible heats is 
     # the lower heating value

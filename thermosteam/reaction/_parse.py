@@ -7,6 +7,7 @@
 # for license details.
 
 import numpy as np
+from ..exceptions import UndefinedChemical
 
 __all__ = ('get_stoichiometric_array',
            'get_stoichiometric_string',
@@ -39,7 +40,15 @@ def get_stoichiometric_string(reaction, chemicals):
 def dct2arr(dct, chemicals):
     arr = np.zeros(chemicals.size)
     chemical_index = chemicals._index
+    chemical_groups = chemicals.chemical_groups
     for ID, coefficient in dct.items():
+        if ID in chemical_groups: 
+            raise ValueError(
+                f"'{ID}' is a chemical group; chemical groups cannot be used "
+                 "in reaction definition"
+            )
+        if ID not in chemical_index:
+            raise UndefinedChemical(ID)
         arr[chemical_index[ID]] = coefficient
     return arr 
 

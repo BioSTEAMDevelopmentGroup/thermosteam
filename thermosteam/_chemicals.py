@@ -483,6 +483,11 @@ class CompiledChemicals(Chemicals):
         self._group_wt_compositions[name] = composition_wt / composition_wt.sum()
         self._group_mol_compositions[name] = composition_mol / composition_mol.sum()
     
+    @property
+    def chemical_groups(self) -> frozenset[str]:
+        """All defined chemical groups."""
+        return frozenset(self._group_mol_compositions)
+    
     def refresh_constants(self):
         """
         Refresh constant arrays according to their chemical values,

@@ -62,7 +62,13 @@ def dct2arr(dct, phases, chemicals):
     phase_index = PhaseIndexer(phases)
     arr = np.zeros([len(phases), chemicals.size])
     chemical_index = chemicals.index
+    chemical_groups = chemicals.chemical_groups
     for ID, (phase, coefficient) in dct.items():
+        if ID in chemical_groups: 
+            raise ValueError(
+                f"'{ID}' is a chemical group; chemical groups cannot be used "
+                 "in reaction definition"
+            )
         arr[phase_index(phase), chemical_index(ID)] = coefficient
     return arr 
 
