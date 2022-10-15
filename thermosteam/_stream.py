@@ -1105,6 +1105,9 @@ class Stream:
     def Hnet(self) -> float:
         """Total enthalpy flow rate (including heats of formation) [kJ/hr]."""
         return self.H + self.Hf
+    @Hnet.setter
+    def Hnet(self, Hnet):
+        self.H = Hnet - self.Hf
     
     @property
     def Hf(self) -> float:
