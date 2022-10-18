@@ -9,16 +9,31 @@
 """
 from .utils import colors
 
-__all__ = ('UndefinedChemicalAlias',
-           'UndefinedChemical',
-           'UndefinedPhase',
-           'DimensionError',
-           'InfeasibleRegion',
-           'InvalidMethod',
-           'NoEquilibrium',
-           'message_with_object_stamp',
-           'try_method_with_object_stamp',
-           'raise_error_with_object_stamp')
+__all__ = (
+    'StampedKeyError',
+    'UndefinedChemicalAlias',
+    'UndefinedChemical',
+    'UndefinedPhase',
+    'DimensionError',
+    'InfeasibleRegion',
+    'InvalidMethod',
+    'NoEquilibrium',
+    'message_with_object_stamp',
+    'try_method_with_object_stamp',
+    'raise_error_with_object_stamp'
+)
+
+class StampedKeyError(KeyError):
+    def __init__(self, msg):
+        super().__init__(msg)
+    
+    def __repr__(self):
+        return f"KeyError({self.args[0]})"
+    
+    def __str__(self):
+        return self.args[0]
+
+StampedKeyError.__name__ = 'KeyError'
 
 class InfeasibleRegion(RuntimeError):
     """Runtime error regarding infeasible processes."""
@@ -67,7 +82,9 @@ def raise_error_with_object_stamp(object, error):
 def try_method_with_object_stamp(object, method, args=()):
     try:
         return method(*args)
+    except StampedKeyError as error:
+        raise StampedKeyError(message_with_object_stamp(object, error.args[0]))
     except KeyError as error:
-        raise error
+        raise StampedKeyError(message_with_object_stamp(object, repr(error.args[0])))
     except Exception as error:
         raise_error_with_object_stamp(object, error)
