@@ -11,6 +11,14 @@ from __future__ import annotations
 import thermosteam as tmo
 from typing import Optional, Iterable
 from .units_of_measure import AbsoluteUnitsOfMeasure
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .equilibrium import (
+        ActivityCoefficients,
+        FugacityCoefficients,
+        PoyintingCorrectionFactors,
+    )
+    from .mixture import Mixture
 try: import biosteam as bst
 except: pass
 
@@ -230,10 +238,10 @@ class ProcessSettings:
         bst.stream_utility_prices[name] = price
     
     def set_thermo(self, thermo: tmo.Thermo|Iterable[str|tmo.Chemical], 
-            mixture: Optional=None,
-            Gamma: Optional=None,
-            Phi: Optional=None,
-            PCF: Optional=None,
+            mixture: Optional[Mixture]=None,
+            Gamma: Optional[type[ActivityCoefficients]]=None,
+            Phi: Optional[type[FugacityCoefficients]]=None,
+            PCF: Optional[type[PoyintingCorrectionFactors]]=None,
             cache: Optional[bool]=None,
             skip_checks: Optional[bool]=False, 
             ideal: Optional[bool]=False,
@@ -247,20 +255,19 @@ class ProcessSettings:
         ----------
         thermo : 
             Thermodynamic property package.
+        Gamma :
+            Class for computing activity coefficients.
+        Phi : 
+            Class for computing fugacity coefficients.
+        PCF : 
+            Class for computing poynting correction factors.
         cache : 
-            Wether or not to use cached chemicals.
+            Whether or not to use cached chemicals.
         skip_checks : 
             Whether to skip checks for missing or invalid properties.
         ideal :
             Whether to use ideal phase equilibrium and mixture property 
             algorithms.
-        Gamma : :class:`~thermosteam.equilibrium.activity_coefficients.ActivityCoefficients` subclass, optional
-            Class for computing activity coefficients.
-        Phi : :class:`~thermosteam.equilibrium.fugacity_coefficients.FugacityCoefficients` subclass, optional
-            Class for computing fugacity coefficients.
-        PCF : :class:`~thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors` subclass, optional
-            Class for computing poynting correction factors.
-            
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, mixture=mixture, cache=cache, skip_checks=skip_checks,
