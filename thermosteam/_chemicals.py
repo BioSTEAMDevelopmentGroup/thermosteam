@@ -557,8 +557,10 @@ class CompiledChemicals(Chemicals):
         repeated_names = set()
         names = set()
         all_names_list = []
+        isa = isinstance
         for i in chemicals:
             if not i.iupac_name: i.iupac_name = ()
+            elif isa(i.iupac_name, str): i.iupac_name = (i.iupac_name,)
             all_names = set([*i.iupac_name, *i.aliases, i.common_name, i.formula])
             all_names_list.append(all_names)
             for name in all_names:

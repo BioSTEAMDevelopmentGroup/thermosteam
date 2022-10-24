@@ -268,6 +268,7 @@ class ProcessSettings:
         ideal :
             Whether to use ideal phase equilibrium and mixture property 
             algorithms.
+        
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, mixture=mixture, cache=cache, skip_checks=skip_checks,
