@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
-# Copyright (C) 2020-2021, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# Copyright (C) 2020-2023, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
@@ -343,21 +343,22 @@ class Stream:
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
-    def rescale(self, ratio):
+    def scale(self, scale):
         """
-        Rescale flow rate by given ratio.
+        Multiply flow rate by given scale.
         
         Examples
         --------
         >>> import thermosteam as tmo
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
         >>> s1 = tmo.Stream('s1', Water=1)
-        >>> s1.rescale(100)
+        >>> s1.scale(100)
         >>> s1.F_mol
         100.0
         
         """
-        self._imol._data[:] *= ratio
+        self._imol._data[:] *= scale
+    rescale = scale
 
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
         """
