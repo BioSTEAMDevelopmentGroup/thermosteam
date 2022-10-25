@@ -1638,8 +1638,18 @@ class Stream:
         Stream: s1
          phase: 'l', T: 300 K, P: 101325 Pa
          flow (kg/hr): Water  2
+        
         """
         self._thermal_condition.copy_like(other._thermal_condition)
+    
+    def copy_phase(self, other):
+        """Copy phase from another stream."""
+        try:
+            self._imol._phase._phase = other._imol._phase._phase
+        except AttributeError as e:
+            if isinstance(other, tmo.MultiStream): 
+                raise ValueError('cannot copy phase from stream with multiple phases')
+            raise e from None
     
     def copy_flow(self, 
                   other: Stream, 
