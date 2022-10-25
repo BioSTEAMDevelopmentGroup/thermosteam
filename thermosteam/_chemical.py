@@ -89,7 +89,7 @@ from thermo import (
 
 __all__ = ('Chemical',)
 
-# %% Temporarilly here
+# %% Temporarily here
 
 # TODO: Make a data table for new additions (not just for common sugars).
 # Source: PubChem
@@ -311,7 +311,7 @@ class Chemical:
     sigma : float or function(T), optional
         Surface tension model [N/m] as a function of temperature [K].
     epsilon : float or function(T), optional
-        Relative permitivity model [-] as a function of temperature [K].
+        Relative permittivity model [-] as a function of temperature [K].
     Psat : float or function(T), optional
         Vapor pressure model [N/m] as a function of temperature [K].
     Hvap : float or function(T), optional
@@ -475,7 +475,7 @@ class Chemical:
     sigma(T) : 
         Surface tension [N/m].
     epsilon(T) : 
-        Relative permitivity [-]
+        Relative permittivity [-]
     S(phase, T, P) : 
         Entropy [J/mol].
     H(phase, T) : 
@@ -721,7 +721,7 @@ class Chemical:
 
     @property
     def charge(self):
-        """Charge of chemical as described in the chemcial formula."""
+        """Charge of chemical as described in the chemical formula."""
         return charge_from_formula(self.formula)
 
     def copy(self, ID, CAS=None, **data):
@@ -930,7 +930,7 @@ class Chemical:
         return self._iupac_name
     @iupac_name.setter
     def iupac_name(self, iupac_name):
-        self._iupac_name = str(iupac_name)
+        self._iupac_name = str(iupac_name) if iupac_name else ()
     
     @property
     def pubchemid(self):
@@ -1067,7 +1067,7 @@ class Chemical:
         
     @property
     def epsilon(self): 
-        """Relative permitivity [-]."""
+        """Relative permittivity [-]."""
         return self._epsilon
     @epsilon.setter
     def epsilon(self, value):
@@ -1192,7 +1192,7 @@ class Chemical:
     
     @property
     def omega(self):
-        """Accentric factor [-]."""
+        """Acentric factor [-]."""
         return self._omega
     @omega.setter
     def omega(self, omega):
@@ -1462,7 +1462,7 @@ class Chemical:
         self._phase_ref = phase_ref
 
     def reset_combustion_data(self, method="Stoichiometry"):
-        """Reset combustion data (LHV, HHV, and combution attributes)
+        """Reset combustion data (LHV, HHV, and combustion attributes)
         based on the molecular formula and the heat of formation."""
         cd = combustion_data(self.atoms, Hf=self._Hf, MW=self._MW, method=method)
         if not self._MW: self._MW = cd.MW
