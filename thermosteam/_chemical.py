@@ -926,11 +926,14 @@ class Chemical:
     
     @property
     def iupac_name(self):
-        """[str] Standard name as defined by IUPAC."""
+        """[tuple[str]] Standard names as defined by IUPAC."""
         return self._iupac_name
     @iupac_name.setter
     def iupac_name(self, iupac_name):
-        self._iupac_name = str(iupac_name) if iupac_name else ()
+        if isinstance(iupac_name, str):
+            self._iupac_name = (iupac_name,)
+        else:
+            self._iupac_name = iupac_name
     
     @property
     def pubchemid(self):
