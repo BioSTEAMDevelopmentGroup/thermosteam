@@ -48,7 +48,7 @@ class Chemicals:
            * SMILES (prefix with 'SMILES=' to ensure smiles parsing)
            * CAS number
     cache : bool, optional
-        Wheather or not to use cached chemicals.
+        Whether or not to use cached chemicals.
     
     Examples
     --------
@@ -390,7 +390,7 @@ class CompiledChemicals(Chemicals):
         >>> chemicals.get_index(('Water', 'Alcohol'))
         [0, [1, 2]]
         
-        By defining a chemical group, you can conviniently use indexers
+        By defining a chemical group, you can conveniently use indexers
         to retrieve the total value of the group:
             
         >>> # Single phase stream case
@@ -560,7 +560,8 @@ class CompiledChemicals(Chemicals):
         isa = isinstance
         for i in chemicals:
             if not i.iupac_name: i.iupac_name = ()
-            elif isa(i.iupac_name, str): i.iupac_name = (i.iupac_name,)
+            elif isa(i.iupac_name, str):
+                i.iupac_name = (i.iupac_name,)
             all_names = set([*i.iupac_name, *i.aliases, i.common_name, i.formula])
             all_names_list.append(all_names)
             for name in all_names:
@@ -739,7 +740,7 @@ class CompiledChemicals(Chemicals):
     
     def ones(self):
         """
-        Return an array of ones with entries that correspond to the orded chemical IDs.
+        Return an array of ones with entries that correspond to the ordered chemical IDs.
         
         Examples
         --------
@@ -753,7 +754,7 @@ class CompiledChemicals(Chemicals):
     
     def kwarray(self, ID_data):
         """
-        Return an array with entries that correspond to the orded chemical IDs.
+        Return an array with entries that correspond to the ordered chemical IDs.
         
         Parameters
         ----------
@@ -970,7 +971,7 @@ class CompiledChemicals(Chemicals):
         Parameters
         ----------
         IDs : iterable
-              Chemical indentifiers.
+              Chemical identifiers.
 
         Examples
         --------
