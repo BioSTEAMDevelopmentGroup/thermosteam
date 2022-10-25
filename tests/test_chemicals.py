@@ -15,6 +15,6 @@ def test_aliases():
     chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol'], cache=True)
     chemicals.compile()
     chemicals.define_group('alcohols', ['Water', 'Ethanol'])
-    assert chemicals.get_aliases('H2O') == ['7732-18-5', 'Water', 'water', 'oxidane', 'H2O']
+    assert set(chemicals.get_aliases('H2O')) == set(['7732-18-5', 'Water', 'water', 'oxidane', 'H2O'])
     
     

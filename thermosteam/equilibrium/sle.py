@@ -183,7 +183,7 @@ class SLE(Equilibrium, phases='ls'):
                 self._index = index
                 thermo = self._thermo
                 self._gamma = thermo.Gamma(eq_chems)
-                self._solute_gamma_index = self._index.index(solute_index)
+                self._solute_gamma_index = np.where(self._index == solute_index)
         
     def __call__(self, solute, T=None, P=None, H=None, solubility=None):
         """

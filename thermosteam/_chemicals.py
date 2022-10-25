@@ -386,9 +386,9 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = tmo.CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'], composition=[0.5, 0.5])
         >>> chemicals.get_index('Alcohol')
-        [1, 2]
+        array([1, 2])
         >>> chemicals.get_index(('Water', 'Alcohol'))
-        [0, [1, 2]]
+        [0, array([1, 2])]
         
         By defining a chemical group, you can conveniently use indexers
         to retrieve the total value of the group:
@@ -1125,7 +1125,7 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
         >>> chemicals.get_vle_indices(data!=0)
-        [0, 2]
+        array([0, 2])
         
         """
         return np.array([i for i, j in enumerate(self._has_vle & nonzeros) if j], int)
@@ -1141,7 +1141,7 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
         >>> chemicals.get_lle_indices(data!=0)
-        [0, 2]
+        array([0, 2])
         
         """
         return np.array([i for i, j in enumerate(self._has_lle & nonzeros) if j], int)

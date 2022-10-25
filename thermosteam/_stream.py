@@ -1971,7 +1971,7 @@ class Stream:
                 if no_vapor and (data[1] == 0).all(): 
                     done[0] = True # No VLE
             return data.copy()
-        data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, convergenceiter=3) * total_flow
+        data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, checkconvergence=False, convergenceiter=10) * total_flow
 
     @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
