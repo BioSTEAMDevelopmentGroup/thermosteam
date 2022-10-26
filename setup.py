@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.30.0',
+    version='0.30.1',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst', encoding='utf-8').read(),
     author='Yoel Cortes-Pena',
@@ -55,7 +55,7 @@ setup(
             'units_of_measure.txt',
         ]
     },
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     platforms=['Windows', 'Mac', 'Linux'],
     author_email='yoelcortes@gmail.com',
     url='https://github.com/BioSTEAMDevelopmentGroup/thermosteam',
