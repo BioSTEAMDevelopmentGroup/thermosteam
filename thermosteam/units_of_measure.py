@@ -19,7 +19,6 @@ from .exceptions import DimensionError
 # %% Import unit registry
 
 from pint import UnitRegistry
-from pint.quantity import to_units_container
 import os
 
 # Set pint Unit Registry
@@ -108,35 +107,25 @@ def reformat_units(name):
     return f"{left} [{format_units(units)}]{right}"
 
 format_plot_units = format_units
-
-def get_dimensionality(units):
-    return ureg._get_dimensionality(to_units_container(units, ureg))
+get_dimensionality = ureg.get_dimensionality
 
 # %% Manage conversion factors
 
 class UnitsOfMeasure:
-    __slots__ = ('_units', '_units_container', '_dimensionality')
-    
-    @property
-    def units(self):
-        return self._units
-    
-    @property
-    def dimensionality(self):
-        return self._dimensionality
+    __slots__ = ('units', 'units_container', 'dimensionality')
     
     def __bool__(self):
-        return bool(self._units)
+        return bool(self.units)
     
     def __str__(self):
-        return self._units
+        return self.units
     
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self._units)})"
+        return f"{type(self).__name__}({repr(self.units)})"
 
 
 class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
-    __slots__ = ('_factor_cache',)
+    __slots__ = ('factor_cache',)
     _cache = {}
     
     def __new__(cls, units):
@@ -147,19 +136,19 @@ class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
             return cache[units]
         else:
             self = super().__new__(cls)
-            self._units = units
-            self._units_container = to_units_container(units, ureg)
-            self._dimensionality = get_dimensionality(self._units_container)
-            self._factor_cache = {}
+            self.units = units
+            self.units_container = ureg[units]
+            self.dimensionality = self.units_container.dimensionality
+            self.factor_cache = {}
             cache[units] = self
             return self
     
     def conversion_factor(self, to_units):
-        cache = self._factor_cache
+        cache = self.factor_cache
         if to_units in cache:
             factor = cache[to_units]
         else:
-            cache[to_units] = factor = ureg.convert(1., self._units_container, to_units)
+            cache[to_units] = factor = ureg.convert(1., self.units_container, to_units)
         return factor
     
     def convert(self, value, to_units):
@@ -181,20 +170,20 @@ class RelativeUnitsOfMeasure(UnitsOfMeasure):
             return cache[units]
         else:
             self = super().__new__(cls)
-            self._units = units
-            self._units_container = to_units_container(units, ureg)
-            self._dimensionality = get_dimensionality(self._units_container)
+            self.units = units
+            self.units_container = ureg.Unit(units)
+            self.dimensionality = self.units_container.dimensionality
             cache[units] = self
             return self
     
     def conversion_factor(self, to_units):
-        return ureg.convert(1., self._units_container, to_units)
+        return ureg.convert(1., self.units_container, to_units)
     
     def convert(self, value, to_units):
-        return ureg.convert(value, self._units_container, to_units)
+        return ureg.convert(value, self.units_container, to_units)
     
     def unconvert(self, value, from_units):
-        return ureg.convert(value, from_units, self._units_container)
+        return ureg.convert(value, from_units, self.units_container)
 
 
 # %% Manage display units
@@ -227,10 +216,10 @@ class DisplayUnits:
         list_keys = []
         for k, v in display_units.items():
             try: # Assume units is one string
-                dims = getattr(ureg, v).dimensionality
+                dims = ureg[v].dimensionality
             except:
                 try: # Assume units are a list of possible units
-                    dims = [getattr(ureg, i).dimensionality for i in v]
+                    dims = [ureg[i].dimensionality for i in v]
                     list_keys.append(k)
                 except: # Assume the user uses value as an option, and ignores units
                     dims = v
