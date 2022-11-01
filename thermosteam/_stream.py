@@ -1357,7 +1357,7 @@ class Stream:
             self._imol.separate_out(other._imol)
             if energy_balance: self.H = H_new
     
-    def mix_from(self, others, energy_balance=True, vle=False):
+    def mix_from(self, others, energy_balance=True, vle=False, Q=0.):
         """
         Mix all other streams into this one, ignoring its initial contents.
         
@@ -1410,33 +1410,39 @@ class Stream:
          flow: 0
         
         """
-        others = [i for i in others if i]
-        N_others = len(others)
-        if N_others == 0:
+        streams = []
+        isa = isinstance
+        for i in others:
+            if isa(i, Stream):
+                if not i.isempty(): streams.append(i)
+            else: 
+                Q += i.heat # Must be a heat or power object, assume power turns to heat
+        N_streams = len(streams)
+        if N_streams == 0:
             self.empty()
-        elif N_others == 1:
-            self.copy_like(others[0])
+        elif N_streams == 1:
+            self.copy_like(streams[0])
         else:
-            P = min([i.P for i in others])
+            P = min([i.P for i in streams])
             if vle:
-                phases = ''.join([i.phase for i in others])
+                phases = ''.join([i.phase for i in streams])
                 self.phases = tuple(set(phases))
-                self._imol.mix_from([i._imol for i in others])
+                self._imol.mix_from([i._imol for i in streams])
                 if energy_balance: 
-                    H = sum([i.H for i in others])
+                    H = sum([i.H for i in streams], Q)
                     self.vle(H=H, P=P)
                 else:
                     self.vle(T=self.T, P=P)
             else:
-                if energy_balance: H = sum([i.H for i in others])
-                self._imol.mix_from([i._imol for i in others])
+                if energy_balance: H = sum([i.H for i in streams], Q)
+                self._imol.mix_from([i._imol for i in streams])
                 if energy_balance and not self.isempty():
                     try:
                         self.H = H
                     except:
-                        phases = ''.join([i.phase for i in others])
+                        phases = ''.join([i.phase for i in streams])
                         self.phases = tuple(set(phases))
-                        self._imol.mix_from([i._imol for i in others])
+                        self._imol.mix_from([i._imol for i in streams])
                         self.H = H
                 
     def split_to(self, s1, s2, split, energy_balance=True):
