@@ -13,6 +13,7 @@ __all__ = ('registered', 'unregistered', 'registered_franchise')
 
 def unregistered(cls):
     cls._register = _pretend_to_register
+    cls.register_alias = _pretend_to_register
     return cls
 
 def registered(ticket_name):
@@ -45,7 +46,7 @@ def _take_ticket(cls):
 
 @classmethod
 def _take_unregistered_ticket(cls):
-    if cls.unregistered_ticket_number > 100:
+    if cls.unregistered_ticket_number > 1000:
        cls.unregistered_ticket_number = 1 
     else:
         cls.unregistered_ticket_number += 1

@@ -89,34 +89,37 @@ class Registry: # pragma: no cover
     
     def register_safely(self, ID, obj):
         """Register object safely, with checks and due warnings."""
-        check_valid_ID(ID)
-        data = self.data
-        ID_old = self._open_registration(ID, obj)
-        if ID in data:
-            other = data[ID]
-            if obj is not other and other not in self.safe_to_replace:
-                if self.AUTORENAME:
-                    try:
-                        base, num = ID.rsplit('_', 1)
-                        num = int(num)
-                    except:
-                        other.ID = ID + '_1'
+        if '.' in ID:
+            self.register(ID[1:] if ID[0] == '.' else ID, obj)
+        else:
+            check_valid_ID(ID)
+            data = self.data
+            ID_old = self._open_registration(ID, obj)
+            if ID in data:
+                other = data[ID]
+                if obj is not other and other not in self.safe_to_replace:
+                    if self.AUTORENAME:
+                        try:
+                            base, num = ID.rsplit('_', 1)
+                            num = int(num)
+                        except:
+                            other.ID = ID + '_1'
+                        else:
+                            other.ID = base + '_' + str(num + 1) 
+                        base, num = other.ID.rsplit('_', 1)
+                        ID = base + '_' + str(int(num) + 1)
+                    elif ID_old:
+                        warning = RuntimeWarning(
+                            f"upon renaming, {repr(obj)} replaced {repr(other)} "
+                             "in registry"
+                        )
+                        warn(warning, 4)
                     else:
-                        other.ID = base + '_' + str(num + 1) 
-                    base, num = other.ID.rsplit('_', 1)
-                    ID = base + '_' + str(int(num) + 1)
-                elif ID_old:
-                    warning = RuntimeWarning(
-                        f"upon renaming, {repr(obj)} replaced {repr(other)} "
-                         "in registry"
-                    )
-                    warn(warning, 4)
-                else:
-                    warning = RuntimeWarning(
-                        f"{repr(other)} has been replaced in registry"
-                    )
-                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
-        self._close_registration(ID, obj)
+                        warning = RuntimeWarning(
+                            f"{repr(other)} has been replaced in registry"
+                        )
+                        warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+            self._close_registration(ID, obj)
         
     def register(self, ID, obj):
         """Register object without warnings or checks."""
