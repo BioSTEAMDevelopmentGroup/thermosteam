@@ -122,7 +122,7 @@ class Indexer:
         self._data[:] = 0
     
     def isempty(self):
-        return (self._data == 0.).all()
+        return (self._data == 0.).all().__bool__()
     
     def copy(self):
         new = self._copy_without_data()
