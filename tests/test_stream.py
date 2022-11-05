@@ -11,6 +11,15 @@ import pytest
 import thermosteam as tmo
 from numpy.testing import assert_allclose
 
+def test_registration_bypass():
+    tmo.settings.set_thermo(['Water'], cache=True)
+    s = tmo.Stream('.s1', Water=1)
+    assert s.ID == 's1'
+    assert s not in s.registry
+    s = tmo.Stream('s.1', Water=1)
+    assert s.ID == 's.1'
+    assert s not in s.registry
+
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
@@ -339,6 +348,7 @@ def test_vle_critical_pure_component():
     
     
 if __name__ == '__main__':
+    test_registration_bypass()
     test_stream()
     test_multistream()
     test_mixing_balance()
