@@ -90,7 +90,10 @@ class Registry: # pragma: no cover
     def register_safely(self, ID, obj):
         """Register object safely, with checks and due warnings."""
         if '.' in ID:
-            self.register(ID[1:] if ID[0] == '.' else ID, obj)
+            data = self.data
+            ID_old = getattr(obj, '_ID', None)
+            if ID_old and data.get(ID_old) is obj: del data[ID_old]
+            obj._ID = ID[1:] if ID[0] == '.' else ID
         else:
             check_valid_ID(ID)
             data = self.data
