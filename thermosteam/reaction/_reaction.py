@@ -325,7 +325,7 @@ class Reaction:
         return self + rxn
     
     def __add__(self, rxn):
-        if rxn == 0 or not rxn.has_reaction(): return self.copy()
+        if rxn == 0 or rxn == None or not rxn.has_reaction(): return self.copy()
         rxn = self._math_compatible_reaction(rxn)
         stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
         rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._X_index])
