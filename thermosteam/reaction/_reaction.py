@@ -325,18 +325,18 @@ class Reaction:
         return self + rxn
     
     def __add__(self, rxn):
-        if rxn == 0 or rxn == None or not rxn.has_reaction(): return self.copy()
+        if rxn == 0 or rxn is None or not rxn.has_reaction(): return self.copy()
         rxn = self._math_compatible_reaction(rxn)
-        stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
-        rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._X_index])
+        stoichiometry = self._stoichiometry * self.X + rxn._stoichiometry * rxn.X
+        rxn._stoichiometry = stoichiometry / -(stoichiometry[rxn._X_index])
         rxn.X = self.X + rxn.X
         return rxn
     
     def __iadd__(self, rxn):
         if not rxn.has_reaction(): return self
         rxn = self._math_compatible_reaction(rxn, copy=False)
-        stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
-        self._stoichiometry = stoichiometry/-(stoichiometry[self._X_index])
+        stoichiometry = self._stoichiometry * self.X + rxn._stoichiometry * rxn.X
+        self._stoichiometry = stoichiometry / -(stoichiometry[self._X_index])
         self.X = self.X + rxn.X
         return self
     
