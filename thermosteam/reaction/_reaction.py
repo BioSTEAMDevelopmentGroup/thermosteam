@@ -261,6 +261,7 @@ class Reaction:
                 if check_atomic_balance:
                     self.check_atomic_balance()
         else:
+            self._phases = ()
             self._stoichiometry = np.zeros(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
     
