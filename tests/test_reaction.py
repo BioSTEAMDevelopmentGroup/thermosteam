@@ -27,6 +27,14 @@ def test_reaction():
     same_reaction = reaction.copy()
     reaction += same_reaction
     reaction -= same_reaction
+    reaction += 0 # Working with 0 allows for pythonic sum method
+    reaction -= 0
+    reaction += None # While this might not make much pythonic sense, it was voted by biosteam users for convinience
+    reaction -= None
+    reaction = reaction + 0 
+    reaction = reaction - 0
+    reaction = reaction + None 
+    reaction = reaction - None
     assert_allclose(reaction.X, same_reaction.X)
     reaction *= 2.
     reaction /= 2.
