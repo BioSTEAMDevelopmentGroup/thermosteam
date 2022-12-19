@@ -514,7 +514,8 @@ class Chemical:
                 sigma=None, kappa=None, epsilon=None, Psat=None,
                 Hvap=None, method=None, **data):
         chemical_cache = cls.chemical_cache
-        if (cache or cls.cache) and ID in chemical_cache:
+        if cache is None: cache = cls.cache
+        if cache and ID in chemical_cache:
             if any([search_ID, eos, phase_ref, CAS, default, phase, 
                     V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap,
                     data]):

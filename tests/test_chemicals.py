@@ -31,7 +31,7 @@ def test_chemical_cache():
     chemicals_c = create_ethanol_chemicals(('O2',))
     assert chemicals_a is not chemicals_c 
     assert chemicals_a.Water is chemicals_c.Water
-    assert chemicals_b.CO2 is not chemicals_c.O2
+    assert chemicals_b.O2 is chemicals_c.O2
     
     
 if __name__ == '__main__':
