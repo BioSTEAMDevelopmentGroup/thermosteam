@@ -558,7 +558,7 @@ class Chemical:
         if default: self.default()
         if cache:
             chemical_cache[ID] = self
-            if len(chemical_cache) > 100:
+            if len(chemical_cache) > 1000:
                 for i in chemical_cache:
                     del chemical_cache[i]
                     break
