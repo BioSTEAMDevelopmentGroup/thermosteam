@@ -1448,6 +1448,9 @@ class ReactionSystem:
     __call__ = Reaction.__call__
     show = Reaction.show
     
+    def __iter__(self):
+        return iter(self.reactions)
+    
     def __getitem__(self, index):
         return self._reactions[index]
     
