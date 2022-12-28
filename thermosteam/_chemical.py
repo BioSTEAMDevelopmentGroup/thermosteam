@@ -514,7 +514,8 @@ class Chemical:
                 sigma=None, kappa=None, epsilon=None, Psat=None,
                 Hvap=None, method=None, **data):
         chemical_cache = cls.chemical_cache
-        if (cache or cls.cache) and ID in chemical_cache:
+        if cache is None: cache = cls.cache
+        if cache and ID in chemical_cache:
             if any([search_ID, eos, phase_ref, CAS, default, phase, 
                     V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap,
                     data]):
@@ -558,7 +559,7 @@ class Chemical:
         if default: self.default()
         if cache:
             chemical_cache[ID] = self
-            if len(chemical_cache) > 100:
+            if len(chemical_cache) > 1000:
                 for i in chemical_cache:
                     del chemical_cache[i]
                     break

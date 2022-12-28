@@ -115,7 +115,7 @@ class Chemicals:
     UndefinedChemicalAlias: 'Butane'
     
     """
-    def __new__(cls, chemicals, cache=False):
+    def __new__(cls, chemicals, cache=None):
         self = super().__new__(cls)
         isa = isinstance
         setfield = setattr

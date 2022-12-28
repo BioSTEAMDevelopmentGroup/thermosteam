@@ -20,6 +20,12 @@ def test_registration_bypass():
     assert s.ID == 's.1'
     assert s not in s.registry
 
+def test_registration_alias():
+    tmo.settings.set_thermo(['Water'], cache=True)
+    s = tmo.Stream('s1', Water=1)
+    s.register_alias('stream_1')
+    assert s.registry.stream_1 is s.registry.s1 is s
+
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
@@ -349,6 +355,7 @@ def test_vle_critical_pure_component():
     
 if __name__ == '__main__':
     test_registration_bypass()
+    test_registration_alias()
     test_stream()
     test_multistream()
     test_mixing_balance()
