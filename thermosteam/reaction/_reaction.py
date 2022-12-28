@@ -433,12 +433,13 @@ class Reaction:
             MW_reactant = chemicals_tuple[reactant_index].MW
             MW_product = chemicals_tuple[product_index].MW
             if basis == 'wt':
-                product_yield *= MW_reactant / MW_product
+                product_yield *= MW_product / MW_reactant 
             elif basis == 'mol':
-                product_yield *= MW_product / MW_reactant
+                product_yield *= MW_reactant / MW_product 
             else:
                 raise ValueError("basis must be either 'wt' or 'mol'; "
                                 f"not {repr(basis)}")
+        assert product_yield <= 1.
         return product_yield
     
     def adiabatic_reaction(self, stream):
