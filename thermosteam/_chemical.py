@@ -519,7 +519,8 @@ class Chemical:
             if any([search_ID, eos, phase_ref, CAS, default, phase, 
                     V, Cn, mu, Cp, rho, sigma, kappa, epsilon, Psat, Hvap,
                     data]):
-                warn('cached chemical returned; additional parameters disregarded')
+                warn('cached chemical returned; additional parameters disregarded',
+                     RuntimeWarning)
             return chemical_cache[ID]
         ID = ID.strip()
         if not phase and len(ID) > 2 and ID[-2] == ',':
