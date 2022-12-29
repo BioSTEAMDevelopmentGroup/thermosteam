@@ -57,8 +57,8 @@ jobs:
         # pip install git+https://github.com/CalebBell/chemicals.git
         # pip install git+https://github.com/CalebBell/fluids.git
         # pip install git+https://github.com/CalebBell/thermo.git
-        pip install git+https://github.com/BioSTEAMDevelopmentGroup/biosteam.git
-        pip install git+https://github.com/BioSTEAMDevelopmentGroup/Bioindustrial-Park.git
+        pip install --no-cache-dir git+https://github.com/BioSTEAMDevelopmentGroup/biosteam.git
+        pip install --no-cache-dir git+https://github.com/BioSTEAMDevelopmentGroup/Bioindustrial-Park.git
         pip uninstall thermosteam -y
         pip install -e .
     - name: Test without numba
