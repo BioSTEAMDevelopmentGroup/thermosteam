@@ -8,8 +8,8 @@
 """
 """
 from biorefineries.tests.test_biorefineries import (
-    test_sugarcane,
     test_cornstover,
+    test_sugarcane,
 )
 
 # To run these following tests, you'll need to get the github version.
