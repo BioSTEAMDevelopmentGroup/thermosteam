@@ -22,6 +22,11 @@ Thermosteam: BioSTEAM's Premier Thermodynamic Engine
 
 .. contents::
 
+Workshops
+---------
+Join us on Friday, Jan 20, 9:15-10:15am CST, for a BioSTEAM workshop! 
+Email biosteamdevelopmentgroup@gmail.com for details.
+
 What is Thermosteam?
 --------------------
 
