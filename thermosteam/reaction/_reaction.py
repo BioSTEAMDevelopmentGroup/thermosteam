@@ -424,23 +424,23 @@ class Reaction:
     
     def product_yield(self, product, basis=None, product_yield=None):
         """
-        Return or set yield of product per reactant,
-        which is calculated by multiplying
-        the stoichiometric coefficient of the product and the conversion.
+        Return or set the yield of a product per reactant (i.e., the product's
+        stoichiometric coefficient multiplied by the conversion).
 
         If this function is used to set the product yield,
-        the conversion will be calculated based on the given yield
-        and stoichiometric coefficient.
+        the conversion is updated and the stoichiometric coefficient is kept 
+        constant.
 
         Parameters
         ----------
-        product : str
+        product : str, optional
             ID of the product chemical.
-        basis : str
-            Can be 'mol' or 'wt' (default to 'mol' if not given).
-        product_yield : float
-            Leave it to None will return the calculated product yield,
-            providing a number between 0 and 1 will set the product yield. 
+        basis : str, optional
+            Can be 'mol' or 'wt'. Defaults to the Reaction object's basis.
+        product_yield : float, optional
+            New product yield as a number between 0 and 1. If none given, 
+            the product yield is returned.
+        
         """
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 2: 
