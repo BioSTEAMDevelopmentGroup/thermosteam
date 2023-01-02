@@ -424,13 +424,18 @@ class Reaction:
     
     def product_yield(self, product, basis=None, product_yield=None):
         """Return or set yield of product per reactant."""
+        stoichiometry = self._stoichiometry
+        if stoichiometry.ndim == 2: 
+            stoichiometry = stoichiometry.sum(axis=0)
+            reactant_index = self._X_index[1]
+        else:
+            reactant_index = self._X_index
         product_index = self._chemicals.index(product)
-        product_coefficient = self._stoichiometry[product_index]
+        product_coefficient = stoichiometry[product_index]
         if product_yield is None:
             product_yield = product_coefficient * self.X
             if basis and self.basis != basis:
                 chemicals_tuple = self._chemicals.tuple
-                reactant_index = self._X_index
                 MW_reactant = chemicals_tuple[reactant_index].MW
                 MW_product = chemicals_tuple[product_index].MW
                 if basis == 'wt':
@@ -446,13 +451,12 @@ class Reaction:
             X = product_yield / product_coefficient
             if basis and self.basis != basis:
                 chemicals_tuple = self._chemicals.tuple
-                reactant_index = self._X_index
                 MW_reactant = chemicals_tuple[reactant_index].MW
                 MW_product = chemicals_tuple[product_index].MW
                 if basis == 'wt':
-                    X *= MW_product / MW_reactant 
+                    X *= MW_reactant / MW_product  
                 elif basis == 'mol':
-                    X *= MW_reactant / MW_product 
+                    X *= MW_product / MW_reactant 
                 else:
                     raise ValueError("basis must be either 'wt' or 'mol'; "
                                     f"not {repr(basis)}")

@@ -22,8 +22,10 @@ def test_reaction():
     assert not reaction.stoichiometry.any()
     
     # Test math cycles, making sure they balance out
-    reaction = tmo.Reaction('2H2O -> 2H2 + O2', reactant='H2O',
-                            correct_atomic_balance=True, X=0.5)
+    single_phase_reaction = reaction = tmo.Reaction(
+        '2H2O -> 2H2 + O2', reactant='H2O',
+        correct_atomic_balance=True, X=0.5
+    )
     same_reaction = reaction.copy()
     reaction += same_reaction
     reaction -= same_reaction
@@ -45,8 +47,10 @@ def test_reaction():
     assert_allclose(negative_reaction.X, -1.)
     
     # Test errors with incompatible phases
-    reaction = tmo.Reaction('H2O,l -> H2,g + O2,g', reactant='H2O',
-                            correct_atomic_balance=True, X=0.7)
+    multi_phase_reaction = reaction = tmo.Reaction(
+        'H2O,l -> H2,g + O2,g', reactant='H2O',
+        correct_atomic_balance=True, X=0.7
+    )
     stream = tmo.MultiStream(None, l=[('H2O', 10)], phases='lL')
     with pytest.raises(ValueError): reaction(stream)
     
@@ -65,6 +69,33 @@ def test_reaction():
     with pytest.raises(tmo.exceptions.UndefinedChemical): 
         reaction = tmo.Reaction('H2O -> UnknownChemical', reactant='H2O',
                                 correct_atomic_balance=True, X=0.7)
+        
+    # Test special methods
+    
+    # Test product_yield with and without multiple phases
+    assert_allclose(single_phase_reaction.product_yield('O2'), 0.25)
+    assert_allclose(multi_phase_reaction.product_yield('O2'), 0.35)
+    assert_allclose(single_phase_reaction.product_yield('H2'), 0.5)
+    assert_allclose(multi_phase_reaction.product_yield('H2'), 0.7)
+    assert_allclose(single_phase_reaction.product_yield('O2', basis='wt'), 0.44405082796381734)
+    assert_allclose(multi_phase_reaction.product_yield('O2', basis='wt'), 0.6216711591493442)
+    
+    # Test product_yield setter with and without multiple phases
+    single_phase_reaction.product_yield('O2', product_yield=0.1)
+    multi_phase_reaction.product_yield('O2', product_yield=0.1)
+    assert_allclose(single_phase_reaction.product_yield('O2'), 0.1)
+    assert_allclose(multi_phase_reaction.product_yield('O2'), 0.1)
+    
+    single_phase_reaction.product_yield('H2', product_yield=0.1)
+    multi_phase_reaction.product_yield('H2', product_yield=0.1)
+    assert_allclose(single_phase_reaction.product_yield('H2'), 0.1)
+    assert_allclose(multi_phase_reaction.product_yield('H2'), 0.1)
+    
+    single_phase_reaction.product_yield('O2', basis='wt', product_yield=0.1)
+    multi_phase_reaction.product_yield('O2', basis='wt', product_yield=0.1)
+    assert_allclose(single_phase_reaction.product_yield('O2', basis='wt'), 0.1)
+    assert_allclose(multi_phase_reaction.product_yield('O2', basis='wt'), 0.1)
+    
     
 def test_reaction_enthalpy_balance():
     # Combustion; ensure heat of gas phase reaction without sensible heats is 
