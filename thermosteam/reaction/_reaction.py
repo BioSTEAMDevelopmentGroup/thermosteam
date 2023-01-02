@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
-# Copyright (C) 2020, Yoel Cortes-Pena, <yoelcortes@gmail.com>, Yalin Li, <yalinli2@illinois.edu>
+# Copyright (C) 2020, Yoel Cortes-Pena, <yoelcortes@gmail.com>, Yalin Li, <mailto.yalin.li@gmail.com>
 # 
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
@@ -89,7 +89,7 @@ class Reaction:
     X : float
         Reactant conversion (fraction).
     chemicals=None : Chemicals, defaults to settings.chemicals.
-        Chemicals corresponing to each entry in the stoichiometry array.
+        Chemicals corresponding to each entry in the stoichiometry array.
     basis='mol': {'mol', 'wt'}
         Basis of reaction.
     
@@ -195,7 +195,7 @@ class Reaction:
      Glucose + O2 -> 0.778 Ethanol + 0.222 H2O + CO2  Glucose    90.00
     
     Note how conversions are added and the stoichiometry rescales to a per
-    reactant basis. Conversly, reaction objects may be substracted as well:
+    reactant basis. Conversely, reaction objects may be subtracted as well:
     
     >>> combustion = mixed_reaction - fermentation
     >>> combustion.show()
@@ -315,11 +315,11 @@ class Reaction:
         basis = self.basis
         if copy or basis != rxn._basis: rxn = rxn.copy(basis)
         if self._chemicals is not rxn._chemicals:
-            raise ValueError('chemicals must be the same to add/substract reactions')
+            raise ValueError('chemicals must be the same to add/subtract reactions')
         if self._phases != rxn._phases:
-            raise ValueError('phases must be the same to add/substract reactions')
+            raise ValueError('phases must be the same to add/subtract reactions')
         if self._X_index != rxn._X_index:
-            raise ValueError('reactants must be the same to add/substract reactions')
+            raise ValueError('reactants must be the same to add/subtract reactions')
         return rxn
     
     def __radd__(self, rxn):
@@ -422,25 +422,64 @@ class Reaction:
         if isproperty: material_array[:] = values
         if config: material._imol.reset_chemicals(*config)
     
-    def product_yield(self, product, basis=None):
-        """Return yield of product per reactant."""
-        product_index = self._chemicals.index(product)
-        product_coefficient = self._stoichiometry[product_index]
-        product_yield = product_coefficient * self.X
-        if basis and self.basis != basis:
-            chemicals_tuple = self._chemicals.tuple
+    def product_yield(self, product, basis=None, product_yield=None):
+        """
+        Return or set the yield of a product per reactant (i.e., the product's
+        stoichiometric coefficient multiplied by the conversion).
+
+        If this function is used to set the product yield,
+        the conversion is updated and the stoichiometric coefficient is kept 
+        constant.
+
+        Parameters
+        ----------
+        product : str, optional
+            ID of the product chemical.
+        basis : str, optional
+            Can be 'mol' or 'wt'. Defaults to the Reaction object's basis.
+        product_yield : float, optional
+            New product yield as a number between 0 and 1. If none given, 
+            the product yield is returned.
+        
+        """
+        stoichiometry = self._stoichiometry
+        if stoichiometry.ndim == 2: 
+            stoichiometry = stoichiometry.sum(axis=0)
+            reactant_index = self._X_index[1]
+        else:
             reactant_index = self._X_index
-            MW_reactant = chemicals_tuple[reactant_index].MW
-            MW_product = chemicals_tuple[product_index].MW
-            if basis == 'wt':
-                product_yield *= MW_product / MW_reactant 
-                assert product_yield <= 1.
-            elif basis == 'mol':
-                product_yield *= MW_reactant / MW_product 
-            else:
-                raise ValueError("basis must be either 'wt' or 'mol'; "
-                                f"not {repr(basis)}")
-        return product_yield
+        product_index = self._chemicals.index(product)
+        product_coefficient = stoichiometry[product_index]
+        if product_yield is None:
+            product_yield = product_coefficient * self.X
+            if basis and self.basis != basis:
+                chemicals_tuple = self._chemicals.tuple
+                MW_reactant = chemicals_tuple[reactant_index].MW
+                MW_product = chemicals_tuple[product_index].MW
+                if basis == 'wt':
+                    product_yield *= MW_product / MW_reactant 
+                    assert product_yield <= 1.
+                elif basis == 'mol':
+                    product_yield *= MW_reactant / MW_product 
+                else:
+                    raise ValueError("basis must be either 'wt' or 'mol'; "
+                                    f"not {repr(basis)}")
+            return product_yield
+        else:
+            X = product_yield / product_coefficient
+            if basis and self.basis != basis:
+                chemicals_tuple = self._chemicals.tuple
+                MW_reactant = chemicals_tuple[reactant_index].MW
+                MW_product = chemicals_tuple[product_index].MW
+                if basis == 'wt':
+                    X *= MW_reactant / MW_product  
+                elif basis == 'mol':
+                    X *= MW_product / MW_reactant 
+                else:
+                    raise ValueError("basis must be either 'wt' or 'mol'; "
+                                    f"not {repr(basis)}")
+            assert X <= 1.
+            self.X = X
     
     def adiabatic_reaction(self, stream):
         """
@@ -631,7 +670,7 @@ class Reaction:
     
     @property
     def X(self):
-        """[float] Reaction converion as a fraction."""
+        """[float] Reaction conversion as a fraction."""
         return self._X
     @X.setter
     def X(self, X):
@@ -752,7 +791,7 @@ class Reaction:
     
     def correct_atomic_balance(self, constants=None):
         """
-        Correct stoichiometry coffecients to satisfy atomic balance.
+        Correct stoichiometry coefficients to satisfy atomic balance.
         
         Parameters
         ----------
@@ -964,7 +1003,7 @@ class ReactionItem(Reaction):
     
     @property
     def X(self):
-        """[float] Reaction converion as a fraction."""
+        """[float] Reaction conversion as a fraction."""
         return self._X[self._index]
     @X.setter
     def X(self, X):
@@ -1079,11 +1118,11 @@ class ReactionSet:
     
     @property
     def X(self):
-        """[1d array] Reaction converions."""
+        """[1d array] Reaction conversions."""
         return self._X
     @X.setter
     def X(self, X):
-        """[1d array] Reaction converions."""
+        """[1d array] Reaction conversions."""
         if X is not self._X: self._X[:] = X
     
     @property
