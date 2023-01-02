@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
-# Copyright (C) 2020, Yoel Cortes-Pena, <yoelcortes@gmail.com>, Yalin Li, <yalinli2@illinois.edu>
+# Copyright (C) 2020, Yoel Cortes-Pena, <yoelcortes@gmail.com>, Yalin Li, <mailto.yalin.li@gmail.com>
 # 
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
@@ -89,7 +89,7 @@ class Reaction:
     X : float
         Reactant conversion (fraction).
     chemicals=None : Chemicals, defaults to settings.chemicals.
-        Chemicals corresponing to each entry in the stoichiometry array.
+        Chemicals corresponding to each entry in the stoichiometry array.
     basis='mol': {'mol', 'wt'}
         Basis of reaction.
     
@@ -195,7 +195,7 @@ class Reaction:
      Glucose + O2 -> 0.778 Ethanol + 0.222 H2O + CO2  Glucose    90.00
     
     Note how conversions are added and the stoichiometry rescales to a per
-    reactant basis. Conversly, reaction objects may be substracted as well:
+    reactant basis. Conversely, reaction objects may be subtracted as well:
     
     >>> combustion = mixed_reaction - fermentation
     >>> combustion.show()
@@ -315,11 +315,11 @@ class Reaction:
         basis = self.basis
         if copy or basis != rxn._basis: rxn = rxn.copy(basis)
         if self._chemicals is not rxn._chemicals:
-            raise ValueError('chemicals must be the same to add/substract reactions')
+            raise ValueError('chemicals must be the same to add/subtract reactions')
         if self._phases != rxn._phases:
-            raise ValueError('phases must be the same to add/substract reactions')
+            raise ValueError('phases must be the same to add/subtract reactions')
         if self._X_index != rxn._X_index:
-            raise ValueError('reactants must be the same to add/substract reactions')
+            raise ValueError('reactants must be the same to add/subtract reactions')
         return rxn
     
     def __radd__(self, rxn):
@@ -423,7 +423,25 @@ class Reaction:
         if config: material._imol.reset_chemicals(*config)
     
     def product_yield(self, product, basis=None, product_yield=None):
-        """Return or set yield of product per reactant."""
+        """
+        Return or set yield of product per reactant,
+        which is calculated by multiplying
+        the stoichiometric coefficient of the product and the conversion.
+
+        If this function is used to set the product yield,
+        the conversion will be calculated based on the given yield
+        and stoichiometric coefficient.
+
+        Parameters
+        ----------
+        product : str
+            ID of the product chemical.
+        basis : str
+            Can be 'mol' or 'wt' (default to 'mol' if not given).
+        product_yield : float
+            Leave it to None will return the calculated product yield,
+            providing a number between 0 and 1 will set the product yield. 
+        """
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 2: 
             stoichiometry = stoichiometry.sum(axis=0)
@@ -652,7 +670,7 @@ class Reaction:
     
     @property
     def X(self):
-        """[float] Reaction converion as a fraction."""
+        """[float] Reaction conversion as a fraction."""
         return self._X
     @X.setter
     def X(self, X):
@@ -773,7 +791,7 @@ class Reaction:
     
     def correct_atomic_balance(self, constants=None):
         """
-        Correct stoichiometry coffecients to satisfy atomic balance.
+        Correct stoichiometry coefficients to satisfy atomic balance.
         
         Parameters
         ----------
@@ -985,7 +1003,7 @@ class ReactionItem(Reaction):
     
     @property
     def X(self):
-        """[float] Reaction converion as a fraction."""
+        """[float] Reaction conversion as a fraction."""
         return self._X[self._index]
     @X.setter
     def X(self, X):
@@ -1100,11 +1118,11 @@ class ReactionSet:
     
     @property
     def X(self):
-        """[1d array] Reaction converions."""
+        """[1d array] Reaction conversions."""
         return self._X
     @X.setter
     def X(self, X):
-        """[1d array] Reaction converions."""
+        """[1d array] Reaction conversions."""
         if X is not self._X: self._X[:] = X
     
     @property
