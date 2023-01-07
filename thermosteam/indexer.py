@@ -111,20 +111,8 @@ def index_overlap(left_chemicals, right_chemicals, right_data):
     
 class Indexer:
     """Abstract class for fast indexing."""
-    __slots__ = ('_data',)
+    __slots__ = ('sparse_data',)
     units = None
-    
-    def empty(self):
-        self.sparse_data.clear()
-    
-    def isempty(self):
-        return self.sparse_data.any()
-    
-    def copy(self):
-        new = self._copy_without_data()
-        new.sparse_data = self.sparse_data.copy()
-        return new
-    __copy__ = copy
     
     def get_conversion_factor(self, units):
         if self.units:
@@ -184,6 +172,18 @@ class SplitIndexer(Indexer):
     
     def __reduce__(self):
         return self.from_data, (self.sparse_data, self._chemicals, False)        
+    
+    def empty(self):
+        self.sparse_data.clear()
+    
+    def isempty(self):
+        return not self.sparse_data.any()
+    
+    def copy(self):
+        new = self._copy_without_data()
+        new.sparse_data = self.sparse_data.copy()
+        return new
+    __copy__ = copy
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data

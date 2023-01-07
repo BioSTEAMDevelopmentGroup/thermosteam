@@ -22,7 +22,7 @@ def sparse_vector(arr, copy=False):
             if j: dct[int(i)] = float(j)
         return SparseVector(dct)
     else:
-        raise TypeError(f'cannot convert {type(arr).__name__} object to a sparce vector')
+        raise TypeError(f'cannot convert {type(arr).__name__} object to a sparse vector')
 
 def sparse_array(arr, copy=False):
     """
@@ -34,7 +34,7 @@ def sparse_array(arr, copy=False):
     elif hasattr(arr, '__iter__'):
         return SparseArray([sparse_vector(row) for row in arr])
     else:
-        raise TypeError(f'cannot convert {type(arr).__name__} object to a sparce array')
+        raise TypeError(f'cannot convert {type(arr).__name__} object to a sparse array')
 
 class SparseArray:
     """
