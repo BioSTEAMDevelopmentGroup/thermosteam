@@ -472,7 +472,7 @@ class CompiledChemicals(Chemicals):
                 raise ValueError(f"'{i}' is a group; cannot define new group using other groups")
         index = self.indices(IDs)
         self.__dict__[name] = [self.tuple[i] for i in index]
-        self._index[name] = np.array(index, dtype=int)
+        self._index[name] = index
         composition = np.asarray(composition, float)
         if wt:
             composition_wt = composition
@@ -1095,7 +1095,7 @@ class CompiledChemicals(Chemicals):
             else: # pragma: no cover
                 raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
             index_cache[key] = index, kind
-            if len(index_cache) > 1000: index_cache.pop(index_cache.__iter__().__next__())
+            if len(index_cache) > 100: index_cache.pop(index_cache.__iter__().__next__())
         except TypeError:
             raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
         return index, kind
