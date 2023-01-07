@@ -23,8 +23,8 @@ from .indexer import nonzeros
 from typing import TYPE_CHECKING
 from ._phase import valid_phases
 if TYPE_CHECKING:
+    from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
-    from free_properties import property_array
     from typing import Optional, Sequence
     import biosteam as bst
 # from .constants import g
@@ -325,7 +325,7 @@ class Stream:
         self._user_equilibrium = None
         if vlle: 
             self.vlle(T, P)
-            data = self._imol._data
+            data = self._imol.sparse_data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
     @classmethod
@@ -357,7 +357,7 @@ class Stream:
         100.0
         
         """
-        self._imol._data[:] *= scale
+        self._imol.sparse_data[:] *= scale
     rescale = scale
 
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
@@ -491,7 +491,7 @@ class Stream:
          flow (kmol/hr): Water  1
 
         """
-        data = self._imol._data
+        data = self._imol.sparse_data
         data[data < 0.] = 0.
 
     def shares_flow_rate_with(self, other):
@@ -518,7 +518,7 @@ class Stream:
         """
         imol = self._imol
         other_imol = other._imol
-        if imol.__class__ is other_imol.__class__ and imol._data is other_imol._data:
+        if imol.__class__ is other_imol.__class__ and imol.sparse_data is other_imol.sparse_data:
             shares_data = True
         elif isinstance(other, tmo.MultiStream):
             phase = self.phase
@@ -666,7 +666,7 @@ class Stream:
         InfeasibleRegion: negative material flow rate is infeasible
         
         """
-        material = self._imol._data
+        material = self._imol.sparse_data
         if material[material < 0.].any(): raise InfeasibleRegion('negative material flow rate')
 
     @property
@@ -953,25 +953,25 @@ class Stream:
     @property
     def mol(self) -> NDArray[float]:
         """Molar flow rates [kmol/hr]."""
-        return self._imol._data
+        return self._imol.sparse_data
     @mol.setter
     def mol(self, value):
         mol = self.mol
         if mol is not value: mol[:] = value
     
     @property
-    def mass(self) -> property_array:
+    def mass(self) -> SparseVector|SparseArray:
         """Mass flow rates [kg/hr]."""
-        return self.imass._data
+        return self.imass.sparse_data
     @mass.setter
     def mass(self, value):
         mass = self.mass
         if mass is not value: mass[:] = value
     
     @property
-    def vol(self) -> property_array:
+    def vol(self) -> SparseVector|SparseArray:
         """Volumetric flow rates [m3/hr]."""
-        return self.ivol._data
+        return self.ivol.sparse_data
     @vol.setter
     def vol(self, value):
         vol = self.vol
@@ -1001,12 +1001,12 @@ class Stream:
     @property
     def F_mol(self) -> float:
         """Total molar flow rate [kmol/hr]."""
-        return self._imol._data.sum()
+        return self._imol.sparse_data.sum()
     @F_mol.setter
     def F_mol(self, value):
         F_mol = self.F_mol
         if not F_mol: raise AttributeError("undefined composition; cannot set flow rate")
-        self._imol._data[:] *= value/F_mol
+        self._imol.sparse_data[:] *= value/F_mol
     @property
     def F_mass(self) -> float:
         """Total mass flow rate [kg/hr]."""
@@ -1015,7 +1015,7 @@ class Stream:
     def F_mass(self, value):
         F_mass = self.F_mass
         if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol._data[:] *= value/F_mass
+        self.imol.sparse_data[:] *= value/F_mass
     @property
     def F_vol(self) -> float:
         """Total volumetric flow rate [m3/hr]."""
@@ -1025,7 +1025,7 @@ class Stream:
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol._data[:] *= value / F_vol
+        self.imol.sparse_data[:] *= value / F_vol
     
     @property
     def H(self) -> float:
@@ -1131,7 +1131,7 @@ class Stream:
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
-        data = imol._data
+        data = imol.sparse_data
         total = data.sum()
         if total == 0.: 
             return 0. if flow else None
@@ -1143,7 +1143,7 @@ class Stream:
                 phase = imol._phase._phase
                 literal = (phase, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition = self._property_cache_key
-            if literal == last_literal and (composition == last_composition).all():
+            if literal == last_literal and (composition == last_composition):
                 if name in property_cache: 
                     value = property_cache[name]
                     return value * total if flow else value
@@ -1542,15 +1542,15 @@ class Stream:
             at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
-        if TP and flow and (phase or self._imol._data.ndim == 2):
-            self._imol._data_cache = other._imol._data_cache
+        if TP and flow and (phase or self._imol.sparse_data.ndim == 2):
+            self._imol.interface_cache = other._imol.interface_cache
         else:
-            self._imol._data_cache.clear()
+            self._imol.interface_cache.clear()
         if TP:
             self._thermal_condition = other._thermal_condition
         if flow:
-            self._imol._data = other._imol._data
-        if phase and self._imol._data.ndim == 1:
+            self._imol.sparse_data = other._imol.sparse_data
+        if phase and self._imol.sparse_data.ndim == 1:
             self._imol._phase = other._imol._phase
             
     def unlink(self):
@@ -1579,8 +1579,8 @@ class Stream:
         imol = self._imol
         if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
             raise RuntimeError('phase is locked; stream cannot be unlinked')
-        imol._data_cache.clear()
-        imol._data = imol._data.copy()
+        imol.interface_cache.clear()
+        imol.sparse_data = imol.sparse_data.copy()
         imol._phase = imol._phase.copy()
         self._thermal_condition = self._thermal_condition.copy()
         self.reset_cache()
@@ -1856,7 +1856,7 @@ class Stream:
         new.price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data()
-        imol._data = self._imol._data
+        imol.sparse_data = self._imol.sparse_data
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.characterization_factors = {}
@@ -1917,7 +1917,7 @@ class Stream:
         0.0
         
         """
-        self._imol._data[:] = 0.
+        self._imol.sparse_data[:] = 0.
     
     ### Equilibrium ###
     
@@ -1961,7 +1961,7 @@ class Stream:
         lle = eq.LLE(imol,
                      self._thermal_condition,
                      self._thermo)
-        data = imol._data
+        data = imol.sparse_data
         net_chemical_flows = data.sum(axis=0)
         total_flow = net_chemical_flows.sum()
         def f(x, done=[False]):

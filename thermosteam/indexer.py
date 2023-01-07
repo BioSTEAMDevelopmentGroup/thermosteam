@@ -12,12 +12,10 @@ from ._thermal_condition import mock_thermal_condition
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemicalAlias
-from .base import PhaseHandle, SparseVector, sparse_vector
+from .base import PhaseHandle, SparseVector, SparseArray, sparse_vector, sparse_array
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
-from free_properties import PropertyFactory, property_array
 from collections.abc import Iterable
 import numpy as np
-from numba import njit
 
 __all__ = (
     'SplitIndexer',
@@ -29,8 +27,6 @@ __all__ = (
     'MassFlowIndexer',
     'ChemicalVolumetricFlowIndexer',
     'VolumetricFlowIndexer',
-    'MassFlowProperty',
-    'VolumetricFlowProperty'
 )
 
 phase_names = {
@@ -40,20 +36,7 @@ phase_names = {
     'L': 'LIQUID',
     'S': 'SOLID',
 }
-
-# %% Numba acceleration
-
-def sum_chemical_index(data, other, left_index, right_index):
-    data[left_index] += other[right_index]
-
-def sum_material_index(data, other, left_index, right_index):
-    data[:, left_index] += other[:, right_index]
     
-def copy_chemical_index(data, other, left_index, right_index):
-    data[left_index] = other[right_index]
-
-def copy_material_index(data, other, left_index, right_index):
-    data[:, left_index] = other[:, right_index]
 
 # %% Utilities
 
@@ -75,8 +58,8 @@ def find_main_phase(indexers, default):
     return phase
 
 def nonzeros(IDs, data):
-    index = data.nonzero_index
-    return [IDs[i] for i in index], data.nonzero_values
+    index = data.nonzero_index()
+    return [IDs[i] for i in index], data.nonzero_values()
 
 def index_overlap(left_chemicals, right_chemicals, right_data):
     right_index, = np.where(right_data)
@@ -113,6 +96,18 @@ class Indexer:
     """Abstract class for fast indexing."""
     __slots__ = ('sparse_data',)
     units = None
+    
+    def empty(self):
+        self.sparse_data.clear()
+    
+    def isempty(self):
+        return not self.sparse_data.any()
+    
+    def copy(self):
+        new = self._copy_without_data()
+        new.sparse_data = self.sparse_data.copy()
+        return new
+    __copy__ = copy
     
     def get_conversion_factor(self, units):
         if self.units:
@@ -173,22 +168,10 @@ class SplitIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self.sparse_data, self._chemicals, False)        
     
-    def empty(self):
-        self.sparse_data.clear()
-    
-    def isempty(self):
-        return not self.sparse_data.any()
-    
-    def copy(self):
-        new = self._copy_without_data()
-        new.sparse_data = self.sparse_data.copy()
-        return new
-    __copy__ = copy
-    
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data
         if container is None:
-            self.sparse_data = data = SparseVector({})
+            self.sparse_data = data = SparseVector()
         else:
             self.sparse_data = data = container
             data.clear()
@@ -201,7 +184,7 @@ class SplitIndexer(Indexer):
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.sparse_data = SparseVector({})
+        self.sparse_data = SparseVector()
         return self
     
     @classmethod
@@ -331,12 +314,12 @@ class ChemicalIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data
-        old_container = (old_data, self.sparse_data_cache)
+        old_container = (old_data, self.interface_cache)
         if container is None:
             self.sparse_data = data = np.zeros(chemicals.size, float)
-            self.sparse_data_cache = {}
+            self.interface_cache = {}
         else:
-            data, self.sparse_data_cache = container
+            data, self.interface_cache = container
             self.sparse_data =  data
             data.clear()
         for CAS, value in zip(self._chemicals.CASs, old_data):
@@ -392,13 +375,12 @@ class ChemicalIndexer(Indexer):
         sc_data = [] # Same chemicals
         other_data = [] # Different chemicals
         repeated_data = 0
-        base = data.base
         for i in others:
             if i is self:
                 repeated_data += 1
             else:
                 idata = i.sum_across_phases()
-                if idata.base is base or idata is base: idata = idata.copy()
+                if idata.shares_data_with(data): idata = idata.copy()
                 ichemicals = i._chemicals
                 if ichemicals is chemicals:
                     sc_data.append(idata)
@@ -442,16 +424,16 @@ class ChemicalIndexer(Indexer):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._phase = self._phase.copy()
-        new.sparse_data_cache = {}
+        new.interface_cache = {}
         return new
     
     @classmethod
     def blank(cls, phase, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.sparse_data = SparseVector({})
+        self.sparse_data = SparseVector()
         self._phase = Phase.convert(phase)
-        self.sparse_data_cache = {}
+        self.interface_cache = {}
         return self
     
     @classmethod
@@ -464,7 +446,7 @@ class ChemicalIndexer(Indexer):
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
         self.sparse_data = sparse_vector(data)
-        self.sparse_data_cache = {}
+        self.interface_cache = {}
         return self
     
     @property
@@ -569,11 +551,11 @@ class MaterialIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data
-        old_data_cache = self.sparse_data_cache
-        shape = N_phases, N_chemicals = (len(self._phases), chemicals.size)
+        old_data_cache = self.interface_cache
+        N_phases = len(self._phases)
         if container is None:
-            self.sparse_data = data = np.zeros(shape, float)
-            self.sparse_data_cache = {}
+            self.sparse_data = data = SparseArray()
+            self.interface_cache = {}
         else:
             data, cache = container
             data[:] = 0.
@@ -611,14 +593,16 @@ class MaterialIndexer(Indexer):
                 self.sparse_data[phase_index, :] = other_data
             else:
                 other_data = other.sparse_data
-                copy_chemical_index(self.sparse_data[phase_index], other_data, *index_overlap(self._chemicals, other._chemicals, other_data))
+                left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+                self.sparse_data[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
                 self.sparse_data[:] = other.sparse_data
             else:
                 self.empty()
                 other_data = other.sparse_data
-                copy_material_index(self.sparse_data, other_data, *index_overlap(self._chemicals, other._chemicals, other_data.any(0)))
+                left_index, other_data = index_overlap(self._chemicals, other._chemicals, other_data.any(0))
+                self.sparse_data[:, left_index] = other_data[:, right_index]
     
     def mix_from(self, others):
         isa = isinstance
@@ -636,7 +620,7 @@ class MaterialIndexer(Indexer):
                 repeated_data += 1
             else:
                 idata = i.sparse_data
-                if idata.base is data: idata = idata.copy()
+                if idata.shares_data_with(data): idata = idata.copy()
                 ichemicals = i._chemicals
                 if isa(i, MaterialIndexer):
                     if phases == i.phases:
@@ -657,28 +641,30 @@ class MaterialIndexer(Indexer):
                             for phase, idata in zip(i.phases, idata):
                                 if not idata.any(): continue
                                 op_data.append(
-                                    (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
+                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, idata))
                                 )
                 elif isa(i, ChemicalIndexer):
-                    if idata.base is data: idata = idata.copy()
+                    if idata.shares_data_with(data): idata = idata.copy()
                     if chemicals is ichemicals:
                         opsc_data.append(
                             (idata, get_phase_index(i.phase))
                         )
                     else:
                         op_data.append(
-                            (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
+                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, idata))
                         )
                 else:
                     raise ValueError("can only mix from chemical or material indexers")
         if repeated_data == 0:
             data[:] = 0.
         elif repeated_data > 1:
-            data[:] *= repeated_data
+            data *= repeated_data
         for i in spsc_data: data[:] += i
-        for args in sp_data: sum_material_index(data, *args)
+        for idata, left_index, right_index in sp_data: 
+            data[:, left_index] += idata[:, right_index]
         for idata, left_index in opsc_data: data[left_index, :] += idata
-        for phase_index, args in op_data: sum_chemical_index(data[phase_index], *args)
+        for phase_index, idata, left_index, right_index in op_data: 
+            data[phase_index, left_index] += idata[right_index]
     
     def separate_out(self, other):
         isa = isinstance
@@ -690,7 +676,7 @@ class MaterialIndexer(Indexer):
         if isa(other, MaterialIndexer):
             if phases == other.phases:
                 if chemicals is other.chemicals:
-                    data[:] -= idata
+                    data -= idata
                 else:
                     idata = other.sparse_data
                     other_index, = np.where(idata.any(0))
@@ -738,7 +724,7 @@ class MaterialIndexer(Indexer):
         new._chemicals = self._chemicals
         new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
-        new.sparse_data_cache = {}
+        new.interface_cache = {}
         return new
     
     @classmethod
@@ -747,8 +733,8 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        self.sparse_data = [SparseVector({}) for i in self._phases]
-        self.sparse_data_cache = {}
+        self.sparse_data = [SparseVector() for i in self._phases]
+        self.interface_cache = {}
         return self
     
     @classmethod
@@ -767,8 +753,8 @@ class MaterialIndexer(Indexer):
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of material data columns')
-        self.sparse_data = [sparse_vector(i) for i in data]
-        self.sparse_data_cache = {}
+        self.sparse_data = sparse_array(data)
+        self.interface_cache = {}
         return self
     
     @property
@@ -1050,6 +1036,15 @@ ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricF
 class WrappedDictionary: # Abstract class
     __slots__ = ('dct',)
     
+    def __iter__(self):
+        return self.dct.__iter__()
+    
+    def __len__(self):
+        return self.dct.__len__()
+    
+    def __bool__(self):
+        return bool(self.dct)
+    
     def __getitem__(self, key):
         return self.getter(key, self.dct[key])
     
@@ -1100,6 +1095,10 @@ class WrappedDictionary: # Abstract class
 class MassFlowDict(WrappedDictionary): # Wraps a dict of molar flows
     __slots__ = ('MW',)
     
+    def __init__(self, dct, MW):
+        self.dct = dct
+        self.MW = MW
+    
     def getter(self, index, value):
         return value * self.MW[index] # From mol to kg
 
@@ -1108,70 +1107,70 @@ class MassFlowDict(WrappedDictionary): # Wraps a dict of molar flows
 
 
 class VolumetricFlowDict(WrappedDictionary): # Wraps a dict of molar flows
-    __slots__ = ('MW', 'cache')
+    __slots__ = ('TP', 'V', 'phase', 'phase_container', 'cache')
+    
+    def __init__(self, dct, TP, V, phase, phase_container, cache):
+        self.dct = dct
+        self.TP = TP
+        self.V = V
+        self.phase = phase
+        self.phase_container = phase_container
+        self.cache = cache
     
     def getter(self, index, value):
-        TP, V = self.cache.get(index, (None, None))
+        TP, V = self.cache.get(index, TP_V)
         if not TP.in_equilibrium(self.TP):
             phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
+            V = self.V[index]
+            V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
             self.cache[index] = (self.TP.copy(), V)
         return value * V # From mol to m3
 
     def setter(self, index, value):
-        TP, V = self.cache.get(index, (None, None))
+        TP, V = self.cache.get(index, TP_V)
         if not TP.in_equilibrium(self.TP):
             phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
+            V = self.V[index]
+            V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
             self.cache[index] = (self.TP.copy(), V)
         return value / V # From m3 to mol
 
-# %% Mass flow properties
 
-@PropertyFactory(slots=('name', 'mol', 'index', 'MW'),
-                 units='kg/hr')
-def MassFlowProperty(self):
-    """Mass flow (kg/hr)."""
-    return self.mol[self.index] * self.MW
-    
-@MassFlowProperty.setter
-def MassFlowProperty(self, value):
-    self.mol[self.index] = value/self.MW
+# %% Mass flow properties
 
 def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
     try:
-        mass = self.sparse_data_cache['mass']
+        mass = self.interface_cache['mass']
     except:
         chemicals = self.chemicals
-        mol = self.data
-        mass = np.zeros_like(mol, dtype=object)
-        for i, chem in enumerate(chemicals):
-            mass[i] = MassFlowProperty(chem.ID, mol, i, chem.MW)
-        self.sparse_data_cache['mass'] = mass = ChemicalMassFlowIndexer.from_data(
-                                                        property_array(mass),
-                                                        self._phase, chemicals,
-                                                        False)
+        self.interface_cache['mass'] = mass = \
+        ChemicalMassFlowIndexer.from_data(
+            SparseVector.from_dict(
+                MassFlowDict(self.sparse_data.dct, chemicals.MW)
+            ),
+            self._phase, chemicals,
+            False
+        )
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
 
 def by_mass(self):
     """Return a MassFlowIndexer that references this object's molar data."""
     try:
-        mass = self.sparse_data_cache['mass']
+        mass = self.interface_cache['mass']
     except:
-        phases = self.phases
         chemicals = self.chemicals
-        mol = self.data
-        mass = np.zeros_like(mol, dtype=object)
-        for i, phase in enumerate(phases):
-            for j, chem in enumerate(chemicals):
-                index = (i, j)
-                mass[index] = MassFlowProperty(chem.ID, mol, index, chem.MW)
-        self.sparse_data_cache['mass'] = mass = MassFlowIndexer.from_data(
-                                                        property_array(mass),
-                                                        phases, chemicals,
-                                                        False)
+        MW = chemicals.MW
+        self.interface_cache['mass'] = mass = \
+        MassFlowIndexer.from_data(
+            SparseArray.from_rows([
+                SparseVector.from_dict(MassFlowDict(i.dct, MW))
+                for i in self.sparse_data
+            ]),
+            self.phases, chemicals,
+            False
+        )
     return mass
 MolarFlowIndexer.by_mass = by_mass; del by_mass
 
@@ -1179,34 +1178,6 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 # %% Volumetric flow properties
 
 TP_V = (mock_thermal_condition, None) # Initial cache for molar volume
-
-@PropertyFactory(slots=('name', 'mol', 'index', 'V',
-                        'TP', 'phase', 'phase_container', 'cache'),
-                 units='m^3/hr')
-def VolumetricFlowProperty(self):
-    """Volumetric flow (m^3/hr)."""
-    f_mol = self.mol[self.index] 
-    if f_mol:
-        TP, V = self.cache
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
-            self.cache = (self.TP.copy(), V)
-        return f_mol * V
-    else:
-        return 0.
-    
-@VolumetricFlowProperty.setter
-def VolumetricFlowProperty(self, value):
-    if value:
-        TP, V = self.cache
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
-            self.cache = (self.TP.copy(), V)
-        self.mol[self.index] = value / V
-    else:
-        self.mol[self.index] = 0.
 
 def by_volume(self, TP):
     """Return a ChemicalVolumetricFlowIndexer that references this object's molar data.
@@ -1217,18 +1188,19 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self.sparse_data_cache['vol', TP]
+        vol = self.interface_cache['vol', TP]
     except:
-        chemicals = self.chemicals
-        mol = self.data
-        vol = np.zeros_like(mol, dtype=object)
-        for i, chem in enumerate(chemicals):
-            vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V,
-                                            TP, None, self._phase, TP_V)
-        self.sparse_data_cache['vol', TP] = \
-        vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
-                                                      self._phase, chemicals,
-                                                      False)
+        chemicals = self._chemicals
+        V = [i.V for i in chemicals]
+        phase = self._phase
+        self.interface_cache['vol', TP] = \
+        vol = ChemicalVolumetricFlowIndexer.from_data(
+            SparseVector.from_dict(
+                VolumetricFlowDict(self.sparse_data.dct, TP, V, None, phase, {})
+            ),
+            phase, chemicals,
+            False
+        )
     return vol
 ChemicalMolarFlowIndexer.by_volume = by_volume
 	
@@ -1241,23 +1213,20 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self.sparse_data_cache[TP]
+        vol = self.interface_cache[TP]
     except:
-        phases = self.phases
-        chemicals = self.chemicals
-        mol = self.data
-        vol = np.zeros_like(mol, dtype=object)
-        for i, phase in enumerate(phases):
-            for j, chem in enumerate(chemicals):
-                index = i, j
-                phase_name = phase_names[phase]
-                vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
-                                                    mol, index, chem.V, TP, phase,
-                                                    None, TP_V)
-        self.sparse_data_cache[TP] = \
-        vol = VolumetricFlowIndexer.from_data(property_array(vol),
-                                              phases, chemicals,
-                                              False)
+        phases = self._phases
+        chemicals = self._chemicals
+        V = [i.V for i in chemicals]
+        self.interface_cache[TP] = \
+        vol = VolumetricFlowIndexer.from_data(
+            SparseArray.from_rows([
+                SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}))
+                for i, j in zip(self.sparse_data, self._phases)
+            ]),
+            phases, chemicals,
+            False
+        )
     return vol
 MolarFlowIndexer.by_volume = by_volume; del by_volume
-del PropertyFactory
+

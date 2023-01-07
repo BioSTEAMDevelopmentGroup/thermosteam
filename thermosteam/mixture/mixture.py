@@ -243,7 +243,6 @@ class Mixture:
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
-        mol = np.asarray(mol, float)
         total_mol = mol.sum()
         return (mol * self.MWs).sum() / total_mol if total_mol else 0.
     

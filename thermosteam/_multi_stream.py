@@ -309,7 +309,7 @@ class MultiStream(Stream):
             else:
                 literal = (imol._phases, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition = self._property_cache_key
-            if literal == last_literal and (composition == last_composition).all():
+            if literal == last_literal and (composition == last_composition):
                 if name in property_cache:
                     value = property_cache.get(name)
                     return value * total if flow else value

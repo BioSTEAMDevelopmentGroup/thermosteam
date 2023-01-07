@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from ..base import display_asfunctor
+from ..base import display_asfunctor, nonzero_items
 from math import log
 
 __all__ = (
@@ -104,7 +104,8 @@ class IdealEntropyModel:
 
     def __call__(self, phase, mol, T, P):
         total_mol = mol.sum()
-        return sum([j * i(phase, T, P) + j * log(j / total_mol) for i, j in zip(self.models, mol) if j])
+        models = self.models
+        return sum([j * models[i](phase, T, P) + j * log(j / total_mol) for i, j in nonzero_items(mol)])
     
 
 class IdealTMixtureModel:
@@ -146,7 +147,9 @@ class IdealTMixtureModel:
     __repr__ = IdealTPMixtureModel.__repr__
 
     def __call__(self, phase, mol, T, P=None):
-        return sum([j * i(phase, T) for i, j in zip(self.models, mol) if j])
+        models = self.models
+        return sum([j * models[i](phase, T) for i, j in nonzero_items(mol) if j])
+
 
 class SinglePhaseIdealTMixtureModel:
     """
@@ -187,7 +190,8 @@ class SinglePhaseIdealTMixtureModel:
     __repr__ = IdealTPMixtureModel.__repr__
 
     def __call__(self, mol, T, P=None):
-        return sum([j * i(T) for i, j in zip(self.models, mol) if j])
+        models = self.models
+        return sum([j * models[i](T) for i, j in nonzero_items(mol)])
 
 class SinglePhaseIdealTPMixtureModel:
     """
@@ -231,7 +235,8 @@ class SinglePhaseIdealTPMixtureModel:
         self.var = var
 
     def __call__(self, mol, T, P):
-        return sum([j * i(T, P) for i, j in zip(self.models, mol) if j])
+        models = self.models
+        return sum([j * models[i](T, P) for i, j in nonzero_items(mol)])
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
@@ -244,9 +249,10 @@ class IdealHvapModel:
         self.chemicals = chemicals
 
     def __call__(self, mol, T, P=None):
+        chemicals = self.chemicals
         return sum([
-            i * j.Hvap(T) for i, j in zip(mol, self.chemicals)
-            if i and not j.locked_state
+            j * k.Hvap(T) for i, j in nonzero_items(mol)
+            if not (k:=chemicals[i]).locked_state
         ])
     
     __repr__ = IdealTPMixtureModel.__repr__
