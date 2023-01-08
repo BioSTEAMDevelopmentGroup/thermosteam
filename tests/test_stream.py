@@ -7,6 +7,9 @@
 # for license details.
 """
 """
+if __name__ == '__main__':
+    import os
+    os.environ["NUMBA_DISABLE_JIT"] = "1"
 import pytest
 import thermosteam as tmo
 from numpy.testing import assert_allclose

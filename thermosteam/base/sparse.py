@@ -46,8 +46,8 @@ def get_ndim(value, ndim=0):
         for i in value: return get_ndim(i, ndim)
     return ndim
 
-def sum_sparse_vectors(svs):
-    dct = {}
+def sum_sparse_vectors(svs, dct=None):
+    if dct is None: dct = {}
     for other in svs:
         for i, j in other.dct.items():
             if i in dct:
@@ -170,12 +170,14 @@ class SparseArray:
                 if not nd and n == open_slice:
                     return self
                 else:
-                    return np.array([i[n] for i in rows])
+                    value = np.array([i[n] for i in rows])
+                    value.setflags(0)
+                    return value
             elif not nd and n == open_slice:
                 if md == 0:
                     return rows[m]
                 elif md == 1:
-                    return SparseArray.from_rows([rows[i] for i in m])
+                    return SparseArray.from_rows([rows[i] for i in m]).to_array()
                 else:
                     raise IndexError(f'column index can be at most 1-D, not {md}-D')
             elif md == 0: 
@@ -189,7 +191,9 @@ class SparseArray:
         elif index == open_slice:
             return self
         else:
-            return rows[index]
+            value = rows[index]
+            if value.__class__ is list: value = SparseArray.from_rows(value)
+            return value
         
     def __setitem__(self, index, value):
         rows = self.rows
@@ -282,7 +286,8 @@ class SparseArray:
         
     @property
     def _minimum_vector_size(self):
-        return max([i._minimum_vector_size for i in self.rows])
+        rows = self.rows
+        return max([i._minimum_vector_size for i in rows]) if rows else 0
     
     @property
     def dtype(self):
@@ -523,6 +528,7 @@ class SparseVector:
             self.size = size
         elif isinstance(obj, dict):
             self.dct = obj
+            self.size = size
             if size is None: raise ValueError('must pass size if object is a dictionary')
         elif isinstance(obj, SparseVector):
             self.dct = obj.dct.copy()

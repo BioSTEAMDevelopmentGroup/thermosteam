@@ -1983,12 +1983,11 @@ class Stream:
                 return data
             else: # Perform VLE on each liquid phase
                 vle(T=T, P=P)
-                no_vapor = (data[1] == 0).all()
+                no_vapor = not data[1].any()
                 data[2], data[0] = data[0].copy(), data[2].copy()
                 vle(T=T, P=P)
-                if no_vapor and (data[1] == 0).all(): 
-                    done[0] = True # No VLE
-            return data.copy()
+                done[0] = no_vapor and not data[1].any() # No VLE
+            return data.to_array()
         data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, checkconvergence=False, convergenceiter=10) * total_flow
 
     @property
