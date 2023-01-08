@@ -93,6 +93,7 @@ def test_sparse_array_math():
 def test_sparse_vector_indexing():
     arr = np.array([1., 2., 0., 4.5])
     sv = sparse_vector(arr)
+    assert sv.size == 4 # Size is not strict
     old_dct = sv.dct.copy()
     sv[20] = 0.
     assert sv.dct == old_dct
@@ -107,8 +108,9 @@ def test_sparse_vector_indexing():
     assert sv[10] == 0.
     sv[[0, 1, 5]] = 1.
     assert sv == np.array([1., 1., 0., 0., 0., 1.])
-    with pytest.raises(IndexError):
-        sv[:] = 2.
+    sv[:] = 2.
+    assert sv.size == 4
+    assert sv == [2., 2., 2., 2.]
         
 
 def test_sparse_array_indexing():
@@ -161,12 +163,12 @@ def test_sparse_array_indexing():
                      [1, 0]]
     assert sa == [[0, 0, 0, 1],
                   [0, 1, 0, 0]]
-    
-    with pytest.raises(IndexError):
-        sa[:] = 2.
-        
-    with pytest.raises(IndexError):
-        sa[[0, 1], :] = 2.
+    sa[:] = 2.
+    assert sa == [[2., 2., 2., 2.],
+                  [2., 2., 2., 2.]]
+    sa[[0, 1], :] = 3.
+    assert sa == [[3., 3., 3., 3.],
+                  [3., 3., 3., 3.]]
 
 if __name__ == '__main__':
     test_sparse_vector_creation()

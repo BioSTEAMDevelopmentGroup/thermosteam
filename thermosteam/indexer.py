@@ -171,7 +171,7 @@ class SplitIndexer(Indexer):
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data
         if container is None:
-            self.sparse_data = data = SparseVector()
+            self.sparse_data = data = SparseVector.from_size(chemicals.size)
         else:
             self.sparse_data = data = container
             data.clear()
@@ -184,7 +184,7 @@ class SplitIndexer(Indexer):
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.sparse_data = SparseVector()
+        self.sparse_data = SparseVector.from_size(chemicals.size)
         return self
     
     @classmethod
@@ -431,7 +431,7 @@ class ChemicalIndexer(Indexer):
     def blank(cls, phase, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.sparse_data = SparseVector()
+        self.sparse_data = SparseVector.from_size(chemicals.size)
         self._phase = Phase.convert(phase)
         self.interface_cache = {}
         return self
@@ -554,7 +554,7 @@ class MaterialIndexer(Indexer):
         old_data_cache = self.interface_cache
         N_phases = len(self._phases)
         if container is None:
-            self.sparse_data = data = SparseArray()
+            self.sparse_data = data = SparseArray.from_shape([N_phases, chemicals.size])
             self.interface_cache = {}
         else:
             data, cache = container
@@ -733,7 +733,7 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        self.sparse_data = [SparseVector() for i in self._phases]
+        self.sparse_data = SparseArray.from_shape([len(phases), chemicals.size])
         self.interface_cache = {}
         return self
     
@@ -1147,7 +1147,8 @@ def by_mass(self):
         self.interface_cache['mass'] = mass = \
         ChemicalMassFlowIndexer.from_data(
             SparseVector.from_dict(
-                MassFlowDict(self.sparse_data.dct, chemicals.MW)
+                MassFlowDict(self.sparse_data.dct, chemicals.MW),
+                chemicals.size
             ),
             self._phase, chemicals,
             False
@@ -1161,11 +1162,12 @@ def by_mass(self):
         mass = self.interface_cache['mass']
     except:
         chemicals = self.chemicals
+        size = chemicals.size
         MW = chemicals.MW
         self.interface_cache['mass'] = mass = \
         MassFlowIndexer.from_data(
             SparseArray.from_rows([
-                SparseVector.from_dict(MassFlowDict(i.dct, MW))
+                SparseVector.from_dict(MassFlowDict(i.dct, MW), size)
                 for i in self.sparse_data
             ]),
             self.phases, chemicals,
@@ -1196,7 +1198,8 @@ def by_volume(self, TP):
         self.interface_cache['vol', TP] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(
             SparseVector.from_dict(
-                VolumetricFlowDict(self.sparse_data.dct, TP, V, None, phase, {})
+                VolumetricFlowDict(self.sparse_data.dct, TP, V, None, phase, {}),
+                chemicals.size
             ),
             phase, chemicals,
             False
@@ -1218,10 +1221,11 @@ def by_volume(self, TP):
         phases = self._phases
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
+        size = chemicals.size
         self.interface_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(
             SparseArray.from_rows([
-                SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}))
+                SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}), size)
                 for i, j in zip(self.sparse_data, self._phases)
             ]),
             phases, chemicals,
