@@ -58,8 +58,9 @@ def find_main_phase(indexers, default):
     return phase
 
 def nonzeros(IDs, data):
+    data = sparse_vector(data)
     index = data.nonzero_index()
-    return [IDs[i] for i in index], data.nonzero_values()
+    return [IDs[i] for i in index], np.array([*data.nonzero_values()])
 
 def index_overlap(left_chemicals, right_chemicals, right_data):
     right_index, = np.where(right_data)
@@ -412,7 +413,7 @@ class ChemicalIndexer(Indexer):
     def copy_like(self, other):
         if self is other: return
         if self.chemicals is other.chemicals:
-            self.sparse_data.copy_like(other)
+            self.sparse_data.copy_like(other.sparse_data)
         else:
             self.empty()
             other_data = other.sparse_data
@@ -1044,6 +1045,9 @@ class WrappedDictionary: # Abstract class
     
     def __bool__(self):
         return bool(self.dct)
+    
+    def __delitem__(self, key):
+        del self.dct[key]
     
     def __getitem__(self, key):
         return self.getter(key, self.dct[key])

@@ -60,6 +60,21 @@ def test_sparse_vector_math():
     sv /= sv
     assert sv == np.array([1., 1., 0., 1.])
     
+    sv[:] *= 0.
+    assert sv == [0.]
+    
+    sv[:] += arr
+    assert sv == arr
+    
+    sv[:] *= 2
+    assert sv == 2. * arr
+
+    sv[:] /= 2.
+    assert sv == arr
+    
+    sv[:] /= sv
+    assert sv == np.array([1., 1., 0., 1.])
+    
     assert 2. / sv == [2., 2., 0., 2.]
     assert [2, 1, 0, 3] / sv == [2, 1, 0, 3]
     
@@ -80,6 +95,12 @@ def test_sparse_array_math():
     sa += arr
     assert sa == arr
     
+    sa -= arr
+    assert sa == [[0.], [0.]]
+    
+    sa += arr
+    assert sa == arr
+    
     sa *= 2
     assert sa == 2. * arr
 
@@ -87,6 +108,28 @@ def test_sparse_array_math():
     assert sa == arr
     
     sa /= sa
+    assert sa == np.array([[1., 1., 0., 1.],
+                           [0., 0., 1., 1.]])
+    
+    sa[:] *= 0.
+    assert sa == [[0.], [0.]]
+    
+    sa[:] += arr
+    assert sa == arr
+    
+    sa[:] -= arr
+    assert sa == [[0.], [0.]]
+    
+    sa[:] += arr
+    assert sa == arr
+    
+    sa[:] *= 2
+    assert sa == 2. * arr
+
+    sa[:] /= 2.
+    assert sa == arr
+    
+    sa[:] /= sa
     assert sa == np.array([[1., 1., 0., 1.],
                            [0., 0., 1., 1.]])
     
@@ -111,7 +154,6 @@ def test_sparse_vector_indexing():
     sv[:] = 2.
     assert sv.size == 4
     assert sv == [2., 2., 2., 2.]
-        
 
 def test_sparse_array_indexing():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
@@ -170,6 +212,20 @@ def test_sparse_array_indexing():
     assert sa == [[3., 3., 3., 3.],
                   [3., 3., 3., 3.]]
 
+def test_sparse_vector_methods():
+    arr = np.array([1., 2., 0., 4.5])
+    sv = sparse_vector(arr)
+    assert (sv.flat_array() == np.array([1., 2., 0., 4.5])).all()
+    sv.flat_array(np.array([1., 2., 0., 2]))
+    assert (sv.flat_array() == np.array([1., 2., 0., 2])).all()
+
+def test_sparse_array_methods():
+    arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
+    sa = sparse_array(arr)
+    assert (sa.flat_array() == np.array([1., 2., 0., 4.5, 0., 0., 1., 1.5])).all()
+    sa.flat_array(np.array([1., 2., 0., 0, 0., 0., 1., 2]))
+    assert (sa.flat_array() == np.array([1., 2., 0., 0, 0., 0., 1., 2])).all()
+
 if __name__ == '__main__':
     test_sparse_vector_creation()
     test_sparse_array_creation()
@@ -177,3 +233,5 @@ if __name__ == '__main__':
     test_sparse_array_math()
     test_sparse_vector_indexing()
     test_sparse_array_indexing()
+    test_sparse_vector_methods()
+    test_sparse_array_methods()

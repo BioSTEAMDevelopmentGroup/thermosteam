@@ -70,7 +70,6 @@ def xV_iter_3n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
     xV[:-1] = z/(1. + V * (Ks - 1.))
     return xV
 
-@njit(cache=True)
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
     vapor_mol[index] = vapor_data
     liquid_mol[index] = total_data - vapor_data
@@ -304,9 +303,9 @@ class VLE(Equilibrium, phases='lg'):
         self._x = None
         self._z_last = None
         self._phase_data = tuple(imol)
-        self._liquid_mol = liquid_mol = imol['l']
+        self._liquid_mol = imol['l']
         self._vapor_mol = imol['g']
-        self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
+        self._nonzero = None
         self._index = ()
     
     def __call__(self, *, T=None, P=None, V=None, H=None, S=None, x=None, y=None):
@@ -427,9 +426,9 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol = self._liquid_mol
         vapor_mol = self._vapor_mol
         mol = liquid_mol + vapor_mol
-        nonzero = mol > 0
+        nonzero = mol.nonzero_index()
         chemicals = self.chemicals
-        if (self._nonzero == nonzero).all():
+        if self._nonzero == nonzero:
             index = self._index
             reset = False
         else:
@@ -438,7 +437,7 @@ class VLE(Equilibrium, phases='lg'):
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
             reset = True     
-            self._nonzero = nonzero
+            self._nonzero = set(nonzero)
             self._index = index
         
         # Get overall composition

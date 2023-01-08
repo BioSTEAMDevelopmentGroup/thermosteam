@@ -19,6 +19,7 @@ from .indexer import nonzeros
 import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    import thermosteam as tmo
     from numpy.typing import NDArray
     from typing import Optional, Sequence, Dict, Tuple
 
@@ -240,12 +241,12 @@ class MultiStream(Stream):
                             raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
             self._init_indexer(flow, phases, chemicals, phase_flows)
             flow = getattr(self, 'i' + name)
-            material_data = self._imol._data / factor
+            material_data = self._imol.sparse_data / factor
             if total_flow: material_data *= total_flow / material_data.sum()
-            flow._data[:] = material_data
+            flow.sparse_data[:] = material_data
         else:
             self._init_indexer(flow, phases, chemicals, phase_flows)
-            if total_flow: self._imol._data *= total_flow / self.F_mol
+            if total_flow: self._imol.sparse_data *= total_flow / self.F_mol
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
@@ -298,7 +299,7 @@ class MultiStream(Stream):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
-        data = imol._data
+        data = imol.sparse_data
         total = data.sum()
         if total == 0.: 
             return 0. if flow else None
@@ -394,21 +395,7 @@ class MultiStream(Stream):
         False
         
         """
-        imol = self._imol
-        other_imol = other._imol
-        if imol.__class__ is other_imol.__class__ and imol._data is other_imol._data:
-            shares_data = True
-        elif isinstance(other, Stream):
-            phase = other.phase
-            substreams = self._streams
-            if phase in substreams:
-                substream = substreams[phase]
-                shares_data = other.shares_flow_rate_with(substream)
-            else:
-                shares_data = False
-        else:
-            shares_data = False
-        return shares_data
+        return self._imol.shares_data_with(other._imol)
     
     ### Property getters ###
     
@@ -489,20 +476,20 @@ class MultiStream(Stream):
     @property
     def mol(self) -> NDArray[float]:
         """Chemical molar flow rates (total of all phases)."""
-        mol = self._imol._data.sum(0)
-        mol.setflags(0)
+        mol = self._imol.sparse_data.sum(0)
+        mol.read_only = True
         return mol
     @property
     def mass(self) -> NDArray[float]:
         """Chemical mass flow rates (total of all phases)."""
         mass = self.mol * self.chemicals.MW
-        mass.setflags(0)
+        mass.read_only = True
         return mass
     @property
     def vol(self) -> NDArray[float]:
         """Chemical volumetric flow rates (total of all phases)."""
-        vol = self.ivol._data.sum(0)
-        vol.setflags(0)
+        vol = self.ivol.sparse_data.sum(0)
+        vol.read_only = True
         return vol
     
     ### Net flow properties ###
@@ -556,6 +543,10 @@ class MultiStream(Stream):
         """Molar solid fraction."""
         return get_phase_fraction(self, 'sS')
         
+    @property
+    def nonzero_chemical_indices(self):
+        return self._imol.sparse_data.nonzero_columns()
+    
     ### Methods ###
     
     def split_to(self, s1, s2, split, energy_balance=True):
@@ -775,11 +766,11 @@ class MultiStream(Stream):
         if other_ismultistream: self.phases = [*self.phases, *other.phases]
         IDs_index = self.chemicals.get_index(IDs)
         phase_index = self.imol.get_phase_index(phase)
-        data = self.imol.data
-        other_data = other.imol.data
+        data = self.imol.sparse_data
+        other_data = other.imol.sparse_data
         if exclude:
-            data = self.imol.data
-            other_data = other.imol.data
+            data = self.imol.sparse_data
+            other_data = other.imol.sparse_data
             original_data = data.copy()
             if other_ismultistream:
                 data[:] = other_data
@@ -1075,9 +1066,9 @@ class MultiStream(Stream):
                 flow_rates += f'{IDs[i]}' + spaces + f'{data[i]:.3g}'
             if too_many_chemicals:
                 spaces = ' ' * (maxlen - 3)
-                flow_rates += new_line + '... ' + spaces + f' {data[N_max:].sum():.3g}'
+                flow_rates += new_line + '...' + spaces + f'{data[N_max:].sum():.3g}'
             if composition:
-                dashes = '-' * maxlen
+                dashes = '-' * (maxlen - 2)
                 flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
             # Put it together
             phases_flow_rates_info += beginning + flow_rates + '\n'

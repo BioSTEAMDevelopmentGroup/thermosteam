@@ -598,15 +598,11 @@ class CompiledChemicals(Chemicals):
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)
         dct['light_chemicals'] = tuple_(light_chemicals)
-        dct['_has_vle'] = has_vle = np.zeros(size, dtype=bool)
-        dct['_has_lle'] = has_lle = np.zeros(size, dtype=bool)
+        dct['_vle_index'] = [index[i.ID] for i in vle_chemicals]
+        dct['_lle_index'] = [index[i.ID] for i in lle_chemicals]
         dct['_heavy_solutes'] = chemical_data_array(heavy_chemicals, 'N_solutes')
         dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
         dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
-        vle_index = [index[i.ID] for i in vle_chemicals]
-        lle_index = [index[i.ID] for i in lle_chemicals]
-        has_vle[vle_index] = True
-        has_lle[lle_index] = True
         
     @property
     def formula_array(self):
@@ -1128,7 +1124,7 @@ class CompiledChemicals(Chemicals):
         array([0, 2])
         
         """
-        return np.array([i for i, j in enumerate(self._has_vle & nonzeros) if j], int)
+        return [i for i in self._vle_index if i in nonzeros]
     
     def get_lle_indices(self, nonzeros):
         """
@@ -1144,7 +1140,7 @@ class CompiledChemicals(Chemicals):
         array([0, 2])
         
         """
-        return np.array([i for i, j in enumerate(self._has_lle & nonzeros) if j], int)
+        return [i for i in self._lle_index if i in nonzeros]
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"

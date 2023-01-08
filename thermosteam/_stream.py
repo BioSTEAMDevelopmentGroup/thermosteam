@@ -357,7 +357,7 @@ class Stream:
         100.0
         
         """
-        self._imol.sparse_data[:] *= scale
+        self._imol.sparse_data *= scale
     rescale = scale
 
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
@@ -1006,7 +1006,7 @@ class Stream:
     def F_mol(self, value):
         F_mol = self.F_mol
         if not F_mol: raise AttributeError("undefined composition; cannot set flow rate")
-        self._imol.sparse_data[:] *= value/F_mol
+        self._imol.sparse_data *= value/F_mol
     @property
     def F_mass(self) -> float:
         """Total mass flow rate [kg/hr]."""
@@ -1015,7 +1015,7 @@ class Stream:
     def F_mass(self, value):
         F_mass = self.F_mass
         if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol.sparse_data[:] *= value/F_mass
+        self.imol.sparse_data *= value/F_mass
     @property
     def F_vol(self) -> float:
         """Total volumetric flow rate [m3/hr]."""
@@ -1025,7 +1025,7 @@ class Stream:
     def F_vol(self, value):
         F_vol = self.F_vol
         if not F_vol: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol.sparse_data[:] *= value / F_vol
+        self.imol.sparse_data *= value / F_vol
     
     @property
     def H(self) -> float:
@@ -1173,6 +1173,7 @@ class Stream:
         """Molar composition."""
         mol = self.mol
         z = mol / mol.sum()
+        z = z.to_array()
         z.setflags(0)
         return z
     @property
@@ -1189,7 +1190,7 @@ class Stream:
     @property
     def z_vol(self) -> NDArray[float]:
         """Volumetric composition."""
-        vol = 1. * self.vol
+        vol = self.vol.to_array()
         z = vol / vol.sum()
         z.setflags(0)
         return z
@@ -1254,7 +1255,8 @@ class Stream:
     @property
     def available_chemicals(self) -> list[tmo.Chemical]:
         """All chemicals with nonzero flow."""
-        return [i for i, j in zip(self.chemicals, self.mol) if j]
+        chemicals = self.chemicals.tuple
+        return [chemicals[i] for i in self.nonzero_chemical_indices]
     
     def in_thermal_equilibrium(self, other):
         """
@@ -1760,7 +1762,7 @@ class Stream:
                 self.imol[CASs] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
-                    other.imol.data[:] = 0.
+                    other.imol.sparse_data[:] = 0.
                 else:
                     other_mol[:] = 0.
         else:
@@ -1788,7 +1790,7 @@ class Stream:
                 self.imol[tuple([CASs[i] for i in other_index])] = other_mol[other_index]
             if remove: 
                 if isinstance(other, tmo.MultiStream):
-                    other.imol.data[:, other_index] = 0
+                    other.imol.sparse_data[:, other_index] = 0
                 else:
                     other_mol[other_index] = 0
     
@@ -1990,11 +1992,15 @@ class Stream:
         data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, checkconvergence=False, convergenceiter=10) * total_flow
 
     @property
+    def nonzero_chemical_indices(self):
+        return [*self._imol.sparse_data.nonzero_index()]
+
+    @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
         """Chemicals cabable of liquid-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_vle_indices(self.mol != 0)
+        indices = chemicals.get_vle_indices(self.nonzero_chemical_indices)
         return [chemicals_tuple[i] for i in indices]
     
     @property
@@ -2002,7 +2008,7 @@ class Stream:
         """Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_lle_indices(self.mol != 0)
+        indices = chemicals.get_lle_indices(self.mol.nonzero_chemical_indices)
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs: Optional[Sequence[str]]=None):
@@ -2524,7 +2530,7 @@ class Stream:
         index.append((f"Pressure [{P_units}]", ''))
         data.append(f"{P:.6g}")
         for phase in self.phases:
-            if indexer.data.ndim == 2:
+            if indexer.sparse_data.ndim == 2:
                 flow_array = factor * indexer[phase, all_IDs]
             else:
                 flow_array = factor * indexer[all_IDs]
@@ -2601,7 +2607,7 @@ class Stream:
                 f"Pressure: {P:.6g} {P_units}"
             )
             for phase in self.phases:
-                stream = self[phase] if self.imol.data.ndim == 2 else self
+                stream = self[phase] if self.imol.sparse_data.ndim == 2 else self
                 flow = stream.get_total_flow(flow_units)
                 phase = valid_phases[phase]
                 if phase.islower(): phase = phase.capitalize()
