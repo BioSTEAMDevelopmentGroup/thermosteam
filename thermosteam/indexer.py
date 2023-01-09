@@ -393,7 +393,7 @@ class ChemicalIndexer(Indexer):
         elif repeated_data > 1:
             data *= repeated_data
         for i in sc_data: data += i
-        for left_index, right_index, idata in other_data: 
+        for idata, left_index, right_index in other_data: 
             data[left_index] += idata[right_index]
     
     def separate_out(self, other):
