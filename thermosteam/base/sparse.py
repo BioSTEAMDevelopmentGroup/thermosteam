@@ -433,9 +433,6 @@ class SparseArray:
             self_length = len(rows)
             if self_length == value_length:
                 for i, j in zip(rows, value): i += j
-            elif value_length == 1:
-                value = value[0]
-                for i in rows: i += value
             else:
                 raise IndexError(
                     f'cannot broadcast input array with length {value_length} to length {self_length}'
@@ -888,8 +885,7 @@ class SparseVector:
             other = other.dct
             for i in dct: dct[i] /= other[i]
         elif hasattr(other, '__iter__'):
-            for i, j in enumerate(other):
-                if i in dct: dct[i] /= j
+            for i in dct: dct[i] /= other[i]
         else:
             other = other
             if other:
@@ -918,14 +914,10 @@ class SparseVector:
     def __rtruediv__(self, other):
         dct = self.dct.copy()
         if hasattr(other, '__iter__'):
-            for i, j in enumerate(other):
-                if i in dct: dct[i] = j / dct[i] 
-                elif j: raise FloatingPointError('division by zero')
-        elif isinstance(other, SparseVector):
-            other = other.dct
-            for i in other: 
-                if i in dct: dct[i] = other[i] / dct[i]
-                else: raise FloatingPointError('division by zero')
+            for i in dct:
+                j = other[i]
+                if j: dct[i] = j / dct[i] 
+                else: del dct[i]
         else:
             other = other
             if other:
