@@ -712,6 +712,9 @@ class SparseVector:
     def sum(self):
         return sum(self.dct.values())
     
+    def mean(self):
+        return sum(self.dct.values()) / self.size
+    
     def max(self):
         return max(max(self.dct.values()), 0.)
     
