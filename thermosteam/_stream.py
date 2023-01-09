@@ -1137,19 +1137,20 @@ class Stream:
             return 0. if flow else None
         else:
             composition = data / total
+            composition_key = composition.dct
             if nophase:
                 literal = (thermal_condition._T, thermal_condition._P)
             else:
                 phase = imol._phase._phase
                 literal = (phase, thermal_condition._T, thermal_condition._P)
-            last_literal, last_composition = self._property_cache_key
-            if literal == last_literal and (composition == last_composition):
+            last_literal, last_composition_key = self._property_cache_key
+            if literal == last_literal and (composition_key == last_composition_key):
                 if name in property_cache: 
                     value = property_cache[name]
                     return value * total if flow else value
             else:
                 property_cache.clear()
-            self._property_cache_key = (literal, composition)
+            self._property_cache_key = (literal, composition_key.copy())
             calculate = getattr(self.mixture, name)
             if nophase:
                 property_cache[name] = value = calculate(
@@ -1992,7 +1993,7 @@ class Stream:
 
     @property
     def nonzero_chemical_indices(self):
-        return [*self._imol.sparse_data.nonzero_index()]
+        return [*self._imol.sparse_data.nonzero_keys()]
 
     @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
@@ -2389,7 +2390,7 @@ class Stream:
                 mol_v = F_mol_vapor * y
                 vapor.imol[IDs] = mol_v
                 liquid.imol[IDs] = mol - mol_v 
-                index = liquid.mol < 0.
+                index = liquid.mol.negative_index()
                 vapor.mol[index] += liquid.mol[index]
                 liquid.mol[index] = 0
                 ms.H = H 
@@ -2401,7 +2402,7 @@ class Stream:
             mol_v = F_mol_vapor * y
             vapor.imol[IDs] = mol_v
             liquid.imol[IDs] = mol - mol_v 
-            index = liquid.mol < 0.
+            index = liquid.mol.negative_index()
             vapor.mol[index] += liquid.mol[index]
             liquid.mol[index] = 0
         self.copy_like(vapor)

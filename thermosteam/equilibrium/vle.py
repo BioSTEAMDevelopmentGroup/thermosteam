@@ -426,7 +426,7 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol = self._liquid_mol
         vapor_mol = self._vapor_mol
         mol = liquid_mol + vapor_mol
-        nonzero = mol.nonzero_index()
+        nonzero = mol.nonzero_keys()
         chemicals = self.chemicals
         if self._nonzero == nonzero:
             index = self._index

@@ -50,9 +50,7 @@ def set_reaction_basis(rxn, basis):
 
 def as_material_array(material, basis, phases, chemicals):
     isa = isinstance
-    if isa(material, np.ndarray):
-        return material, None
-    elif isa(material, tmo.Stream):
+    if isa(material, tmo.Stream):
         if (phases or len(material.phases) != 1) and material.phases != phases:
             raise ValueError("reaction and stream phases do not match")
         if material.chemicals is chemicals:
@@ -60,13 +58,13 @@ def as_material_array(material, basis, phases, chemicals):
         else:
             config = material.chemicals, material.imol.reset_chemicals(chemicals)
         if basis == 'mol':
-            return material.imol.data, config
+            return material.imol.sparse_data, config
         elif basis == 'wt':
-            return material.imass.data, config
+            return material.imass.sparse_data, config
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     else:
-        raise ValueError('reaction material must be either an array or a stream')
+        return material, None
 
 
 # %%
@@ -384,8 +382,7 @@ class Reaction:
         material_array, config = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
-        isproperty = isinstance(material_array, property_array)
-        values = material_array.value if isproperty else material_array
+        values = material_array.to_array(dtype=float) if hasattr(material_array, 'to_array') else np.array(material_array)
         self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             negatives = values < 0.
@@ -406,7 +403,7 @@ class Reaction:
                     values[negatives] = 0.
         else:
             fn.remove_negligible_negative_values(values)
-        if isproperty: material_array[:] = values
+        material_array[:] = values
         if config: material._imol.reset_chemicals(*config)
         
     def force_reaction(self, material):
@@ -415,11 +412,10 @@ class Reaction:
                                            self._basis,
                                            self._phases,
                                            self._chemicals)
-        isproperty = isinstance(material_array, property_array)
-        values = material_array.value if isproperty else material_array
+        values = material_array.to_array(dtype=float) if hasattr(material_array, 'to_array') else np.array(material_array)
         self._reaction(values)
         fn.remove_negligible_negative_values(values)
-        if isproperty: material_array[:] = values
+        material_array[:] = values
         if config: material._imol.reset_chemicals(*config)
     
     def product_yield(self, product, basis=None, product_yield=None):
@@ -1545,8 +1541,7 @@ class ReactionSystem:
         material_array, config = as_material_array(
             material.copy(), self._basis, self._phases, self._chemicals
         )
-        isproperty = isinstance(material_array, property_array)
-        preconverted_material = material_array.value if isproperty else material_array
+        preconverted_material = material_array.to_array(dtype=float) if hasattr(material_array, 'to_array') else np.array(material_array)
         reactions = self.reactions
         for i, rxn in enumerate(reactions):
             if i == index: break

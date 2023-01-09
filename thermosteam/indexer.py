@@ -59,8 +59,7 @@ def find_main_phase(indexers, default):
 
 def nonzeros(IDs, data):
     data = sparse_vector(data)
-    index = data.nonzero_index()
-    return [IDs[i] for i in index], np.array([*data.nonzero_values()])
+    return [IDs[i] for i in data.nonzero_keys()], np.array([*data.nonzero_values()])
 
 def index_overlap(left_chemicals, right_chemicals, right_data):
     right_index, = np.where(right_data)
@@ -317,7 +316,7 @@ class ChemicalIndexer(Indexer):
         old_data = self.sparse_data
         old_container = (old_data, self.interface_cache)
         if container is None:
-            self.sparse_data = data = np.zeros(chemicals.size, float)
+            self.sparse_data = data = SparseVector.from_size(chemicals.size)
             self.interface_cache = {}
         else:
             data, self.interface_cache = container

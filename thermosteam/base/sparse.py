@@ -99,6 +99,14 @@ class SparseArray:
     def __len__(self):
         return self.rows.__len__()
     
+    def __abs__(self):
+        positive = abs
+        rows = [row.copy() for row in self.rows]
+        for row in rows:
+            dct = row.dct
+            for i in dct: dct[i] = positive(dct[i])
+        return SparseArray(rows)
+                
     def __float__(self):
         return self.to_array(self.vector_size, dtype=float)
     
@@ -157,8 +165,26 @@ class SparseArray:
         elif dim == 1:
             return np.array([i.any() for i in rows])
     
-    def __eq__(self, other):
+    def sparse_equal(self, other):
         return all([i.dct == j.dct for i, j in zip(self.rows, sparse_array(other).rows)])
+    
+    def __eq__(self, other):
+        return self.to_array() == other
+    
+    def __ne__(self, other):
+        return self.to_array() != other
+    
+    def __gt__(self, other):
+        return self.to_array() > other
+    
+    def __lt__(self, other):
+        return self.to_array() < other
+    
+    def __ge__(self, other):
+        return self.to_array() >= other
+    
+    def __le__(self, other):
+        return self.to_array() <= other
     
     def __getitem__(self, index):
         rows = self.rows
@@ -541,6 +567,19 @@ class SparseVector:
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse vector')
     
+    __eq__ = SparseArray.__eq__
+    __ne__ = SparseArray.__ne__
+    __gt__ = SparseArray.__gt__
+    __lt__ = SparseArray.__lt__
+    __ge__ = SparseArray.__ge__
+    __le__ = SparseArray.__le__
+    
+    def __abs__(self):
+        positive = abs
+        dct = self.dct.copy()
+        for i in dct: dct[i] = positive(dct[i])
+        return SparseVector.from_dict(dct, self.size)
+    
     def __iter__(self):
         dct = self.dct
         for i in range(self.size):
@@ -601,7 +640,7 @@ class SparseVector:
         new.read_only = False
         return new
     
-    def __eq__(self, other):
+    def sparse_equal(self, other):
         other = sparse_vector(other)
         return self.dct == other.dct
     
@@ -622,7 +661,15 @@ class SparseVector:
         elif (index:=int(index)) in dct:
             return dct[index]
     
-    def nonzero_index(self):
+    def negative_index(self):
+        dct = self.dct
+        return [i for i in dct if dct[i] < 0.]
+    
+    def positive_index(self):
+        dct = self.dct
+        return [i for i in dct if dct[i] > 0.]
+    
+    def nonzero_keys(self):
         return self.dct.keys()
     
     def nonzero_values(self):
@@ -652,6 +699,7 @@ class SparseVector:
     
     def copy_like(self, other):
         dct = self.dct
+        if dct is other.dct: return
         dct.clear()
         dct.update(other.dct)
     
@@ -676,8 +724,8 @@ class SparseVector:
 
     def __setitem__(self, index, value):
         if self.read_only: raise ValueError('assignment destination is read-only')
+        dct = self.dct
         if hasattr(index, '__iter__'):
-            dct = self.dct
             if hasattr(value, '__iter__'):
                 for i, j in zip(index, value): 
                     if j: dct[int(i)] = j
@@ -686,10 +734,10 @@ class SparseVector:
                 if value:
                     for i in index: dct[int(i)] = value
                 else:
-                    dct.clear()
+                    for i in index: 
+                        if (i:=int(i)) in dct: del dct[i]
         elif index == open_slice:
             if value is self: return
-            dct = self.dct
             dct.clear()
             if value.__class__ is SparseVector:
                 dct.update(value.dct)
@@ -700,28 +748,37 @@ class SparseVector:
             elif value != 0.:
                 for i in range(self.size): dct[i] = value
         elif value:
-            self.dct[index] = value
+            dct[int(index)] = value
+        elif (index:=int(index)) in dct:
+            del dct[int(index)]
     
     def __iadd__(self, other):
         dct = self.dct
         if other.__class__ is SparseVector:
             for i, j in other.dct.items():
                 if i in dct:
-                    dct[i] += j
+                    j += dct[i]
+                    if j: dct[i] = j
+                    else: del dct[i]
                 else:
                     dct[i] = j
         elif hasattr(other, '__iter__'):
             for i, j in enumerate(other):
-                if j: 
-                    if i in dct:
-                        dct[i] += j
-                    else:
-                        dct[i] = j
-
+                if not j: continue
+                if i in dct:
+                    j += dct[i]
+                    if j: dct[i] = j
+                    else: del dct[i]
+                else:
+                    dct[i] = j
         elif other != 0.:
             for i in range(self.size):
-                if i in dct: dct[i] += other
-                else: dct[i] = other
+                if i in dct: 
+                    j = dct[i] + other
+                    if j: dct[i] = j
+                    else: del dct[i]
+                else:
+                    dct[i] = other
         return self
     
     def __add__(self, other):
@@ -735,10 +792,8 @@ class SparseVector:
             for i, j in other.dct.items():
                 if i in dct:
                     j = dct[i] - j
-                    if j:
-                        dct[i] = j
-                    else: 
-                        del dct[i]
+                    if j: dct[i] = j
+                    else: del dct[i]
                 else:
                     dct[i] = -j
         elif hasattr(other, '__iter__'):
@@ -746,16 +801,18 @@ class SparseVector:
                 if not j: continue
                 if i in dct:
                     j = dct[i] - j
-                    if j:
-                        dct[i] = j
-                    else: 
-                        del dct[i]
+                    if j: dct[i] = j
+                    else: del dct[i]
                 else:
                     dct[i] = -j
         elif other != 0.:
             for i in range(self.size):
-                if i in dct: dct[i] -= other
-                else: dct[i] = -other
+                if i in dct: 
+                    j = dct[i] - other
+                    if j: dct[i] = j
+                    else: del dct[i]
+                else:
+                    dct[i] = -other
         return self
     
     def __sub__(self, other):
@@ -767,13 +824,13 @@ class SparseVector:
         dct = self.dct
         if other.__class__ is SparseVector:
             other = other.dct
-            for i in dct:
+            for i in tuple(dct):
                 if i in other:
                     dct[i] *= other[i]
                 else:
                     del dct[i]
         elif hasattr(other, '__iter__'):
-            for i in dct:
+            for i in tuple(dct):
                 j = other[i]
                 if j: dct[i] *= j
                 else: del dct[i]

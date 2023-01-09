@@ -178,7 +178,7 @@ class LLE(Equilibrium, phases='lL'):
         imol = self._imol
         imol['L'] = mol =  imol['l'] + imol['L']
         imol['l'] = 0
-        index = self.chemicals.get_lle_indices(mol.nonzero_index())
+        index = self.chemicals.get_lle_indices(mol.nonzero_keys())
         mol = mol[index]
         chemicals = self.chemicals.tuple
         lle_chemicals = [chemicals[i] for i in index]
