@@ -513,23 +513,21 @@ class Stream:
         False
         >>> s1['g'].shares_flow_rate_with(s2['g'])
         False
+        >>> s1 = tmo.MultiStream('s1')
+        >>> other = s1.flow_proxy()
+        >>> s1.shares_flow_rate_with(other)
+        True
+        >>> s1 = tmo.MultiStream('s1', phases=('l', 'g'))
+        >>> s1.shares_flow_rate_with(s1['g'])
+        True
+        >>> s2 = tmo.MultiStream('s2', phases=('l', 'g'))
+        >>> s2.shares_flow_rate_with(s1['g'])
+        False
+        >>> s1.shares_flow_rate_with(s2)
+        False
         
         """
-        imol = self._imol
-        other_imol = other._imol
-        if imol.__class__ is other_imol.__class__ and imol.sparse_data is other_imol.sparse_data:
-            shares_data = True
-        elif isinstance(other, tmo.MultiStream):
-            phase = self.phase
-            substreams = other._streams
-            if phase in substreams:
-                substream = substreams[phase]
-                shares_data = self.shares_flow_rate_with(substream)
-            else:
-                shares_data = False
-        else:
-            shares_data = False
-        return shares_data
+        return self._imol.sparse_data.shares_data_with(other._imol.sparse_data)
 
     def as_stream(self):
         """Does nothing."""

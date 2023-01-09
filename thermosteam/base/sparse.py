@@ -125,7 +125,7 @@ class SparseArray:
         return keys
     
     def shares_data_with(self, other):
-        return self.base.intersection(other.base)
+        return bool(self.base.intersection(other.base))
     
     def flat_array(self, arr=None, vector_size=None, dtype=None):
         rows = self.rows
