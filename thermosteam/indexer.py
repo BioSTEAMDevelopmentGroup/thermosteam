@@ -77,12 +77,11 @@ def index_overlap(left_chemicals, right_chemicals, right_data):
         N = len(CASs)
         left_index = np.zeros(N, dtype=int)
         isa = isinstance
-        ndarray = np.ndarray
         for i in range(N):
             CAS = CASs[i]
             if CAS in dct:
                 index = dct[CAS]
-                if isa(index, ndarray): raise RuntimeError('conflict in chemical groups and aliases between property packages')
+                if isa(index, list): raise RuntimeError('conflict in chemical groups and aliases between property packages')
                 left_index[i] = index
             else:
                 raise UndefinedChemicalAlias(CAS)
@@ -216,8 +215,7 @@ class SplitIndexer(Indexer):
             self.sparse_data[index] = data
         elif kind == 2:
             sparse_data = self.sparse_data
-            isa = isinstance
-            if isa(data, Iterable):
+            if hasattr(data, '__iter__'):
                 for i, x in zip(index, data): sparse_data[i] = x
             else:
                 for i in index: sparse_data[i] = data
@@ -801,18 +799,17 @@ class MaterialIndexer(Indexer):
                 data = self.sparse_data
                 isa = isinstance
                 phase, index = index
-                ndarray = np.ndarray
                 if phase == slice(None):
                     values = np.zeros([len(self.phases), len(index)])
                     for d, s in enumerate(index):
-                        if isa(s, ndarray): 
+                        if isa(s, list): 
                             values[:, d] = data[phase, s].sum(1)
                         else:
                             values[:, d] = data[phase, s]
                 else:
                     values = np.zeros(len(index))
                     for d, s in enumerate(index):
-                        if isa(s, ndarray): 
+                        if isa(s, list): 
                             values[d] = data[phase, s].sum()
                         else:
                             values[d] = data[phase, s]
@@ -835,10 +832,9 @@ class MaterialIndexer(Indexer):
             sparse_data = self.sparse_data
             group_compositions = self.group_compositions
             isa = isinstance
-            ndarray = np.ndarray
             for n in range(len(index)):
                 i = index[n]
-                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, ndarray) else data[n]
+                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, list) else data[n]
         else:
             raise IndexError('unknown error')
     

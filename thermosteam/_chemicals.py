@@ -1083,11 +1083,6 @@ class CompiledChemicals(Chemicals):
                     if isa(i, list): 
                         kind = 2
                         break
-                else:
-                    try:
-                        index = np.array(index, dtype=int)
-                    except:
-                        print(index)
             elif key is ...:
                 index = slice(None)
             else: # pragma: no cover
