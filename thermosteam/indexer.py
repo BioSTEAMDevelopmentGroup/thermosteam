@@ -61,8 +61,7 @@ def nonzeros(IDs, data):
     data = sparse_vector(data)
     return [IDs[i] for i in data.nonzero_keys()], np.array([*data.nonzero_values()])
 
-def index_overlap(left_chemicals, right_chemicals, right_data):
-    right_index, = np.where(right_data)
+def index_overlap(left_chemicals, right_chemicals, right_index):
     CASs_all = right_chemicals.CASs
     CASs = tuple([CASs_all[i] for i in right_index])
     cache = left_chemicals._index_cache
@@ -75,7 +74,7 @@ def index_overlap(left_chemicals, right_chemicals, right_data):
     else:
         dct = left_chemicals._index
         N = len(CASs)
-        left_index = np.zeros(N, dtype=int)
+        left_index = [0] * N
         isa = isinstance
         for i in range(N):
             CAS = CASs[i]
@@ -384,7 +383,7 @@ class ChemicalIndexer(Indexer):
                     sc_data.append(idata)
                 else:
                     other_data.append(
-                        (idata, *index_overlap(chemicals, ichemicals, idata))
+                        (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                     )
         if repeated_data == 0:
             data.clear()
@@ -399,7 +398,7 @@ class ChemicalIndexer(Indexer):
             self.sparse_data -= other.sum_across_phases()
         else:
             other_data = other.sparse_data
-            left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+            left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
             self.sparse_data[left_index] -= other_data[right_index]
     
     def to_material_indexer(self, phases):
@@ -414,7 +413,7 @@ class ChemicalIndexer(Indexer):
         else:
             self.empty()
             other_data = other.sparse_data
-            left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+            left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
             self.sparse_data[left_index] = other_data[right_index]
         self.phase = other.phase
     
@@ -591,7 +590,7 @@ class MaterialIndexer(Indexer):
                 self.sparse_data[phase_index, :] = other_data
             else:
                 other_data = other.sparse_data
-                left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
+                left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 self.sparse_data[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
@@ -599,7 +598,7 @@ class MaterialIndexer(Indexer):
             else:
                 self.empty()
                 other_data = other.sparse_data
-                left_index, other_data = index_overlap(self._chemicals, other._chemicals, other_data.any(0))
+                left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_columns()])
                 self.sparse_data[:, left_index] = other_data[:, right_index]
     
     def mix_from(self, others):
@@ -626,7 +625,7 @@ class MaterialIndexer(Indexer):
                             spsc_data.append(idata)
                         else:
                             sp_data.append(
-                                (idata, *index_overlap(chemicals, ichemicals, idata.any(0)))
+                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_colums()]))
                             )
                     else:
                         if chemicals is ichemicals:
@@ -639,7 +638,7 @@ class MaterialIndexer(Indexer):
                             for phase, idata in zip(i.phases, idata):
                                 if not idata.any(): continue
                                 op_data.append(
-                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, idata))
+                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                                 )
                 elif isa(i, ChemicalIndexer):
                     if idata.shares_data_with(data): idata = idata.copy()
@@ -649,7 +648,7 @@ class MaterialIndexer(Indexer):
                         )
                     else:
                         op_data.append(
-                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, idata))
+                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                         )
                 else:
                     raise ValueError("can only mix from chemical or material indexers")

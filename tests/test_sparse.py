@@ -76,12 +76,13 @@ def test_sparse_vector_math():
     
     sv[:] /= sv
     assert sv.sparse_equal(np.array([1., 1., 0., 1.]))
-    
-    assert (2. / sv).sparse_equal([2., 2., 0., 2.])
+    sv[:] = 1
+    assert (2. / sv).sparse_equal([2., 2., 2., 2.])
     assert ([2, 1, 0, 3] / sv).sparse_equal([2, 1, 0, 3])
     
+    sv[:] = [0., 1]
     with pytest.raises(FloatingPointError):
-        [2, 1, 0.1, 3] / sv
+        print(repr([2, 1, 0.1, 3] / sv))
     
 def test_sparse_array_math():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])

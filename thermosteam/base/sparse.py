@@ -914,16 +914,18 @@ class SparseVector:
     def __rtruediv__(self, other):
         dct = self.dct.copy()
         if hasattr(other, '__iter__'):
-            for i in dct:
-                j = other[i]
-                if j: dct[i] = j / dct[i] 
+            for i, j in enumerate(other):
+                if j:
+                    if i in dct:
+                        dct[i] = j / dct[i] 
+                    else:
+                        raise FloatingPointError('division by zero')
                 else: del dct[i]
+        elif other:
+            if len(dct) != self.size: raise FloatingPointError('division by zero')
+            for i in dct: dct[i] = other / dct[i]
         else:
-            other = other
-            if other:
-                for i in dct: dct[i] = other / dct[i]
-            else:
-                dct = {}
+            dct = {}
         return SparseVector.from_dict(dct, self.size)
     
     shares_data_with = SparseArray.shares_data_with
