@@ -17,13 +17,13 @@ def sparse_vector(arr, copy=False, size=None):
     Convert 1-d array to a SparseVector object.
 
     """
-    if isinstance(arr, SparseVector):
+    if arr.__class__ is SparseVector:
         return arr.copy() if copy else arr
     else:
         return SparseVector(arr, size)
 
 def nonzero_items(arr):
-    if isinstance(arr, SparseVector):
+    if arr.__class__ is SparseVector:
         return arr.dct.items()
     else:
         return [(i, j) for i, j in enumerate(arr) if j]
@@ -33,7 +33,7 @@ def sparse_array(arr, copy=False, vector_size=None):
     Convert 2-d array to a SparseArray object.
 
     """
-    if isinstance(arr, SparseArray):
+    if arr.__class__ is SparseArray:
         return arr.copy() if copy else arr
     else:
         return SparseArray(arr, vector_size)
@@ -658,11 +658,13 @@ class SparseVector:
         return argmax
     
     def sum_of(self, index):
+        dct = self.dct
         if hasattr(index, '__iter__'):
-            dct = self.dct
             return sum([dct[i] for i in index if i in dct])
         elif (index:=int(index)) in dct:
             return dct[index]
+        else:
+            return 0.
     
     def remove_negatives(self):
         dct = self.dct

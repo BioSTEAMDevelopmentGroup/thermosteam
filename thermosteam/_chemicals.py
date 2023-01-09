@@ -1074,18 +1074,20 @@ class CompiledChemicals(Chemicals):
         except KeyError:
             isa = isinstance
             kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
-            ndarray = np.ndarray
             if isa(key, str):
                 index = self.index(key)
-                if isa(index, ndarray): kind = 1 
+                if isa(index, list): kind = 1 
             elif isa(key, tuple):
                 index = self.indices(key)
                 for i in index:
-                    if isa(i, ndarray): 
+                    if isa(i, list): 
                         kind = 2
                         break
                 else:
-                    index = np.array(index, dtype=int)
+                    try:
+                        index = np.array(index, dtype=int)
+                    except:
+                        print(index)
             elif key is ...:
                 index = slice(None)
             else: # pragma: no cover
