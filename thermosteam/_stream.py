@@ -491,8 +491,7 @@ class Stream:
          flow (kmol/hr): Water  1
 
         """
-        data = self._imol.sparse_data
-        data[data < 0.] = 0.
+        self._imol.sparse_data.remove_negatives()
 
     def shares_flow_rate_with(self, other):
         """

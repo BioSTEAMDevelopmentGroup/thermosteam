@@ -113,6 +113,9 @@ class SparseArray:
     def __int__(self):
         return self.to_array(self.vector_size, dtype=int)
     
+    def remove_negatives(self):
+        for i in self.rows: i.remove_negatives
+    
     def nonzero_rows(self):
         return [i for i, j in enumerate(self.rows) if j.dct]
     
@@ -660,6 +663,11 @@ class SparseVector:
             return sum([dct[i] for i in index if i in dct])
         elif (index:=int(index)) in dct:
             return dct[index]
+    
+    def remove_negatives(self):
+        dct = self.dct
+        for i in tuple(dct): 
+            if dct[i] < 0.: del dct[i]
     
     def negative_index(self):
         dct = self.dct
