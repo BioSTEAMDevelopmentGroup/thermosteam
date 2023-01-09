@@ -86,7 +86,7 @@ def index_overlap(left_chemicals, right_chemicals, right_data):
             else:
                 raise UndefinedChemicalAlias(CAS)
         cache[CASs] = (left_index, 0)
-        if len(cache) > 1000: cache.pop(cache.__iter__().__next__())
+        if len(cache) > 100: cache.pop(cache.__iter__().__next__())
         return left_index, right_index
 
 # %% Abstract indexer

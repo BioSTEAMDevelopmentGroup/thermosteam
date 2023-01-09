@@ -373,6 +373,27 @@ class SparseArray:
         else:
             raise ValueError('axis must be either 0, 1, or None')
     
+    def mean(self, axis=None, keepdims=False):
+        rows = self.rows
+        if axis is None:
+            value = sum([sum(i.dct.values()) for i in rows]) / sum([i.size for i in self.rows])
+            if keepdims: value = SparseArray([[value]], 1)
+            return value
+        elif axis == 0:
+            value = SparseVector(sum_sparse_vectors(rows), size=self.vector_size)
+            value /= len(rows)
+            if keepdims: value = SparseArray([value])
+            return value
+        elif axis == 1:
+            if keepdims:
+                arr = np.zeros([len(rows)])
+            else:
+                arr = np.zeros(len(rows))
+            for i, j in enumerate(rows): arr[i] = sum(j.dct.values()) / j.size
+            return arr
+        else:
+            raise ValueError('axis must be either 0, 1, or None')
+    
     def max(self, axis=None):
         rows = self.rows
         if axis is None:
