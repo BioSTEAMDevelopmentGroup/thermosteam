@@ -139,7 +139,11 @@ class SparseArray:
         return self.to_array(self.vector_size, dtype=int)
     
     def nonzero_index(self):
-        return [(i, j) for i, row in enumerate(self.rows) for j in row.dct]
+        m = []; n = []
+        for i, row in enumerate(self.rows):
+            for j, value in row.dct.items():
+                m.append(i); n.append(j)
+        return m, n
     
     def nonzero_values(self):
         for row in self.rows:
@@ -206,7 +210,7 @@ class SparseArray:
             return arr
         else:
             dcts = [i.dct for i in rows]
-            for i in range(N): dcts[i].clear()
+            for i in dcts: i.clear()
             for j, value in enumerate(arr):
                 if value: 
                     i = int(j / vector_size)
@@ -279,9 +283,9 @@ class SparseArray:
             elif md == 1: 
                 if nd == 0:
                     n = n.__index__()
-                    return np.array([rows[i].dct[n] for i in m])
+                    return np.array([rows[i].dct.get(n, 0.) for i in m])
                 elif nd == 1:
-                    return np.array([rows[i].dct[j.__int__()] for i, j in zip(m, n)])
+                    return np.array([rows[i].dct.get(j.__int__(), 0.) for i, j in zip(m, n)])
                 else:
                     raise IndexError(f'column index can be at most 1-D, not {nd}-D')
             else:
@@ -498,12 +502,14 @@ class SparseArray:
     def max(self, axis=None):
         rows = self.rows
         if axis is None:
-            return max(max([max(i.dct.values()) for i in rows]), 0.)
+            return max([i.max() for i in rows])
         elif axis == 0:
             keys = set()
             for i in rows: keys.update(i)
             dcts = [i.dct for i in rows]
-            return SparseVector.from_dict({i: max([j[i] for j in dcts if i in j]) for i in keys})
+            return SparseVector.from_dict(
+                {i: (max(x) if (x:=[j[i] for j in dcts if i in j]) else 0.) for i in keys}
+            )
         elif axis == 1:
             arr = np.zeros(len(rows))
             for i, j in enumerate(rows): arr[i] = j.max()
@@ -514,12 +520,14 @@ class SparseArray:
     def min(self, axis=None):
         rows = self.rows
         if axis is None:
-            return min(min([min(i.dct.values()) for i in rows]), 0.)
+            return min([i.max() for i in rows])
         elif axis == 0:
             keys = set()
             for i in rows: keys.update(i)
             dcts = [i.dct for i in rows]
-            return SparseVector.from_dict({i: min([j[i] for j in dcts if i in j]) for i in keys})
+            return SparseVector.from_dict(
+                {i: (min(x) if (x:=[j[i] for j in dcts if i in j]) else 0.) for i in keys}
+            )
         elif axis == 1:
             arr = np.zeros(len(rows))
             for i, j in enumerate(rows): arr[i] = j.min()
@@ -802,7 +810,7 @@ class SparseVector:
         return [i for i in dct if dct[i] > 0.],
     
     def nonzero_index(self):
-        return [*self.dct.keys()]
+        return [*self.dct.keys()],
     
     def nonzero_keys(self):
         return self.dct.keys()
@@ -817,13 +825,13 @@ class SparseVector:
         return sum(self.dct.values())
     
     def mean(self):
-        return sum(self.dct.values()) / self.size
+        return sum(self.dct.values()) / self.size if self.dct else 0.
     
     def max(self):
-        return max(max(self.dct.values()), 0.)
+        return max(self.dct.values()) if self.dct else 0.
     
     def min(self):
-        return min(min(self.dct.values()), 0.)
+        return min(self.dct.values()) if self.dct else 0.
     
     def to_array(self, vector_size=None, dtype=None):
         if vector_size is None: vector_size = self.size

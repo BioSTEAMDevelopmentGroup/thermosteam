@@ -281,6 +281,13 @@ def test_sparse_vector_methods():
     assert (sv.flat_array() == np.array([1., 2., 0., 4.5])).all()
     sv.flat_array(np.array([1., 2., 0., 2]))
     assert (sv.flat_array() == np.array([1., 2., 0., 2])).all()
+    
+    arr = np.array([[1., 2., 0., 4.5], [1., 2., 0., 4.5]])
+    sa = sparse_array(arr)
+    
+    assert (sa.flat_array() == np.array([1., 2., 0., 4.5, 1., 2., 0., 4.5])).all()
+    sa.flat_array(np.array([1., 2., 0., 2, 1., 2., 0., 2]))
+    assert (sa == np.array([[1., 2., 0., 2], [1., 2., 0., 2]])).all()
 
 def test_sparse_array_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
