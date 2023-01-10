@@ -546,7 +546,7 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
     if bottom_chemicals:
         bottom.imol[bottom_chemicals] = bottom_flows = feed.imol[bottom_chemicals]
-        Fb = bottom_flows.sum()
+        Fb = bottom_flows.sum() if hasattr(bottom_flows, 'sum') else bottom_flows
     else:
         Fb = 0.
     F_mol += Fa + Fb

@@ -64,30 +64,31 @@ def as_material_array(material, basis, phases, chemicals):
         else:
             config = material.chemicals, material.imol.reset_chemicals(chemicals)
         if basis == 'mol':
-            return material._imol.sparse_data, config, False
+            return material._imol.sparse_data, config, None
         elif basis == 'wt':
-            return material.imass.sparse_data.copy(), config, True
+            original = material.imass.sparse_data
+            return original.copy(), config, original
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     elif material.__class__ in (SparseVector, SparseArray):
         ndim = material.ndim
         if ndim == 1:
             if hasattr(material.dct, 'dct'):
-                return (material.copy(), None, True)
+                return (material.copy(), None, material)
             else:
-                return (material, None, True)
+                return (material, None, None)
         elif ndim == 2:
             for i in material.rows:
                 if hasattr(i.dct, 'dct'):
-                    return material.copy(), None, True
+                    return material.copy(), None, material
             else:
-                return material.copy(), None, False
+                return material.copy(), None, None
         else:
             raise Exception('unknown error')
     elif phases:
-        return SparseArray(material), None, True
+        return SparseArray(material), None, material
     else:
-        return SparseVector(material), None, True
+        return SparseVector(material), None, material
 
 
 # %%
@@ -401,7 +402,7 @@ class Reaction:
         return self
     
     def __call__(self, material):
-        values, config, iscopy = as_material_array(
+        values, config, original = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
         try:
@@ -429,17 +430,17 @@ class Reaction:
                     values[negative_index] = 0.
         else:
             fn.remove_negligible_negative_values(values)
-        if iscopy: material[:] = values
+        if original is not None: original[:] = values
         if config: material._imol.reset_chemicals(*config)
         
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
-        values, config, iscopy = as_material_array(
+        values, config, original = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
         self._reaction(values)
         fn.remove_negligible_negative_values(values)
-        if iscopy: material[:] = values
+        if original is not None: original[:] = values
         if config: material._imol.reset_chemicals(*config)
     
     def product_yield(self, product, basis=None, product_yield=None):
@@ -1569,10 +1570,10 @@ class ReactionSystem:
             Subindex of reaction to calculate reactant flux.    
         
         """
-        values, config, iscopy = as_material_array(
+        values, config, original = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
-        preconverted_material = values if iscopy else values.copy()
+        preconverted_material = values if original else values.copy()
         reactions = self.reactions
         for i, rxn in enumerate(reactions):
             if i == index: break
