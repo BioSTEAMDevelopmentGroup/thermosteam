@@ -162,7 +162,7 @@ def test_sparse_vector_indexing():
     assert (sv[[1, 2]] == np.array([3, 2])).all()
     
     with pytest.raises(IndexError):
-        sv[sv == 0] = 1.
+        sv[sv == 0] = 4 * [1.]
     
     with pytest.raises(IndexError):
         sv[(1, 2)]
@@ -174,8 +174,17 @@ def test_sparse_vector_indexing():
         sv[1] = [0., 1]
 
 def test_sparse_array_indexing():
+    arr = np.array([[1., 0.], [0., 1.5]])
+    sa = sparse_array(arr)
+    with pytest.raises(IndexError):
+        sa[sa == 0] = 0.
+    
+    with pytest.raises(IndexError):
+        sa[sa == 0] = [0., 1]
+    
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse_array(arr)
+    
     old_rows = [i.copy() for i in sa.rows]
     sa[0, 20] = 0.
     assert (sa == old_rows).all()

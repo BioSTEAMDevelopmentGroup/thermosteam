@@ -873,10 +873,6 @@ class SparseVector:
                         raise IndexError(
                             'cannot set an array element with a sequence'
                         )
-                    if index.__class__.__name__[0] == 'b':
-                        raise IndexError(
-                            'masks (boolan indexing) are is not supported'
-                        )
                     index = index.__index__()
                     if value:
                         dct[index] = value
@@ -887,7 +883,7 @@ class SparseVector:
                 for i, j in zip(index, value): 
                     if i.__class__.__name__[0] == 'b':
                         raise IndexError(
-                            'masks (boolan indexing) are is not supported'
+                            'masks (boolean indexes) are is not supported'
                         )
                     i = i.__index__()
                     if j: dct[i] = j
@@ -897,18 +893,18 @@ class SparseVector:
                     f'cannot broadcast {vd}-D array on to 1-D sparse vector'
                 )
             elif value:
-                for i in index: 
+                for i in index:
                     if i.__class__.__name__[0] == 'b':
                         raise IndexError(
-                            'masks (boolan indexing) are is not supported'
+                            'masks (boolean indexes) are is not supported'
                         )
                     i = i.__index__()
                     dct[i] = value
             else:
-                for i in index: 
+                for i in index:
                     if i.__class__.__name__[0] == 'b':
                         raise IndexError(
-                            'masks (boolan indexing) are is not supported'
+                            'masks (boolean indexes) are is not supported'
                         )
                     i = i.__index__()
                     if i in dct: del dct[i]

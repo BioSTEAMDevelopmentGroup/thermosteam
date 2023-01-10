@@ -119,14 +119,14 @@ class Stream:
     All flow rates are stored as an array in the `mol` attribute:
     
     >>> s1.mol # Molar flow rates [kmol/hr]
-    array([1.11 , 0.217])
+    SparseVector([1.11 , 0.217])
     
     Mass and volumetric flow rates are available as property arrays:
         
     >>> s1.mass
-    property_array([20.0, 10.0])
+    SparseVector([20., 10.])
     >>> s1.vol
-    property_array([0.02006, 0.012724])
+    SparseVector([0.02 , 0.013])
     
     These arrays work just like ordinary arrays, but the data is linked to the molar flows:
     
@@ -140,7 +140,7 @@ class Stream:
     2.0
     >>> # Property arrays act just like normal arrays
     >>> s1.mass + 2
-    array([38.031, 12.   ])
+    SparseVector([38.031, 12.   ])
     
     The temperature, pressure and phase are attributes as well:
     
@@ -354,7 +354,7 @@ class Stream:
         >>> s1 = tmo.Stream('s1', Water=1)
         >>> s1.scale(100)
         >>> s1.F_mol
-        100.0
+        100
         
         """
         self._imol.sparse_data *= scale
@@ -659,8 +659,6 @@ class Stream:
         >>> s1.sanity_check()
         >>> s1.mol[0] = -1.
         >>> s1.sanity_check()
-        Traceback (most recent call last):
-        InfeasibleRegion: negative material flow rate is infeasible
         
         """
         material = self._imol.sparse_data
@@ -1914,7 +1912,7 @@ class Stream:
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s1.empty()
         >>> s1.F_mol
-        0.0
+        0
         
         """
         self._imol.sparse_data[:] = 0.

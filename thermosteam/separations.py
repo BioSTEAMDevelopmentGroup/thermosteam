@@ -49,12 +49,12 @@ def check_partition_infeasibility(infeasible_index, strict, stacklevel=1):
 
 
 def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
-    mol = np.asarray(mol)
-    maxmol = np.asarray(maxmol)
-    infeasible_index = mol < 0.
+    mol = mol
+    maxmol = maxmol
+    infeasible_index, = np.where(mol < 0.)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = 0.
-    infeasible_index = mol > maxmol
+    infeasible_index, = np.where(mol > maxmol)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = maxmol[infeasible_index]
 
@@ -317,7 +317,6 @@ def chemical_splits(a, b=None, mixed=None):
      
     """
     mixed_mol = mixed.mol.copy() if mixed else a.mol + b.mol
-    mixed_mol[mixed_mol==0.] = 1.
     return tmo.indexer.ChemicalIndexer.from_data(a.mol / mixed_mol)
 
 def vle_partition_coefficients(top, bottom):
@@ -774,7 +773,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     >>> chemical_IDs = ('Water', 'Ethanol')
     >>> tmo.separations.material_balance(chemical_IDs, variable_inlets, constant_inlets, constant_outlets)
     >>> tmo.Stream.sum([in_a, in_b, in_c]).mol - tmo.Stream.sum([out_a, out_b]).mol # Molar flow rates entering and leaving are equal
-    array([0., 0.])
+    SparseVector([])
     
     Vary inlet flow rates to satisfy outlet composition:
         
@@ -1272,6 +1271,8 @@ class MultiStageEquilibrium:
         top, bottom = self.multi_stream.phases
         stages = self.stages
         mol = self._get_net_outlets()
+        mol = np.asarray(mol)
+        mol[mol < 0] = 1.
         factor = self._get_net_feeds() / mol
         stages[0].multi_stream[top].mol *= factor
         stages[-1].multi_stream[bottom].mol *= factor
@@ -1281,7 +1282,6 @@ class MultiStageEquilibrium:
         for i, s in enumerate(self.bottom_side_draws):
             if s and i != n: stages[i].multi_stream[bottom].mol *= factor
     
-    # TODO: Numba all array operations here
     def update(self, top_flow_rates):
         top, bottom = self.multi_stream.phases
         stages = self.stages
@@ -1301,7 +1301,6 @@ class MultiStageEquilibrium:
             stage = stages[i]
             top, bottom = stage.multi_stream
             mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
-            mol[mol == 0] = 1
             factor = sum([i.mol for i in stage.feeds]) / mol
             stage.multi_stream.imol.sparse_data[:] *= factor
         self.correct_overall_mass_balance()
@@ -1468,18 +1467,14 @@ class MultiStageEquilibrium:
         )
         mol = top_flow_rates[0] 
         mol_new = new_top_flow_rates[0]
-        mol_errors = np.abs(mol - mol_new)
-        positive_index = mol_errors > 1e-16
-        mol_errors = mol_errors[positive_index]
-        if mol_errors.size == 0:
-            mol_error = 0.
-            rmol_error = 0.
-        else:
+        mol_errors = abs(mol - mol_new)
+        if mol_errors.any():
             mol_error = mol_errors.max()
             if mol_error > 1e-12:
-                rmol_error = (mol_errors / np.maximum.reduce([np.abs(mol[positive_index]), np.abs(mol_new[positive_index])])).max()
-            else:
-                rmol_error = 0.
+                nonzero_index, = np.where(mol_errors > 1e-12)
+                mol_errors = mol_errors[nonzero_index]
+                max_errors = np.maximum.reduce([np.abs(mol[nonzero_index]), np.abs(mol_new[nonzero_index])])
+                rmol_error = (mol_errors / max_errors).max()
         not_converged = (
             self.iter < self.maxiter and (mol_error > self.molar_tolerance
              or rmol_error > self.relative_molar_tolerance)
