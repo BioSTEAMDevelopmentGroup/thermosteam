@@ -273,10 +273,10 @@ class SparseArray:
                 return rows[m][n]
             elif md == 1: 
                 if nd == 0:
-                    n = int(n)
+                    n = n.__index__()
                     return np.array([rows[i].dct[n] for i in m])
                 elif nd == 1:
-                    return np.array([rows[i].dct[int(j)] for i, j in zip(m, n)])
+                    return np.array([rows[i].dct[j.__int__()] for i, j in zip(m, n)])
                 else:
                     raise IndexError(f'column index can be at most 1-D, not {nd}-D')
             else:
@@ -356,29 +356,16 @@ class SparseArray:
                 if vd == 0:
                     if value:
                         for i, j in zip(*unpack_index(index, self.ndim)): 
-                            if type(j) is not int: 
-                                raise TypeError(
-                                   f'cannot index with {type(index)} objects;'
-                                    'only integers are valid index elements'
-                                )
-                            rows[i].dct[j] = value
+                            rows[i].dct[j.__index__()] = value
                     else:
                         for i, j in zip(*unpack_index(index, self.ndim)): 
-                            if type(j) is not int: 
-                                raise TypeError(
-                                   f'cannot index with {type(index)} objects;'
-                                    'only integers are valid index elements'
-                                )
                             dct = rows[i].dct
+                            j = j.__index__()
                             if j in dct: del dct[j]
                 elif vd == 1:
                     for i, j, k in zip(*unpack_index(index, self.ndim), value): 
-                        if type(j) is not int: 
-                            raise TypeError(
-                               f'cannot index with {type(index)} objects;'
-                                'only integers are valid index elements'
-                            )
                         dct = rows[i].dct
+                        j = j.__index__()
                         if k: rows[i].dct[j] = k
                         elif j in dct: del dct[j]
                 else:
@@ -856,29 +843,17 @@ class SparseVector:
             if index.__class__ is tuple:
                 index, = unpack_index(index, self.ndim)
                 if not hasattr(index, '__iter__'):
-                    if type(index) is not int: 
-                        raise TypeError(
-                           f'cannot index with {type(index)} objects;'
-                            'only integers are valid index elements'
-                        )
+                    index = index.__index__()
                     return dct[index] if index in dct else 0.
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
-                if type(i) is not int: 
-                    raise TypeError(
-                       f'cannot index with {type(index)} objects;'
-                        'only integers are valid index elements'
-                    )
+                i = i.__index__()
                 if i in dct: arr[n] = dct[i]
             return arr
         elif index == open_slice:
             return self
         else:
-            if type(index) is not int: 
-                raise TypeError(
-                   f'cannot index with {type(index)} objects;'
-                    'only integers are valid index elements'
-                )
+            index = index.__index__()
             if index in dct:
                 return dct[index]
             else:
@@ -895,11 +870,7 @@ class SparseVector:
                         raise IndexError(
                             'cannot set an array element with a sequence'
                         )
-                    if type(index) is not int: 
-                        raise TypeError(
-                           f'cannot index with {type(index)} objects;'
-                            'only integers are valid index elements'
-                        )
+                    index = index.__index__()
                     if value:
                         dct[index] = value
                     elif index in dct:
@@ -907,11 +878,7 @@ class SparseVector:
                     return
             if (vd:=get_ndim(value)) == 1:
                 for i, j in zip(index, value): 
-                    if type(i) is not int: 
-                        raise TypeError(
-                           f'cannot index with {type(index)} objects;'
-                            'only integers are valid index elements'
-                        )
+                    i = i.__index__()
                     if j: dct[i] = j
                     elif i in dct: del dct[i]
             elif vd > 1:
@@ -920,19 +887,11 @@ class SparseVector:
                 )
             elif value:
                 for i in index: 
-                    if type(i) is not int: 
-                        raise TypeError(
-                           f'cannot index with {type(index)} objects;'
-                            'only integers are valid index elements'
-                        )
+                    i = i.__index__()
                     dct[i] = value
             else:
                 for i in index: 
-                    if type(i) is not int: 
-                        raise TypeError(
-                           f'cannot index with {type(index)} objects;'
-                            'only integers are valid index elements'
-                        )
+                    i = i.__index__()
                     if i in dct: del dct[i]
         elif index == open_slice:
             if value is self: return
@@ -950,11 +909,7 @@ class SparseVector:
                 'cannot set an array element with a sequence'
             )
         else:
-            if type(index) is not int: 
-                raise TypeError(
-                   f'cannot index with {type(index)} objects;'
-                    'only integers are valid index elements'
-                )
+            index = index.__index__()
             if value:
                 dct[index] = value
             elif index in dct:

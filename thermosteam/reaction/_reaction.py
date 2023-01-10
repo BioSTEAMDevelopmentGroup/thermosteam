@@ -404,7 +404,10 @@ class Reaction:
         values, config, iscopy = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
-        self._reaction(values)
+        try:
+            self._reaction(values)
+        except:
+            breakpoint()
         if tmo.reaction.CHECK_FEASIBILITY:
             negative_index = values.negative_index()
             if negative_index:
