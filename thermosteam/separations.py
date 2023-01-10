@@ -938,7 +938,7 @@ class StageEquilibrium:
         
     def partition_lle(self, partition_data=None, stacklevel=1, P=None, solvent=None):
         ms = self.multi_stream
-        data = ms._imol.sparse_data.copy()
+        data = ms._imol.data.copy()
         ms.mix_from(self.feeds, energy_balance=False)
         top, bottom = ms
         if partition_data:
@@ -961,11 +961,11 @@ class StageEquilibrium:
                 self.K = K_new
                 self.IDs = IDs
                 self.phi = phi
-        ms._imol.sparse_data[:] = data
+        ms._imol.data[:] = data
         
     def partition_vle(self, partition_data=None, stacklevel=1, P=None):
         ms = self.multi_stream
-        data = ms._imol.sparse_data.copy()
+        data = ms._imol.data.copy()
         top, bottom = ms
         if partition_data:
             self.K = K = partition_data['K']
@@ -983,7 +983,7 @@ class StageEquilibrium:
                 z[z == 0] = 1.
                 self.K = bp.y / bp.z
                 ms.T = bp.T
-        ms._imol.sparse_data[:] = data
+        ms._imol.data[:] = data
         
     def balance_flows(self, top_split, bottom_split):
         feed, *other_feeds = self.feeds
@@ -1302,7 +1302,7 @@ class MultiStageEquilibrium:
             top, bottom = stage.multi_stream
             mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
             factor = sum([i.mol for i in stage.feeds]) / mol
-            stage.multi_stream.imol.sparse_data[:] *= factor
+            stage.multi_stream.imol.data[:] *= factor
         self.correct_overall_mass_balance()
             
     def simulate(self):

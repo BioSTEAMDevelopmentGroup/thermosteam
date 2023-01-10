@@ -241,12 +241,12 @@ class MultiStream(Stream):
                             raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
             self._init_indexer(flow, phases, chemicals, phase_flows)
             flow = getattr(self, 'i' + name)
-            material_data = self._imol.sparse_data / factor
+            material_data = self._imol.data / factor
             if total_flow: material_data *= total_flow / material_data.sum()
-            flow.sparse_data[:] = material_data
+            flow.data[:] = material_data
         else:
             self._init_indexer(flow, phases, chemicals, phase_flows)
-            if total_flow: self._imol.sparse_data *= total_flow / self.F_mol
+            if total_flow: self._imol.data *= total_flow / self.F_mol
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
@@ -299,7 +299,7 @@ class MultiStream(Stream):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
-        data = imol.sparse_data
+        data = imol.data
         total = data.sum()
         if total == 0.: 
             return 0. if flow else None
@@ -453,7 +453,7 @@ class MultiStream(Stream):
     @property
     def mol(self) -> NDArray[float]:
         """Chemical molar flow rates (total of all phases)."""
-        mol = self._imol.sparse_data.sum(0)
+        mol = self._imol.data.sum(0)
         mol.read_only = True
         return mol
     @property
@@ -465,7 +465,7 @@ class MultiStream(Stream):
     @property
     def vol(self) -> NDArray[float]:
         """Chemical volumetric flow rates (total of all phases)."""
-        vol = self.ivol.sparse_data.sum(0)
+        vol = self.ivol.data.sum(0)
         vol.read_only = True
         return vol
     
@@ -739,11 +739,11 @@ class MultiStream(Stream):
         if other_ismultistream: self.phases = [*self.phases, *other.phases]
         IDs_index = self.chemicals.get_index(IDs)
         phase_index = self.imol.get_phase_index(phase)
-        data = self.imol.sparse_data
-        other_data = other.imol.sparse_data
+        data = self.imol.data
+        other_data = other.imol.data
         if exclude:
-            data = self.imol.sparse_data
-            other_data = other.imol.sparse_data
+            data = self.imol.data
+            other_data = other.imol.data
             original_data = data.copy()
             if other_ismultistream:
                 data[:] = other_data
