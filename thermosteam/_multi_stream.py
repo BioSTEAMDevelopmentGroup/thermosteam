@@ -519,10 +519,6 @@ class MultiStream(Stream):
     def solid_fraction(self) -> float:
         """Molar solid fraction."""
         return get_phase_fraction(self, 'sS')
-        
-    @property
-    def nonzero_chemical_indices(self):
-        return self._imol.sparse_data.nonzero_columns()
     
     ### Methods ###
     
@@ -1021,6 +1017,7 @@ class MultiStream(Stream):
         for phase in self.phases:
             phase_data = factor * indexer[phase, all_IDs] 
             IDs, data = nonzeros(all_IDs, phase_data)
+            data = np.array(data)
             if not IDs: continue
             if composition:
                 total_flow = data.sum()

@@ -5,9 +5,8 @@
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
-
-import numpy as np
 from ..exceptions import UndefinedChemical
+from ..base import SparseVector, sparse_vector
 
 __all__ = ('get_stoichiometric_array',
            'get_stoichiometric_string',
@@ -20,8 +19,8 @@ def get_stoichiometric_array(reaction, chemicals):
         stoichiometry_dict = reaction
     elif isa(reaction, str):
         stoichiometry_dict = str2dct(reaction)
-    elif isa(reaction, np.ndarray):
-        return reaction
+    elif hasattr(reaction, '__iter__'):
+        return sparse_vector(reaction, chemicals.size)
     else:
         raise ValueError(f"reaction must be either a str, dict, or array; not a '{type(reaction).__name__}' object")
     stoichiometric_array = dct2arr(stoichiometry_dict, chemicals)
@@ -31,14 +30,14 @@ def get_stoichiometric_string(reaction, chemicals):
     """Return a string defining the reaction given the stoichiometric array and chemicals."""
     if isinstance(reaction, dict):
         stoichiometric_dict = reaction
-    elif isinstance(reaction, np.ndarray):
+    elif hasattr(reaction, '__iter__'):
         stoichiometric_dict = arr2dct(reaction, chemicals)
     else:
         raise ValueError(f"reaction must be either a str or an array; not a '{type(reaction).__name__}' object")
     return dct2str(stoichiometric_dict)
 
 def dct2arr(dct, chemicals):
-    arr = np.zeros(chemicals.size)
+    idct = {} # same ass dct but using integers as keys
     chemical_index = chemicals._index
     chemical_groups = chemicals.chemical_groups
     for ID, coefficient in dct.items():
@@ -49,8 +48,8 @@ def dct2arr(dct, chemicals):
             )
         if ID not in chemical_index:
             raise UndefinedChemical(ID)
-        arr[chemical_index[ID]] = coefficient
-    return arr 
+        idct[chemical_index[ID]] = coefficient
+    return SparseVector.from_dict(idct, chemicals.size)
 
 def split_coefficient(nID, sign):
     for i, letter in enumerate(nID):
@@ -97,5 +96,11 @@ def dct2str(dct):
     return reaction
 
 def arr2dct(arr, chemicals):
-    return {ID: n for n, ID in zip(arr, chemicals.IDs) if n}
+    IDs = chemicals.IDs
+    if hasattr(arr, 'dct'):
+        dct = arr.dct
+        index = sorted(dct.keys())
+        return {IDs[i]: dct[i] for i in index}
+    else:
+        return {IDs[i]: j for i, j in enumerate(arr) if j}
 

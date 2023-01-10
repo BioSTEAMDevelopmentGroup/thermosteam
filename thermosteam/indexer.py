@@ -8,13 +8,14 @@
 """
 """
 import thermosteam as tmo
-from ._thermal_condition import mock_thermal_condition
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemicalAlias
-from .base import PhaseHandle, SparseVector, SparseArray, sparse_vector, sparse_array
+from .base import (
+    SparseVector, SparseArray, sparse_vector, sparse_array,
+    MassFlowDict, VolumetricFlowDict,
+)
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
-from collections.abc import Iterable
 import numpy as np
 
 __all__ = (
@@ -58,8 +59,13 @@ def find_main_phase(indexers, default):
     return phase
 
 def nonzeros(IDs, data):
-    data = sparse_vector(data)
-    return [IDs[i] for i in data.nonzero_keys()], np.array([*data.nonzero_values()])
+    if hasattr(IDs, 'dct'):
+        dct = data.dct
+        index = sorted(data.nonzero_keys())
+        return  [IDs[i] for i in index], [dct[i] for i in index]
+    else:
+        index, = np.where(data)
+        return [IDs[i] for i in index], [data[i] for i in index]
 
 def index_overlap(left_chemicals, right_chemicals, right_index):
     CASs_all = right_chemicals.CASs
@@ -182,7 +188,7 @@ class SplitIndexer(Indexer):
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.sparse_data = SparseVector.from_size(chemicals.size)
+        self.sparse_data = SparseVector.from_size(self._chemicals.size)
         return self
     
     @classmethod
@@ -298,7 +304,7 @@ class ChemicalIndexer(Indexer):
     `ChemicalVolumetricIndexer`.
     
     """
-    __slots__ = ('_chemicals', '_phase', '_data_cache')
+    __slots__ = ('_chemicals', '_phase', 'interface_cache')
     
     def __new__(cls, phase=NoPhase, units=None, chemicals=None, **ID_data):
         self = cls.blank(phase, chemicals)
@@ -533,7 +539,7 @@ class MaterialIndexer(Indexer):
     
     """
     __slots__ = ('_chemicals', '_phases', '_phase_indexer',
-                 '_index_cache', '_data_cache')
+                 '_index_cache', 'interface_cache')
     _index_caches = {}
     _ChemicalIndexer = ChemicalIndexer
     
@@ -548,7 +554,7 @@ class MaterialIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.sparse_data
-        old_data_cache = self.interface_cache
+        old_interface_cache = self.interface_cache
         N_phases = len(self._phases)
         if container is None:
             self.sparse_data = data = SparseArray.from_shape([N_phases, chemicals.size])
@@ -565,7 +571,7 @@ class MaterialIndexer(Indexer):
                 if value: data[i, chemicals.index(CASs[j])] = value
         self._load_chemicals(chemicals)
         self._set_cache()
-        return (old_data, old_data_cache)
+        return (old_data, old_interface_cache)
     
     def __reduce__(self):
         return self.from_data, (self.sparse_data, self._phases, self._chemicals, False)
@@ -730,7 +736,7 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        self.sparse_data = SparseArray.from_shape([len(phases), chemicals.size])
+        self.sparse_data = SparseArray.from_shape([len(phases), self._chemicals.size])
         self.interface_cache = {}
         return self
     
@@ -1026,114 +1032,6 @@ ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr'
 ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr', group_wt_compositions)
 ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr', group_vol_composition)
 
-# %% Dictionary wrappers
-
-class WrappedDictionary: # Abstract class
-    __slots__ = ('dct',)
-    
-    def __iter__(self):
-        return self.dct.__iter__()
-    
-    def __len__(self):
-        return self.dct.__len__()
-    
-    def __bool__(self):
-        return bool(self.dct)
-    
-    def __delitem__(self, key):
-        del self.dct[key]
-    
-    def __getitem__(self, key):
-        return self.getter(key, self.dct[key])
-    
-    def __setitem__(self, key, value):
-        self.dct[key] = self.setter(key, value)
-        
-    def keys(self):
-        return self.dct.keys()
-    
-    def items(self):
-        for i, j in self.dct.items():
-            yield (i, self.getter(i, j))
-            
-    def values(self):
-        for i, j in self.dct.items():
-            yield self.getter(i, j)
-    
-    def clear(self):
-        self.dct.clear()
-        
-    def copy(self):
-        return {i: self.getter(i, j) for i, j in self.dct.items()}
-    
-    def get(self, key, default=None):
-        dct = self.dct
-        if key in dct:
-            return self.getter(key, dct[key])
-        else:
-            return default
-        
-    def pop(self, key):
-        return self.getter(key, self.dct.pop(key))
-        
-    def popitem(self):
-        key, value = self.dct.popitem()
-        return self.getter(key, value)
-    
-    def setdefault(self, key, default=None):
-        if key not in self.dct: self[key] = default
-        
-    def from_keys(self, keys, value=None):
-        return self.dct.from_keys(keys, value)
-    
-    def update(self, dct):
-        for i, j in dct.items(): self[i] = j
-
-
-class MassFlowDict(WrappedDictionary): # Wraps a dict of molar flows
-    __slots__ = ('MW',)
-    
-    def __init__(self, dct, MW):
-        self.dct = dct
-        self.MW = MW
-    
-    def getter(self, index, value):
-        return value * self.MW[index] # From mol to kg
-
-    def setter(self, index, value):
-        return value / self.MW[index] # From kg to mol
-
-
-class VolumetricFlowDict(WrappedDictionary): # Wraps a dict of molar flows
-    __slots__ = ('TP', 'V', 'phase', 'phase_container', 'cache')
-    
-    def __init__(self, dct, TP, V, phase, phase_container, cache):
-        self.dct = dct
-        self.TP = TP
-        self.V = V
-        self.phase = phase
-        self.phase_container = phase_container
-        self.cache = cache
-    
-    def getter(self, index, value):
-        TP, V = self.cache.get(index, TP_V)
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = self.V[index]
-            V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
-            self.cache[index] = (self.TP.copy(), V)
-        return value * V # From mol to m3
-
-    def setter(self, index, value):
-        TP, V = self.cache.get(index, TP_V)
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = self.V[index]
-            V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
-            self.cache[index] = (self.TP.copy(), V)
-        return value / V # From m3 to mol
-
-
 # %% Mass flow properties
 
 def by_mass(self):
@@ -1176,8 +1074,6 @@ MolarFlowIndexer.by_mass = by_mass; del by_mass
 
 
 # %% Volumetric flow properties
-
-TP_V = (mock_thermal_condition, None) # Initial cache for molar volume
 
 def by_volume(self, TP):
     """Return a ChemicalVolumetricFlowIndexer that references this object's molar data.

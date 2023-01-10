@@ -1117,7 +1117,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
-        >>> chemicals.get_vle_indices(data!=0)
+        >>> chemicals.get_vle_indices(data[data!=0])
         array([0, 2])
         
         """
@@ -1133,7 +1133,7 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
-        >>> chemicals.get_lle_indices(data!=0)
+        >>> chemicals.get_lle_indices(data[data!=0])
         array([0, 2])
         
         """

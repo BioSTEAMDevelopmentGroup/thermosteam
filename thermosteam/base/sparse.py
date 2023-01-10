@@ -8,9 +8,24 @@ __all__ = (
     'sparse_array',
     'SparseVector',
     'SparseArray',
+    'sparse',
 )
 
 open_slice = slice(None)
+
+def unpack_index(index, ndim):
+    if (indim:=index.__len__()) == ndim:
+        return index
+    elif indim < ndim:
+        raise IndexError(
+            f'too few indices for array; array is {ndim}-dimensional, '
+            f'but {indim} were indexed'
+        )
+    else:
+        raise IndexError(
+            f'too many indices for array; array is {ndim}-dimensional, '
+            f'but {indim} were indexed'
+        )
 
 def sparse_vector(arr, copy=False, size=None):
     """
@@ -38,6 +53,16 @@ def sparse_array(arr, copy=False, vector_size=None):
     else:
         return SparseArray(arr, vector_size)
 
+def sparse(arr, copy=False, vector_size=None):
+    if arr.__class__ in (SparseArray, SparseVector):
+        return arr
+    elif (ndim:=get_ndim(arr)) == 1:
+        return SparseVector(arr)
+    elif ndim == 2:
+        return SparseArray(arr)
+    else:
+        raise ValueError(f'cannot convert {ndim}-D object to a sparse array or vector')
+    
 def get_ndim(value, ndim=0):
     if hasattr(value, 'ndim'):
         ndim += value.ndim
@@ -113,16 +138,51 @@ class SparseArray:
     def __int__(self):
         return self.to_array(self.vector_size, dtype=int)
     
-    def remove_negatives(self):
-        for i in self.rows: i.remove_negatives
+    def nonzero_index(self):
+        return [(i, j) for i, row in enumerate(self.rows) for j in row.dct]
+    
+    def nonzero_values(self):
+        for row in self.rows:
+            yield from row.values()
+    
+    def nonzero_items(self):
+        for i, row in enumerate(self.rows):
+            for j, k in row.dct.items(): yield ((i, j), k)
     
     def nonzero_rows(self):
         return [i for i, j in enumerate(self.rows) if j.dct]
     
-    def nonzero_columns(self):
+    def nonzero_keys(self):
         keys = set()
         for i in self.rows: keys.update(i.dct)
         return keys
+    
+    def negative_index(self):
+        m = []; n = []
+        for i, row in enumerate(self.rows):
+            for j, value in row.dct.items():
+                if value < 0.:
+                    m.append(i); n.append(j)
+        return m, n
+    
+    def negative_rows(self):
+        m = []
+        for i, row in enumerate(self.rows):
+            for j, value in row.dct.items():
+                if value < 0.: 
+                    m.append(i)
+                    break
+        return m
+    
+    def negative_keys(self):
+        n = set()
+        for i, row in enumerate(self.rows):
+            for j, value in row.dct.items():
+                if value < 0.: n.add(j)
+        return n
+    
+    def remove_negatives(self):
+        for i in self.rows: i.remove_negatives
     
     def shares_data_with(self, other):
         return bool(self.base.intersection(other.base))
@@ -192,7 +252,7 @@ class SparseArray:
     def __getitem__(self, index):
         rows = self.rows
         if index.__class__ is tuple:
-            m, n = index
+            m, n = unpack_index(index, self.ndim)
             md = get_ndim(m)
             nd = get_ndim(n)
             if not md and m == open_slice:
@@ -208,15 +268,23 @@ class SparseArray:
                 elif md == 1:
                     return SparseArray.from_rows([rows[i] for i in m]).to_array()
                 else:
-                    raise IndexError(f'column index can be at most 1-D, not {md}-D')
+                    raise IndexError(f'row index can be at most 1-D, not {md}-D')
             elif md == 0: 
                 return rows[m][n]
             elif md == 1: 
-                return np.array([rows[i][n] for i in m])
+                if nd == 0:
+                    n = int(n)
+                    return np.array([rows[i].dct[n] for i in m])
+                elif nd == 1:
+                    return np.array([rows[i].dct[int(j)] for i, j in zip(m, n)])
+                else:
+                    raise IndexError(f'column index can be at most 1-D, not {nd}-D')
             else:
                 raise IndexError(f'row index can be at most 1-D, not {md}-D')
-        elif hasattr(index, '__iter__'):
+        elif (ndim:=get_ndim(index)) == 1:
             return SparseArray.from_rows([rows[i] for i in index])
+        elif ndim > 1:
+            raise IndexError('must use tuple for multidimensional indexing')
         elif index == open_slice:
             return self
         else:
@@ -227,19 +295,26 @@ class SparseArray:
     def __setitem__(self, index, value):
         rows = self.rows
         if index.__class__ is tuple:
-            m, n = index
+            m, n = unpack_index(index, self.ndim)
             md = get_ndim(m)
             nd = get_ndim(n)
             if not md and m == open_slice:
                 if not nd and n == open_slice:
                     self[:] = value
                 else:
-                    ndim = get_ndim(value)
-                    if ndim == 0.:
+                    vd = get_ndim(value)
+                    if vd == 0.:
                         for i in rows: i[n] = value
-                    elif ndim == 1:
-                        for i in rows: i[n] = value
-                    elif ndim == 2:
+                    elif vd == 1:
+                        if nd == 0.:
+                            for i, j in zip(rows, value): i[n] = j
+                        elif nd == 1:
+                            for i, j in zip(rows, n): i[j] = value
+                        else:
+                            raise IndexError(
+                                f'cannot broadcast {vd}-D array on to array column'
+                            )
+                    elif vd == 2:
                         value_length = len(value)
                         self_length = len(rows)
                         if self_length == value_length:
@@ -250,7 +325,7 @@ class SparseArray:
                             )
                     else:
                         raise IndexError(
-                            f'cannot broadcast {ndim}-D array with onto 2-D sparse array'
+                            f'cannot broadcast {vd}-D array on to 2-D sparse array'
                         )
             elif not nd and n == open_slice:
                 md = get_ndim(m)
@@ -270,23 +345,57 @@ class SparseArray:
                             )
                     else:
                         raise IndexError(
-                            f'cannot broadcast {ndim}-D array with onto 1-D '
+                            f'cannot broadcast {ndim}-D array on to 1-D '
                         )
                 else:
                     raise IndexError(f'column index can be at most 1-D, not {md}-D')
             elif md == 0: 
                 rows[m][n] = value
             elif md == 1: 
-                for i in m: rows[i][n] = value
+                vd = get_ndim(value)
+                if vd == 0:
+                    if value:
+                        for i, j in zip(*unpack_index(index, self.ndim)): 
+                            if type(j) is not int: 
+                                raise TypeError(
+                                   f'cannot index with {type(index)} objects;'
+                                    'only integers are valid index elements'
+                                )
+                            rows[i].dct[j] = value
+                    else:
+                        for i, j in zip(*unpack_index(index, self.ndim)): 
+                            if type(j) is not int: 
+                                raise TypeError(
+                                   f'cannot index with {type(index)} objects;'
+                                    'only integers are valid index elements'
+                                )
+                            dct = rows[i].dct
+                            if j in dct: del dct[j]
+                elif vd == 1:
+                    for i, j, k in zip(*unpack_index(index, self.ndim), value): 
+                        if type(j) is not int: 
+                            raise TypeError(
+                               f'cannot index with {type(index)} objects;'
+                                'only integers are valid index elements'
+                            )
+                        dct = rows[i].dct
+                        if k: rows[i].dct[j] = k
+                        elif j in dct: del dct[j]
+                else:
+                    raise IndexError(
+                        f'cannot broadcast {vd}-D array on to 2-D sparse array'
+                    )
             else:
                 raise IndexError(f'row index can be at most 1-D, not {md}-D')
-        elif hasattr(index, '__iter__'):
+        elif (ndim:=get_ndim(index)) == 1:
             SparseArray.from_rows([rows[i] for i in index])[:] = value
+        elif ndim == 2:
+            raise IndexError('must use tuple for multidimensional indexing')
         elif index == open_slice:
-            ndim = get_ndim(value)
-            if ndim in (0, 1):
+            vd = get_ndim(value)
+            if vd in (0, 1):
                 for i in rows: i[:] = value
-            elif ndim == 2:
+            elif vd == 2:
                 value_length = len(value)
                 self_length = len(rows)
                 if self_length == value_length:
@@ -300,7 +409,7 @@ class SparseArray:
                     )
             else:
                 raise IndexError(
-                    f'cannot broadcast {ndim}-D array with onto 2-D sparse array'
+                    f'cannot broadcast {vd}-D array on to 2-D sparse array'
                 )
         else:
             rows[index][:] = value
@@ -583,7 +692,7 @@ class SparseVector:
         elif hasattr(obj, '__iter__'):
             self.dct = dct = {}
             for i, j in enumerate(obj):
-                if j: dct[int(i)] = j
+                if j: dct[i] = j
             self.size = len(obj) if size is None else size
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse vector')
@@ -679,7 +788,7 @@ class SparseVector:
         dct = self.dct
         if hasattr(index, '__iter__'):
             return sum([dct[i] for i in index if i in dct])
-        elif (index:=int(index)) in dct:
+        elif index in dct:
             return dct[index]
         else:
             return 0.
@@ -691,11 +800,14 @@ class SparseVector:
     
     def negative_index(self):
         dct = self.dct
-        return [i for i in dct if dct[i] < 0.]
+        return [i for i in dct if dct[i] < 0.],
     
     def positive_index(self):
         dct = self.dct
-        return [i for i in dct if dct[i] > 0.]
+        return [i for i in dct if dct[i] > 0.],
+    
+    def nonzero_index(self):
+        return [*self.dct.keys()]
     
     def nonzero_keys(self):
         return self.dct.keys()
@@ -741,47 +853,112 @@ class SparseVector:
     def __getitem__(self, index):
         dct = self.dct
         if hasattr(index, '__iter__'):
-            dct = self.dct
+            if index.__class__ is tuple:
+                index, = unpack_index(index, self.ndim)
+                if not hasattr(index, '__iter__'):
+                    if type(index) is not int: 
+                        raise TypeError(
+                           f'cannot index with {type(index)} objects;'
+                            'only integers are valid index elements'
+                        )
+                    return dct[index] if index in dct else 0.
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
-                if (i:=int(i)) in dct: arr[n] = dct[i]
+                if type(i) is not int: 
+                    raise TypeError(
+                       f'cannot index with {type(index)} objects;'
+                        'only integers are valid index elements'
+                    )
+                if i in dct: arr[n] = dct[i]
             return arr
         elif index == open_slice:
             return self
-        elif (index:=int(index)) in dct:
-            return dct[index]
         else:
-            return 0.
+            if type(index) is not int: 
+                raise TypeError(
+                   f'cannot index with {type(index)} objects;'
+                    'only integers are valid index elements'
+                )
+            if index in dct:
+                return dct[index]
+            else:
+                return 0.
 
     def __setitem__(self, index, value):
         if self.read_only: raise ValueError('assignment destination is read-only')
         dct = self.dct
         if hasattr(index, '__iter__'):
-            if hasattr(value, '__iter__'):
+            if index.__class__ is tuple:
+                index, = unpack_index(index, self.ndim)
+                if not hasattr(index, '__iter__'):
+                    if hasattr(value, '__iter__'):
+                        raise IndexError(
+                            'cannot set an array element with a sequence'
+                        )
+                    if type(index) is not int: 
+                        raise TypeError(
+                           f'cannot index with {type(index)} objects;'
+                            'only integers are valid index elements'
+                        )
+                    if value:
+                        dct[index] = value
+                    elif index in dct:
+                        del dct[index]
+                    return
+            if (vd:=get_ndim(value)) == 1:
                 for i, j in zip(index, value): 
-                    if j: dct[int(i)] = j
-                    elif (i:=int(i)) in dct: del dct[i]
+                    if type(i) is not int: 
+                        raise TypeError(
+                           f'cannot index with {type(index)} objects;'
+                            'only integers are valid index elements'
+                        )
+                    if j: dct[i] = j
+                    elif i in dct: del dct[i]
+            elif vd > 1:
+                raise IndexError(
+                    f'cannot broadcast {vd}-D array on to 1-D sparse vector'
+                )
+            elif value:
+                for i in index: 
+                    if type(i) is not int: 
+                        raise TypeError(
+                           f'cannot index with {type(index)} objects;'
+                            'only integers are valid index elements'
+                        )
+                    dct[i] = value
             else:
-                if value:
-                    for i in index: dct[int(i)] = value
-                else:
-                    for i in index: 
-                        if (i:=int(i)) in dct: del dct[i]
+                for i in index: 
+                    if type(i) is not int: 
+                        raise TypeError(
+                           f'cannot index with {type(index)} objects;'
+                            'only integers are valid index elements'
+                        )
+                    if i in dct: del dct[i]
         elif index == open_slice:
             if value is self: return
             dct.clear()
             if value.__class__ is SparseVector:
                 dct.update(value.dct)
             elif hasattr(value, '__iter__'):
-                for i, j in enumerate(value): 
+                for i, j in enumerate(value):
                     if j: dct[i] = j
                     elif i in dct: del dct[i]  
             elif value != 0.:
                 for i in range(self.size): dct[i] = value
-        elif value:
-            dct[int(index)] = value
-        elif (index:=int(index)) in dct:
-            del dct[int(index)]
+        elif hasattr(value, '__iter__'):
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+        else:
+            if type(index) is not int: 
+                raise TypeError(
+                   f'cannot index with {type(index)} objects;'
+                    'only integers are valid index elements'
+                )
+            if value:
+                dct[index] = value
+            elif index in dct:
+                del dct[index]
     
     def __iadd__(self, other):
         dct = self.dct

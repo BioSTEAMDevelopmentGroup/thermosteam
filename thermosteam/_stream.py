@@ -664,7 +664,7 @@ class Stream:
         
         """
         material = self._imol.sparse_data
-        if material[material < 0.].any(): raise InfeasibleRegion('negative material flow rate')
+        if not material.any(): raise InfeasibleRegion('negative material flow rate')
 
     @property
     def vapor_fraction(self) -> float:
@@ -1254,7 +1254,7 @@ class Stream:
     def available_chemicals(self) -> list[tmo.Chemical]:
         """All chemicals with nonzero flow."""
         chemicals = self.chemicals.tuple
-        return [chemicals[i] for i in self.nonzero_chemical_indices]
+        return [chemicals[i] for i in [*self.mol.nonzero_keys()]]
     
     def in_thermal_equilibrium(self, other):
         """
@@ -1989,15 +1989,11 @@ class Stream:
         data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, checkconvergence=False, convergenceiter=10) * total_flow
 
     @property
-    def nonzero_chemical_indices(self):
-        return [*self._imol.sparse_data.nonzero_keys()]
-
-    @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
         """Chemicals cabable of liquid-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_vle_indices(self.nonzero_chemical_indices)
+        indices = chemicals.get_vle_indices([*self.mol.nonzero_keys()])
         return [chemicals_tuple[i] for i in indices]
     
     @property
@@ -2005,7 +2001,7 @@ class Stream:
         """Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_lle_indices(self.mol.nonzero_chemical_indices)
+        indices = chemicals.get_lle_indices([*self.mol.nonzero_keys()])
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs: Optional[Sequence[str]]=None):

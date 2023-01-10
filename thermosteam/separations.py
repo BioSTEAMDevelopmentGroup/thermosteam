@@ -442,7 +442,7 @@ def phase_fraction(feed, IDs, K, phi=None, top_chemicals=None,
     Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
     if bottom_chemicals:
         bottom_flows = feed.imol[bottom_chemicals]
-        Fb = bottom_flows.sum()
+        Fb = bottom_flows.sum() if hasattr(bottom_flows, 'sum') else bottom_flows
     else:
         Fb = 0.
     F_mol += Fa + Fb
@@ -800,8 +800,8 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     if not variable_inlets:
         raise ValueError('variable_inlets must contain at least one stream')
     index = variable_inlets[0].chemicals.get_index(chemical_IDs)
-    mol_out = sum([s.mol for s in constant_outlets])
-
+    mol_out = sum([s.mol for s in constant_outlets]).to_array()
+    inlet_mols = np.array([s.mol.to_array() for s in variable_inlets]).transpose()
     if balance == 'flow':
         # Perform the following calculation: Ax = b = f - g
         # Where:
@@ -812,7 +812,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
         #    g = constant inlet flow rates
 
         # Solve linear equations for mass balance
-        A = np.array([s.mol for s in variable_inlets]).transpose()[index, :]
+        A = inlet_mols[index, :]
         f = mol_out[index]
         g = sum([s.mol[index] for s in constant_inlets])
         b = f - g
@@ -834,8 +834,8 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
         # Same variable definitions as in 'flow'
 
         # Set all variables
-        A_ = np.array([s.mol for s in variable_inlets]).transpose()
-        A = np.array([s.mol for s in variable_inlets]).transpose()[index, :]
+        A_ = inlet_mols.copy()
+        A = inlet_mols[index, :]
         F_mol_out = mol_out.sum()
         z_mol_out = mol_out / F_mol_out if F_mol_out else mol_out
         f = z_mol_out[index]
@@ -937,7 +937,7 @@ class StageEquilibrium:
         
     def partition_lle(self, partition_data=None, stacklevel=1, P=None, solvent=None):
         ms = self.multi_stream
-        data = ms._imol._data.copy()
+        data = ms._imol.sparse_data.copy()
         ms.mix_from(self.feeds, energy_balance=False)
         top, bottom = ms
         if partition_data:
@@ -960,11 +960,11 @@ class StageEquilibrium:
                 self.K = K_new
                 self.IDs = IDs
                 self.phi = phi
-        ms._imol._data[:] = data
+        ms._imol.sparse_data[:] = data
         
     def partition_vle(self, partition_data=None, stacklevel=1, P=None):
         ms = self.multi_stream
-        data = ms._imol._data.copy()
+        data = ms._imol.sparse_data.copy()
         top, bottom = ms
         if partition_data:
             self.K = K = partition_data['K']
@@ -982,7 +982,7 @@ class StageEquilibrium:
                 z[z == 0] = 1.
                 self.K = bp.y / bp.z
                 ms.T = bp.T
-        ms._imol._data[:] = data
+        ms._imol.sparse_data[:] = data
         
     def balance_flows(self, top_split, bottom_split):
         feed, *other_feeds = self.feeds
@@ -1302,7 +1302,7 @@ class MultiStageEquilibrium:
             mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
             mol[mol == 0] = 1
             factor = sum([i.mol for i in stage.feeds]) / mol
-            stage.multi_stream.imol.data[:] *= factor
+            stage.multi_stream.imol.sparse_data[:] *= factor
         self.correct_overall_mass_balance()
             
     def simulate(self):
@@ -1375,6 +1375,10 @@ class MultiStageEquilibrium:
                 index = ms.chemicals.get_index(IDs)
                 phi = 0.5
                 K = bp.y / bp.z
+            for i in stages: 
+                i.IDs = IDs
+                i.K = K
+                i.phi = phi
             N_chemicals = len(index)
             phase_ratios = np.ones(N_stages) * (phi / (1 - phi))
             partition_coefficients = np.ones([N_stages, N_chemicals]) * K[np.newaxis, :]
@@ -1455,8 +1459,9 @@ class MultiStageEquilibrium:
             partition_coefficients = np.array([i.K for i in stages], dtype=float) 
         else:
             for i in stages: i.partition_lle(self.partition_data, P=P, solvent=self.solvent)
-            phase_ratios = np.array([i.phi / (1 - i.phi) for i in stages], dtype=float)
-        partition_coefficients = np.array([i.K for i in stages], dtype=float) 
+            almost_one = 1 - 1e-16
+            phase_ratios = np.array([(1e16 if (phi:=i.phi) > almost_one else phi / (1 - phi))  for i in stages], dtype=float)
+            partition_coefficients = np.array([i.K for i in stages], dtype=float)
         new_top_flow_rates = flow_rates_for_multi_stage_equilibrium(
             phase_ratios, partition_coefficients, *self._iter_args,
         )

@@ -152,15 +152,15 @@ def rho_to_V(rho, MW):
     '''
     return MW/rho/1000.
 
-@njit(cache=True)
-def remove_negligible_negative_values(material: np.ndarray):
-    negative = material < 0.
-    if negative.any():
-        material_sum = np.abs(material).sum()
+def remove_negligible_negative_values(material):
+    negative_index = material.negative_index()
+    if negative_index:
+        material_sum = abs(material).sum()
         if material_sum > 1e-16:
-            negligible = material / material_sum > -1e-16
-            material[negative & negligible] = 0. 
+            negligible = material[negative_index] / material_sum > -1e-16
+            index = [negative_index[i] for i, j in enumerate(negligible) if j]
+            material[index] = 0. 
         else:
-            material[negative] = 0. 
+            material[negative_index] = 0. 
 
 del njit
