@@ -160,6 +160,10 @@ def test_sparse_vector_indexing():
     assert sv[(1,)] == sv[1] == 3
     assert (sv[([1, 2],)] == np.array([3, 2])).all()
     assert (sv[[1, 2]] == np.array([3, 2])).all()
+    
+    with pytest.raises(IndexError):
+        sv[sv == 0] = 1.
+    
     with pytest.raises(IndexError):
         sv[(1, 2)]
     with pytest.raises(IndexError):

@@ -49,6 +49,8 @@ def check_partition_infeasibility(infeasible_index, strict, stacklevel=1):
 
 
 def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
+    mol = np.asarray(mol)
+    maxmol = np.asarray(maxmol)
     infeasible_index = mol < 0.
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = 0.
@@ -1270,7 +1272,6 @@ class MultiStageEquilibrium:
         top, bottom = self.multi_stream.phases
         stages = self.stages
         mol = self._get_net_outlets()
-        mol[mol == 0] = 1
         factor = self._get_net_feeds() / mol
         stages[0].multi_stream[top].mol *= factor
         stages[-1].multi_stream[bottom].mol *= factor

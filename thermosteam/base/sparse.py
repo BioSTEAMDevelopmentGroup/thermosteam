@@ -873,6 +873,10 @@ class SparseVector:
                         raise IndexError(
                             'cannot set an array element with a sequence'
                         )
+                    if index.__class__.__name__[0] == 'b':
+                        raise IndexError(
+                            'masks (boolan indexing) are is not supported'
+                        )
                     index = index.__index__()
                     if value:
                         dct[index] = value
@@ -881,6 +885,10 @@ class SparseVector:
                     return
             if (vd:=get_ndim(value)) == 1:
                 for i, j in zip(index, value): 
+                    if i.__class__.__name__[0] == 'b':
+                        raise IndexError(
+                            'masks (boolan indexing) are is not supported'
+                        )
                     i = i.__index__()
                     if j: dct[i] = j
                     elif i in dct: del dct[i]
@@ -890,10 +898,18 @@ class SparseVector:
                 )
             elif value:
                 for i in index: 
+                    if i.__class__.__name__[0] == 'b':
+                        raise IndexError(
+                            'masks (boolan indexing) are is not supported'
+                        )
                     i = i.__index__()
                     dct[i] = value
             else:
                 for i in index: 
+                    if i.__class__.__name__[0] == 'b':
+                        raise IndexError(
+                            'masks (boolan indexing) are is not supported'
+                        )
                     i = i.__index__()
                     if i in dct: del dct[i]
         elif index == open_slice:
