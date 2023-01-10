@@ -461,7 +461,7 @@ class SparseArray:
             return value
         elif axis == 1:
             if keepdims:
-                arr = np.zeros([len(rows)])
+                arr = np.zeros([len(rows), 1])
             else:
                 arr = np.zeros(len(rows))
             for i, j in enumerate(rows): arr[i] = sum(j.dct.values())
@@ -524,7 +524,7 @@ class SparseArray:
             
     def __iadd__(self, value):
         rows = self.rows
-        if hasattr(value, '__iter__') and value.__class__ is not SparseVector:
+        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -544,7 +544,7 @@ class SparseArray:
             
     def __isub__(self, value):
         rows = self.rows
-        if hasattr(value, '__iter__') and value.__class__ is not SparseVector:
+        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -564,7 +564,7 @@ class SparseArray:
     
     def __imul__(self, value):
         rows = self.rows
-        if hasattr(value, '__iter__') and value.__class__ is not SparseVector:
+        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -584,7 +584,7 @@ class SparseArray:
         
     def __itruediv__(self, value):
         rows = self.rows
-        if hasattr(value, '__iter__') and value.__class__ is not SparseVector:
+        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -605,7 +605,7 @@ class SparseArray:
     def __rtruediv__(self, value):
         new = self.copy()
         rows = new.rows
-        if hasattr(value, '__iter__') and value.__class__ is not SparseVector:
+        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -1017,9 +1017,15 @@ class SparseVector:
             other = other.dct
             for i in dct: dct[i] /= other[i]
         elif hasattr(other, '__iter__'):
-            for i in dct: dct[i] /= other[i]
+            if other.__len__() == 1:
+                other, = other
+                if other:
+                    for i in dct: dct[i] /= other
+                elif dct:
+                    raise FloatingPointError('division by zero')
+            else:
+                for i in dct: dct[i] /= other[i]
         else:
-            other = other
             if other:
                 for i in dct: dct[i] /= other
             elif dct:

@@ -64,9 +64,9 @@ def as_material_array(material, basis, phases, chemicals):
         else:
             config = material.chemicals, material.imol.reset_chemicals(chemicals)
         if basis == 'mol':
-            return material.mol, config, False
+            return material._imol.sparse_data, config, False
         elif basis == 'wt':
-            return material.mass.copy(), config, True
+            return material.imass.sparse_data.copy(), config, True
         else:
             raise ValueError("basis must be either 'mol' or 'wt'")
     elif material.__class__ in (SparseVector, SparseArray):
