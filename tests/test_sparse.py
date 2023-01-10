@@ -253,6 +253,15 @@ def test_sparse_array_indexing():
          [3., 3., 3., 2.]]
     )
 
+    sa_not_a_view = sa[:, [1, 2]]
+    with pytest.raises(ValueError):
+        sa_not_a_view[:] = 20
+    
+    assert (sa_not_a_view ==
+        [[3., 2.],
+         [3., 3.]]
+    ).all()
+
 def test_sparse_vector_methods():
     arr = np.array([1., 2., 0., 4.5])
     sv = sparse_vector(arr)

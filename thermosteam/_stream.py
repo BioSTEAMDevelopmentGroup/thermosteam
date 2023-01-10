@@ -664,7 +664,7 @@ class Stream:
         
         """
         material = self._imol.sparse_data
-        if not material.any(): raise InfeasibleRegion('negative material flow rate')
+        if not material.has_negatives(): raise InfeasibleRegion('negative material flow rate')
 
     @property
     def vapor_fraction(self) -> float:

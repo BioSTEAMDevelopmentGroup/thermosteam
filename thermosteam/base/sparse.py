@@ -181,6 +181,11 @@ class SparseArray:
                 if value < 0.: n.add(j)
         return n
     
+    def has_negatives(self):
+        for i, row in enumerate(self.rows):
+            if row.has_negatives(): return True
+        return False
+    
     def remove_negatives(self):
         for i in self.rows: i.remove_negatives
     
@@ -700,7 +705,7 @@ class SparseVector:
     def __iter__(self):
         dct = self.dct
         for i in range(self.size):
-            yield dct[i] if i in dct else 0.
+            yield dct.get(i, 0.)
     
     def __len__(self):
         return self.size
@@ -775,15 +780,18 @@ class SparseVector:
         dct = self.dct
         if hasattr(index, '__iter__'):
             return sum([dct[i] for i in index if i in dct])
-        elif index in dct:
-            return dct[index]
         else:
-            return 0.
+            return dct.get(index, 0.)
     
     def remove_negatives(self):
         dct = self.dct
         for i in tuple(dct): 
             if dct[i] < 0.: del dct[i]
+    
+    def has_negatives(self):
+        for value in self.dct.values():
+            if value < 0.: return True
+        return False
     
     def negative_index(self):
         dct = self.dct
@@ -843,8 +851,7 @@ class SparseVector:
             if index.__class__ is tuple:
                 index, = unpack_index(index, self.ndim)
                 if not hasattr(index, '__iter__'):
-                    index = index.__index__()
-                    return dct[index] if index in dct else 0.
+                    return dct.get(index.__index__())
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
                 i = i.__index__()
@@ -853,11 +860,7 @@ class SparseVector:
         elif index == open_slice:
             return self
         else:
-            index = index.__index__()
-            if index in dct:
-                return dct[index]
-            else:
-                return 0.
+            return dct.get(index.__index__(), 0.)
 
     def __setitem__(self, index, value):
         if self.read_only: raise ValueError('assignment destination is read-only')
@@ -1069,3 +1072,86 @@ class SparseVector:
     shares_data_with = SparseArray.shares_data_with
     __repr__ = SparseArray.__repr__
     __str__ = SparseArray.__str__
+    
+# %% For column slicing in sparse array objects
+    
+# class DictionaryColumn: 
+#     __slots__ = ('rows', 'index')
+
+#     def __init__(self, rows, index):
+#         self.rows = rows # List of dictionaries
+#         self.index = index
+
+#     def __eq__(self, other):
+#         return self.copy() == other
+
+#     def get(self, key, default=None):
+#         try:
+#             dct = self.rows[key]
+#         except:
+#             return default
+#         return dct.get(self.index, default)
+
+#     def __contains__(self, key):
+#         try:
+#             dct = self.rows[key]
+#         except:
+#             return False
+#         return self.index in dct
+
+#     def __delitem__(self, key):
+#         del self.rows[key][self.index]
+        
+#     def __bool__(self):
+#         index = self.index
+#         return any([index in dct for dct in self.rows])
+        
+#     def keys(self):
+#         index = self.index
+#         for i, dct in enumerate(self.rows):
+#             if index in dct: yield i
+#     __iter__ = keys
+    
+#     def clear(self):
+#         index = self.index
+#         for i, dct in enumerate(self.rows):
+#             if index in dct: del dct[index]
+    
+#     def __len__(self):
+#         index = self.index
+#         return sum([1 for dct in self.rows if index in dct])
+    
+#     def __getitem__(self, key):
+#         return self.rows[key][self.index]
+    
+#     def __setitem__(self, key, value):
+#         self.rows[key][self.index] = value
+    
+#     def items(self):
+#         index = self.index
+#         for i, dct in enumerate(self.rows):
+#             if index in dct: yield (i, dct[index])
+            
+#     def values(self):
+#         index = self.index
+#         for dct in self.rows:
+#             if index in dct: yield dct[index]
+        
+#     def copy(self):
+#         index = self.index
+#         return {i: dct[index] for i, dct in enumerate(self.rows) if index in dct}
+    
+#     def update(self, dct):
+#         for i, j in dct.items(): self[i] = j
+    
+#     def pop(self, key):
+#         raise NotImplementedError
+        
+#     def popitem(self):
+#         raise NotImplementedError
+    
+#     def setdefault(self, key, default=None):
+#         raise NotImplementedError
+        
+#     def from_keys(self, keys, value=None):
+#         raise NotImplementedError

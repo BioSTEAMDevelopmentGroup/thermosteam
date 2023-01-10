@@ -12,7 +12,7 @@ from thermosteam import functional as fn
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
-from ..base import sparse, SparseVector, SparseArray
+from ..base import sparse, SparseVector, SparseArray, DictionaryView
 from . import (
     _parse as prs,
     _xparse as xprs,
@@ -73,13 +73,13 @@ def as_material_array(material, basis, phases, chemicals):
     elif material.__class__ in (SparseVector, SparseArray):
         ndim = material.ndim
         if ndim == 1:
-            if hasattr(material.dct, 'dct'):
+            if isinstance(material.dct, DictionaryView):  
                 return (material.copy(), None, material)
             else:
                 return (material, None, None)
         elif ndim == 2:
             for i in material.rows:
-                if hasattr(i.dct, 'dct'):
+                if isinstance(i.dct, DictionaryView):
                     return material.copy(), None, material
             else:
                 return material.copy(), None, None

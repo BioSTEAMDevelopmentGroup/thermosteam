@@ -11,14 +11,14 @@
 from . import functor
 from . import phase_handle
 from . import sparse
-from . import wrapped_dictionary
+from . import dictionary_view
 
 __all__ = (*functor.__all__,
            *phase_handle.__all__,
            *sparse.__all__,
-           *wrapped_dictionary.__all__)
+           *dictionary_view.__all__)
 
 from .functor import *
 from .phase_handle import *
 from .sparse import *
-from .wrapped_dictionary import *
+from .dictionary_view import *
