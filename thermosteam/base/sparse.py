@@ -697,23 +697,13 @@ class SparseArray:
     
     def __repr__(self):
         name = type(self).__name__
-        if self.any():
-            n_spaces = len(name) - 5
-            nums = repr(self.to_array(vector_size=self._minimum_vector_size))[5:].replace('\n', '\n' + n_spaces * ' ')
-            return f'{name}{nums}'
-        elif self.ndim == 2:
-            return f'{name}({[[]*len(self.rows)]})'
-        elif self.ndim == 1:
-            return f'{name}([])'
+        n_spaces = len(name) - 5
+        nums = repr(self.to_array())[5:].replace('\n', '\n' + n_spaces * ' ')
+        return f'{name}{nums}'
     
     def __str__(self):
-        if self.any():
-            arr = self.to_array(vector_size=self._minimum_vector_size)
-            return str(arr)
-        elif self.ndim == 2:
-            return str([[]*len(self.rows)])
-        elif self.ndim == 1:
-            return '[]'
+        arr = self.to_array()
+        return str(arr)
             
 
 class SparseVector:

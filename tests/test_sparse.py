@@ -22,8 +22,8 @@ def test_sparse_vector_creation():
     arr = np.array([1., 2., 0., 4.5, 0., 0.])
     sv = sparse_vector(arr)
     assert (sv.to_array() == arr).all()
-    assert repr(sv) == 'SparseVector([1. , 2. , 0. , 4.5])'
-    assert str(sv) == '[1.  2.  0.  4.5]'
+    assert repr(sv) == 'SparseVector([1. , 2. , 0. , 4.5, 0. , 0. ])'
+    assert str(sv) == '[1.  2.  0.  4.5 0.  0. ]'
     
 def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5]])
@@ -35,8 +35,8 @@ def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5, 0., 0.]])
     sa = sparse_array(arr)
     assert (sa.to_array() == arr).all()
-    assert repr(sa) == 'SparseArray([[1. , 2. , 0. , 4.5]])'
-    assert str(sa) == '[[1.  2.  0.  4.5]]'
+    assert repr(sa) == 'SparseArray([[1. , 2. , 0. , 4.5, 0. , 0. ]])'
+    assert str(sa) == '[[1.  2.  0.  4.5 0.  0. ]]'
 
 def test_sparse_vector_math():
     arr = np.array([1., 2., 0., 4.5])
