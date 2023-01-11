@@ -123,7 +123,7 @@ class Indexer:
         length = len(index)
         factor = self.get_conversion_factor(units)
         if length == 0:
-            return factor * self.data.to_array(self._chemicals.size)
+            return factor * self.data
         elif length == 1:
             return factor * self[index[0]]
         else:
