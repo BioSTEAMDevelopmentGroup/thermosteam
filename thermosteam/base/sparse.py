@@ -63,7 +63,7 @@ def sparse(arr, copy=False, vector_size=None):
     elif ndim == 2:
         return SparseArray(arr)
     else:
-        raise ValueError(f'cannot convert {ndim}-D object to a sparse array or vector')
+        raise ValueError(f'cannot convert {ndim}-d object to a sparse array or vector')
     
 def get_ndim(value):
     if hasattr(value, 'ndim'):
@@ -98,7 +98,7 @@ class SparseArray:
     Create a SparseArray object that can be used for array-like arithmetic operations
     (i.e., +, -, *, /) of sparse 2-dimensional arrays. 
     
-    In contrast to Scipy's sparse 2-D arrays, sparse arrays do not have a strict row length 
+    In contrast to Scipy's sparse 2-d arrays, sparse arrays do not have a strict row length 
     (but still have a strict column length). 
     
     """
@@ -263,7 +263,7 @@ class SparseArray:
                 elif md == 1:
                     return SparseArray.from_rows([rows[i] for i in m]).to_array()
                 else:
-                    raise IndexError(f'row index can be at most 1-D, not {md}-D')
+                    raise IndexError(f'row index can be at most 1-d, not {md}-d')
             elif md == 0: 
                 return rows[m][n]
             elif md == 1: 
@@ -273,15 +273,15 @@ class SparseArray:
                 elif nd == 1:
                     return np.array([rows[i].dct.get(j.__index__(), 0.) for i, j in zip(m, n)])
                 else:
-                    raise IndexError(f'column index can be at most 1-D, not {nd}-D')
+                    raise IndexError(f'column index can be at most 1-d, not {nd}-d')
             else:
-                raise IndexError(f'row index can be at most 1-D, not {md}-D')
+                raise IndexError(f'row index can be at most 1-d, not {md}-d')
         else:
             ndim, has_bool = get_index_properties(index)
             if has_bool: 
                 if ndim != 2:
                     raise IndexError(
-                        f'boolean index is {ndim}-D but sparse array is 2-D '
+                        f'boolean index is {ndim}-d but sparse array is 2-d '
                     )
                 return self[np.where(index)]
             elif ndim == 1:
@@ -315,7 +315,7 @@ class SparseArray:
                             for i, j in zip(rows, n): i[j] = value
                         else:
                             raise IndexError(
-                                f'cannot broadcast {vd}-D array on to array column'
+                                f'cannot broadcast {vd}-d array on to array column'
                             )
                     elif vd == 2:
                         value_length = len(value)
@@ -328,7 +328,7 @@ class SparseArray:
                             )
                     else:
                         raise IndexError(
-                            f'cannot broadcast {vd}-D array on to 2-D sparse array'
+                            f'cannot broadcast {vd}-d array on to 2-d sparse array'
                         )
             elif not nd and n == open_slice:
                 md = get_ndim(m)
@@ -348,10 +348,10 @@ class SparseArray:
                             )
                     else:
                         raise IndexError(
-                            f'cannot broadcast {ndim}-D array on to 1-D '
+                            f'cannot broadcast {ndim}-d array on to 1-d '
                         )
                 else:
-                    raise IndexError(f'column index can be at most 1-D, not {md}-D')
+                    raise IndexError(f'column index can be at most 1-d, not {md}-d')
             elif md == 0: 
                 rows[m][n] = value
             elif md == 1: 
@@ -376,13 +376,13 @@ class SparseArray:
                         'cannot set an array element with a sequence'
                     )
             else:
-                raise IndexError(f'row index can be at most 1-D, not {md}-D')
+                raise IndexError(f'row index can be at most 1-d, not {md}-d')
         else:
             ndim, has_bool = get_index_properties(index)
             if has_bool:
                 if ndim != 2:
                     raise IndexError(
-                        f'boolean index is {ndim}-D but sparse array is 2-D '
+                        f'boolean index is {ndim}-d but sparse array is 2-d '
                     )
                 self[np.where(index)] = value
             elif ndim == 1:
@@ -407,7 +407,7 @@ class SparseArray:
                         )
                 else:
                     raise IndexError(
-                        f'cannot broadcast {vd}-D array on to 2-D sparse array'
+                        f'cannot broadcast {vd}-d array on to 2-d sparse array'
                     )
             else:
                 rows[index][:] = value
@@ -467,7 +467,7 @@ class SparseArray:
             arr = np.zeros([len(rows), 1] if keepdims else len(rows))
             for i, j in enumerate(rows): arr[i] = j.all()
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
     
     def any(self, axis=None, keepdims=False):
@@ -488,7 +488,7 @@ class SparseArray:
             arr = np.zeros([len(rows), 1] if keepdims else len(rows))
             for i, j in enumerate(rows): arr[i] = j.any()
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
             
     def sum(self, axis=None, keepdims=False):
@@ -503,7 +503,7 @@ class SparseArray:
             arr = np.zeros([len(rows), 1] if keepdims else len(rows))
             for i, j in enumerate(rows): arr[i] = sum(j.dct.values())
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
     
     def mean(self, axis=None, keepdims=False):
@@ -521,7 +521,7 @@ class SparseArray:
             arr = np.zeros([len(rows), 1] if keepdims else len(rows))
             for i, j in enumerate(rows): arr[i] = sum(j.dct.values()) / j.size
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
     
     def max(self, axis=None, keepdims=False):
@@ -542,7 +542,7 @@ class SparseArray:
             arr = np.zeros([len(rows), 1] if keepdims else len(rows))
             for i, j in enumerate(rows): arr[i] = j.max()
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
     
     def min(self, axis=None, keepdims=False):
@@ -564,7 +564,7 @@ class SparseArray:
             for i, j in enumerate(rows): arr[i] = j.min()
             return arr
         else:
-            raise ValueError('axis is out of bounds for 2-D sparse array')
+            raise ValueError('axis is out of bounds for 2-d sparse array')
         return arr
     
     def __iadd__(self, value):
@@ -985,31 +985,31 @@ class SparseVector:
         return self.dct == other.dct
     
     def any(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         arr = bool(self.dct)
         if keepdims: arr = np.array([arr])
         return arr
     
     def all(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         arr = len(self.dct) == self.size
         if keepdims: arr = np.array([arr])
         return arr
     
     def sum(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         arr = sum(self.dct.values())
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def mean(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         arr = sum(self.dct.values()) / self.size if self.dct else 0.
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def max(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         dct = self.dct
         if dct:
             arr = max(dct.values())
@@ -1022,7 +1022,7 @@ class SparseVector:
         return arr
     
     def min(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
         dct = self.dct
         if dct:
             arr = min(dct.values())
@@ -1061,7 +1061,7 @@ class SparseVector:
         if has_bool: 
             if ndim != 1:
                 raise IndexError(
-                    f'boolean index is {ndim}-D but sparse vector is 1-D '
+                    f'boolean index is {ndim}-d but sparse vector is 1-d '
                 )
             return self[np.where(index)]
         if ndim == 1:
@@ -1084,7 +1084,7 @@ class SparseVector:
         if has_bool: 
             if ndim != 1:
                 raise IndexError(
-                    f'boolean index is {ndim}-D but sparse vector is 1-D '
+                    f'boolean index is {ndim}-d but sparse vector is 1-d '
                 )
             index, = np.where(index)
         if ndim:
@@ -1096,7 +1096,7 @@ class SparseVector:
                         
             elif vd > 1:
                 raise IndexError(
-                    f'cannot broadcast {vd}-D array on to 1-D sparse vector'
+                    f'cannot broadcast {vd}-d array on to 1-d sparse vector'
                 )
             elif value:
                 for i in index:
