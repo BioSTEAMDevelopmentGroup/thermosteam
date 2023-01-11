@@ -1473,7 +1473,7 @@ class MultiStageEquilibrium:
             if mol_error > 1e-12:
                 nonzero_index, = np.where(mol_errors > 1e-12)
                 mol_errors = mol_errors[nonzero_index]
-                max_errors = np.maximum.reduce([np.abs(mol[nonzero_index]), np.abs(mol_new[nonzero_index])])
+                max_errors = np.maximum.reduce([abs(mol[nonzero_index]), abs(mol_new[nonzero_index])])
                 rmol_error = (mol_errors / max_errors).max()
         not_converged = (
             self.iter < self.maxiter and (mol_error > self.molar_tolerance

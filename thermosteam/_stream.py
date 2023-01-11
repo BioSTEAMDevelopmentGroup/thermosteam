@@ -1991,7 +1991,7 @@ class Stream:
         """Chemicals cabable of liquid-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_vle_indices([*self.mol.nonzero_keys()])
+        indices = chemicals.get_vle_indices(self.mol.nonzero_keys())
         return [chemicals_tuple[i] for i in indices]
     
     @property
@@ -1999,7 +1999,7 @@ class Stream:
         """Chemicals cabable of vapor-liquid equilibrium."""
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
-        indices = chemicals.get_lle_indices([*self.mol.nonzero_keys()])
+        indices = chemicals.get_lle_indices(self.mol.nonzero_keys())
         return [chemicals_tuple[i] for i in indices]
     
     def get_bubble_point(self, IDs: Optional[Sequence[str]]=None):
