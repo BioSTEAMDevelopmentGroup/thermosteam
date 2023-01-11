@@ -119,7 +119,7 @@ class MultiStream(Stream):
     array([0.217, 1.11 ])
     >>> # Index the vapor phase
     >>> s1.imol['g']
-    SparseVector([])
+    SparseVector([0., 0.])
     >>> # Index flow of chemicals summed across all phases
     >>> s1.imol['Ethanol', 'Water']
     array([0.217, 1.11 ])

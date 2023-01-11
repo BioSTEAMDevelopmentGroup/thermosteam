@@ -157,30 +157,6 @@ class SparseArray:
             dct = row.dct
             for i in dct: dct[i] = positive(dct[i])
         return SparseArray(rows)
-                
-    def __float__(self):
-        return self.to_array(dtype=float)
-    
-    def __int__(self):
-        return self.to_array(dtype=int)
-    
-    def __eq__(self, other):
-        return self.to_array() == other
-    
-    def __ne__(self, other):
-        return self.to_array() != other
-    
-    def __gt__(self, other):
-        return self.to_array() > other
-    
-    def __lt__(self, other):
-        return self.to_array() < other
-    
-    def __ge__(self, other):
-        return self.to_array() >= other
-    
-    def __le__(self, other):
-        return self.to_array() <= other
     
     def nonzero_index(self):
         m = []; n = []
@@ -188,6 +164,7 @@ class SparseArray:
             for j, value in row.dct.items():
                 m.append(i); n.append(j)
         return m, n
+    nonzero = nonzero_index
     
     def nonzero_values(self):
         for row in self.rows:
@@ -433,11 +410,6 @@ class SparseArray:
             vector_size = i.size
             break
         return vector_size
-        
-    @property
-    def _minimum_vector_size(self):
-        rows = self.rows
-        return max([i._minimum_vector_size for i in rows]) if rows else 0
     
     @property
     def shape(self):
@@ -447,11 +419,10 @@ class SparseArray:
     def size(self):
         return len(self.rows) * self.vector_size
     
-    def to_array(self, dtype=None, vector_size=None):
+    def to_array(self, dtype=None):
         rows = self.rows
         N = len(rows)
-        if vector_size is None: vector_size = self.vector_size
-        arr = np.zeros([N, vector_size], dtype=self.dtype if dtype is None else dtype)
+        arr = np.zeros([N, self.vector_size], dtype=self.dtype if dtype is None else dtype)
         for i in range(N):
             row = rows[i]
             for j, value in row.dct.items():
@@ -695,6 +666,171 @@ class SparseArray:
     def __rmul__(self, other):
         return self * other
     
+    # Not yet optimized methods
+    
+    def __eq__(self, other):
+        return self.to_array() == other
+    
+    def __ne__(self, other):
+        return self.to_array() != other
+    
+    def __gt__(self, other):
+        return self.to_array() > other
+    
+    def __lt__(self, other):
+        return self.to_array() < other
+    
+    def __ge__(self, other):
+        return self.to_array() >= other
+    
+    def __le__(self, other):
+        return self.to_array() <= other
+    
+    def argmin(self, *args, **kwargs):
+        return self.to_array().argmin(*args, **kwargs)
+
+    def argmax(self, *args, **kwargs):
+        return self.to_array().argmax(*args, **kwargs)
+    
+    def argpartition(self, *args, **kwargs):
+        return self.to_array().argpartition(*args, **kwargs)
+
+    def argsort(self, *args, **kwargs):
+        return self.to_array().argsort(*args, **kwargs)
+
+    def choose(self, *args, **kwargs):
+        return self.to_array().choose(*args, **kwargs)
+
+    def clip(self, *args, **kwargs):
+        return self.to_array().clip(*args, **kwargs)
+
+    def conj(self):
+        return self.to_array().conj()
+
+    def conjugate(self):
+        return self.to_array().conjugate()
+
+    def cumprod(self, *args, **kwargs):
+        return self.to_array().cumprod(*args, **kwargs)
+
+    def cumsum(self, *args, **kwargs):
+        return self.to_array().cumsum(*args, **kwargs)
+
+    def dot(self, *args, **kwargs):
+        return self.to_array().dot(*args, **kwargs)
+
+    def prod(self, *args, **kwargs):
+        return self.to_array().prod(*args, **kwargs)
+
+    def ptp(self, *args, **kwargs):
+        return self.to_array().ptp(*args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        return self.to_array().put(*args, **kwargs)
+
+    def round(self, *args, **kwargs):
+        return self.to_array().round(*args, **kwargs)
+
+    def std(self, *args, **kwargs):
+        return self.to_array().std(*args, **kwargs)
+
+    def trace(self, *args, **kwargs):
+        return self.to_array().trace(*args, **kwargs)
+
+    def var(self, *args, **kwargs):
+        return self.to_array().var(*args, **kwargs)
+
+    def __matmul__(self, other):
+        return self.to_array() @ other
+
+    def __floordiv__(self, other):
+        return self.to_array() // other
+
+    def __mod__(self, other):
+        return self.to_array() % other
+
+    def __pow__(self, other):
+        return self.to_array() ** other
+
+    def __lshift__(self, other):
+        return self.to_array() << other
+
+    def __rshift__(self, other):
+        return self.to_array() >> other
+
+    def __and__(self, other): 
+        return self.to_array() & other
+
+    def __xor__(self, other): 
+        return self.to_array() ^ other
+
+    def __or__(self, other):
+        return self.to_array() | other
+
+    def __rmatmul__(self, other):
+        return other @ self.to_array()
+
+    def __rfloordiv__(self, other):
+        return other // self.to_array()
+
+    def __rmod__(self, other):
+        return other % self.to_array()
+
+    def __rpow__(self, other):
+        return other ** self.to_array()
+
+    def __rlshift__(self, other):
+        return other << self.to_array() 
+
+    def __rrshift__(self, other):
+        return other >> self.to_array()
+
+    def __rand__(self, other):
+        return other & self.to_array()
+
+    def __rxor__(self, other):
+        return other ^ self.to_array()
+
+    def __ror__(self, other):
+        return other | self.to_array()
+
+    def __imatmul__(self, other):
+        raise TypeError("in-place matrix multiplication is not (yet) supported")
+
+    def __ifloordiv__(self, other):
+        self[:] = self.to_array() // other
+        return self
+
+    def __imod__(self, other): 
+        self[:] =self.to_array() % other
+        return self
+
+    def __ipow__(self, other):
+        self[:] = self.to_array() ** other
+        return self
+
+    def __ilshift__(self, other):
+        self[:] = self.to_array() << other
+        return self
+
+    def __irshift__(self, other):
+        self[:] = self.to_array() >> other
+        return self
+
+    def __iand__(self, other): 
+        self[:] = self.to_array() & other
+        return self
+
+    def __ixor__(self, other): 
+        self[:] = self.to_array() ^ other
+        return self
+
+    def __ior__(self, other):
+        self[:] = self.to_array() | other
+        return self
+    
+    # Representation
+    
     def __repr__(self):
         name = type(self).__name__
         n_spaces = len(name) - 5
@@ -755,17 +891,10 @@ class SparseVector:
         return self.size
     
     def __float__(self):
-        return self.to_array(self.size, dtype=float)
+        return self.to_array(float)
     
     def __int__(self):
-        return self.to_array(self.size, dtype=int)
-    
-    __eq__ = SparseArray.__eq__
-    __ne__ = SparseArray.__ne__
-    __gt__ = SparseArray.__gt__
-    __lt__ = SparseArray.__lt__
-    __ge__ = SparseArray.__ge__
-    __le__ = SparseArray.__le__
+        return self.to_array(int)
     
     def to_flat_array(self, arr=None):
         if arr is None:
@@ -784,14 +913,6 @@ class SparseVector:
     @property
     def vector_size(self):
         return self.size
-    
-    @property
-    def _minimum_vector_size(self):
-        dct = self.dct
-        if dct:
-            return max(self.dct) + 1
-        else:
-            return 0
     
     @property
     def shape(self):
@@ -820,6 +941,8 @@ class SparseVector:
         else:
             return dct.get(index, 0.)
     
+    shares_data_with = SparseArray.shares_data_with
+    
     def remove_negatives(self):
         dct = self.dct
         for i in tuple(dct): 
@@ -840,6 +963,7 @@ class SparseVector:
     
     def nonzero_index(self):
         return [*self.dct.keys()],
+    nonzero = nonzero_index
     
     def nonzero_keys(self):
         return self.dct.keys()
@@ -866,28 +990,6 @@ class SparseVector:
         if keepdims: arr = np.array([arr])
         return arr
     
-    def argmax(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
-        max = 0
-        argmax = None
-        for i, j in self.dct.items():
-            if j > max:
-                argmax = i
-                max = j
-        if keepdims: argmax = SparseVector({0: argmax})
-        return argmax
-    
-    def argmin(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
-        min = 0
-        argmin = None
-        for i, j in self.dct.items():
-            if j < min: 
-                argmin = i
-                min = j
-        if keepdims: argmin = SparseVector({0: argmin})
-        return argmin
-    
     def sum(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-D sparse vector')
         arr = sum(self.dct.values())
@@ -906,8 +1008,10 @@ class SparseVector:
         if dct:
             arr = max(dct.values())
             if arr < 0 and len(dct) < self.size: arr = 0
-        else:
+        elif self.size:
             arr = 0.
+        else:
+            raise ValueError('zero-size vector to reduction has no identity')
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
@@ -917,15 +1021,16 @@ class SparseVector:
         if dct:
             arr = min(dct.values())
             if arr > 0 and len(dct) < self.size: arr = 0
-        else:
+        elif self.size:
             arr = 0.
+        else:
+            raise ValueError('zero-size vector to reduction has no identity')
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
-    def to_array(self, dtype=None, vector_size=None):
+    def to_array(self, dtype=None):
         if dtype is None: dtype = self.dtype
-        if vector_size is None: vector_size = self.size
-        arr = np.zeros(vector_size, dtype=dtype)
+        arr = np.zeros(self.size, dtype=dtype)
         for i, j in self.dct.items(): arr[i] = j
         return arr
     
@@ -1155,7 +1260,63 @@ class SparseVector:
             dct = {}
         return SparseVector.from_dict(dct, self.size)
     
-    shares_data_with = SparseArray.shares_data_with
+    # Not yet optimized methods
+    
+    __eq__ = SparseArray.__eq__
+    __ne__ = SparseArray.__ne__
+    __gt__ = SparseArray.__gt__
+    __lt__ = SparseArray.__lt__
+    __ge__ = SparseArray.__ge__
+    __le__ = SparseArray.__le__
+    
+    argmin = SparseArray.argmin
+    argmax = SparseArray.argmax
+    argpartition = SparseArray.argpartition
+    argsort = SparseArray.argsort
+    choose = SparseArray.choose
+    clip = SparseArray.clip
+    conj = SparseArray.conj
+    conjugate = SparseArray.conjugate
+    cumprod = SparseArray.cumprod
+    cumsum = SparseArray.cumsum
+    dot = SparseArray.dot
+    prod = SparseArray.prod
+    ptp = SparseArray.ptp
+    put = SparseArray.put
+    round = SparseArray.round
+    std = SparseArray.std
+    trace = SparseArray.trace
+    var = SparseArray.var
+    __matmul__ = SparseArray.__matmul__
+    __floordiv__ = SparseArray.__floordiv__ 
+    __mod__ = SparseArray.__mod__
+    __pow__ = SparseArray.__pow__ 
+    __lshift__ = SparseArray.__lshift__ 
+    __rshift__ = SparseArray.__rshift__ 
+    __and__ = SparseArray.__and__ 
+    __xor__ = SparseArray.__xor__ 
+    __or__ = SparseArray.__or__ 
+    __rmatmul__ = SparseArray.__rmatmul__
+    __rfloordiv__ = SparseArray.__rfloordiv__
+    __rmod__ = SparseArray.__rmod__
+    __rpow__ = SparseArray.__rpow__
+    __rlshift__ = SparseArray.__rlshift__
+    __rrshift__ = SparseArray.__rrshift__
+    __rand__ = SparseArray.__rand__
+    __rxor__ = SparseArray.__rxor__
+    __ror__ = SparseArray.__ror__
+    __imatmul__ = SparseArray.__imatmul__
+    __ifloordiv__ = SparseArray.__ifloordiv__
+    __imod__ = SparseArray.__imod__ 
+    __ipow__ = SparseArray.__ipow__
+    __ilshift__ = SparseArray.__ilshift__
+    __irshift__ = SparseArray.__irshift__
+    __iand__ = SparseArray.__iand__
+    __ixor__ = SparseArray.__ixor__
+    __ior__ = SparseArray.__ior__
+    
+    # Representation
+    
     __bool__ = SparseArray.__bool__
     __repr__ = SparseArray.__repr__
     __str__ = SparseArray.__str__

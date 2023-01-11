@@ -304,7 +304,7 @@ def test_sparse_vector_methods_vs_numpy():
     ]
     for arr in arrays:
         sv = sparse_vector(arr)
-        for method in ('min', 'max', 'mean', 'sum', 'any', 'all'):
+        for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
             sv_method = getattr(sv, method)
             arr_method = getattr(arr, method)
             for axis in (0, None, 1):
@@ -328,7 +328,7 @@ def test_sparse_array_methods_vs_numpy():
     ]
     for arr in arrays:
         sa = sparse_array(arr)
-        for method in ('min', 'max', 'mean', 'sum', 'any', 'all'):
+        for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
             sa_method = getattr(sa, method)
             arr_method = getattr(arr, method)
             for axis in (0, 1, None, 2):
