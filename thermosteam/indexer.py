@@ -174,7 +174,7 @@ class SplitIndexer(Indexer):
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
         if container is None:
-            self.data = data = np.zeros(chemicals.size)
+            self.data = data = SparseVector.from_size(chemicals.size)
         else:
             self.data = data = container
             data.clear()
@@ -187,20 +187,19 @@ class SplitIndexer(Indexer):
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self.data = np.zeros(self._chemicals.size)
+        self.data = SparseVector.from_size(self._chemicals.size)
         return self
     
     @classmethod
     def from_data(cls, data, chemicals=None, check_data=True):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        data = np.asarray(data)
-        if check_data:
+        if check_data and isinstance(data, np.ndarray):
             assert data.ndim == 1, 'data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
             assert (data <= 1.).all(), 'data must be less or equal to one'
-        self.data = data
+        self.data = sparse_vector(data)
         return self
     
     def __getitem__(self, key):
@@ -219,11 +218,11 @@ class SplitIndexer(Indexer):
         if kind == 0 or kind == 1:
             self.data[index] = data
         elif kind == 2:
-            self_data = self.data
+            sparse_data = self.data
             if hasattr(data, '__iter__'):
-                for i, x in zip(index, data): self_data[i] = x
+                for i, x in zip(index, data): sparse_data[i] = x
             else:
-                for i in index: self_data[i] = data
+                for i in index: sparse_data[i] = data
         else:
             raise IndexError('unknown error')
                 
@@ -356,11 +355,11 @@ class ChemicalIndexer(Indexer):
             composition = self.group_compositions[key]
             self.data[index] = data * composition
         elif kind == 2:
-            self_data = self.data
+            sparse_data = self.data
             group_compositions = self.group_compositions
             for n in range(len(index)):
                 i = index[n]
-                self_data[i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
+                sparse_data[i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
         else:
             raise IndexError('unknown error')
     
@@ -833,11 +832,11 @@ class MaterialIndexer(Indexer):
             self.data[phase, index] = data * composition
         elif kind == 2: # Nested chemical group
             phase, index = index
-            self_data = self.data
+            sparse_data = self.data
             group_compositions = self.group_compositions
             for n in range(len(index)):
                 i = index[n]
-                self_data[phase, i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
+                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
         else:
             raise IndexError('unknown error')
     
