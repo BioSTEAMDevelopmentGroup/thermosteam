@@ -405,10 +405,7 @@ class Reaction:
         values, config, original = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
-        try:
-            self._reaction(values)
-        except:
-            breakpoint()
+        self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
