@@ -11,6 +11,7 @@ __all__ = (
     'sparse',
 )
 
+bools = (bool, np.bool_)
 open_slice = slice(None)
 
 def unpack_index(index, ndim):
@@ -56,20 +57,38 @@ def sparse_array(arr, copy=False, vector_size=None):
 def sparse(arr, copy=False, vector_size=None):
     if arr.__class__ in (SparseArray, SparseVector):
         return arr
-    elif (ndim:=get_ndim(arr)) == 1:
+    elif (ndim:=get_ndim_value(arr)) == 1:
         return SparseVector(arr)
     elif ndim == 2:
         return SparseArray(arr)
     else:
         raise ValueError(f'cannot convert {ndim}-D object to a sparse array or vector')
     
-def get_ndim(value, ndim=0):
+def get_ndim_value(value):
     if hasattr(value, 'ndim'):
-        ndim += value.ndim
+        return value.ndim
     elif hasattr(value, '__iter__'):
-        ndim += 1
-        for i in value: return get_ndim(i, ndim)
-    return ndim
+        for i in value: return get_ndim_value(i) + 1
+    return 0
+
+def get_ndim_index(index):
+    if hasattr(index, 'ndim'):
+        if index.dtype in bools: 
+            raise IndexError(
+            'masks (boolean indexes) are is not supported'
+        )
+        return index.ndim
+    elif hasattr(index, '__iter__'):
+        for i in index: 
+            ndim = get_ndim_index(i) + 1
+            if ndim == 1 and i.__class__ in bools: # short for bool
+                raise IndexError(
+                    'masks (boolean indexes) are is not supported'
+                )
+            return ndim
+        return 1
+    else:
+        return 0
 
 def sum_sparse_vectors(svs, dct=None):
     if dct is None: dct = {}
@@ -196,26 +215,28 @@ class SparseArray:
     def shares_data_with(self, other):
         return bool(self.base.intersection(other.base))
     
-    def flat_array(self, arr=None, vector_size=None, dtype=None):
+    def to_flat_array(self, arr=None):
+        vector_size = self.vector_size
+        dtype = self.dtype
         rows = self.rows
         N = len(rows)
-        if vector_size is None: vector_size = self.vector_size
-        if dtype is None: dtype = self.dtype
-        if arr is None:
-            arr = np.zeros(N * vector_size, dtype=dtype)
-            for i in range(N):
-                row = rows[i]
-                for j, value in row.dct.items(): 
-                    arr[i * vector_size + j] = value
-            return arr
-        else:
-            dcts = [i.dct for i in rows]
-            for i in dcts: i.clear()
-            for j, value in enumerate(arr):
-                if value: 
-                    i = int(j / vector_size)
-                    j -= i * vector_size
-                    dcts[i][j] = value
+        if arr is None: arr = np.zeros(N * vector_size, dtype=dtype)
+        for i in range(N):
+            row = rows[i]
+            for j, value in row.dct.items(): 
+                arr[i * vector_size + j] = value
+        return arr
+        
+    def from_flat_array(self, arr=None):
+        rows = self.rows
+        vector_size = self.vector_size
+        dcts = [i.dct for i in rows]
+        for i in dcts: i.clear()
+        for j, value in enumerate(arr):
+            if value: 
+                i = int(j / vector_size)
+                j -= i * vector_size
+                dcts[i][j] = value
     
     @property
     def base(self):
@@ -262,8 +283,8 @@ class SparseArray:
         rows = self.rows
         if index.__class__ is tuple:
             m, n = unpack_index(index, self.ndim)
-            md = get_ndim(m)
-            nd = get_ndim(n)
+            md = get_ndim_index(m)
+            nd = get_ndim_index(n)
             if not md and m == open_slice:
                 if not nd and n == open_slice:
                     return self
@@ -290,7 +311,7 @@ class SparseArray:
                     raise IndexError(f'column index can be at most 1-D, not {nd}-D')
             else:
                 raise IndexError(f'row index can be at most 1-D, not {md}-D')
-        elif (ndim:=get_ndim(index)) == 1:
+        elif (ndim:=get_ndim_index(index)) == 1:
             return SparseArray.from_rows([rows[i] for i in index])
         elif ndim > 1:
             raise IndexError('must use tuple for multidimensional indexing')
@@ -305,13 +326,13 @@ class SparseArray:
         rows = self.rows
         if index.__class__ is tuple:
             m, n = unpack_index(index, self.ndim)
-            md = get_ndim(m)
-            nd = get_ndim(n)
+            md = get_ndim_index(m)
+            nd = get_ndim_index(n)
             if not md and m == open_slice:
                 if not nd and n == open_slice:
                     self[:] = value
                 else:
-                    vd = get_ndim(value)
+                    vd = get_ndim_value(value)
                     if vd == 0.:
                         for i in rows: i[n] = value
                     elif vd == 1:
@@ -337,11 +358,11 @@ class SparseArray:
                             f'cannot broadcast {vd}-D array on to 2-D sparse array'
                         )
             elif not nd and n == open_slice:
-                md = get_ndim(m)
+                md = get_ndim_index(m)
                 if md == 0:
                     rows[m][:] = value
                 elif md == 1:
-                    ndim = get_ndim(value)
+                    ndim = get_ndim_value(value)
                     if ndim in (0, 1):
                         for i in m: rows[i][:] = value
                     elif ndim == 2:
@@ -361,7 +382,7 @@ class SparseArray:
             elif md == 0: 
                 rows[m][n] = value
             elif md == 1: 
-                vd = get_ndim(value)
+                vd = get_ndim_value(value)
                 if vd == 0:
                     if value:
                         for i, j in zip(*unpack_index(index, self.ndim)): 
@@ -383,12 +404,12 @@ class SparseArray:
                     )
             else:
                 raise IndexError(f'row index can be at most 1-D, not {md}-D')
-        elif (ndim:=get_ndim(index)) == 1:
+        elif (ndim:=get_ndim_index(index)) == 1:
             SparseArray.from_rows([rows[i] for i in index])[:] = value
         elif ndim == 2:
             raise IndexError('must use tuple for multidimensional indexing')
         elif index == open_slice:
-            vd = get_ndim(value)
+            vd = get_ndim_value(value)
             if vd in (0, 1):
                 for i in rows: i[:] = value
             elif vd == 2:
@@ -537,7 +558,7 @@ class SparseArray:
             
     def __iadd__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim_value(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -557,7 +578,7 @@ class SparseArray:
             
     def __isub__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim_value(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -577,7 +598,7 @@ class SparseArray:
     
     def __imul__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim_value(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -597,7 +618,7 @@ class SparseArray:
         
     def __itruediv__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim_value(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -618,7 +639,7 @@ class SparseArray:
     def __rtruediv__(self, value):
         new = self.copy()
         rows = new.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim_value(value) == 2 and value.__class__ is not SparseVector:
             value_length = len(value)
             self_length = len(rows)
             if self_length == value_length:
@@ -724,11 +745,15 @@ class SparseVector:
     def __int__(self):
         return self.to_array(self.size, dtype=int)
     
-    def flat_array(self, arr=None, vector_size=None):
+    def to_flat_array(self, arr=None):
         if arr is None:
-            return self.to_array(vector_size)
+            return self.to_array()
         else:
-            self[:] = arr
+            for i, j in self.dct.items(): arr[i] = j
+            return arr
+    
+    def from_flat_array(self, arr=None):
+        self[:] = arr
     
     @classmethod
     def from_size(cls, size):
@@ -855,11 +880,9 @@ class SparseVector:
     
     def __getitem__(self, index):
         dct = self.dct
+        if index.__class__ is tuple:
+            index, = unpack_index(index, self.ndim)
         if hasattr(index, '__iter__'):
-            if index.__class__ is tuple:
-                index, = unpack_index(index, self.ndim)
-                if not hasattr(index, '__iter__'):
-                    return dct.get(index.__index__())
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
                 i = i.__index__()
@@ -873,47 +896,26 @@ class SparseVector:
     def __setitem__(self, index, value):
         if self.read_only: raise ValueError('assignment destination is read-only')
         dct = self.dct
-        if hasattr(index, '__iter__'):
-            if index.__class__ is tuple:
-                index, = unpack_index(index, self.ndim)
-                if not hasattr(index, '__iter__'):
-                    if hasattr(value, '__iter__'):
-                        raise IndexError(
-                            'cannot set an array element with a sequence'
-                        )
-                    index = index.__index__()
-                    if value:
-                        dct[index] = value
-                    elif index in dct:
-                        del dct[index]
-                    return
-            if (vd:=get_ndim(value)) == 1:
+        if index.__class__ is tuple:
+            index, = unpack_index(index, self.ndim)
+        ndim = get_ndim_index(index)
+        if ndim:
+            if (vd:=get_ndim_value(value)) == 1:
                 for i, j in zip(index, value): 
-                    if i.__class__.__name__[0] == 'b':
-                        raise IndexError(
-                            'masks (boolean indexes) are is not supported'
-                        )
                     i = i.__index__()
                     if j: dct[i] = j
                     elif i in dct: del dct[i]
+                        
             elif vd > 1:
                 raise IndexError(
                     f'cannot broadcast {vd}-D array on to 1-D sparse vector'
                 )
             elif value:
                 for i in index:
-                    if i.__class__.__name__[0] == 'b':
-                        raise IndexError(
-                            'masks (boolean indexes) are is not supported'
-                        )
                     i = i.__index__()
                     dct[i] = value
             else:
                 for i in index:
-                    if i.__class__.__name__[0] == 'b':
-                        raise IndexError(
-                            'masks (boolean indexes) are is not supported'
-                        )
                     i = i.__index__()
                     if i in dct: del dct[i]
         elif index == open_slice:
