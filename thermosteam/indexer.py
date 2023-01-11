@@ -131,7 +131,6 @@ class Indexer:
     
     def set_data(self, data, units, *index):
         length = len(index)
-        data = np.asarray(data, dtype=float)
         factor = self.get_conversion_factor(units)
         scaled_data = data / factor
         if length == 0:
