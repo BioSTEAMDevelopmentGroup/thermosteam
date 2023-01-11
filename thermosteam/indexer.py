@@ -193,12 +193,12 @@ class SplitIndexer(Indexer):
     def from_data(cls, data, chemicals=None, check_data=True):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        if check_data and isinstance(data, np.ndarray):
+        self.data = data = sparse_vector(data)
+        if check_data:
             assert data.ndim == 1, 'data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
             assert (data <= 1.).all(), 'data must be less or equal to one'
-        self.data = sparse_vector(data)
         return self
     
     def __getitem__(self, key):
@@ -442,11 +442,11 @@ class ChemicalIndexer(Indexer):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._phase = Phase.convert(phase)
-        if check_data and isinstance(data, np.ndarray):
+        self.data = data = sparse_vector(data)
+        if check_data:
             assert data.ndim == 1, 'material data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
-        self.data = sparse_vector(data)
         self.interface_cache = {}
         return self
     
@@ -744,7 +744,8 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        if check_data and isinstance(data, np.ndarray):
+        self.data = data = sparse_array(data)
+        if check_data:
             assert data.ndim == 2, ('material data must be an 2d numpy array')
             M_phases = len(self._phases)
             N_chemicals = self._chemicals.size
@@ -754,7 +755,6 @@ class MaterialIndexer(Indexer):
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of material data columns')
-        self.data = sparse_array(data)
         self.interface_cache = {}
         return self
     
