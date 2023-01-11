@@ -162,9 +162,6 @@ def test_sparse_vector_indexing():
     assert (sv[[1, 2]] == np.array([3, 2])).all()
     
     with pytest.raises(IndexError):
-        sv[sv == 0] = 4 * [1.]
-    
-    with pytest.raises(IndexError):
         sv[(1, 2)]
     with pytest.raises(IndexError):
         sv[(1, 2)] = 0.
@@ -174,14 +171,6 @@ def test_sparse_vector_indexing():
         sv[1] = [0., 1]
 
 def test_sparse_array_indexing():
-    arr = np.array([[1., 0.], [0., 1.5]])
-    sa = sparse_array(arr)
-    with pytest.raises(IndexError):
-        sa[sa == 0] = 0.
-    
-    with pytest.raises(IndexError):
-        sa[sa == 0] = [0., 1]
-    
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse_array(arr)
     
@@ -275,6 +264,28 @@ def test_sparse_array_indexing():
          [3., 3.]]
     ).all()
 
+def test_sparse_array_boolean_indexing():
+    arr = np.array([[1., 0.], [0., 1.]])
+    sa = sparse_array(arr)
+    assert (sa[sa == 0] == arr[arr == 0]).all()
+    sa[sa == 0] = 1.
+    arr[arr == 0] = 1.
+    assert (sa == arr).all()
+    sa[sa == 1] = [0., 1, 1, 0.]
+    arr[arr == 1] = [0., 1, 1, 0.]
+    assert (sa == arr).all()
+
+def test_sparse_vector_boolean_indexing():
+    arr = np.array([1., 0., 0., 1.])
+    sv = sparse_vector(arr)
+    assert (sv[sv == 0] == arr[arr == 0]).all()
+    sv[sv == 0] = 1.
+    arr[arr == 0] = 1.
+    assert (sv == arr).all()
+    sv[sv == 1] = [0., 1, 1, 0.]
+    arr[arr == 1] = [0., 1, 1, 0.]
+    assert (sv == arr).all()
+
 def test_sparse_vector_special_methods():
     arr = np.array([1., 2., 0., 4.5])
     sv = sparse_vector(arr)
@@ -352,6 +363,8 @@ if __name__ == '__main__':
     test_sparse_array_math()
     test_sparse_vector_indexing()
     test_sparse_array_indexing()
+    test_sparse_vector_boolean_indexing()
+    test_sparse_array_boolean_indexing()
     test_sparse_vector_special_methods()
     test_sparse_array_special_methods()
     test_sparse_vector_methods_vs_numpy()

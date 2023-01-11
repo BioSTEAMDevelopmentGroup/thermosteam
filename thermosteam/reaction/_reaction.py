@@ -410,12 +410,10 @@ class Reaction:
         except:
             breakpoint()
         if tmo.reaction.CHECK_FEASIBILITY:
-            negative_index = values.negative_index()
-            if negative_index:
-                try:
-                    negative_values = values[negative_index]
-                except:
-                    breakpoint()
+            has_negatives = values.has_negatives()
+            if has_negatives:
+                negative_index = values.negative_index()
+                negative_values = values[negative_index]
                 if negative_values.sum() < -1e-12:
                     X_net = self.X_net()
                     for ID, X in X_net.items():
