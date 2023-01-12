@@ -474,7 +474,7 @@ class ChemicalIndexer(Indexer):
             phase = '\n' + tab + phase
         else:
             dlim = ", "
-        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(self._chemicals.size), dlim)
+        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(), dlim)
         return f"{type(self).__name__}({phase}{ID_data})"
     
     def __repr__(self):
