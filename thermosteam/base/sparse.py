@@ -467,7 +467,8 @@ class SparseArray:
         return self.to_array() # For backwards compatibility with property objects used by QSDsan
     
     def setflags(self, flag):
-        if flag == 0: self.read_only = True # For backwards compatibility with arrays
+        if flag == 0: 
+            for i in self.rows: i.read_only = True # For backwards compatibility with arrays
         else: raise NotImplementedError(f'flag {flag} not yet implemented')
     
     def to_array(self, dtype=None):
@@ -976,6 +977,10 @@ class SparseVector:
         new.read_only = False
         return new
         
+    def setflags(self, flag):
+        if flag == 0: self.read_only = True # For backwards compatibility with arrays
+        else: raise NotImplementedError(f'flag {flag} not yet implemented')
+    
     def sum_of(self, index):
         dct = self.dct
         if hasattr(index, '__iter__'):
