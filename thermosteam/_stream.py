@@ -1541,9 +1541,9 @@ class Stream:
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
         if TP and flow and (phase or self._imol.data.ndim == 2):
-            self._imol.interface_cache = other._imol.interface_cache
+            self._imol._cache_data = other._imol._cache_data
         else:
-            self._imol.interface_cache.clear()
+            self._imol._cache_data.clear()
         if TP:
             self._thermal_condition = other._thermal_condition
         if flow:
@@ -1577,7 +1577,7 @@ class Stream:
         imol = self._imol
         if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
             raise RuntimeError('phase is locked; stream cannot be unlinked')
-        imol.interface_cache.clear()
+        imol._cache_data.clear()
         imol.data = imol.data.copy()
         imol._phase = imol._phase.copy()
         self._thermal_condition = self._thermal_condition.copy()
