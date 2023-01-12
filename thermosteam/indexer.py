@@ -302,7 +302,7 @@ class ChemicalIndexer(Indexer):
     `ChemicalVolumetricIndexer`.
     
     """
-    __slots__ = ('_chemicals', '_phase', '_cache_data')
+    __slots__ = ('_chemicals', '_phase', '_data_cache')
     
     def __new__(cls, phase=NoPhase, units=None, chemicals=None, **ID_data):
         self = cls.blank(phase, chemicals)
@@ -315,12 +315,12 @@ class ChemicalIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
-        old_container = (old_data, self._cache_data)
+        old_container = (old_data, self._data_cache)
         if container is None:
             self.data = data = SparseVector.from_size(chemicals.size)
-            self._cache_data = {}
+            self._data_cache = {}
         else:
-            data, self._cache_data = container
+            data, self._data_cache = container
             self.data =  data
             data.clear()
         for CAS, value in zip(self._chemicals.CASs, old_data):
@@ -425,7 +425,7 @@ class ChemicalIndexer(Indexer):
         new = _new(self.__class__)
         new._chemicals = self._chemicals
         new._phase = self._phase.copy()
-        new._cache_data = {}
+        new._data_cache = {}
         return new
     
     @classmethod
@@ -434,7 +434,7 @@ class ChemicalIndexer(Indexer):
         self._load_chemicals(chemicals)
         self.data = SparseVector.from_size(chemicals.size)
         self._phase = Phase.convert(phase)
-        self._cache_data = {}
+        self._data_cache = {}
         return self
     
     @classmethod
@@ -447,7 +447,7 @@ class ChemicalIndexer(Indexer):
             assert data.ndim == 1, 'material data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
-        self._cache_data = {}
+        self._data_cache = {}
         return self
     
     @property
@@ -537,7 +537,7 @@ class MaterialIndexer(Indexer):
     
     """
     __slots__ = ('_chemicals', '_phases', '_phase_indexer',
-                 '_index_cache', '_cache_data')
+                 '_index_cache', '_data_cache')
     _index_caches = {}
     _ChemicalIndexer = ChemicalIndexer
     
@@ -552,11 +552,11 @@ class MaterialIndexer(Indexer):
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
-        old__cache_data = self._cache_data
+        old__data_cache = self._data_cache
         N_phases = len(self._phases)
         if container is None:
             self.data = data = SparseArray.from_shape([N_phases, chemicals.size])
-            self._cache_data = {}
+            self._data_cache = {}
         else:
             data, cache = container
             data[:] = 0.
@@ -569,7 +569,7 @@ class MaterialIndexer(Indexer):
                 if value: data[i, chemicals.index(CASs[j])] = value
         self._load_chemicals(chemicals)
         self._set_cache()
-        return (old_data, old__cache_data)
+        return (old_data, old__data_cache)
     
     def __reduce__(self):
         return self.from_data, (self.data, self._phases, self._chemicals, False)
@@ -725,7 +725,7 @@ class MaterialIndexer(Indexer):
         new._chemicals = self._chemicals
         new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
-        new._cache_data = {}
+        new._data_cache = {}
         return new
     
     @classmethod
@@ -735,7 +735,7 @@ class MaterialIndexer(Indexer):
         self._set_phases(phases)
         self._set_cache()
         self.data = SparseArray.from_shape([len(phases), self._chemicals.size])
-        self._cache_data = {}
+        self._data_cache = {}
         return self
     
     @classmethod
@@ -755,7 +755,7 @@ class MaterialIndexer(Indexer):
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of material data columns')
-        self._cache_data = {}
+        self._data_cache = {}
         return self
     
     @property
@@ -1033,10 +1033,10 @@ ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricF
 def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
     try:
-        mass = self._cache_data['mass']
+        mass = self._data_cache['mass']
     except:
         chemicals = self.chemicals
-        self._cache_data['mass'] = mass = \
+        self._data_cache['mass'] = mass = \
         ChemicalMassFlowIndexer.from_data(
             SparseVector.from_dict(
                 MassFlowDict(self.data.dct, chemicals.MW),
@@ -1051,12 +1051,12 @@ ChemicalMolarFlowIndexer.by_mass = by_mass
 def by_mass(self):
     """Return a MassFlowIndexer that references this object's molar data."""
     try:
-        mass = self._cache_data['mass']
+        mass = self._data_cache['mass']
     except:
         chemicals = self.chemicals
         size = chemicals.size
         MW = chemicals.MW
-        self._cache_data['mass'] = mass = \
+        self._data_cache['mass'] = mass = \
         MassFlowIndexer.from_data(
             SparseArray.from_rows([
                 SparseVector.from_dict(MassFlowDict(i.dct, MW), size)
@@ -1080,12 +1080,12 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._cache_data['vol', TP]
+        vol = self._data_cache['vol', TP]
     except:
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
         phase = self._phase
-        self._cache_data['vol', TP] = \
+        self._data_cache['vol', TP] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(
             SparseVector.from_dict(
                 VolumetricFlowDict(self.data.dct, TP, V, None, phase, {}),
@@ -1106,13 +1106,13 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._cache_data[TP]
+        vol = self._data_cache[TP]
     except:
         phases = self._phases
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
         size = chemicals.size
-        self._cache_data[TP] = \
+        self._data_cache[TP] = \
         vol = VolumetricFlowIndexer.from_data(
             SparseArray.from_rows([
                 SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}), size)
