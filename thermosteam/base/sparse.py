@@ -161,7 +161,7 @@ class SparseArray:
     
     def nonzero_values(self):
         for row in self.rows:
-            yield from row.values()
+            yield from row.dct.values()
     
     def nonzero_items(self):
         for i, row in enumerate(self.rows):
@@ -205,7 +205,7 @@ class SparseArray:
         return False
     
     def remove_negatives(self):
-        for i in self.rows: i.remove_negatives
+        for i in self.rows: i.remove_negatives()
     
     def shares_data_with(self, other):
         return bool(self.base.intersection(other.base))
@@ -261,7 +261,7 @@ class SparseArray:
                 if md == 0:
                     return rows[m]
                 elif md == 1:
-                    return SparseArray.from_rows([rows[i] for i in m]).to_array()
+                    return SparseArray.from_rows([rows[i] for i in m])
                 else:
                     raise IndexError(f'row index can be at most 1-d, not {md}-d')
             elif md == 0: 
@@ -278,12 +278,11 @@ class SparseArray:
                 raise IndexError(f'row index can be at most 1-d, not {md}-d')
         else:
             ndim, has_bool = get_index_properties(index)
-            if has_bool: 
-                if ndim != 2:
-                    raise IndexError(
-                        f'boolean index is {ndim}-d but sparse array is 2-d '
-                    )
-                return self[np.where(index)]
+            if has_bool:
+                if ndim == 1: 
+                    return SparseArray.from_rows([rows[i] for i, j in enumerate(index) if j])
+                else:
+                    return self[np.where(index)]
             elif ndim == 1:
                 return SparseArray.from_rows([rows[i] for i in index])
             elif ndim > 1:
@@ -312,7 +311,8 @@ class SparseArray:
                         if nd == 0.:
                             for i, j in zip(rows, value): i[n] = j
                         elif nd == 1:
-                            for i, j in zip(rows, n): i[j] = value
+                            for i in rows:
+                                for j, k in zip(n, value): i[j] = k
                         else:
                             raise IndexError(
                                 f'cannot broadcast {vd}-d array on to array column'
@@ -380,11 +380,16 @@ class SparseArray:
         else:
             ndim, has_bool = get_index_properties(index)
             if has_bool:
-                if ndim != 2:
-                    raise IndexError(
-                        f'boolean index is {ndim}-d but sparse array is 2-d '
-                    )
-                self[np.where(index)] = value
+                if ndim == 1: 
+                    vd = get_ndim(value)
+                    if vd == 0:
+                        for i, j in enumerate(index):
+                            if j: rows[i][:] = value
+                    else:
+                        for i, j in enumerate(index):
+                            if j: rows[i][:] = value[i]
+                else:
+                    self[np.where(index)] = value
             elif ndim == 1:
                 SparseArray.from_rows([rows[i] for i in index])[:] = value
             elif ndim == 2:
@@ -677,164 +682,164 @@ class SparseArray:
     
     # Not yet optimized methods
     
-    def __eq__(self, other):
+    def __eq__(self, other): # pragma: no cover
         return self.to_array() == other
     
-    def __ne__(self, other):
+    def __ne__(self, other): # pragma: no cover
         return self.to_array() != other
     
-    def __gt__(self, other):
+    def __gt__(self, other): # pragma: no cover
         return self.to_array() > other
     
-    def __lt__(self, other):
+    def __lt__(self, other): # pragma: no cover
         return self.to_array() < other
     
-    def __ge__(self, other):
+    def __ge__(self, other): # pragma: no cover
         return self.to_array() >= other
     
-    def __le__(self, other):
+    def __le__(self, other): # pragma: no cover
         return self.to_array() <= other
     
-    def argmin(self, *args, **kwargs):
+    def argmin(self, *args, **kwargs): # pragma: no cover
         return self.to_array().argmin(*args, **kwargs)
 
-    def argmax(self, *args, **kwargs):
+    def argmax(self, *args, **kwargs): # pragma: no cover
         return self.to_array().argmax(*args, **kwargs)
     
-    def argpartition(self, *args, **kwargs):
+    def argpartition(self, *args, **kwargs): # pragma: no cover
         return self.to_array().argpartition(*args, **kwargs)
 
-    def argsort(self, *args, **kwargs):
+    def argsort(self, *args, **kwargs): # pragma: no cover
         return self.to_array().argsort(*args, **kwargs)
 
-    def choose(self, *args, **kwargs):
+    def choose(self, *args, **kwargs): # pragma: no cover
         return self.to_array().choose(*args, **kwargs)
 
-    def clip(self, *args, **kwargs):
+    def clip(self, *args, **kwargs): # pragma: no cover
         return self.to_array().clip(*args, **kwargs)
 
-    def conj(self):
+    def conj(self): # pragma: no cover
         return self.to_array().conj()
 
-    def conjugate(self):
+    def conjugate(self): # pragma: no cover
         return self.to_array().conjugate()
 
-    def cumprod(self, *args, **kwargs):
+    def cumprod(self, *args, **kwargs): # pragma: no cover
         return self.to_array().cumprod(*args, **kwargs)
 
-    def cumsum(self, *args, **kwargs):
+    def cumsum(self, *args, **kwargs): # pragma: no cover
         return self.to_array().cumsum(*args, **kwargs)
 
-    def dot(self, *args, **kwargs):
+    def dot(self, *args, **kwargs): # pragma: no cover
         return self.to_array().dot(*args, **kwargs)
 
-    def prod(self, *args, **kwargs):
+    def prod(self, *args, **kwargs): # pragma: no cover
         return self.to_array().prod(*args, **kwargs)
 
-    def ptp(self, *args, **kwargs):
+    def ptp(self, *args, **kwargs): # pragma: no cover
         return self.to_array().ptp(*args, **kwargs)
 
-    def put(self, *args, **kwargs):
+    def put(self, *args, **kwargs): # pragma: no cover
         return self.to_array().put(*args, **kwargs)
 
-    def round(self, *args, **kwargs):
+    def round(self, *args, **kwargs): # pragma: no cover
         return self.to_array().round(*args, **kwargs)
 
-    def std(self, *args, **kwargs):
+    def std(self, *args, **kwargs): # pragma: no cover
         return self.to_array().std(*args, **kwargs)
 
-    def trace(self, *args, **kwargs):
+    def trace(self, *args, **kwargs): # pragma: no cover
         return self.to_array().trace(*args, **kwargs)
 
-    def var(self, *args, **kwargs):
+    def var(self, *args, **kwargs): # pragma: no cover
         return self.to_array().var(*args, **kwargs)
 
-    def __matmul__(self, other):
+    def __matmul__(self, other): # pragma: no cover
         return self.to_array() @ other
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other): # pragma: no cover
         return self.to_array() // other
 
-    def __mod__(self, other):
+    def __mod__(self, other): # pragma: no cover
         return self.to_array() % other
 
-    def __pow__(self, other):
+    def __pow__(self, other): # pragma: no cover
         return self.to_array() ** other
 
-    def __lshift__(self, other):
+    def __lshift__(self, other): # pragma: no cover
         return self.to_array() << other
 
-    def __rshift__(self, other):
+    def __rshift__(self, other): # pragma: no cover
         return self.to_array() >> other
 
-    def __and__(self, other): 
+    def __and__(self, other): # pragma: no cover 
         return self.to_array() & other
 
-    def __xor__(self, other): 
+    def __xor__(self, other): # pragma: no cover 
         return self.to_array() ^ other
 
-    def __or__(self, other):
+    def __or__(self, other): # pragma: no cover
         return self.to_array() | other
 
-    def __rmatmul__(self, other):
+    def __rmatmul__(self, other): # pragma: no cover
         return other @ self.to_array()
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(self, other): # pragma: no cover
         return other // self.to_array()
 
-    def __rmod__(self, other):
+    def __rmod__(self, other): # pragma: no cover
         return other % self.to_array()
 
-    def __rpow__(self, other):
+    def __rpow__(self, other): # pragma: no cover
         return other ** self.to_array()
 
-    def __rlshift__(self, other):
+    def __rlshift__(self, other): # pragma: no cover
         return other << self.to_array() 
 
-    def __rrshift__(self, other):
+    def __rrshift__(self, other): # pragma: no cover
         return other >> self.to_array()
 
-    def __rand__(self, other):
+    def __rand__(self, other): # pragma: no cover
         return other & self.to_array()
 
-    def __rxor__(self, other):
+    def __rxor__(self, other): # pragma: no cover
         return other ^ self.to_array()
 
-    def __ror__(self, other):
+    def __ror__(self, other): # pragma: no cover
         return other | self.to_array()
 
-    def __imatmul__(self, other):
+    def __imatmul__(self, other): # pragma: no cover
         raise TypeError("in-place matrix multiplication is not (yet) supported")
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__(self, other): # pragma: no cover
         self[:] = self.to_array() // other
         return self
 
-    def __imod__(self, other): 
+    def __imod__(self, other): # pragma: no cover 
         self[:] =self.to_array() % other
         return self
 
-    def __ipow__(self, other):
+    def __ipow__(self, other): # pragma: no cover
         self[:] = self.to_array() ** other
         return self
 
-    def __ilshift__(self, other):
+    def __ilshift__(self, other): # pragma: no cover
         self[:] = self.to_array() << other
         return self
 
-    def __irshift__(self, other):
+    def __irshift__(self, other): # pragma: no cover
         self[:] = self.to_array() >> other
         return self
 
-    def __iand__(self, other): 
+    def __iand__(self, other): # pragma: no cover 
         self[:] = self.to_array() & other
         return self
 
-    def __ixor__(self, other): 
+    def __ixor__(self, other): # pragma: no cover 
         self[:] = self.to_array() ^ other
         return self
 
-    def __ior__(self, other):
+    def __ior__(self, other): # pragma: no cover
         self[:] = self.to_array() | other
         return self
     
@@ -896,12 +901,6 @@ class SparseVector:
     def __len__(self):
         return self.size
     
-    def __float__(self):
-        return self.to_array(float)
-    
-    def __int__(self):
-        return self.to_array(int)
-    
     def to_flat_array(self, arr=None):
         if arr is None:
             return self.to_array()
@@ -958,6 +957,11 @@ class SparseVector:
         for value in self.dct.values():
             if value < 0.: return True
         return False
+    
+    def negative_keys(self):
+        dct = self.dct
+        for i in dct:
+            if dct[i] < 0.: yield i
     
     def negative_index(self):
         dct = self.dct
