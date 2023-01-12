@@ -202,7 +202,7 @@ def test_sparse_array_math():
     assert (sa / 2 == arr / 2).all()
     sparse_ones = sparse(np.ones([3, 2]))
     assert (2 / (2. * sparse_ones) == np.ones([3, 2])).all()
-    assert (sparse_ones * 2 / sparse_ones == np.ones([3, 2]) / 2).all()
+    assert (sparse_ones * 2 / sparse_ones == 2 * np.ones([3, 2])).all()
     
     assert_no_zero_data(sa * 2)
     assert_no_zero_data(sa + sa)
