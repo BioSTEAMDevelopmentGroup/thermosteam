@@ -64,7 +64,8 @@ def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
 CAS_water = '7732-18-5'
 
 def mix_and_split_with_moisture_content(ins, retentate, permeate,
-                                        split, moisture_content, ID=None):
+                                        split, moisture_content, ID=None,
+                                        strict=None):
     """
     Run splitter mass and energy balance with mixing all input streams and 
     and ensuring retentate moisture content.
@@ -106,9 +107,9 @@ def mix_and_split_with_moisture_content(ins, retentate, permeate,
 
     """
     mix_and_split(ins, retentate, permeate, split)
-    adjust_moisture_content(retentate, permeate, moisture_content, ID)
+    adjust_moisture_content(retentate, permeate, moisture_content, ID, strict)
 
-def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
+def adjust_moisture_content(retentate, permeate, moisture_content, ID=None, strict=None):
     """
     Remove water from permate to adjust retentate moisture content.
     
@@ -166,7 +167,12 @@ def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
         key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
         permeate.imass[key] -= moisture - retentate_moisture
     if permeate.imol[key] < 0:
-        raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
+        if strict is None: strict = True
+        if strict:
+            raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
+        else:
+            retentate.imol[key] -= permeate.imol[key]
+            permeate.imol[key] = 0.
 
 def mix_and_split(ins, top, bottom, split):
     """
