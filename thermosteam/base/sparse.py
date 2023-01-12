@@ -11,7 +11,6 @@ __all__ = (
     'sparse',
 )
 
-bools = (bool, np.bool_)
 open_slice = slice(None)
 
 def unpack_index(index, ndim):
@@ -72,7 +71,7 @@ def get_ndim(value):
         for i in value: return get_ndim(i) + 1
     return 0
 
-def get_index_properties(index):
+def get_index_properties(index, bools=(bool, np.bool_)):
     if hasattr(index, 'ndim'):
         return index.ndim, index.dtype in bools
     elif hasattr(index, '__iter__'):
