@@ -462,6 +462,10 @@ class SparseArray:
     def size(self):
         return len(self.rows) * self.vector_size
     
+    @property
+    def value(self):
+        return self.to_array() # For backwards compatibility with property objects used by QSDsan
+    
     def to_array(self, dtype=None):
         rows = self.rows
         N = len(rows)
