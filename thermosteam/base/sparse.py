@@ -466,6 +466,10 @@ class SparseArray:
     def value(self):
         return self.to_array() # For backwards compatibility with property objects used by QSDsan
     
+    def setflags(self, flag):
+        if flag == 0: self.read_only = True # For backwards compatibility with arrays
+        else: raise NotImplementedError(f'flag {flag} not yet implemented')
+    
     def to_array(self, dtype=None):
         rows = self.rows
         N = len(rows)
