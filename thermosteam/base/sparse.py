@@ -480,7 +480,8 @@ class SparseArray:
             for j, value in row.dct.items():
                 arr[i, j] = value
         return arr
-        
+    astype = to_array    
+    
     def sum_of(self, index, axis=0):
         rows = self.rows
         if axis == 0:
@@ -1085,6 +1086,7 @@ class SparseVector:
         arr = np.zeros(self.size, dtype=dtype)
         for i, j in self.dct.items(): arr[i] = j
         return arr
+    astype = to_array
     
     def copy(self):
         return SparseVector.from_dict(self.dct.copy(), self.size)
@@ -1325,6 +1327,8 @@ class SparseVector:
         else:
             dct = {}
         return SparseVector.from_dict(dct, self.size)
+    
+    value = SparseArray.value
     
     # Not yet optimized methods
     
