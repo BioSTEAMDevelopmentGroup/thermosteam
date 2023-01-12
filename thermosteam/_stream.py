@@ -659,6 +659,8 @@ class Stream:
         >>> s1.sanity_check()
         >>> s1.mol[0] = -1.
         >>> s1.sanity_check()
+        Traceback (most recent call last):
+        InfeasibleRegion: negative material flow rate is infeasible
         
         """
         material = self._imol.data
