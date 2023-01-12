@@ -1093,7 +1093,6 @@ class SparseVector:
                     i = i.__index__()
                     if j: dct[i] = j
                     elif i in dct: del dct[i]
-                        
             elif vd > 1:
                 raise IndexError(
                     f'cannot broadcast {vd}-d array on to 1-d sparse vector'
