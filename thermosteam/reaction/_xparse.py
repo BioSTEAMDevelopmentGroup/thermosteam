@@ -107,8 +107,8 @@ def str2dct(reaction):
     reactants = left.split('+')
     products = right.split('+')
     dct = {}
-    extract_coefficients(reactants, dct, -1)
-    extract_coefficients(products, dct, 1)
+    extract_coefficients(reactants, dct, -1.)
+    extract_coefficients(products, dct, 1.)
     return dct
 
 def dct2str(dct):

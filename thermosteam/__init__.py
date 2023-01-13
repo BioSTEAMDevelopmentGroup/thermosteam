@@ -75,14 +75,6 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixtur
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
            'reaction', 'constants', 'utils', 'separations')
 
-def speed_up():
-    from warnings import warn
-    warning = DeprecationWarning(
-        "this function is deprecated; all functions are now automatically JIT "
-        "compiled by numba when the libray is loaded"
-    )
-    warn(warning)
-
 # Set number of digits displayed
 import numpy as np
 import pandas as pd

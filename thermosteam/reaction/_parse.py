@@ -16,7 +16,7 @@ def get_stoichiometric_array(reaction, chemicals):
     """Return stoichiometric array given a string defining the reaction and chemicals."""
     isa = isinstance
     if isa(reaction, dict):
-        stoichiometry_dict = reaction
+        stoichiometry_dict = {i: float(j) for i, j in reaction.items() if j}
     elif isa(reaction, str):
         stoichiometry_dict = str2dct(reaction)
     elif hasattr(reaction, '__iter__'):
@@ -37,7 +37,7 @@ def get_stoichiometric_string(reaction, chemicals):
     return dct2str(stoichiometric_dict)
 
 def dct2arr(dct, chemicals):
-    idct = {} # same ass dct but using integers as keys
+    idct = {} # same as dct but using integers as keys
     chemical_index = chemicals._index
     chemical_groups = chemicals.chemical_groups
     for ID, coefficient in dct.items():
@@ -76,8 +76,8 @@ def str2dct(reaction) -> dict:
     reactants = left.split('+')
     products = right.split('+')
     dct = {}
-    extract_coefficients(reactants, dct, -1)
-    extract_coefficients(products, dct, 1)
+    extract_coefficients(reactants, dct, -1.)
+    extract_coefficients(products, dct, 1.)
     return dct
 
 def dct2str(dct):

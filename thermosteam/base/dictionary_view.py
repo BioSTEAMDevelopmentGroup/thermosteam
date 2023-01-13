@@ -32,7 +32,7 @@ class DictionaryView: # Abstract class for wrapping a dictionary's get and set m
         return self.output(key, self.dct[key])
     
     def __setitem__(self, key, value):
-        self.dct[key] = self.input(key, value)
+        self.dct[key] = self.input(key, value).__float__()
         
     def keys(self):
         return self.dct.keys()
