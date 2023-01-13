@@ -378,7 +378,7 @@ class SparseArray:
                         raise IndexError(f'column index can be at most 1-d, not {md}-d')
                 else:
                     raise IndexError('sparse arrays do not support slicing (yet)')
-            elif md == 0: 
+            elif (md:=get_ndim(m)) == 0: 
                 rows[m][n] = value
             elif md == 1: 
                 vd = get_ndim(value)
