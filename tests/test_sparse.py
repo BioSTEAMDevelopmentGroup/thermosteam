@@ -44,14 +44,14 @@ def test_sparse_array_creation():
     sa = sparse_array(arr)
     assert_no_zero_data(sa)
     assert (sa.to_array() == arr).all()
-    assert repr(sa) == 'SparseArray([[1. , 2. , 0. , 4.5]])'
+    assert repr(sa) == 'sparse([[1. , 2. , 0. , 4.5]])'
     assert str(sa) == '[[1.  2.  0.  4.5]]'
     
     arr = np.array([[1., 2., 0., 4.5, 0., 0.]])
     sa = sparse_array(arr)
     assert_no_zero_data(sa)
     assert (sa.to_array() == arr).all()
-    assert repr(sa) == 'SparseArray([[1. , 2. , 0. , 4.5, 0. , 0. ]])'
+    assert repr(sa) == 'sparse([[1. , 2. , 0. , 4.5, 0. , 0. ]])'
     assert str(sa) == '[[1.  2.  0.  4.5 0.  0. ]]'
     
     assert (sparse(arr) == arr).all()
