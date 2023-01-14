@@ -26,14 +26,14 @@ def test_sparse_vector_creation():
     sv = sparse_vector(arr)
     assert_no_zero_data(sv)
     assert (sv.to_array() == arr).all()
-    assert repr(sv) == 'SparseVector([1. , 2. , 0. , 4.5])'
+    assert repr(sv) == 'sparse([1. , 2. , 0. , 4.5])'
     assert str(sv) == '[1.  2.  0.  4.5]'
     
     arr = np.array([1., 2., 0., 4.5, 0., 0.])
     sv = sparse_vector(arr)
     assert_no_zero_data(sv)
     assert (sv.to_array() == arr).all()
-    assert repr(sv) == 'SparseVector([1. , 2. , 0. , 4.5, 0. , 0. ])'
+    assert repr(sv) == 'sparse([1. , 2. , 0. , 4.5, 0. , 0. ])'
     assert str(sv) == '[1.  2.  0.  4.5 0.  0. ]'
     
     assert (sparse(arr) == arr).all()

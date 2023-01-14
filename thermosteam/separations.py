@@ -779,7 +779,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     >>> chemical_IDs = ('Water', 'Ethanol')
     >>> tmo.separations.material_balance(chemical_IDs, variable_inlets, constant_inlets, constant_outlets)
     >>> tmo.Stream.sum([in_a, in_b, in_c]).mol - tmo.Stream.sum([out_a, out_b]).mol # Molar flow rates entering and leaving are equal
-    SparseVector([0., 0.])
+    sparse([0., 0.])
     
     Vary inlet flow rates to satisfy outlet composition:
         

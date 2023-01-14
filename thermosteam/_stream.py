@@ -116,19 +116,21 @@ class Stream:
                       Ethanol  33.3
                       -------  30 kg/hr
     
-    All flow rates are stored as an array in the `mol` attribute:
+    All flow rates are stored as a sparse array in the `mol` attribute.
+    These arrays work just like numpy arrays, but are more scalable
+    (saving memory and increasing speed) for sparse chemical data:
     
     >>> s1.mol # Molar flow rates [kmol/hr]
-    SparseVector([1.11 , 0.217])
+    sparse([1.11 , 0.217])
     
-    Mass and volumetric flow rates are available as property arrays:
+    Mass and volumetric flow rates are also available for convenience:
         
     >>> s1.mass
-    SparseVector([20., 10.])
+    sparse([20., 10.])
     >>> s1.vol
-    SparseVector([0.02 , 0.013])
+    sparse([0.02 , 0.013])
     
-    These arrays work just like ordinary arrays, but the data is linked to the molar flows:
+    The data of these arrays are linked to the molar flows:
     
     >>> # Mass flows are always up to date with molar flows
     >>> s1.mol[0] = 1
@@ -138,9 +140,9 @@ class Stream:
     >>> s1.mass[0] *= 2
     >>> s1.mol[0]
     2.0
-    >>> # Property arrays act just like normal arrays
+    >>> # New arrays are not linked to molar flows
     >>> s1.mass + 2
-    SparseVector([38.031, 12.   ])
+    sparse([38.031, 12.   ])
     
     The temperature, pressure and phase are attributes as well:
     

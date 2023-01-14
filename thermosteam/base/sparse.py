@@ -886,7 +886,7 @@ class SparseArray:
     # Representation
     
     def __repr__(self):
-        name = type(self).__name__
+        name = 'sparse'
         n_spaces = len(name) - 5
         nums = repr(self.to_array())[5:].replace('\n', '\n' + n_spaces * ' ')
         return f'{name}{nums}'

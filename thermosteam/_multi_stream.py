@@ -100,7 +100,7 @@ class MultiStream(Stream):
     linked:
     
     >>> s1.mol
-    SparseVector([1.11 , 0.217])
+    sparse([1.11 , 0.217])
     >>> s1.mol[0] = 1
     Traceback (most recent call last):
     ValueError: assignment destination is read-only
@@ -119,7 +119,7 @@ class MultiStream(Stream):
     array([0.217, 1.11 ])
     >>> # Index the vapor phase
     >>> s1.imol['g']
-    SparseVector([0., 0.])
+    sparse([0., 0.])
     >>> # Index flow of chemicals summed across all phases
     >>> s1.imol['Ethanol', 'Water']
     array([0.217, 1.11 ])
