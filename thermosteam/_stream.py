@@ -354,7 +354,7 @@ class Stream:
         >>> s1 = tmo.Stream('s1', Water=1)
         >>> s1.scale(100)
         >>> s1.F_mol
-        100
+        100.0
         
         """
         self._imol.data *= scale

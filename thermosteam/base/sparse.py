@@ -1286,7 +1286,11 @@ class SparseVector:
             other = other.dct
             for i in dct: dct[i] /= other[i]
         elif hasattr(other, '__iter__'):
-            for i in dct: dct[i] /= other[i].__float__()
+            if other.__len__() == 1:
+                other = other[0].__float__()
+                for i in dct: dct[i] /= other
+            else:
+                for i in dct: dct[i] /= other[i].__float__()
         elif other:
             other = other.__float__()
             for i in dct: dct[i] /= other
