@@ -55,12 +55,59 @@ def sparse_array(arr, copy=False, vector_size=None):
         return SparseArray(arr, vector_size)
 
 def sparse(arr, copy=False, vector_size=None):
+    """
+    Create a sparse array that can be used for array-like arithmetic operations
+    (i.e., +, -, *, /) of sparse 1 or 2-dimensional arrays.  
+    
+    Parameters
+    ----------
+    arr : array-like
+        Structure to be converted to a sparse array. 
+    
+    Examples
+    --------
+    Create a sparse array from an array-like object.
+    
+    >>> from thermosteam.base import sparse
+    >>> sa = sparse([[0, 1, 2], [3, 2, 0]])
+    >>> sa
+    sparse([[0., 1., 2.],
+            [3., 2., 0.]])
+    
+    Create a sparse array from an a list of dictionaries of index-nonzero value pairs.
+    
+    >>> sa = sparse(
+    ...     [{1: 1, 2: 2},
+    ...      {0: 3, 1: 2}],
+    ...     vector_size=3,
+    ... )
+    >>> sa
+    sparse([[0., 1., 2.],
+            [3., 2., 0.]])
+    
+    Sparse arrays support arithmetic operations just like dense arrays
+    
+    >>> sa * sa 
+    sparse([[0., 1., 4.],
+            [9., 4., 0.]])
+    
+    Sparse arrays assume sparsity across columns (0-axis) but not across rows. 
+    For this reason, indexing rows will return sparse arrays while indexing
+    columns will return NumPy dense arrays:
+        
+    >>> sa[0]
+    sparse([0., 1., 2.])
+    
+    >>> sa[:, 0]
+    array([0., 3.])
+    
+    """
     if arr.__class__ in (SparseArray, SparseVector):
         return arr
     elif (ndim:=get_ndim(arr)) == 1:
-        return SparseVector(arr)
+        return SparseVector(arr, vector_size)
     elif ndim == 2:
-        return SparseArray(arr)
+        return SparseArray(arr, vector_size)
     else:
         raise ValueError(f'cannot convert {ndim}-d object to a sparse array or vector')
     
@@ -93,14 +140,7 @@ def sum_sparse_vectors(svs, dct=None):
     return dct
 
 class SparseArray:
-    """
-    Create a SparseArray object that can be used for array-like arithmetic operations
-    (i.e., +, -, *, /) of sparse 2-dimensional arrays. 
-    
-    In contrast to Scipy's sparse 2-d arrays, sparse arrays do not have a strict row length 
-    (but still have a strict column length). 
-    
-    """
+    __doc__ = sparse.__doc__
     __slots__ = ('rows', '_base')
     ndim = 2
     dtype = float
@@ -109,7 +149,7 @@ class SparseArray:
         if obj is None:
             self.rows = []
         elif hasattr(obj, '__iter__'):
-            self.rows = [sparse_vector(row, vector_size) for row in obj]
+            self.rows = [sparse_vector(row, size=vector_size) for row in obj]
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
     
@@ -150,6 +190,11 @@ class SparseArray:
             for i in dct: dct[i] = positive(dct[i])
         return SparseArray(rows)
     
+    def copy_like(self, other):
+        rows = self.rows
+        for i, j in zip(rows, other.rows):
+            i.copy_like(j)
+    
     def nonzero_index(self):
         m = []; n = []
         for i, row in enumerate(self.rows):
@@ -173,6 +218,14 @@ class SparseArray:
         keys = set()
         for i in self.rows: keys.update(i.dct)
         return keys
+    
+    def positive_index(self):
+        m = []; n = []
+        for i, row in enumerate(self.rows):
+            for j, value in row.dct.items():
+                if value > 0.:
+                    m.append(i); n.append(j)
+        return m, n
     
     def negative_index(self):
         m = []; n = []
@@ -221,7 +274,7 @@ class SparseArray:
                 arr[i * vector_size + j] = value
         return arr
         
-    def from_flat_array(self, arr=None):
+    def from_flat_array(self, arr):
         rows = self.rows
         vector_size = self.vector_size
         dcts = [i.dct for i in rows]
@@ -897,11 +950,7 @@ class SparseArray:
             
 
 class SparseVector:
-    """
-    Create a SparseVector object that can be used for array-like arithmetic operations
-    (i.e., +, -, *, /) of sparse 1-dimensional arrays. 
-    
-    """
+    __doc__ = sparse.__doc__
     __slots__ = ('dct', 'read_only', 'size', '_base')
     ndim = 1
     dtype = float
