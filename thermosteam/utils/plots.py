@@ -55,7 +55,7 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
             width = convert(width, units, 'inch')
     import matplotlib
     params = matplotlib.rcParams
-    params['figure.figsize'] = np.array([width, width * aspect_ratio])
+    params['figure.figsize'] = (width, width * aspect_ratio)
 
 def set_ticks(ax, ticks, which='x', ticklabels=(),
               labelrotation=0., ha=None, offset=False):
