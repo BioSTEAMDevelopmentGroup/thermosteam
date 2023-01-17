@@ -332,8 +332,11 @@ class SparseArray:
                 elif md == 0:
                     return rows[m][n]
                 elif md == 1:
-                    value = np.array([rows[i][n] for i in m])
-                    value.set_flags(0)
+                    if misbool:
+                        value = np.array([rows[i][n] for i, j in enumerate(m) if j])
+                    else:
+                        value = np.array([rows[i][n] for i in m])
+                    value.setflags(0)
                     return value
                 else:
                     raise IndexError(f'row index can be at most 1-d, not {md}-d')
@@ -414,33 +417,30 @@ class SparseArray:
                     )
             elif n.__class__ is slice:
                 md, misbool = get_index_properties(m)
-                if n == open_slice:
-                    if md == 0:
-                        rows[m][:] = value
-                    elif md == 1:
-                        vd = get_ndim(value)
-                        if vd in (0, 1):
-                            if misbool:
-                                for i, j in enumerate(m): 
-                                    if j: rows[i][:] = value
-                            else:
-                                for i in m: rows[i][:] = value
-                        elif vd == 2:
-                            if len(m) == len(value):
-                                for i, j in zip(m, value):
-                                    rows[i][:] = j
-                            else:
-                                raise IndexError(
-                                    f'cannot broadcast input array with length {len(value)} to length {len(m)}'
-                                )
+                if md == 0:
+                    rows[m][n] = value
+                elif md == 1:
+                    vd = get_ndim(value)
+                    if vd in (0, 1):
+                        if misbool:
+                            for i, j in enumerate(m): 
+                                if j: rows[i][n] = value
+                        else:
+                            for i in m: rows[i][n] = value
+                    elif vd == 2:
+                        if len(m) == len(value):
+                            for i, j in zip(m, value):
+                                rows[i][n] = j
                         else:
                             raise IndexError(
-                                f'cannot broadcast {vd}-d array on to 1-d '
+                                f'cannot broadcast input array with length {len(value)} to length {len(m)}'
                             )
                     else:
-                        raise IndexError(f'column index can be at most 1-d, not {md}-d')
+                        raise IndexError(
+                            f'cannot broadcast {vd}-d array on to 1-d '
+                        )
                 else:
-                    self[m][n] = value
+                    raise IndexError(f'column index can be at most 1-d, not {md}-d')
             elif (md:=get_ndim(m)) == 0: 
                 rows[m][n] = value
             elif md == 1: 
@@ -448,15 +448,15 @@ class SparseArray:
                 if vd == 0:
                     if value:
                         value = value.__float__()
-                        for i, j in zip(*unpack_index(index, self.ndim)): 
+                        for i, j in zip(m, n): 
                             rows[i].dct[j.__index__()] = value
                     else:
-                        for i, j in zip(*unpack_index(index, self.ndim)): 
+                        for i, j in zip(m, n): 
                             dct = rows[i].dct
                             j = j.__index__()
                             if j in dct: del dct[j]
                 elif vd == 1:
-                    for i, j, k in zip(*unpack_index(index, self.ndim), value): 
+                    for i, j, k in zip(m, n, value): 
                         dct = rows[i].dct
                         j = j.__index__()
                         if k: rows[i].dct[j] = k.__float__()

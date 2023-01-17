@@ -468,6 +468,27 @@ def test_sparse_array_indexing():
     sa[:2] = 2 
     arr[:2] = 2
     assert (sa[:3] == arr[:3]).all()
+    
+    arr = np.ones([3,4])
+    sa = sparse(arr)
+    sa[[True, False, True]] = 2
+    arr[[True, False, True]] = 2
+    assert (sa == arr).all() and (sa[[True, False, True]] == arr[[True, False, True]]).all()
+    sa[[True, False, True], :2] = 3
+    arr[[True, False, True], :2] = 3
+    assert (sa == arr).all() and (sa[[True, False, True], :2] == arr[[True, False, True], :2]).all()
+    sa[0, :2] = 3
+    arr[0, :2] = 3
+    assert (sa == arr).all() and (sa[0, :2] == arr[0, :2]).all()
+    sa[0, 2:4] = 10
+    arr[0, 2:4] = 10
+    assert (sa == arr).all() and (sa[0, 2:4] == arr[0, 2:4]).all()
+    sa[[0, 2]] = 0
+    arr[[0, 2]] = 0
+    assert (sa == arr).all() and (sa[[0, 2]] == arr[[0, 2]]).all()
+    sa[[0, 1], [2, 0]] = 0
+    arr[[0, 1], [2, 0]] = 0
+    assert (sa == arr).all() and (sa[[0, 1], [2, 0]] == arr[[0, 1], [2, 0]]).all()
 
 def test_sparse_array_boolean_indexing():
     arr = np.array([[1., 0.], [0., 1.]])
