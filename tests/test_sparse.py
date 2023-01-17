@@ -549,6 +549,11 @@ def test_sparse_array_special_methods():
     sa = sparse(arr)
     assert (sa.sum_of([3, 1], axis=0) == [6., 2.]).all()
     assert (sa.sum_of([0, 2], axis=1) == [1, 1]).all()
+    assert set(zip(*sa.positive_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
+    assert set(zip(*(-sa).negative_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
+    assert sa.nonzero_rows() == [0, 1]
+    sa[:] = 0
+    assert sa.nonzero_rows() == []
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [
