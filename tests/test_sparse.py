@@ -545,6 +545,10 @@ def test_sparse_array_special_methods():
     assert (sa.to_flat_array() == np.array([1., 2., 0., 4.5, 0., 0., 1., 1.5])).all()
     sa.from_flat_array(np.array([1., 2., 0., 0, 0., 0., 1., 2]))
     assert (sa.to_flat_array() == np.array([1., 2., 0., 0, 0., 0., 1., 2])).all()
+    arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
+    sa = sparse(arr)
+    assert (sa.sum_of([3, 1], axis=0) == [6., 2.]).all()
+    assert (sa.sum_of([0, 2], axis=1) == [1, 1]).all()
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [
