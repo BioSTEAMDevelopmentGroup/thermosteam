@@ -298,6 +298,18 @@ def test_sparse_vector_indexing():
     assert (sv[([1, 2],)] == np.array([3, 2])).all()
     assert (sv[[1, 2]] == np.array([3, 2])).all()
     
+    arr = np.ones(10)
+    sv = sparse(arr)
+    sv[:2] = 3
+    arr[:2] = 3
+    assert (sv == arr).all()
+    sv[0::2] = -2
+    arr[0::2] = -2
+    assert (sv == arr).all()
+    sv[0:6:2] = -2
+    arr[0:6:2] = -2
+    assert (sv == arr).all()
+    
     with pytest.raises(IndexError):
         sv[(1, 2)]
     with pytest.raises(IndexError):
@@ -447,14 +459,15 @@ def test_sparse_array_indexing():
     arr[[0, 1], :] = 0
     assert (arr[[0, 1], :] == sa[[0, 1], :]).all()
     
-    with pytest.raises(IndexError):
-        sa[0:2, :] = 2 # Not yet implemented
-    
-    with pytest.raises(IndexError):
-        sa[:, :1] = 2 # Not yet implemented
-        
-    with pytest.raises(IndexError):
-        sa[:3] = 2 # Not yet implemented
+    sa[0:2, :] = 2
+    arr[0:2, :] = 2
+    assert (sa[0:2, :] == arr[0:2, :]).all()
+    sa[:, :1] = 2
+    arr[:, :1] = 2
+    assert (sa[:, :1] == arr[:, :1]).all()
+    sa[:2] = 2 
+    arr[:2] = 2
+    assert (sa[:3] == arr[:3]).all()
 
 def test_sparse_array_boolean_indexing():
     arr = np.array([[1., 0.], [0., 1.]])

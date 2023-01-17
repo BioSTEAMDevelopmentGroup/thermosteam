@@ -440,7 +440,7 @@ class SparseArray:
                     else:
                         raise IndexError(f'column index can be at most 1-d, not {md}-d')
                 else:
-                    raise IndexError('sparse arrays do not support slicing (yet)')
+                    self[m][n] = value
             elif (md:=get_ndim(m)) == 0: 
                 rows[m][n] = value
             elif md == 1: 
@@ -480,35 +480,35 @@ class SparseArray:
                             if j: rows[i][:] = value[i]
                 else:
                     self[np.where(index)] = value
+                return
             elif ndim == 1:
-                SparseArray.from_rows([rows[i] for i in index])[:] = value
-            elif ndim == 2:
-                raise IndexError('must use tuple for multidimensional indexing')
+                rows = [rows[i] for i in index]
             elif index.__class__ is slice:
-                if index == open_slice:
-                    vd = get_ndim(value)
-                    if vd in (0, 1):
-                        for i in rows: i[:] = value
-                    elif vd == 2:
-                        value_length = len(value)
-                        self_length = rows.__len__()
-                        if self_length == value_length:
-                            for i, j in zip(rows, value): i[:] = j
-                        elif value_length == 1:
-                            value = value[0]
-                            for i in rows: i[:] = value
-                        else:
-                            raise IndexError(
-                                f'cannot broadcast input array with length {value_length} to length {self_length}'
-                            )
-                    else:
-                        raise IndexError(
-                            f'cannot broadcast {vd}-d array on to 2-d sparse array'
-                        )
-                else:
-                    raise IndexError('sparse arrays do not support slicing (yet)')
-            else:
+                if index != open_slice: rows = [rows[i] for i in default_range(index, len(rows))]
+            elif ndim == 0:
                 rows[index][:] = value
+                return
+            else:
+                raise IndexError('must use tuple for multidimensional indexing')
+            vd = get_ndim(value)
+            if vd in (0, 1):
+                for i in rows: i[:] = value
+            elif vd == 2:
+                value_length = len(value)
+                self_length = rows.__len__()
+                if self_length == value_length:
+                    for i, j in zip(rows, value): i[:] = j
+                elif value_length == 1:
+                    value = value[0]
+                    for i in rows: i[:] = value
+                else:
+                    raise IndexError(
+                        f'cannot broadcast input array with length {value_length} to length {self_length}'
+                    )
+            else:
+                raise IndexError(
+                    f'cannot broadcast {vd}-d array on to 2-d sparse array'
+                )
     
     @property
     def vector_size(self):
@@ -984,7 +984,7 @@ class SparseVector:
                 if j: dct[i] = j.__float__()
             self.size = len(obj) if size is None else size
         else:
-            raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse vector')
+            raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
     
     def __abs__(self):
         positive = abs
@@ -1092,31 +1092,31 @@ class SparseVector:
         return self.dct == other.dct
     
     def any(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = bool(self.dct)
         if keepdims: arr = np.array([arr])
         return arr
     
     def all(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = len(self.dct) == self.size
         if keepdims: arr = np.array([arr])
         return arr
     
     def sum(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = sum(self.dct.values())
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def mean(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = sum(self.dct.values()) / self.size if self.dct else 0.
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def max(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         dct = self.dct
         if dct:
             arr = max(dct.values())
@@ -1129,7 +1129,7 @@ class SparseVector:
         return arr
     
     def min(self, axis=None, keepdims=False):
-        if axis: raise ValueError('axis is out of bounds for 1-d sparse vector')
+        if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         dct = self.dct
         if dct:
             arr = min(dct.values())
@@ -1178,7 +1178,9 @@ class SparseVector:
             if index == open_slice:
                 return self
             else:
-                raise IndexError('sparse vectors do not support slicing (yet)')
+                value = np.array([dct.get(i, 0.) for i in default_range(index, self.size)])
+                value.setflags(0)
+                return value
         else:
             return dct.get(index.__index__(), 0.)
 
@@ -1191,7 +1193,7 @@ class SparseVector:
         if has_bool: 
             if ndim != 1:
                 raise IndexError(
-                    f'boolean index is {ndim}-d but sparse vector is 1-d '
+                    f'boolean index is {ndim}-d but sparse array is 1-d '
                 )
             index, = np.where(index)
         if ndim:
@@ -1203,7 +1205,7 @@ class SparseVector:
                     elif i in dct: del dct[i]
             elif vd > 1:
                 raise IndexError(
-                    f'cannot broadcast {vd}-d array on to 1-d sparse vector'
+                    f'cannot broadcast {vd}-d array on to 1-d sparse array'
                 )
             elif value:
                 value = value.__float__()
@@ -1217,18 +1219,24 @@ class SparseVector:
         elif index.__class__ is slice:
             if index == open_slice:
                 if value is self: return
+                vd = get_ndim(value)
                 dct.clear()
                 if value.__class__ is SparseVector:
                     dct.update(value.dct)
-                elif hasattr(value, '__iter__'):
+                elif vd == 1:
                     for i, j in enumerate(value):
                         if j: dct[i] = j.__float__()
                         elif i in dct: del dct[i]  
-                elif value != 0.:
-                    value = value.__float__()
-                    for i in range(self.size): dct[i] = value
+                elif vd == 0:
+                    if value != 0.:
+                        value = value.__float__()
+                        for i in range(self.size): dct[i] = value
+                else:
+                    raise IndexError(
+                        f'cannot broadcast {vd}-d array on to 1-d sparse array'
+                    )
             else:
-                raise IndexError('sparse vectors do not support slicing (yet)')
+                self[default_range(index, self.size)] = value
         elif hasattr(value, '__iter__'):
             raise IndexError(
                 'cannot set an array element with a sequence'
