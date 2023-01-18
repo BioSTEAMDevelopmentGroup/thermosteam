@@ -176,10 +176,16 @@ def test_sparse_vector_math():
     
     sv[:] = [0., 1]
     assert_no_zero_data(sv)
+    
+    assert ((0 / sv) == np.zeros_like(sv)).all()
+    
     with pytest.raises(FloatingPointError):
-        print(repr([2, 1, 0.1, 3] / sv))
+        [2, 1, 0.1, 3] / sv
         
-    sv
+    with pytest.raises(FloatingPointError):
+        sv /= 0
+
+    
 
 def test_sparse_array_math():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
@@ -490,6 +496,9 @@ def test_sparse_array_indexing():
     arr[[0, 1], [2, 0]] = 0
     assert (sa == arr).all() and (sa[[0, 1], [2, 0]] == arr[[0, 1], [2, 0]]).all()
 
+    with pytest.raises(IndexError):
+        sa[(0,)] # Too few indices, array is 2 dimensional but only 1 dimension was indexed
+
 def test_sparse_array_boolean_indexing():
     arr = np.array([[1., 0.], [0., 1.]])
     sa = sparse_array(arr)
@@ -532,12 +541,23 @@ def test_sparse_vector_special_methods():
     sv.from_flat_array(np.array([1., 2., 0., 2]))
     assert (sv.to_flat_array() == np.array([1., 2., 0., 2])).all()
     
-    arr = np.array([[1., 2., 0., 4.5], [1., 2., 0., 4.5]])
-    sa = sparse_array(arr)
+    with pytest.raises(IndexError):
+        sv[[[True, False]]] # boolean index dimensions is off
     
-    assert (sa.to_flat_array() == np.array([1., 2., 0., 4.5, 1., 2., 0., 4.5])).all()
-    sa.from_flat_array(np.array([1., 2., 0., 2, 1., 2., 0., 2]))
-    assert (sa == np.array([[1., 2., 0., 2], [1., 2., 0., 2]])).all()
+    with pytest.raises(IndexError):
+        sv[[[True, False]]] = [2, 2] # boolean index dimensions is off
+    
+    with pytest.raises(IndexError):
+        sv[[[1, 2]]] # index dimensions is off
+
+    with pytest.raises(IndexError):
+        sv[[[1, 2]]] = [2, 3] # index dimensions is off
+        
+    with pytest.raises(IndexError):
+        sv[[1, 2]] = [[2, 3]] # value dimensions is off
+    
+    with pytest.raises(IndexError):
+        sv[:] = [[2]] # value dimensions is off
 
 def test_sparse_array_special_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
@@ -554,6 +574,20 @@ def test_sparse_array_special_methods():
     assert sa.nonzero_rows() == [0, 1]
     sa[:] = 0
     assert sa.nonzero_rows() == []
+    assert [*nonzero_items(sa)] == [*sa.nonzero_items()] == [*nonzero_items(sa.to_array())]
+    assert [*nonzero_items(sa[0])] == [*sa[0].nonzero_items()]
+    
+    sa = sparse([[1, 2], [3, 4]])
+    sa_other = sa.copy()
+    sa.copy_like(sa + 1)
+    assert (sa == sa_other + 1).all()
+    
+    arr = np.array([[1., 2., 0., 4.5], [1., 2., 0., 4.5]])
+    sa = sparse_array(arr)
+    assert (sa.to_flat_array() == np.array([1., 2., 0., 4.5, 1., 2., 0., 4.5])).all()
+    sa.from_flat_array(np.array([1., 2., 0., 2, 1., 2., 0., 2]))
+    assert (sa == np.array([[1., 2., 0., 2], [1., 2., 0., 2]])).all()
+    
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [
@@ -603,6 +637,12 @@ def test_sparse_array_methods_vs_numpy():
                     assert sa_result.shape == arr_result.shape, f"wrong shape in SparseArray.{method} with axis {axis} and keepdims {keepdims}"
                     assert (sa_result == arr_result).all(), f"wrong value in SparseArray.{method} with axis {axis} and keepdims {keepdims}"
 
+    sa = sparse([[]])
+    assert sa.vector_size == 0
+    with pytest.raises(ValueError):
+        sa.min()
+    with pytest.raises(ValueError):
+        sa.max()
 
 if __name__ == '__main__':
     test_sparse_vector_creation()

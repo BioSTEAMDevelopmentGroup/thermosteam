@@ -46,10 +46,10 @@ def sparse_vector(arr, copy=False, size=None):
         return SparseVector(arr, size)
 
 def nonzero_items(arr):
-    if arr.__class__ is SparseVector:
-        return arr.dct.items()
+    if arr.__class__ in (SparseVector, SparseArray):
+        return arr.nonzero_items()
     else:
-        return [(i, j) for i, j in enumerate(arr) if j]
+        return [(i, j) for i, j in enumerate(arr.flat) if j]
 
 def sparse_array(arr, copy=False, vector_size=None):
     """
@@ -123,6 +123,7 @@ def get_ndim(value):
         return value.ndim
     elif hasattr(value, '__iter__'):
         for i in value: return get_ndim(i) + 1
+        return 1
     return 0
 
 def get_index_properties(index, bools=frozenset([bool, np.bool_, np.dtype('bool')])):
@@ -1124,7 +1125,7 @@ class SparseVector:
         elif self.size:
             arr = 0.
         else:
-            raise ValueError('zero-size vector to reduction has no identity')
+            raise ValueError('zero-size array reduction has no identity')
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
@@ -1137,7 +1138,7 @@ class SparseVector:
         elif self.size:
             arr = 0.
         else:
-            raise ValueError('zero-size vector to reduction has no identity')
+            raise ValueError('zero-size array reduction has no identity')
         if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
@@ -1181,6 +1182,8 @@ class SparseVector:
                 value = np.array([dct.get(i, 0.) for i in default_range(index, self.size)])
                 value.setflags(0)
                 return value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
         else:
             return dct.get(index.__index__(), 0.)
 
@@ -1196,7 +1199,7 @@ class SparseVector:
                     f'boolean index is {ndim}-d but sparse array is 1-d '
                 )
             index, = np.where(index)
-        if ndim:
+        if ndim == 1:
             vd = get_ndim(value)
             if vd == 1:
                 for i, j in zip(index, value): 
@@ -1237,6 +1240,8 @@ class SparseVector:
                     )
             else:
                 self[default_range(index, self.size)] = value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
         elif hasattr(value, '__iter__'):
             raise IndexError(
                 'cannot set an array element with a sequence'
