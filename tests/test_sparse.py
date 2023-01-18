@@ -588,6 +588,26 @@ def test_sparse_array_special_methods():
     sa.from_flat_array(np.array([1., 2., 0., 2, 1., 2., 0., 2]))
     assert (sa == np.array([[1., 2., 0., 2], [1., 2., 0., 2]])).all()
     
+def test_descriptive_methods():
+    arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
+    sa = sparse(arr)
+    assert (sa.value == sa.to_array()).all()
+    assert sa.vector_size == sa[0].size == sa[0].vector_size == arr[0].size
+    assert sa.shape == arr.shape
+    assert sa[0].shape == arr[0].shape
+
+def test_read_only_flag():
+    arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
+    sa = sparse(arr)
+    sa.setflag(0)
+    with pytest.raises(ValueError):
+        sa[:] = 1
+   
+    arr = np.ones(3)
+    sv = sparse(arr)
+    sv.read_only = True
+    with pytest.raises(ValueError):
+        sv[:] = 1
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [
@@ -657,5 +677,6 @@ if __name__ == '__main__':
     test_sparse_array_boolean_indexing()
     test_sparse_vector_special_methods()
     test_sparse_array_special_methods()
+    test_descriptive_methods()
     test_sparse_vector_methods_vs_numpy()
     test_sparse_array_methods_vs_numpy()
