@@ -498,6 +498,15 @@ def test_sparse_array_indexing():
 
     with pytest.raises(IndexError):
         sa[(0,)] # Too few indices, array is 2 dimensional but only 1 dimension was indexed
+        
+    assert (sa[[1], :2] == arr[[1], :2]).all()
+    
+    with pytest.raises(IndexError):
+        sa[[[0]], :] # Row index dimensions can be at most 1
+    
+    with pytest.raises(IndexError):
+        sa[[0, 1], [[0]]] # Column index dimensions can be at most 1
+        
 
 def test_sparse_array_boolean_indexing():
     arr = np.array([[1., 0.], [0., 1.]])

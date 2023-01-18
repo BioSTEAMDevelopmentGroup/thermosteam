@@ -393,25 +393,13 @@ class SparseArray:
                     for i in rows: i[n] = value
                 elif vd == 1:
                     nd, nisbool = get_index_properties(n)
-                    if nd == 0.:
-                        for i, j in zip(rows, value): i[n] = j
-                    elif nd == 1:
+                    if nd:
                         if nisbool: n, = np.where(n)
-                        for i in rows:
-                            for j, k in zip(n, value): i[j] = k
+                        for i in rows: i[n] = value
                     else:
-                        raise IndexError(
-                            f'cannot broadcast {vd}-d array on to array column'
-                        )
-                elif vd == 2:
-                    value_length = len(value)
-                    self_length = rows.__len__()
-                    if self_length == value_length:
                         for i, j in zip(rows, value): i[n] = j
-                    else:
-                        raise IndexError(
-                            f'cannot broadcast input array with length {value_length} to length {self_length}'
-                        )
+                elif vd == 2:
+                    for i, j in zip(rows, value): i[n] = j # TODO: With python 3.10, use strict=True zip kwarg
                 else:
                     raise IndexError(
                         f'cannot broadcast {vd}-d array on to 2-d sparse array'
@@ -429,13 +417,7 @@ class SparseArray:
                         else:
                             for i in m: rows[i][n] = value
                     elif vd == 2:
-                        if len(m) == len(value):
-                            for i, j in zip(m, value):
-                                rows[i][n] = j
-                        else:
-                            raise IndexError(
-                                f'cannot broadcast input array with length {len(value)} to length {len(m)}'
-                            )
+                        for i, j in zip(m, value): rows[i][n] = j # TODO: With python 3.10, use strict=True zip kwarg
                     else:
                         raise IndexError(
                             f'cannot broadcast {vd}-d array on to 1-d '
@@ -495,17 +477,7 @@ class SparseArray:
             if vd in (0, 1):
                 for i in rows: i[:] = value
             elif vd == 2:
-                value_length = len(value)
-                self_length = rows.__len__()
-                if self_length == value_length:
-                    for i, j in zip(rows, value): i[:] = j
-                elif value_length == 1:
-                    value = value[0]
-                    for i in rows: i[:] = value
-                else:
-                    raise IndexError(
-                        f'cannot broadcast input array with length {value_length} to length {self_length}'
-                    )
+                for i, j in zip(rows, value): i[:] = j # TODO: With python 3.10, use strict=True zip kwarg
             else:
                 raise IndexError(
                     f'cannot broadcast {vd}-d array on to 2-d sparse array'
@@ -757,9 +729,9 @@ class SparseArray:
         return new
     
     def __rtruediv__(self, value):
-        new = self.copy()
-        rows = new.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if (ndim:=get_ndim(value)) == 2:
+            new = self.copy()
+            rows = new.rows
             value_length = len(value)
             self_length = rows.__len__()
             if self_length == value_length:
@@ -768,7 +740,11 @@ class SparseArray:
                 raise IndexError(
                     f'cannot broadcast input array with length {value_length} to length {self_length}'
                 )
+        elif ndim > 2:
+            return NotImplemented
         else:
+            new = self.copy()
+            rows = new.rows
             for i in rows: i[:] = value / i
         return new
     
