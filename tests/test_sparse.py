@@ -599,7 +599,7 @@ def test_descriptive_methods():
 def test_read_only_flag():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse(arr)
-    sa.setflag(0)
+    sa.setflags(0)
     with pytest.raises(ValueError):
         sa[:] = 1
    
@@ -678,5 +678,6 @@ if __name__ == '__main__':
     test_sparse_vector_special_methods()
     test_sparse_array_special_methods()
     test_descriptive_methods()
+    test_read_only_flag()
     test_sparse_vector_methods_vs_numpy()
     test_sparse_array_methods_vs_numpy()
