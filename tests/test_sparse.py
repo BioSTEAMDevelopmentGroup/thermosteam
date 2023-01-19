@@ -39,6 +39,8 @@ def test_sparse_vector_creation():
     assert (sparse(arr) == arr).all()
     
     sv_2 = sparse_vector(sv)
+    assert sv_2.dct is sv.dct
+    sv_2 = SparseVector(sv)
     assert sv_2.dct is not sv.dct
     
     sv = SparseVector(size=2)
