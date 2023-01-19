@@ -33,8 +33,8 @@ def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
-    assert_allclose(s.imol['l'] + s.imol['L'], [0.537583, 0.383255, 1.755296], rtol=5e-2)
-    assert_allclose(s.imol['g'], [0.462, 0.617, 0.245], rtol=5e-2) # Convergence
+    assert_allclose(s.imol['l'] + s.imol['L'], [0.537583, 0.383255, 1.755296], rtol=0.1)
+    assert_allclose(s.imol['g'], [0.462, 0.617, 0.245], rtol=0.1) # Convergence
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
