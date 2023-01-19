@@ -215,6 +215,8 @@ def test_sparse_array_math():
     assert_no_zero_data(sa * 0)
     assert_no_zero_data(sa - sa)
     assert_no_zero_data(sa / sa)
+    sa[:] = 1.
+    assert_allclose(arr.tolist() / sa, arr / sa.to_array())
     
     sa *= 0.
     assert sa.sparse_equal([[0.], [0.]])
