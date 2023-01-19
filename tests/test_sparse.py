@@ -38,6 +38,15 @@ def test_sparse_vector_creation():
     
     assert (sparse(arr) == arr).all()
     
+    sv_2 = sparse_vector(sv)
+    assert sv_2.dct is not sv.dct
+    
+    sv = SparseVector(size=2)
+    assert sv.size == 2
+    assert (sv == 0).all()
+    
+    with pytest.raises(ValueError):
+        SparseVector() # must pass size
     
 def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5]])
@@ -629,6 +638,13 @@ def test_read_only_flag():
     sv.read_only = True
     with pytest.raises(ValueError):
         sv[:] = 1
+        
+    sv.read_only = False
+    sv.setflags(0)
+    assert sv.read_only
+    with pytest.raises(NotImplementedError):
+        sv.setflags(1) # flag not implemented
+    
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [
