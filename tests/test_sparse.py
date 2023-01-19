@@ -597,6 +597,8 @@ def test_sparse_array_special_methods():
     sa = sparse(arr)
     assert (sa.sum_of([3, 1], axis=0) == [6., 2.]).all()
     assert (sa.sum_of([0, 2], axis=1) == [1, 1]).all()
+    with pytest.raises(ValueError):
+        sa.sum_of([0, 2], axis=2) # Invalid axis
     assert set(zip(*sa.positive_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
     assert set(zip(*(-sa).negative_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
     assert sa.nonzero_rows() == [0, 1]
