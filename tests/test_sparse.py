@@ -509,6 +509,12 @@ def test_sparse_array_indexing():
     with pytest.raises(IndexError):
         sa[[0, 1], [[0]]] # Column index dimensions can be at most 1
         
+    with pytest.raises(IndexError):
+        sa[[0, 1]] = [[[0, 1]]] # Cannot broadcast 3-d array to 2-d
+        
+    with pytest.raises(IndexError):
+        sa[[0, 1], 0] = [[0, 1]] # Cannot set array element with sequence
+        
 
 def test_sparse_array_boolean_indexing():
     arr = np.array([[1., 0.], [0., 1.]])
@@ -603,6 +609,7 @@ def test_descriptive_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse(arr)
     assert (sa.value == sa.to_array()).all()
+    assert sa.size == arr.size
     assert sa.vector_size == sa[0].size == sa[0].vector_size == arr[0].size
     assert sa.shape == arr.shape
     assert sa[0].shape == arr[0].shape
@@ -613,6 +620,9 @@ def test_read_only_flag():
     sa.setflags(0)
     with pytest.raises(ValueError):
         sa[:] = 1
+   
+    with pytest.raises(NotImplementedError):
+        sa.setflags(1)
    
     arr = np.ones(3)
     sv = sparse(arr)
