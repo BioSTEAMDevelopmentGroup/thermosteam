@@ -3,7 +3,7 @@
 # Copyright (C) 2020-2023, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
 # This module is under the UIUC open-source license. See 
-# github.com/BioSTEAMDevelopmentVector/biosteam/blob/master/LICENSE.txt
+# github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
 """
 """
@@ -46,7 +46,7 @@ _new = object.__new__
 def raise_material_indexer_index_error():
     raise IndexError("index by [phase, IDs] where phase is a "
                      "(str, ellipsis, or missing), and IDs is a "
-                     "(str, Sequence[str], ellipisis, or missing)")
+                     "(str, Sequence[str], ellipsis, or missing)")
 
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
