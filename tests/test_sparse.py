@@ -285,6 +285,21 @@ def test_sparse_array_math():
     assert sa.sparse_equal(np.array([[1., 1., 0., 1.], [0., 0., 1., 1.]]))
     assert_no_zero_data(sa)
     
+    arr = np.array([1., -2., 0., 4.5])
+    sv = sparse_vector(arr)
+    assert (sv + [[2]] == arr + [[2]]).all()
+    assert (sv - [[2]] == arr - [[2]]).all()
+    assert (sv * [[2]] == arr * [[2]]).all()
+    assert (sv / [[2]] == arr / [[2]]).all()
+    assert ([[2]] / (sv + 1) == [[2]] / (arr + 1)).all()
+    
+    sa = sparse([[2]])
+    assert (sv + sa == arr + sa).all()
+    assert (sv - sa == arr - sa).all()
+    assert (sv * sa == arr * sa).all()
+    assert (sv / sa == arr / sa).all()
+    assert (sa / (sv + 1) == sa / (arr + 1)).all()
+    
 def test_sparse_vector_indexing():
     arr = np.array([1., 2., 0., 4.5])
     sv = sparse_vector(arr)
@@ -648,7 +663,6 @@ def test_read_only_flag():
     assert sv.read_only
     with pytest.raises(NotImplementedError):
         sv.setflags(1) # flag not implemented
-    
 
 def test_sparse_vector_methods_vs_numpy():
     arrays = [

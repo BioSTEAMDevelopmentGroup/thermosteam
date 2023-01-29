@@ -1971,7 +1971,6 @@ class Stream:
             data[:] = x 
             lle(T=T, P=P)
             net_phase_flows = data.sum(axis=1, keepdims=True)
-            net_phase_flows[net_phase_flows == 0] = 1
             compositions = data / net_phase_flows
             if (abs(compositions[0] - compositions[2]).sum() < 1e-3
                 or compositions[0].sum() < 1e-6

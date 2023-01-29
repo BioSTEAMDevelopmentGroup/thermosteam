@@ -703,14 +703,12 @@ class SparseArray:
     def __rtruediv__(self, value):
         if (ndim:=get_ndim(value)) == 2:
             new = self.copy()
-            rows = new.rows
-            for i, j in zip(rows, value): i[:] = j / i # TODO: With python 3.10, use strict=True zip kwarg
+            for i, j in zip(new.rows, value): i[:] = j / i # TODO: With python 3.10, use strict=True zip kwarg
         elif ndim > 2:
             return NotImplemented
         else:
             new = self.copy()
-            rows = new.rows
-            for i in rows: i[:] = value / i
+            for i in new.rows: i[:] = value / i
         return new
     
     def __neg__(self):
@@ -1197,6 +1195,17 @@ class SparseVector:
     def __iadd__(self, other):
         dct = self.dct
         if other.__class__ is SparseVector:
+            if other.size == 1:
+                if 0 in other.dct: 
+                    other = other.dct[0]
+                    for i in range(self.size):
+                        if i in dct: 
+                            j = dct[i] + other
+                            if j: dct[i] = j
+                            else: del dct[i]
+                        else:
+                            dct[i] = other
+                return self
             for i, j in other.dct.items():
                 if i in dct:
                     j += dct[i]
@@ -1205,6 +1214,9 @@ class SparseVector:
                 else:
                     dct[i] = j
         elif hasattr(other, '__iter__'):
+            if other.__len__() == 1: 
+                self.__iadd__(other[0])
+                return self
             for i, j in enumerate(other):
                 if not j: continue
                 if i in dct:
@@ -1214,7 +1226,7 @@ class SparseVector:
                     else: del dct[i]
                 else:
                     dct[i] = j
-        elif other != 0.:
+        elif other:
             other = other.__float__()
             for i in range(self.size):
                 if i in dct: 
@@ -1233,6 +1245,17 @@ class SparseVector:
     def __isub__(self, other):
         dct = self.dct
         if other.__class__ is SparseVector:
+            if other.size == 1:
+                if 0 in other.dct: 
+                    other = other.dct[0]
+                    for i in range(self.size):
+                        if i in dct: 
+                            j = dct[i] - other
+                            if j: dct[i] = j
+                            else: del dct[i]
+                        else:
+                            dct[i] = -other
+                return self
             for i, j in other.dct.items():
                 if i in dct:
                     j = dct[i] - j
@@ -1241,6 +1264,9 @@ class SparseVector:
                 else:
                     dct[i] = -j
         elif hasattr(other, '__iter__'):
+            if other.__len__() == 1: 
+                self.__isub__(other[0])
+                return self
             for i, j in enumerate(other):
                 if not j: continue
                 j = j.__float__()
@@ -1269,6 +1295,13 @@ class SparseVector:
     def __imul__(self, other):
         dct = self.dct
         if other.__class__ is SparseVector:
+            if other.size == 1:
+                if 0 in other.dct: 
+                    other = other.dct[0]
+                    for i in dct: dct[i] *= other
+                else:
+                    dct.clear()
+                return self
             other = other.dct
             for i in tuple(dct):
                 if i in other:
@@ -1276,6 +1309,9 @@ class SparseVector:
                 else:
                     del dct[i]
         elif hasattr(other, '__iter__'):
+            if other.__len__() == 1: 
+                self.__imul__(other[0])
+                return self
             for i in tuple(dct):
                 j = other[i]
                 if j: dct[i] *= j.__float__()
@@ -1296,14 +1332,20 @@ class SparseVector:
         if self.read_only: raise ValueError('assignment destination is read-only')
         dct = self.dct
         if other.__class__ is SparseVector:
+            if other.size == 1:
+                if 0 in other.dct: 
+                    other = other.dct[0]
+                    for i in dct: dct[i] /= other
+                elif dct:
+                    raise FloatingPointError('division by zero')
+                return self
             other = other.dct
             for i in dct: dct[i] /= other[i]
         elif hasattr(other, '__iter__'):
-            if other.__len__() == 1:
-                other = other[0].__float__()
-                for i in dct: dct[i] /= other
-            else:
-                for i in dct: dct[i] /= other[i].__float__()
+            if other.__len__() == 1: 
+                self.__itruediv__(other[0])
+                return self
+            for i in dct: dct[i] /= other[i].__float__()
         elif other:
             other = other.__float__()
             for i in dct: dct[i] /= other
@@ -1331,6 +1373,8 @@ class SparseVector:
     def __rtruediv__(self, other):
         dct = self.dct.copy()
         if hasattr(other, '__iter__'):
+            if other.__len__() == 1: 
+                return self.__rtruediv__(other[0])
             for i, j in enumerate(other):
                 if j:
                     if i in dct:
