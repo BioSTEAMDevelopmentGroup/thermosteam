@@ -147,10 +147,10 @@ class SLE(Equilibrium, phases='ls'):
         super().__init__(imol, thermal_condition, thermo)
         imol = self._imol
         self._phase_data = tuple(imol)
-        self._liquid_mol = liquid_mol = imol['l']
+        self._liquid_mol = imol['l']
         self._solid_mol = imol['s']
         self._phase_data = tuple(imol)
-        self._nonzero = np.zeros(liquid_mol.shape, dtype=bool)
+        self._nonzero = None
         self._index = ()
         self._chemical = None
         self._x = None
@@ -165,8 +165,8 @@ class SLE(Equilibrium, phases='ls'):
         self._mol_solute = mol_solute = mol[solute_index]
         if not mol_solute:
             raise RuntimeError('no solute available')
-        nonzero = mol > 0
-        if (self._nonzero == nonzero).all():
+        nonzero = frozenset(mol.nonzero_keys())
+        if self._nonzero == nonzero:
             index = self._index
         else:
             chemicals = self.chemicals
@@ -183,7 +183,7 @@ class SLE(Equilibrium, phases='ls'):
                 self._index = index
                 thermo = self._thermo
                 self._gamma = thermo.Gamma(eq_chems)
-                self._solute_gamma_index = np.where(self._index == solute_index)
+                self._solute_gamma_index = self._index.index(solute_index)
         
     def __call__(self, solute, T=None, P=None, H=None, solubility=None):
         """
@@ -313,6 +313,7 @@ class SLE(Equilibrium, phases='ls'):
         if Hm is None: raise RuntimeError(f"solute {solute_chemical} does not have a heat of fusion, Hfus")
         gamma = 1.
         x = solubility_eutectic(T, Tm, Hm, Cpl, Cps, gamma) # Initial guess
+        
         args = (T, Tm, Hm, Cpl, Cps)
         if isinstance(self._gamma, IdealActivityCoefficients):
             return solubility_eutectic(T, Tm, Hm, Cpl, Cps, self.activity_coefficient or 1.)

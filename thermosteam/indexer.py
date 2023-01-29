@@ -8,16 +8,15 @@
 """
 """
 import thermosteam as tmo
-from ._thermal_condition import mock_thermal_condition
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemicalAlias
-from .base import PhaseHandle
+from .base import (
+    SparseVector, SparseArray, sparse_vector, sparse_array,
+    MassFlowDict, VolumetricFlowDict,
+)
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
-from free_properties import PropertyFactory, property_array
-from collections.abc import Iterable
 import numpy as np
-from numba import njit
 
 __all__ = (
     'SplitIndexer',
@@ -29,8 +28,6 @@ __all__ = (
     'MassFlowIndexer',
     'ChemicalVolumetricFlowIndexer',
     'VolumetricFlowIndexer',
-    'MassFlowProperty',
-    'VolumetricFlowProperty'
 )
 
 phase_names = {
@@ -40,24 +37,7 @@ phase_names = {
     'L': 'LIQUID',
     'S': 'SOLID',
 }
-
-# %% Numba acceleration
-
-@njit(cache=True)
-def sum_chemical_index(data, other, left_index, right_index):
-    data[left_index] += other[right_index]
-
-@njit(cache=True)
-def sum_material_index(data, other, left_index, right_index):
-    data[:, left_index] += other[:, right_index]
     
-@njit(cache=True)
-def copy_chemical_index(data, other, left_index, right_index):
-    data[left_index] = other[right_index]
-
-@njit(cache=True)
-def copy_material_index(data, other, left_index, right_index):
-    data[:, left_index] = other[:, right_index]
 
 # %% Utilities
 
@@ -66,7 +46,7 @@ _new = object.__new__
 def raise_material_indexer_index_error():
     raise IndexError("index by [phase, IDs] where phase is a "
                      "(str, ellipsis, or missing), and IDs is a "
-                     "(str, Sequence[str], ellipisis, or missing)")
+                     "(str, Sequence[str], ellipsis, or missing)")
 
 def find_main_phase(indexers, default):
     main_indexer, *indexers = indexers
@@ -79,11 +59,15 @@ def find_main_phase(indexers, default):
     return phase
 
 def nonzeros(IDs, data):
-    index, = np.where(data != 0)
-    return [IDs[i] for i in index], data[index]
+    if hasattr(IDs, 'dct'):
+        dct = data.dct
+        index = sorted(data.nonzero_keys())
+        return  [IDs[i] for i in index], [dct[i] for i in index]
+    else:
+        index, = np.where(data)
+        return [IDs[i] for i in index], [data[i] for i in index]
 
-def index_overlap(left_chemicals, right_chemicals, right_data):
-    right_index, = np.where(right_data)
+def index_overlap(left_chemicals, right_chemicals, right_index):
     CASs_all = right_chemicals.CASs
     CASs = tuple([CASs_all[i] for i in right_index])
     cache = left_chemicals._index_cache
@@ -96,37 +80,39 @@ def index_overlap(left_chemicals, right_chemicals, right_data):
     else:
         dct = left_chemicals._index
         N = len(CASs)
-        left_index = np.zeros(N, dtype=int)
-        isa = isinstance
-        ndarray = np.ndarray
+        left_index = [0] * N
         for i in range(N):
             CAS = CASs[i]
             if CAS in dct:
                 index = dct[CAS]
-                if isa(index, ndarray): raise RuntimeError('conflict in chemical groups and aliases between property packages')
+                if hasattr(index, '__iter__'): raise RuntimeError('conflict in chemical groups and aliases between property packages')
                 left_index[i] = index
             else:
                 raise UndefinedChemicalAlias(CAS)
         cache[CASs] = (left_index, 0)
-        if len(cache) > 1000: cache.pop(cache.__iter__().__next__())
+        if len(cache) > 100: cache.pop(cache.__iter__().__next__())
         return left_index, right_index
 
 # %% Abstract indexer
     
 class Indexer:
     """Abstract class for fast indexing."""
-    __slots__ = ('_data',)
+    __slots__ = ('data',)
     units = None
     
+    @property
+    def _data(self): # For backwards compatibility
+        return self.data
+    
     def empty(self):
-        self._data[:] = 0
+        self.data.clear()
     
     def isempty(self):
-        return (self._data == 0.).all().__bool__()
+        return not self.data.any()
     
     def copy(self):
         new = self._copy_without_data()
-        new._data = self._data.copy()
+        new.data = self.data.copy()
         return new
     __copy__ = copy
     
@@ -141,7 +127,7 @@ class Indexer:
         length = len(index)
         factor = self.get_conversion_factor(units)
         if length == 0:
-            return factor * self._data
+            return factor * self.data
         elif length == 1:
             return factor * self[index[0]]
         else:
@@ -149,20 +135,15 @@ class Indexer:
     
     def set_data(self, data, units, *index):
         length = len(index)
-        data = np.asarray(data, dtype=float)
         factor = self.get_conversion_factor(units)
         scaled_data = data / factor
         if length == 0:
-            self._data[:] = scaled_data
+            self.data[:] = scaled_data
         elif length == 1:
             self[index[0]] = scaled_data
         else:
             self[index] = scaled_data
     
-    @property
-    def data(self):
-        return self._data
-
 
 # %% Phase data
 
@@ -191,17 +172,17 @@ class SplitIndexer(Indexer):
         return self
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._chemicals, False)        
+        return self.from_data, (self.data, self._chemicals, False)        
     
     def reset_chemicals(self, chemicals, container=None):
-        old_data = self._data
+        old_data = self.data
         if container is None:
-            self._data = data = np.zeros(chemicals.size, float)
+            self.data = data = SparseVector.from_size(chemicals.size)
         else:
-            self._data = data = container
-            data[:] = 0.
+            self.data = data = container
+            data.clear()
         for CAS, split in zip(self._chemicals.CASs, old_data):
-            if CAS in chemicals: data[chemicals.index(CAS)] = split
+            if CAS in chemicals: data.dct[chemicals.index(CAS)] = split
         self._chemicals = chemicals
         return old_data
     
@@ -209,28 +190,28 @@ class SplitIndexer(Indexer):
     def blank(cls, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self._data = np.zeros(self._chemicals.size, float)
+        self.data = SparseVector.from_size(self._chemicals.size)
         return self
     
     @classmethod
     def from_data(cls, data, chemicals=None, check_data=True):
         self = _new(cls)
         self._load_chemicals(chemicals)
+        self.data = data = sparse_vector(data)
         if check_data:
             assert data.ndim == 1, 'data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of data must be equal to '
                                                        'size of chemicals')
             assert (data <= 1.).all(), 'data must be less or equal to one'
-        self._data = data
         return self
     
     def __getitem__(self, key):
         chemicals = self._chemicals
         index, kind = chemicals._get_index_and_kind(key)
         if kind == 0 or kind == 1:
-            return self._data[index]
+            return self.data[index]
         elif kind == 2:
-            data = self._data
+            data = self.data
             return np.array([data[i] for i in index], dtype=object)
         else:
             raise IndexError('unknown error')
@@ -238,14 +219,13 @@ class SplitIndexer(Indexer):
     def __setitem__(self, key, data):
         index, kind = self._chemicals._get_index_and_kind(key)
         if kind == 0 or kind == 1:
-            self._data[index] = data
+            self.data[index] = data
         elif kind == 2:
-            local_data = self._data
-            isa = isinstance
-            if isa(data, Iterable):
-                for i, x in zip(index, data): local_data[i] = x
+            sparse_data = self.data
+            if hasattr(data, '__iter__'):
+                for i, x in zip(index, data): sparse_data[i] = x
             else:
-                for i in index: local_data[i] = data
+                for i in index: sparse_data[i] = data
         else:
             raise IndexError('unknown error')
                 
@@ -257,7 +237,7 @@ class SplitIndexer(Indexer):
             dlim = ",\n" + tab
         else:
             dlim = ", "
-        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self._data, dlim, start='')
+        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(self._chemicals.size), dlim, start='')
         return f"{type(self).__name__}({ID_data})"
     
     def __repr__(self):
@@ -334,43 +314,38 @@ class ChemicalIndexer(Indexer):
             IDs = tuple(ID_data)
             values = list(ID_data.values())
             self[IDs] = values
-            if units: self.set_data(self._data, units)
+            if units: self.set_data(self.data, units)
         return self
     
     def reset_chemicals(self, chemicals, container=None):
-        old_data = self._data
+        old_data = self.data
         old_container = (old_data, self._data_cache)
         if container is None:
-            self._data = data = np.zeros(chemicals.size, float)
+            self.data = data = SparseVector.from_size(chemicals.size)
             self._data_cache = {}
         else:
             data, self._data_cache = container
-            self._data =  data
-            data[:] = 0.
+            self.data =  data
+            data.clear()
         for CAS, value in zip(self._chemicals.CASs, old_data):
-            if value: data[chemicals.index(CAS)] = value
+            if value: data.dct[chemicals.index(CAS)] = value
         self._chemicals = chemicals
         return old_container
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._phase, self._chemicals, False)
+        return self.from_data, (self.data, self._phase, self._chemicals, False)
     
     def __getitem__(self, key):
         index, kind = self._chemicals._get_index_and_kind(key)
         if kind == 0:
-            return self._data[index]
+            return self.data[index]
         elif kind == 1:
-            return self._data[index].sum()
+            return self.data.sum_of(index)
         elif kind == 2:
             arr = np.zeros(len(index))
-            data = self._data
-            isa = isinstance
-            ndarray = np.ndarray
+            data = self.data
             for d, s in enumerate(index):
-                if isa(s, ndarray): 
-                    arr[d] = data[s].sum()
-                else:
-                    arr[d] = data[s]
+                arr[d] = data.sum_of(s)
             return arr
         else:
             raise IndexError('unknown index error')
@@ -378,23 +353,21 @@ class ChemicalIndexer(Indexer):
     def __setitem__(self, key, data):
         index, kind = self._chemicals._get_index_and_kind(key)
         if kind == 0:
-            self._data[index] = data
+            self.data[index] = data
         elif kind == 1:
             composition = self.group_compositions[key]
-            self._data[index] = data * composition
+            self.data[index] = data * composition
         elif kind == 2:
-            local_data = self._data
-            isa = isinstance
+            sparse_data = self.data
             group_compositions = self.group_compositions
-            ndarray = np.ndarray
             for n in range(len(index)):
                 i = index[n]
-                local_data[i] = data[n] * group_compositions[key[n]] if isa(i, ndarray) else data[n]
+                sparse_data[i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
         else:
             raise IndexError('unknown error')
     
     def sum_across_phases(self):
-        return self._data
+        return self.data
     
     @property
     def get_index(self):
@@ -403,52 +376,53 @@ class ChemicalIndexer(Indexer):
     def mix_from(self, others):
         self.phase = find_main_phase(others, self.phase)
         chemicals = self._chemicals
-        data = self._data
+        data = self.data
         sc_data = [] # Same chemicals
         other_data = [] # Different chemicals
         repeated_data = 0
-        base = data.base
         for i in others:
             if i is self:
                 repeated_data += 1
             else:
                 idata = i.sum_across_phases()
-                if idata.base is base or idata is base: idata = idata.copy()
+                if idata.shares_data_with(data): idata = idata.copy()
                 ichemicals = i._chemicals
                 if ichemicals is chemicals:
                     sc_data.append(idata)
                 else:
                     other_data.append(
-                        (idata, *index_overlap(chemicals, ichemicals, idata))
+                        (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                     )
         if repeated_data == 0:
-            data[:] = 0.
+            data.clear()
         elif repeated_data > 1:
-            data[:] *= repeated_data
-        for i in sc_data: data[:] += i
-        for args in other_data: sum_chemical_index(data, *args)
+            data *= repeated_data
+        for i in sc_data: data += i
+        for idata, left_index, right_index in other_data: 
+            data[left_index] += idata[right_index]
     
     def separate_out(self, other):
         if self._chemicals is other._chemicals:
-            self._data[:] -= other.sum_across_phases()
+            self.data -= other.sum_across_phases()
         else:
-            other_data = other._data
-            left_index, right_index = index_overlap(self._chemicals, other._chemicals, other_data)
-            self._data[left_index] -= other_data[right_index]
+            other_data = other.data
+            left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
+            self.data[left_index] -= other_data[right_index]
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
-        material_array[self.phase] = self._data
+        material_array[self.phase].copy_like(self.data)
         return material_array
     
     def copy_like(self, other):
         if self is other: return
         if self.chemicals is other.chemicals:
-            self._data[:] = other._data
+            self.data.copy_like(other.data)
         else:
             self.empty()
-            other_data = other._data
-            copy_chemical_index(self._data, other_data, *index_overlap(self._chemicals, other._chemicals, other_data))
+            other_data = other.data
+            left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
+            self.data[left_index] = other_data[right_index]
         self.phase = other.phase
     
     def _copy_without_data(self):
@@ -462,7 +436,7 @@ class ChemicalIndexer(Indexer):
     def blank(cls, phase, chemicals=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self._data = np.zeros(self._chemicals.size, float)
+        self.data = SparseVector.from_size(chemicals.size)
         self._phase = Phase.convert(phase)
         self._data_cache = {}
         return self
@@ -472,11 +446,11 @@ class ChemicalIndexer(Indexer):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._phase = Phase.convert(phase)
+        self.data = data = sparse_vector(data)
         if check_data:
             assert data.ndim == 1, 'material data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
-        self._data = data
         self._data_cache = {}
         return self
     
@@ -489,7 +463,7 @@ class ChemicalIndexer(Indexer):
     
     def get_phase_and_composition(self):
         """Return phase and composition."""
-        data = self._data
+        data = self.data
         total = data.sum()
         if total <= 0.: raise RuntimeError(f"'{phase_names[self.phase]}' phase does not exist")
         return self.phase, data / total
@@ -504,7 +478,7 @@ class ChemicalIndexer(Indexer):
             phase = '\n' + tab + phase
         else:
             dlim = ", "
-        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self._data, dlim)
+        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(), dlim)
         return f"{type(self).__name__}({phase}{ID_data})"
     
     def __repr__(self):
@@ -581,11 +555,11 @@ class MaterialIndexer(Indexer):
         return self
     
     def reset_chemicals(self, chemicals, container=None):
-        old_data = self._data
-        old_data_cache = self._data_cache
-        shape = N_phases, N_chemicals = (len(self._phases), chemicals.size)
+        old_data = self.data
+        old__data_cache = self._data_cache
+        N_phases = len(self._phases)
         if container is None:
-            self._data = data = np.zeros(shape, float)
+            self.data = data = SparseArray.from_shape([N_phases, chemicals.size])
             self._data_cache = {}
         else:
             data, cache = container
@@ -599,43 +573,45 @@ class MaterialIndexer(Indexer):
                 if value: data[i, chemicals.index(CASs[j])] = value
         self._load_chemicals(chemicals)
         self._set_cache()
-        return (old_data, old_data_cache)
+        return (old_data, old__data_cache)
     
     def __reduce__(self):
-        return self.from_data, (self._data, self._phases, self._chemicals, False)
+        return self.from_data, (self.data, self._phases, self._chemicals, False)
     
     def phases_are_empty(self, phases):
         get_phase_index = self.get_phase_index
-        data = self._data
+        data = self.data
         for phase in set(self._phases).intersection(phases):
             if data[get_phase_index(phase)].any(): return False
         return True
     
     def sum_across_phases(self):
-        return self._data.sum(0)
+        return self.data.sum(0)
     
     def copy_like(self, other):
         if self is other: return
         if isinstance(other, ChemicalIndexer):
             self.empty()
-            other_data = other._data
+            other_data = other.data
             phase_index = self.get_phase_index(other.phase)
             if self.chemicals is other.chemicals:
-                self._data[phase_index, :] = other_data
+                self.data[phase_index, :] = other_data
             else:
-                other_data = other._data
-                copy_chemical_index(self._data[phase_index], other_data, *index_overlap(self._chemicals, other._chemicals, other_data))
+                other_data = other.data
+                left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
+                self.data[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
-                self._data[:] = other._data
+                self.data[:] = other.data
             else:
                 self.empty()
-                other_data = other._data
-                copy_material_index(self._data, other_data, *index_overlap(self._chemicals, other._chemicals, other_data.any(0)))
+                other_data = other.data
+                left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_columns()])
+                self.data[:, left_index] = other_data[:, right_index]
     
     def mix_from(self, others):
         isa = isinstance
-        data = self._data
+        data = self.data
         get_phase_index = self.get_phase_index
         chemicals = self._chemicals
         phases = self._phases
@@ -648,8 +624,8 @@ class MaterialIndexer(Indexer):
             if i is self:
                 repeated_data += 1
             else:
-                idata = i._data
-                if idata.base is data: idata = idata.copy()
+                idata = i.data
+                if idata.shares_data_with(data): idata = idata.copy()
                 ichemicals = i._chemicals
                 if isa(i, MaterialIndexer):
                     if phases == i.phases:
@@ -657,7 +633,7 @@ class MaterialIndexer(Indexer):
                             spsc_data.append(idata)
                         else:
                             sp_data.append(
-                                (idata, *index_overlap(chemicals, ichemicals, idata.any(0)))
+                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_colums()]))
                             )
                     else:
                         if chemicals is ichemicals:
@@ -670,42 +646,44 @@ class MaterialIndexer(Indexer):
                             for phase, idata in zip(i.phases, idata):
                                 if not idata.any(): continue
                                 op_data.append(
-                                    (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
+                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                                 )
                 elif isa(i, ChemicalIndexer):
-                    if idata.base is data: idata = idata.copy()
+                    if idata.shares_data_with(data): idata = idata.copy()
                     if chemicals is ichemicals:
                         opsc_data.append(
                             (idata, get_phase_index(i.phase))
                         )
                     else:
                         op_data.append(
-                            (get_phase_index(phase), (idata, *index_overlap(chemicals, ichemicals, idata)))
+                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                         )
                 else:
                     raise ValueError("can only mix from chemical or material indexers")
         if repeated_data == 0:
             data[:] = 0.
         elif repeated_data > 1:
-            data[:] *= repeated_data
+            data *= repeated_data
         for i in spsc_data: data[:] += i
-        for args in sp_data: sum_material_index(data, *args)
+        for idata, left_index, right_index in sp_data: 
+            data[:, left_index] += idata[:, right_index]
         for idata, left_index in opsc_data: data[left_index, :] += idata
-        for phase_index, args in op_data: sum_chemical_index(data[phase_index], *args)
+        for phase_index, idata, left_index, right_index in op_data: 
+            data[phase_index, left_index] += idata[right_index]
     
     def separate_out(self, other):
         isa = isinstance
-        data = self._data
+        data = self.data
         get_phase_index = self.get_phase_index
         chemicals = self._chemicals
         phases = self._phases
-        idata = other._data
+        idata = other.data
         if isa(other, MaterialIndexer):
             if phases == other.phases:
                 if chemicals is other.chemicals:
-                    data[:] -= idata
+                    data -= idata
                 else:
-                    idata = other._data
+                    idata = other.data
                     other_index, = np.where(idata.any(0))
                     CASs = other.chemicals.CASs
                     self_index = chemicals.indices([CASs[i] for i in other_index])
@@ -760,8 +738,7 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
-        shape = (len(self._phases), self._chemicals.size)
-        self._data = np.zeros(shape, float)
+        self.data = SparseArray.from_shape([len(phases), self._chemicals.size])
         self._data_cache = {}
         return self
     
@@ -771,6 +748,7 @@ class MaterialIndexer(Indexer):
         self._load_chemicals(chemicals)
         self._set_phases(phases)
         self._set_cache()
+        self.data = data = sparse_array(data)
         if check_data:
             assert data.ndim == 2, ('material data must be an 2d numpy array')
             M_phases = len(self._phases)
@@ -781,7 +759,6 @@ class MaterialIndexer(Indexer):
             assert N == N_chemicals, ('size of chemicals '
                                       'must be equal to '
                                       'number of material data columns')
-        self._data = data
         self._data_cache = {}
         return self
     
@@ -794,7 +771,7 @@ class MaterialIndexer(Indexer):
         return self._phase_indexer
     
     def to_chemical_indexer(self, phase=NoPhase):
-        return self._ChemicalIndexer.from_data(self._data.sum(0), phase, self._chemicals, False)
+        return self._ChemicalIndexer.from_data(sum(self.data), phase, self._chemicals, False)
     
     def to_material_indexer(self, phases):
         material_indexer = self.__class__.blank(phases, self._chemicals)
@@ -803,44 +780,42 @@ class MaterialIndexer(Indexer):
         return material_indexer
     
     def get_phase(self, phase):
-        return self._ChemicalIndexer.from_data(self._data[self.get_phase_index(phase)],
+        return self._ChemicalIndexer.from_data(self.data[self.get_phase_index(phase)],
                                                LockedPhase(phase), self._chemicals, False)
     
     def __getitem__(self, key):
         index, kind, sum_across_phases = self._get_index_data(key)
         if sum_across_phases:
             if kind == 0: # Normal
-                values = self._data[:, index].sum(0)
+                values = self.data[:, index].sum(0)
             elif kind == 1: # Chemical group
-                values = self._data[:, index].sum()
+                values = self.data[:, index].sum()
             elif kind == 2: # Nested chemical group
-                data = self._data
+                data = self.data
                 values = np.array([data[:, i].sum() for i in index], dtype=float)
         else:
             if kind == 0: # Normal
-                return self._data[index]
+                return self.data[index]
             elif kind == 1: # Chemical group
                 phase, index = index
                 if phase == slice(None):
-                    values = self._data[phase, index].sum(1)
+                    values = self.data[phase, index].sum(1)
                 else:
-                    values = self._data[phase, index].sum()
+                    values = self.data[phase, index].sum()
             elif kind == 2: # Nested chemical group
-                data = self._data
-                isa = isinstance
+                data = self.data
                 phase, index = index
-                ndarray = np.ndarray
                 if phase == slice(None):
                     values = np.zeros([len(self.phases), len(index)])
                     for d, s in enumerate(index):
-                        if isa(s, ndarray): 
+                        if hasattr(s, '__iter__'): 
                             values[:, d] = data[phase, s].sum(1)
                         else:
                             values[:, d] = data[phase, s]
                 else:
                     values = np.zeros(len(index))
                     for d, s in enumerate(index):
-                        if isa(s, ndarray): 
+                        if hasattr(s, '__iter__'): 
                             values[d] = data[phase, s].sum()
                         else:
                             values[d] = data[phase, s]
@@ -852,21 +827,19 @@ class MaterialIndexer(Indexer):
             raise IndexError("multiple phases present; must include phase key "
                              "to set chemical data")
         if kind == 0:
-            self._data[index] = data
+            self.data[index] = data
         elif kind == 1: # Chemical group
             phase, index = index
             _, key = key
             composition = self.group_compositions[key]
-            self._data[phase, index] = data * composition
+            self.data[phase, index] = data * composition
         elif kind == 2: # Nested chemical group
             phase, index = index
-            local_data = self._data
+            sparse_data = self.data
             group_compositions = self.group_compositions
-            isa = isinstance
-            ndarray = np.ndarray
             for n in range(len(index)):
                 i = index[n]
-                local_data[phase, i] = data[n] * group_compositions[key[n]] if isa(i, ndarray) else data[n]
+                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
         else:
             raise IndexError('unknown error')
     
@@ -934,11 +907,11 @@ class MaterialIndexer(Indexer):
     
     def __iter__(self):
         """Iterate over phase-data pairs."""
-        return zip(self._phases, self._data)
+        return zip(self._phases, self.data)
     
     def iter_composition(self):
         """Iterate over phase-composition pairs."""
-        array = self._data
+        array = self.data
         total = array.sum() or 1.
         return zip(self._phases, array/total)
     
@@ -1059,18 +1032,7 @@ ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr'
 ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr', group_wt_compositions)
 ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr', group_vol_composition)
 
-
 # %% Mass flow properties
-
-@PropertyFactory(slots=('name', 'mol', 'index', 'MW'),
-                 units='kg/hr')
-def MassFlowProperty(self):
-    """Mass flow (kg/hr)."""
-    return self.mol[self.index] * self.MW
-    
-@MassFlowProperty.setter
-def MassFlowProperty(self, value):
-    self.mol[self.index] = value/self.MW
 
 def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
@@ -1078,14 +1040,15 @@ def by_mass(self):
         mass = self._data_cache['mass']
     except:
         chemicals = self.chemicals
-        mol = self.data
-        mass = np.zeros_like(mol, dtype=object)
-        for i, chem in enumerate(chemicals):
-            mass[i] = MassFlowProperty(chem.ID, mol, i, chem.MW)
-        self._data_cache['mass'] = mass = ChemicalMassFlowIndexer.from_data(
-                                                        property_array(mass),
-                                                        self._phase, chemicals,
-                                                        False)
+        self._data_cache['mass'] = mass = \
+        ChemicalMassFlowIndexer.from_data(
+            SparseVector.from_dict(
+                MassFlowDict(self.data.dct, chemicals.MW),
+                chemicals.size
+            ),
+            self._phase, chemicals,
+            False
+        )
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
 
@@ -1094,53 +1057,23 @@ def by_mass(self):
     try:
         mass = self._data_cache['mass']
     except:
-        phases = self.phases
         chemicals = self.chemicals
-        mol = self.data
-        mass = np.zeros_like(mol, dtype=object)
-        for i, phase in enumerate(phases):
-            for j, chem in enumerate(chemicals):
-                index = (i, j)
-                mass[index] = MassFlowProperty(chem.ID, mol, index, chem.MW)
-        self._data_cache['mass'] = mass = MassFlowIndexer.from_data(
-                                                        property_array(mass),
-                                                        phases, chemicals,
-                                                        False)
+        size = chemicals.size
+        MW = chemicals.MW
+        self._data_cache['mass'] = mass = \
+        MassFlowIndexer.from_data(
+            SparseArray.from_rows([
+                SparseVector.from_dict(MassFlowDict(i.dct, MW), size)
+                for i in self.data
+            ]),
+            self.phases, chemicals,
+            False
+        )
     return mass
 MolarFlowIndexer.by_mass = by_mass; del by_mass
 
 
 # %% Volumetric flow properties
-
-TP_V = (mock_thermal_condition, None) # Initial cache for molar volume
-
-@PropertyFactory(slots=('name', 'mol', 'index', 'V',
-                        'TP', 'phase', 'phase_container', 'cache'),
-                 units='m^3/hr')
-def VolumetricFlowProperty(self):
-    """Volumetric flow (m^3/hr)."""
-    f_mol = self.mol[self.index] 
-    if f_mol:
-        TP, V = self.cache
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
-            self.cache = (self.TP.copy(), V)
-        return f_mol * V
-    else:
-        return 0.
-    
-@VolumetricFlowProperty.setter
-def VolumetricFlowProperty(self, value):
-    if value:
-        TP, V = self.cache
-        if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
-            V = 1000. * (getattr(self.V, phase) if isinstance(self.V, PhaseHandle) else self.V)(*self.TP)
-            self.cache = (self.TP.copy(), V)
-        self.mol[self.index] = value / V
-    else:
-        self.mol[self.index] = 0.
 
 def by_volume(self, TP):
     """Return a ChemicalVolumetricFlowIndexer that references this object's molar data.
@@ -1153,16 +1086,18 @@ def by_volume(self, TP):
     try:
         vol = self._data_cache['vol', TP]
     except:
-        chemicals = self.chemicals
-        mol = self.data
-        vol = np.zeros_like(mol, dtype=object)
-        for i, chem in enumerate(chemicals):
-            vol[i] = VolumetricFlowProperty(chem.ID, mol, i, chem.V,
-                                            TP, None, self._phase, TP_V)
+        chemicals = self._chemicals
+        V = [i.V for i in chemicals]
+        phase = self._phase
         self._data_cache['vol', TP] = \
-        vol = ChemicalVolumetricFlowIndexer.from_data(property_array(vol),
-                                                      self._phase, chemicals,
-                                                      False)
+        vol = ChemicalVolumetricFlowIndexer.from_data(
+            SparseVector.from_dict(
+                VolumetricFlowDict(self.data.dct, TP, V, None, phase, {}),
+                chemicals.size
+            ),
+            phase, chemicals,
+            False
+        )
     return vol
 ChemicalMolarFlowIndexer.by_volume = by_volume
 	
@@ -1177,21 +1112,19 @@ def by_volume(self, TP):
     try:
         vol = self._data_cache[TP]
     except:
-        phases = self.phases
-        chemicals = self.chemicals
-        mol = self.data
-        vol = np.zeros_like(mol, dtype=object)
-        for i, phase in enumerate(phases):
-            for j, chem in enumerate(chemicals):
-                index = i, j
-                phase_name = phase_names[phase]
-                vol[index] = VolumetricFlowProperty(f"{phase_name}{chem.ID}", 
-                                                    mol, index, chem.V, TP, phase,
-                                                    None, TP_V)
+        phases = self._phases
+        chemicals = self._chemicals
+        V = [i.V for i in chemicals]
+        size = chemicals.size
         self._data_cache[TP] = \
-        vol = VolumetricFlowIndexer.from_data(property_array(vol),
-                                              phases, chemicals,
-                                              False)
+        vol = VolumetricFlowIndexer.from_data(
+            SparseArray.from_rows([
+                SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}), size)
+                for i, j in zip(self.data, self._phases)
+            ]),
+            phases, chemicals,
+            False
+        )
     return vol
 MolarFlowIndexer.by_volume = by_volume; del by_volume
-del PropertyFactory
+

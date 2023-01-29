@@ -5,9 +5,9 @@
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
-import numpy as np
 from collections.abc import Sized
 from .._phase import PhaseIndexer, valid_phases, phase_tuple
+from ..base import sparse_array, SparseArray, SparseVector
 
 __all__ = ('get_phases',
            'get_stoichiometric_array',
@@ -41,8 +41,8 @@ def get_stoichiometric_array(reaction, phases, chemicals):
         stoichiometry_dict = reaction
     elif isa(reaction, str):
         stoichiometry_dict = str2dct(reaction)
-    elif isa(reaction, np.ndarray):
-        return reaction
+    elif hasattr(reaction, '__iter__'):
+        return sparse_array(reaction, chemicals.size)
     else:
         raise ValueError(f"reaction must be either a str or a dict; not a '{type(reaction).__name__}' object")
     stoichiometric_array = dct2arr(stoichiometry_dict, phases, chemicals)
@@ -52,7 +52,7 @@ def get_stoichiometric_string(reaction, phases, chemicals):
     """Return a string defining the reaction given the stoichiometric array and chemicals."""
     if isinstance(reaction, dict):
         stoichiometric_dict = reaction
-    elif isinstance(reaction, np.ndarray):
+    elif hasattr(reaction, '__iter__'):
         stoichiometric_dict = arr2dct(reaction, phases, chemicals)
     else:
         raise ValueError(f"reaction must be either a str or an array; not a '{type(reaction).__name__}' object")
@@ -60,7 +60,7 @@ def get_stoichiometric_string(reaction, phases, chemicals):
 
 def dct2arr(dct, phases, chemicals):
     phase_index = PhaseIndexer(phases)
-    arr = np.zeros([len(phases), chemicals.size])
+    rows = [{} for i in range(len(phases))]
     chemical_index = chemicals.index
     chemical_groups = chemicals.chemical_groups
     for ID, (phase, coefficient) in dct.items():
@@ -69,8 +69,10 @@ def dct2arr(dct, phases, chemicals):
                 f"'{ID}' is a chemical group; chemical groups cannot be used "
                  "in reaction definition"
             )
-        arr[phase_index(phase), chemical_index(ID)] = coefficient
-    return arr 
+        rows[phase_index(phase)][chemical_index(ID)] = coefficient
+    return SparseArray.from_rows(
+        [SparseVector.from_dict(i, chemicals.size) for i in rows]
+    ) 
 
 def split_coefficient(nID, sign):
     for i, letter in enumerate(nID):
@@ -105,8 +107,8 @@ def str2dct(reaction):
     reactants = left.split('+')
     products = right.split('+')
     dct = {}
-    extract_coefficients(reactants, dct, -1)
-    extract_coefficients(products, dct, 1)
+    extract_coefficients(reactants, dct, -1.)
+    extract_coefficients(products, dct, 1.)
     return dct
 
 def dct2str(dct):
@@ -129,8 +131,12 @@ def dct2str(dct):
 def arr2dct(arr, phases, chemicals):
     dct = {}
     phase_index = PhaseIndexer(phases)
+    IDs = chemicals.IDs
     for phase in phases:
         index = phase_index(phase)
-        dct.update({ID: (phase, n) for n, ID in zip(arr[index], chemicals.IDs) if n})
+        sv = arr[index]
+        svdct = sv.dct
+        index = sorted(sv.nonzero_keys())
+        for i in index: dct[IDs[i]] = (phase, svdct[i])
     return dct
 

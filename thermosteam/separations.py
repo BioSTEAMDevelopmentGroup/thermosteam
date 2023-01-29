@@ -49,10 +49,12 @@ def check_partition_infeasibility(infeasible_index, strict, stacklevel=1):
 
 
 def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
-    infeasible_index = mol < 0.
+    mol = mol
+    maxmol = maxmol
+    infeasible_index, = np.where(mol < 0.)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = 0.
-    infeasible_index = mol > maxmol
+    infeasible_index, = np.where(mol > maxmol)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = maxmol[infeasible_index]
 
@@ -62,7 +64,8 @@ def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
 CAS_water = '7732-18-5'
 
 def mix_and_split_with_moisture_content(ins, retentate, permeate,
-                                        split, moisture_content, ID=None):
+                                        split, moisture_content, ID=None,
+                                        strict=None):
     """
     Run splitter mass and energy balance with mixing all input streams and 
     and ensuring retentate moisture content.
@@ -104,9 +107,9 @@ def mix_and_split_with_moisture_content(ins, retentate, permeate,
 
     """
     mix_and_split(ins, retentate, permeate, split)
-    adjust_moisture_content(retentate, permeate, moisture_content, ID)
+    adjust_moisture_content(retentate, permeate, moisture_content, ID, strict)
 
-def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
+def adjust_moisture_content(retentate, permeate, moisture_content, ID=None, strict=None):
     """
     Remove water from permate to adjust retentate moisture content.
     
@@ -164,7 +167,12 @@ def adjust_moisture_content(retentate, permeate, moisture_content, ID=None):
         key = ('l', ID) if isinstance(retentate, tmo.MultiStream) else ID
         permeate.imass[key] -= moisture - retentate_moisture
     if permeate.imol[key] < 0:
-        raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
+        if strict is None: strict = True
+        if strict:
+            raise InfeasibleRegion(f'not enough {ID}; permeate moisture content')
+        else:
+            retentate.imol[key] -= permeate.imol[key]
+            permeate.imol[key] = 0.
 
 def mix_and_split(ins, top, bottom, split):
     """
@@ -315,7 +323,6 @@ def chemical_splits(a, b=None, mixed=None):
      
     """
     mixed_mol = mixed.mol.copy() if mixed else a.mol + b.mol
-    mixed_mol[mixed_mol==0.] = 1.
     return tmo.indexer.ChemicalIndexer.from_data(a.mol / mixed_mol)
 
 def vle_partition_coefficients(top, bottom):
@@ -442,7 +449,7 @@ def phase_fraction(feed, IDs, K, phi=None, top_chemicals=None,
     Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
     if bottom_chemicals:
         bottom_flows = feed.imol[bottom_chemicals]
-        Fb = bottom_flows.sum()
+        Fb = bottom_flows.sum() if hasattr(bottom_flows, 'sum') else bottom_flows
     else:
         Fb = 0.
     F_mol += Fa + Fb
@@ -546,7 +553,7 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
     if bottom_chemicals:
         bottom.imol[bottom_chemicals] = bottom_flows = feed.imol[bottom_chemicals]
-        Fb = bottom_flows.sum()
+        Fb = bottom_flows.sum() if hasattr(bottom_flows, 'sum') else bottom_flows
     else:
         Fb = 0.
     F_mol += Fa + Fb
@@ -772,7 +779,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     >>> chemical_IDs = ('Water', 'Ethanol')
     >>> tmo.separations.material_balance(chemical_IDs, variable_inlets, constant_inlets, constant_outlets)
     >>> tmo.Stream.sum([in_a, in_b, in_c]).mol - tmo.Stream.sum([out_a, out_b]).mol # Molar flow rates entering and leaving are equal
-    array([0., 0.])
+    sparse([0., 0.])
     
     Vary inlet flow rates to satisfy outlet composition:
         
@@ -800,8 +807,8 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
     if not variable_inlets:
         raise ValueError('variable_inlets must contain at least one stream')
     index = variable_inlets[0].chemicals.get_index(chemical_IDs)
-    mol_out = sum([s.mol for s in constant_outlets])
-
+    mol_out = sum([s.mol for s in constant_outlets]).to_array()
+    inlet_mols = np.array([s.mol.to_array() for s in variable_inlets]).transpose()
     if balance == 'flow':
         # Perform the following calculation: Ax = b = f - g
         # Where:
@@ -812,7 +819,7 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
         #    g = constant inlet flow rates
 
         # Solve linear equations for mass balance
-        A = np.array([s.mol for s in variable_inlets]).transpose()[index, :]
+        A = inlet_mols[index, :]
         f = mol_out[index]
         g = sum([s.mol[index] for s in constant_inlets])
         b = f - g
@@ -834,8 +841,8 @@ def material_balance(chemical_IDs, variable_inlets, constant_inlets=(),
         # Same variable definitions as in 'flow'
 
         # Set all variables
-        A_ = np.array([s.mol for s in variable_inlets]).transpose()
-        A = np.array([s.mol for s in variable_inlets]).transpose()[index, :]
+        A_ = inlet_mols.copy()
+        A = inlet_mols[index, :]
         F_mol_out = mol_out.sum()
         z_mol_out = mol_out / F_mol_out if F_mol_out else mol_out
         f = z_mol_out[index]
@@ -937,7 +944,7 @@ class StageEquilibrium:
         
     def partition_lle(self, partition_data=None, stacklevel=1, P=None, solvent=None):
         ms = self.multi_stream
-        data = ms._imol._data.copy()
+        data = ms._imol.data.copy()
         ms.mix_from(self.feeds, energy_balance=False)
         top, bottom = ms
         if partition_data:
@@ -960,11 +967,11 @@ class StageEquilibrium:
                 self.K = K_new
                 self.IDs = IDs
                 self.phi = phi
-        ms._imol._data[:] = data
+        ms._imol.data[:] = data
         
     def partition_vle(self, partition_data=None, stacklevel=1, P=None):
         ms = self.multi_stream
-        data = ms._imol._data.copy()
+        data = ms._imol.data.copy()
         top, bottom = ms
         if partition_data:
             self.K = K = partition_data['K']
@@ -982,7 +989,7 @@ class StageEquilibrium:
                 z[z == 0] = 1.
                 self.K = bp.y / bp.z
                 ms.T = bp.T
-        ms._imol._data[:] = data
+        ms._imol.data[:] = data
         
     def balance_flows(self, top_split, bottom_split):
         feed, *other_feeds = self.feeds
@@ -1270,7 +1277,8 @@ class MultiStageEquilibrium:
         top, bottom = self.multi_stream.phases
         stages = self.stages
         mol = self._get_net_outlets()
-        mol[mol == 0] = 1
+        mol = np.asarray(mol)
+        mol[mol < 0] = 1.
         factor = self._get_net_feeds() / mol
         stages[0].multi_stream[top].mol *= factor
         stages[-1].multi_stream[bottom].mol *= factor
@@ -1280,7 +1288,6 @@ class MultiStageEquilibrium:
         for i, s in enumerate(self.bottom_side_draws):
             if s and i != n: stages[i].multi_stream[bottom].mol *= factor
     
-    # TODO: Numba all array operations here
     def update(self, top_flow_rates):
         top, bottom = self.multi_stream.phases
         stages = self.stages
@@ -1300,7 +1307,6 @@ class MultiStageEquilibrium:
             stage = stages[i]
             top, bottom = stage.multi_stream
             mol = top.mol / top_splits[i] + bottom.mol / bottom_splits[i]
-            mol[mol == 0] = 1
             factor = sum([i.mol for i in stage.feeds]) / mol
             stage.multi_stream.imol.data[:] *= factor
         self.correct_overall_mass_balance()
@@ -1375,6 +1381,10 @@ class MultiStageEquilibrium:
                 index = ms.chemicals.get_index(IDs)
                 phi = 0.5
                 K = bp.y / bp.z
+            for i in stages: 
+                i.IDs = IDs
+                i.K = K
+                i.phi = phi
             N_chemicals = len(index)
             phase_ratios = np.ones(N_stages) * (phi / (1 - phi))
             partition_coefficients = np.ones([N_stages, N_chemicals]) * K[np.newaxis, :]
@@ -1455,25 +1465,22 @@ class MultiStageEquilibrium:
             partition_coefficients = np.array([i.K for i in stages], dtype=float) 
         else:
             for i in stages: i.partition_lle(self.partition_data, P=P, solvent=self.solvent)
-            phase_ratios = np.array([i.phi / (1 - i.phi) for i in stages], dtype=float)
-        partition_coefficients = np.array([i.K for i in stages], dtype=float) 
+            almost_one = 1 - 1e-16
+            phase_ratios = np.array([(1e16 if (phi:=i.phi) > almost_one else phi / (1 - phi))  for i in stages], dtype=float)
+            partition_coefficients = np.array([i.K for i in stages], dtype=float)
         new_top_flow_rates = flow_rates_for_multi_stage_equilibrium(
             phase_ratios, partition_coefficients, *self._iter_args,
         )
         mol = top_flow_rates[0] 
         mol_new = new_top_flow_rates[0]
-        mol_errors = np.abs(mol - mol_new)
-        positive_index = mol_errors > 1e-16
-        mol_errors = mol_errors[positive_index]
-        if mol_errors.size == 0:
-            mol_error = 0.
-            rmol_error = 0.
-        else:
+        mol_errors = abs(mol - mol_new)
+        if mol_errors.any():
             mol_error = mol_errors.max()
             if mol_error > 1e-12:
-                rmol_error = (mol_errors / np.maximum.reduce([np.abs(mol[positive_index]), np.abs(mol_new[positive_index])])).max()
-            else:
-                rmol_error = 0.
+                nonzero_index, = np.where(mol_errors > 1e-12)
+                mol_errors = mol_errors[nonzero_index]
+                max_errors = np.maximum.reduce([abs(mol[nonzero_index]), abs(mol_new[nonzero_index])])
+                rmol_error = (mol_errors / max_errors).max()
         not_converged = (
             self.iter < self.maxiter and (mol_error > self.molar_tolerance
              or rmol_error > self.relative_molar_tolerance)

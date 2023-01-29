@@ -210,3 +210,4 @@ if __name__ == '__main__':
     test_reaction()
     test_reaction_enthalpy_balance()
     test_reaction_enthalpy_with_phases()
+    test_repr()

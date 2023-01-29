@@ -386,9 +386,9 @@ class CompiledChemicals(Chemicals):
         >>> chemicals = tmo.CompiledChemicals(['Water', 'Methanol', 'Ethanol'], cache=True)
         >>> chemicals.define_group('Alcohol', ['Methanol', 'Ethanol'], composition=[0.5, 0.5])
         >>> chemicals.get_index('Alcohol')
-        array([1, 2])
+        [1, 2]
         >>> chemicals.get_index(('Water', 'Alcohol'))
-        [0, array([1, 2])]
+        [0, [1, 2]]
         
         By defining a chemical group, you can conveniently use indexers
         to retrieve the total value of the group:
@@ -397,7 +397,7 @@ class CompiledChemicals(Chemicals):
         >>> tmo.settings.set_thermo(chemicals)
         >>> s1 = tmo.Stream(ID='s1', Water=2)
         >>> s1.imol['Alcohol']
-        0.
+        0
         >>> s1.imol['Methanol', 'Ethanol'] = [2., 1.]
         >>> s1.imol['Water', 'Alcohol']
         array([2., 3.])
@@ -472,7 +472,7 @@ class CompiledChemicals(Chemicals):
                 raise ValueError(f"'{i}' is a group; cannot define new group using other groups")
         index = self.indices(IDs)
         self.__dict__[name] = [self.tuple[i] for i in index]
-        self._index[name] = np.array(index, dtype=int)
+        self._index[name] = index
         composition = np.asarray(composition, float)
         if wt:
             composition_wt = composition
@@ -598,15 +598,11 @@ class CompiledChemicals(Chemicals):
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)
         dct['light_chemicals'] = tuple_(light_chemicals)
-        dct['_has_vle'] = has_vle = np.zeros(size, dtype=bool)
-        dct['_has_lle'] = has_lle = np.zeros(size, dtype=bool)
+        dct['_vle_index'] = [index[i.ID] for i in vle_chemicals]
+        dct['_lle_index'] = [index[i.ID] for i in lle_chemicals]
         dct['_heavy_solutes'] = chemical_data_array(heavy_chemicals, 'N_solutes')
         dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
         dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
-        vle_index = [index[i.ID] for i in vle_chemicals]
-        lle_index = [index[i.ID] for i in lle_chemicals]
-        has_vle[vle_index] = True
-        has_lle[lle_index] = True
         
     @property
     def formula_array(self):
@@ -1078,24 +1074,21 @@ class CompiledChemicals(Chemicals):
         except KeyError:
             isa = isinstance
             kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
-            ndarray = np.ndarray
             if isa(key, str):
                 index = self.index(key)
-                if isa(index, ndarray): kind = 1 
+                if isa(index, list): kind = 1 
             elif isa(key, tuple):
                 index = self.indices(key)
                 for i in index:
-                    if isa(i, ndarray): 
+                    if isa(i, list): 
                         kind = 2
                         break
-                else:
-                    index = np.array(index, dtype=int)
             elif key is ...:
                 index = slice(None)
             else: # pragma: no cover
                 raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
             index_cache[key] = index, kind
-            if len(index_cache) > 1000: index_cache.pop(index_cache.__iter__().__next__())
+            if len(index_cache) > 100: index_cache.pop(index_cache.__iter__().__next__())
         except TypeError:
             raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
         return index, kind
@@ -1124,11 +1117,11 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
-        >>> chemicals.get_vle_indices(data!=0)
-        array([0, 2])
+        >>> chemicals.get_vle_indices(data[data!=0])
+        [1, 2]
         
         """
-        return np.array([i for i, j in enumerate(self._has_vle & nonzeros) if j], int)
+        return [i for i in self._vle_index if i in nonzeros]
     
     def get_lle_indices(self, nonzeros):
         """
@@ -1140,11 +1133,11 @@ class CompiledChemicals(Chemicals):
         >>> from thermosteam import CompiledChemicals
         >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
         >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
-        >>> chemicals.get_lle_indices(data!=0)
-        array([0, 2])
+        >>> chemicals.get_lle_indices(data[data!=0])
+        [1, 2]
         
         """
-        return np.array([i for i, j in enumerate(self._has_lle & nonzeros) if j], int)
+        return [i for i in self._lle_index if i in nonzeros]
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"

@@ -12,7 +12,7 @@ import numpy as np
 from math import exp
 from thermosteam import functional as fn
 from .. import units_of_measure as thermo_units
-from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle
+from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle, sparse
 from .ideal_mixture_model import (
     SinglePhaseIdealTMixtureModel,
     IdealTMixtureModel, 
@@ -243,8 +243,7 @@ class Mixture:
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
-        mol = np.asarray(mol, float)
-        total_mol = mol.sum()
+        total_mol = sparse(mol).sum()
         return (mol * self.MWs).sum() / total_mol if total_mol else 0.
     
     def rho(self, phase, mol, T, P):

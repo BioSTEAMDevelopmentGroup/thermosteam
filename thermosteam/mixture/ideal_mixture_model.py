@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from ..base import display_asfunctor
+from ..base import display_asfunctor, SparseVector
 from math import log
 
 __all__ = (
@@ -57,7 +57,9 @@ class IdealTPMixtureModel:
         self.var = var
 
     def __call__(self, phase, mol, T, P):
-        return sum([j * i(phase, T, P) for i, j in zip(self.models, mol) if j])
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        models = self.models
+        return sum([j * models[i](phase, T, P) for i, j in mol.dct.items()])
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
@@ -103,8 +105,10 @@ class IdealEntropyModel:
     __repr__ = IdealTPMixtureModel.__repr__
 
     def __call__(self, phase, mol, T, P):
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         total_mol = mol.sum()
-        return sum([j * i(phase, T, P) + j * log(j / total_mol) for i, j in zip(self.models, mol) if j])
+        models = self.models
+        return sum([j * models[i](phase, T, P) + j * log(j / total_mol) for i, j in mol.dct.items()])
     
 
 class IdealTMixtureModel:
@@ -146,7 +150,10 @@ class IdealTMixtureModel:
     __repr__ = IdealTPMixtureModel.__repr__
 
     def __call__(self, phase, mol, T, P=None):
-        return sum([j * i(phase, T) for i, j in zip(self.models, mol) if j])
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        models = self.models
+        return sum([j * models[i](phase, T) for i, j in mol.dct.items()])
+
 
 class SinglePhaseIdealTMixtureModel:
     """
@@ -187,7 +194,9 @@ class SinglePhaseIdealTMixtureModel:
     __repr__ = IdealTPMixtureModel.__repr__
 
     def __call__(self, mol, T, P=None):
-        return sum([j * i(T) for i, j in zip(self.models, mol) if j])
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        models = self.models
+        return sum([j * models[i](T) for i, j in mol.dct.items()])
 
 class SinglePhaseIdealTPMixtureModel:
     """
@@ -231,7 +240,9 @@ class SinglePhaseIdealTPMixtureModel:
         self.var = var
 
     def __call__(self, mol, T, P):
-        return sum([j * i(T, P) for i, j in zip(self.models, mol) if j])
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        models = self.models
+        return sum([j * models[i](T, P) for i, j in mol.dct.items()])
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
@@ -244,9 +255,11 @@ class IdealHvapModel:
         self.chemicals = chemicals
 
     def __call__(self, mol, T, P=None):
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        chemicals = self.chemicals
         return sum([
-            i * j.Hvap(T) for i, j in zip(mol, self.chemicals)
-            if i and not j.locked_state
+            j * k.Hvap(T) for i, j in mol.dct.items()
+            if not (k:=chemicals[i]).locked_state
         ])
     
     __repr__ = IdealTPMixtureModel.__repr__

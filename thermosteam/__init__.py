@@ -31,7 +31,7 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
-__version__ = "0.31.0"
+__version__ = "0.32.0.dev1"
 
 from . import thermo
 del thermo
@@ -74,14 +74,6 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixtur
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
            'reaction', 'constants', 'utils', 'separations')
-
-def speed_up():
-    from warnings import warn
-    warning = DeprecationWarning(
-        "this function is deprecated; all functions are now automatically JIT "
-        "compiled by numba when the libray is loaded"
-    )
-    warn(warning)
 
 # Set number of digits displayed
 import numpy as np
