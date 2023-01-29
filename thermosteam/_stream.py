@@ -1256,7 +1256,7 @@ class Stream:
     def available_chemicals(self) -> list[tmo.Chemical]:
         """All chemicals with nonzero flow."""
         chemicals = self.chemicals.tuple
-        return [chemicals[i] for i in [*self.mol.nonzero_keys()]]
+        return [chemicals[i] for i in self.mol.nonzero_keys()]
     
     def in_thermal_equilibrium(self, other):
         """
