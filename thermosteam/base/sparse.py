@@ -650,7 +650,7 @@ class SparseArray:
     
     def __iadd__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim(value) > 1:
             for i, j in zip(rows, value): i += j # TODO: With python 3.10, use strict=True zip kwarg
         else:
             for i in rows: i += value
@@ -663,7 +663,7 @@ class SparseArray:
             
     def __isub__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim(value) > 1:
             for i, j in zip(rows, value): i -= j # TODO: With python 3.10, use strict=True zip kwarg
         else:
             for i in rows: i -= value
@@ -676,7 +676,7 @@ class SparseArray:
     
     def __imul__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim(value) > 1:
             for i, j in zip(rows, value): i *= j # TODO: With python 3.10, use strict=True zip kwarg
         else:
             for i in rows: i *= value
@@ -689,7 +689,7 @@ class SparseArray:
         
     def __itruediv__(self, value):
         rows = self.rows
-        if get_ndim(value) == 2 and value.__class__ is not SparseVector:
+        if get_ndim(value) > 1:
             for i, j in zip(rows, value): i /= j # TODO: With python 3.10, use strict=True zip kwarg
         else:
             for i in rows: i /= value
@@ -701,13 +701,10 @@ class SparseArray:
         return new
     
     def __rtruediv__(self, value):
-        if (ndim:=get_ndim(value)) == 2:
-            new = self.copy()
+        new = self.copy()
+        if get_ndim(value) > 1:
             for i, j in zip(new.rows, value): i[:] = j / i # TODO: With python 3.10, use strict=True zip kwarg
-        elif ndim > 2:
-            return NotImplemented
         else:
-            new = self.copy()
             for i in new.rows: i[:] = value / i
         return new
     
