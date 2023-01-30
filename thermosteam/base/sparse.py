@@ -1012,7 +1012,7 @@ class SparseVector:
         return [i for i in dct if dct[i] > 0.],
     
     def nonzero_index(self):
-        return [*self.dct.keys()],
+        return [*self.dct],
     nonzero = nonzero_index
     
     def nonzero_keys(self):
