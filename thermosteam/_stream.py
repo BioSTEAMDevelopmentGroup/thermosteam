@@ -267,6 +267,7 @@ class Stream:
     display_units = thermo_units.DisplayUnits(T='K', P='Pa',
                                               flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                               composition=False,
+                                              sort=False,
                                               N=7)
 
     _units_of_measure = thermo_units.stream_units_of_measure
@@ -1965,6 +1966,8 @@ class Stream:
                      self._thermo)
         data = imol.data
         net_chemical_flows = data.sum(axis=0)
+        data.clear()
+        imol['l'] = net_chemical_flows
         total_flow = net_chemical_flows.sum()
         def f(x, done=[False]):
             if done[0]: return x
@@ -2445,10 +2448,13 @@ class Stream:
         source = self.source
         return f"{source}-{source.outs.index(self)}" if source else self.ID
     
-    def _translate_layout(self, layout, flow, composition, N):
+    def _translate_layout(self, layout, flow, composition, N, sort):
         if layout:
             for param in (flow, composition, N):
                 if param is not None: raise ValueError(f'cannot specify both `layout` and `{param}`')
+            if layout[-1] == 's':
+                sort = True
+                layout = layout[:-1]
             if layout[0] == 'c':
                 composition = True
                 layout = layout[1:]
@@ -2466,13 +2472,13 @@ class Stream:
             else:
                 raise ValueError(
                     "`layout` must have the form "
-                    "{'c' or ''}{'wt', 'mol' or 'vol'}{# or ''};"
-                    "for example: 'cwt100' corresponds to compostion=True, "
-                    "flow='kg/hr', and N=100."
+                    "{'c' or ''}{'wt', 'mol' or 'vol'}{# or ''}{'s' or ''};"
+                    "for example: 'cwt100s' corresponds to compostion=True, "
+                    "flow='kg/hr', N=100, sort=True"
                 )
             if layout.isdigit():
                 N = int(layout)
-        return flow, composition, N
+        return flow, composition, N, sort
 
     def _info_str(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
         basic_info = self._basic_info()
@@ -2557,24 +2563,28 @@ class Stream:
         return pd.DataFrame(data, columns=[self.ID.replace('_', ' ')], 
                             index=pd.MultiIndex.from_tuples(index))
         
-    def _info(self, layout, T, P, flow, composition, N, IDs, df=False):
+    def _info(self, layout, T, P, flow, composition, N, IDs, sort=None, df=False):
         """Return string with all specifications."""
-        flow, composition, N = self._translate_layout(layout, flow, composition, N)
-        if not IDs:
-            IDs = self.chemicals.IDs
-            data = self.mol
-        else:
-            data = self.imol[IDs]
-        IDs, data = nonzeros(IDs, data)
-        IDs = tuple(IDs)
+        flow, composition, N, sort = self._translate_layout(layout, flow, composition, N, sort)
         display_units = self.display_units
         T_units = T or display_units.T
         P_units = P or display_units.P
         flow_units = flow or display_units.flow
         N_max = display_units.N if N is None else N
         composition = display_units.composition if composition is None else composition
+        sort = display_units.sort if sort is None else sort
         name, factor = self._get_flow_name_and_factor(flow_units)
         indexer = getattr(self, 'i' + name)
+        if not IDs:
+            IDs = self.chemicals.IDs
+            data = getattr(self, name)
+        else:
+            data = indexer[IDs]
+        IDs, data = nonzeros(IDs, data)
+        if sort: 
+            index = sorted(range(len(data)), key=lambda x: data[x], reverse=True)
+            IDs = [IDs[i] for i in index]
+        IDs = tuple(IDs)
         return (self._info_df if df else self._info_str)(T_units, P_units, flow_units, composition, N_max, IDs, indexer, factor)
     
     def _get_tooltip_string(self, format, full):
@@ -2582,7 +2592,7 @@ class Stream:
         if self.isempty():
             tooltip = '(empty)'
         elif format == 'html' and full:
-            df = self._info(None, None, None, None, None, None, None, df=True)
+            df = self._info(None, None, None, None, None, None, None, None, df=True)
             tooltip = (
                 " " + # makes sure graphviz does not try to parse the string as HTML
                 df.to_html(justify='unset'). # unset makes sure that table header style can be overwritten in CSS
@@ -2618,6 +2628,7 @@ class Stream:
              composition: Optional[bool]=None, 
              N: Optional[int]=None, 
              IDs: Optional[Sequence[str]]=None,
+             sort: Optional[bool]=None,
              df: Optional[bool]=None):
         """
         Print all specifications.
@@ -2641,11 +2652,13 @@ class Stream:
             Number of compounds to display.
         IDs : 
             IDs of compounds to display. Defaults to all chemicals.
+        sort :
+            Whether to sort flows in descending order.
         df :
             Whether to return a pandas DataFrame.
         
         """
-        print(self._info(layout, T, P, flow, composition, N, IDs, df))
+        print(self._info(layout, T, P, flow, composition, N, IDs, sort, df))
     _ipython_display_ = show
     
     def print(self, units: Optional[str]=None):

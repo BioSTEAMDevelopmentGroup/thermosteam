@@ -33,8 +33,17 @@ def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=350)
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
-    assert_allclose(s.imol['l'] + s.imol['L'], [0.537583, 0.383255, 1.755296], rtol=0.1)
+    assert_allclose(s.imol['l'] + s.imol['L'], [0.5298055753954918, 0.37320491618563845, 1.7511913810504698], rtol=0.1)
     assert_allclose(s.imol['g'], [0.47019442460450805, 0.6267950838143611, 0.24880861894952971], rtol=0.1) # Convergence
+    
+    # Make sure past equilibrium conditions do not affect result of vlle
+    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, T=350)
+    s.vle(T=350, P=101325)
+    s.vlle(T=350, P=101325)
+    assert_allclose(s.mol, [1, 1, 2]) # mass balance
+    assert_allclose(s.imol['l'] + s.imol['L'], [0.5298055753954918, 0.37320491618563845, 1.7511913810504698], rtol=0.1)
+    assert_allclose(s.imol['g'], [0.47019442460450805, 0.6267950838143611, 0.24880861894952971], rtol=0.1) # Convergence
+    
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
     assert_allclose(s.mol, [1, 1, 2]) # mass balance
@@ -354,7 +363,6 @@ def test_vle_critical_pure_component():
     assert s.phase == 'g'
     s.vle(P=N2.Pc, S=s.S + 10)
     assert s.phase == 'g'
-    
     
 if __name__ == '__main__':
     test_registration_bypass()
