@@ -2657,6 +2657,22 @@ class Stream:
         df :
             Whether to return a pandas DataFrame.
         
+        Examples
+        --------
+        Show a stream's composition by weight for only the top 2 chemicals
+        with the highest mass fractions:
+            
+        >>> import biosteam as bst
+        >>> bst.settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
+        >>> stream = bst.Stream('stream', Water=0.5, Ethanol=1.5, Methanol=0.2, Propanol=0.3, units='kg/hr')
+        >>> stream.show('cwt2s') # Alternatively: stream.show(composition=True, flow='kg/hr', N=2, sort=True)
+        Stream: stream
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         composition (%): Ethanol  60
+                          Water    20
+                          ...      20
+                          -------  2.5 kg/hr
+        
         """
         print(self._info(layout, T, P, flow, composition, N, IDs, sort, df))
     _ipython_display_ = show
