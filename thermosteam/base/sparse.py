@@ -38,7 +38,7 @@ def unpack_index(index, ndim):
 
 def sparse_vector(arr, copy=False, size=None):
     """
-    Convert 1-d array to a SparseVector or SparseBooleanVector object.
+    Convert 1-d array to a SparseVector or SparseLogicalVector object.
 
     """
     if arr.__class__ in SparseVectorSet:
@@ -46,7 +46,7 @@ def sparse_vector(arr, copy=False, size=None):
     else:
         for i in arr:
             if i.__class__ in bools:
-                return SparseBooleanVector(arr, size)
+                return SparseLogicalVector(arr, size)
         return SparseVector(arr, size)
 
 def nonzero_items(arr):
@@ -112,11 +112,11 @@ def sparse(arr, copy=False, vector_size=None):
     >>> sa[:, 0]
     array([0., 3.])
     
-    Sparse arrays also support boolean operations
+    Sparse arrays also support logical operations:
     
     >>> sa = sparse([[True, False, True, False],
     ...              [False, True, True, False]])
-    >>> sa ^ True
+    >>> sa ^ True # XOR
     sparse([[False,  True, False,  True],
             [ True, False, False,  True]])
     
@@ -126,7 +126,7 @@ def sparse(arr, copy=False, vector_size=None):
     elif (ndim:=get_ndim(arr)) == 1:
         for i in arr:
             if i.__class__ in bools:
-                return SparseBooleanVector(arr, vector_size)
+                return SparseLogicalVector(arr, vector_size)
         return SparseVector(arr, vector_size)
     elif ndim == 2:
         return SparseArray(arr, vector_size)
@@ -618,14 +618,14 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = all([i.all() for i in rows])
-            if keepdims: arr = SparseArray.from_rows([SparseBooleanVector.from_set({0} if arr else set(), 1)])
+            if keepdims: arr = SparseArray.from_rows([SparseLogicalVector.from_set({0} if arr else set(), 1)])
         elif axis == 0:
             if rows: 
                 keys = set(rows[0].data)
                 for i in rows[1:]: keys.intersection_update(i.data)
-                arr = SparseBooleanVector.from_set(keys, self.vector_size)
+                arr = SparseLogicalVector.from_set(keys, self.vector_size)
             else:
-                arr = SparseBooleanVector.from_set(set(), 0)
+                arr = SparseLogicalVector.from_set(set(), 0)
             if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
@@ -638,11 +638,11 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = any([i.any() for i in rows])
-            if keepdims: arr = SparseArray.from_rows([SparseBooleanVector.from_set({0} if arr else set(), 1)])
+            if keepdims: arr = SparseArray.from_rows([SparseLogicalVector.from_set({0} if arr else set(), 1)])
         elif axis == 0:
             keys = set()
             for i in rows: keys.update(i.data)
-            arr = SparseBooleanVector.from_set(keys, self.vector_size)
+            arr = SparseLogicalVector.from_set(keys, self.vector_size)
             if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
@@ -1170,13 +1170,13 @@ class SparseVector:
     # def any(self, axis=None, keepdims=False):
     #     if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
     #     arr = bool(self.dct)
-    #     if keepdims: arr = SparseBooleanVector({0} if arr else set(), size=1)
+    #     if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
     #     return arr
     
     # def all(self, axis=None, keepdims=False):
     #     if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
     #     arr = len(self.dct) == self.size
-    #     if keepdims: arr = SparseBooleanVector({0} if arr else set(), size=1)
+    #     if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
     #     return arr
     
     def sum(self, axis=None, keepdims=False):
@@ -1525,34 +1525,34 @@ class SparseVector:
     
     # Not yet optimized methods
     
-    def __and__(self, other): # pragma: no cover 
-        return SparseBooleanVector.from_set(set(self.dct), self.size) & other
+    def __and__(self, other): 
+        return SparseLogicalVector.from_set(set(self.dct), self.size) & other
 
-    def __xor__(self, other): # pragma: no cover 
-        return SparseBooleanVector.from_set(set(self.dct), self.size) ^ other
+    def __xor__(self, other): 
+        return SparseLogicalVector.from_set(set(self.dct), self.size) ^ other
 
-    def __or__(self, other): # pragma: no cover
-        return SparseBooleanVector.from_set(set(self.dct), self.size) | other
+    def __or__(self, other): 
+        return SparseLogicalVector.from_set(set(self.dct), self.size) | other
 
-    def __rand__(self, other): # pragma: no cover
-        return other & SparseBooleanVector.from_set(set(self.dct), self.size)
+    def __rand__(self, other): 
+        return other & SparseLogicalVector.from_set(set(self.dct), self.size)
 
-    def __rxor__(self, other): # pragma: no cover
-        return other ^ SparseBooleanVector.from_set(set(self.dct), self.size)
+    def __rxor__(self, other): 
+        return other ^ SparseLogicalVector.from_set(set(self.dct), self.size)
 
-    def __ror__(self, other): # pragma: no cover
-        return other | SparseBooleanVector.from_set(set(self.dct), self.size)
+    def __ror__(self, other): 
+        return other | SparseLogicalVector.from_set(set(self.dct), self.size)
 
-    def __iand__(self, other): # pragma: no cover 
-        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) & other
+    def __iand__(self, other): 
+        self[:] = SparseLogicalVector.from_set(set(self.dct), self.size) & other
         return self
 
-    def __ixor__(self, other): # pragma: no cover 
-        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) ^ other
+    def __ixor__(self, other):  
+        self[:] = SparseLogicalVector.from_set(set(self.dct), self.size) ^ other
         return self
 
-    def __ior__(self, other): # pragma: no cover
-        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) | other
+    def __ior__(self, other): 
+        self[:] = SparseLogicalVector.from_set(set(self.dct), self.size) | other
         return self
     
     __eq__ = SparseArray.__eq__
@@ -1607,7 +1607,7 @@ class SparseVector:
 
 # %% For boolean sparse arrays
     
-class SparseBooleanVector:
+class SparseLogicalVector:
     __doc__ = sparse.__doc__
     __slots__ = ('set', 'size', '_base')
     ndim = 1
@@ -1622,7 +1622,7 @@ class SparseBooleanVector:
             self.set = obj
             self.size = size
             if size is None: raise ValueError('must pass size if object is a set')
-        elif isinstance(obj, SparseBooleanVector):
+        elif isinstance(obj, SparseLogicalVector):
             self.set = obj.set.copy()
             self.size = obj.size if size is None else size
         elif isinstance(obj, SparseVector):
@@ -1727,13 +1727,13 @@ class SparseBooleanVector:
     def any(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = bool(self.set)
-        if keepdims: arr = SparseBooleanVector({0} if arr else set(), size=1)
+        if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
         return arr
     
     def all(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = len(self.set) == self.size
-        if keepdims: arr = SparseBooleanVector({0} if arr else set(), size=1)
+        if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
         return arr
     
     def sum(self, axis=None, keepdims=False):
@@ -1779,7 +1779,7 @@ class SparseBooleanVector:
     astype = to_array
     
     def copy(self):
-        return SparseBooleanVector.from_set(self.set.copy(), self.size)
+        return SparseLogicalVector.from_set(self.set.copy(), self.size)
     
     def __getitem__(self, index):
         set = self.set
@@ -1865,7 +1865,7 @@ class SparseBooleanVector:
     
     def __iadd__(self, other):
         set = self.set
-        if other.__class__ is SparseBooleanVector:
+        if other.__class__ is SparseLogicalVector:
             if other.size == 1:
                 if 0 in other.set: 
                     self.set.update(range(self.size))
@@ -1915,7 +1915,7 @@ class SparseBooleanVector:
             
     def __isub__(self, other):
         set = self.set
-        if other.__class__ is SparseBooleanVector:
+        if other.__class__ is SparseLogicalVector:
             if other.size == 1:
                 if 0 in other.set: 
                     self.set.update(range(self.size))
@@ -1965,7 +1965,7 @@ class SparseBooleanVector:
     
     def __imul__(self, other):
         set = self.set
-        if other.__class__ in (SparseBooleanVector, SparseVector):
+        if other.__class__ in (SparseLogicalVector, SparseVector):
             set.intersection_update(other.data)
         elif hasattr(other, '__iter__'):
             if len(other) == 1: 
@@ -1985,7 +1985,7 @@ class SparseBooleanVector:
         
     def __itruediv__(self, other):
         set = self.set
-        if other.__class__ in (SparseBooleanVector, SparseVector):
+        if other.__class__ in (SparseLogicalVector, SparseVector):
             if set.difference(other.data): raise FloatingPointError('division by zero')
         elif hasattr(other, '__iter__'):
             if len(other) == 1: 
@@ -2006,7 +2006,7 @@ class SparseBooleanVector:
     
     def __invert__(self):
         set = self.set
-        return SparseBooleanVector.from_set({i for i in range(self.size) if i not in set}, self.size)
+        return SparseLogicalVector.from_set({i for i in range(self.size) if i not in set}, self.size)
     
     def __radd__(self, other):
         return self + other
@@ -2030,7 +2030,7 @@ class SparseBooleanVector:
             if len(set_) != self.size: raise FloatingPointError('division by zero')
         else:
             set_ = set()
-        return SparseBooleanVector.from_set(set_, self.size)
+        return SparseLogicalVector.from_set(set_, self.size)
     
     value = SparseArray.value
     
@@ -2060,7 +2060,7 @@ class SparseBooleanVector:
 
     def __iand__(self, other):
         set = self.set
-        if other.__class__ in (SparseBooleanVector, SparseVector):
+        if other.__class__ in (SparseLogicalVector, SparseVector):
             if other.size == 1:
                 if 0 not in other.set: self.data.clear()
                 return self
@@ -2078,7 +2078,7 @@ class SparseBooleanVector:
 
     def __ixor__(self, other):
         set = self.set
-        if other.__class__ in (SparseBooleanVector, SparseVector):
+        if other.__class__ in (SparseLogicalVector, SparseVector):
             if other.size == 1:
                 if 0 in other.data: 
                     self.set.symmetric_difference_update(range(self.size))
@@ -2098,7 +2098,7 @@ class SparseBooleanVector:
 
     def __ior__(self, other):
         set = self.set
-        if other.__class__ in (SparseBooleanVector, SparseVector):
+        if other.__class__ in (SparseLogicalVector, SparseVector):
             if other.size == 1:
                 if 0 in other.data: 
                     self.set.update(range(self.size))
@@ -2167,5 +2167,5 @@ class SparseBooleanVector:
     __repr__ = SparseArray.__repr__
     __str__ = SparseArray.__str__
 
-SparseSet = frozenset([SparseArray, SparseVector, SparseBooleanVector])
-SparseVectorSet = frozenset([SparseVector, SparseBooleanVector])
+SparseSet = frozenset([SparseArray, SparseVector, SparseLogicalVector])
+SparseVectorSet = frozenset([SparseVector, SparseLogicalVector])
