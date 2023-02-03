@@ -641,12 +641,7 @@ class SparseArray:
             if keepdims: arr = SparseArray.from_rows([SparseBooleanVector.from_set({0} if arr else set(), 1)])
         elif axis == 0:
             keys = set()
-            if self.dtype is float:
-                for i in rows: keys.update(i.data)
-            elif self.dtype is bool:
-                for i in rows: keys.update(i.data)
-            else:
-                raise RuntimeError('unexpected dtype')
+            for i in rows: keys.update(i.data)
             arr = SparseBooleanVector.from_set(keys, self.vector_size)
             if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
