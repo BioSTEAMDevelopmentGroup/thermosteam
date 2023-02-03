@@ -21,7 +21,7 @@ def default_range(slice, max):
     )
 
 def unpack_index(index, ndim):
-    indim = index.__len__()
+    indim = len(index)
     if indim == ndim:
         return index
     elif indim < ndim:
@@ -73,7 +73,7 @@ def sparse(arr, copy=False, vector_size=None):
     
     Examples
     --------
-    Create a sparse array from an array-like object.
+    Create a sparse array from an array-like object:
     
     >>> from thermosteam.base import sparse
     >>> sa = sparse([[0, 1, 2], [3, 2, 0]])
@@ -81,7 +81,7 @@ def sparse(arr, copy=False, vector_size=None):
     sparse([[0., 1., 2.],
             [3., 2., 0.]])
     
-    Create a sparse array from an a list of dictionaries of index-nonzero value pairs.
+    Create a sparse array from an a list of dictionaries of index-nonzero value pairs:
     
     >>> sa = sparse(
     ...     [{1: 1, 2: 2},
@@ -92,7 +92,7 @@ def sparse(arr, copy=False, vector_size=None):
     sparse([[0., 1., 2.],
             [3., 2., 0.]])
     
-    Sparse arrays support arithmetic operations just like dense arrays
+    Sparse arrays support arithmetic operations just like dense arrays:
     
     >>> sa * sa 
     sparse([[0., 1., 4.],
@@ -349,10 +349,9 @@ class SparseArray:
                 elif md == 1: 
                     nd = get_ndim(n)
                     if nd == 0:
-                        n = n.__index__()
                         return np.array([rows[i].dct.get(n, 0.) for i in m])
                     elif nd == 1:
-                        return np.array([rows[i].dct.get(j.__index__(), 0.) for i, j in zip(m, n)])
+                        return np.array([rows[i].dct.get(j, 0.) for i, j in zip(m, n)])
                     else:
                         raise IndexError(f'column index can be at most 1-d, not {nd}-d')
                 else:
@@ -430,19 +429,17 @@ class SparseArray:
                 vd = get_ndim(value)
                 if vd == 0:
                     if value:
-                        value = value.__float__()
+                        value = float(value)
                         for i, j in zip(m, n): 
-                            rows[i].dct[j.__index__()] = value
+                            rows[i].dct[j] = value
                     else:
                         for i, j in zip(m, n): 
                             dct = rows[i].dct
-                            j = j.__index__()
                             if j in dct: del dct[j]
                 elif vd == 1:
                     for i, j, k in zip(m, n, value): 
                         dct = rows[i].dct
-                        j = j.__index__()
-                        if k: rows[i].dct[j] = k.__float__()
+                        if k: dct[j] = float(k)
                         elif j in dct: del dct[j]
                 else:
                     raise IndexError(
@@ -534,7 +531,7 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = all([i.all() for i in rows])
-            if keepdims: arr = np.array([[arr]])
+            if keepdims: arr = SparseArray([[arr]], 1)
         elif axis == 0:
             size = self.vector_size
             dcts = [i.dct for i in rows]
@@ -555,7 +552,7 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = any([i.any() for i in rows])
-            if keepdims: arr = np.array([[arr]])
+            if keepdims: arr = SparseArray([[arr]], 1)
         elif axis == 0:
             keys = set()
             for i in rows: keys.update(i.dct)
@@ -909,7 +906,7 @@ class SparseVector:
             if size is None: raise ValueError('must pass size if no object given')
             self.size = size
         elif isinstance(obj, dict):
-            self.dct = {i.__index__(): j.__float__() for i, j in obj.items() if j}
+            self.dct = {i: float(j) for i, j in obj.items() if j}
             self.size = size
             if size is None: raise ValueError('must pass size if object is a dictionary')
         elif isinstance(obj, SparseVector):
@@ -918,7 +915,7 @@ class SparseVector:
         elif hasattr(obj, '__iter__'):
             self.dct = dct = {}
             for i, j in enumerate(obj):
-                if j: dct[i] = j.__float__()
+                if j: dct[i] = float(j)
             self.size = len(obj) if size is None else size
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
@@ -1031,13 +1028,13 @@ class SparseVector:
     def any(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = bool(self.dct)
-        if keepdims: arr = np.array([arr])
+        if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def all(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = len(self.dct) == self.size
-        if keepdims: arr = np.array([arr])
+        if keepdims: arr = SparseVector({0: arr} if arr else {}, size=1)
         return arr
     
     def sum(self, axis=None, keepdims=False):
@@ -1108,7 +1105,6 @@ class SparseVector:
         if ndim == 1:
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
-                i = i.__index__()
                 if i in dct: arr[n] = dct[i]
             return arr
         elif index.__class__ is slice:
@@ -1121,7 +1117,7 @@ class SparseVector:
         elif ndim:
             raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
         else:
-            return dct.get(index.__index__(), 0.)
+            return dct.get(index, 0.)
 
     def __setitem__(self, index, value):
         if self.read_only: raise ValueError('assignment destination is read-only')
@@ -1139,21 +1135,18 @@ class SparseVector:
             vd = get_ndim(value)
             if vd == 1:
                 for i, j in zip(index, value): 
-                    i = i.__index__()
-                    if j: dct[i] = j.__float__()
+                    if j: dct[i] = float(j)
                     elif i in dct: del dct[i]
             elif vd > 1:
                 raise IndexError(
                     f'cannot broadcast {vd}-d array on to 1-d sparse array'
                 )
             elif value:
-                value = value.__float__()
+                value = float(value)
                 for i in index:
-                    i = i.__index__()
                     dct[i] = value
             else:
                 for i in index:
-                    i = i.__index__()
                     if i in dct: del dct[i]
         elif index.__class__ is slice:
             if index == open_slice:
@@ -1164,11 +1157,11 @@ class SparseVector:
                     dct.update(value.dct)
                 elif vd == 1:
                     for i, j in enumerate(value):
-                        if j: dct[i] = j.__float__()
+                        if j: dct[i] = float(j)
                         elif i in dct: del dct[i]  
                 elif vd == 0:
                     if value != 0.:
-                        value = value.__float__()
+                        value = float(value)
                         for i in range(self.size): dct[i] = value
                 else:
                     raise IndexError(
@@ -1182,12 +1175,10 @@ class SparseVector:
             raise IndexError(
                 'cannot set an array element with a sequence'
             )
-        else:
-            index = index.__index__()
-            if value:
-                dct[index] = value.__float__()
-            elif index in dct:
-                del dct[index]
+        elif value:
+                dct[index] = float(value)
+        elif index in dct:
+            del dct[index]
     
     def __iadd__(self, other):
         dct = self.dct
@@ -1211,20 +1202,20 @@ class SparseVector:
                 else:
                     dct[i] = j
         elif hasattr(other, '__iter__'):
-            if other.__len__() == 1: 
+            if len(other) == 1: 
                 self.__iadd__(other[0])
                 return self
             for i, j in enumerate(other):
                 if not j: continue
                 if i in dct:
-                    j = j.__float__()
+                    j = float(j)
                     j += dct[i]
                     if j: dct[i] = j
                     else: del dct[i]
                 else:
                     dct[i] = j
         elif other:
-            other = other.__float__()
+            other = float(other)
             for i in range(self.size):
                 if i in dct: 
                     j = dct[i] + other
@@ -1261,12 +1252,12 @@ class SparseVector:
                 else:
                     dct[i] = -j
         elif hasattr(other, '__iter__'):
-            if other.__len__() == 1: 
+            if len(other) == 1: 
                 self.__isub__(other[0])
                 return self
             for i, j in enumerate(other):
                 if not j: continue
-                j = j.__float__()
+                j = float(j)
                 if i in dct:
                     j = dct[i] - j
                     if j: dct[i] = j
@@ -1274,7 +1265,7 @@ class SparseVector:
                 else:
                     dct[i] = -j
         elif other:
-            other = other.__float__()
+            other = float(other)
             for i in range(self.size):
                 if i in dct: 
                     j = dct[i] - other
@@ -1306,15 +1297,15 @@ class SparseVector:
                 else:
                     del dct[i]
         elif hasattr(other, '__iter__'):
-            if other.__len__() == 1: 
+            if len(other) == 1: 
                 self.__imul__(other[0])
                 return self
             for i in tuple(dct):
                 j = other[i]
-                if j: dct[i] *= j.__float__()
+                if j: dct[i] *= float(j)
                 else: del dct[i]
         elif other:
-            other = other.__float__()
+            other = float(other)
             for i in dct: dct[i] *= other
         else:
             dct.clear()
@@ -1339,12 +1330,12 @@ class SparseVector:
             other = other.dct
             for i in dct: dct[i] /= other[i]
         elif hasattr(other, '__iter__'):
-            if other.__len__() == 1: 
+            if len(other) == 1: 
                 self.__itruediv__(other[0])
                 return self
-            for i in dct: dct[i] /= other[i].__float__()
+            for i in dct: dct[i] /= float(other[i])
         elif other:
-            other = other.__float__()
+            other = float(other)
             for i in dct: dct[i] /= other
         elif dct:
             raise FloatingPointError('division by zero')
@@ -1370,18 +1361,18 @@ class SparseVector:
     def __rtruediv__(self, other):
         dct = self.dct.copy()
         if hasattr(other, '__iter__'):
-            if other.__len__() == 1: 
+            if len(other) == 1: 
                 return self.__rtruediv__(other[0])
             for i, j in enumerate(other):
                 if j:
                     if i in dct:
-                        dct[i] = j.__float__() / dct[i] 
+                        dct[i] = float(j) / dct[i] 
                     else:
                         raise FloatingPointError('division by zero')
                 else: del dct[i]
         elif other:
             if len(dct) != self.size: raise FloatingPointError('division by zero')
-            other = other.__float__()
+            other = float(other)
             for i in dct: dct[i] = other / dct[i]
         else:
             dct = {}
