@@ -61,7 +61,7 @@ def find_main_phase(indexers, default):
 def nonzeros(IDs, data):
     if hasattr(IDs, 'dct'):
         dct = data.dct
-        index = sorted(data.nonzero_keys())
+        index = sorted(dct)
         return  [IDs[i] for i in index], [dct[i] for i in index]
     else:
         index, = np.where(data)
@@ -606,7 +606,7 @@ class MaterialIndexer(Indexer):
             else:
                 self.empty()
                 other_data = other.data
-                left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_columns()])
+                left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 self.data[:, left_index] = other_data[:, right_index]
     
     def mix_from(self, others):
@@ -633,7 +633,7 @@ class MaterialIndexer(Indexer):
                             spsc_data.append(idata)
                         else:
                             sp_data.append(
-                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_colums()]))
+                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
                             )
                     else:
                         if chemicals is ichemicals:
