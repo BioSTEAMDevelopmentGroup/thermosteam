@@ -116,7 +116,9 @@ def sparse(arr, copy=False, vector_size=None):
     
     >>> sa = sparse([[True, False, True, False],
     ...              [False, True, True, False]])
-    >>> sa & sa
+    >>> sa ^ True
+    sparse([[False,  True, False,  True],
+            [ True, False, False,  True]])
     
     """
     if arr.__class__ in SparseSet:
@@ -1529,33 +1531,33 @@ class SparseVector:
     # Not yet optimized methods
     
     def __and__(self, other): # pragma: no cover 
-        return self.to_array() & other
+        return SparseBooleanVector.from_set(set(self.dct), self.size) & other
 
     def __xor__(self, other): # pragma: no cover 
-        return self.to_array() ^ other
+        return SparseBooleanVector.from_set(set(self.dct), self.size) ^ other
 
     def __or__(self, other): # pragma: no cover
-        return self.to_array() | other
+        return SparseBooleanVector.from_set(set(self.dct), self.size) | other
 
     def __rand__(self, other): # pragma: no cover
-        return other & self.to_array()
+        return other & SparseBooleanVector.from_set(set(self.dct), self.size)
 
     def __rxor__(self, other): # pragma: no cover
-        return other ^ self.to_array()
+        return other ^ SparseBooleanVector.from_set(set(self.dct), self.size)
 
     def __ror__(self, other): # pragma: no cover
-        return other | self.to_array()
+        return other | SparseBooleanVector.from_set(set(self.dct), self.size)
 
     def __iand__(self, other): # pragma: no cover 
-        self[:] = self.to_array() & other
+        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) & other
         return self
 
     def __ixor__(self, other): # pragma: no cover 
-        self[:] = self.to_array() ^ other
+        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) ^ other
         return self
 
     def __ior__(self, other): # pragma: no cover
-        self[:] = self.to_array() | other
+        self[:] = SparseBooleanVector.from_set(set(self.dct), self.size) | other
         return self
     
     __eq__ = SparseArray.__eq__
