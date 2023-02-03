@@ -1158,26 +1158,14 @@ class SparseVector:
     def any(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = bool(self.dct)
-        if keepdims: arr = np.array([arr])
+        if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
         return arr
     
     def all(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
         arr = len(self.dct) == self.size
-        if keepdims: arr = np.array([arr])
+        if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
         return arr
-    
-    # def any(self, axis=None, keepdims=False):
-    #     if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
-    #     arr = bool(self.dct)
-    #     if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
-    #     return arr
-    
-    # def all(self, axis=None, keepdims=False):
-    #     if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
-    #     arr = len(self.dct) == self.size
-    #     if keepdims: arr = SparseLogicalVector({0} if arr else set(), size=1)
-    #     return arr
     
     def sum(self, axis=None, keepdims=False):
         if axis: raise ValueError('axis is out of bounds for 1-d sparse array')
