@@ -543,71 +543,85 @@ def test_sparse_array_indexing():
         
 
 def test_sparse_array_boolean_indexing():
-    arr = np.array([[1., 0.], [0., 1.]])
-    sa = sparse_array(arr)
-    assert (sa[sa == 0] == arr[arr == 0]).all()
-    sa[sa == 0] = 1.
-    arr[arr == 0] = 1.
-    assert (sa == arr).all()
-    sa[sa == 1] = [0., 1, 1, 0.]
-    arr[arr == 1] = [0., 1, 1, 0.]
-    assert (sa == arr).all()
-    mask = (arr == 0).any(0)
-    assert (sa[mask] == arr[mask]).all()
-    arr[mask] *= 2
-    sa[mask] *= 2
-    assert (sa[mask] == arr[mask]).all()
-    sa[mask] = 2
-    arr[mask] = 2
-    assert (sa[mask] == arr[mask]).all()
-    arr = np.array([[1, 1, 1], [2, 2, 2], [3, 3, 3]])
-    sa = SparseArray(arr)
-    assert (arr[[True, False, True], :] == sa[[True, False, True], :]).all()
-    assert (arr[:, [True, False, True]] == sa[:, [True, False, True]]).all()
+    for dtype in (float, bool):
+        arr = np.array([[1., 0.], [0., 1.]], dtype=dtype)
+        sa = sparse_array(arr)
+        assert (sa[sa == 0] == arr[arr == 0]).all()
+        sa[sa == 0] = 1.
+        arr[arr == 0] = 1.
+        assert (sa == arr).all()
+        sa[sa == 1] = [0., 1, 1, 0.]
+        arr[arr == 1] = [0., 1, 1, 0.]
+        assert (sa == arr).all()
+        mask = (arr == 0).any(0)
+        assert (sa[mask] == arr[mask]).all()
+        if dtype is float:
+            arr[mask] *= 2
+            sa[mask] *= 2
+            assert (sa[mask] == arr[mask]).all()
+            sa[mask] = 2
+            arr[mask] = 2
+            assert (sa[mask] == arr[mask]).all()
+        elif dtype is bool:
+            arr[mask] &= True
+            sa[mask] &= True
+            assert (sa[mask] == arr[mask]).all()
+            sa[mask] = False
+            arr[mask] = False
+            assert (sa[mask] == arr[mask]).all()
+        arr = np.array([[1, 1, 1], [2, 2, 2], [3, 3, 3]], dtype=dtype)
+        sa = SparseArray(arr)
+        assert (arr[[True, False, True], :] == sa[[True, False, True], :]).all()
+        assert (arr[:, [True, False, True]] == sa[:, [True, False, True]]).all()
 
 
 def test_sparse_vector_boolean_indexing():
-    arr = np.array([1., 0., 0., 1.])
-    sv = sparse_vector(arr)
-    assert (sv[sv == 0] == arr[arr == 0]).all()
-    sv[sv == 0] = 1.
-    arr[arr == 0] = 1.
-    assert (sv == arr).all()
-    sv[sv == 1] = [0., 1, 1, 0.]
-    arr[arr == 1] = [0., 1, 1, 0.]
-    assert (sv == arr).all()
+    for dtype in (float, bool):
+        arr = np.array([1., 0., 0., 1.], dtype=dtype)
+        sv = sparse_vector(arr)
+        assert (sv[sv == 0] == arr[arr == 0]).all()
+        sv[sv == 0] = 1.
+        arr[arr == 0] = 1.
+        assert (sv == arr).all()
+        sv[sv == 1] = [0., 1, 1, 0.]
+        arr[arr == 1] = [0., 1, 1, 0.]
+        assert (sv == arr).all()
 
 def test_sparse_vector_special_methods():
-    arr = np.array([1., 2., 0., 4.5])
-    sv = sparse_vector(arr)
-    assert (sv.to_flat_array() == np.array([1., 2., 0., 4.5])).all()
-    sv.from_flat_array(np.array([1., 2., 0., 2]))
-    assert (sv.to_flat_array() == np.array([1., 2., 0., 2])).all()
-    
-    with pytest.raises(IndexError):
-        sv[[[True, False]]] # boolean index dimensions is off
-    
-    with pytest.raises(IndexError):
-        sv[[[True, False]]] = [2, 2] # boolean index dimensions is off
-    
-    with pytest.raises(IndexError):
-        sv[[[1, 2]]] # index dimensions is off
-
-    with pytest.raises(IndexError):
-        sv[[[1, 2]]] = [2, 3] # index dimensions is off
+    for dtype in (float, bool):
+        arr = np.array([1., 2., 0., 4.5], dtype=dtype)
+        sv = sparse_vector(arr)
+        assert (sv.to_flat_array() == arr).all()
+        arr = np.array([1., 2., 0., 2], dtype=dtype)
+        sv.from_flat_array(arr)
+        assert (sv.to_flat_array() == arr).all()
         
-    with pytest.raises(IndexError):
-        sv[[1, 2]] = [[2, 3]] # value dimensions is off
+        with pytest.raises(IndexError):
+            sv[[[True, False]]] # boolean index dimensions is off
+        
+        with pytest.raises(IndexError):
+            sv[[[True, False]]] = [2, 2] # boolean index dimensions is off
+        
+        with pytest.raises(IndexError):
+            sv[[[1, 2]]] # index dimensions is off
     
-    with pytest.raises(IndexError):
-        sv[:] = [[2]] # value dimensions is off
+        with pytest.raises(IndexError):
+            sv[[[1, 2]]] = [2, 3] # index dimensions is off
+            
+        with pytest.raises(IndexError):
+            sv[[1, 2]] = [[2, 3]] # value dimensions is off
+        
+        with pytest.raises(IndexError):
+            sv[:] = [[2]] # value dimensions is off
+        
 
 def test_sparse_array_special_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse_array(arr)
-    assert (sa.to_flat_array() == np.array([1., 2., 0., 4.5, 0., 0., 1., 1.5])).all()
-    sa.from_flat_array(np.array([1., 2., 0., 0, 0., 0., 1., 2]))
-    assert (sa.to_flat_array() == np.array([1., 2., 0., 0, 0., 0., 1., 2])).all()
+    assert (sa.to_flat_array() == arr.flatten()).all()
+    arr = np.array([1., 2., 0., 0, 0., 0., 1., 2])
+    sa.from_flat_array(arr)
+    assert (sa.to_flat_array() == arr.flatten()).all()
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse(arr)
     assert (sa.sum_of([3, 1], axis=0) == [6., 2.]).all()
@@ -627,20 +641,54 @@ def test_sparse_array_special_methods():
     sa.copy_like(sa + 1)
     assert (sa == sa_other + 1).all()
     
-    arr = np.array([[1., 2., 0., 4.5], [1., 2., 0., 4.5]])
+    # Now with booleans
+    
+    arr = np.array([[True, True, False, True], [True, True, False, True]])
     sa = sparse_array(arr)
-    assert (sa.to_flat_array() == np.array([1., 2., 0., 4.5, 1., 2., 0., 4.5])).all()
-    sa.from_flat_array(np.array([1., 2., 0., 2, 1., 2., 0., 2]))
-    assert (sa == np.array([[1., 2., 0., 2], [1., 2., 0., 2]])).all()
+    assert (sa.to_flat_array() == np.array([True, True, False, True, True, True, False, True])).all()
+    sa.from_flat_array(np.array([True, True, False, True, True, True, False, True]))
+    assert (sa == np.array([[True, True, False, True], [True, True, False, True]])).all()
+    
+    arr = np.array([[True, True, False, True], [False, False, True, True]])
+    sa = sparse_array(arr)
+    assert (sa.to_flat_array() == arr.flatten()).all()
+    arr = np.array([True, True, False, False, False, False, True, True])
+    sa.from_flat_array(arr)
+    assert (sa.to_flat_array() == arr.flatten()).all()
+    arr = np.array([[True, True, False, True], [False, False, True, True]])
+    sa = sparse(arr)
+    assert (sa.sum_of([3, 1], axis=0) == [2, 1]).all()
+    assert (sa.sum_of([0, 2], axis=1) == [1, 1]).all()
+    with pytest.raises(ValueError):
+        sa.sum_of([0, 2], axis=2) # Invalid axis
+    assert set(zip(*sa.positive_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
+    assert set(zip(*(-sa).negative_index())) == set([(int(i), int(j)) for i,j in zip(*np.where(arr > 0))])
+    assert sa.nonzero_rows() == [0, 1]
+    sa[:] = 0
+    assert sa.nonzero_rows() == []
+    assert [*nonzero_items(sa)] == [*sa.nonzero_items()] == [*nonzero_items(sa.to_array())]
+    assert [*nonzero_items(sa[0])] == [*sa[0].nonzero_items()]
+    
+    sa = sparse([[1, 2], [3, 4]])
+    sa_other = sa.copy()
+    sa.copy_like(sa + 1)
+    assert (sa == sa_other + 1).all()
+    
+    arr = np.array([[True, True, False, True], [True, True, False, True]])
+    sa = sparse_array(arr)
+    assert (sa.to_flat_array() == np.array([True, True, False, True, True, True, False, True])).all()
+    sa.from_flat_array(np.array([True, True, False, True, True, True, False, True]))
+    assert (sa == np.array([[True, True, False, True], [True, True, False, True]])).all()
     
 def test_descriptive_methods():
-    arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
-    sa = sparse(arr)
-    assert (sa.value == sa.to_array()).all()
-    assert sa.size == arr.size
-    assert sa.vector_size == sa[0].size == sa[0].vector_size == arr[0].size
-    assert sa.shape == arr.shape
-    assert sa[0].shape == arr[0].shape
+    for arr in [np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]]),
+                np.array([[True, True, False, True], [False, False, True, True]])]:
+        sa = sparse(arr)
+        assert (sa.value == sa.to_array()).all()
+        assert sa.size == arr.size
+        assert sa.vector_size == sa[0].size == sa[0].vector_size == arr[0].size
+        assert sa.shape == arr.shape
+        assert sa[0].shape == arr[0].shape
 
 def test_read_only_flag():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
@@ -665,59 +713,61 @@ def test_read_only_flag():
         sv.setflags(1) # flag not implemented
 
 def test_sparse_vector_methods_vs_numpy():
-    arrays = [
-        np.array([1., 2., 0., 4.5]),
-        np.zeros(3),
-        np.ones(3),
-    ]
-    for arr in arrays:
-        sv = sparse_vector(arr)
-        for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
-            sv_method = getattr(sv, method)
-            arr_method = getattr(arr, method)
-            for axis in (0, None, 1):
-                for keepdims in (False, True):
-                    if axis == 1:
-                        with pytest.raises(ValueError):
-                            np.asarray(sv_method(axis=axis, keepdims=keepdims))
-                        with pytest.raises(ValueError): # For good measure
-                            arr_method(axis=axis, keepdims=keepdims)
-                        continue
-                    sv_result = np.asarray(sv_method(axis=axis, keepdims=keepdims))
-                    arr_result = arr_method(axis=axis, keepdims=keepdims)
-                    assert sv_result.shape == arr_result.shape, f"wrong shape in SparseVector.{method} with axis {axis} and keepdims {keepdims}"
-                    assert (sv_result == arr_result).all(), f"wrong value in SparseVector.{method} with axis {axis} and keepdims {keepdims}"
+    for dtype in (float, bool):
+        arrays = [
+            np.array([1., 2., 0., 4.5], dtype=dtype),
+            np.zeros(3, dtype=dtype),
+            np.ones(3, dtype=dtype),
+        ]
+        for arr in arrays:
+            sv = sparse_vector(arr)
+            for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
+                sv_method = getattr(sv, method)
+                arr_method = getattr(arr, method)
+                for axis in (0, None, 1):
+                    for keepdims in (False, True):
+                        if axis == 1:
+                            with pytest.raises(ValueError):
+                                np.asarray(sv_method(axis=axis, keepdims=keepdims))
+                            with pytest.raises(ValueError): # For good measure
+                                arr_method(axis=axis, keepdims=keepdims)
+                            continue
+                        sv_result = np.asarray(sv_method(axis=axis, keepdims=keepdims))
+                        arr_result = arr_method(axis=axis, keepdims=keepdims)
+                        assert sv_result.shape == arr_result.shape, f"wrong shape in SparseVector.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
+                        assert (sv_result == arr_result).all(), f"wrong value in SparseVector.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
 
 def test_sparse_array_methods_vs_numpy():
-    arrays = [
-        np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]]),
-        np.zeros([2, 3]),
-        np.ones([2, 3]),
-    ]
-    for arr in arrays:
-        sa = sparse_array(arr)
-        for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
-            sa_method = getattr(sa, method)
-            arr_method = getattr(arr, method)
-            for axis in (0, 1, None, 2):
-                for keepdims in (False, True):
-                    if axis == 2:
-                        with pytest.raises(ValueError):
-                            np.asarray(sa_method(axis=axis, keepdims=keepdims))
-                        with pytest.raises(ValueError): # For good measure
-                            arr_method(axis=axis, keepdims=keepdims)
-                        continue
-                    sa_result = np.asarray(sa_method(axis=axis, keepdims=keepdims))
-                    arr_result = arr_method(axis=axis, keepdims=keepdims)
-                    assert sa_result.shape == arr_result.shape, f"wrong shape in SparseArray.{method} with axis {axis} and keepdims {keepdims}"
-                    assert (sa_result == arr_result).all(), f"wrong value in SparseArray.{method} with axis {axis} and keepdims {keepdims}"
-
-    sa = sparse([[]])
-    assert sa.vector_size == 0
-    with pytest.raises(ValueError):
-        sa.min()
-    with pytest.raises(ValueError):
-        sa.max()
+    for dtype in (float, bool):
+        arrays = [
+            np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]], dtype=dtype),
+            np.zeros([2, 3], dtype=dtype),
+            np.ones([2, 3], dtype=dtype),
+        ]
+        for arr in arrays:
+            sa = sparse_array(arr)
+            for method in ('min', 'max', 'argmin', 'argmax', 'mean', 'sum', 'any', 'all'):
+                sa_method = getattr(sa, method)
+                arr_method = getattr(arr, method)
+                for axis in (0, 1, None, 2):
+                    for keepdims in (False, True):
+                        if axis == 2:
+                            with pytest.raises(ValueError):
+                                np.asarray(sa_method(axis=axis, keepdims=keepdims))
+                            with pytest.raises(ValueError): # For good measure
+                                arr_method(axis=axis, keepdims=keepdims)
+                            continue
+                        sa_result = np.asarray(sa_method(axis=axis, keepdims=keepdims))
+                        arr_result = arr_method(axis=axis, keepdims=keepdims)
+                        assert sa_result.shape == arr_result.shape, f"wrong shape in SparseArray.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
+                        assert (sa_result == arr_result).all(), f"wrong value in SparseArray.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
+    
+        sa = sparse([[]])
+        assert sa.vector_size == 0
+        with pytest.raises(ValueError):
+            sa.min()
+        with pytest.raises(ValueError):
+            sa.max()
 
 if __name__ == '__main__':
     test_sparse_vector_creation()
