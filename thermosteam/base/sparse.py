@@ -151,7 +151,7 @@ class SparseArray:
     __doc__ = sparse.__doc__
     __slots__ = ('rows', '_base')
     ndim = 2
-    dtype = float
+    dtype = None
     
     def __init__(self, obj=None, vector_size=None):
         if obj is None:
@@ -272,10 +272,9 @@ class SparseArray:
     
     def to_flat_array(self, arr=None):
         vector_size = self.vector_size
-        dtype = self.dtype
         rows = self.rows
         N = rows.__len__()
-        if arr is None: arr = np.zeros(N * vector_size, dtype=dtype)
+        if arr is None: arr = np.zeros(N * vector_size)
         for i in range(N):
             row = rows[i]
             for j, value in row.dct.items(): 
@@ -362,7 +361,7 @@ class SparseArray:
                 if ndim == 1: 
                     return SparseArray.from_rows([rows[i] for i, j in enumerate(index) if j])
                 else:
-                    return self[np.where(index)]
+                    return self[index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)]
             elif ndim == 1:
                 return SparseArray.from_rows([rows[i] for i in index])
             elif ndim > 1:
@@ -393,7 +392,7 @@ class SparseArray:
                 elif vd == 1:
                     nd, nisbool = get_index_properties(n)
                     if nd:
-                        if nisbool: n, = np.where(n)
+                        if nisbool: n, = n.nonzero() if hasattr(n, 'nonzero') else np.nonzero(n)
                         for i in rows: i[n] = value
                     else:
                         for i, j in zip(rows, value): i[n] = j
@@ -429,7 +428,6 @@ class SparseArray:
                 vd = get_ndim(value)
                 if vd == 0:
                     if value:
-                        value = float(value)
                         for i, j in zip(m, n): 
                             rows[i].dct[j] = value
                     else:
@@ -439,7 +437,7 @@ class SparseArray:
                 elif vd == 1:
                     for i, j, k in zip(m, n, value): 
                         dct = rows[i].dct
-                        if k: dct[j] = float(k)
+                        if k: dct[j] = k
                         elif j in dct: del dct[j]
                 else:
                     raise IndexError(
@@ -459,7 +457,7 @@ class SparseArray:
                         for i, j in enumerate(index):
                             if j: rows[i][:] = value[i]
                 else:
-                    self[np.where(index)] = value
+                    self[index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)] = value
                 return
             elif ndim == 1:
                 rows = [rows[i] for i in index]
@@ -508,7 +506,7 @@ class SparseArray:
     def to_array(self, dtype=None):
         rows = self.rows
         N = rows.__len__()
-        arr = np.zeros([N, self.vector_size], dtype=self.dtype if dtype is None else dtype)
+        arr = np.zeros([N, self.vector_size], dtype=dtype)
         for i in range(N):
             row = rows[i]
             for j, value in row.dct.items():
@@ -531,16 +529,15 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = all([i.all() for i in rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr} if arr else {}, 1)])
         elif axis == 0:
-            size = self.vector_size
-            dcts = [i.dct for i in rows]
-            if keepdims:
-                arr = np.zeros([1, size])
-                for i in range(size): arr[0, i] = all([i in dct for dct in dcts])
+            if rows: 
+                keys = set(rows[0].dct)
+                for i in rows[1:]: keys.intersection_update(i.dct)
+                arr = SparseVector.from_dict({i: True for i in keys}, self.vector_size)
             else:
-                arr = np.zeros(size)
-                for i in range(size): arr[i] = all([i in dct for dct in dcts])
+                arr = SparseVector.from_dict({}, 0)
+            if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
             for i, j in enumerate(rows): arr[i] = j.all()
@@ -552,16 +549,12 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = any([i.any() for i in rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr} if arr else {}, 1)])
         elif axis == 0:
             keys = set()
             for i in rows: keys.update(i.dct)
-            if keepdims:
-                arr = np.zeros([1, self.vector_size])
-                for i in keys: arr[0, i] = True
-            else:
-                arr = np.zeros(self.vector_size)
-                for i in keys: arr[i] = True
+            arr = SparseVector.from_dict({i: True for i in keys}, self.vector_size)
+            if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
             for i, j in enumerate(rows): arr[i] = j.any()
@@ -573,10 +566,10 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = sum([sum(i.dct.values()) for i in rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr}, 1)])
         elif axis == 0:
             arr = SparseVector(sum_sparse_vectors(rows), size=self.vector_size)
-            if keepdims: arr = SparseArray([arr])
+            if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
             for i, j in enumerate(rows): arr[i] = sum(j.dct.values())
@@ -588,12 +581,12 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = sum([sum(i.dct.values()) for i in rows]) / sum([i.size for i in self.rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr}, 1)])
             return arr
         elif axis == 0:
             arr = SparseVector(sum_sparse_vectors(rows), size=self.vector_size)
             arr /= rows.__len__()
-            if keepdims: arr = SparseArray([arr])
+            if keepdims: arr = SparseArray.from_rows([arr])
             return arr
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
@@ -606,7 +599,7 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = max([i.max() for i in rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr}, 1)])
         elif axis == 0:
             keys = set()
             dcts = [i.dct for i in rows]
@@ -615,7 +608,7 @@ class SparseArray:
                 {i: x for i in keys if (x:=max([(j[i] if i in j else 0.) for j in dcts]))},
                 self.vector_size
             )
-            if keepdims: arr = SparseArray([arr])
+            if keepdims: arr = SparseArray.from_rows([arr])
         elif axis == 1:
             arr = np.zeros([rows.__len__(), 1] if keepdims else rows.__len__())
             for i, j in enumerate(rows): arr[i] = j.max()
@@ -627,7 +620,7 @@ class SparseArray:
         rows = self.rows
         if axis is None:
             arr = min([i.min() for i in rows])
-            if keepdims: arr = SparseArray([[arr]], 1)
+            if keepdims: arr = SparseArray.from_rows([SparseVector.from_dict({0: arr}, 1)])
         elif axis == 0:
             keys = set()
             dcts = [i.dct for i in rows]
@@ -897,7 +890,7 @@ class SparseVector:
     __doc__ = sparse.__doc__
     __slots__ = ('dct', 'read_only', 'size', '_base')
     ndim = 1
-    dtype = float
+    dtype = None
     
     def __init__(self, obj=None, size=None):
         self.read_only = False
@@ -906,7 +899,7 @@ class SparseVector:
             if size is None: raise ValueError('must pass size if no object given')
             self.size = size
         elif isinstance(obj, dict):
-            self.dct = {i: float(j) for i, j in obj.items() if j}
+            self.dct = {i: j for i, j in obj.items() if j}
             self.size = size
             if size is None: raise ValueError('must pass size if object is a dictionary')
         elif isinstance(obj, SparseVector):
@@ -915,7 +908,7 @@ class SparseVector:
         elif hasattr(obj, '__iter__'):
             self.dct = dct = {}
             for i, j in enumerate(obj):
-                if j: dct[i] = float(j)
+                if j: dct[i] = j
             self.size = len(obj) if size is None else size
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
@@ -1076,7 +1069,6 @@ class SparseVector:
         return arr
     
     def to_array(self, dtype=None):
-        if dtype is None: dtype = self.dtype
         arr = np.zeros(self.size, dtype=dtype)
         for i, j in self.dct.items(): arr[i] = j
         return arr
@@ -1101,7 +1093,7 @@ class SparseVector:
             index, = unpack_index(index, self.ndim)
         ndim, has_bool = get_index_properties(index)
         if has_bool:
-            return self[np.where(index)]
+            return self[index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)]
         if ndim == 1:
             arr = np.zeros(len(index))
             for n, i in enumerate(index):
@@ -1130,19 +1122,18 @@ class SparseVector:
                 raise IndexError(
                     f'boolean index is {ndim}-d but sparse array is 1-d '
                 )
-            index, = np.where(index)
+            index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
         if ndim == 1:
             vd = get_ndim(value)
             if vd == 1:
                 for i, j in zip(index, value): 
-                    if j: dct[i] = float(j)
+                    if j: dct[i] = j
                     elif i in dct: del dct[i]
             elif vd > 1:
                 raise IndexError(
                     f'cannot broadcast {vd}-d array on to 1-d sparse array'
                 )
             elif value:
-                value = float(value)
                 for i in index:
                     dct[i] = value
             else:
@@ -1157,11 +1148,10 @@ class SparseVector:
                     dct.update(value.dct)
                 elif vd == 1:
                     for i, j in enumerate(value):
-                        if j: dct[i] = float(j)
+                        if j: dct[i] = j
                         elif i in dct: del dct[i]  
                 elif vd == 0:
                     if value != 0.:
-                        value = float(value)
                         for i in range(self.size): dct[i] = value
                 else:
                     raise IndexError(
@@ -1176,7 +1166,7 @@ class SparseVector:
                 'cannot set an array element with a sequence'
             )
         elif value:
-                dct[index] = float(value)
+            dct[index] = value
         elif index in dct:
             del dct[index]
     
@@ -1208,14 +1198,12 @@ class SparseVector:
             for i, j in enumerate(other):
                 if not j: continue
                 if i in dct:
-                    j = float(j)
                     j += dct[i]
                     if j: dct[i] = j
                     else: del dct[i]
                 else:
                     dct[i] = j
         elif other:
-            other = float(other)
             for i in range(self.size):
                 if i in dct: 
                     j = dct[i] + other
@@ -1257,7 +1245,6 @@ class SparseVector:
                 return self
             for i, j in enumerate(other):
                 if not j: continue
-                j = float(j)
                 if i in dct:
                     j = dct[i] - j
                     if j: dct[i] = j
@@ -1265,7 +1252,6 @@ class SparseVector:
                 else:
                     dct[i] = -j
         elif other:
-            other = float(other)
             for i in range(self.size):
                 if i in dct: 
                     j = dct[i] - other
@@ -1302,10 +1288,9 @@ class SparseVector:
                 return self
             for i in tuple(dct):
                 j = other[i]
-                if j: dct[i] *= float(j)
+                if j: dct[i] *= j
                 else: del dct[i]
         elif other:
-            other = float(other)
             for i in dct: dct[i] *= other
         else:
             dct.clear()
@@ -1333,9 +1318,8 @@ class SparseVector:
             if len(other) == 1: 
                 self.__itruediv__(other[0])
                 return self
-            for i in dct: dct[i] /= float(other[i])
+            for i in dct: dct[i] /= other[i]
         elif other:
-            other = float(other)
             for i in dct: dct[i] /= other
         elif dct:
             raise FloatingPointError('division by zero')
@@ -1366,13 +1350,12 @@ class SparseVector:
             for i, j in enumerate(other):
                 if j:
                     if i in dct:
-                        dct[i] = float(j) / dct[i] 
+                        dct[i] = j / dct[i] 
                     else:
                         raise FloatingPointError('division by zero')
                 else: del dct[i]
         elif other:
             if len(dct) != self.size: raise FloatingPointError('division by zero')
-            other = float(other)
             for i in dct: dct[i] = other / dct[i]
         else:
             dct = {}
