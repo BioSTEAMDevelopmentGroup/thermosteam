@@ -39,13 +39,8 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
 # @njit(cache=True)
 def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
     args = (x_gamma, T, P, f_gamma, gamma_args)
-    # x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
-    #                  checkconvergence=False, convergenceiter=3)
-    try:
-        x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
-                         checkconvergence=False, convergenceiter=3)
-    except:
-        return x_gamma
+    x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
+                      checkconvergence=False, convergenceiter=3)
     return x
 
 # %% Dew point values container
