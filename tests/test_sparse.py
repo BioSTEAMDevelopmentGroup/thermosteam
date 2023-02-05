@@ -362,11 +362,7 @@ def test_sparse_array_math():
     assert (sv + sa == arr + sa).all()
     assert (sv - sa == arr - sa).all()
     assert (sv * sa == arr * sa).all()
-    try:
-        assert (sv / sa == arr / sa).all()
-    except:
-        breakpoint()
-        sv / sa
+    assert (sv / sa == arr / sa).all()
     assert (sa / (sv + 1) == sa / (arr + 1)).all()
     
 def test_sparse_vector_indexing():
