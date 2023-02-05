@@ -13,6 +13,7 @@ from ._chemical import Chemical
 from .indexer import ChemicalIndexer, SplitIndexer
 from collections.abc import Sequence
 import thermosteam as tmo
+from thermosteam.base import SparseVector
 import numpy as np
 
 __all__ = ('Chemicals', 'CompiledChemicals')
@@ -24,10 +25,10 @@ def must_compile(*args, **kwargs): # pragma: no cover
     raise TypeError("method valid only for compiled chemicals; "
                     "run <Chemicals>.compile() to compile")
 
-def chemical_data_array(chemicals, attr, dtype=float):
+def chemical_data_array(chemicals, attr):
     getfield = getattr
-    data = np.asarray([getfield(i, attr) for i in chemicals], dtype)
-    data.setflags(0)
+    data = SparseVector([getfield(i, attr) for i in chemicals])
+    data.read_only = True
     return data
     
 

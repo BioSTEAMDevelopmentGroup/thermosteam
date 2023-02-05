@@ -10,7 +10,7 @@
 import pytest
 import numpy as np
 from thermosteam.base import (
-    SparseVector, SparseArray, sparse_vector, sparse_array,
+    SparseVector, SparseLogicalVector, SparseArray, sparse_vector, sparse_array,
     nonzero_items, sparse
 )
 from numpy.testing import assert_allclose
@@ -19,7 +19,7 @@ def assert_no_zero_data(arr):
     if isinstance(arr, SparseVector):
         assert 0 not in arr.dct.values()
     elif isinstance(arr, SparseArray):
-        assert all([0 not in i.dct.values() for i in arr])
+        assert all([0 not in i.dct.values() for i in arr if isinstance(i, SparseVector)])
 
 def test_sparse_vector_creation():
     arr = np.array([1., 2., 0., 4.5])
@@ -80,6 +80,21 @@ def test_sparse_array_creation():
     with pytest.raises(ValueError):
         bool(sa)
         
+    arr = np.array([[True, True, False, True]])
+    sa = sparse_array(arr)
+    assert_no_zero_data(sa)
+    assert (sa.to_array() == arr).all()
+    assert repr(sa) == 'sparse([[ True,  True, False,  True]])'
+    assert str(sa) == '[[ True  True False  True]]'
+    
+    arr = np.array([[True, True, False, True, False, False]])
+    sa = sparse_array(arr)
+    assert_no_zero_data(sa)
+    assert (sa.to_array() == arr).all()
+    assert repr(sa) == 'sparse([[ True,  True, False,  True, False, False]])'
+    assert str(sa) == '[[ True  True False  True False False]]'
+    assert (sparse(arr) == arr).all()
+        
 def test_sparse_vector_easy_methods():
     arr = np.array([1., 2., 0., 4.5])
     sv = sparse_vector(arr)
@@ -122,18 +137,17 @@ def test_sparse_array_easy_methods():
     n_sa.remove_negatives()
     assert (n_sa == np.zeros_like(sa)).all()
     
-
 def test_sparse_vector_math():
     arr = np.array([1., -2., 0., 4.5])
     sv = sparse_vector(arr)
     arr = abs(arr)
     sv = abs(sv)
     assert (sv == arr).all()
-    assert (sv * 2).sparse_equal(2 * arr)
-    assert (sv + sv).sparse_equal(2 * arr)
-    assert (sv * 0).sparse_equal([])
-    assert (sv - sv).sparse_equal([])
-    assert (sv / sv).sparse_equal(np.array([1., 1., 0., 1.]))
+    assert ((sv * 2) == (2 * arr)).all()
+    assert ((sv + sv) == (2 * arr)).all()
+    assert ((sv * 0) == ([0, 0, 0, 0])).all()
+    assert ((sv - sv) == ([0, 0, 0, 0])).all()
+    assert ((sv / sv) == (np.array([1., 1., 0., 1.]))).all()
     
     assert_no_zero_data(sv * 2)
     assert_no_zero_data(sv + sv)
@@ -196,25 +210,76 @@ def test_sparse_vector_math():
     with pytest.raises(FloatingPointError):
         sv /= 0
 
+def test_sparse_logical_vector_math():
+    left = (
+        [True, False, True],
+        [[True, False, False], [False, True, False]],
+        [[True]],
+        [[False]],
+        [1, 3, 0],
+        [[1, 2, 0], [0, 0, 4]],
+        [[0]],
+        [[2]],
+    )
+    right = (
+        [True, True, False],
+        [[True, True, False], [False, False, True]],
+        [[[False]]],
+        [[[True]]],
+        [1, 3, 0],
+        [[1, 2, 0], [0, 0, 4]],
+        [[[0]]],
+        [[[2]]],
+    )
+    left = [sparse(i) for i in left]
+    right = left + [np.array(i) for i in right]
+    for L in left:
+        for R in right:
+            try: value = np.asarray(L) + R
+            except: pass
+            else: assert ((L + R) == value).all()
+            try: value = np.asarray(L) * R
+            except: pass
+            else: assert ((L * R) == value).all()
+            try: value = np.asarray(L) / R
+            except: pass
+            else: assert ((L / R) == value).all()
+            try: value = np.asarray(L) - R
+            except: pass
+            else: assert ((L - R) == value).all()
+            assert ((L == R) == (np.asarray(L) == R)).all()
+            assert ((L != R) == (np.asarray(L) != R)).all()
+            assert ((L > R) == (np.asarray(L) > R)).all()
+            assert ((L < R) == (np.asarray(L) < R)).all()
+            assert ((L >= R) == (np.asarray(L) >= R)).all()
+            assert ((L <= R) == (np.asarray(L) <= R)).all()
+            try: value = (np.asarray(L) & R)
+            except: pass
+            else: assert ((L & R) == value).all()
+            try: value = (np.asarray(L) | R)
+            except: pass
+            else: assert ((L | R) == value).all()
+            try: value = (np.asarray(L) ^ R)
+            except: pass
+            else: assert ((L ^ R) == value).all()
     
-
 def test_sparse_array_math():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
     sa = sparse_array(-arr)
     assert_no_zero_data(sa)
     sa = abs(sa)
     assert (sa == arr).all()
-    assert (sa * 2).sparse_equal(2. * arr)
-    assert (sa + sa).sparse_equal(2. * arr)
-    assert (sa + arr).sparse_equal(2. * arr)
-    assert (sa * sa).sparse_equal(arr * arr)
-    assert (sa + sa).sparse_equal(2. * arr)
-    assert (sa * 0).sparse_equal([[0.], [0.]])
-    assert (sa - sa).sparse_equal([[0.], [0.]])
-    assert (sa - 1).sparse_equal(arr - 1)
-    assert (1 - sa).sparse_equal(1 - arr)
-    assert (1 + sa).sparse_equal(1 + arr)
-    assert (sa / sa).sparse_equal(np.array([[1., 1., 0., 1.], [0., 0., 1., 1.]]))
+    assert (sa * 2 == 2. * arr).all()
+    assert (sa + sa == 2. * arr).all()
+    assert (sa + arr == 2. * arr).all()
+    assert (sa * sa == arr * arr).all()
+    assert (sa + sa == 2. * arr).all()
+    assert (sa * 0 == [[0.], [0.]]).all()
+    assert (sa - sa == [[0.], [0.]]).all()
+    assert (sa - 1 == arr - 1).all()
+    assert (1 - sa == 1 - arr).all()
+    assert (1 + sa == 1 + arr).all()
+    assert (sa / sa == np.array([[1., 1., 0., 1.], [0., 0., 1., 1.]])).all()
     assert (sa / 1 == arr / 1).all()
     assert (sa / 2 == arr / 2).all()
     sparse_ones = sparse(np.ones([3, 2]))
@@ -297,7 +362,11 @@ def test_sparse_array_math():
     assert (sv + sa == arr + sa).all()
     assert (sv - sa == arr - sa).all()
     assert (sv * sa == arr * sa).all()
-    assert (sv / sa == arr / sa).all()
+    try:
+        assert (sv / sa == arr / sa).all()
+    except:
+        breakpoint()
+        sv / sa
     assert (sa / (sv + 1) == sa / (arr + 1)).all()
     
 def test_sparse_vector_indexing():
@@ -540,7 +609,6 @@ def test_sparse_array_indexing():
         
     with pytest.raises(IndexError):
         sa[[0, 1], 0] = [[0, 1]] # Cannot set array element with sequence
-        
 
 def test_sparse_array_boolean_indexing():
     for dtype in (float, bool):
@@ -573,7 +641,6 @@ def test_sparse_array_boolean_indexing():
         sa = SparseArray(arr)
         assert (arr[[True, False, True], :] == sa[[True, False, True], :]).all()
         assert (arr[:, [True, False, True]] == sa[:, [True, False, True]]).all()
-
 
 def test_sparse_vector_boolean_indexing():
     for dtype in (float, bool):
@@ -613,7 +680,6 @@ def test_sparse_vector_special_methods():
         
         with pytest.raises(IndexError):
             sv[:] = [[2]] # value dimensions is off
-        
 
 def test_sparse_array_special_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
@@ -638,8 +704,8 @@ def test_sparse_array_special_methods():
     
     sa = sparse([[1, 2], [3, 4]])
     sa_other = sa.copy()
-    sa.copy_like(sa + 1)
-    assert (sa == sa_other + 1).all()
+    sa.copy_like(sparse(sa + 1))
+    assert (sa == sparse(sa_other + 1)).all()
     
     # Now with booleans
     
@@ -671,8 +737,8 @@ def test_sparse_array_special_methods():
     
     sa = sparse([[1, 2], [3, 4]])
     sa_other = sa.copy()
-    sa.copy_like(sa + 1)
-    assert (sa == sa_other + 1).all()
+    sa.copy_like(sparse(sa + 1))
+    assert (sa == sparse(sa_other + 1)).all()
     
     arr = np.array([[True, True, False, True], [True, True, False, True]])
     sa = sparse_array(arr)
@@ -775,6 +841,7 @@ if __name__ == '__main__':
     test_sparse_vector_easy_methods()
     test_sparse_array_easy_methods()
     test_sparse_vector_math()
+    test_sparse_logical_vector_math()
     test_sparse_array_math()
     test_sparse_vector_indexing()
     test_sparse_array_indexing()
