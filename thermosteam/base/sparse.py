@@ -792,7 +792,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i + other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() + other
         else:
             return SparseArray.from_rows(
@@ -817,7 +817,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i - other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() - other
         else:
             return SparseArray.from_rows(
@@ -842,7 +842,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i * other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() * other
         else:
             return SparseArray.from_rows(
@@ -867,7 +867,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i / other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() / other
         else:
             return SparseArray.from_rows(
@@ -892,7 +892,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i & other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() & other
         else:
             return SparseArray.from_rows(
@@ -917,7 +917,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i ^ other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() ^ other
         else:
             return SparseArray.from_rows(
@@ -942,7 +942,7 @@ class SparseArray:
                 if ndim > 1 else
                 [i | other for i in rows]
             ) # TODO: With python 3.10, use strict=True zip kwarg
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() | other
         else:
             return SparseArray.from_rows(
@@ -1525,10 +1525,7 @@ class SparseVector:
         return arr
     
     def to_array(self, dtype=None):
-        try:
-            arr = np.zeros(self.size, dtype=dtype or self.dtype)
-        except:
-            breakpoint()
+        arr = np.zeros(self.size, dtype=dtype or self.dtype)
         for i, j in self.dct.items(): arr[i] = j
         return arr
     astype = to_array
@@ -1639,7 +1636,7 @@ class SparseVector:
                 new = self.copy()
                 new += other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() + other
         else:
             new = self.copy()
@@ -1654,7 +1651,7 @@ class SparseVector:
                 new = self.copy()
                 new -= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() - other
         else:
             new = self.copy()
@@ -1669,7 +1666,7 @@ class SparseVector:
                 new = self.copy()
                 new *= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() * other
         else:
             new = self.copy()
@@ -1684,7 +1681,7 @@ class SparseVector:
                 new = self.copy()
                 new /= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() / other
         else:
             new = self.copy()
@@ -1699,7 +1696,7 @@ class SparseVector:
                 new = self.copy()
                 new &= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() & other
         else:
             new = self.copy()
@@ -1714,7 +1711,7 @@ class SparseVector:
                 new = self.copy()
                 new ^= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() ^ other
         else:
             new = self.copy()
@@ -1729,7 +1726,7 @@ class SparseVector:
                 new = self.copy()
                 new |= other
                 return new
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() | other
         else:
             new = self.copy()
@@ -1770,7 +1767,7 @@ class SparseVector:
                     else: del dct[i]
                 else:
                     dct[i] = j
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__iadd__(other[0])
@@ -1788,7 +1785,7 @@ class SparseVector:
                     if j: dct[i] = j
                     else: del dct[i]
                 else:
-                    dct[i] = j
+                    dct[i] = float(j)
         elif other:
             other = float(other)
             for i in range(self.size):
@@ -1827,7 +1824,7 @@ class SparseVector:
                     else: del dct[i]
                 else:
                     dct[i] = -j
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__isub__(other[0])
@@ -1845,7 +1842,7 @@ class SparseVector:
                     if j: dct[i] = j
                     else: del dct[i]
                 else:
-                    dct[i] = -j
+                    dct[i] = - float(j)
         elif other:
             other = float(other)
             for i in range(self.size):
@@ -1879,7 +1876,7 @@ class SparseVector:
                     dct[i] *= other[i]
                 else:
                     del dct[i]
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__imul__(other[0])
@@ -1920,7 +1917,7 @@ class SparseVector:
                 return self
             other = other.dct
             for i in dct: dct[i] /= other[i]
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__itruediv__(other[0])
@@ -2005,7 +2002,7 @@ class SparseVector:
                         if dct.get(i, 0) == other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other == self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() == other
         elif other:
             for i in dct: 
@@ -2044,7 +2041,7 @@ class SparseVector:
                         if dct.get(i, 0) != other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other != self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() != other
         elif other:
             for i in range(size):
@@ -2078,7 +2075,7 @@ class SparseVector:
                         if dct.get(i, 0) > other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other < self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() > other
         else:
             for i in range(size):
@@ -2107,7 +2104,7 @@ class SparseVector:
                         if dct.get(i, 0) < other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other > self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() < other
         else:
             for i in range(self.size):
@@ -2136,7 +2133,7 @@ class SparseVector:
                         if dct.get(i, 0) >= other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other <= self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() >= other
         else:
             for i in range(size):
@@ -2165,7 +2162,7 @@ class SparseVector:
                         if dct.get(i, 0) <= other.get(i, 0): new.add(i)
         elif other.__class__ is SparseArray:
             return other >= self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() <= other
         else:
             for i in range(size):
@@ -2505,28 +2502,7 @@ class SparseLogicalVector:
                     self.set.update(range(self.size))
                 return self
             self.set.update(other.set)
-        elif other.__class__ is SparseVector:
-            other_size = other.size
-            if self.size == 1: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            elif other.size == 1:
-                if 0 in other.dct: 
-                    other = other.dct[0]
-                    for i in range(self.size):
-                        if i in set: 
-                            j = True + other
-                            if not j: set.discard(i)
-                        else:
-                            set.add(i)
-                return self
-            for i, j in other.dct.items():
-                if i in set:
-                    j = True + j
-                    if not j: set.discard(i)
-                else:
-                    set.add(i)
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__iadd__(other[0])
@@ -2558,7 +2534,7 @@ class SparseLogicalVector:
     
     def __imul__(self, other):
         set = self.set
-        if other.__class__ in (SparseLogicalVector, SparseVector):
+        if other.__class__ in SparseVectorSet:
             other_size = other.size
             if self.size == 1: 
                 self.size = other_size
@@ -2567,7 +2543,7 @@ class SparseLogicalVector:
                 if not other.data: set.clear()
                 return self
             set.intersection_update(other.data)
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__imul__(other[0])
@@ -2584,7 +2560,7 @@ class SparseLogicalVector:
     
     def __itruediv__(self, other):
         set = self.set
-        if other.__class__ in (SparseLogicalVector, SparseVector):
+        if other.__class__ in SparseVectorSet:
             other_size = other.size
             if self.size == 1: 
                 self.size = other_size
@@ -2595,7 +2571,7 @@ class SparseLogicalVector:
                 else:
                     return self
             if set.difference(other.data): raise FloatingPointError('division by zero')
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__itruediv__(other[0])
@@ -2634,7 +2610,7 @@ class SparseLogicalVector:
     
     def __iand__(self, other):
         data = self.set
-        if other.__class__ in (SparseLogicalVector, SparseVector):
+        if other.__class__ in SparseVectorSet:
             other_size = other.size
             if self.size == 1: 
                 self.size = other_size
@@ -2643,7 +2619,7 @@ class SparseLogicalVector:
                 if 0 not in other.data: data.clear()
                 return self
             data.intersection_update(other.data)
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__iand__(other[0])
@@ -2660,7 +2636,7 @@ class SparseLogicalVector:
 
     def __ixor__(self, other):
         data = self.set
-        if other.__class__ in (SparseLogicalVector, SparseVector):
+        if other.__class__ in SparseVectorSet:
             other_size = other.size
             if self.size == 1: 
                 self.size = other_size
@@ -2670,7 +2646,7 @@ class SparseLogicalVector:
                     data.symmetric_difference_update(range(self.size))
                 return self
             data.symmetric_difference_update(other.data)
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__ixor__(other[0])
@@ -2688,7 +2664,7 @@ class SparseLogicalVector:
 
     def __ior__(self, other):
         data = self.set
-        if other.__class__ in (SparseLogicalVector, SparseVector):
+        if other.__class__ in SparseVectorSet:
             other_size = other.size
             if self.size == 1: 
                 self.size = other_size
@@ -2698,7 +2674,7 @@ class SparseLogicalVector:
                     self.set.update(range(self.size))
                 return self
             data.update(other.data)
-        elif hasattr(other, '__iter__'):
+        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
             other_size = len(other)
             if other_size == 1: 
                 self.__ior__(other[0])
@@ -2735,7 +2711,7 @@ class SparseLogicalVector:
                 new.difference_update(data.symmetric_difference(other.set))
         elif other.__class__ is SparseArray:
             return other == self
-        elif hasattr(other, '__iter__'):
+        elif hasattr(other, '__len__'):
             return self.to_array() == other
         else:
             new = set([i for i in range(size) if (i in data) == other])

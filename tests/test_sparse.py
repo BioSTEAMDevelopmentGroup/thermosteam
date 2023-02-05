@@ -49,6 +49,43 @@ def test_sparse_vector_creation():
     
     with pytest.raises(ValueError):
         SparseVector() # must pass size
+        
+    arr = np.array([True, True, False, True])
+    sv = sparse_vector(arr)
+    assert_no_zero_data(sv)
+    assert (sv.to_array() == arr).all()
+    assert repr(sv) == 'sparse([ True,  True, False,  True])'
+    assert str(sv) == '[ True  True False  True]'
+    assert (sparse(arr) == arr).all()
+    
+    sv_2 = sparse_vector(sv)
+    assert sv_2.set is sv.set
+    sv_2 = SparseLogicalVector(sv)
+    assert sv_2.set is not sv.set
+    assert sv.sparse_equal(sv_2)
+    
+    sv = SparseLogicalVector(SparseVector(size=2))
+    arr = np.zeros(2, dtype=bool)
+    assert (sv == arr).all()
+    sv = SparseLogicalVector(size=2)
+    assert sv.size == 2
+    assert (sv == 0).all()
+    assert (sv[:1] == arr[:1]).all()
+    assert (sv[:] == arr[:]).all()
+    sv[0] = True
+    arr[0] = True
+    assert (sv == arr).all()
+    sv[:] = arr[:] = [False, False]
+    assert (sv == arr).all()
+    sv[0] = True
+    arr[0] = True
+    sv[0] = False
+    arr[0] = False
+    assert (sv == arr).all()
+    assert (~sv == ~arr).all()
+    
+    with pytest.raises(ValueError):
+        SparseLogicalVector() # must pass size
     
 def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5]])
@@ -248,6 +285,7 @@ def test_sparse_logical_vector_math():
     right = left + [np.array(i) for i in right]
     for L in left:
         for R in right:
+            # Math
             try: value = np.asarray(L) + R
             except: pass
             else: assert ((L + R) == value).all()
@@ -260,12 +298,6 @@ def test_sparse_logical_vector_math():
             try: value = np.asarray(L) - R
             except: pass
             else: assert ((L - R) == value).all()
-            assert ((L == R) == (np.asarray(L) == R)).all()
-            assert ((L != R) == (np.asarray(L) != R)).all()
-            assert ((L > R) == (np.asarray(L) > R)).all()
-            assert ((L < R) == (np.asarray(L) < R)).all()
-            assert ((L >= R) == (np.asarray(L) >= R)).all()
-            assert ((L <= R) == (np.asarray(L) <= R)).all()
             try: value = (np.asarray(L) & R)
             except: pass
             else: assert ((L & R) == value).all()
@@ -275,6 +307,72 @@ def test_sparse_logical_vector_math():
             try: value = (np.asarray(L) ^ R)
             except: pass
             else: assert ((L ^ R) == value).all()
+            
+            # In-place math
+            try: 
+                arr = np.array(L)
+                arr += R
+            except: pass
+            else: 
+                s = L.copy()
+                s += R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr *= R
+            except: pass
+            else: 
+                s = L.copy()
+                s *= R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr /= R
+            except: pass
+            else: 
+                s = L.copy()
+                s /= R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr -= R
+            except: pass
+            else: 
+                s = L.copy()
+                s -= R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr &= R
+            except: pass
+            else: 
+                s = L.copy()
+                s &= R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr |= R
+            except: pass
+            else: 
+                s = L.copy()
+                s |= R
+                assert (s == arr).all()
+            try: 
+                arr = np.array(L)
+                arr ^= R
+            except: pass
+            else: 
+                s = L.copy()
+                s ^= R
+                assert (s == arr).all()
+            
+            # Equality math
+            assert ((L == R) == (np.asarray(L) == R)).all()
+            assert ((L != R) == (np.asarray(L) != R)).all()
+            assert ((L > R) == (np.asarray(L) > R)).all()
+            assert ((L < R) == (np.asarray(L) < R)).all()
+            assert ((L >= R) == (np.asarray(L) >= R)).all()
+            assert ((L <= R) == (np.asarray(L) <= R)).all()
     
 def test_sparse_array_math():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
