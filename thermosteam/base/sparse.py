@@ -1945,22 +1945,37 @@ class SparseVector:
     def __rtruediv__(self, other):
         dct = self.dct.copy()
         if hasattr(other, '__iter__'):
-            if len(other) == 1: 
+            size_other = len(other)
+            if size_other == 1: 
                 return self.__rtruediv__(other[0])
-            for i, j in enumerate(other):
-                if j:
-                    if i in dct:
-                        dct[i] = float(j) / dct[i] 
-                    else:
-                        raise FloatingPointError('division by zero')
-                elif i in dct: del dct[i]
+            elif self.size == 1:
+                size = len(other)
+                if 0 in dct:
+                    value = dct[0]
+                    dct.clear()
+                    for i, j in enumerate(other):
+                        if j: dct[i] = float(j) / value
+                else:
+                    for i, j in enumerate(other):
+                        if j: raise FloatingPointError('division by zero')
+            else:
+                size = self.size
+                for i, j in enumerate(other):
+                    if j:
+                        if i in dct:
+                            dct[i] = float(j) / dct[i] 
+                        else:
+                            raise FloatingPointError('division by zero')
+                    elif i in dct: del dct[i]
         elif other:
-            if len(dct) != self.size: raise FloatingPointError('division by zero')
+            size = self.size
+            if len(dct) != size: raise FloatingPointError('division by zero')
             other = float(other)
             for i in dct: dct[i] = other / dct[i]
         else:
+            size = self.size
             dct = {}
-        return SparseVector.from_dict(dct, self.size)
+        return SparseVector.from_dict(dct, size)
     
     value = SparseArray.value
     
@@ -2008,8 +2023,11 @@ class SparseVector:
             if other.size == 1:
                 if 0 in other.dct: 
                     other = other.dct[0]
-                    for i in dct: 
-                        if dct[i] != other: new.add(i)
+                    for i in range(size): 
+                        if i in dct:
+                            if dct[i] != other: new.add(i)
+                        else:
+                            new.add(i)
                 else:
                     for i in range(size):
                         if i in dct: new.add(i)
@@ -2215,7 +2233,7 @@ class SparseVector:
     
 class SparseLogicalVector:
     __doc__ = sparse.__doc__
-    __slots__ = ('set', 'size', '_base')
+    __slots__ = ('set', 'size')
     ndim = 1
     dtype = bool
     priority = 0
@@ -2287,16 +2305,6 @@ class SparseLogicalVector:
         new.set = set
         new.size = size
         return new
-    
-    @property
-    def base(self):
-        try:
-            base = self._base
-        except:
-            self._base = base = frozenset([id(self.set)])
-        return base
-    
-    shares_data_with = SparseArray.shares_data_with
     
     def remove_negatives(self): pass
     
@@ -2543,61 +2551,10 @@ class SparseLogicalVector:
         return self
             
     def __isub__(self, other):
-        set = self.set
-        if other.__class__ is SparseLogicalVector:
-            other_size = other.size
-            if self.size == 1: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            elif other_size == 1:
-                if 0 in other.set: 
-                    self.set.update(range(self.size))
-                return self
-            self.set.difference_update(other.set)
-        elif other.__class__ is SparseVector:
-            other_size = other.size
-            if self.size == 1: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            elif other_size == 1:
-                if 0 in other.dct: 
-                    other = other.dct[0]
-                    for i in range(self.size):
-                        if i in set: 
-                            j = True - other
-                            if not j: set.discard(i)
-                        else:
-                            set.add(i)
-                return self
-            for i, j in other.dct.items():
-                if i in set:
-                    j = True - j
-                    if not j: set.discard(i)
-                else:
-                    set.add(i)
-        elif hasattr(other, '__iter__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__isub__(other[0])
-                return self
-            if self.size == 1: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            for i, j in enumerate(other):
-                if not j: continue
-                if i in set:
-                    j = True - j
-                    if not j: set.discard(i)
-                else:
-                    set.add(i)
-        elif other:
-            for i in range(self.size):
-                if i in set: 
-                    j = True - other
-                    if not j: set.discard(i)
-                else:
-                    set.add(i)
-        return self
+        raise TypeError(
+            "boolean subtract, the `-` operator, is not supported, use the "
+            "bitwise_xor, the `^` operator instead"
+        )
     
     def __imul__(self, other):
         set = self.set
@@ -2845,7 +2802,8 @@ class SparseLogicalVector:
         if other.__class__ is SparseLogicalVector:
             if other.size == 1:
                 if 0 in other.set:
-                    new = data.copy()
+                    new = set(range(size))
+                    new.difference_update(data)
                 else:
                     new = set()
             elif size == 1: 
@@ -2902,7 +2860,8 @@ class SparseLogicalVector:
                 if 0 in other.set:
                     new = set(range(size))
                 else:
-                    new = data.copy()
+                    new = set(range(size))
+                    new.difference_update(data)
             elif size == 1: 
                 size = other.size
                 if 0 in data:

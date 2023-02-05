@@ -212,6 +212,11 @@ def test_sparse_vector_math():
 
 def test_sparse_logical_vector_math():
     left = (
+        [True],
+        [False],
+        [0],
+        [3],
+        [-2],
         [True, False, True],
         [[True, False, False], [False, True, False]],
         [[True]],
@@ -222,6 +227,11 @@ def test_sparse_logical_vector_math():
         [[2]],
     )
     right = (
+        [True],
+        [False],
+        [0],
+        [3],
+        [-2],
         [True, True, False],
         [[True, True, False], [False, False, True]],
         [[[False]]],
@@ -230,6 +240,9 @@ def test_sparse_logical_vector_math():
         [[1, 2, 0], [0, 0, 4]],
         [[[0]]],
         [[[2]]],
+        0, 
+        1,
+        3,
     )
     left = [sparse(i) for i in left]
     right = left + [np.array(i) for i in right]
