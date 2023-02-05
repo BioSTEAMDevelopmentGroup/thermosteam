@@ -275,7 +275,7 @@ def test_sparse_vector_math():
     sv[:] = 1
     assert_no_zero_data(sv)
     assert (2. / sv).sparse_equal([2., 2., 2., 2.])
-    assert ([2, 1, 0, 3] / sv).sparse_equal([2, 1, 0, 3])
+    assert (sparse([2, 1, 0, 3]) / sv).sparse_equal([2, 1, 0, 3])
     
     sv[:] = [0., 1]
     assert_no_zero_data(sv)
@@ -344,6 +344,13 @@ def test_sparse_logical_vector_math():
             try: value = np.asarray(L) / R
             except: pass
             else: assert ((L / R) == value).all()
+            try: value = R / np.asarray(L)
+            except: pass
+            else: 
+                try:assert ((R / L) == value).all()
+                except:
+                    breakpoint()
+                    R / L
             try: value = np.asarray(L) - R
             except: pass
             else: assert ((L - R) == value).all()

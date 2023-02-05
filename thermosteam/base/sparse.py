@@ -1950,31 +1950,12 @@ class SparseVector:
     __invert__ = __neg__
     
     def __rtruediv__(self, other):
-        dct = self.dct.copy()
-        if hasattr(other, '__iter__'):
-            size_other = len(other)
-            if size_other == 1: 
-                return self.__rtruediv__(other[0])
-            elif self.size == 1:
-                size = len(other)
-                if 0 in dct:
-                    value = dct[0]
-                    dct.clear()
-                    for i, j in enumerate(other):
-                        if j: dct[i] = float(j) / value
-                else:
-                    for i, j in enumerate(other):
-                        if j: raise FloatingPointError('division by zero')
-            else:
-                size = self.size
-                for i, j in enumerate(other):
-                    if j:
-                        if i in dct:
-                            dct[i] = float(j) / dct[i] 
-                        else:
-                            raise FloatingPointError('division by zero')
-                    elif i in dct: del dct[i]
+        if hasattr(other, '__len__'):
+            return other / self.to_array()
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(other / self.to_array())
         elif other:
+            dct = self.dct.copy()
             size = self.size
             if len(dct) != size: raise FloatingPointError('division by zero')
             other = float(other)
@@ -2602,15 +2583,12 @@ class SparseLogicalVector:
         return SparseLogicalVector.from_set({i for i in range(self.size) if i not in set}, self.size)
     
     def __rtruediv__(self, other):
-        set_ = self.set.copy()
-        if hasattr(other, '__iter__'):
-            if len(other) == 1: 
-                return self.__rtruediv__(other[0])
-            for i, j in enumerate(other):
-                if j and i not in set_:
-                    raise FloatingPointError('division by zero')
-                else: set_.discard(i)
+        if hasattr(other, '__len__'):
+            return other / self.to_array()
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(other / self.to_array())
         elif other:
+            set_ = self.set.copy()
             if len(set_) != self.size: raise FloatingPointError('division by zero')
         else:
             set_ = set()
