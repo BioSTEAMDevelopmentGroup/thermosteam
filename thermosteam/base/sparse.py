@@ -1952,8 +1952,6 @@ class SparseVector:
     def __rtruediv__(self, other):
         if hasattr(other, '__len__'):
             return other / self.to_array()
-        elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(other / self.to_array())
         elif other:
             dct = self.dct.copy()
             size = self.size
