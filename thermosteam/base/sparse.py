@@ -946,7 +946,7 @@ class SparseArray:
             return self.to_array() | other
         else:
             return SparseArray.from_rows(
-                [i | other for i in rows]
+                [i | other for i in self.rows]
             )
     
     def __iadd__(self, value):
@@ -1364,10 +1364,6 @@ class SparseVector:
     def data(self):
         return self.dct
     
-    @property
-    def set(self):
-        return self.dct.keys()
-    
     def __abs__(self):
         positive = abs
         dct = self.dct.copy()
@@ -1638,6 +1634,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() + other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() + other)
         else:
             new = self.copy()
             new += other
@@ -1653,6 +1651,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() - other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() - other)
         else:
             new = self.copy()
             new -= other
@@ -1668,6 +1668,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() * other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() * other)
         else:
             new = self.copy()
             new *= other
@@ -1683,6 +1685,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() / other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() / other)
         else:
             new = self.copy()
             new /= other
@@ -1698,6 +1702,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() & other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() & other)
         else:
             new = self.copy()
             new &= other
@@ -1713,6 +1719,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() ^ other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() ^ other)
         else:
             new = self.copy()
             new ^= other
@@ -1728,6 +1736,8 @@ class SparseVector:
                 return new
         elif hasattr(other, '__len__'):
             return self.to_array() | other
+        elif self.dtype is bool and other.__class__ is not bool:
+            return SparseVector(self.to_array() | other)
         else:
             new = self.copy()
             new |= other

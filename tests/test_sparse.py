@@ -69,6 +69,13 @@ def test_sparse_vector_creation():
     assert (sv == arr).all()
     sv = SparseLogicalVector(size=2)
     assert sv.size == 2
+    
+    with pytest.raises(ValueError):
+        SparseLogicalVector() # must pass size
+    
+def test_sparse_logical_vector_indexing_and_methods():
+    arr = np.zeros(2, dtype=bool)
+    sv = sparse(arr)
     assert (sv == 0).all()
     assert (sv[:1] == arr[:1]).all()
     assert (sv[:] == arr[:]).all()
@@ -83,9 +90,43 @@ def test_sparse_vector_creation():
     arr[0] = False
     assert (sv == arr).all()
     assert (~sv == ~arr).all()
+    assert (abs(sv) == abs(arr)).all()
+    sv[:] = True
+    arr[:] = True
+    assert (sv == arr).all()
+    sv2 = sv.copy()
+    sv2[:] = False
+    sv[:] = sv2
+    assert (sv2 == sv).all()
     
-    with pytest.raises(ValueError):
-        SparseLogicalVector() # must pass size
+    sv[0] = -1 # This is casted to True
+    assert not sv.has_negatives()
+    assert not sv.has_negatives()
+    for i in sv.nonzero_values(): assert i
+    assert sv.sum_of(0)
+    assert not sv.sum_of(1)
+    assert sv.sum_of([0, 1])
+    
+    arr = np.ones(10, dtype=bool)
+    sv = sparse(arr)
+    sv[:2] = True
+    arr[:2] = True
+    assert (sv == arr).all()
+    sv[0::2] = False
+    arr[0::2] = False
+    assert (sv == arr).all()
+    sv[0:6:2] = True
+    arr[0:6:2] = True
+    assert (sv == arr).all()
+    
+    with pytest.raises(IndexError):
+        sv[(1, 2)]
+    with pytest.raises(IndexError):
+        sv[(1, 2)] = 0.
+    with pytest.raises(IndexError):
+        sv[(1,)] = [0., 1]
+    with pytest.raises(IndexError):
+        sv[1] = [0., 1]
     
 def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5]])
@@ -248,7 +289,7 @@ def test_sparse_vector_math():
         sv /= 0
 
 def test_sparse_logical_vector_math():
-    left = (
+    left = [
         [True],
         [False],
         [0],
@@ -266,8 +307,8 @@ def test_sparse_logical_vector_math():
         [[1, 2, 0], [0, 0, 4]],
         [[0]],
         [[2]],
-    )
-    right = (
+    ]
+    right = [
         [True],
         [False],
         [0],
@@ -288,9 +329,9 @@ def test_sparse_logical_vector_math():
         0, 
         1,
         3,
-    )
+    ]
     left = [sparse(i) for i in left]
-    right = left + [np.array(i) for i in right]
+    right = left + right + [np.array(i) for i in right]
     for L in left:
         for R in right:
             # Math
