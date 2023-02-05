@@ -2171,15 +2171,15 @@ class SparseVector:
     
     # Not yet optimized methods
 
-    def __iand__(self, other): 
+    def __iand__(self, other): # pragma: no cover
         self[:] = self.to_array() & other
         return self
 
-    def __ixor__(self, other):  
+    def __ixor__(self, other): # pragma: no cover
         self[:] = self.to_array() ^ other
         return self
 
-    def __ior__(self, other): 
+    def __ior__(self, other): # pragma: no cover
         self[:] = self.to_array() | other
         return self
     

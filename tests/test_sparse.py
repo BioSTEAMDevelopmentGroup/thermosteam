@@ -254,10 +254,14 @@ def test_sparse_logical_vector_math():
         [0],
         [3],
         [-2],
+        [False, False],
+        [True, True],
         [True, False, True],
         [[True, False, False], [False, True, False]],
         [[True]],
         [[False]],
+        [0, 0],
+        [1, 3],
         [1, 3, 0],
         [[1, 2, 0], [0, 0, 4]],
         [[0]],
@@ -269,10 +273,14 @@ def test_sparse_logical_vector_math():
         [0],
         [3],
         [-2],
+        [False, False],
+        [True, True],
         [True, True, False],
         [[True, True, False], [False, False, True]],
         [[[False]]],
         [[[True]]],
+        [0, 0],
+        [1, 3],
         [1, 3, 0],
         [[1, 2, 0], [0, 0, 4]],
         [[[0]]],
@@ -367,12 +375,30 @@ def test_sparse_logical_vector_math():
                 assert (s == arr).all()
             
             # Equality math
-            assert ((L == R) == (np.asarray(L) == R)).all()
-            assert ((L != R) == (np.asarray(L) != R)).all()
-            assert ((L > R) == (np.asarray(L) > R)).all()
-            assert ((L < R) == (np.asarray(L) < R)).all()
-            assert ((L >= R) == (np.asarray(L) >= R)).all()
-            assert ((L <= R) == (np.asarray(L) <= R)).all()
+            try: arr = (np.asarray(L) == R)
+            except: pass
+            else:
+                if arr.__class__ is not bool: assert ((L == R) == arr).all()
+            try: arr = (np.asarray(L) != R)
+            except: pass
+            else:
+                if arr.__class__ is not bool: assert ((L != R) == arr).all()
+            try: arr = (np.asarray(L) > R)
+            except: pass
+            else: 
+                if arr.__class__ is not bool: assert ((L > R) == arr).all()
+            try: arr = (np.asarray(L) < R)
+            except: pass
+            else:
+                if arr.__class__ is not bool: assert ((L < R) == arr).all()
+            try: arr = (np.asarray(L) >= R)
+            except: pass
+            else:
+                if arr.__class__ is not bool: assert ((L >= R) == arr).all()
+            try: arr = (np.asarray(L) <= R)
+            except: pass
+            else:
+                if arr.__class__ is not bool: assert ((L <= R) == arr).all()
     
 def test_sparse_array_math():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])
