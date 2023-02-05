@@ -128,6 +128,13 @@ def test_sparse_logical_vector_indexing_and_methods():
     with pytest.raises(IndexError):
         sv[1] = [0., 1]
     
+def test_sparse_logical_vector_miscellanious():
+    for arr in [np.zeros(2, dtype=bool), np.ones(2, dtype=bool)]:
+        sv = sparse(arr)
+        for other in [True, [True], [True, True]]:
+            sv /= other
+            assert (sv == arr).all()
+    
 def test_sparse_array_creation():
     arr = np.array([[1., 2., 0., 4.5]])
     sa = sparse_array(arr)
@@ -1023,6 +1030,8 @@ if __name__ == '__main__':
     test_sparse_array_easy_methods()
     test_sparse_vector_math()
     test_sparse_logical_vector_math()
+    test_sparse_logical_vector_miscellanious()
+    test_sparse_logical_vector_indexing_and_methods()
     test_sparse_array_math()
     test_sparse_vector_indexing()
     test_sparse_array_indexing()

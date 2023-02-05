@@ -2568,7 +2568,7 @@ class SparseLogicalVector:
             if self.size == 1: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
-            if set.difference(other): raise FloatingPointError('division by zero')
+            if set.difference([i for i, j in enumerate(other) if j]): raise FloatingPointError('division by zero')
         elif not other and set:
             raise FloatingPointError('division by zero')
         return self
