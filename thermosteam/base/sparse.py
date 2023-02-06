@@ -139,21 +139,18 @@ def get_ndim(value):
     ndim = 0
     while hasattr(value, '__iter__'):
         ndim += 1
-        iter = value.__iter__()
-        try: value = iter.__next__()
+        try: value = next(iter(value))
         except StopIteration: break
     return ndim
 
 def get_index_properties(index):
-    if hasattr(index, 'ndim'):
-        return index.ndim, index.dtype in bools
-    elif hasattr(index, '__iter__'):
-        for i in index: 
-            ndim, has_bool = get_index_properties(i)
-            return ndim + 1, has_bool
-        return 1, False
-    else:
-        return 0, index.__class__ in bools
+    if hasattr(index, 'ndim'): return index.ndim, index.dtype in bools
+    ndim = 0
+    while hasattr(index, '__iter__'):
+        ndim += 1
+        try: index = next(iter(index))
+        except StopIteration: break
+    return ndim, index.__class__ in bools
 
 def sum_sparse_vectors(svs, dct=None):
     if dct is None: dct = {}
