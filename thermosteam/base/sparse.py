@@ -1750,7 +1750,7 @@ class SparseVector:
         dct = self.dct
         if other.__class__ is SparseVector:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1778,7 +1778,7 @@ class SparseVector:
             if other_size == 1: 
                 self.__iadd__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1807,7 +1807,7 @@ class SparseVector:
         dct = self.dct
         if other.__class__ is SparseVector:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1835,7 +1835,7 @@ class SparseVector:
             if other_size == 1: 
                 self.__isub__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1864,7 +1864,7 @@ class SparseVector:
         dct = self.dct
         if other.__class__ is SparseVector:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1887,7 +1887,7 @@ class SparseVector:
             if other_size == 1: 
                 self.__imul__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1909,7 +1909,7 @@ class SparseVector:
         dct = self.dct
         if other.__class__ is SparseVector:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -1928,7 +1928,7 @@ class SparseVector:
             if other_size == 1: 
                 self.__itruediv__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in dct:
                     value = dct[0]
@@ -2467,7 +2467,6 @@ class SparseLogicalVector:
     __and__ = SparseVector.__and__
     __xor__ = SparseVector.__xor__
     __or__ = SparseVector.__or__
-    
     __radd__ = SparseArray.__radd__
     __rsub__ = SparseArray.__rsub__
     __rmul__ = SparseArray.__rmul__
@@ -2479,7 +2478,7 @@ class SparseLogicalVector:
         set = self.set
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             elif other_size == 1:
@@ -2492,7 +2491,7 @@ class SparseLogicalVector:
             if other_size == 1: 
                 self.__iadd__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             for i, j in enumerate(other):
@@ -2521,7 +2520,7 @@ class SparseLogicalVector:
         set = self.set
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             elif other_size == 1:
@@ -2533,7 +2532,7 @@ class SparseLogicalVector:
             if other_size == 1: 
                 self.__imul__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             for i in tuple(set):
@@ -2547,7 +2546,7 @@ class SparseLogicalVector:
         set = self.set
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             elif other_size == 1:
@@ -2561,7 +2560,7 @@ class SparseLogicalVector:
             if other_size == 1: 
                 self.__itruediv__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             if set.difference([i for i, j in enumerate(other) if j]): raise FloatingPointError('division by zero')
@@ -2594,7 +2593,7 @@ class SparseLogicalVector:
         data = self.set
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in data: data.update(range(1, other_size))
             elif other_size == 1:
@@ -2606,7 +2605,7 @@ class SparseLogicalVector:
             if other_size == 1: 
                 self.__iand__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
             for i in tuple(data):
@@ -2620,7 +2619,7 @@ class SparseLogicalVector:
         data = self.set
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in data: data.update(range(1, other_size))
             elif other_size == 1:
@@ -2648,7 +2647,7 @@ class SparseLogicalVector:
         data = self.set
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in data: data.update(range(1, other_size))
             elif other_size == 1:
@@ -2661,7 +2660,7 @@ class SparseLogicalVector:
             if other_size == 1: 
                 self.__ior__(other[0])
                 return self
-            if self.size == 1: 
+            if self.size < other_size: 
                 self.size = other_size
                 if 0 in data: data.update(range(1, other_size))
             for i, j in enumerate(other):
