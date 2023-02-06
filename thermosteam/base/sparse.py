@@ -1627,121 +1627,118 @@ class SparseVector:
     def __add__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other + self
+                new = other + self
             else:
                 new = self.copy()
                 new += other
-                return new
         elif hasattr(other, '__len__'):
             return self.to_array() + other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() + other)
+            new = SparseVector.from_dict({i: 1. for i in self.set}, self.size)
+            new += other
         else:
             new = self.copy()
             new += other
-            return new
+        return new
     
     def __sub__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return -other + self
+                new = -other + self
             else:
                 new = self.copy()
                 new -= other
-                return new
         elif hasattr(other, '__len__'):
-            return self.to_array() - other
+            new =self.to_array() - other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() - other)
+            new = SparseVector.from_dict({i: 1. for i in self.set}, self.size)
+            new -= other
         else:
             new = self.copy()
             new -= other
-            return new
+        return new
     
     def __mul__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other * self
+                new = other * self
             else:
                 new = self.copy()
                 new *= other
-                return new
         elif hasattr(other, '__len__'):
-            return self.to_array() * other
+            new = self.to_array() * other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() * other)
+            new = SparseVector.from_dict({i: 1. for i in self.set}, self.size)
+            new *= other
         else:
             new = self.copy()
             new *= other
-            return new
+        return new
     
     def __truediv__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other.__rtruediv__(self)
+                new = other.__rtruediv__(self)
             else:
                 new = self.copy()
                 new /= other
-                return new
         elif hasattr(other, '__len__'):
-            return self.to_array() / other
+            new = self.to_array() / other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() / other)
+            new = SparseVector.from_dict({i: 1. for i in self.set}, self.size)
+            new /= other
         else:
             new = self.copy()
             new /= other
-            return new
+        return new
     
     def __and__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other & self
+                new = other & self
             else:
                 new = self.copy()
                 new &= other
-                return new
         elif hasattr(other, '__len__'):
             return self.to_array() & other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() & other)
+            new = SparseVector(self.to_array() & other)
         else:
             new = self.copy()
             new &= other
-            return new
+        return new
     
     def __xor__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other ^ self
+                new = other ^ self
             else:
                 new = self.copy()
                 new ^= other
-                return new
         elif hasattr(other, '__len__'):
-            return self.to_array() ^ other
+            new = self.to_array() ^ other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() ^ other)
+            new = SparseVector(self.to_array() ^ other)
         else:
             new = self.copy()
             new ^= other
-            return new
+        return new
     
     def __or__(self, other):
         if hasattr(other, 'priority'):
             if other.priority > self.priority:
-                return other | self
+                new = other | self
             else:
                 new = self.copy()
                 new |= other
-                return new
         elif hasattr(other, '__len__'):
             return self.to_array() | other
         elif self.dtype is bool and other.__class__ is not bool:
-            return SparseVector(self.to_array() | other)
+            new = SparseVector(self.to_array() | other)
         else:
             new = self.copy()
             new |= other
-            return new
+        return new
     
     __radd__ = SparseArray.__radd__
     __rsub__ = SparseArray.__rsub__
