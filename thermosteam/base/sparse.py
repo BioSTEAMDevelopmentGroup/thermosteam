@@ -135,12 +135,14 @@ def sparse(arr, copy=False, vector_size=None):
         raise ValueError(f'cannot convert {ndim}-d object to a sparse array or vector')
     
 def get_ndim(value):
-    if hasattr(value, 'ndim'):
-        return value.ndim
-    elif hasattr(value, '__iter__'):
-        for i in value: return get_ndim(i) + 1
-        return 1
-    return 0
+    if hasattr(value, 'ndim'): return value.ndim
+    ndim = 0
+    while hasattr(value, '__iter__'):
+        ndim += 1
+        iter = value.__iter__()
+        try: value = iter.__next__()
+        except StopIteration: break
+    return ndim
 
 def get_index_properties(index):
     if hasattr(index, 'ndim'):
