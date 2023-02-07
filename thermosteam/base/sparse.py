@@ -2715,7 +2715,7 @@ class SparseLogicalVector:
                 else:
                     new = set(range(size))
                     new.difference_update(data)
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 other = other.set
                 if 0 in data:
@@ -2746,7 +2746,7 @@ class SparseLogicalVector:
                     new.difference_update(data)
                 else:
                     new = data.copy()
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 other = other.set
                 if 0 in data:
@@ -2776,7 +2776,7 @@ class SparseLogicalVector:
                     new = set()
                 else:
                     new = data.copy()
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
                     other = other.set
@@ -2807,7 +2807,7 @@ class SparseLogicalVector:
                     new.difference_update(data)
                 else:
                     new = set()
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
                     new = set()
@@ -2837,7 +2837,7 @@ class SparseLogicalVector:
                     new = data.copy()
                 else:
                     new = set(range(size))
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
                     new = set(range(size))
@@ -2869,7 +2869,7 @@ class SparseLogicalVector:
                 else:
                     new = set(range(size))
                     new.difference_update(data)
-            elif size == 1: 
+            elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
                     other = other.set
