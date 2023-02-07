@@ -353,11 +353,7 @@ def test_sparse_logical_vector_math():
             else: assert ((L / R) == value).all()
             try: value = R / np.asarray(L)
             except: pass
-            else: 
-                try:assert ((R / L) == value).all()
-                except:
-                    breakpoint()
-                    R / L
+            else: assert ((R / L) == value).all()
             try: value = np.asarray(L) - R
             except: pass
             else: assert ((L - R) == value).all()
