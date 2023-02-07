@@ -779,7 +779,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -804,7 +804,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -829,7 +829,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -854,7 +854,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -879,7 +879,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -904,7 +904,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -929,7 +929,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1002,7 +1002,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1083,7 +1083,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1104,7 +1104,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1125,7 +1125,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1146,7 +1146,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1167,7 +1167,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1188,7 +1188,7 @@ class SparseArray:
             while len(other) == 1:
                 ndim -= 1
                 other = other[0]
-                if not hasattr(other, '__len__'): break
+                if not ndim: break
             rows = self.rows
             if ndim == 2 and len(rows) == 1:
                 row = rows[0]
@@ -1692,9 +1692,13 @@ class SparseVector:
         return new
     
     def __and__(self, other):
-        if hasattr(other, 'priority'):
-            if other.priority > self.priority:
-                new = other & self
+        if other.__class__ in SparseSet:
+            if other.__class__ is SparseArray:
+                new = SparseArray.from_rows(
+                    [self & i for i in other.rows]
+                ) 
+            elif self.dtype is bool and other.dtype is float:
+                raise TypeError('casting between float and bool is unsafe')
             else:
                 new = self.copy()
                 new &= other
@@ -1708,9 +1712,13 @@ class SparseVector:
         return new
     
     def __xor__(self, other):
-        if hasattr(other, 'priority'):
-            if other.priority > self.priority:
-                new = other ^ self
+        if other.__class__ in SparseSet:
+            if other.__class__ is SparseArray:
+                new = SparseArray.from_rows(
+                    [self ^ i for i in other.rows]
+                ) 
+            elif self.dtype is bool and other.dtype is float:
+                raise TypeError('casting between float and bool is unsafe')
             else:
                 new = self.copy()
                 new ^= other
@@ -1724,9 +1732,13 @@ class SparseVector:
         return new
     
     def __or__(self, other):
-        if hasattr(other, 'priority'):
-            if other.priority > self.priority:
-                new = other | self
+        if other.__class__ in SparseSet:
+            if other.__class__ is SparseArray:
+                new = SparseArray.from_rows(
+                    [self | i for i in other.rows]
+                ) 
+            elif self.dtype is bool and other.dtype is float:
+                raise TypeError('casting between float and bool is unsafe')
             else:
                 new = self.copy()
                 new |= other
