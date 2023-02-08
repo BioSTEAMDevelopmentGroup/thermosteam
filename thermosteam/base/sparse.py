@@ -174,7 +174,6 @@ def sum_sparse_vectors(svs, dct=None):
 class SparseArray:
     __doc__ = sparse.__doc__
     __slots__ = ('rows', '_base')
-    priority = 2
     ndim = 2
     
     def __init__(self, obj=None, vector_size=None):
@@ -1055,7 +1054,6 @@ class SparseArray:
 class SparseVector:
     __doc__ = sparse.__doc__
     __slots__ = ('dct', 'read_only', 'size', '_base')
-    priority = 1
     ndim = 1
     dtype = float
     
@@ -1948,7 +1946,6 @@ class SparseLogicalVector:
     __slots__ = ('set', 'size')
     ndim = 1
     dtype = bool
-    priority = 0
     
     def __init__(self, obj=None, size=None):
         if obj is None:
