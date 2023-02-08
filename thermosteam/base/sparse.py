@@ -1758,15 +1758,28 @@ class SparseVector:
             other_size = other.size
             if other_size == 1:
                 other = other.dct.get(0, 0.)
-                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other)}
+                default = getattr(0., operation)(other)
+                if default:
+                    new = {i for i in range(size) if i not in dct or getattr(dct[i], operation)(other)}
+                else:
+                    new = {i for i in dct if getattr(dct[i], operation)(other)}
             elif size == 1 and other_size:  
                 size = other_size
                 value = dct.get(0, 0.)
                 other = other.dct
-                new = {i for i in range(size) if getattr(value, operation)(other.get(i, 0.))}
+                default = getattr(value, operation)(0.)
+                if default:
+                    new = {i for i in range(size) if i not in other or getattr(value, operation)(other[i])}
+                else:
+                    new = {i for i in other if getattr(value, operation)(other[i])}
             elif size == other_size:
                 other = other.dct
-                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other.get(i, 0.))}
+                default = getattr(0., operation)(0.)
+                if default:
+                    new = {*range(size)}
+                    new.difference_update([i for i in [*dct, *other] if not getattr(dct.get(i, 0.), operation)(other.get(i, 0.))])
+                else:
+                    new = {i for i in [*dct, *other] if getattr(dct.get(i, 0.), operation)(other.get(i, 0.))}
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseArray:
@@ -1778,7 +1791,11 @@ class SparseVector:
                 other = other[0]
             if ndim == 0:
                 other = float(other)
-                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other)}
+                default = getattr(0., operation)(other)
+                if default:
+                    new = {i for i in range(size) if i not in dct or getattr(dct[i], operation)(other)}
+                else:
+                    new = {i for i in dct if getattr(dct[i], operation)(other)}
             elif ndim == 1:
                 if size == 1 and other_size: 
                     size = other_size
