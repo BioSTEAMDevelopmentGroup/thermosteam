@@ -289,10 +289,10 @@ def test_sparse_vector_math():
     
     assert ((0 / sv) == np.zeros_like(sv)).all()
     
-    with pytest.raises(FloatingPointError):
+    with pytest.raises((ZeroDivisionError, FloatingPointError)):
         [2, 1, 0.1, 3] / sv
         
-    with pytest.raises(FloatingPointError):
+    with pytest.raises(ZeroDivisionError):
         sv /= 0
 
 def test_sparse_logical_vector_math():
