@@ -351,7 +351,7 @@ class SparseArray:
         try:
             base = self._base
         except:
-            self._base = base = frozenset([id(i.data) for i in self.rows])
+            self._base = base = {id(i.data) for i in self.rows}
         return base
     
     def sparse_equal(self, other):
@@ -1126,7 +1126,7 @@ class SparseVector:
         try:
             base = self._base
         except:
-            self._base = base = frozenset([id(self.dct)])
+            self._base = base = {id(self.dct)}
         return base
     
     @classmethod
@@ -1623,30 +1623,37 @@ class SparseVector:
     
     def __eq__(self, other): 
         dct = self.dct
-        new = set()
         size = self.size
-        if other.__class__ is SparseVector:
+        cls = other.__class__
+        if cls is SparseLogicalVector:
+            other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
+        if cls is SparseVector:
             other_size = other.size
             if other_size == 1:
                 if 0 in other.dct: 
                     other = other.dct[0]
-                    for i in dct: 
-                        if dct[i] == other: new.add(i)
+                    new = {i for i in dct if dct[i] == other}
                 else:
-                    for i in range(size):
-                        if i not in dct: new.add(i)
+                    new = {i for i in range(size) if i not in dct}
             elif size == 1 and other_size: 
                 size = other_size
-                value = dct.get(0, 0)
-                other = other.dct
-                for i in range(size):
-                    if value == other.get(i, 0): new.add(i)
+                if 0 in dct: 
+                    value = dct[0]
+                    new = {i for i in other.dct if other.dct[i] == value}
+                else:
+                    new = {i for i in range(size) if i not in other.dct}
             elif size == other_size:
                 other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) == other.get(i, 0): new.add(i)
+                new = {
+                    i for i in range(size) 
+                    if (i in other and dct[i] == other[i]
+                        if i in dct
+                        else i not in other)
+                }
             else:
                 raise ValueError('shape mismatch between arrays')
+        elif cls is SparseArray:
+            return other == self
         else:
             ndim = get_ndim(other)
             while ndim and (other_size:=len(other)) == 1:
@@ -1654,21 +1661,25 @@ class SparseVector:
                 other = other[0]
             if ndim == 0:
                 if other:
-                    for i in dct: 
-                        if dct[i] == other: new.add(i)
+                    new = {i for i in dct if dct[i] == other}
                 else:
-                    for i in range(size):
-                        if i not in dct: new.add(i)
+                    new = {i for i in range(size) if i not in dct}
             elif ndim == 1:
                 if size == 1 and other_size: 
                     size = other_size
-                    if 0 in dct:
+                    dct = dct.copy()
+                    if 0 in dct: 
                         value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
+                        new = {i for i in range(size) if other[i] == value}
+                    else:
+                        new = {i for i in range(size) if not other[i]}
                 elif size != other_size:
                     raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) == other[i]: new.add(i)
+                else:
+                    new = {
+                        i for i in range(size) 
+                        if (dct[i] == other[i] if i in dct else not other[i])
+                    }
             elif ndim == 2:
                 return SparseArray.from_rows([self == i for i in other])
             else:
@@ -1677,33 +1688,36 @@ class SparseVector:
 
     def __ne__(self, other): 
         dct = self.dct
-        new = set()
         size = self.size
-        if other.__class__ is SparseVector:
+        cls = other.__class__
+        if cls is SparseLogicalVector:
+            other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
+        if cls is SparseVector:
             other_size = other.size
             if other_size == 1:
                 if 0 in other.dct: 
                     other = other.dct[0]
-                    for i in range(size): 
-                        if i in dct:
-                            if dct[i] != other: new.add(i)
-                        else:
-                            new.add(i)
+                    new = {i for i in range(size) if i not in dct or dct[i] != other}
                 else:
-                    for i in range(size):
-                        if i in dct: new.add(i)
+                    new = {*dct}
             elif size == 1 and other_size: 
                 size = other_size
-                value = dct.get(0, 0)
                 other = other.dct
-                for i in range(size):
-                    if value != other.get(i, 0): new.add(i)
+                if 0 in dct:
+                    value = dct[0]
+                    new = {i for i in range(size) if i not in other or other[i] != value}
+                else:
+                    new = {*other}
             elif size == other_size:
                 other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) != other.get(i, 0): new.add(i)
+                new = {
+                    i for i in [*dct, *other]
+                    if (i not in other or i not in dct or dct[i] != other[i])
+                }
             else:
                 raise ValueError('shape mismatch between arrays')
+        elif other.__class__ is SparseArray:
+            return other != self
         else:
             ndim = get_ndim(other)
             while ndim and (other_size:=len(other)) == 1:
@@ -1711,212 +1725,87 @@ class SparseVector:
                 other = other[0]
             if ndim == 0:
                 if other:
-                    for i in range(size):
-                        if i in dct:
-                            if dct[i] != other: new.add(i)
-                        else:
-                            new.add(i)
+                    new = {i for i in range(size) if i not in dct or dct[i] != other}
                 else:
-                    new.update(dct)
+                    new = {*dct}
             elif ndim == 1:
                 if size == 1 and other_size: 
                     size = other_size
                     if 0 in dct:
                         value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
+                        new = {i for i in range(size) if other[i] != value}
+                    else:
+                        new = {i for i in range(size) if other[i]}
                 elif size != other_size:
                     raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) != other[i]: new.add(i)
+                else:
+                    new = {
+                        i for i in range(size) 
+                        if (dct[i] != other[i] if i in dct else other[i])
+                    }
             elif ndim == 2:
                 return SparseArray.from_rows([self != i for i in other])
             else:
                 return self.to_array() != other
         return SparseLogicalVector.from_set(new, size)
 
-    def __gt__(self, other): 
+    def _comparison(self, other, operation):
         dct = self.dct
-        new = set()
         size = self.size
-        if other.__class__ is SparseVector:
+        cls = other.__class__
+        if cls is SparseLogicalVector:
+            other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
+        if cls is SparseVector:
             other_size = other.size
             if other_size == 1:
-                other = other.dct.get(0, 0)
-                for i in range(size): 
-                    if dct.get(i, 0) > other: new.add(i)
+                other = other.dct.get(0, 0.)
+                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other)}
             elif size == 1 and other_size:  
                 size = other_size
-                value = dct.get(0, 0)
+                value = dct.get(0, 0.)
                 other = other.dct
-                for i in range(size):
-                    if value > other.get(i, 0): new.add(i)
+                new = {i for i in range(size) if getattr(value, operation)(other.get(i, 0.))}
             elif size == other_size:
                 other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) > other.get(i, 0): new.add(i)
+                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other.get(i, 0.))}
             else:
                 raise ValueError('shape mismatch between arrays')
+        elif other.__class__ is SparseArray:
+            return getattr(SparseArray.from_rows([self]), operation)(other)
         else:
             ndim = get_ndim(other)
             while ndim and (other_size:=len(other)) == 1:
                 ndim -= 1
                 other = other[0]
             if ndim == 0:
-                for i in range(size):
-                    if dct.get(i, 0) > other: new.add(i)
+                other = float(other)
+                new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(other)}
             elif ndim == 1:
                 if size == 1 and other_size: 
                     size = other_size
-                    if 0 in dct:
-                        value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
+                    value = dct.get(0, 0.)
+                    new = {i for i in range(size) if getattr(value, operation)(float(other[i]))}
                 elif size != other_size:
                     raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) > other[i]: new.add(i)
+                else:
+                    new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(float(other[i]))}
             elif ndim == 2:
-                return SparseArray.from_rows([self > i for i in other])
+                return SparseArray.from_rows([getattr(self, operation)(i) for i in other])
             else:
-                return self.to_array() > other
+                return getattr(self.to_array(), operation)(other)
         return SparseLogicalVector.from_set(new, size)
+
+    def __gt__(self, other): 
+        return self._comparison(other, '__gt__')
     
     def __lt__(self, other): 
-        dct = self.dct
-        new = set()
-        size = self.size
-        if other.__class__ is SparseVector:
-            other_size = other.size
-            if other_size == 1:
-                other = other.dct.get(0, 0)
-                for i in range(size): 
-                    if dct.get(i, 0) < other: new.add(i)
-            elif size == 1 and other_size: 
-                size = other_size
-                value = dct.get(0, 0)
-                other = other.dct
-                for i in range(size):
-                    if value < other.get(i, 0): new.add(i)
-            elif size == other_size:
-                other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) < other.get(i, 0): new.add(i)
-            else:
-                raise ValueError('shape mismatch between arrays')
-        else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
-            if ndim == 0:
-                for i in range(size):
-                    if dct.get(i, 0) < other: new.add(i)
-            elif ndim == 1:
-                if size == 1 and other_size: 
-                    self.size = other_size
-                    if 0 in dct:
-                        value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) < other[i]: new.add(i)
-            elif ndim == 2:
-                return SparseArray.from_rows([self < i for i in other])
-            else:
-                return self.to_array() < other
-        return SparseLogicalVector.from_set(new, size)
+        return self._comparison(other, '__lt__')
 
     def __ge__(self, other): 
-        dct = self.dct
-        new = set()
-        size = self.size
-        if other.__class__ is SparseVector:
-            other_size = other.size
-            if other_size == 1:
-                other = other.dct.get(0, 0)
-                for i in range(size): 
-                    if dct.get(i, 0) >= other: new.add(i)
-            elif size == 1 and other_size: 
-                size = other_size
-                value = dct.get(0, 0)
-                other = other.dct
-                for i in range(size):
-                    if value >= other.get(i, 0): new.add(i)
-            elif size == other_size:
-                other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) >= other.get(i, 0): new.add(i)
-            else:
-                raise ValueError('shape mismatch between arrays')
-        else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
-            if ndim == 0:
-                for i in range(size):
-                    if dct.get(i, 0) >= other: new.add(i)
-            elif ndim == 1:
-                if size == 1 and other_size: 
-                    self.size = other_size
-                    if 0 in dct:
-                        value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) >= other[i]: new.add(i)
-            elif ndim == 2:
-                return SparseArray.from_rows([self >= i for i in other])
-            else:
-                return self.to_array() >= other
-        return SparseLogicalVector.from_set(new, size)
+        return self._comparison(other, '__ge__')
 
     def __le__(self, other): 
-        dct = self.dct
-        new = set()
-        size = self.size
-        if other.__class__ is SparseVector:
-            other_size = other.size
-            if other_size == 1:
-                other = other.dct.get(0, 0)
-                for i in range(size): 
-                    if dct.get(i, 0) <= other: new.add(i)
-            elif size == 1 and other_size: 
-                size = other_size
-                value = dct.get(0, 0)
-                other = other.dct
-                for i in range(size):
-                    if value <= other.get(i, 0): new.add(i)
-            elif size == other_size:
-                other = other.dct
-                for i in range(size):
-                    if dct.get(i, 0) <= other.get(i, 0): new.add(i)
-            else:
-                raise ValueError('shape mismatch between arrays')
-        else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
-            if ndim == 0:
-                for i in range(size):
-                    if dct.get(i, 0) <= other: new.add(i)
-            elif ndim == 1:
-                if size == 1 and other_size: 
-                    self.size = other_size
-                    if 0 in dct:
-                        value = dct[0]
-                        for i in range(1, other_size): dct[i] = value
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
-                for i in range(size):
-                    if dct.get(i, 0) <= other[i]: new.add(i)
-            elif ndim == 2:
-                return SparseArray.from_rows([self <= i for i in other])
-            else:
-                return self.to_array() <= other
-        return SparseLogicalVector.from_set(new, size)
+        return self._comparison(other, '__le__')
     
     # Not yet optimized methods
 
@@ -2450,17 +2339,17 @@ class SparseLogicalVector:
                 if 0 in other.set: 
                     new = data.copy()
                 else:
-                    new = set(range(size))
+                    new = {*range(size)}
                     new.difference_update(data)
             elif size == 1 and other_size: 
                 size = other_size
                 other = other.set
                 if 0 in data:
-                    new = set([i for i in range(size) if i in other])
+                    new = other.copy()
                 else:
-                    new = set([i for i in range(size) if i not in other])
+                    new = {i for i in range(size) if i not in other}
             elif size == other_size:
-                new = set(range(size))
+                new = {*range(size)}
                 new.difference_update(data.symmetric_difference(other.set))
             else:
                 raise ValueError('shape mismatch between arrays')
@@ -2473,7 +2362,7 @@ class SparseLogicalVector:
             if new.__class__ in bools: raise ValueError('shape mismatch between arrays')
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) == other])
+            new = {i for i in range(size) if (i in data) == other}
         return SparseLogicalVector.from_set(new, size)
 
     def __ne__(self, other): 
@@ -2483,7 +2372,7 @@ class SparseLogicalVector:
             other_size = other.size
             if other_size == 1:
                 if 0 in other.set: 
-                    new = set(range(size))
+                    new = {*range(size)}
                     new.difference_update(data)
                 else:
                     new = data.copy()
@@ -2491,9 +2380,9 @@ class SparseLogicalVector:
                 size = other_size
                 other = other.set
                 if 0 in data:
-                    new = set([i for i in range(size) if i not in other])
+                    new = {i for i in range(size) if i not in other}
                 else:
-                    new = set([i for i in range(size) if i in other])
+                    new = other.copy()
             elif size == other_size:
                 new = data.symmetric_difference(other.set)
             else:
@@ -2507,7 +2396,7 @@ class SparseLogicalVector:
             if new.__class__ in bools: raise ValueError('shape mismatch between arrays')
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) != other])
+            new = {i for i in range(size) if (i in data) != other}
         return SparseLogicalVector.from_set(new, size)
 
     def __gt__(self, other): 
@@ -2524,7 +2413,7 @@ class SparseLogicalVector:
                 size = other_size
                 if 0 in data:
                     other = other.set
-                    new = set([i for i in range(size) if i not in other])
+                    new = {i for i in range(size) if i not in other}
                 else:
                     new = set()
             elif size == other_size:
@@ -2539,7 +2428,7 @@ class SparseLogicalVector:
             new = self.to_array() > other
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) > other])
+            new = {i for i in range(size) if (i in data) > other}
         return SparseLogicalVector.from_set(new, size)
     
     def __lt__(self, other): 
@@ -2549,7 +2438,7 @@ class SparseLogicalVector:
             other_size = other.size
             if other_size == 1:
                 if 0 in other.set:
-                    new = set(range(size))
+                    new = {*range(size)}
                     new.difference_update(data)
                 else:
                     new = set()
@@ -2559,7 +2448,7 @@ class SparseLogicalVector:
                     new = set()
                 else:
                     other = other.set
-                    new = set([i for i in range(size) if i in other])
+                    new = other.copy()
             elif size == other_size:
                 new = other.set.difference(data)
             else:
@@ -2572,7 +2461,7 @@ class SparseLogicalVector:
             new = self.to_array() < other
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) < other])
+            new = {i for i in range(size) if (i in data) < other}
         return SparseLogicalVector.from_set(new, size)
 
     def __ge__(self, other): 
@@ -2584,16 +2473,16 @@ class SparseLogicalVector:
                 if 0 in other.set:
                     new = data.copy()
                 else:
-                    new = set(range(size))
+                    new = {*range(size)}
             elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
-                    new = set(range(size))
+                    new = {*range(size)}
                 else:
                     other = other.set
-                    new = set([i for i in range(size) if i not in other])
+                    new = {i for i in range(size) if i not in other}
             elif size == other_size:
-                new = set(range(size))
+                new = {*range(size)}
                 new.difference_update(other.set.difference(data))
             else:
                 raise ValueError('shape mismatch between arrays')
@@ -2605,7 +2494,7 @@ class SparseLogicalVector:
             new = self.to_array() >= other
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) >= other])
+            new = {i for i in range(size) if (i in data) >= other}
         return SparseLogicalVector.from_set(new, size)
 
     def __le__(self, other): 
@@ -2615,19 +2504,19 @@ class SparseLogicalVector:
             other_size = other.size
             if other_size == 1:
                 if 0 in other.set:
-                    new = set(range(size))
+                    new = {*range(size)}
                 else:
-                    new = set(range(size))
+                    new = {*range(size)}
                     new.difference_update(data)
             elif size == 1 and other_size: 
                 size = other_size
                 if 0 in data:
                     other = other.set
-                    new = set([i for i in range(size) if i in other])
+                    new = {i for i in range(size) if i in other}
                 else:
-                    new = set(range(size))
+                    new = {*range(size)}
             elif size == other_size:
-                new = set(range(size))
+                new = {*range(size)}
                 new.difference_update(data.difference(other.set))
             else:
                 raise ValueError('shape mismatch between arrays')
@@ -2639,7 +2528,7 @@ class SparseLogicalVector:
             new = self.to_array() <= other
             return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size) if new.ndim == 1 else new
         else:
-            new = set([i for i in range(size) if (i in data) <= other])
+            new = {i for i in range(size) if (i in data) <= other}
         return SparseLogicalVector.from_set(new, size)
     
     # Not yet optimized methods
