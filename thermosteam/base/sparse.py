@@ -1667,7 +1667,6 @@ class SparseVector:
             elif ndim == 1:
                 if size == 1 and other_size: 
                     size = other_size
-                    dct = dct.copy()
                     if 0 in dct: 
                         value = dct[0]
                         new = {i for i in range(size) if other[i] == value}
