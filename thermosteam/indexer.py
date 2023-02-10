@@ -61,8 +61,7 @@ def find_main_phase(indexers, default):
 def nonzeros(IDs, data):
     if hasattr(IDs, 'dct'):
         dct = data.dct
-        index = sorted(dct)
-        return  [IDs[i] for i in index], [dct[i] for i in index]
+        return  [IDs[i] for i in dct], [*dct.values()]
     else:
         index, = np.where(data)
         return [IDs[i] for i in index], [data[i] for i in index]
