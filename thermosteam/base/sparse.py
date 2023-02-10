@@ -1469,7 +1469,15 @@ class SparseVector:
         size = self.size
         if other.__class__ is SparseVector:
             other_size = other.size
-            if size == 1 and other_size: 
+            if size == other_size:
+                for i, j in other.dct.items():
+                    if i in dct:
+                        j += dct[i]
+                        if j: dct[i] = j
+                        else: del dct[i]
+                    else:
+                        dct[i] = j
+            elif size == 1 and other_size: 
                 self.size = other_size
                 other = other.dct
                 if 0 in dct: 
@@ -1492,16 +1500,8 @@ class SparseVector:
                             else: del dct[i]
                         else:
                             dct[i] = other
-            elif size != other_size:
-                raise ValueError('shape mismatch between arrays')
             else:
-                for i, j in other.dct.items():
-                    if i in dct:
-                        j += dct[i]
-                        if j: dct[i] = j
-                        else: del dct[i]
-                    else:
-                        dct[i] = j
+                raise ValueError('shape mismatch between arrays')
         else:
             other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
@@ -1515,7 +1515,16 @@ class SparseVector:
                     else:
                         dct[i] = other
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    for i, j in enumerate(other):
+                        if not j: continue
+                        if i in dct:
+                            j = dct[i] + float(j)
+                            if j: dct[i] = j
+                            else: del dct[i]
+                        else:
+                            dct[i] = float(j)
+                elif size == 1 and other_size: 
                     self.size = other_size
                     if 0 in dct: 
                         value = dct.pop(0)
@@ -1526,17 +1535,8 @@ class SparseVector:
                         for i in range(other_size):
                             j = other[i]
                             if j: dct[i] = float(j)
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    for i, j in enumerate(other):
-                        if not j: continue
-                        if i in dct:
-                            j = dct[i] + float(j)
-                            if j: dct[i] = j
-                            else: del dct[i]
-                        else:
-                            dct[i] = float(j)
+                    raise ValueError('shape mismatch between arrays')
             else:
                 raise ValueError('shape mismatch between arrays')
         return self
@@ -1547,7 +1547,15 @@ class SparseVector:
         size = self.size
         if other.__class__ is SparseVector:
             other_size = other.size
-            if size == 1 and other_size: 
+            if size == other_size:
+                for i, j in other.dct.items():
+                    if i in dct:
+                        j = dct[i] - j
+                        if j: dct[i] = j
+                        else: del dct[i]
+                    else:
+                        dct[i] = -j
+            elif size == 1 and other_size: 
                 self.size = other_size
                 other = other.dct
                 if 0 in dct: 
@@ -1570,16 +1578,8 @@ class SparseVector:
                             else: del dct[i]
                         else:
                             dct[i] = other
-            elif size != other_size:
-                raise ValueError('shape mismatch between arrays')
             else:
-                for i, j in other.dct.items():
-                    if i in dct:
-                        j = dct[i] - j
-                        if j: dct[i] = j
-                        else: del dct[i]
-                    else:
-                        dct[i] = -j
+                raise ValueError('shape mismatch between arrays')
         else:
             other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
@@ -1593,7 +1593,16 @@ class SparseVector:
                     else:
                         dct[i] = other
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    for i, j in enumerate(other):
+                        if not j: continue
+                        if i in dct:
+                            j = dct[i] - float(j)
+                            if j: dct[i] = j
+                            else: del dct[i]
+                        else:
+                            dct[i] = -float(j)
+                elif size == 1 and other_size: 
                     self.size = other_size
                     if 0 in dct: 
                         value = dct.pop(0)
@@ -1604,17 +1613,8 @@ class SparseVector:
                         for i in range(other_size):
                             j = other[i]
                             if j: dct[i] = -float(j)
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    for i, j in enumerate(other):
-                        if not j: continue
-                        if i in dct:
-                            j = dct[i] - float(j)
-                            if j: dct[i] = j
-                            else: del dct[i]
-                        else:
-                            dct[i] = -float(j)
+                    raise ValueError('shape mismatch between arrays')
             else:
                 raise ValueError('shape mismatch between arrays')
         return self
@@ -1625,7 +1625,14 @@ class SparseVector:
         size = self.size
         if other.__class__ is SparseVector:
             other_size = other.size
-            if size == 1 and other_size: 
+            if size == other_size:
+                other = other.dct
+                for i in tuple(dct):
+                    if i in other:
+                        dct[i] *= other[i]
+                    else:
+                        del dct[i]
+            elif size == 1 and other_size: 
                 self.size = other_size
                 other = other.dct
                 if 0 in dct: 
@@ -1637,15 +1644,8 @@ class SparseVector:
                     for i in dct: dct[i] *= other
                 else:
                     dct.clear()
-            elif size != other_size:
-                raise ValueError('shape mismatch between arrays')
             else:
-                other = other.dct
-                for i in tuple(dct):
-                    if i in other:
-                        dct[i] *= other[i]
-                    else:
-                        del dct[i]
+                raise ValueError('shape mismatch between arrays')
         else:
             other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
@@ -1655,20 +1655,20 @@ class SparseVector:
                 else:
                     dct.clear()
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    for i in tuple(dct):
+                        j = other[i]
+                        if j: dct[i] *= float(j)
+                        else: del dct[i]
+                elif size == 1 and other_size: 
                     self.size = other_size
                     if 0 in dct: 
                         value = dct.pop(0)
                         for i in range(other_size):
                             j = other[i]
                             if j: dct[i] = value * float(j)
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    for i in tuple(dct):
-                        j = other[i]
-                        if j: dct[i] *= float(j)
-                        else: del dct[i]
+                    raise ValueError('shape mismatch between arrays')
             else:
                 raise ValueError('shape mismatch between arrays')
         return self
@@ -1679,7 +1679,14 @@ class SparseVector:
         size = self.size
         if other.__class__ is SparseVector:
             other_size = other.size
-            if size == 1 and other_size: 
+            if size == other_size:
+                other = other.dct
+                for i in dct: 
+                    if i in other:
+                        dct[i] /= other[i]
+                    else:
+                        raise ZeroDivisionError('division by zero')
+            elif size == 1 and other_size: 
                 other = other.dct
                 if 0 in dct: 
                     if len(other) != other_size: raise ZeroDivisionError('division by zero')
@@ -1692,33 +1699,26 @@ class SparseVector:
                     for i in dct: dct[i] /= other
                 elif dct:
                     raise ZeroDivisionError('division by zero')
-            elif size != other_size:
-                raise ValueError('shape mismatch between arrays')
             else:
-                other = other.dct
-                for i in dct: 
-                    if i in other:
-                        dct[i] /= other[i]
-                    else:
-                        raise ZeroDivisionError('division by zero')
+                raise ValueError('shape mismatch between arrays')
         else:
             other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 other = float(other)
                 for i in dct: dct[i] /= other
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    for i in tuple(dct):
+                        j = other[i]
+                        dct[i] /= float(j)
+                elif size == 1 and other_size: 
                     self.size = other_size
                     if 0 in dct: 
                         value = dct.pop(0)
                         for i in range(other_size):
                             dct[i] = value / float(other[i])
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    for i in tuple(dct):
-                        j = other[i]
-                        dct[i] /= float(j)
+                    raise ValueError('shape mismatch between arrays')
             else:
                 raise ValueError('shape mismatch between arrays')
         return self
@@ -1751,7 +1751,15 @@ class SparseVector:
             other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
         if cls is SparseVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                other = other.dct
+                new = {
+                    i for i in range(size) 
+                    if (i in other and dct[i] == other[i]
+                        if i in dct
+                        else i not in other)
+                }
+            elif other_size == 1:
                 if 0 in other.dct: 
                     other = other.dct[0]
                     new = {i for i in dct if dct[i] == other}
@@ -1764,14 +1772,6 @@ class SparseVector:
                     new = {i for i in other.dct if other.dct[i] == value}
                 else:
                     new = {i for i in range(size) if i not in other.dct}
-            elif size == other_size:
-                other = other.dct
-                new = {
-                    i for i in range(size) 
-                    if (i in other and dct[i] == other[i]
-                        if i in dct
-                        else i not in other)
-                }
             else:
                 raise ValueError('shape mismatch between arrays')
         elif cls is SparseArray:
@@ -1784,20 +1784,20 @@ class SparseVector:
                 else:
                     new = {i for i in range(size) if i not in dct}
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    new = {
+                        i for i in range(size) 
+                        if (dct[i] == other[i] if i in dct else not other[i])
+                    }
+                elif size == 1 and other_size: 
                     size = other_size
                     if 0 in dct: 
                         value = dct[0]
                         new = {i for i in range(size) if other[i] == value}
                     else:
                         new = {i for i in range(size) if not other[i]}
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    new = {
-                        i for i in range(size) 
-                        if (dct[i] == other[i] if i in dct else not other[i])
-                    }
+                    raise ValueError('shape mismatch between arrays')
             elif ndim == 2:
                 return SparseArray.from_rows([self == i for i in other])
             else:
@@ -1812,7 +1812,13 @@ class SparseVector:
             other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
         if cls is SparseVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                other = other.dct
+                new = {
+                    i for i in [*dct, *other]
+                    if (i not in other or i not in dct or dct[i] != other[i])
+                }
+            elif other_size == 1:
                 if 0 in other.dct: 
                     other = other.dct[0]
                     new = {i for i in range(size) if i not in dct or dct[i] != other}
@@ -1826,12 +1832,6 @@ class SparseVector:
                     new = {i for i in range(size) if i not in other or other[i] != value}
                 else:
                     new = {*other}
-            elif size == other_size:
-                other = other.dct
-                new = {
-                    i for i in [*dct, *other]
-                    if (i not in other or i not in dct or dct[i] != other[i])
-                }
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseArray:
@@ -1844,20 +1844,20 @@ class SparseVector:
                 else:
                     new = {*dct}
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    new = {
+                        i for i in range(size) 
+                        if (dct[i] != other[i] if i in dct else other[i])
+                    }
+                elif size == 1 and other_size: 
                     size = other_size
                     if 0 in dct:
                         value = dct[0]
                         new = {i for i in range(size) if other[i] != value}
                     else:
                         new = {i for i in range(size) if other[i]}
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    new = {
-                        i for i in range(size) 
-                        if (dct[i] != other[i] if i in dct else other[i])
-                    }
+                    raise ValueError('shape mismatch between arrays')
             elif ndim == 2:
                 return SparseArray.from_rows([self != i for i in other])
             else:
@@ -1872,7 +1872,15 @@ class SparseVector:
             other = SparseVector.from_dict({i: 1. for i in other.set}, other.size)
         if cls is SparseVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                other = other.dct
+                default = getattr(0., operation)(0.)
+                if default:
+                    new = {*range(size)}
+                    new.difference_update([i for i in [*dct, *other] if not getattr(dct.get(i, 0.), operation)(other.get(i, 0.))])
+                else:
+                    new = {i for i in [*dct, *other] if getattr(dct.get(i, 0.), operation)(other.get(i, 0.))}
+            elif other_size == 1:
                 other = other.dct.get(0, 0.)
                 default = getattr(0., operation)(other)
                 if default:
@@ -1888,14 +1896,6 @@ class SparseVector:
                     new = {i for i in range(size) if i not in other or getattr(value, operation)(other[i])}
                 else:
                     new = {i for i in other if getattr(value, operation)(other[i])}
-            elif size == other_size:
-                other = other.dct
-                default = getattr(0., operation)(0.)
-                if default:
-                    new = {*range(size)}
-                    new.difference_update([i for i in [*dct, *other] if not getattr(dct.get(i, 0.), operation)(other.get(i, 0.))])
-                else:
-                    new = {i for i in [*dct, *other] if getattr(dct.get(i, 0.), operation)(other.get(i, 0.))}
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseArray:
@@ -1910,14 +1910,14 @@ class SparseVector:
                 else:
                     new = {i for i in dct if getattr(dct[i], operation)(other)}
             elif ndim == 1:
-                if size == 1 and other_size: 
+                if size == other_size:
+                    new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(float(other[i]))}
+                elif size == 1 and other_size: 
                     size = other_size
                     value = dct.get(0, 0.)
                     new = {i for i in range(size) if getattr(value, operation)(float(other[i]))}
-                elif size != other_size:
-                    raise ValueError('shape mismatch between arrays')
                 else:
-                    new = {i for i in range(size) if getattr(dct.get(i, 0.), operation)(float(other[i]))}
+                    raise ValueError('shape mismatch between arrays')
             elif ndim == 2:
                 return SparseArray.from_rows([getattr(self, operation)(i) for i in other])
             else:
@@ -2260,38 +2260,46 @@ class SparseLogicalVector:
     
     def __iadd__(self, other):
         set = self.set
+        size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                set.update(other.set)
+            elif size == 1 and other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
+                else: self.set.update(other.set)
             elif other_size == 1:
-                if 0 in other.set: 
-                    self.set.update(range(self.size))
-                return self
-            self.set.update(other.set)
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__iadd__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            for i, j in enumerate(other):
-                if not j: continue
-                if i in set:
-                    j = True + j
-                    if not j: set.discard(i)
+                if 0 in other.set: self.set.update(range(size))
+            else:
+                raise ValueError('shape mismatch between arrays')
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if other:
+                    for i in range(size):
+                        if i in set: 
+                            j = True + other
+                            if not j: set.discard(i)
+                        else:
+                            set.add(i)
+            elif ndim == 1:
+                if size == other_size:
+                    for i, j in enumerate(other):
+                        if not j: continue
+                        if i in set:
+                            j = True + j
+                            if not j: set.discard(i)
+                        else:
+                            set.add(i)
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in set: set.update(range(1, other_size))
+                    else: set.update([i for i, j in enumerate(other) if j])
                 else:
-                    set.add(i)
-        elif other:
-            for i in range(self.size):
-                if i in set: 
-                    j = True + other
-                    if not j: set.discard(i)
-                else:
-                    set.add(i)
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
             
     def __isub__(self, other):
@@ -2302,54 +2310,71 @@ class SparseLogicalVector:
     
     def __imul__(self, other):
         set = self.set
+        size = self.size
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                set.intersection_update(other.data)
+            elif size == 1 and other_size: 
                 self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
+                if 0 in set: 
+                    set.clear()
+                    set.update(other.data)
             elif other_size == 1:
                 if not other.data: set.clear()
-                return self
-            set.intersection_update(other.data)
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__imul__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            for i in tuple(set):
-                j = other[i]
-                if not j: set.remove(i)
-        elif not other:
-            set.clear()
+            else:
+                raise ValueError('shape mismatch between arrays')
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if not other: set.clear()
+            elif ndim == 1:
+                if size == other_size:
+                    for i in tuple(set):
+                        j = other[i]
+                        if not j: set.remove(i)
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in set: 
+                        set.clear()
+                        set.update([i for i, j in enumerate(other) if j])
+                else:
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
     
     def __itruediv__(self, other):
         set = self.set
+        size = self.size
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                if set.difference(other.data): raise ZeroDivisionError('division by zero')
+            elif size == 1 and other_size: 
                 self.size = other_size
                 if 0 in set: set.update(range(1, other_size))
+                elif set.difference(other.data): raise ZeroDivisionError('division by zero')
             elif other_size == 1:
-                if not other.data and set:
-                    raise ZeroDivisionError('division by zero')
+                if not other.data and set: raise ZeroDivisionError('division by zero')
+            else:
+                raise ValueError('shape mismatch between arrays')
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if not other and set: raise ZeroDivisionError('division by zero')
+            elif ndim == 1:
+                if size == other_size:
+                    if set.difference([i for i, j in enumerate(other) if j]): raise ZeroDivisionError('division by zero')
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in set: 
+                        set.update(range(1, other_size))
+                        if set.difference([i for i, j in enumerate(other) if j]): raise ZeroDivisionError('division by zero')
                 else:
-                    return self
-            if set.difference(other.data): raise ZeroDivisionError('division by zero')
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__itruediv__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in set: set.update(range(1, other_size))
-            if set.difference([i for i, j in enumerate(other) if j]): raise ZeroDivisionError('division by zero')
-        elif not other and set:
-            raise ZeroDivisionError('division by zero')
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
     
     def __neg__(self):
@@ -2375,89 +2400,113 @@ class SparseLogicalVector:
     
     def __iand__(self, other):
         data = self.set
+        size = self.size
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                data.intersection_update(other.data)
+            elif size == 1 and other_size: 
                 self.size = other_size
-                if 0 in data: data.update(range(1, other_size))
+                if 0 in data: 
+                    data.clear()
+                    data.update(other.data)
             elif other_size == 1:
                 if 0 not in other.data: data.clear()
-                return self
-            elif self.size != other_size:
+            else:
                 raise ValueError('shape mismatch between arrays')
-            data.intersection_update(other.data)
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__iand__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in data: data.update(range(1, other_size))
-            for i in tuple(data):
-                j = other[i]
-                if not j: data.discard(i)
-        elif not other:
-            data.clear()
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if not other: data.clear()
+            elif ndim == 1:
+                if size == other_size:
+                    for i in tuple(data):
+                        j = other[i]
+                        if not j: data.discard(i)
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in data: 
+                        data.clear()
+                        data.update([i for i, j in enumerate(other) if j])
+                else:
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
 
     def __ixor__(self, other):
         data = self.set
+        size = self.size
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                data.symmetric_difference_update(other.data)
+            elif size == 1 and other_size: 
                 self.size = other_size
-                if 0 in data: data.update(range(1, other_size))
+                if 0 in data: 
+                    other_data = other.data
+                    data.clear()
+                    data.update([i for i in range(other_size) if i not in other_data])
+                else:
+                    data.update(other.data)
             elif other_size == 1:
                 if 0 in other.data: 
-                    data.symmetric_difference_update(range(self.size))
-                return self
-            elif self.size != other_size:
+                    data.symmetric_difference_update(range(size))
+            else:
                 raise ValueError('shape mismatch between arrays')
-            data.symmetric_difference_update(other.data)
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__ixor__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in data: data.update(range(1, other_size))
-            for i, j in enumerate(other):
-                if not j: continue
-                if i in data: data.remove(i)
-                else: data.add(i)
-        elif other:
-            data.symmetric_difference_update(range(self.size))
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if other: data.symmetric_difference_update(range(size))
+            elif ndim == 1:
+                if size == other_size:
+                    for i, j in enumerate(other):
+                        if not j: continue
+                        if i in data: data.remove(i)
+                        else: data.add(i)
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in data: 
+                        data.clear()
+                        data.update([i for i, j in enumerate(other) if not j])
+                    else:
+                        data.update([i for i, j in enumerate(other) if j])
+                else:
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
 
     def __ior__(self, other):
         data = self.set
+        size = self.size
         if other.__class__ in SparseVectorSet:
             other_size = other.size
-            if self.size == 1 and other_size: 
+            if size == other_size:
+                data.update(other.data)
+            elif size == 1 and other_size: 
                 self.size = other_size
                 if 0 in data: data.update(range(1, other_size))
+                else: data.update(other.data)
             elif other_size == 1:
-                if 0 in other.data: 
-                    self.set.update(range(self.size))
-                return self
-            elif self.size != other_size:
+                if 0 in other.data: data.update(range(size))
+            else:
                 raise ValueError('shape mismatch between arrays')
-            data.update(other.data)
-        elif other.ndim if hasattr(other, 'ndim') else hasattr(other, '__len__'):
-            other_size = len(other)
-            if other_size == 1: 
-                self.__ior__(other[0])
-                return self
-            if self.size == 1 and other_size: 
-                self.size = other_size
-                if 0 in data: data.update(range(1, other_size))
-            for i, j in enumerate(other):
-                if not j: continue
-                if i not in data: data.add(i)
-        elif other:
-            data.update(range(self.size))
+        else:
+            other, ndim, other_size = reduce_ndim(other)
+            if ndim == 0:
+                if other: data.update(range(size))
+            elif ndim == 1:
+                if size == other_size:
+                    data.update([i for i, j in enumerate(other) if j])
+                elif size == 1 and other_size: 
+                    self.size = other_size
+                    if 0 in data: data.update(range(1, other_size))
+                    else: data.update([i for i, j in enumerate(other) if j])
+                else:
+                    raise ValueError('shape mismatch between arrays')
+            else:
+                raise ValueError('shape mismatch between arrays')
         return self
     
     def __eq__(self, other): 
@@ -2465,7 +2514,10 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = {*range(size)}
+                new.difference_update(data.symmetric_difference(other.set))
+            elif other_size == 1:
                 if 0 in other.set: 
                     new = data.copy()
                 else:
@@ -2478,9 +2530,6 @@ class SparseLogicalVector:
                     new = other.copy()
                 else:
                     new = {i for i in range(size) if i not in other}
-            elif size == other_size:
-                new = {*range(size)}
-                new.difference_update(data.symmetric_difference(other.set))
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
@@ -2500,7 +2549,9 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = data.symmetric_difference(other.set)
+            elif other_size == 1:
                 if 0 in other.set: 
                     new = {*range(size)}
                     new.difference_update(data)
@@ -2513,8 +2564,6 @@ class SparseLogicalVector:
                     new = {i for i in range(size) if i not in other}
                 else:
                     new = other.copy()
-            elif size == other_size:
-                new = data.symmetric_difference(other.set)
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
@@ -2534,7 +2583,9 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = data.difference(other.set)
+            elif other_size == 1:
                 if 0 in other.set:
                     new = set()
                 else:
@@ -2546,8 +2597,6 @@ class SparseLogicalVector:
                     new = {i for i in range(size) if i not in other}
                 else:
                     new = set()
-            elif size == other_size:
-                new = data.difference(other.set)
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
@@ -2566,7 +2615,9 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = other.set.difference(data)
+            elif other_size == 1:
                 if 0 in other.set:
                     new = {*range(size)}
                     new.difference_update(data)
@@ -2579,8 +2630,6 @@ class SparseLogicalVector:
                 else:
                     other = other.set
                     new = other.copy()
-            elif size == other_size:
-                new = other.set.difference(data)
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
@@ -2599,7 +2648,10 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = {*range(size)}
+                new.difference_update(other.set.difference(data))
+            elif other_size == 1:
                 if 0 in other.set:
                     new = data.copy()
                 else:
@@ -2611,9 +2663,6 @@ class SparseLogicalVector:
                 else:
                     other = other.set
                     new = {i for i in range(size) if i not in other}
-            elif size == other_size:
-                new = {*range(size)}
-                new.difference_update(other.set.difference(data))
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
@@ -2632,7 +2681,10 @@ class SparseLogicalVector:
         size = self.size
         if other.__class__ is SparseLogicalVector:
             other_size = other.size
-            if other_size == 1:
+            if size == other_size:
+                new = {*range(size)}
+                new.difference_update(data.difference(other.set))
+            elif other_size == 1:
                 if 0 in other.set:
                     new = {*range(size)}
                 else:
@@ -2645,9 +2697,6 @@ class SparseLogicalVector:
                     new = {i for i in range(size) if i in other}
                 else:
                     new = {*range(size)}
-            elif size == other_size:
-                new = {*range(size)}
-                new.difference_update(data.difference(other.set))
             else:
                 raise ValueError('shape mismatch between arrays')
         elif other.__class__ is SparseVector:
