@@ -788,7 +788,7 @@ class CompiledChemicals(Chemicals):
         """
         array =  np.zeros(self.size) 
         index, kind = self._get_index_and_kind(tuple(IDs))
-        if kind == 0:
+        if kind == 0 or kind == 3:
             array[index] = data
         elif kind == 1:
             raise ValueError('cannot create array by chemical groups')
@@ -919,7 +919,6 @@ class CompiledChemicals(Chemicals):
         if isinstance(split, dict):
             assert not order, "cannot pass 'order' key word argument when split is a dictionary"
             order, split = zip(*split.items())
-        
         if order:
             isplit = SplitIndexer.blank(chemicals=self)
             isplit[tuple(order)] = split
@@ -1073,18 +1072,25 @@ class CompiledChemicals(Chemicals):
             return index_cache[key]
         except KeyError:
             isa = isinstance
-            kind = 0 # [int] Kind of index: 0 - normal, 1 - chemical group, 2 - nested chemical group
+            # [int|None] Kind of index:
+            # None - all
+            # 0 - chemical
+            # 1 - chemical group
+            # 2 - nested chemical group
+            # 3 - array
             if isa(key, str):
                 index = self.index(key)
-                if isa(index, list): kind = 1 
+                kind = 0 if isa(index, int) else 1
             elif isa(key, tuple):
                 index = self.indices(key)
                 for i in index:
                     if isa(i, list): 
                         kind = 2
                         break
+                else:
+                    kind = 3
             elif key is ...:
-                index = slice(None)
+                kind = index = None
             else: # pragma: no cover
                 raise TypeError("only strings, sequences of strings, and ellipsis are valid index keys")
             index_cache[key] = index, kind

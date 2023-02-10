@@ -788,11 +788,9 @@ def test_sparse_array_indexing():
     with pytest.raises(IndexError):
         sa[[0, 1], [[0]]] # Column index dimensions can be at most 1
         
-    with pytest.raises(IndexError):
-        sa[[0, 1]] = [[[0, 1]]] # Cannot broadcast 3-d array to 2-d
+    sa[[0, 1]] = [[[0, 1]]] # Broadcast 3-d array to 2-d
         
-    with pytest.raises(IndexError):
-        sa[[0, 1], 0] = [[0, 1]] # Cannot set array element with sequence
+    sa[[0, 1], 0] = [[0, 1]] # Reduce dimensions
 
 def test_sparse_array_boolean_indexing():
     for dtype in (float, bool):
@@ -859,11 +857,9 @@ def test_sparse_vector_special_methods():
         with pytest.raises(IndexError):
             sv[[[1, 2]]] = [2, 3] # index dimensions is off
             
-        with pytest.raises(IndexError):
-            sv[[1, 2]] = [[2, 3]] # value dimensions is off
+        sv[[1, 2]] = [[2, 3]] # Reduce dimensions
         
-        with pytest.raises(IndexError):
-            sv[:] = [[2]] # value dimensions is off
+        sv[:] = [[2]] # Reduce dimensions
 
 def test_sparse_array_special_methods():
     arr = np.array([[1., 2., 0., 4.5], [0., 0., 1., 1.5]])

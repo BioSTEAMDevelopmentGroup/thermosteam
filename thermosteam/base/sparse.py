@@ -10,6 +10,7 @@ __all__ = (
     'SparseLogicalVector',
     'SparseArray',
     'sparse',
+    'reduce_ndim',
 )
 
 open_slice = slice(None)
@@ -143,6 +144,24 @@ def get_ndim(value):
         except StopIteration: break
     return ndim
 
+def reduce_ndim(value):
+    if hasattr(value, 'ndim'): 
+        ndim = value.ndim
+        size = 0
+        while ndim and (size:=len(value)) == 1:
+            ndim -= 1
+            value = value[0]
+        return value, ndim, size
+    else:
+        ndim = size = 0
+        while hasattr(value, '__len__') and (size:=len(value)) == 1: value = value[0]
+        dummy = value
+        while hasattr(dummy, '__iter__'):
+            ndim += 1
+            try: dummy = next(iter(dummy))
+            except StopIteration: break
+        return value, ndim, size
+
 def get_array_properties(index):
     if hasattr(index, 'ndim'): return index.ndim, index.dtype in bools
     ndim = 0
@@ -205,11 +224,33 @@ class SparseArray:
     def copy(self):
         return SparseArray.from_rows([i.copy() for i in self.rows])
     
+    def __int__(self):
+        value, ndim, _ = reduce_ndim(self)
+        if ndim == 0:
+            return int(value)
+        else:
+            raise ValueError(
+                'cannot cast array with more than one element to a scalar'
+            )
+    
+    def __float__(self):
+        value, ndim, _ = reduce_ndim(self)
+        if ndim == 0:
+            return float(value)
+        else:
+            raise ValueError(
+                'cannot cast array with more than one element to a scalar'
+            )
+    
     def __bool__(self):
-        raise ValueError(
-            'the truth value of an array with more than one element is ambiguous; '
-            'use any() or all() methods instead'
-        )
+        value, ndim, _ = reduce_ndim(self)
+        if ndim == 0:
+            return bool(value)
+        else:
+            raise ValueError(
+                'the truth value of an array with more than one element is ambiguous; '
+                'use any() or all() methods instead'
+            )
     
     def __iter__(self):
         return self.rows.__iter__()
@@ -439,6 +480,7 @@ class SparseArray:
     
     def __setitem__(self, index, value):
         rows = self.rows
+        value, vd, _ = reduce_ndim(value)
         if index.__class__ is tuple:
             m, n = unpack_index(index, self.ndim)
             if m.__class__ is slice:
@@ -450,7 +492,6 @@ class SparseArray:
                         return
                     else:
                         n = default_range(n, self.vector_size)
-                vd = get_ndim(value)
                 if vd == 0.:
                     for i in rows: i[n] = value
                 elif vd == 1:
@@ -471,7 +512,6 @@ class SparseArray:
                 if md == 0:
                     rows[m][n] = value
                 elif md == 1:
-                    vd = get_ndim(value)
                     if vd in (0, 1):
                         if misbool:
                             for i, j in enumerate(m): 
@@ -489,27 +529,49 @@ class SparseArray:
             elif (md:=get_ndim(m)) == 0: 
                 rows[m][n] = value
             elif md == 1: 
-                vd = get_ndim(value)
                 dtype = self.dtype
                 if dtype is float:
-                    if vd == 0:
-                        if value:
-                            value = float(value)
-                            for i, j in zip(m, n): 
-                                rows[i].dct[j] = value
-                        else:
-                            for i, j in zip(m, n): 
+                    nd = get_ndim(n)
+                    if nd == 0:
+                        if vd == 0:
+                            if value:
+                                value = float(value)
+                                for i in m: 
+                                    rows[i].dct[n] = value
+                            else:
+                                for i in m: 
+                                    dct = rows[i].dct
+                                    if n in dct: del dct[n]
+                        elif vd == 1:
+                            for i, k in zip(m, value): 
                                 dct = rows[i].dct
-                                if j in dct: del dct[j]
-                    elif vd == 1:
-                        for i, j, k in zip(m, n, value): 
-                            dct = rows[i].dct
-                            if k: dct[j] = float(k)
-                            elif j in dct: del dct[j]
+                                if k: dct[n] = float(k)
+                                elif n in dct: del dct[n]
+                        else:
+                            raise IndexError(
+                                'cannot set an array element with a sequence'
+                            )
+                    elif nd == 1:
+                        if vd == 0:
+                            if value:
+                                value = float(value)
+                                for i, j in zip(m, n): 
+                                    rows[i].dct[j] = value
+                            else:
+                                for i, j in zip(m, n): 
+                                    dct = rows[i].dct
+                                    if j in dct: del dct[j]
+                        elif vd == 1:
+                            for i, j, k in zip(m, n, value): 
+                                dct = rows[i].dct
+                                if k: dct[j] = float(k)
+                                elif j in dct: del dct[j]
+                        else:
+                            raise IndexError(
+                                'cannot set an array element with a sequence'
+                            )
                     else:
-                        raise IndexError(
-                            'cannot set an array element with a sequence'
-                        )
+                        raise IndexError(f'column index can be at most 1-d, not {nd}-d')
                 elif dtype is bool:
                     if vd == 0:
                         if value:
@@ -533,7 +595,6 @@ class SparseArray:
             ndim, has_bool = get_array_properties(index)
             if has_bool:
                 if ndim == 1: 
-                    vd = get_ndim(value)
                     if vd == 0:
                         for i, j in enumerate(index):
                             if j: rows[i][:] = value
@@ -552,7 +613,6 @@ class SparseArray:
                 return
             else:
                 raise IndexError('must use tuple for multidimensional indexing')
-            vd = get_ndim(value)
             if vd in (0, 1):
                 for i in rows: i[:] = value
             elif vd == 2:
@@ -779,33 +839,45 @@ class SparseArray:
             other = other[0]
         if ndim < 2:
             rows = self.rows
-            return SparseArray.from_rows([
-                getattr(SparseVector.from_dict({j: 1. for j in i.set}, i.size)
-                        if not has_bool and self.dtype is bool else i.copy(), operation)(other)
-                for i in rows
-            ])
+            if not has_bool and self.dtype is bool:
+                return SparseArray.from_rows([
+                    getattr(SparseVector.from_dict({j: 1. for j in i.set}, i.size), operation)(other)
+                    for i in rows
+                ])
+            else:
+                return SparseArray.from_rows([
+                    getattr(i.copy(), operation)(other)
+                    for i in rows
+                ])
         elif ndim == 2:
             rows = self.rows
             if len(rows) == 1:
                 row = rows[0]
-                return SparseArray.from_rows(
-                    [getattr(SparseVector.from_dict({j: 1. for j in row.set}, row.size)
-                             if not has_bool and self.dtype is bool else row.copy(), operation)(i)
-                     for i in other]
-                ) 
+                if not has_bool and self.dtype is bool:
+                    return SparseArray.from_rows(
+                        [getattr(SparseVector.from_dict({j: 1. for j in row.set}, row.size), operation)(i)
+                         for i in other]
+                    )
+                else:
+                    return SparseArray.from_rows(
+                        [getattr(row.copy(), operation)(i) for i in other]
+                    )
             else:
-                return SparseArray.from_rows([
-                    getattr(SparseVector.from_dict({j: 1. for j in i.set}, i.size)
-                            if not has_bool and self.dtype is bool else i.copy(), operation)(j) for i, j in zip(rows, other)
-                ]) # TODO: With python 3.10, use strict=True zip kwarg
+                # TODO: With python 3.10, use strict=True zip kwarg
+                if not has_bool and self.dtype is bool:
+                    return SparseArray.from_rows(
+                        [getattr(SparseVector.from_dict({k: 1. for k in i.set}, i.size), operation)(j)
+                         for i, j in zip(rows, other)]
+                    )
+                else:
+                    return SparseArray.from_rows(
+                        [getattr(i.copy(), operation)(j) for i, j in zip(rows, other)]
+                    )
         else:
             return getattr(self.to_array(), operation)(other)
     
     def _comparison(self, other, operation):
-        ndim, has_bool = get_array_properties(other)
-        while ndim and len(other) == 1:
-            ndim -= 1
-            other = other[0]
+        other, ndim, _ = reduce_ndim(other)
         if ndim < 2:
             rows = self.rows
             return SparseArray.from_rows([getattr(i, operation)(other) for i in rows])
@@ -824,10 +896,7 @@ class SparseArray:
             return getattr(self.to_array(), operation)(other)
     
     def _imath(self, other, operation):
-        ndim = get_ndim(other)
-        while ndim and len(other) == 1:
-            ndim -= 1
-            other = other[0]
+        other, ndim, _ = reduce_ndim(other)
         if ndim == 2:
             for i, j in zip(self.rows, other): getattr(i, operation)(j) # TODO: With python 3.10, use strict=True zip kwarg
         elif ndim < 2:
@@ -1287,6 +1356,7 @@ class SparseVector:
         if index.__class__ is tuple:
             index, = unpack_index(index, self.ndim)
         ndim, has_bool = get_array_properties(index)
+        value, vd, _ = reduce_ndim(value)
         if has_bool: 
             if ndim != 1:
                 raise IndexError(
@@ -1294,7 +1364,6 @@ class SparseVector:
                 )
             index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
         if ndim == 1:
-            vd = get_ndim(value)
             if vd == 1:
                 for i, j in zip(index, value): 
                     if j: dct[i] = float(j)
@@ -1313,7 +1382,6 @@ class SparseVector:
         elif index.__class__ is slice:
             if index == open_slice:
                 if value is self: return
-                vd = get_ndim(value)
                 dct.clear()
                 if value.__class__ is SparseVector:
                     dct.update(value.dct)
@@ -1322,7 +1390,7 @@ class SparseVector:
                         if j: dct[i] = float(j)
                         elif i in dct: del dct[i]  
                 elif vd == 0:
-                    if value != 0.:
+                    if value:
                         value = float(value)
                         for i in range(self.size): dct[i] = value
                 else:
@@ -1333,7 +1401,7 @@ class SparseVector:
                 self[default_range(index, self.size)] = value
         elif ndim:
             raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
-        elif hasattr(value, '__iter__'):
+        elif vd:
             raise IndexError(
                 'cannot set an array element with a sequence'
             )
@@ -1381,6 +1449,9 @@ class SparseVector:
     def __or__(self, other):
         return self._math(other, '__ior__')
     
+    __float__ = SparseArray.__float__
+    __bool__ = SparseArray.__bool__
+    __int__ = SparseArray.__int__
     __radd__ = SparseArray.__radd__
     __rsub__ = SparseArray.__rsub__
     __rmul__ = SparseArray.__rmul__
@@ -1428,10 +1499,7 @@ class SparseVector:
                     else:
                         dct[i] = j
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 if not other: return self
                 other = float(other)
@@ -1509,10 +1577,7 @@ class SparseVector:
                     else:
                         dct[i] = -j
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 if not other: return self
                 other = -float(other)
@@ -1578,10 +1643,7 @@ class SparseVector:
                     else:
                         del dct[i]
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 if other:
                     other = float(other)
@@ -1636,10 +1698,7 @@ class SparseVector:
                     else:
                         raise ZeroDivisionError('division by zero')
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 other = float(other)
                 for i in dct: dct[i] /= other
@@ -1714,10 +1773,7 @@ class SparseVector:
         elif cls is SparseArray:
             return other == self
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 if other:
                     new = {i for i in dct if dct[i] == other}
@@ -1777,10 +1833,7 @@ class SparseVector:
         elif other.__class__ is SparseArray:
             return other != self
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 if other:
                     new = {i for i in range(size) if i not in dct or dct[i] != other}
@@ -1844,10 +1897,7 @@ class SparseVector:
         elif other.__class__ is SparseArray:
             return getattr(SparseArray.from_rows([self]), operation)(other)
         else:
-            ndim = get_ndim(other)
-            while ndim and (other_size:=len(other)) == 1:
-                ndim -= 1
-                other = other[0]
+            other, ndim, other_size = reduce_ndim(other)
             if ndim == 0:
                 other = float(other)
                 default = getattr(0., operation)(other)
@@ -2134,6 +2184,7 @@ class SparseLogicalVector:
         if index.__class__ is tuple:
             index, = unpack_index(index, self.ndim)
         ndim, has_bool = get_array_properties(index)
+        value, vd, _ = reduce_ndim(value)
         if has_bool: 
             if ndim != 1:
                 raise IndexError(
@@ -2141,7 +2192,6 @@ class SparseLogicalVector:
                 )
             index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
         if ndim == 1:
-            vd = get_ndim(value)
             if vd == 1:
                 for i, j in zip(index, value): 
                     if j: set.add(i)
@@ -2158,7 +2208,6 @@ class SparseLogicalVector:
         elif index.__class__ is slice:
             if index == open_slice:
                 if value is self: return
-                vd = get_ndim(value)
                 set.clear()
                 if vd == 0:
                     if value:
@@ -2178,7 +2227,7 @@ class SparseLogicalVector:
                 self[default_range(index, self.size)] = value
         elif ndim:
             raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
-        elif hasattr(value, '__iter__'):
+        elif vd:
             raise IndexError(
                 'cannot set an array element with a sequence'
             )
@@ -2188,6 +2237,9 @@ class SparseLogicalVector:
             set.discard(index)
     
     _math = SparseVector._math
+    __float__ = SparseArray.__float__
+    __bool__ = SparseArray.__bool__
+    __int__ = SparseArray.__int__
     __add__ = SparseVector.__add__
     __sub__ = SparseVector.__sub__
     __mul__ = SparseVector.__mul__

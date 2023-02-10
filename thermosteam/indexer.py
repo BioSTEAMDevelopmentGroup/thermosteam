@@ -13,7 +13,7 @@ from . import utils
 from .exceptions import UndefinedChemicalAlias
 from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
-    MassFlowDict, VolumetricFlowDict,
+    MassFlowDict, VolumetricFlowDict, reduce_ndim
 )
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
 import numpy as np
@@ -92,6 +92,126 @@ def index_overlap(left_chemicals, right_chemicals, right_index):
         cache[CASs] = (left_index, 0)
         if len(cache) > 100: cache.pop(cache.__iter__().__next__())
         return left_index, right_index
+
+def get_sparse_chemical_data(sparse, index, kind):
+    if kind is None: return sparse
+    dct = sparse.dct
+    if kind == 0:
+        return dct.get(index, 0.)
+    elif kind == 1:
+        return sum([dct[i] for i in index if i in dct])
+    elif kind == 2:
+        return np.array([
+            (sum([dct[j] for j in i if j in dct]) if i.__class__ is list else dct.get(i, 0.))
+            for n, i in enumerate(index)
+        ])
+    elif kind == 3:
+        return np.array([dct.get(i, 0.) for i in index])
+    else:
+        raise IndexError('invalid index kind')
+
+def reset_sparse_chemical_data(sparse, data):
+    if data is sparse: return
+    data, ndim, size = reduce_ndim(data)
+    dct = sparse.dct
+    dct.clear()
+    if data.__class__ is SparseVector:
+        dct.update(data.dct)
+    elif ndim == 1:
+        for i, j in enumerate(data):
+            if j: dct[i] = float(j)
+            elif i in dct: del dct[i]  
+    elif ndim == 0:
+        if data:
+            data = float(data)
+            for i in range(size): dct[i] = data
+    else:
+        raise IndexError(
+            'cannot set an array element with a sequence'
+        )
+
+def set_sparse_chemical_data(sparse, index, kind, data, key, parent):
+    if kind is None:
+        reset_sparse_chemical_data(sparse, data)
+        return
+    data, ndim, size = reduce_ndim(data)
+    dct = sparse.dct
+    if kind == 0:
+        if ndim:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+        if data:
+            dct[index] = float(data)
+        elif index in dct: 
+            del dct[index]
+    elif kind == 1:
+        if ndim == 0:
+            composition = parent.group_compositions[key]
+            values = data * composition
+            for i, j in zip(index, values):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        elif ndim == 1:
+            for i, j in zip(index, data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    elif kind == 2:
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for n, i in enumerate(index):
+                    if i.__class__ is list:
+                        values = data * parent.group_compositions[key[n]]
+                        for k, j in zip(i, values):
+                            if j: dct[k] = float(j)
+                            elif k in dct: del dct[k]
+                    else:
+                        dct[i] = data
+            else:
+                for i in index:
+                    if i.__class__ is list:
+                        for j in i:
+                            if j in dct: del dct[j]
+                    elif i in dct:
+                        del dct[i]
+        elif ndim == 1:
+            for n, i in enumerate(index):
+                if i.__class__ is list:
+                    values = data[n] * parent.group_compositions[key[n]]
+                    for k, j in zip(i, values):
+                        if j: dct[k] = float(j)
+                        elif k in dct: del dct[k]
+                else:
+                    j = data[n]
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    elif kind == 3:
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for i in index: dct[i] = data
+            else:
+                for i in index:
+                    if i in dct: del dct[i]
+        elif ndim == 1:
+            for i, j in zip(index, data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    else:
+        raise IndexError('invalid index kind') 
 
 # %% Abstract indexer
     
@@ -206,28 +326,108 @@ class SplitIndexer(Indexer):
         return self
     
     def __getitem__(self, key):
-        chemicals = self._chemicals
-        index, kind = chemicals._get_index_and_kind(key)
-        if kind == 0 or kind == 1:
-            return self.data[index]
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind is None: return self.data
+        dct = self.data.dct
+        if kind == 0:
+            return dct.get(index, 0.)
+        elif kind == 1:
+            return np.array([dct.get(i, 0.) for i in index])
         elif kind == 2:
-            data = self.data
-            return np.array([data[i] for i in index], dtype=object)
+            return np.array([
+                (np.array([dct.get(j, 0.) for j in i]) if i.__class__ is list else dct.get(i, 0.))
+                for n, i in enumerate(index)
+            ])
+        elif kind == 3:
+            return np.array([dct.get(i, 0.) for i in index])
         else:
-            raise IndexError('unknown error')
+            raise IndexError('invalid index kind')
     
     def __setitem__(self, key, data):
         index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0 or kind == 1:
-            self.data[index] = data
-        elif kind == 2:
-            sparse_data = self.data
-            if hasattr(data, '__iter__'):
-                for i, x in zip(index, data): sparse_data[i] = x
+        if kind is None:
+            reset_sparse_chemical_data(self.data, data)
+            return
+        data, ndim, size = reduce_ndim(data)
+        dct = self.data.dct
+        if kind == 0:
+            if ndim:
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
+            if data:
+                dct[index] = float(data)
+            elif index in dct: 
+                del dct[index]
+        elif kind == 1:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index: dct[i] = data
+                else:
+                    for i in index:
+                        if i in dct: del dct[i]
+            elif ndim == 1:
+                for i, j in zip(index, data):
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
             else:
-                for i in index: sparse_data[i] = data
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
+        elif kind == 2:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index:
+                        if i.__class__ is list:
+                            for j in i: dct[j] = data
+                        else:
+                            dct[i] = data
+                else:
+                    for i in index:
+                        if i.__class__ is list:
+                            for j in i:
+                                if j in dct: del dct[j]
+                        elif i in dct:
+                            del dct[i]
+            else:
+                for n, i in enumerate(index):
+                    if i.__class__ is list:
+                        k = data[n]
+                        if hasattr(k, '__iter__'):
+                            for j, m in zip(i, k):
+                                if m: dct[j] = m
+                                elif j in dct: del dct[j]
+                        else:
+                            if k:
+                                k = float(k)
+                                for j in i: dct[j] = k
+                            else:
+                                for j in i:
+                                    if j in dct: del dct[j]  
+                    else:
+                        j = data[n]
+                        if j: dct[i] = float(j)
+                        elif i in dct: del dct[i]
+        elif kind == 3:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index: dct[i] = data
+                else:
+                    for i in index:
+                        if i in dct: del dct[i]
+            elif ndim == 1:
+                for i, j in zip(index, data):
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
+            else:
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
         else:
-            raise IndexError('unknown error')
+            raise IndexError('invalid index kind') 
                 
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -336,35 +536,13 @@ class ChemicalIndexer(Indexer):
         return self.from_data, (self.data, self._phase, self._chemicals, False)
     
     def __getitem__(self, key):
-        index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0:
-            return self.data[index]
-        elif kind == 1:
-            return self.data.sum_of(index)
-        elif kind == 2:
-            arr = np.zeros(len(index))
-            data = self.data
-            for d, s in enumerate(index):
-                arr[d] = data.sum_of(s)
-            return arr
-        else:
-            raise IndexError('unknown index error')
+        return get_sparse_chemical_data(self.data, *self._chemicals._get_index_and_kind(key))
     
     def __setitem__(self, key, data):
-        index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0:
-            self.data[index] = data
-        elif kind == 1:
-            composition = self.group_compositions[key]
-            self.data[index] = data * composition
-        elif kind == 2:
-            sparse_data = self.data
-            group_compositions = self.group_compositions
-            for n in range(len(index)):
-                i = index[n]
-                sparse_data[i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
-        else:
-            raise IndexError('unknown error')
+        set_sparse_chemical_data(
+            self.data, *self._chemicals._get_index_and_kind(key), 
+            data, key, self
+        )
     
     def sum_across_phases(self):
         return self.data
@@ -786,39 +964,36 @@ class MaterialIndexer(Indexer):
     def __getitem__(self, key):
         index, kind, sum_across_phases = self._get_index_data(key)
         if sum_across_phases:
-            if kind == 0: # Normal
-                values = self.data[:, index].sum(0)
+            dcts = [i.dct for i in self.data.rows]
+            if kind == 0: # Chemical
+                values = sum([i[index] for i in dcts if index in i])
             elif kind == 1: # Chemical group
-                values = self.data[:, index].sum()
+                values = sum([j[i] for i in index for j in dcts if i in j])
             elif kind == 2: # Nested chemical group
-                data = self.data
-                values = np.array([data[:, i].sum() for i in index], dtype=float)
+                values = np.array([
+                    (sum([dct[j] for j in i for dct in dcts if j in dct]) 
+                     if i.__class__ is list 
+                     else sum([dct[i] for dct in dcts if i in dct]))
+                    for n, i in enumerate(index)
+                ])
+            elif kind == 3: # List
+                values = np.array([sum([dct[i] for dct in dcts if i in dct]) for i in index])
+            elif kind == 4:
+                values = self.data.sum(0)
+            else:
+                raise IndexError('invalid index kind')
         else:
-            if kind == 0: # Normal
-                return self.data[index]
-            elif kind == 1: # Chemical group
-                phase, index = index
-                if phase == slice(None):
-                    values = self.data[phase, index].sum(1)
+            if kind is None:
+                values = self.data if index is None else self.data.rows[index]
+            else:
+                phase_index, chemical_index = index
+                if phase_index is None:
+                    values = np.array([
+                        get_sparse_chemical_data(i, chemical_index, kind) for i in self.data.rows
+                    ])
                 else:
-                    values = self.data[phase, index].sum()
-            elif kind == 2: # Nested chemical group
-                data = self.data
-                phase, index = index
-                if phase == slice(None):
-                    values = np.zeros([len(self.phases), len(index)])
-                    for d, s in enumerate(index):
-                        if hasattr(s, '__iter__'): 
-                            values[:, d] = data[phase, s].sum(1)
-                        else:
-                            values[:, d] = data[phase, s]
-                else:
-                    values = np.zeros(len(index))
-                    for d, s in enumerate(index):
-                        if hasattr(s, '__iter__'): 
-                            values[d] = data[phase, s].sum()
-                        else:
-                            values[d] = data[phase, s]
+                    phase_index, chemical_index = index
+                    values = get_sparse_chemical_data(self.data.rows[phase_index], chemical_index, kind)
         return values
     
     def __setitem__(self, key, data):
@@ -826,22 +1001,34 @@ class MaterialIndexer(Indexer):
         if sum_across_phases:
             raise IndexError("multiple phases present; must include phase key "
                              "to set chemical data")
-        if kind == 0:
-            self.data[index] = data
-        elif kind == 1: # Chemical group
-            phase, index = index
-            _, key = key
-            composition = self.group_compositions[key]
-            self.data[phase, index] = data * composition
-        elif kind == 2: # Nested chemical group
-            phase, index = index
-            sparse_data = self.data
-            group_compositions = self.group_compositions
-            for n in range(len(index)):
-                i = index[n]
-                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
+        if kind is None:
+            if index is None:
+                self.data[:] = data
+            else:
+                reset_sparse_chemical_data(self.data.rows[index], data)
         else:
-            raise IndexError('unknown error')
+            phase_index, chemical_index = index
+            _, key = key
+            if phase_index is None:
+                if kind in (0, 3):
+                    self.data[:, chemical_index] = data
+                elif kind == 1: # Chemical group
+                    phase, index = index
+                    composition = self.group_compositions[key]
+                    self.data[:, chemical_index] = data * composition
+                elif kind == 2: # Nested chemical group
+                    phase, index = index
+                    sparse_data = self.data
+                    group_compositions = self.group_compositions
+                    for n, i in enumerate(index):
+                        sparse_data[:, i] = data[n] * group_compositions[key[n]] if i.__class__ is list else data[n]
+                else:
+                    raise IndexError('invalid index kind')
+            else:
+                set_sparse_chemical_data(
+                    self.data[phase_index], chemical_index, kind, 
+                    data, key, self
+                )
     
     def _get_index_data(self, key):
         cache = self._index_cache
@@ -880,12 +1067,11 @@ class MaterialIndexer(Indexer):
         if isa(phase_IDs, str):
             if len(phase_IDs) == 1: 
                 index = self.get_phase_index(phase_IDs)
-                kind = 0
+                kind = None
             else:
                 raise undefined_chemical_error
         elif phase_IDs is ...:
-            index = slice(None)
-            kind = 0
+            phase_index = index = kind = None
         else:
             phase = phase_IDs[0]
             if isa(phase, str):
@@ -894,7 +1080,7 @@ class MaterialIndexer(Indexer):
                 else:
                     raise undefined_chemical_error
             elif phase is ...:
-                phase_index = slice(None)
+                phase_index = None
             else:
                 raise_material_indexer_index_error()
             try:
@@ -903,7 +1089,7 @@ class MaterialIndexer(Indexer):
                 raise_material_indexer_index_error()
             chemical_index, kind = self._chemicals._get_index_and_kind(IDs)
             index = (phase_index, chemical_index)
-        return index, kind
+        return index, kind, 
     
     def __iter__(self):
         """Iterate over phase-data pairs."""
