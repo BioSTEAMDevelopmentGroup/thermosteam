@@ -154,12 +154,16 @@ def reduce_ndim(value):
         return value, ndim, size
     else:
         ndim = size = 0
-        while hasattr(value, '__len__') and (size:=len(value)) == 1: value = value[0]
-        dummy = value
-        while hasattr(dummy, '__iter__'):
-            ndim += 1
-            try: dummy = next(iter(dummy))
-            except StopIteration: break
+        if hasattr(value, '__len__'):
+            while (size:=len(value)) == 1: 
+                value = value[0]
+                if not hasattr(value, '__len__'): break
+            else:
+                dummy = value
+                while hasattr(dummy, '__iter__'):
+                    ndim += 1
+                    try: dummy = next(iter(dummy))
+                    except StopIteration: break
         return value, ndim, size
 
 def get_array_properties(index):
