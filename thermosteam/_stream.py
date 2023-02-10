@@ -1571,6 +1571,14 @@ class Stream:
         >>> s2.mol is s1.mol
         False
         
+        >>> s1.phases = s2.phases = ('l', 'g')
+        >>> s2.link_with(s1)
+        >>> s1.imol.data is s2.imol.data
+        True
+        >>> s1.unlink()
+        >>> s1.imol.data is s2.imol.data
+        False
+        
         MultiStream phases cannot be unlinked:
         
         >>> s1 = tmo.MultiStream(None, phases=('l', 'g'))
@@ -1580,11 +1588,13 @@ class Stream:
         
         """
         imol = self._imol
-        if hasattr(imol, '_phase') and isinstance(imol._phase, tmo._phase.LockedPhase):
-            raise RuntimeError('phase is locked; stream cannot be unlinked')
+        if hasattr(imol, '_phase'):
+            if isinstance(imol._phase, tmo._phase.LockedPhase):
+                raise RuntimeError('phase is locked; stream cannot be unlinked')
+            else:
+                imol._phase = imol._phase.copy()
         imol._data_cache.clear()
         imol.data = imol.data.copy()
-        imol._phase = imol._phase.copy()
         self._thermal_condition = self._thermal_condition.copy()
         self.reset_cache()
         
@@ -1748,7 +1758,15 @@ class Stream:
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
         >>> s2 = tmo.Stream('s2')
         >>> s2.copy_flow(s1, 'Water', exclude=True, remove=True)
-         
+        >>> s1.show('wt')
+        Stream: s1
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Water  20
+        >>> s2.show('wt')
+        Stream: s2
+         phase: 'l', T: 298.15 K, P: 101325 Pa
+         flow (kg/hr): Ethanol  10
+        
         """
         other_mol = other.mol
         other_chemicals = other.chemicals
@@ -1759,13 +1777,13 @@ class Stream:
                 self.mol[:] = other.mol
             else:
                 self.empty()
-                CASs, values = zip(*[(i, j) for i, j in zip(other_chemicals.CASs, other_mol) if j])
+                CASs, values = zip(*[(i, j) for i, j in zip(other_chemicals.CASs, other_mol.nonzero_items())])
                 self.imol[CASs] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
-                    other.imol.data[:] = 0.
+                    other.imol.data.clear()
                 else:
-                    other_mol[:] = 0.
+                    other_mol.clear()
         else:
             if exclude:
                 if isinstance(IDs, str):
