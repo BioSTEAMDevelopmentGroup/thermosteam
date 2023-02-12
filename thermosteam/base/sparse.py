@@ -11,6 +11,7 @@ __all__ = (
     'SparseArray',
     'sparse',
     'reduce_ndim',
+    'get_ndim',
 )
 
 open_slice = slice(None)
@@ -403,10 +404,10 @@ def sparse(arr, copy=False, vector_size=None):
 def get_ndim(value):
     if hasattr(value, 'ndim'): return value.ndim
     ndim = 0
-    while hasattr(value, '__len__'):
+    while hasattr(value, '__iter__'):
         ndim += 1
-        if value: value = value[0]
-        else: break
+        try: value = value.__iter__().__next__()
+        except: break
     return ndim
 
 def reduce_ndim(value):
@@ -426,13 +427,12 @@ def reduce_ndim(value):
             size = len(value)
             if size == 1:
                 value = value[0]
-            elif value: 
-                dummy = value[0]
-                ndim = 1
-                while hasattr(dummy, '__len__'):
+            else: 
+                dummy = value
+                while hasattr(dummy, '__iter__'):
                     ndim += 1
-                    if dummy: dummy = dummy[0]
-                    else: break
+                    try: dummy = dummy.__iter__().__next__()
+                    except: break
                 break
         return value, ndim, size
 
@@ -1347,7 +1347,7 @@ class SparseVector:
     
     @property
     def set(self):
-        return self.dct.keys()
+        return self.dct
     
     def __abs__(self):
         positive = abs
@@ -1652,11 +1652,13 @@ class SparseVector:
         other_dct = other.dct
         if size == other_size:
             new = dct.copy()
-            new.update(other_dct)
-            for i in other_dct.keys() & dct.keys():
-                x = dct[i] + other_dct[i]
-                if x: new[i] = x
-                else: del new[x]
+            for i, j in other_dct.items():
+                if i in dct:
+                    j = dct[i] + j
+                    if j: new[i] = j
+                    else: del new[i]
+                else:
+                    new[i] = j
         elif size == 1 and other_size: 
             size = other_size
             if 0 in dct: 
