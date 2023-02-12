@@ -10,10 +10,10 @@
 import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedChemicalAlias
+from .exceptions import UndefinedChemicalAlias, UndefinedPhase
 from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
-    MassFlowDict, VolumetricFlowDict, reduce_ndim
+    MassFlowDict, VolumetricFlowDict, get_ndim
 )
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
 import numpy as np
@@ -111,7 +111,7 @@ def get_sparse_chemical_data(sparse, index, kind):
 
 def reset_sparse_chemical_data(sparse, data):
     if data is sparse: return
-    data, ndim, size = reduce_ndim(data)
+    ndim = get_ndim(data)
     dct = sparse.dct
     dct.clear()
     if data.__class__ is SparseVector:
@@ -123,7 +123,7 @@ def reset_sparse_chemical_data(sparse, data):
     elif ndim == 0:
         if data:
             data = float(data)
-            for i in range(size): dct[i] = data
+            for i in range(sparse.size): dct[i] = data
     else:
         raise IndexError(
             'cannot set an array element with a sequence'
@@ -133,7 +133,7 @@ def set_sparse_chemical_data(sparse, index, kind, data, key, parent):
     if kind is None:
         reset_sparse_chemical_data(sparse, data)
         return
-    data, ndim, size = reduce_ndim(data)
+    ndim = get_ndim(data)
     dct = sparse.dct
     if kind == 0:
         if ndim:
@@ -347,7 +347,7 @@ class SplitIndexer(Indexer):
         if kind is None:
             reset_sparse_chemical_data(self.data, data)
             return
-        data, ndim, size = reduce_ndim(data)
+        ndim = get_ndim(data)
         dct = self.data.dct
         if kind == 0:
             if ndim:
@@ -556,25 +556,26 @@ class ChemicalIndexer(Indexer):
         data = self.data
         sc_data = [] # Same chemicals
         other_data = [] # Different chemicals
-        repeated_data = 0
+        isa = isinstance
         for i in others:
-            if i is self:
-                repeated_data += 1
-            else:
-                idata = i.sum_across_phases()
-                if idata.shares_data_with(data): idata = idata.copy()
-                ichemicals = i._chemicals
+            ichemicals = i._chemicals
+            idata = i.data
+            if isa(i, MaterialIndexer):
                 if ichemicals is chemicals:
-                    sc_data.append(idata)
+                    sc_data.extend(idata.rows)
                 else:
+                    idata = idata.sum(0)
+                    sc_data.append(idata)
                     other_data.append(
-                        (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
+                        (i, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
                     )
-        if repeated_data == 0:
-            data.clear()
-        elif repeated_data > 1:
-            data *= repeated_data
-        for i in sc_data: data += i
+            elif ichemicals is chemicals:
+                sc_data.append(idata)
+            else:
+                other_data.append(
+                    (idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
+                )
+        data.mix_from(sc_data)
         for idata, left_index, right_index in other_data: 
             data[left_index] += idata[right_index]
     
@@ -772,11 +773,11 @@ class MaterialIndexer(Indexer):
             other_data = other.data
             phase_index = self.get_phase_index(other.phase)
             if self.chemicals is other.chemicals:
-                self.data[phase_index, :] = other_data
+                self.data.rows[phase_index][:] = other_data
             else:
                 other_data = other.data
                 left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
-                self.data[phase_index][left_index] = other_data[right_index] 
+                self.data.rows[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
                 self.data[:] = other.data
@@ -789,64 +790,46 @@ class MaterialIndexer(Indexer):
     def mix_from(self, others):
         isa = isinstance
         data = self.data
-        get_phase_index = self.get_phase_index
         chemicals = self._chemicals
         phases = self._phases
-        repeated_data = 0
-        spsc_data = [] # Same phases, same chemicals
-        sp_data = [] # Same phases, different chemicals
-        opsc_data = [] # One phase, same chemicals
-        op_data = [] # One phase, different chemicals
+        scp_data = {i: [] for i in phases} # Same chemicals by phase
+        dcp_data = {i: [] for i in phases} # Different chemicals by phase
         for i in others:
-            if i is self:
-                repeated_data += 1
-            else:
-                idata = i.data
-                if idata.shares_data_with(data): idata = idata.copy()
-                ichemicals = i._chemicals
-                if isa(i, MaterialIndexer):
-                    if phases == i.phases:
-                        if chemicals is ichemicals:
-                            spsc_data.append(idata)
-                        else:
-                            sp_data.append(
-                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                            )
-                    else:
-                        if chemicals is ichemicals:
-                            for phase, idata in zip(i.phases, idata):
-                                if not idata.any(): continue
-                                opsc_data.append(
-                                    (idata, get_phase_index(i.phase))
-                                )
-                        else:
-                            for phase, idata in zip(i.phases, idata):
-                                if not idata.any(): continue
-                                op_data.append(
-                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                                )
-                elif isa(i, ChemicalIndexer):
-                    if idata.shares_data_with(data): idata = idata.copy()
-                    if chemicals is ichemicals:
-                        opsc_data.append(
-                            (idata, get_phase_index(i.phase))
-                        )
-                    else:
-                        op_data.append(
-                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                        )
+            ichemicals = i._chemicals
+            idata = i.data
+            if isa(i, MaterialIndexer):
+                if chemicals is ichemicals:
+                    for i, j in zip(i._phases, idata.rows):
+                        try: scp_data[i].append(j)
+                        except: raise UndefinedPhase(i)
                 else:
-                    raise ValueError("can only mix from chemical or material indexers")
-        if repeated_data == 0:
-            data[:] = 0.
-        elif repeated_data > 1:
-            data *= repeated_data
-        for i in spsc_data: data[:] += i
-        for idata, left_index, right_index in sp_data: 
-            data[:, left_index] += idata[:, right_index]
-        for idata, left_index in opsc_data: data[left_index, :] += idata
-        for phase_index, idata, left_index, right_index in op_data: 
-            data[phase_index, left_index] += idata[right_index]
+                    left_index, right_index = index_overlap(chemicals, ichemicals, idata.nonzero_keys())
+                    for i, j in zip(i._phases, i.data.rows):
+                        try:
+                            dcp_data[i].append(
+                                (idata, left_index, right_index)
+                            )
+                        except:
+                            raise UndefinedPhase(i)
+            elif isa(i, ChemicalIndexer):
+                if chemicals is ichemicals:
+                    try:
+                        scp_data[i.phase].append(idata)
+                    except:
+                        raise UndefinedPhase(i.phase)
+                else:
+                    try:
+                        dcp_data[i].append(
+                            (idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
+                        )
+                    except:
+                        raise UndefinedPhase(i)
+            else:
+                raise ValueError("can only mix from chemical or material indexers")
+        for phase, sv in zip(phases, data.rows):
+            sv.mix_from(scp_data[phase])
+            for idata, left_index, right_index in dcp_data[phase]:
+                sv[left_index] += idata[right_index]
     
     def separate_out(self, other):
         isa = isinstance

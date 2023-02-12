@@ -455,7 +455,7 @@ def sum_sparse_vectors(svs):
     elif dtype is float:
         dcts = [i.dct for i in svs]
         keys = {i for dct in dcts for i in dct}
-        dct = {i: sum([j[i] for j in dcts if i in j]) for i in keys}
+        dct = {i: x for i in keys if (x:=sum([j[i] for j in dcts if i in j]))}
     else:
         raise RuntimeError('unexpected dtype')
     return dct
@@ -1337,6 +1337,29 @@ class SparseVector:
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
     
+    def mix_from(self, others):
+        if others: 
+            other_dcts = [i.dct for i in others]
+            dct = self.dct
+            repeated = 0
+            dcts = []
+            for i in other_dcts:
+                if i is dct: repeated += 1
+                else: dcts.append(i)
+            if repeated == 0:
+                dct.clear()
+            elif repeated == 1:
+                dcts.append(dct.copy())
+            elif repeated:
+                dcts.append({i: j * repeated for i, j in dct.items()})
+            keys = {i for dct in dcts for i in dct}
+            for i in keys:
+                x = sum([j[i] for j in dcts if i in j])
+                if x: dct[i] = x
+                elif x in dct: del dct[i]
+        else:
+            self.dct.clear()
+    
     def shares_data_with(self, other):
         if other.__class__ is SparseArray:
             for i in other.rows:
@@ -1429,7 +1452,7 @@ class SparseVector:
         return [i for i in dct if dct[i] > 0.],
     
     def nonzero_index(self):
-        return [*self.dct],
+        return sorted(self.dct)
     nonzero = nonzero_index
     
     def nonzero_keys(self):
