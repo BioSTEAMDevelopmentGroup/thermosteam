@@ -1350,7 +1350,7 @@ class SparseVector:
                 dct.clear()
             elif repeated == 1:
                 dcts.append(dct.copy())
-            elif repeated:
+            else:
                 dcts.append({i: j * repeated for i, j in dct.items()})
             keys = {i for dct in dcts for i in dct}
             for i in keys:
@@ -1452,7 +1452,7 @@ class SparseVector:
         return [i for i in dct if dct[i] > 0.],
     
     def nonzero_index(self):
-        return sorted(self.dct)
+        return sorted(self.dct),
     nonzero = nonzero_index
     
     def nonzero_keys(self):
