@@ -439,10 +439,10 @@ def reduce_ndim(value):
 def get_array_properties(index):
     if hasattr(index, 'ndim'): return index.ndim, index.dtype in bools
     ndim = 0
-    while hasattr(index, '__len__'):
+    while hasattr(index, '__iter__'):
         ndim += 1
-        if index: index = index[0]
-        else: break
+        try: index = index.__iter__().__next__()
+        except: break
     return ndim, index.__class__ in bools
 
 def sum_sparse_vectors(svs):
