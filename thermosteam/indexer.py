@@ -111,23 +111,24 @@ def get_sparse_chemical_data(sparse, index, kind):
 
 def reset_sparse_chemical_data(sparse, data):
     if data is sparse: return
-    ndim = get_ndim(data)
     dct = sparse.dct
     dct.clear()
     if data.__class__ is SparseVector:
         dct.update(data.dct)
-    elif ndim == 1:
-        for i, j in enumerate(data):
-            if j: dct[i] = float(j)
-            elif i in dct: del dct[i]  
-    elif ndim == 0:
-        if data:
-            data = float(data)
-            for i in range(sparse.size): dct[i] = data
     else:
-        raise IndexError(
-            'cannot set an array element with a sequence'
-        )
+        ndim = get_ndim(data)
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for i in range(sparse.size): dct[i] = data
+        elif ndim == 1:
+            for i, j in enumerate(data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]  
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
 
 def set_sparse_chemical_data(sparse, index, kind, data, key, parent):
     if kind is None:
@@ -773,14 +774,14 @@ class MaterialIndexer(Indexer):
             other_data = other.data
             phase_index = self.get_phase_index(other.phase)
             if self.chemicals is other.chemicals:
-                self.data.rows[phase_index][:] = other_data
+                self.data.rows[phase_index].copy_like(other_data)
             else:
                 other_data = other.data
                 left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 self.data.rows[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
-                self.data[:] = other.data
+                self.data.copy_like(other.data)
             else:
                 self.empty()
                 other_data = other.data
