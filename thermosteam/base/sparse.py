@@ -1356,7 +1356,7 @@ class SparseVector:
             for i in keys:
                 x = sum([j[i] for j in dcts if i in j])
                 if x: dct[i] = x
-                elif x in dct: del dct[i]
+                elif i in dct: del dct[i]
         else:
             self.dct.clear()
     
