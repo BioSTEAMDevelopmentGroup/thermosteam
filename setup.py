@@ -6,6 +6,7 @@
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
 # for license details.
 from setuptools import setup
+from Cython.Build import cythonize
 
 setup(
     name='thermosteam',

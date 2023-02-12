@@ -35,7 +35,6 @@ def test_sparse_vector_creation():
     assert (sv.to_array() == arr).all()
     assert repr(sv) == 'sparse([1. , 2. , 0. , 4.5, 0. , 0. ])'
     assert str(sv) == '[1.  2.  0.  4.5 0.  0. ]'
-    
     assert (sparse(arr) == arr).all()
     
     sv_2 = sparse_vector(sv)
@@ -616,10 +615,10 @@ def test_sparse_array_indexing():
     with pytest.raises(IndexError):
         sa[(1, 1, 0)] = 2
     
-    old_rows = [i.copy() for i in sa.rows]
+    old_sa = sa.copy()
     sa[0, 20] = 0.
     assert_no_zero_data(sa)
-    assert (sa == old_rows).all()
+    assert (sa == old_sa).all()
     sa[0, 5] = 3.
     assert_no_zero_data(sa)
     assert sa[0].sparse_equal(np.array([1., 2., 0., 4.5, 0., 3.]))
@@ -1007,7 +1006,6 @@ def test_sparse_array_methods_vs_numpy():
                         arr_result = arr_method(axis=axis, keepdims=keepdims)
                         assert sa_result.shape == arr_result.shape, f"wrong shape in SparseArray.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
                         assert (sa_result == arr_result).all(), f"wrong value in SparseArray.{method} with axis {axis}, dtype {dtype}, and keepdims {keepdims}"
-    
         sa = sparse([[]])
         assert sa.vector_size == 0
         with pytest.raises(ValueError):
