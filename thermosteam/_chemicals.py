@@ -829,8 +829,9 @@ class CompiledChemicals(Chemicals):
         1.0
         
         """
-        array = self.array(IDs, data)
-        return ChemicalIndexer.from_data(array, chemicals=self)
+        indexer = ChemicalIndexer.blank(None, self)
+        indexer[IDs] = data
+        return indexer
 
     def ikwarray(self, ID_data):
         """
@@ -862,8 +863,10 @@ class CompiledChemicals(Chemicals):
         1.0
         
         """
-        array = self.kwarray(ID_data)
-        return ChemicalIndexer.from_data(array, chemicals=self)
+        indexer = ChemicalIndexer.blank(None, self)
+        IDs, data = zip(*ID_data.items())
+        indexer[IDs] = data
+        return indexer
 
     def isplit(self, split, order=None):
         """
@@ -921,14 +924,12 @@ class CompiledChemicals(Chemicals):
             order, split = zip(*split.items())
         if order:
             isplit = SplitIndexer.blank(chemicals=self)
-            isplit[tuple(order)] = split
+            isplit[order] = split
         elif hasattr(split, '__len__'):
-            isplit = SplitIndexer.from_data(np.asarray(split),
-                                            chemicals=self)
+            isplit = SplitIndexer.from_data(split, chemicals=self)
         else:
-            split = split * np.ones(self.size)
-            isplit = SplitIndexer.from_data(split,
-                                            chemicals=self)
+            isplit = SplitIndexer.blank(chemicals=self)
+            isplit[...] = split
         return isplit
 
     def index(self, ID):

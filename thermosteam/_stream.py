@@ -724,8 +724,7 @@ class Stream:
             else:
                 imol = indexer.ChemicalMolarFlowIndexer.blank(phase, chemicals)
         else:
-            assert not chemical_flows, ("may specify either 'flow' or "
-                                        "'chemical_flows', but not both")
+            if chemical_flows: ValueError("may specify either 'flow' or 'chemical_flows', but not both")
             if isinstance(flow, indexer.ChemicalMolarFlowIndexer):
                 imol = flow 
                 imol.phase = phase
@@ -1428,8 +1427,6 @@ class Stream:
         else:
             P = min([i.P for i in streams])
             if vle:
-                phases = ''.join([i.phase for i in streams])
-                self.phases = tuple(set(phases))
                 self._imol.mix_from([i._imol for i in streams])
                 if energy_balance: 
                     H = sum([i.H for i in streams], Q)
@@ -1443,8 +1440,7 @@ class Stream:
                     try:
                         self.H = H
                     except:
-                        phases = ''.join([i.phase for i in streams])
-                        self.phases = tuple(set(phases))
+                        self.phases = {i.phase for i in others}
                         self._imol.mix_from([i._imol for i in streams])
                         self.H = H
                 
@@ -1621,9 +1617,12 @@ class Stream:
 
         """
         if isinstance(other, tmo.MultiStream):
-            phase = other.phases[0]
-            if len(phase) == 1:
-                imol = other._imol.to_chemical_indexer(phase)
+            phases = other.phases
+            if len(phases) == 1:
+                phase, = phases
+                self.phase = phase
+                self.mol.copy_like(other.imol[phase])
+                return
             else:
                 self.phases = other.phases
                 imol = other._imol

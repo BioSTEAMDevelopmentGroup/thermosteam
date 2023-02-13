@@ -12,7 +12,7 @@ from thermosteam import functional as fn
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
-from ..base import sparse, SparseVector, SparseArray, DictionaryView
+from ..base import SparseVector, SparseArray, DictionaryView
 from . import (
     _parse as prs,
     _xparse as xprs,
