@@ -11,7 +11,7 @@ from numba import njit
 from ..utils import Cache
 from .equilibrium import Equilibrium
 from .binary_phase_fraction import phase_fraction
-from scipy.optimize import shgo
+from scipy.optimize import shgo, differential_evolution
 import numpy as np
 
 __all__ = ('LLE', 'LLECache')
@@ -46,13 +46,6 @@ def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
         g_mix_L = gibbs_free_energy_of_liquid(mol_L, xgamma_L)
     g_mix = g_mix_l + g_mix_L
     return g_mix
-
-def solve_lle_liquid_mol(mol, T, f_gamma, gamma_args, shgo_options):
-    args = (mol, T, f_gamma, gamma_args)
-    bounds = np.zeros([mol.size, 2])
-    bounds[:, 1] = mol
-    result = shgo(lle_objective_function, bounds, args, options=shgo_options)
-    return result.x
 
 class LLE(Equilibrium, phases='lL'):
     """
@@ -94,6 +87,7 @@ class LLE(Equilibrium, phases='lL'):
     """
     __slots__ = ('composition_cache_tolerance',
                  'temperature_cache_tolerance',
+                 'method',
                  '_z_mol',
                  '_T',
                  '_lle_chemicals',
@@ -101,7 +95,11 @@ class LLE(Equilibrium, phases='lL'):
                  '_K',
                  '_phi'
     )
+    default_method = 'differential evolution'
     shgo_options = dict(symmetry=True, f_tol=1e-6, minimizer_kwargs=dict(f_tol=1e-6))
+    differential_evolution_options = {'seed': 0,
+                                      'popsize': 12,
+                                      'tol': 1e-6}
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
                  composition_cache_tolerance=1e-5,
@@ -109,6 +107,7 @@ class LLE(Equilibrium, phases='lL'):
         super().__init__(imol, thermal_condition, thermo)
         self.composition_cache_tolerance = composition_cache_tolerance
         self.temperature_cache_tolerance = temperature_cache_tolerance
+        self.method = self.default_method
         self._lle_chemicals = None
     
     def __call__(self, T, P=None, top_chemical=None, update=True):
@@ -151,8 +150,8 @@ class LLE(Equilibrium, phases='lL'):
                     mol_l = y * phi
                     mol_L = mol - mol_l
             else:
-                gamma = self.thermo.Gamma(lle_chemicals)
-                mol_L = solve_lle_liquid_mol(mol, T, gamma.f, gamma.args, self.shgo_options)
+                
+                mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals)
                 mol_l = mol - mol_L
                 F_mol_l = mol_l.sum()
                 F_mol_L = mol_L.sum()
@@ -184,6 +183,21 @@ class LLE(Equilibrium, phases='lL'):
             if not update: return self._lle_chemicals, self._K, self._phi
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
+        
+    def solve_lle_liquid_mol(self, mol, T, lle_chemicals):
+        gamma = self.thermo.Gamma(lle_chemicals)
+        args = (mol, T, gamma.f, gamma.args)
+        bounds = np.zeros([mol.size, 2])
+        bounds[:, 1] = mol
+        method = self.method
+        if method == 'shgo':
+            result = shgo(lle_objective_function, bounds, args, options=self.shgo_options)
+        elif method == 'differential evolution':
+            result = differential_evolution(lle_objective_function, bounds, args,
+                                            **self.differential_evolution_options)
+        else:
+            raise ValueError(f"invalid method {repr(method)}")
+        return result.x
         
     def get_liquid_mol_data(self):
         # Get flow rates
