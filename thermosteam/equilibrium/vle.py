@@ -299,12 +299,8 @@ class VLE(Equilibrium, phases='lg'):
         self._dew_point_cache = dew_point_cache or DewPointCache()
         self._bubble_point_cache = bubble_point_cache or BubblePointCache()
         super().__init__(imol, thermal_condition, thermo)
-        imol = self._imol
         self._x = None
         self._z_last = None
-        self._phase_data = tuple(imol)
-        self._liquid_mol = imol['l']
-        self._vapor_mol = imol['g']
         self._nonzero = None
         self._index = ()
     
@@ -423,8 +419,10 @@ class VLE(Equilibrium, phases='lg'):
     
     def _setup(self):
         # Get flow rates
-        liquid_mol = self._liquid_mol
-        vapor_mol = self._vapor_mol
+        imol = self._imol
+        self._phase_data = tuple(imol)
+        self._liquid_mol = liquid_mol = imol['l']
+        self._vapor_mol = vapor_mol = imol['g']
         mol = liquid_mol + vapor_mol
         nonzero = mol.nonzero_keys()
         chemicals = self.chemicals
