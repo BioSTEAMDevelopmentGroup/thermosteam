@@ -388,7 +388,7 @@ def lle_partition_coefficients(top, bottom):
     >>> IDs
     ('Water', 'Ethanol', 'Octanol')
     >>> K[2] # Octanol
-    3.326e+03
+    3324.4
 
     """
     IDs = tuple([i.ID for i in bottom.lle_chemicals])
