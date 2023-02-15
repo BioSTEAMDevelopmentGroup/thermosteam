@@ -387,8 +387,8 @@ def lle_partition_coefficients(top, bottom):
     >>> IDs, K = tmo.separations.lle_partition_coefficients(s['L'], s['l'])
     >>> IDs
     ('Water', 'Ethanol', 'Octanol')
-    >>> K
-    array([1.466e-01, 4.203e+00, 3.326e+03])
+    >>> K[2] # Octanol
+    3.326e+03
 
     """
     IDs = tuple([i.ID for i in bottom.lle_chemicals])

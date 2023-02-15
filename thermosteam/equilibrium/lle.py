@@ -190,7 +190,7 @@ class LLE(Equilibrium, phases='lL'):
         args = (mol, T, gamma.f, gamma.args)
         bounds = np.zeros([mol.size, 2])
         bounds[:, 1] = mol
-        bounds[0, 1] = (0.5 - 1e-6) * mol[0] # Remove symmetry
+        bounds[0, 1] = 0.5 * mol[0] # Remove symmetry
         method = self.method
         if method == 'shgo':
             result = shgo(lle_objective_function, bounds, args, options=self.shgo_options)
