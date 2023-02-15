@@ -255,6 +255,54 @@ def _i{name}_array(self, other):
     return self
 """
 
+sparse_logical_vector_scalar_array_comparison = """
+def _{name}_array(self, other):
+    other_size = len(other)
+    size = self.size
+    data = self.set
+    if size == other_size:
+        new = {{i for i, j in enumerate(other) if (i in data) {sign} j}}
+    elif size == 1:
+        size = other_size
+        value = 0 in data
+        new = {{i for i, j in enumerate(other) if value {sign} j}}
+    elif other_size == 1:
+        other = other[0]
+        x = True {sign} other
+        y = False {sign} other
+        if x:
+            if y:
+                new = {{*range(size)}}
+            else:
+                new = data.copy()
+        elif y:
+            new = {{*range(size)}}
+            new.difference_update(data)
+        else:
+            new = set()
+    else:
+        raise ValueError('shape mismatch between arrays')
+    return SparseLogicalVector.from_set(new, size)
+
+def _{name}_scalar(self, other):
+    data = self.set
+    size = self.size
+    x = True {sign} other
+    y = False {sign} other
+    if x:
+        if y:
+            new = {{*range(size)}}
+        else:
+            new = data.copy()
+    elif y:
+        new = {{*range(size)}}
+        new.difference_update(data)
+    else:
+        new = set()
+    return SparseLogicalVector.from_set(new, size)
+
+"""
+
 sparse_logical_vector_math_pseudo_optimized = sparse_vector_math + """
 def _{name}_sparse(self, other):
     return self.copy()._i{name}_sparse(other)
@@ -2664,6 +2712,12 @@ class SparseLogicalVector:
     exec(sparse_vector_imath.format(name='and', read_only=not_read_only))
     exec(sparse_vector_imath.format(name='xor', read_only=not_read_only))
     exec(sparse_vector_imath.format(name='or', read_only=not_read_only))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='eq', sign='=='))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='ne', sign='!='))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='gt', sign='>'))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='lt', sign='<'))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='ge', sign='>='))
+    exec(sparse_logical_vector_scalar_array_comparison.format(name='le', sign='<='))
     __eq__ = SparseVector.__eq__
     __ne__ = SparseVector.__ne__
     __gt__ = SparseVector.__gt__
@@ -2954,12 +3008,6 @@ class SparseLogicalVector:
             raise ValueError('shape mismatch between arrays')
         return self
     
-    def _eq_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) == other}
-        return SparseLogicalVector.from_set(new, size)
-    
     def _eq_sparse(self, other):
         data = self.set
         size = self.size
@@ -2982,17 +3030,6 @@ class SparseLogicalVector:
                 new = {i for i in range(size) if i not in other}
         else:
             raise ValueError('shape mismatch between arrays')
-        return SparseLogicalVector.from_set(new, size)
-    
-    def _eq_array(self, other):
-        new = self.to_array() == other
-        if new.__class__ in bools: raise ValueError('shape mismatch between arrays')
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
-
-    def _ne_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) != other}
         return SparseLogicalVector.from_set(new, size)
     
     def _ne_sparse(self, other):
@@ -3018,17 +3055,6 @@ class SparseLogicalVector:
             raise ValueError('shape mismatch between arrays')
         return SparseLogicalVector.from_set(new, size)
     
-    def _ne_array(self, other):
-        new = self.to_array() != other
-        if new.__class__ in bools: raise ValueError('shape mismatch between arrays')
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
-
-    def _gt_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) > other}
-        return SparseLogicalVector.from_set(new, size)
-    
     def _gt_sparse(self, other):
         data = self.set
         size = self.size
@@ -3050,17 +3076,7 @@ class SparseLogicalVector:
         else:
             raise ValueError('shape mismatch between arrays')
         return SparseLogicalVector.from_set(new, size)
-    
-    def _gt_array(self, other):
-        new = self.to_array() > other
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
-    
-    def _lt_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) < other}
-        return SparseLogicalVector.from_set(new, size)
-    
+
     def _lt_sparse(self, other):
         data = self.set
         size = self.size
@@ -3083,17 +3099,7 @@ class SparseLogicalVector:
         else:
             raise ValueError('shape mismatch between arrays')
         return SparseLogicalVector.from_set(new, size)
-    
-    def _lt_array(self, other):
-        new = self.to_array() < other
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
 
-    def _ge_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) >= other}
-        return SparseLogicalVector.from_set(new, size)
-    
     def _ge_sparse(self, other):
         data = self.set
         size = self.size
@@ -3116,17 +3122,7 @@ class SparseLogicalVector:
         else:
             raise ValueError('shape mismatch between arrays')
         return SparseLogicalVector.from_set(new, size)
-    
-    def _ge_array(self, other):
-        new = self.to_array() >= other
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
 
-    def _le_scalar(self, other):
-        data = self.set
-        size = self.size
-        new = {i for i in range(size) if (i in data) <= other}
-        return SparseLogicalVector.from_set(new, size)
-    
     def _le_sparse(self, other):
         data = self.set
         size = self.size
@@ -3150,10 +3146,6 @@ class SparseLogicalVector:
         else:
             raise ValueError('shape mismatch between arrays')
         return SparseLogicalVector.from_set(new, size)
-    
-    def _le_array(self, other):
-        new = self.to_array() <= other
-        return SparseLogicalVector.from_set({i for i, j in enumerate(new) if j}, new.size)
     
     # Not yet optimized methods
     
