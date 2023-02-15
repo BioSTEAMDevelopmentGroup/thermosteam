@@ -95,8 +95,8 @@ class LLE(Equilibrium, phases='lL'):
                  '_K',
                  '_phi'
     )
-    default_method = 'differential evolution'
-    shgo_options = dict(symmetry=True, f_tol=1e-6, minimizer_kwargs=dict(f_tol=1e-6))
+    default_method = 'shgo'
+    shgo_options = dict(f_tol=1e-6, minimizer_kwargs=dict(f_tol=1e-6))
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
                                       'tol': 1e-6}
@@ -150,7 +150,6 @@ class LLE(Equilibrium, phases='lL'):
                     mol_l = y * phi
                     mol_L = mol - mol_l
             else:
-                
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals)
                 mol_l = mol - mol_L
                 F_mol_l = mol_l.sum()
@@ -167,14 +166,16 @@ class LLE(Equilibrium, phases='lL'):
                         mass_L = mol_L * MW
                         mass_l = mol_l * MW
                         IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                        top_chemical_index = IDs[top_chemical]
-                        C_L = mass_L[top_chemical_index] / mass_L.sum()
-                        C_l = mass_l[top_chemical_index] / mass_l.sum()
-                        if C_L < C_l: mol_l, mol_L = mol_L, mol_l
-                    z_mol_l = mol_l / F_mol_l
-                    z_mol_L = mol_L / F_mol_L
-                    z_mol_l[z_mol_l < 1e-16] = 1e-16
-                    K = z_mol_L / z_mol_l
+                        try: top_chemical_index = IDs[top_chemical]
+                        except: pass
+                        else:
+                            C_L = mass_L[top_chemical_index] / mass_L.sum()
+                            C_l = mass_l[top_chemical_index] / mass_l.sum()
+                            if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+                    x_mol_l = mol_l / F_mol_l
+                    x_mol_L = mol_L / F_mol_L
+                    x_mol_l[x_mol_l < 1e-16] = 1e-16
+                    K = x_mol_L / x_mol_l
                     self._K = K
                     self._phi = F_mol_L / (F_mol_L + F_mol_l)
                 self._lle_chemicals = lle_chemicals
@@ -189,9 +190,13 @@ class LLE(Equilibrium, phases='lL'):
         args = (mol, T, gamma.f, gamma.args)
         bounds = np.zeros([mol.size, 2])
         bounds[:, 1] = mol
+        bounds[0, 1] = (0.5 - 1e-6) * mol[0] # Remove symmetry
         method = self.method
         if method == 'shgo':
             result = shgo(lle_objective_function, bounds, args, options=self.shgo_options)
+            if not result.success or (result.x == 0.).all():
+                result = differential_evolution(lle_objective_function, bounds, args,
+                                                **self.differential_evolution_options)
         elif method == 'differential evolution':
             result = differential_evolution(lle_objective_function, bounds, args,
                                             **self.differential_evolution_options)

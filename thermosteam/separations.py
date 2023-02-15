@@ -967,7 +967,7 @@ class StageEquilibrium:
             else:
                 self.K = K_new
                 self.IDs = IDs
-                self.phi = phi
+            self.phi = phi
         ms._imol.data[:] = data
         
     def partition_vle(self, partition_data=None, stacklevel=1, P=None):
@@ -1279,7 +1279,7 @@ class MultiStageEquilibrium:
         stages = self.stages
         mol = self._get_net_outlets()
         mol = np.asarray(mol)
-        mol[mol < 0] = 1.
+        mol[mol <= 0.] = 1.
         factor = self._get_net_feeds() / mol
         stages[0].multi_stream[top].mol *= factor
         stages[-1].multi_stream[bottom].mol *= factor
