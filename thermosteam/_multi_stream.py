@@ -19,7 +19,6 @@ from .indexer import nonzeros
 import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    import thermosteam as tmo
     from numpy.typing import NDArray
     from typing import Optional, Sequence, Dict, Tuple
 
@@ -599,15 +598,7 @@ class MultiStream(Stream):
          flow (kg/hr): (l) Water  2
 
         """
-        if isinstance(other, MultiStream):
-            self.phases = other.phases
-            imol = other._imol
-        elif other.phase not in self.phases:
-            self.phases = (other.phase, *self.phases)
-            imol = other._imol
-        else:
-            imol = other._imol
-        self._imol.copy_like(imol)
+        self._imol.copy_like(other._imol)
         self._thermal_condition.copy_like(other._thermal_condition)
     
     def copy_flow(self, 

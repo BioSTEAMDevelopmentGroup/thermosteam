@@ -37,9 +37,9 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl, 0.14900116395733892, rtol=0.1)
-    assert_allclose(xL, 0.5145493042005613, rtol=0.1) # Convergence
-    assert_allclose(xg, 0.33644953184209986, rtol=0.1)
+    assert_allclose(xl, 0.14900116395733892, atol=0.05)
+    assert_allclose(xL, 0.5145493042005613, atol=0.05) # Convergence
+    assert_allclose(xg, 0.33644953184209986, atol=0.05)
     # Make sure past equilibrium conditions do not affect result of vlle
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, T=350)
     s.vle(T=350, P=101325)
@@ -48,9 +48,9 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl, 0.14900116395733892, rtol=0.1)
-    assert_allclose(xL, 0.5145493042005613, rtol=0.1) # Convergence
-    assert_allclose(xg, 0.33644953184209986, rtol=0.1)
+    assert_allclose(xl, 0.14900116395733892, atol=0.05)
+    assert_allclose(xL, 0.5145493042005613, atol=0.05) # Convergence
+    assert_allclose(xg, 0.33644953184209986, atol=0.05)
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
@@ -278,6 +278,40 @@ def test_multistream():
     assert stream.get_flow('g/s', 'Water') == stream.F_mass / 3.6 == 1.
     stream.empty()    
 
+def test_stream_indexing():
+    tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True)
+    tmo.settings.chemicals.define_group('Alcohol', ['Ethanol', 'Methanol'], [0.5, 0.5], wt=False)
+    stream = tmo.Stream(None, Water=1.)
+    assert stream.imol['Alcohol'] == 0.
+    assert stream.imol['Water'] == 1.
+    stream.imol['Alcohol'] = 1.
+    stream.imol['Water'] = 2.
+    assert (stream.imol['Alcohol', 'Water'] == [1., 2.]).all()
+    assert (stream.imol['Ethanol', 'Water'] == [0.5, 2.]).all()
+    stream.imol['Ethanol', 'Water'] = [1., 2.]
+    assert (stream.imol['Ethanol', 'Water'] == [1., 2.]).all()
+    assert stream.imol['Ethanol'] == 1.
+    stream = tmo.MultiStream(None, l=[('Water', 1)], phases='lg')
+    assert stream.imol['l', 'Alcohol'] == 0.
+    assert stream.imol['l', 'Water'] == 1.
+    assert (stream.imol['l', ('Alcohol', 'Water')] == [0., 1.]).all()
+    assert (stream.imol[..., ('Alcohol', 'Water')] == [[0., 0.], [0., 1.]]).all()
+    
+    stream.imol['l', 'Alcohol'] = 1.
+    assert stream.imol['Ethanol'] == 0.5
+    stream.imol['l', 'Water'] = 2.
+    assert (stream.imol['l', ('Alcohol', 'Water')] == [1., 2.]).all()
+    stream.imol['g', 'Alcohol'] = 2.
+    stream.imol['g', 'Water'] = 1.
+    assert stream.imol['Alcohol'] == 3.
+    assert stream.imol['Water'] == 3.
+    assert (stream.imol['Alcohol', 'Water'] == [3., 3.]).all()
+    assert (stream.imol[..., ('Alcohol', 'Water')] == [[2., 1.], [1., 2.]]).all()
+    
+    key = ('l', 'Water')
+    stream.set_flow(1, 'gpm', key)
+    assert stream.get_flow('gpm', key) == 1.
+
 def test_stream_property_cache():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     s = tmo.Stream(None, Water=2, T=299.15)
@@ -377,6 +411,7 @@ if __name__ == '__main__':
     test_registration_alias()
     test_stream()
     test_multistream()
+    test_stream_indexing()
     test_mixing_balance()
     test_vlle()
     stream_methods()

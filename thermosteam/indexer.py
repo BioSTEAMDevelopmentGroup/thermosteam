@@ -10,10 +10,10 @@
 import thermosteam as tmo
 from .units_of_measure import AbsoluteUnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedChemicalAlias
+from .exceptions import UndefinedChemicalAlias, UndefinedPhase
 from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
-    MassFlowDict, VolumetricFlowDict,
+    MassFlowDict, VolumetricFlowDict, get_ndim
 )
 from ._phase import Phase, LockedPhase, NoPhase, PhaseIndexer, phase_tuple
 import numpy as np
@@ -43,26 +43,24 @@ phase_names = {
 
 _new = object.__new__
 
+def set_main_phase(main_indexer, indexers):
+    other_indexer, *indexers = indexers
+    try:
+        phase = other_indexer._phase.phase
+        for i in indexers:
+            if phase != i._phase.phase: return
+        main_indexer.phase = phase
+    except: pass
+
 def raise_material_indexer_index_error():
     raise IndexError("index by [phase, IDs] where phase is a "
                      "(str, ellipsis, or missing), and IDs is a "
                      "(str, Sequence[str], ellipsis, or missing)")
 
-def find_main_phase(indexers, default):
-    main_indexer, *indexers = indexers
-    try:
-        phase = main_indexer._phase.phase
-        for i in indexers:
-            if phase != i._phase.phase: return default
-    except:
-        return default
-    return phase
-
 def nonzeros(IDs, data):
     if hasattr(IDs, 'dct'):
         dct = data.dct
-        index = sorted(dct)
-        return  [IDs[i] for i in index], [dct[i] for i in index]
+        return  [IDs[i] for i in dct], [*dct.values()]
     else:
         index, = np.where(data)
         return [IDs[i] for i in index], [data[i] for i in index]
@@ -92,6 +90,127 @@ def index_overlap(left_chemicals, right_chemicals, right_index):
         cache[CASs] = (left_index, 0)
         if len(cache) > 100: cache.pop(cache.__iter__().__next__())
         return left_index, right_index
+
+def get_sparse_chemical_data(sparse, index, kind):
+    if kind is None: return sparse
+    dct = sparse.dct
+    if kind == 0:
+        return dct.get(index, 0.)
+    elif kind == 1:
+        return sum([dct[i] for i in index if i in dct])
+    elif kind == 2:
+        return np.array([
+            (sum([dct[j] for j in i if j in dct]) if i.__class__ is list else dct.get(i, 0.))
+            for n, i in enumerate(index)
+        ])
+    elif kind == 3:
+        return np.array([dct.get(i, 0.) for i in index])
+    else:
+        raise IndexError('invalid index kind')
+
+def reset_sparse_chemical_data(sparse, data):
+    if data is sparse: return
+    dct = sparse.dct
+    dct.clear()
+    if data.__class__ is SparseVector:
+        dct.update(data.dct)
+    else:
+        ndim = get_ndim(data)
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for i in range(sparse.size): dct[i] = data
+        elif ndim == 1:
+            for i, j in enumerate(data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]  
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+
+def set_sparse_chemical_data(sparse, index, kind, data, key, parent):
+    if kind is None:
+        reset_sparse_chemical_data(sparse, data)
+        return
+    ndim = get_ndim(data)
+    dct = sparse.dct
+    if kind == 0:
+        if ndim:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+        if data:
+            dct[index] = float(data)
+        elif index in dct: 
+            del dct[index]
+    elif kind == 1:
+        if ndim == 0:
+            composition = parent.group_compositions[key]
+            values = data * composition
+            for i, j in zip(index, values):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        elif ndim == 1:
+            for i, j in zip(index, data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    elif kind == 2:
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for n, i in enumerate(index):
+                    if i.__class__ is list:
+                        values = data * parent.group_compositions[key[n]]
+                        for k, j in zip(i, values):
+                            if j: dct[k] = float(j)
+                            elif k in dct: del dct[k]
+                    else:
+                        dct[i] = data
+            else:
+                for i in index:
+                    if i.__class__ is list:
+                        for j in i:
+                            if j in dct: del dct[j]
+                    elif i in dct:
+                        del dct[i]
+        elif ndim == 1:
+            for n, i in enumerate(index):
+                if i.__class__ is list:
+                    values = data[n] * parent.group_compositions[key[n]]
+                    for k, j in zip(i, values):
+                        if j: dct[k] = float(j)
+                        elif k in dct: del dct[k]
+                else:
+                    j = data[n]
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    elif kind == 3:
+        if ndim == 0:
+            if data:
+                data = float(data)
+                for i in index: dct[i] = data
+            else:
+                for i in index:
+                    if i in dct: del dct[i]
+        elif ndim == 1:
+            for i, j in zip(index, data):
+                if j: dct[i] = float(j)
+                elif i in dct: del dct[i]
+        else:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+    else:
+        raise IndexError('invalid index kind') 
 
 # %% Abstract indexer
     
@@ -206,28 +325,108 @@ class SplitIndexer(Indexer):
         return self
     
     def __getitem__(self, key):
-        chemicals = self._chemicals
-        index, kind = chemicals._get_index_and_kind(key)
-        if kind == 0 or kind == 1:
-            return self.data[index]
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind is None: return self.data
+        dct = self.data.dct
+        if kind == 0:
+            return dct.get(index, 0.)
+        elif kind == 1:
+            return np.array([dct.get(i, 0.) for i in index])
         elif kind == 2:
-            data = self.data
-            return np.array([data[i] for i in index], dtype=object)
+            return np.array([
+                (np.array([dct.get(j, 0.) for j in i]) if i.__class__ is list else dct.get(i, 0.))
+                for n, i in enumerate(index)
+            ])
+        elif kind == 3:
+            return np.array([dct.get(i, 0.) for i in index])
         else:
-            raise IndexError('unknown error')
+            raise IndexError('invalid index kind')
     
     def __setitem__(self, key, data):
         index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0 or kind == 1:
-            self.data[index] = data
-        elif kind == 2:
-            sparse_data = self.data
-            if hasattr(data, '__iter__'):
-                for i, x in zip(index, data): sparse_data[i] = x
+        if kind is None:
+            reset_sparse_chemical_data(self.data, data)
+            return
+        ndim = get_ndim(data)
+        dct = self.data.dct
+        if kind == 0:
+            if ndim:
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
+            if data:
+                dct[index] = float(data)
+            elif index in dct: 
+                del dct[index]
+        elif kind == 1:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index: dct[i] = data
+                else:
+                    for i in index:
+                        if i in dct: del dct[i]
+            elif ndim == 1:
+                for i, j in zip(index, data):
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
             else:
-                for i in index: sparse_data[i] = data
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
+        elif kind == 2:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index:
+                        if i.__class__ is list:
+                            for j in i: dct[j] = data
+                        else:
+                            dct[i] = data
+                else:
+                    for i in index:
+                        if i.__class__ is list:
+                            for j in i:
+                                if j in dct: del dct[j]
+                        elif i in dct:
+                            del dct[i]
+            else:
+                for n, i in enumerate(index):
+                    if i.__class__ is list:
+                        k = data[n]
+                        if hasattr(k, '__iter__'):
+                            for j, m in zip(i, k):
+                                if m: dct[j] = m
+                                elif j in dct: del dct[j]
+                        else:
+                            if k:
+                                k = float(k)
+                                for j in i: dct[j] = k
+                            else:
+                                for j in i:
+                                    if j in dct: del dct[j]  
+                    else:
+                        j = data[n]
+                        if j: dct[i] = float(j)
+                        elif i in dct: del dct[i]
+        elif kind == 3:
+            if ndim == 0:
+                if data:
+                    data = float(data)
+                    for i in index: dct[i] = data
+                else:
+                    for i in index:
+                        if i in dct: del dct[i]
+            elif ndim == 1:
+                for i, j in zip(index, data):
+                    if j: dct[i] = float(j)
+                    elif i in dct: del dct[i]
+            else:
+                raise IndexError(
+                    'cannot set an array element with a sequence'
+                )
         else:
-            raise IndexError('unknown error')
+            raise IndexError('invalid index kind') 
                 
     def __format__(self, tabs=""):
         if not tabs: tabs = 1
@@ -336,35 +535,13 @@ class ChemicalIndexer(Indexer):
         return self.from_data, (self.data, self._phase, self._chemicals, False)
     
     def __getitem__(self, key):
-        index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0:
-            return self.data[index]
-        elif kind == 1:
-            return self.data.sum_of(index)
-        elif kind == 2:
-            arr = np.zeros(len(index))
-            data = self.data
-            for d, s in enumerate(index):
-                arr[d] = data.sum_of(s)
-            return arr
-        else:
-            raise IndexError('unknown index error')
+        return get_sparse_chemical_data(self.data, *self._chemicals._get_index_and_kind(key))
     
     def __setitem__(self, key, data):
-        index, kind = self._chemicals._get_index_and_kind(key)
-        if kind == 0:
-            self.data[index] = data
-        elif kind == 1:
-            composition = self.group_compositions[key]
-            self.data[index] = data * composition
-        elif kind == 2:
-            sparse_data = self.data
-            group_compositions = self.group_compositions
-            for n in range(len(index)):
-                i = index[n]
-                sparse_data[i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
-        else:
-            raise IndexError('unknown error')
+        set_sparse_chemical_data(
+            self.data, *self._chemicals._get_index_and_kind(key), 
+            data, key, self
+        )
     
     def sum_across_phases(self):
         return self.data
@@ -374,30 +551,31 @@ class ChemicalIndexer(Indexer):
         return self._chemicals.get_index
     
     def mix_from(self, others):
-        self.phase = find_main_phase(others, self.phase)
+        set_main_phase(self, others)
         chemicals = self._chemicals
         data = self.data
         sc_data = [] # Same chemicals
         other_data = [] # Different chemicals
-        repeated_data = 0
+        isa = isinstance
         for i in others:
-            if i is self:
-                repeated_data += 1
-            else:
-                idata = i.sum_across_phases()
-                if idata.shares_data_with(data): idata = idata.copy()
-                ichemicals = i._chemicals
+            ichemicals = i._chemicals
+            idata = i.data
+            if isa(i, MaterialIndexer):
                 if ichemicals is chemicals:
-                    sc_data.append(idata)
+                    sc_data.extend(idata.rows)
                 else:
+                    idata = idata.sum(0)
+                    sc_data.append(idata)
                     other_data.append(
-                        (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
+                        (i, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
                     )
-        if repeated_data == 0:
-            data.clear()
-        elif repeated_data > 1:
-            data *= repeated_data
-        for i in sc_data: data += i
+            elif ichemicals is chemicals:
+                sc_data.append(idata)
+            else:
+                other_data.append(
+                    (idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
+                )
+        data.mix_from(sc_data)
         for idata, left_index, right_index in other_data: 
             data[left_index] += idata[right_index]
     
@@ -593,83 +771,75 @@ class MaterialIndexer(Indexer):
         if isinstance(other, ChemicalIndexer):
             self.empty()
             other_data = other.data
+            self._expand_phases(other.phase)
             phase_index = self.get_phase_index(other.phase)
             if self.chemicals is other.chemicals:
-                self.data[phase_index, :] = other_data
+                self.data.rows[phase_index].copy_like(other_data)
             else:
                 other_data = other.data
                 left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
-                self.data[phase_index][left_index] = other_data[right_index] 
+                self.data.rows[phase_index][left_index] = other_data[right_index] 
         else:
             if self.chemicals is other.chemicals:
-                self.data[:] = other.data
+                self._expand_phases(other.phases)
+                self.data.copy_like(other.data)
             else:
                 self.empty()
+                self._expand_phases(other.phases)
                 other_data = other.data
                 left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 self.data[:, left_index] = other_data[:, right_index]
     
+    def _expand_phases(self, other_phases):
+        phases = self._phases
+        other_phases = set(other_phases)
+        new_phases = other_phases.difference(phases)
+        if new_phases: 
+            data = self.data
+            data_by_phase = {i: j for i, j in zip(phases, data.rows)}
+            all_phases = new_phases | phases
+            self._set_phases(all_phases)
+            size = self._chemicals.size
+            for i in new_phases: data_by_phase[i] = SparseVector.from_size(size)
+            phases = self._phases
+            data.rows = [data_by_phase[i] for i in phases]
+            
     def mix_from(self, others):
         isa = isinstance
-        data = self.data
-        get_phase_index = self.get_phase_index
         chemicals = self._chemicals
-        phases = self._phases
-        repeated_data = 0
-        spsc_data = [] # Same phases, same chemicals
-        sp_data = [] # Same phases, different chemicals
-        opsc_data = [] # One phase, same chemicals
-        op_data = [] # One phase, different chemicals
+        material_indexers = []
+        chemical_indexers = []
         for i in others:
-            if i is self:
-                repeated_data += 1
+            if isa(i, MaterialIndexer): material_indexers.append(i)
+            elif isa(i, ChemicalIndexer): chemical_indexers.append(i)
+            else: raise ValueError("can only mix from chemical or material indexers")
+        other_phases = [i.phase for i in chemical_indexers]
+        for i in material_indexers: other_phases.extend(i._phases)
+        self._expand_phases(other_phases)
+        phases = self._phases
+        scp_data = {i: [] for i in phases} # Same chemicals by phase
+        dcp_data = {i: [] for i in phases} # Different chemicals by phase
+        for i in material_indexers:
+            ichemicals = i._chemicals
+            idata = i.data
+            if chemicals is ichemicals:
+                for i, j in zip(i._phases, idata.rows):
+                    scp_data[i].append(j)
             else:
-                idata = i.data
-                if idata.shares_data_with(data): idata = idata.copy()
-                ichemicals = i._chemicals
-                if isa(i, MaterialIndexer):
-                    if phases == i.phases:
-                        if chemicals is ichemicals:
-                            spsc_data.append(idata)
-                        else:
-                            sp_data.append(
-                                (idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                            )
-                    else:
-                        if chemicals is ichemicals:
-                            for phase, idata in zip(i.phases, idata):
-                                if not idata.any(): continue
-                                opsc_data.append(
-                                    (idata, get_phase_index(i.phase))
-                                )
-                        else:
-                            for phase, idata in zip(i.phases, idata):
-                                if not idata.any(): continue
-                                op_data.append(
-                                    (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                                )
-                elif isa(i, ChemicalIndexer):
-                    if idata.shares_data_with(data): idata = idata.copy()
-                    if chemicals is ichemicals:
-                        opsc_data.append(
-                            (idata, get_phase_index(i.phase))
-                        )
-                    else:
-                        op_data.append(
-                            (get_phase_index(phase), idata, *index_overlap(chemicals, ichemicals, [*idata.nonzero_keys()]))
-                        )
-                else:
-                    raise ValueError("can only mix from chemical or material indexers")
-        if repeated_data == 0:
-            data[:] = 0.
-        elif repeated_data > 1:
-            data *= repeated_data
-        for i in spsc_data: data[:] += i
-        for idata, left_index, right_index in sp_data: 
-            data[:, left_index] += idata[:, right_index]
-        for idata, left_index in opsc_data: data[left_index, :] += idata
-        for phase_index, idata, left_index, right_index in op_data: 
-            data[phase_index, left_index] += idata[right_index]
+                left_index, right_index = index_overlap(chemicals, ichemicals, idata.nonzero_keys())
+                for i, j in zip(i._phases, i.data.rows):
+                    dcp_data[i].append((idata, left_index, right_index))
+        for i in chemical_indexers:
+            ichemicals = i._chemicals
+            idata = i.data
+            if chemicals is ichemicals:
+                scp_data[i.phase].append(idata)
+            else:
+                dcp_data[i].append((idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys())))
+        for phase, sv in zip(phases, self.data.rows):
+            sv.mix_from(scp_data[phase])
+            for idata, left_index, right_index in dcp_data[phase]:
+                sv[left_index] += idata[right_index]
     
     def separate_out(self, other):
         isa = isinstance
@@ -684,7 +854,7 @@ class MaterialIndexer(Indexer):
                     data -= idata
                 else:
                     idata = other.data
-                    other_index, = np.where(idata.any(0))
+                    other_index, = idata.any(0).nonzero()
                     CASs = other.chemicals.CASs
                     self_index = chemicals.indices([CASs[i] for i in other_index])
                     data[:, self_index] -= idata[:, other_index]
@@ -696,7 +866,7 @@ class MaterialIndexer(Indexer):
                 else:
                     for phase, idata in zip(other.phases, idata):
                         if not idata.any(): continue
-                        other_index, = np.where(idata)
+                        other_index, = idata.nonzero()
                         CASs = other.chemicals.CASs
                         self_index = chemicals.indices([CASs[i] for i in other_index])
                         data[get_phase_index(phase), self_index] -= idata[other_index]
@@ -704,7 +874,7 @@ class MaterialIndexer(Indexer):
             if chemicals is other.chemicals:
                 data[get_phase_index(other.phase), :] -= idata
             else:
-                other_index, = np.where(idata != 0.)
+                other_index, = idata.nonzero()
                 CASs = other.chemicals.CASs
                 self_index = chemicals.indices([CASs[i] for i in other_index])
                 data[get_phase_index(other.phase), self_index] -= idata[other_index]
@@ -780,45 +950,42 @@ class MaterialIndexer(Indexer):
         return material_indexer
     
     def get_phase(self, phase):
-        return self._ChemicalIndexer.from_data(self.data[self.get_phase_index(phase)],
+        return self._ChemicalIndexer.from_data(self.data.rows[self.get_phase_index(phase)],
                                                LockedPhase(phase), self._chemicals, False)
     
     def __getitem__(self, key):
         index, kind, sum_across_phases = self._get_index_data(key)
         if sum_across_phases:
-            if kind == 0: # Normal
-                values = self.data[:, index].sum(0)
+            dcts = [i.dct for i in self.data.rows]
+            if kind == 0: # Chemical
+                values = sum([i[index] for i in dcts if index in i])
             elif kind == 1: # Chemical group
-                values = self.data[:, index].sum()
+                values = sum([j[i] for i in index for j in dcts if i in j])
             elif kind == 2: # Nested chemical group
-                data = self.data
-                values = np.array([data[:, i].sum() for i in index], dtype=float)
+                values = np.array([
+                    (sum([dct[j] for j in i for dct in dcts if j in dct]) 
+                     if i.__class__ is list 
+                     else sum([dct[i] for dct in dcts if i in dct]))
+                    for n, i in enumerate(index)
+                ])
+            elif kind == 3: # List
+                values = np.array([sum([dct[i] for dct in dcts if i in dct]) for i in index])
+            elif kind == 4:
+                values = self.data.sum(0)
+            else:
+                raise IndexError('invalid index kind')
         else:
-            if kind == 0: # Normal
-                return self.data[index]
-            elif kind == 1: # Chemical group
-                phase, index = index
-                if phase == slice(None):
-                    values = self.data[phase, index].sum(1)
+            if kind is None:
+                values = self.data if index is None else self.data.rows[index]
+            else:
+                phase_index, chemical_index = index
+                if phase_index is None:
+                    values = np.array([
+                        get_sparse_chemical_data(i, chemical_index, kind) for i in self.data.rows
+                    ])
                 else:
-                    values = self.data[phase, index].sum()
-            elif kind == 2: # Nested chemical group
-                data = self.data
-                phase, index = index
-                if phase == slice(None):
-                    values = np.zeros([len(self.phases), len(index)])
-                    for d, s in enumerate(index):
-                        if hasattr(s, '__iter__'): 
-                            values[:, d] = data[phase, s].sum(1)
-                        else:
-                            values[:, d] = data[phase, s]
-                else:
-                    values = np.zeros(len(index))
-                    for d, s in enumerate(index):
-                        if hasattr(s, '__iter__'): 
-                            values[d] = data[phase, s].sum()
-                        else:
-                            values[d] = data[phase, s]
+                    phase_index, chemical_index = index
+                    values = get_sparse_chemical_data(self.data.rows[phase_index], chemical_index, kind)
         return values
     
     def __setitem__(self, key, data):
@@ -826,22 +993,34 @@ class MaterialIndexer(Indexer):
         if sum_across_phases:
             raise IndexError("multiple phases present; must include phase key "
                              "to set chemical data")
-        if kind == 0:
-            self.data[index] = data
-        elif kind == 1: # Chemical group
-            phase, index = index
-            _, key = key
-            composition = self.group_compositions[key]
-            self.data[phase, index] = data * composition
-        elif kind == 2: # Nested chemical group
-            phase, index = index
-            sparse_data = self.data
-            group_compositions = self.group_compositions
-            for n in range(len(index)):
-                i = index[n]
-                sparse_data[phase, i] = data[n] * group_compositions[key[n]] if hasattr(i, '__iter__') else data[n]
+        if kind is None:
+            if index is None:
+                self.data[:] = data
+            else:
+                reset_sparse_chemical_data(self.data.rows[index], data)
         else:
-            raise IndexError('unknown error')
+            phase_index, chemical_index = index
+            _, key = key
+            if phase_index is None:
+                if kind in (0, 3):
+                    self.data[:, chemical_index] = data
+                elif kind == 1: # Chemical group
+                    phase, index = index
+                    composition = self.group_compositions[key]
+                    self.data[:, chemical_index] = data * composition
+                elif kind == 2: # Nested chemical group
+                    phase, index = index
+                    sparse_data = self.data
+                    group_compositions = self.group_compositions
+                    for n, i in enumerate(index):
+                        sparse_data[:, i] = data[n] * group_compositions[key[n]] if i.__class__ is list else data[n]
+                else:
+                    raise IndexError('invalid index kind')
+            else:
+                set_sparse_chemical_data(
+                    self.data[phase_index], chemical_index, kind, 
+                    data, key, self
+                )
     
     def _get_index_data(self, key):
         cache = self._index_cache
@@ -880,12 +1059,11 @@ class MaterialIndexer(Indexer):
         if isa(phase_IDs, str):
             if len(phase_IDs) == 1: 
                 index = self.get_phase_index(phase_IDs)
-                kind = 0
+                kind = None
             else:
                 raise undefined_chemical_error
         elif phase_IDs is ...:
-            index = slice(None)
-            kind = 0
+            phase_index = index = kind = None
         else:
             phase = phase_IDs[0]
             if isa(phase, str):
@@ -894,7 +1072,7 @@ class MaterialIndexer(Indexer):
                 else:
                     raise undefined_chemical_error
             elif phase is ...:
-                phase_index = slice(None)
+                phase_index = None
             else:
                 raise_material_indexer_index_error()
             try:
@@ -903,7 +1081,7 @@ class MaterialIndexer(Indexer):
                 raise_material_indexer_index_error()
             chemical_index, kind = self._chemicals._get_index_and_kind(IDs)
             index = (phase_index, chemical_index)
-        return index, kind
+        return index, kind, 
     
     def __iter__(self):
         """Iterate over phase-data pairs."""
@@ -947,7 +1125,7 @@ class MaterialIndexer(Indexer):
         from thermosteam import Stream
         N_max = N or Stream.display_units.N
         IDs = self.chemicals.IDs
-        index, = np.where(self.data.sum(0) != 0)
+        index, = self.data.any(0).nonzero()
         len_ = len(index)
         if len_ == 0:
             return f"{type(self).__name__}: (empty)"
