@@ -202,7 +202,7 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
         ys = np.array(ys)
         index = np.argsort(xs[:, 0])
         N_total_lines = len(tie_lines) 
-        step = floor(N_total_lines / N_tie_lines)
+        step = floor(N_total_lines / N_tie_lines) or 1
         partition_index = np.arange(0, N_total_lines, step, dtype=int)
         index = index[partition_index]
         xs = [xs[i] for i in index]

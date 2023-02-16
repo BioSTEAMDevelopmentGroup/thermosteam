@@ -145,10 +145,6 @@ class SLE(Equilibrium, phases='ls'):
     def __init__(self, imol=None, thermal_condition=None, thermo=None, 
                  solubility_weight=None, activity_coefficient=None):
         super().__init__(imol, thermal_condition, thermo)
-        imol = self._imol
-        self._phase_data = tuple(imol)
-        self._liquid_mol = imol['l']
-        self._solid_mol = imol['s']
         self._phase_data = tuple(imol)
         self._nonzero = None
         self._index = ()
@@ -158,8 +154,10 @@ class SLE(Equilibrium, phases='ls'):
     
     def _setup(self):
         # Get flow rates
-        liquid_mol = self._liquid_mol
-        solid_mol = self._solid_mol
+        imol = self._imol
+        self._phase_data = tuple(imol)
+        self._liquid_mol = liquid_mol = imol['l']
+        self._solid_mol = solid_mol = imol['s']
         mol = liquid_mol + solid_mol
         solute_index = self._solute_index
         self._mol_solute = mol_solute = mol[solute_index]
