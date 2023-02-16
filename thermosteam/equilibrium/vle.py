@@ -7,7 +7,7 @@
 # for license details.
 """
 """
-from scipy.optimize import differential_evolution
+from scipy.optimize import shgo
 import flexsolve as flx
 from numba import njit
 from warnings import warn
@@ -289,9 +289,7 @@ class VLE(Equilibrium, phases='lg'):
     x_tol = 1e-9
     y_tol = 1e-9
     default_method = 'fixed-point'
-    differential_evolution_options = {'seed': 0,
-                                      'popsize': 12,
-                                      'tol': 1e-6}
+    
     def __init__(self, imol=None, thermal_condition=None,
                  thermo=None, bubble_point_cache=None, dew_point_cache=None):
         self.method = self.default_method
@@ -299,12 +297,8 @@ class VLE(Equilibrium, phases='lg'):
         self._dew_point_cache = dew_point_cache or DewPointCache()
         self._bubble_point_cache = bubble_point_cache or BubblePointCache()
         super().__init__(imol, thermal_condition, thermo)
-        imol = self._imol
         self._x = None
         self._z_last = None
-        self._phase_data = tuple(imol)
-        self._liquid_mol = imol['l']
-        self._vapor_mol = imol['g']
         self._nonzero = None
         self._index = ()
     
@@ -423,8 +417,10 @@ class VLE(Equilibrium, phases='lg'):
     
     def _setup(self):
         # Get flow rates
-        liquid_mol = self._liquid_mol
-        vapor_mol = self._vapor_mol
+        imol = self._imol
+        self._phase_data = tuple(imol)
+        self._liquid_mol = liquid_mol = imol['l']
+        self._vapor_mol = vapor_mol = imol['g']
         mol = liquid_mol + vapor_mol
         nonzero = mol.nonzero_keys()
         chemicals = self.chemicals
@@ -1194,11 +1190,11 @@ class VLE(Equilibrium, phases='lg'):
     def _V_err_at_T(self, T, V):
         return self._solve_v(T, self._P).sum()/self._F_mol_vle  - V
     
-    def _y_iter(self, y, Psats, Psats_over_P, T, P):
+    def _y_iter(self, y, pcf_Psat_over_P, T, P):
         phi = self._phi(y, T, P)
         gamma = self._gamma
         x = self._x
-        pcf_Psat_over_P_phi = self._pcf(T, P, Psats) * Psats_over_P / phi
+        pcf_Psat_over_P_phi = pcf_Psat_over_P / phi
         N = self._N
         z = self._z
         if N > 3 or self._z_light or self._z_heavy:
@@ -1232,7 +1228,7 @@ class VLE(Equilibrium, phases='lg'):
     def _solve_v(self, T, P):
         """Solve for vapor mol"""
         method = self.method
-        if method == 'differential-evolution':
+        if method == 'shgo':
             gamma = self._gamma
             phi = self._phi
             Psats = np.array([i(T) for i in self._bubble_point.Psats]) 
@@ -1240,21 +1236,21 @@ class VLE(Equilibrium, phases='lg'):
             F_mol_vle = self._F_mol_vle
             mol_vle = self._mol_vle
             z = mol_vle / F_mol_vle
-            v = F_mol_vle * solve_vle_vapor_mol_differential_evolution(
-                z, T, gamma.f, gamma.args, pcf, P, Psats, phi.f, phi.args, 
-                **self.differential_evolution_options,
+            v = F_mol_vle * solve_vle_vapor_mol_shgo(
+                z, T, gamma.f, gamma.args, P, pcf * Psats, phi.f, phi.args, 
+                dict(f_tol=self.y_tol, minimizer_kwargs=dict(f_tol=self.y_tol)),
             )
             self._z_last = z
         elif method == 'fixed-point':
             Psats = np.array([i(T) for i in
                               self._bubble_point.Psats])
-            Psats_over_P = Psats / P
+            pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
             if isinstance(self._phi, IdealFugacityCoefficients):
-                y = self._y_iter(self._y, Psats, Psats_over_P, T, P)
+                y = self._y_iter(self._y, pcf_Psats_over_P, T, P)
             else:
                 y = flx.aitken(self._y_iter, self._y, self.y_tol,
-                               args=(Psats, Psats_over_P, T, P),
+                               args=(pcf_Psats_over_P, T, P),
                                checkiter=False, 
                                checkconvergence=False, 
                                convergenceiter=5,
@@ -1304,13 +1300,11 @@ def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, P, pcf_Psats, f_p
     g_mix = g_mix_l + g_mix_g
     return g_mix
 
-def solve_vle_vapor_mol_differential_evolution(
-        mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args, 
-        **differential_evolution_options
+def solve_vle_vapor_mol_shgo(
+        mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args, shgo_options,
     ):
     args = (mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol
-    result = differential_evolution(vle_objective_function, bounds, args,
-                                    **differential_evolution_options)
+    result = shgo(vle_objective_function, bounds, args, options=shgo_options)
     return result.x

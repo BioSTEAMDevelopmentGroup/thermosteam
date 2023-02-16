@@ -15,6 +15,7 @@ import thermosteam as tmo
 import flexsolve as flx
 import numpy as np
 import pandas as pd
+from scipy.interpolate import UnivariateSpline
 from .utils import thermo_user
 from .exceptions import InfeasibleRegion
 from .equilibrium import phase_fraction as compute_phase_fraction
@@ -382,12 +383,12 @@ def lle_partition_coefficients(top, bottom):
     >>> import thermosteam as tmo
     >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Octanol'], cache=True)
     >>> s = tmo.Stream('s', Water=20, Octanol=20, Ethanol=1)
-    >>> s.lle(T=298.15, P=101325)
-    >>> IDs, K = tmo.separations.lle_partition_coefficients(s['l'], s['L'])
+    >>> s.lle(T=298.15, P=101325, top_chemical='Octanol') # Top phase is L
+    >>> IDs, K = tmo.separations.lle_partition_coefficients(s['L'], s['l'])
     >>> IDs
     ('Water', 'Ethanol', 'Octanol')
-    >>> K
-    array([6.82e+00, 2.38e-01, 3.00e-04])
+    >>> K[2] # Octanol
+    3324.4
 
     """
     IDs = tuple([i.ID for i in bottom.lle_chemicals])
@@ -601,7 +602,7 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> feed = tmo.Stream('feed', Water=20, Octanol=20, Ethanol=1)
     >>> top = tmo.Stream('top')
     >>> bottom = tmo.Stream('bottom')
-    >>> tmo.separations.lle(feed, top, bottom)
+    >>> tmo.separations.lle(feed, top, bottom, top_chemical='Octanol')
     >>> top.show()
     Stream: top
      phase: 'l', T: 298.15 K, P: 101325 Pa
@@ -623,7 +624,7 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> top = tmo.Stream('top')
     >>> bottom = tmo.Stream('bottom')
     >>> ms = tmo.MultiStream('ms', phases='lL') # Store flow rate data here as well
-    >>> tmo.separations.lle(feed, top, bottom, efficiency=0.99, multi_stream=ms)
+    >>> tmo.separations.lle(feed, top, bottom, efficiency=0.99, multi_stream=ms, top_chemical='Octanol')
     >>> ms.show()
     MultiStream: ms
      phases: ('L', 'l'), T: 298.15 K, P: 101325 Pa
@@ -645,10 +646,10 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     if not top_chemical:
         rho_l = ms['l'].rho
         rho_L = ms['L'].rho
-        top_L = rho_L < rho_l
-        if top_L:
-            top_phase = 'L'
-            bottom_phase = 'l'
+        top_l = rho_l < rho_L
+        if top_l:
+            top_phase = 'l'
+            bottom_phase = 'L'
     top.mol[:] = ms.imol[top_phase]
     bottom.mol[:] = ms.imol[bottom_phase]
     top.T = bottom.T = feed.T
@@ -966,7 +967,7 @@ class StageEquilibrium:
             else:
                 self.K = K_new
                 self.IDs = IDs
-                self.phi = phi
+            self.phi = phi
         ms._imol.data[:] = data
         
     def partition_vle(self, partition_data=None, stacklevel=1, P=None):
@@ -1146,7 +1147,7 @@ class MultiStageEquilibrium:
     __slots__ = ('stages', 'multi_stream', 'iter', 'solvent', 'feeds', 'feed_stages', 'P',
                  'partition_data', 'top_side_draws', 'bottom_side_draws', 'specifications',
                  'maxiter', 'molar_tolerance', 'relative_molar_tolerance', 'use_cache',
-                 '_thermo', '_iter_args', '_update_args', '_top_only')
+                 '_thermo', '_iter_args', '_update_args', '_top_only', '_N_chemicals')
     
     default_maxiter = 20
     default_molar_tolerance = 0.1
@@ -1278,7 +1279,7 @@ class MultiStageEquilibrium:
         stages = self.stages
         mol = self._get_net_outlets()
         mol = np.asarray(mol)
-        mol[mol < 0] = 1.
+        mol[mol <= 0.] = 1.
         factor = self._get_net_feeds() / mol
         stages[0].multi_stream[top].mol *= factor
         stages[-1].multi_stream[bottom].mol *= factor
@@ -1408,6 +1409,7 @@ class MultiStageEquilibrium:
         )
         self._iter_args = (feed_flows, -top_splits, -bottom_splits)
         self._update_args = (top_splits, bottom_splits, index)
+        self._N_chemicals = N_chemicals
         return top_flow_rates
     
     def get_vle_phase_ratios(self):
@@ -1465,9 +1467,32 @@ class MultiStageEquilibrium:
             partition_coefficients = np.array([i.K for i in stages], dtype=float) 
         else:
             for i in stages: i.partition_lle(self.partition_data, P=P, solvent=self.solvent)
-            almost_one = 1 - 1e-16
-            phase_ratios = np.array([(1e16 if (phi:=i.phi) > almost_one else phi / (1 - phi))  for i in stages], dtype=float)
-            partition_coefficients = np.array([i.K for i in stages], dtype=float)
+            phase_ratios = []
+            partition_coefficients = []
+            almost_one = 1. - 1e-16
+            almost_zero = 1e-16
+            N_stages = len(stages)
+            index = []
+            for i in range(N_stages):
+                stage = stages[i]
+                phi = stage.phi
+                if almost_zero < phi < almost_one:
+                    index.append(i)
+                    phase_ratios.append(phi / (1 - phi))
+                    partition_coefficients.append(stage.K)
+            if len(index) == N_stages:
+                phase_ratios = np.array(phase_ratios)
+                partition_coefficients = np.array(partition_coefficients)
+            else:
+                spline = UnivariateSpline(index, phase_ratios, k=1, ext='const')
+                all_index = np.arange(N_stages)
+                phase_ratios = spline(all_index)
+                N_chemicals = self._N_chemicals
+                all_partition_coefficients = np.zeros([N_stages, N_chemicals])
+                for i in range(N_chemicals):
+                    spline = UnivariateSpline(index, [stage[i] for stage in partition_coefficients], k=1, ext='const')
+                    all_partition_coefficients[:, i] = spline(all_index)
+                partition_coefficients = all_partition_coefficients
         new_top_flow_rates = flow_rates_for_multi_stage_equilibrium(
             phase_ratios, partition_coefficients, *self._iter_args,
         )
@@ -1477,14 +1502,18 @@ class MultiStageEquilibrium:
         if mol_errors.any():
             mol_error = mol_errors.max()
             if mol_error > 1e-12:
-                nonzero_index, = np.where(mol_errors > 1e-12)
+                nonzero_index, = (mol_errors > 1e-12).nonzero()
                 mol_errors = mol_errors[nonzero_index]
                 max_errors = np.maximum.reduce([abs(mol[nonzero_index]), abs(mol_new[nonzero_index])])
                 rmol_error = (mol_errors / max_errors).max()
-        not_converged = (
-            self.iter < self.maxiter and (mol_error > self.molar_tolerance
-             or rmol_error > self.relative_molar_tolerance)
-        )
+                not_converged = (
+                    self.iter < self.maxiter and (mol_error > self.molar_tolerance
+                     or rmol_error > self.relative_molar_tolerance)
+                )
+            else:
+                not_converged = False
+        else:
+            not_converged = False
         return new_top_flow_rates, not_converged
 
 
