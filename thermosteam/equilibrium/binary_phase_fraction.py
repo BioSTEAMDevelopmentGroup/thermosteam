@@ -65,10 +65,10 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
     K_minus_1 = Ks - 1.
     args = (- zs * K_minus_1, K_minus_1, za, zb)
     f = phase_fraction_objective_function
-    x0 = 0.
-    x1 = 1.
-    y0 = -np.inf if za else f(x0, *args) 
-    y1 = np.inf if zb else f(x1, *args)
+    x0 = 1e-16 if za else 0.
+    x1 = (1 - 1e-16) if zb else 1.
+    y0 = f(x0, *args) 
+    y1 = f(x1, *args)
     if y0 > y1 > 0.: return 1
     if y1 > y0 > 0.: return 0.
     if y0 < y1 < 0.: return 1.
