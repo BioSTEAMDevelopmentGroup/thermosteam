@@ -775,6 +775,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        if self._F_mol_heavy: P_dew = 0.5 * P_dew + 0.5 * self._bubble_point.Pmin
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         H_dew = self.mixture.xH(phase_data, T, P_dew)
@@ -784,6 +785,7 @@ class VLE(Equilibrium, phases='lg'):
 
         # Check if subcooled liquid
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
+        if self._F_mol_light: P_bubble = 2 * P_bubble
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         H_bubble = self.mixture.xH(phase_data, T, P_bubble)
@@ -822,6 +824,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Check if super heated vapor
         P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
+        if self._F_mol_heavy: P_dew = 0.5 * P_dew + 0.5 * self._bubble_point.Pmin
         vapor_mol[index] = mol
         liquid_mol[index] = 0
         S_dew = self.mixture.xS(phase_data, T, P_dew)
@@ -831,6 +834,7 @@ class VLE(Equilibrium, phases='lg'):
 
         # Check if subcooled liquid
         P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
+        if self._F_mol_light: P_bubble = 2 * P_bubble
         vapor_mol[index] = 0
         liquid_mol[index] = mol
         S_bubble = self.mixture.xS(phase_data, T, P_bubble)
