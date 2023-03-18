@@ -167,12 +167,20 @@ class Thermo:
     def __exit__(self):
         tmo.settings.set_thermo(self._original_thermo)
     
+    def extended(self, chemicals):
+        original_chemicals = self.chemicals
+        return self.subset([
+            *original_chemicals,
+            *[i for i in chemicals if i.ID not in original_chemicals],
+        ])
+    
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
-        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
-        ndarray = np.ndarray
+        isa = isinstance
+        if not isa(chemicals, Chemicals): 
+            chemicals = Chemicals([self.as_chemical(i) for i in chemicals])
         groups = [(name, index) for name, index in self.chemicals._index.items() 
-                  if isinstance(index, ndarray)]
+                  if isa(index, list)]
         chemicals.compile(skip_checks=True)
         CASs = self.chemicals.CASs
         for name, index in groups:
@@ -223,12 +231,9 @@ class Thermo:
         """
         isa = isinstance
         if isa(chemical, str):
-            try: 
-                chemical = self.chemicals[chemical]
-            except:
-                chemical = Chemical(chemical)
+            chemical = self.chemicals[chemical] if chemical in self.chemicals else Chemical(chemical)
         elif not isa(chemical, Chemical): # pragma: no cover
-            raise ValueError(f"can only convert '{type(chemical).__name__}' object to chemical")
+            raise ValueError(f"cannot convert '{type(chemical).__name__}' object to chemical")
         return chemical
     
     def __repr__(self):
@@ -299,10 +304,11 @@ class IdealThermo:
     
     def subset(self, chemicals):
         if chemicals is self.chemicals: return self
-        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals)
-        ndarray = np.ndarray
+        isa = isinstance
+        if not isa(chemicals, Chemicals): 
+            chemicals = Chemicals([self.as_chemical(i) for i in chemicals])
         groups = [(name, index) for name, index in self.chemicals._index.items() 
-                  if isinstance(index, ndarray)]
+                  if isinstance(index, list)]
         chemicals.compile(skip_checks=True)
         CASs = self.chemicals.CASs
         for name, index in groups:
@@ -313,7 +319,7 @@ class IdealThermo:
         setattr = object.__setattr__
         setattr(new, 'chemicals', chemicals)
         setattr(new, 'mixture', self.mixture.from_chemicals(chemicals))
-        setattr(new, '_original_thermo', None)
+        setattr(new, '_original_thermo', self._original_thermo)
         return new
     
     def ideal(self):
