@@ -409,7 +409,7 @@ class Reaction:
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
-                negative_index = values.negative_index()
+                negative_index, = values.negative_index()
                 negative_values = values[negative_index]
                 if negative_values.sum() < -1e-12:
                     X_net = self.X_net()
@@ -694,7 +694,7 @@ class Reaction:
     
     @property
     def stoichiometry(self):
-        """[array] Stoichiometry coefficients."""
+        """[sparse array] Stoichiometry coefficients."""
         return self._stoichiometry
     @property
     def istoichiometry(self):
