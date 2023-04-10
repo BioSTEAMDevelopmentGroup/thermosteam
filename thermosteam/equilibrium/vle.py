@@ -463,7 +463,9 @@ class VLE(Equilibrium, phases='lg'):
             N += z_heavy > 0.
         self._N = N
         if reset:
-            if N == 1:
+            if N == 0:
+                self._phi = self._gamma = self._pcf = self._dew_point = self._bubble_point = None
+            elif N == 1:
                 self._chemical, = eq_chems
             else:
                 # Set equilibrium objects
