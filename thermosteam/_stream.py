@@ -1425,7 +1425,7 @@ class Stream:
         elif N_streams == 1:
             self.copy_like(streams[0])
         else:
-            P = min([i.P for i in streams])
+            self.P = P = min([i.P for i in streams])
             if vle:
                 self._imol.mix_from([i._imol for i in streams])
                 if energy_balance: 

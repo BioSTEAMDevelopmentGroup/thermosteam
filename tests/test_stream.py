@@ -373,12 +373,26 @@ def test_mixing_balance():
     ms['l'].mix_from(streams)
     assert ms['l'].imol['Water'] == total_flow
 
+def test_mixing_pressure():
+    P = 111458
+    s1 = tmo.Stream(None, Water=1000, P=P)
+    s2 = tmo.Stream(None, Water=2000, P=P)
+    s_mix = tmo.Stream.sum([s1, s2])
+    assert s_mix.P == P
+    
+    P_high = 131458
+    P_low = 111458
+    s3 = tmo.Stream(None, Water=1000, P=P_high)
+    s4 = tmo.Stream(None, Water=2000, P=P_low)
+    s_mix = tmo.Stream.sum([s3, s4])
+    assert s_mix.P == P_low
+
 def test_mixture():
     tmo.settings.set_thermo(['Water'], cache=True)
 
     # test solve_T_at_xx
     T_expected = 298
-    s5 = tmo.Stream('s5', T=T_expected, P=1e5, Water=1)
+    s5 = tmo.Stream(None, T=T_expected, P=1e5, Water=1)
     Th = s5.mixture.solve_T_at_HP(phase=s5.phase, mol=s5.mol, H=s5.H, T_guess=s5.T, P=s5.P)
     assert_allclose(T_expected, Th, rtol=1e-3)
     Ts = s5.mixture.solve_T_at_SP(phase=s5.phase, mol=s5.mol, S=s5.S, T_guess=s5.T, P=s5.P)
@@ -417,3 +431,4 @@ if __name__ == '__main__':
     test_vle_critical_pure_component()
     test_critical()
     test_mixture()
+    test_mixing_pressure()
