@@ -1786,7 +1786,10 @@ class Chemical:
             if single_phase:
                 # Reference state does not matter because phase will not change
                 self._H = Enthalpy.functor(Cn, T_ref, H_ref)
-                self._S = Entropy.functor(Cn, T_ref, S0)
+                if phase_ref == 'g':
+                    self._S = EntropyGas.functor(Cn, T_ref, P_ref, S0)
+                else:
+                    self._S = Entropy.functor(Cn, T_ref, S0)
                 # Excess energies
                 if single_phase == 's':
                     self._H_excess = Excess_Solid_Enthalpy_Ref_Solid.functor()
