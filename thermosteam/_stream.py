@@ -2343,7 +2343,7 @@ class Stream:
         if x.sum() < 1e-12: return 0
         return F_l(x, self.T).sum()
     
-    def receive_vent(self, other, energy_balance=True):
+    def receive_vent(self, other, energy_balance=True, ideal=False):
         """
         Receive vapors from another stream by vapor-liquid equilibrium between 
         a gas and liquid stream assuming only a small amount of chemicals
@@ -2383,12 +2383,13 @@ class Stream:
         
         """
         assert self.phase == 'g', 'stream must be a gas to receive vent'
-        ms = tmo.Stream(None, T=self.T, P=self.P, thermo=self.thermo)
+        thermo = self.thermo.ideal() if ideal else self.thermo
+        ms = tmo.Stream(None, T=self.T, P=self.P, thermo=thermo)
         ms.mix_from([self, other], energy_balance=False)
         if energy_balance: ms.H = H = self.H + other.H
         ms.vle._setup()
         chemicals = ms.vle_chemicals
-        F_l = eq.LiquidFugacities(chemicals, ms.thermo)
+        F_l = eq.LiquidFugacities(chemicals, thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = other.get_molar_fraction(IDs)
         T = ms.T
