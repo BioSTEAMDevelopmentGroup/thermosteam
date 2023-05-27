@@ -2460,7 +2460,7 @@ class Stream:
         T = thermo_units.convert(self.T, 'K', T_units)
         P = thermo_units.convert(self.P, 'Pa', P_units)
         s = '' if isinstance(phase, str) else 's'
-        return f" phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
+        return f"phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
     
     def _source_info(self):
         source = self.source
@@ -2505,17 +2505,17 @@ class Stream:
             return basic_info[:-1]
         N_IDs = len(all_IDs)
         if N_IDs == 0:
-            return basic_info + ' flow: 0' 
+            return basic_info + 'flow: 0' 
             
         # Remaining lines (all flow rates)
         flow_array = factor * indexer[all_IDs]
         if composition:
             total_flow = flow_array.sum()
-            beginning = " composition (%): "
+            beginning = "composition (%): "
             new_line = '\n' + len(beginning) * ' '
             flow_array = 100 * flow_array/total_flow
         else:
-            beginning = f' flow ({flow_units}): '
+            beginning = f'flow ({flow_units}): '
             new_line = '\n' + len(beginning) * ' '
         flow_rates = ''
         too_many_chemicals = N_IDs > N_max

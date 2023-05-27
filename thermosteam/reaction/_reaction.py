@@ -149,8 +149,8 @@ class Reaction:
     >>> reaction = tmo.Reaction('2H2O,l -> 2H2,g + O2,g', reactant='H2O', X=0.7)
     >>> reaction.show() # Note that the default basis is by 'mol'
     Reaction (by mol):
-     stoichiometry             reactant    X[%]
-     H2O,l -> H2,g + 0.5 O2,g  H2O,l       70.00
+    stoichiometry             reactant    X[%]
+    H2O,l -> H2,g + 0.5 O2,g  H2O,l       70.00
     >>> reaction.reactant # The reactant is a tuple of phase and chemical ID
     ('l', 'H2O')
     >>> feed = tmo.Stream('feed', H2O=100)
@@ -158,18 +158,18 @@ class Reaction:
     >>> reaction(feed) # Call to run reaction on molar flow
     >>> feed.show() # Notice how 70% of water was converted to product
     MultiStream: feed
-     phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): (g) H2   70
-                         O2   35
-                     (l) H2O  30
+    phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+    flow (kmol/hr): (g) H2   70
+                        O2   35
+                    (l) H2O  30
     
     Let's change to a per 'wt' basis:
     
     >>> reaction.basis = 'wt'
     >>> reaction.show()
     Reaction (by wt):
-     stoichiometry                     reactant    X[%]
-     H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O,l       70.00
+    stoichiometry                     reactant    X[%]
+    H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O,l       70.00
     
     Although we changed the basis, the end result is the same if we pass a 
     stream:
@@ -179,10 +179,10 @@ class Reaction:
     >>> reaction(feed) # Call to run reaction on mass flow
     >>> feed.show() # Notice how 70% of water was converted to product
     MultiStream: feed
-     phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): (g) H2   70
-                         O2   35
-                     (l) H2O  30
+    phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+    flow (kmol/hr): (g) H2   70
+                        O2   35
+                    (l) H2O  30
     
     If chemicals phases are not specified, Reaction objects can 
     react a any single phase Stream object (regardless of phase):
@@ -192,10 +192,10 @@ class Reaction:
     >>> reaction(feed) 
     >>> feed.show() 
     Stream: feed
-     phase: 'g', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): H2O  30
-                     H2   70
-                     O2   35
+    phase: 'g', T: 298.15 K, P: 101325 Pa
+    flow (kmol/hr): H2O  30
+                    H2   70
+                    O2   35
     
     Alternatively, it's also possible to react an array (instead of a stream):
     
@@ -213,8 +213,8 @@ class Reaction:
     >>> mixed_reaction = fermentation + combustion
     >>> mixed_reaction.show()
     Reaction (by mol):
-     stoichiometry                                    reactant    X[%]
-     Glucose + O2 -> 0.778 Ethanol + 0.222 H2O + CO2  Glucose    90.00
+    stoichiometry                                    reactant    X[%]
+    Glucose + O2 -> 0.778 Ethanol + 0.222 H2O + CO2  Glucose    90.00
     
     Note how conversions are added and the stoichiometry rescales to a per
     reactant basis. Conversely, reaction objects may be subtracted as well:
@@ -222,8 +222,8 @@ class Reaction:
     >>> combustion = mixed_reaction - fermentation
     >>> combustion.show()
     Reaction (by mol):
-     stoichiometry              reactant    X[%]
-     Glucose + O2 -> H2O + CO2  Glucose    20.00
+    stoichiometry              reactant    X[%]
+    Glucose + O2 -> H2O + CO2  Glucose    20.00
     
     When a Reaction object is multiplied (or divided), a new Reaction object
     with the conversion multiplied (or divided) is returned:
@@ -231,13 +231,13 @@ class Reaction:
     >>> combustion_multiplied = 2 * combustion
     >>> combustion_multiplied.show()
     Reaction (by mol):
-     stoichiometry              reactant    X[%]
-     Glucose + O2 -> H2O + CO2  Glucose    40.00
+    stoichiometry              reactant    X[%]
+    Glucose + O2 -> H2O + CO2  Glucose    40.00
     >>> fermentation_divided = fermentation / 2
     >>> fermentation_divided.show()
     Reaction (by mol):
-     stoichiometry                  reactant    X[%]
-     Glucose + O2 -> Ethanol + CO2  Glucose    35.00
+    stoichiometry                  reactant    X[%]
+    Glucose + O2 -> Ethanol + CO2  Glucose    35.00
     
     """
     phases = MaterialIndexer.phases
@@ -819,15 +819,14 @@ class Reaction:
         Balance glucose fermentation to ethanol:
         
         >>> import thermosteam as tmo
-        >>> from biorefineries import lipidcane as lc
-        >>> tmo.settings.set_thermo(lc.chemicals)
+        >>> tmo.settings.set_thermo(['Glucose', 'O2', 'CO2', 'Ethanol', 'CH4', 'Water'])
         >>> fermentation = tmo.Reaction('Glucose + O2 -> Ethanol + CO2',
         ...                             reactant='Glucose',  X=0.9)
         >>> fermentation.correct_atomic_balance()
         >>> fermentation.show()
         Reaction (by mol):
-         stoichiometry                 reactant    X[%]
-         Glucose -> 2 Ethanol + 2 CO2  Glucose    90.00
+        stoichiometry                 reactant    X[%]
+        Glucose -> 2 CO2 + 2 Ethanol  Glucose    90.00
         
         Balance methane combustion:
             
@@ -836,8 +835,8 @@ class Reaction:
         >>> combustion.correct_atomic_balance()
         >>> combustion.show()
         Reaction (by mol):
-         stoichiometry                reactant    X[%]
-         2 O2 + CH4 -> 2 Water + CO2  CH4       100.00
+        stoichiometry                reactant    X[%]
+        2 O2 + CH4 -> CO2 + 2 Water  CH4       100.00
          
         Balance electrolysis of water (with chemical phases specified):
             
@@ -847,8 +846,8 @@ class Reaction:
         >>> electrolysis.correct_atomic_balance()
         >>> electrolysis.show()
         Reaction (by mol):
-         stoichiometry             reactant    X[%]
-         H2O,l -> H2,g + 0.5 O2,g  H2O,l     100.00
+        stoichiometry             reactant    X[%]
+        H2O,l -> H2,g + 0.5 O2,g  H2O,l     100.00
         
         Note that if the reaction is underspecified, there are infinite
         ways to balance the reaction and a runtime error is raised:
@@ -868,8 +867,8 @@ class Reaction:
         >>> rxn_underspecified.correct_atomic_balance(['Glucose', 'CH4'])
         >>> rxn_underspecified.show()
         Reaction (by mol):
-         stoichiometry                            reactant    X[%]
-         Glucose + 8 O2 + CH4 -> 8 Water + 7 CO2  CH4       100.00
+        stoichiometry                            reactant    X[%]
+        Glucose + 8 O2 + CH4 -> 7 CO2 + 8 Water  CH4       100.00
         
         """
         stoichiometry_by_mol = self._get_stoichiometry_by_mol()
