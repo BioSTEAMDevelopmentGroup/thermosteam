@@ -150,7 +150,7 @@ class Reaction:
     >>> reaction.show() # Note that the default basis is by 'mol'
     Reaction (by mol):
     stoichiometry             reactant    X[%]
-    H2O,l -> H2,g + 0.5 O2,g  H2O,l       70.00
+    H2O,l -> H2,g + 0.5 O2,g  H2O,l      70.00
     >>> reaction.reactant # The reactant is a tuple of phase and chemical ID
     ('l', 'H2O')
     >>> feed = tmo.Stream('feed', H2O=100)
@@ -169,7 +169,7 @@ class Reaction:
     >>> reaction.show()
     Reaction (by wt):
     stoichiometry                     reactant    X[%]
-    H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O,l       70.00
+    H2O,l -> 0.112 H2,g + 0.888 O2,g  H2O,l      70.00
     
     Although we changed the basis, the end result is the same if we pass a 
     stream:
@@ -516,31 +516,31 @@ class Reaction:
         >>> s2.copy_like(s1) # s1 and s2 are the same
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): H2   10
-                         O2   20
-                         H2O  1e+03
+        phase: 'g', T: 373.15 K, P: 101325 Pa
+        flow (kmol/hr): H2   10
+                        O2   20
+                        H2O  1e+03
         
         >>> reaction.show()
         Reaction (by mol):
-         stoichiometry       reactant    X[%]
-         H2 + 0.5 O2 -> H2O  H2         70.00
+        stoichiometry       reactant    X[%]
+        H2 + 0.5 O2 -> H2O  H2         70.00
         
         >>> reaction(s1) 
         >>> s1.show() # After isothermal reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): H2   3
-                         O2   16.5
-                         H2O  1.01e+03
+        phase: 'g', T: 373.15 K, P: 101325 Pa
+        flow (kmol/hr): H2   3
+                        O2   16.5
+                        H2O  1.01e+03
         
         >>> reaction.adiabatic_reaction(s2)
         >>> s2.show() # After adiabatic reaction
         Stream: s2
-         phase: 'g', T: 421.6 K, P: 101325 Pa
-         flow (kmol/hr): H2   3
-                         O2   16.5
-                         H2O  1.01e+03
+        phase: 'g', T: 421.6 K, P: 101325 Pa
+        flow (kmol/hr): H2   3
+                        O2   16.5
+                        H2O  1.01e+03
         
         Adiabatic combustion of H2 and CH4:
         
@@ -556,11 +556,11 @@ class Reaction:
         >>> s2 = tmo.Stream('s2')
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): H2   10
-                         CH4  5
-                         O2   100
-                         H2O  100
+        phase: 'g', T: 373.15 K, P: 101325 Pa
+        flow (kmol/hr): H2   10
+                        CH4  5
+                        O2   100
+                        H2O  100
         
         >>> reaction.show()
         ParallelReaction (by mol):
@@ -571,12 +571,12 @@ class Reaction:
         >>> reaction.adiabatic_reaction(s1)
         >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 666.21 K, P: 101325 Pa
-         flow (kmol/hr): H2   3
-                         CH4  4.5
-                         O2   96
-                         CO2  0.5
-                         H2O  108
+        phase: 'g', T: 666.21 K, P: 101325 Pa
+        flow (kmol/hr): H2   3
+                        CH4  4.5
+                        O2   96
+                        CO2  0.5
+                        H2O  108
         
         Sequential combustion of CH4 and CO:
         
@@ -591,10 +591,10 @@ class Reaction:
         >>> s1 = tmo.Stream('s1', CH4=5, O2=100, H2O=100, T=373.15, phase='g')
         >>> s1.show() # Before reaction
         Stream: s1
-         phase: 'g', T: 373.15 K, P: 101325 Pa
-         flow (kmol/hr): CH4  5
-                         O2   100
-                         H2O  100
+        phase: 'g', T: 373.15 K, P: 101325 Pa
+        flow (kmol/hr): CH4  5
+                        O2   100
+                        H2O  100
         
         >>> reaction.show()
         SeriesReaction (by mol):
@@ -605,12 +605,12 @@ class Reaction:
         >>> reaction.adiabatic_reaction(s1)
         >>> s1.show() # After adiabatic reaction
         Stream: s1
-         phase: 'g', T: 649.84 K, P: 101325 Pa
-         flow (kmol/hr): CH4  1.5
-                         CO   3.15
-                         O2   94.6
-                         CO2  0.35
-                         H2O  107
+        phase: 'g', T: 649.84 K, P: 101325 Pa
+        flow (kmol/hr): CH4  1.5
+                        CO   3.15
+                        O2   94.6
+                        CO2  0.35
+                        H2O  107
         
         """
         if not isinstance(stream, tmo.Stream):
@@ -1252,30 +1252,30 @@ class ParallelReaction(ReactionSet):
     ...                      g=[('H2', 10), ('CH4', 5), ('O2', 100), ('H2O', 10)])
     >>> s1.show() # Before reaction
     MultiStream: s1
-     phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
-     flow (kmol/hr): (g) H2       10
-                         CH4      5
-                         O2       100
-                         H2O      10
-                     (l) Ethanol  10
+    phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
+    flow (kmol/hr): (g) H2       10
+                        CH4      5
+                        O2       100
+                        H2O      10
+                    (l) Ethanol  10
     
     >>> reaction(s1)
     >>> s1.show() # After isothermal reaction
     MultiStream: s1
-     phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
-     flow (kmol/hr): (g) H2       3
-                         CH4      5
-                         O2       93.5
-                         CO2      2
-                         H2O      20
-                     (l) Ethanol  9
+    phases: ('g', 'l'), T: 373.15 K, P: 101325 Pa
+    flow (kmol/hr): (g) H2       3
+                        CH4      5
+                        O2       93.5
+                        CO2      2
+                        H2O      20
+                    (l) Ethanol  9
     
     Reaction items are accessible:
     
     >>> reaction[0].show()
     ReactionItem (by mol):
-     stoichiometry             reactant    X[%]
-     H2,g + 0.5 O2,g -> H2O,g  H2,g       70.00
+    stoichiometry             reactant    X[%]
+    H2,g + 0.5 O2,g -> H2O,g  H2,g       70.00
     
     Note that changing the conversion of a reaction item changes the 
     conversion of its parent reaction set:
@@ -1479,14 +1479,14 @@ class ReactionSystem:
     >>> cellulosic_rxnsys(feed)
     >>> feed.show()
     Stream: feed
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kmol/hr): Water       4.15
-                     Ethanol     1.66
-                     LacticAcid  0.054
-                     HMF         0.025
-                     Glucan      0.075
-                     CO2         1.66
-                     Biomass     0.0437
+    phase: 'l', T: 298.15 K, P: 101325 Pa
+    flow (kmol/hr): Water       4.15
+                    Ethanol     1.66
+                    LacticAcid  0.054
+                    HMF         0.025
+                    Glucan      0.075
+                    CO2         1.66
+                    Biomass     0.0437
     
     """
     __slots__ = ('_reactions',

@@ -1880,24 +1880,7 @@ class Chemical:
         >>> Substance = Chemical.blank('Substance')
         >>> missing_properties = Substance.default()
         >>> sorted(missing_properties)
-        ['Dortmund',
-         'Hfus',
-         'Hvap',
-         'PSRK',
-         'Pc',
-         'Psat',
-         'Pt',
-         'Sfus',
-         'Tb',
-         'Tc',
-         'Tm',
-         'Tt',
-         'UNIFAC',
-         'Vc',
-         'dipole',
-         'iscyclic_aliphatic',
-         'omega',
-         'similarity_variable']
+        ['Dortmund', 'Hfus', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
         
         Note that missing properties does not include essential properties volume, heat capacity, and conductivity.
         
@@ -2004,38 +1987,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> sorted(Substance.get_missing_properties())
-        ['Cn',
-         'Dortmund',
-         'H',
-         'HHV',
-         'H_excess',
-         'Hf',
-         'Hfus',
-         'Hvap',
-         'LHV',
-         'MW',
-         'PSRK',
-         'Pc',
-         'Psat',
-         'Pt',
-         'S',
-         'S_excess',
-         'Sfus',
-         'Tb',
-         'Tc',
-         'Tm',
-         'Tt',
-         'UNIFAC',
-         'Vc',
-         'combustion',
-         'dipole',
-         'epsilon',
-         'iscyclic_aliphatic',
-         'kappa',
-         'mu',
-         'omega',
-         'sigma',
-         'similarity_variable']
+        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
         
         """
         getfield = getattr

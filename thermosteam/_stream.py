@@ -106,15 +106,15 @@ class Stream:
     ...                 T=298.15, P=101325, phase='l')
     >>> s1.show(flow='kg/hr') # Use the show method to select units of display
     Stream: s1
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water    20
-                   Ethanol  10
+    phase: 'l', T: 298.15 K, P: 101325 Pa
+    flow (kg/hr): Water    20
+                  Ethanol  10
     >>> s1.show(composition=True, flow='kg/hr') # Its also possible to show by composition
     Stream: s1
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     composition (%): Water    66.7
-                      Ethanol  33.3
-                      -------  30 kg/hr
+    phase: 'l', T: 298.15 K, P: 101325 Pa
+    composition (%): Water    66.7
+                     Ethanol  33.3
+                     -------  30 kg/hr
     
     All flow rates are stored as a sparse array in the `mol` attribute.
     These arrays work just like numpy arrays, but are more scalable
@@ -222,35 +222,35 @@ class Stream:
     >>> s1.vle(P=101325, V=0.5)
     >>> s1.show()
     MultiStream: s1
-     phases: ('g', 'l'), T: 364.76 K, P: 101325 Pa
-     flow (kmol/hr): (g) Water    0.472
-                         Ethanol  0.192
-                     (l) Water    0.638
-                         Ethanol  0.0256
+    phases: ('g', 'l'), T: 364.76 K, P: 101325 Pa
+    flow (kmol/hr): (g) Water    0.472
+                        Ethanol  0.192
+                    (l) Water    0.638
+                        Ethanol  0.0256
     
     Note that the stream is a now a MultiStream object to manage multiple phases.
     Each phase can be accessed separately too:
     
     >>> s1['l'].show()
     Stream: 
-     phase: 'l', T: 364.76 K, P: 101325 Pa
-     flow (kmol/hr): Water    0.638
-                     Ethanol  0.0256
+    phase: 'l', T: 364.76 K, P: 101325 Pa
+    flow (kmol/hr): Water    0.638
+                    Ethanol  0.0256
     
     >>> s1['g'].show()
     Stream: 
-     phase: 'g', T: 364.76 K, P: 101325 Pa
-     flow (kmol/hr): Water    0.472
-                     Ethanol  0.192
+    phase: 'g', T: 364.76 K, P: 101325 Pa
+    flow (kmol/hr): Water    0.472
+                    Ethanol  0.192
     
     We can convert a MultiStream object back to a Stream object by setting the phase:
         
     >>> s1.phase = 'l'
     >>> s1.show(flow='kg/hr')
     Stream: s1
-     phase: 'l', T: 364.76 K, P: 101325 Pa
-     flow (kg/hr): Water    20
-                   Ethanol  10
+    phase: 'l', T: 364.76 K, P: 101325 Pa
+    flow (kg/hr): Water    20
+                  Ethanol  10
     
     """
     __slots__ = (
@@ -375,9 +375,9 @@ class Stream:
         >>> s1.reset_flow(Ethanol=1, phase='g', units='kg/hr', total_flow=2)
         >>> s1.show('cwt')
         Stream: s1
-         phase: 'g', T: 298.15 K, P: 101325 Pa
-         composition (%): Ethanol  100
-                          -------  2 kg/hr
+        phase: 'g', T: 298.15 K, P: 101325 Pa
+        composition (%): Ethanol  100
+                         -------  2 kg/hr
         
         """
         imol = self._imol
@@ -490,8 +490,8 @@ class Stream:
         >>> s1.empty_negative_flows()
         >>> s1.show()
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kmol/hr): Water  1
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kmol/hr): Water  1
 
         """
         self._imol.data.remove_negatives()
@@ -557,14 +557,14 @@ class Stream:
         >>> stream.set_data(data)
         >>> stream.show()
         Stream: stream
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kmol/hr): Water  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kmol/hr): Water  10
         >>> stream.set_data(data_vle)
         >>> stream.show()
         MultiStream: stream
-         phases: ('g', 'l'), T: 373.12 K, P: 101325 Pa
-         flow (kmol/hr): (g) Water  5
-                         (l) Water  5
+        phases: ('g', 'l'), T: 373.12 K, P: 101325 Pa
+        flow (kmol/hr): (g) Water  5
+                        (l) Water  5
         
         Note that only StreamData objects are valid for this method:
         
@@ -1290,9 +1290,9 @@ class Stream:
         >>> s_sum = tmo.Stream.sum([s1, s1], 's_sum')
         >>> s_sum.show(flow='kg/hr')
         Stream: s_sum
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    40
-                       Ethanol  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    40
+                      Ethanol  20
         
         Sum two streams with new property package:
             
@@ -1300,9 +1300,9 @@ class Stream:
         >>> s_sum = tmo.Stream.sum([s1, s1], 's_sum', thermo)
         >>> s_sum.show(flow='kg/hr')
         Stream: s_sum
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    40
-                       Ethanol  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    40
+                      Ethanol  20
         """
         new = cls(ID, thermo=thermo)
         if streams: new.copy_thermal_condition(streams[0])
@@ -1324,9 +1324,9 @@ class Stream:
         >>> s1.separate_out(s2)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    20
-                       Ethanol  5
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    20
+                      Ethanol  5
         
         It's also possible to separate out streams with different property packages
         so long as all chemicals are defined in the mixed stream's property 
@@ -1341,16 +1341,16 @@ class Stream:
         >>> s_mix.separate_out(s2)
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  40
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  40
         
         Removing empty streams is fine too:
             
         >>> s1.empty(); s_mix.separate_out(s1)
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  40
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  40
         
         """
         if other:
@@ -1382,9 +1382,9 @@ class Stream:
         >>> s1.mix_from([s1, s2])
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    40
-                       Ethanol  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    40
+                      Ethanol  20
         
         It's also possible to mix streams with different property packages
         so long as all chemicals are defined in the mixed stream's property 
@@ -1399,17 +1399,17 @@ class Stream:
         >>> s_mix.mix_from([s1, s2])
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    40
-                       Ethanol  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    40
+                      Ethanol  20
         
         Mixing empty streams is fine too:
             
         >>> s1.empty(); s2.empty(); s_mix.mix_from([s1, s2])
         >>> s_mix.show()
         Stream: s_mix
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow: 0
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow: 0
         
         """
         streams = []
@@ -1461,15 +1461,15 @@ class Stream:
         >>> s.split_to(s1, s2, split)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    10
-                       Ethanol  1
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    10
+                      Ethanol  1
         
         >>> s2.show(flow='kg/hr')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    10
-                       Ethanol  9
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    10
+                      Ethanol  9
         
         
         """
@@ -1609,8 +1609,8 @@ class Stream:
         >>> s1.copy_like(s2)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  2
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  2
          
         Copy data from another stream with a different property package:
         
@@ -1622,8 +1622,8 @@ class Stream:
         >>> s1.copy_like(s2)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  2
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  2
 
         """
         if isinstance(other, tmo.MultiStream):
@@ -1654,8 +1654,8 @@ class Stream:
         >>> s1.copy_thermal_condition(s2)
         >>> s1.show(flow='kg/hr')
         Stream: s1
-         phase: 'l', T: 300 K, P: 101325 Pa
-         flow (kg/hr): Water  2
+        phase: 'l', T: 300 K, P: 101325 Pa
+        flow (kg/hr): Water  2
         
         """
         self._thermal_condition.copy_like(other._thermal_condition)
@@ -1702,9 +1702,9 @@ class Stream:
         >>> s2.copy_flow(s1)
         >>> s2.show(flow='kg/hr')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    20
-                       Ethanol  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    20
+                      Ethanol  10
         
         Reset and copy just water flow:
         
@@ -1712,8 +1712,8 @@ class Stream:
         >>> s2.copy_flow(s1, 'Water')
         >>> s2.show(flow='kg/hr')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  20
         
         Reset and copy all flows except water:
         
@@ -1721,22 +1721,22 @@ class Stream:
         >>> s2.copy_flow(s1, 'Water', exclude=True)
         >>> s2.show(flow='kg/hr')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Ethanol  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Ethanol  10
         
         Cut and paste flows:
         
         >>> s2.copy_flow(s1, remove=True)
         >>> s2.show(flow='kg/hr')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    20
-                       Ethanol  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    20
+                      Ethanol  10
         
         >>> s1.show()
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow: 0
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow: 0
          
         Its also possible to copy flows from a multistream:
         
@@ -1745,11 +1745,11 @@ class Stream:
         >>> s2.copy_flow(s1, remove=True)
         >>> s2.show()
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kmol/hr): Water  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kmol/hr): Water  10
         >>> s1.show()
         MultiStream: s1
-         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
+        phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
          flow: 0
          
         Copy flows except except water and remove water:
@@ -1759,12 +1759,12 @@ class Stream:
         >>> s2.copy_flow(s1, 'Water', exclude=True, remove=True)
         >>> s1.show('wt')
         Stream: s1
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water  20
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water  20
         >>> s2.show('wt')
         Stream: s2
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Ethanol  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Ethanol  10
         
         """
         other_mol = other.mol
@@ -1826,9 +1826,9 @@ class Stream:
         >>> s1_copy = s1.copy('s1_copy')
         >>> s1_copy.show(flow='kg/hr')
         Stream: s1_copy
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         flow (kg/hr): Water    20
-                       Ethanol  10
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        flow (kg/hr): Water    20
+                      Ethanol  10
         
         Warnings
         --------
@@ -2361,10 +2361,10 @@ class Stream:
         >>> s1.receive_vent(s2)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
-         phase: 'g', T: 323.13 K, P: 101325 Pa
-         flow (kmol/hr): Water    0.0799
-                         Ethanol  0.0889
-                         N2       0.739
+        phase: 'g', T: 323.13 K, P: 101325 Pa
+        flow (kmol/hr): Water    0.0799
+                        Ethanol  0.0889
+                        N2       0.739
         
         Set energy balance to false to receive vent isothermally:
             
@@ -2376,10 +2376,10 @@ class Stream:
         >>> s1.receive_vent(s2, energy_balance=False)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
-         phase: 'g', T: 330 K, P: 101325 Pa
-         flow (kmol/hr): Water    0.112
-                         Ethanol  0.123
-                         N2       0.739
+        phase: 'g', T: 330 K, P: 101325 Pa
+        flow (kmol/hr): Water    0.112
+                        Ethanol  0.123
+                        N2       0.739
         
         """
         assert self.phase == 'g', 'stream must be a gas to receive vent'
@@ -2685,11 +2685,11 @@ class Stream:
         >>> stream = bst.Stream('stream', Water=0.5, Ethanol=1.5, Methanol=0.2, Propanol=0.3, units='kg/hr')
         >>> stream.show('cwt2s') # Alternatively: stream.show(composition=True, flow='kg/hr', N=2, sort=True)
         Stream: stream
-         phase: 'l', T: 298.15 K, P: 101325 Pa
-         composition (%): Ethanol  60
-                          Water    20
-                          ...      20
-                          -------  2.5 kg/hr
+        phase: 'l', T: 298.15 K, P: 101325 Pa
+        composition (%): Ethanol  60
+                         Water    20
+                         ...      20
+                         -------  2.5 kg/hr
         
         """
         print(self._info(layout, T, P, flow, composition, N, IDs, sort, df))

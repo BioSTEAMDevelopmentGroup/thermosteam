@@ -202,8 +202,8 @@ class DisplayUnits:
     >>> stream = tmo.Stream('stream', Water=1, units='kg/hr')
     >>> stream.show()
     Stream: stream
-     phase: 'l', T: 298.15 K, P: 101325 Pa
-     flow (kg/hr): Water  1
+    phase: 'l', T: 298.15 K, P: 101325 Pa
+    flow (kg/hr): Water  1
     
     >>> # Change back to kmol/hr
     >>> tmo.Stream.display_units.flow = 'kmol/hr'
