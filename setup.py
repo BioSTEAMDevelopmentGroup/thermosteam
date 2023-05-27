@@ -11,11 +11,11 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.33.0',
+    version='0.34.0',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst', encoding='utf-8').read(),
     author='Yoel Cortes-Pena',
-    install_requires=['numpy>=1.22',
+    install_requires=['numpy>=1.24.2',
                       'pint>=0.20',
                       'scipy>=1.5',
                       'thermo>=0.2.9',
@@ -27,7 +27,7 @@ setup(
                       'openpyxl>=3.0.0',
                       'free_properties>=0.3.6',
                       'flexsolve>=0.5.4',
-                      'numba>=0.56.0',
+                      'numba>=0.57.0',
                       'pyglet'],
     extras_require={
         'dev': [
