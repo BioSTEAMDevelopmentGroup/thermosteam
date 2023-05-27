@@ -222,9 +222,9 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(S=S, T=363.88)
     >>> vle 
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 128.1), ('Ethanol', 26.46), ('Methanol', 33.59), ('Propanol', 0.8978), ('O2', 10)],
-            l=[('Water', 175.9), ('Ethanol', 3.538), ('Methanol', 6.409), ('Propanol', 0.1022), ('Glucose', 5)]),
-        thermal_condition=ThermalCondition(T=363.88, P=106583))
+            g=[('Water', 128.1), ('Ethanol', 26.46), ('Methanol', 33.59), ('Propanol', 0.8979), ('O2', 10)],
+            l=[('Water', 175.9), ('Ethanol', 3.536), ('Methanol', 6.406), ('Propanol', 0.1021), ('Glucose', 5)]),
+        thermal_condition=ThermalCondition(T=363.88, P=106576))
 
     The presence of a non-partitioning gaseous chemical will result in some
     evaporation, even if the tempeture is below the saturated bubble point:
