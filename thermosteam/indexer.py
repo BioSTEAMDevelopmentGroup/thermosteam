@@ -336,7 +336,7 @@ class SplitIndexer(Indexer):
             return np.array([
                 (np.array([dct.get(j, 0.) for j in i]) if i.__class__ is list else dct.get(i, 0.))
                 for n, i in enumerate(index)
-            ])
+            ], dtype=object)
         elif kind == 3:
             return np.array([dct.get(i, 0.) for i in index])
         else:
