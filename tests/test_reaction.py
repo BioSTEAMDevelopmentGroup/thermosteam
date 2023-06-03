@@ -96,6 +96,38 @@ def test_reaction():
     assert_allclose(single_phase_reaction.product_yield('O2', basis='wt'), 0.1)
     assert_allclose(multi_phase_reaction.product_yield('O2', basis='wt'), 0.1)
     
+    # Test reactant_demand with and without multiple phases
+    single_phase_reaction = reaction = tmo.Reaction(
+        'H2 + O2 -> H2O', reactant='H2',
+        correct_atomic_balance=True, X=0.5
+    )
+    multi_phase_reaction = reaction = tmo.Reaction(
+        'H2,g + O2,g -> H2O,l', reactant='H2',
+        correct_atomic_balance=True, X=0.7
+    )
+    assert_allclose(single_phase_reaction.reactant_demand('O2'), 0.25)
+    assert_allclose(multi_phase_reaction.reactant_demand('O2'), 0.35)
+    assert_allclose(single_phase_reaction.reactant_demand('H2'), 0.5)
+    assert_allclose(multi_phase_reaction.reactant_demand('H2'), 0.7)
+    assert_allclose(single_phase_reaction.reactant_demand('O2', basis='wt'), 3.9683413695259637)
+    
+    # Test reactant_demand setter with and without multiple phases
+    single_phase_reaction.reactant_demand('O2', reactant_demand=0.1)
+    multi_phase_reaction.reactant_demand('O2', reactant_demand=0.1)
+    assert_allclose(single_phase_reaction.reactant_demand('O2'), 0.1)
+    assert_allclose(multi_phase_reaction.reactant_demand('O2'), 0.1)
+    
+    single_phase_reaction.reactant_demand('H2', reactant_demand=0.1)
+    multi_phase_reaction.reactant_demand('H2', reactant_demand=0.1)
+    assert_allclose(single_phase_reaction.reactant_demand('H2'), 0.1)
+    assert_allclose(multi_phase_reaction.reactant_demand('H2'), 0.1)
+    
+    single_phase_reaction.reactant_demand('O2', basis='wt', reactant_demand=0.1)
+    multi_phase_reaction.reactant_demand('O2', basis='wt', reactant_demand=0.1)
+    assert_allclose(single_phase_reaction.reactant_demand('O2', basis='wt'), 0.1)
+    assert_allclose(multi_phase_reaction.reactant_demand('O2', basis='wt'), 0.1)
+    
+    
     
 def test_reaction_enthalpy_balance():
     # Combustion; ensure heat of gas phase reaction without sensible heats is 

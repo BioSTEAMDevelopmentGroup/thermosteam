@@ -330,6 +330,7 @@ class Reaction:
         return copy
     
     def has_reaction(self):
+        """Return whether any reaction takes place."""
         return bool(self.X and self.stoichiometry.any())
     
     def _math_compatible_reaction(self, rxn, copy=True):
@@ -438,6 +439,31 @@ class Reaction:
         if original is not None: original[:] = values
         if config: material._imol.reset_chemicals(*config)
     
+    def reactant_demand(self, reactant, basis=None, reactant_demand=None):
+        """
+        Return or set the demand of any reactant (i.e., the reactant's 
+        stoichiometric coefficient multiplied by the conversion).
+
+        If this function is used to set the reactant yield,
+        the conversion is updated and the stoichiometric coefficient is kept 
+        constant.
+
+        Parameters
+        ----------
+        reactant : str, optional
+            ID of the reactant chemical.
+        basis : str, optional
+            Can be 'mol' or 'wt'. Defaults to the Reaction object's basis.
+        reactant_demand: float, optional
+            New reactant demand as a number between 0 and 1. If none given, 
+            the reactant demand is returned.
+
+        """
+        if reactant_demand is None:
+            return -self.product_yield(reactant, basis, reactant_demand)
+        else:
+            self.product_yield(reactant, basis, -reactant_demand)
+    
     def product_yield(self, product, basis=None, product_yield=None):
         """
         Return or set the yield of a product per reactant (i.e., the product's
@@ -494,7 +520,8 @@ class Reaction:
                 else:
                     raise ValueError("basis must be either 'wt' or 'mol'; "
                                     f"not {repr(basis)}")
-            assert X <= 1.
+            if abs(X) > 1.: 
+                raise ValueError("product yield or reactant demand is above the maximum theoretical")
             self.X = X
     
     def adiabatic_reaction(self, stream):
