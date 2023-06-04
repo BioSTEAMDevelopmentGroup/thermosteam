@@ -18,16 +18,16 @@ from .exceptions import DimensionError
 
 # %% Import unit registry
 
-from pint import UnitRegistry
+import pint
 import os
 
 # Set pint Unit Registry
-ureg = UnitRegistry()
+ureg = pint.get_application_registry()
 ureg.default_format = '~P'
 ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
 convert = ureg.convert
 Quantity = ureg.Quantity
-del os, UnitRegistry
+del os
 
 # %% Functions
 
