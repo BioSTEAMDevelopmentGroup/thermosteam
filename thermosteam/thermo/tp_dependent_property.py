@@ -13,7 +13,7 @@
 # 
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
-from thermo.volume import COOLPROP, EOS
+from thermo.volume import COOLPROP, EOS, NEGLECT_P
 from thermo import (
     TPDependentProperty,
     VaporPressure, 
@@ -38,16 +38,13 @@ subs = (
 
 # Remove cache from call
 def __call__(self, T, P):
-    if self._method_P:
-        return self.TP_dependent_property(T, P)
-    else:
-        return self.T_dependent_property(T)
+    return self.TP_dependent_property(T, P)
 
 TPDependentProperty.__call__ = __call__
 
 # Missing method 
 def has_method(self):
-    return bool(self._method or self._method_P)
+    return bool(self._method or self._method_P and self._method_P != NEGLECT_P)
 
 TPDependentProperty.__bool__ = has_method
 
