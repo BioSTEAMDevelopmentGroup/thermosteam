@@ -38,7 +38,10 @@ subs = (
 
 # Remove cache from call
 def __call__(self, T, P):
-    return self.TP_dependent_property(T, P)
+    if self._method_P:
+        return self.TP_dependent_property(T, P)
+    else:
+        return self.T_dependent_property(T)
 
 TPDependentProperty.__call__ = __call__
 
