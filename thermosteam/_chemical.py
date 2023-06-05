@@ -372,7 +372,7 @@ class Chemical:
              HHV: -0 J/mol
              Hfus: 6010 J/mol
              Sfus: None
-             omega: 0.3443
+             omega: 0.344
              dipole: 1.85 Debye
              similarity_variable: 0.16653
              iscyclic_aliphatic: 0
@@ -1987,7 +1987,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> sorted(Substance.get_missing_properties())
-        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'omega', 'sigma', 'similarity_variable']
+        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
         
         """
         getfield = getattr

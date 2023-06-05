@@ -300,7 +300,7 @@ class BubblePointBeta:
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
     >>> bp
-    BubblePointValues(T=355.00, P=111447, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.341 0.659])
+    BubblePointValues(T=355.00, P=111467, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.341 0.659])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
     >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
     (355, 111467, ['Water', 'Ethanol'], array([0.5, 0.5]), array([0.341, 0.659]))
@@ -344,7 +344,7 @@ class BubblePointBeta:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
         >>> tmo.docround(BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325))
-        (353.4052, array([0.38 , 0.62]))
+        (353.4013, array([0.38 , 0.621]))
         
         """
         positives = z > 0.
