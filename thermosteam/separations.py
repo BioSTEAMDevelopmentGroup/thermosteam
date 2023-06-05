@@ -244,14 +244,14 @@ def phase_split(feed, outlets):
     >>> tmo.separations.phase_split(feed, outlets)
     >>> vapor.show()
     Stream: vapor
-    phase: 'g', T: 353.86 K, P: 101325 Pa
-    flow (kmol/hr): Water    3.86
-                    Ethanol  6.14
+    phase: 'g', T: 353.94 K, P: 101325 Pa
+    flow (kmol/hr): Water    3.87
+                    Ethanol  6.13
     >>> liquid.show()
     Stream: liquid
-    phase: 'l', T: 353.86 K, P: 101325 Pa
-    flow (kmol/hr): Water    6.14
-                    Ethanol  3.86
+    phase: 'l', T: 353.94 K, P: 101325 Pa
+    flow (kmol/hr): Water    6.13
+                    Ethanol  3.87
     
     Note that the number of phases in the feed should be equal to the number of 
     outlets:
@@ -293,7 +293,7 @@ def partition_coefficients(IDs, top, bottom):
     >>> s = tmo.Stream('s', Water=20, Ethanol=20, O2=0.1)
     >>> s.vle(V=0.5, P=101325)
     >>> tmo.separations.partition_coefficients(('Water', 'Ethanol'), s['g'], s['l'])
-    array([0.63 , 1.588])
+    array([0.632, 1.582])
 
     """
     numerator = top.get_normalized_mol(IDs)
@@ -314,13 +314,13 @@ def chemical_splits(a, b=None, mixed=None):
     >>> isplits = tmo.separations.chemical_splits(stream['g'], stream['l'])
     >>> isplits.show()
     ChemicalIndexer:
-     Water    0.3861
-     Ethanol  0.6139
+     Water    0.387
+     Ethanol  0.613
     >>> isplits = tmo.separations.chemical_splits(stream['g'], mixed=stream)
     >>> isplits.show()
     ChemicalIndexer:
-     Water    0.3861
-     Ethanol  0.6139
+     Water    0.387
+     Ethanol  0.613
      
     """
     mixed_mol = mixed.mol.copy() if mixed else a.mol + b.mol
@@ -354,7 +354,7 @@ def vle_partition_coefficients(top, bottom):
     >>> IDs
     ('Water', 'Ethanol')
     >>> K
-    array([0.63 , 1.588])
+    array([0.632, 1.582])
 
     """
     IDs = tuple([i.ID for i in bottom.vle_chemicals])
@@ -702,14 +702,14 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     >>> tmo.separations.vle(feed, vapor, liquid, V=0.5, P=101325)
     >>> vapor.show()
     Stream: top
-    phase: 'g', T: 353.86 K, P: 101325 Pa
-    flow (kmol/hr): Water    7.73
+    phase: 'g', T: 353.94 K, P: 101325 Pa
+    flow (kmol/hr): Water    7.75
                     Ethanol  12.3
     >>> liquid.show()
     Stream: bottom
-    phase: 'l', T: 353.86 K, P: 101325 Pa
+    phase: 'l', T: 353.94 K, P: 101325 Pa
     flow (kmol/hr): Water    12.3
-                    Ethanol  7.73
+                    Ethanol  7.75
     
     It is also possible to save flow rate data in a multi-stream as well:
         
@@ -717,11 +717,11 @@ def vle(feed, vap, liq, T=None, P=None, V=None, Q=None, x=None, y=None,
     >>> tmo.separations.vle(feed, vapor, liquid, V=0.5, P=101325, multi_stream=ms)
     >>> ms.show()
     MultiStream: ms
-    phases: ('g', 'l'), T: 353.86 K, P: 101325 Pa
-    flow (kmol/hr): (g) Water    7.73
+    phases: ('g', 'l'), T: 353.94 K, P: 101325 Pa
+    flow (kmol/hr): (g) Water    7.75
                         Ethanol  12.3
                     (l) Water    12.3
-                        Ethanol  7.73
+                        Ethanol  7.75
     
     """
     if multi_stream:

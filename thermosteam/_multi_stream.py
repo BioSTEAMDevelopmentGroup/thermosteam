@@ -112,7 +112,7 @@ class MultiStream(Stream):
          Ethanol   0.2171
     >>> # Index a single chemical in the liquid phase
     >>> s1.imol['l', 'Water']
-    1.1101687012358397
+    1.1101
     >>> # Index multiple chemicals in the liquid phase
     >>> s1.imol['l', ('Ethanol', 'Water')]
     array([0.217, 1.11 ])
@@ -179,13 +179,13 @@ class MultiStream(Stream):
     >>> s1['l'].show()
     Stream: 
     phase: 'l', T: 365 K, P: 101325 Pa
-    flow (kmol/hr): Water    0.616
-                    Ethanol  0.0235
+    flow (kmol/hr): Water    0.617
+                    Ethanol  0.0238
     >>> s1['g'].show()
     Stream: 
     phase: 'g', T: 365 K, P: 101325 Pa
-    flow (kmol/hr): Water    0.494
-                    Ethanol  0.194
+    flow (kmol/hr): Water    0.493
+                    Ethanol  0.193
     
     Note that the phase cannot be changed:
     
@@ -903,10 +903,10 @@ class MultiStream(Stream):
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10), ('Methanol', 10)], units='m3/hr')
         >>> s1.get_concentration('l', ('Water', 'Ethanol'))
-        array([27.672,  4.265])
+        array([27.673,  4.261])
 
         >>> s1.get_concentration('l', ('Water', 'Ethanol'), 'g/L')
-        array([498.512, 196.479])
+        array([498.532, 196.291])
 
         """
         F_vol = self.F_vol

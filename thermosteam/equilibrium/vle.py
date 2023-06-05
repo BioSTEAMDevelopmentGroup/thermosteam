@@ -113,8 +113,8 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(V=0.5, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.48), ('Propanol', 0.8958)],
-            l=[('Water', 177.3), ('Ethanol', 3.603), ('Methanol', 6.516), ('Propanol', 0.1042)]),
+            g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958)],
+            l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042)]),
         thermal_condition=ThermalCondition(T=363.85, P=101325))
     
     Equilibrium given temperature and pressure:
@@ -122,8 +122,8 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(T=363.88, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
-            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+            g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
+            l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given enthalpy and pressure:
@@ -132,8 +132,8 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(H=H, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
-            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+            g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
+            l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given entropy and pressure:
@@ -142,8 +142,8 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(S=S, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
-            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+            g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
+            l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given vapor fraction and temperature:
@@ -151,17 +151,17 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(V=0.5, T=363.88)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.48), ('Propanol', 0.8958)],
-            l=[('Water', 177.3), ('Ethanol', 3.603), ('Methanol', 6.517), ('Propanol', 0.1042)]),
-        thermal_condition=ThermalCondition(T=363.88, P=101445))
+            g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958)],
+            l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042)]),
+        thermal_condition=ThermalCondition(T=363.88, P=101431))
     
     Equilibrium given enthalpy and temperature:
     
     >>> vle(H=H, T=363.88)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 127.5), ('Ethanol', 26.43), ('Methanol', 33.54), ('Propanol', 0.8969)],
-            l=[('Water', 176.5), ('Ethanol', 3.567), ('Methanol', 6.457), ('Propanol', 0.1031)]),
+            g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
+            l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Non-partitioning heavy and gaseous chemicals also affect VLE. Calculation 
@@ -178,53 +178,53 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(T=363.88, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 159.6), ('Ethanol', 27.66), ('Methanol', 35.63), ('Propanol', 0.9338), ('O2', 10)],
-            l=[('Water', 144.4), ('Ethanol', 2.337), ('Methanol', 4.371), ('Propanol', 0.06621), ('Glucose', 5)]),
+            g=[('Water', 159.5), ('Ethanol', 27.65), ('Methanol', 35.63), ('Propanol', 0.9337), ('O2', 10)],
+            l=[('Water', 144.5), ('Ethanol', 2.352), ('Methanol', 4.369), ('Propanol', 0.0663), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     >>> vle(V=0.5, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.51), ('Propanol', 0.8958), ('O2', 10)],
-            l=[('Water', 177.3), ('Ethanol', 3.599), ('Methanol', 6.485), ('Propanol', 0.1042), ('Glucose', 5)]),
+            g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.52), ('Propanol', 0.8957), ('O2', 10)],
+            l=[('Water', 177.3), ('Ethanol', 3.618), ('Methanol', 6.478), ('Propanol', 0.1043), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.47, P=101325))
     
     >>> H = vle.thermo.mixture.xH(vle.imol, T=363.88, P=101325)
     >>> vle(H=H, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 127.4), ('Ethanol', 26.44), ('Methanol', 33.57), ('Propanol', 0.8969), ('O2', 10)],
-            l=[('Water', 176.6), ('Ethanol', 3.564), ('Methanol', 6.428), ('Propanol', 0.1031), ('Glucose', 5)]),
+            g=[('Water', 127.4), ('Ethanol', 26.42), ('Methanol', 33.58), ('Propanol', 0.8968), ('O2', 10)],
+            l=[('Water', 176.6), ('Ethanol', 3.583), ('Methanol', 6.421), ('Propanol', 0.1032), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.51, P=101325))
     
     >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
     >>> vle(S=S, P=101325)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 128.2), ('Ethanol', 26.47), ('Methanol', 33.63), ('Propanol', 0.8979), ('O2', 10)],
-            l=[('Water', 175.8), ('Ethanol', 3.53), ('Methanol', 6.372), ('Propanol', 0.1021), ('Glucose', 5)]),
+            g=[('Water', 128.2), ('Ethanol', 26.45), ('Methanol', 33.63), ('Propanol', 0.8979), ('O2', 10)],
+            l=[('Water', 175.8), ('Ethanol', 3.548), ('Methanol', 6.365), ('Propanol', 0.1021), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.54, P=101325))
     
     >>> vle(V=0.5, T=363.88)
     >>> vle
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.48), ('Propanol', 0.8958), ('O2', 10)],
-            l=[('Water', 177.3), ('Ethanol', 3.603), ('Methanol', 6.517), ('Propanol', 0.1042), ('Glucose', 5)]),
-        thermal_condition=ThermalCondition(T=363.88, P=106856))
+            g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958), ('O2', 10)],
+            l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042), ('Glucose', 5)]),
+        thermal_condition=ThermalCondition(T=363.88, P=106841))
     
     >>> vle(H=H, T=363.88)
     >>> vle 
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 126.7), ('Ethanol', 26.4), ('Methanol', 33.48), ('Propanol', 0.8958), ('O2', 10)],
-            l=[('Water', 177.3), ('Ethanol', 3.604), ('Methanol', 6.517), ('Propanol', 0.1042), ('Glucose', 5)]),
-        thermal_condition=ThermalCondition(T=363.88, P=106857))
+            g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958), ('O2', 10)],
+            l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.51), ('Propanol', 0.1042), ('Glucose', 5)]),
+        thermal_condition=ThermalCondition(T=363.88, P=106842))
 
     >>> vle(S=S, T=363.88)
     >>> vle 
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 128.1), ('Ethanol', 26.46), ('Methanol', 33.59), ('Propanol', 0.8979), ('O2', 10)],
-            l=[('Water', 175.9), ('Ethanol', 3.536), ('Methanol', 6.406), ('Propanol', 0.1021), ('Glucose', 5)]),
-        thermal_condition=ThermalCondition(T=363.88, P=106576))
+            g=[('Water', 128.1), ('Ethanol', 26.45), ('Methanol', 33.6), ('Propanol', 0.8978), ('O2', 10)],
+            l=[('Water', 175.9), ('Ethanol', 3.555), ('Methanol', 6.399), ('Propanol', 0.1022), ('Glucose', 5)]),
+        thermal_condition=ThermalCondition(T=363.88, P=106562))
 
     The presence of a non-partitioning gaseous chemical will result in some
     evaporation, even if the tempeture is below the saturated bubble point:

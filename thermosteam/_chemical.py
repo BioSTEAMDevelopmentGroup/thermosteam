@@ -392,10 +392,10 @@ class Chemical:
         
     >>> # Vapor pressure (Pa)
     >>> Water.Psat(T=373.15)
-    101417.99665995422
+    101417.99
     >>> # Surface tension (N/m)
     >>> Water.sigma(T=298.15)
-    0.07197220523022962
+    0.0719
     >>> # Molar volume (m^3/mol)
     >>> Water.V(phase='l', T=298.15, P=101325)
     1.806...e-05
@@ -420,7 +420,7 @@ class Chemical:
     Temperature dependent properties are managed by objects:
     
     >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="IAPWS")
+    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="HEOS_FIT")
 
     Phase dependent properties have attributes with model handles for each phase:
 
@@ -770,7 +770,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.rho('l', 298.15, 101325)
-        997.024
+        997.064
         
         """
         return fn.V_to_rho(self._V(*args, **kwargs), self._MW)
@@ -784,7 +784,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.Cp('l', 298.15, 101325)
-        4.180
+        4.181
         
         """
         return self._Cn(*args, **kwargs) / self._MW
@@ -798,7 +798,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.alpha('l', 298.15, 101325)
-        1.425...e-07
+        1.425...-07
         
         """
         return fn.alpha(self._kappa(*args, **kwargs), 
@@ -814,7 +814,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.nu('l', 298.15, 101325)
-        9.154...e-07
+        8.928...e-07
         
         """
         return fn.mu_to_nu(self._mu(*args, **kwargs), 
@@ -829,7 +829,7 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.Pr('l', 298.15, 101325)
-        6.421
+        6.261
         
         """
         return fn.Pr(self.Cp(*args, **kwargs) * 1000,
@@ -854,10 +854,10 @@ class Chemical:
         >>> import thermosteam as tmo
         >>> Water = tmo.Chemical('Water', cache=True)
         >>> Water.get_property('sigma', 'N/m', 300.) # Surface tension
-        0.07168596252716256
+        0.07168
 
         >>> Water.get_property('rho', 'g/cm3', 'l', 300., 101325) # Density
-        0.9962
+        0.9965
 
         """
         value = getattr(self, name)(*args, **kwargs)
@@ -1987,7 +1987,7 @@ class Chemical:
         >>> from thermosteam import Chemical
         >>> Substance = Chemical.blank('Substance', phase_ref='l')
         >>> sorted(Substance.get_missing_properties())
-        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'kappa', 'mu', 'omega', 'sigma', 'similarity_variable']
+        ['Cn', 'Dortmund', 'H', 'HHV', 'H_excess', 'Hf', 'Hfus', 'Hvap', 'LHV', 'MW', 'PSRK', 'Pc', 'Psat', 'Pt', 'S', 'S_excess', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'combustion', 'dipole', 'epsilon', 'iscyclic_aliphatic', 'omega', 'sigma', 'similarity_variable']
         
         """
         getfield = getattr

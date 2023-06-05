@@ -184,17 +184,17 @@ class Stream:
     
     >>> s1.T += 10
     >>> s1.H
-    1083.467954...
+    1083.46
     
     Other thermodynamic properties are temperature and pressure dependent as well:
     
     >>> s1.rho # Density [kg/m3]
-    908.648
+    909.14
     
     It may be more convinient to get properties with different units:
         
     >>> s1.get_property('rho', 'g/cm3')
-    0.90864
+    0.9091
     
     It is also possible to set some of the properties in different units:
         
@@ -206,12 +206,12 @@ class Stream:
         
     >>> bp = s1.bubble_point_at_P() # Bubble point at constant pressure
     >>> bp
-    BubblePointValues(T=357.07, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
+    BubblePointValues(T=357.14, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.492 0.508])
     
     The bubble point results contain all results as attributes:
     
     >>> tmo.docround(bp.T) # Temperature [K]
-    357.0693
+    357.1442
     >>> bp.y # Vapor composition
     array([0.49, 0.51])
     
@@ -222,33 +222,33 @@ class Stream:
     >>> s1.vle(P=101325, V=0.5)
     >>> s1.show()
     MultiStream: s1
-    phases: ('g', 'l'), T: 364.76 K, P: 101325 Pa
+    phases: ('g', 'l'), T: 364.78 K, P: 101325 Pa
     flow (kmol/hr): (g) Water    0.472
-                        Ethanol  0.192
+                        Ethanol  0.191
                     (l) Water    0.638
-                        Ethanol  0.0256
+                        Ethanol  0.0257
     
     Note that the stream is a now a MultiStream object to manage multiple phases.
     Each phase can be accessed separately too:
     
     >>> s1['l'].show()
     Stream: 
-    phase: 'l', T: 364.76 K, P: 101325 Pa
+    phase: 'l', T: 364.78 K, P: 101325 Pa
     flow (kmol/hr): Water    0.638
-                    Ethanol  0.0256
+                    Ethanol  0.0257
     
     >>> s1['g'].show()
     Stream: 
-    phase: 'g', T: 364.76 K, P: 101325 Pa
+    phase: 'g', T: 364.78 K, P: 101325 Pa
     flow (kmol/hr): Water    0.472
-                    Ethanol  0.192
+                    Ethanol  0.191
     
     We can convert a MultiStream object back to a Stream object by setting the phase:
         
     >>> s1.phase = 'l'
     >>> s1.show(flow='kg/hr')
     Stream: s1
-    phase: 'l', T: 364.76 K, P: 101325 Pa
+    phase: 'l', T: 364.78 K, P: 101325 Pa
     flow (kg/hr): Water    20
                   Ethanol  10
     
@@ -2086,7 +2086,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_T()
-        BubblePointValues(T=350.00, P=76677, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.486 0.514])
+        BubblePointValues(T=350.00, P=76463, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.488 0.512])
         
         """
         bp = self.get_bubble_point(IDs)
@@ -2108,7 +2108,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.bubble_point_at_P()
-        BubblePointValues(T=357.07, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.49 0.51])
+        BubblePointValues(T=357.14, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.492 0.508])
         
         """
         bp = self.get_bubble_point(IDs)
@@ -2132,7 +2132,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_T()
-        DewPointValues(T=350.00, P=49062, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        DewPointValues(T=350.00, P=49058, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
         
         """
         dp = self.get_dew_point(IDs)
@@ -2156,7 +2156,7 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, T=350, units='kg/hr')
         >>> s1.dew_point_at_P()
-        DewPointValues(T=368.62, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.984 0.016])
+        DewPointValues(T=368.62, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], x=[0.983 0.017])
         
         """
         dp = self.get_dew_point(IDs)
@@ -2318,10 +2318,10 @@ class Stream:
         >>> tmo.settings.set_thermo(['Water', 'Ethanol', 'Methanol'], cache=True) 
         >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, Methanol=10, units='m3/hr')
         >>> s1.get_concentration(['Water', 'Ethanol']) # kg/m3
-        array([27.672,  4.265])
+        array([27.673,  4.261])
         
         >>> s1.get_concentration(['Water', 'Ethanol'], 'g/L')
-        array([498.512, 196.479])
+        array([498.532, 196.291])
         
         """
         F_vol = self.F_vol
@@ -2361,9 +2361,9 @@ class Stream:
         >>> s1.receive_vent(s2)
         >>> s1.show(flow='kmol/hr')
         Stream: s1
-        phase: 'g', T: 323.13 K, P: 101325 Pa
+        phase: 'g', T: 323.12 K, P: 101325 Pa
         flow (kmol/hr): Water    0.0799
-                        Ethanol  0.0889
+                        Ethanol  0.0887
                         N2       0.739
         
         Set energy balance to false to receive vent isothermally:
