@@ -451,8 +451,8 @@ class SplitIndexer(Indexer):
         if N_IDs == 0:
             return f"{type(self).__name__}: (all zeros)"
         else:
-            basic_info = f"{type(self).__name__}:\n "
-        new_line = '\n '
+            basic_info = f"{type(self).__name__}:\n"
+        new_line = '\n'
         data_info = ''
         lengths = [len(i) for i in IDs]
         maxlen = max(lengths) + 1
@@ -674,7 +674,7 @@ class ChemicalIndexer(Indexer):
             basic_info = f"{type(self).__name__} ({self.units}):\n"
         else:
             basic_info = f"{type(self).__name__}:\n"
-        beginning = f' ({self.phase}) ' if self.phase else " "
+        beginning = f'({self.phase}) ' if self.phase else " "
         new_line = '\n' + len(beginning) * ' '
         data_info = ''
         lengths = [len(i) for i in IDs]
@@ -1147,7 +1147,7 @@ class MaterialIndexer(Indexer):
             if not IDs: continue
         
             # Get basic structure for phase data
-            beginning = f' ({phase}) '
+            beginning = f'({phase}) '
             new_line = '\n' + len(beginning) * ' '
 
             # Set chemical data
