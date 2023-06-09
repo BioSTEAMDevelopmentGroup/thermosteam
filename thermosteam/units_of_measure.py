@@ -22,7 +22,8 @@ import pint
 import os
 
 # Set pint Unit Registry
-ureg = pint.get_application_registry()
+appreg = pint.get_application_registry()
+ureg = appreg.get()
 ureg.default_format = '~P'
 if not getattr(pint, 'BioSTEAM_units_loaded', False): # Avoid reloading units of measure in pint if thermosteam module is reloaded
     ureg.load_definitions(os.path.dirname(os.path.realpath(__file__)) + '/units_of_measure.txt')
