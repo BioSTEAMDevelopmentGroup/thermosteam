@@ -230,7 +230,7 @@ class Registry: # pragma: no cover
     
     def show(self):
         if self.data:
-            print('Register:\n ' + '\n '.join([repr(i) for i in self]))
+            print('Register:\n ' + '\n'.join([repr(i) for i in self]))
         else:
             print('Register: (Empty)')
     
