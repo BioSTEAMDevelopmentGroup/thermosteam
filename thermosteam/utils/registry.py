@@ -230,9 +230,9 @@ class Registry: # pragma: no cover
     
     def show(self):
         if self.data:
-            print('Register:\n ' + '\n'.join([repr(i) for i in self]))
+            print(f'{type(self).__name__}:\n' + '\n'.join([repr(i) for i in self]))
         else:
-            print('Register: (Empty)')
+            print(f'{type(self).__name__}: (Empty)')
     
     _ipython_display_ = show
 
