@@ -53,8 +53,8 @@ jobs:
         python -c "import platform; print(platform.platform()); print(platform.architecture())"
         python -m pip install --upgrade pip
         python -m pip install wheel
-        pip install --no-cache-dir git+https://github.com/CalebBell/chemicals.git
         pip install --no-cache-dir git+https://github.com/CalebBell/fluids.git
+        pip install --no-cache-dir git+https://github.com/CalebBell/chemicals.git
         pip install --no-cache-dir git+https://github.com/CalebBell/thermo.git
         pip install -r requirements_test.txt
         pip install --no-cache-dir git+https://github.com/BioSTEAMDevelopmentGroup/biosteam.git
